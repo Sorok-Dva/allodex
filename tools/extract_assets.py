@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """Extrait les assets nécessaires au site depuis le client Allods Online.
 
-Usage : python3 tools/extract_assets.py [--client DIR] [--out public/game] [--force] [--skip-video]
+Les textures UI sont stockées en puissances de deux avec un padding
+entièrement transparent en bas et à droite ; par défaut, ce padding est
+rogné (voir `tools.uitexture.trim_transparent_padding`) et la taille
+enregistrée dans le manifest est la taille utile, rognée. `--no-trim`
+désactive ce rognage globalement ; la clé `no_trim` du manifest liste les
+entrées (chemin de pak complet) à ne jamais rogner.
+
+Usage : python3 tools/extract_assets.py [--client DIR] [--out public/game] [--force] [--skip-video] [--no-trim]
 """
 from __future__ import annotations
 
@@ -17,7 +24,7 @@ import zipfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from tools.uitexture import decode_uitexture  # noqa: E402
+from tools.uitexture import decode_uitexture, trim_transparent_padding  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_CLIENT = os.environ.get("ALLODS_CLIENT_DIR", "/mnt/h/MyGames/Allods Online FR (FR)")
@@ -54,7 +61,7 @@ def output_path_for(entry: str) -> str:
     return entry[: -len(TEXTURE_SUFFIX)] if entry.endswith(TEXTURE_SUFFIX) else entry
 
 
-def extract_textures(pak: zipfile.ZipFile, manifest: dict, out: Path, force: bool) -> dict:
+def extract_textures(pak: zipfile.ZipFile, manifest: dict, out: Path, force: bool, trim: bool = True) -> dict:
     index: dict[str, dict] = {}
     names = pak.namelist()
     entries = select_entries(names, manifest)
@@ -62,6 +69,7 @@ def extract_textures(pak: zipfile.ZipFile, manifest: dict, out: Path, force: boo
     for m in sorted(missing):
         print(f"AVERTISSEMENT : introuvable dans le pak : {m}", file=sys.stderr)
     overrides = {k: tuple(v) for k, v in manifest.get("dims_overrides", {}).items()}
+    no_trim = set(manifest.get("no_trim", []))
     for entry in entries:
         rel = output_path_for(entry)
         target = out / "textures" / f"{rel}.png"
@@ -72,9 +80,11 @@ def extract_textures(pak: zipfile.ZipFile, manifest: dict, out: Path, force: boo
                 index[rel] = {"w": im.width, "h": im.height}
             continue
         img, info = decode_uitexture(pak.read(entry), overrides.get(entry))
+        if trim and entry not in no_trim:
+            img = trim_transparent_padding(img)
         img.save(target)
-        index[rel] = {"w": info.width, "h": info.height}
-        print(f"texture  {rel}  {info.width}x{info.height} {info.fourcc}")
+        index[rel] = {"w": img.width, "h": img.height}
+        print(f"texture  {rel}  {img.width}x{img.height} (src {info.width}x{info.height} {info.fourcc})")
     return index
 
 
@@ -114,6 +124,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--out", default=str(HERE.parent / "public" / "game"))
     p.add_argument("--force", action="store_true")
     p.add_argument("--skip-video", action="store_true")
+    p.add_argument("--no-trim", action="store_true", help="désactive le rognage du padding transparent")
     args = p.parse_args(argv)
 
     client, out = Path(args.client), Path(args.out)
@@ -124,7 +135,7 @@ def main(argv: list[str] | None = None) -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     with zipfile.ZipFile(client / manifest["packs"]["interface"]) as pak:
-        textures = extract_textures(pak, manifest, out, args.force)
+        textures = extract_textures(pak, manifest, out, args.force, trim=not args.no_trim)
         extract_cursors(pak, manifest, out, args.force)
     if not args.skip_video:
         with zipfile.ZipFile(client / manifest["packs"]["video"]) as pak:

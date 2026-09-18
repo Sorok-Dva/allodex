@@ -104,6 +104,23 @@ def _try_decode(width: int, height: int, fourcc: bytes, payload: bytes) -> Image
         return None
 
 
+def trim_transparent_padding(img: Image.Image) -> Image.Image:
+    """Rogne les colonnes de droite et lignes du bas entièrement transparentes.
+
+    Les textures UI d'Allods sont stockées en puissances de deux, ancrées en
+    haut-gauche ; la zone utile (realWidth × realHeight du .xdb) est suivie
+    d'un padding alpha=0. Le haut et la gauche ne sont jamais touchés.
+    """
+    if img.mode != "RGBA":
+        return img
+    alpha = np.asarray(img)[:, :, 3]
+    rows = np.flatnonzero(alpha.max(axis=1))
+    cols = np.flatnonzero(alpha.max(axis=0))
+    if rows.size == 0 or cols.size == 0:
+        return img
+    return img.crop((0, 0, int(cols[-1]) + 1, int(rows[-1]) + 1))
+
+
 def decode_uitexture(data: bytes, dims_hint: tuple[int, int] | None = None) -> tuple[Image.Image, DecodeInfo]:
     raw = zlib.decompress(data)
     _zero, size = struct.unpack("<II", raw[:8])

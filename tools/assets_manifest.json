@@ -19,6 +19,7 @@
     "Interface/Icons/Special/Currency/DiamondMedal.(UITexture).bin"
   ],
   "dims_overrides": {},
+  "no_trim": [],
   "cursor_prefix": "Interface/System/Cursors/",
   "videos": {
     "intro": "Video/16_0Events/MainMenu/Intro.ogv",

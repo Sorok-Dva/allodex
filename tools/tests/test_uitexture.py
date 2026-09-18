@@ -1,7 +1,31 @@
 import os, struct, zipfile, zlib
 import pytest
+from PIL import Image
 
-from tools.uitexture import candidate_dims, build_dds, decode_uitexture, row_smoothness, _is_better
+from tools.uitexture import candidate_dims, build_dds, decode_uitexture, row_smoothness, _is_better, trim_transparent_padding
+
+
+def test_trim_removes_only_right_and_bottom_transparent_padding():
+    img = Image.new("RGBA", (8, 8), (0, 0, 0, 0))
+    img.putpixel((0, 0), (255, 0, 0, 255))   # coin haut-gauche opaque
+    img.putpixel((4, 2), (0, 255, 0, 255))   # contenu jusqu'à x=4, y=2
+    out = trim_transparent_padding(img)
+    assert out.size == (5, 3)
+    assert out.getpixel((0, 0)) == (255, 0, 0, 255)
+    assert out.getpixel((4, 2)) == (0, 255, 0, 255)
+
+
+def test_trim_keeps_top_left_transparent_margin():
+    img = Image.new("RGBA", (8, 8), (0, 0, 0, 0))
+    img.putpixel((3, 3), (0, 0, 255, 255))
+    assert trim_transparent_padding(img).size == (4, 4)
+
+
+def test_trim_fully_transparent_or_opaque_is_identity():
+    empty = Image.new("RGBA", (4, 4), (0, 0, 0, 0))
+    assert trim_transparent_padding(empty).size == (4, 4)
+    rgb = Image.new("RGB", (4, 4), (10, 10, 10))
+    assert trim_transparent_padding(rgb).size == (4, 4)
 
 
 def test_candidate_dims_lists_power_of_two_pairs():
