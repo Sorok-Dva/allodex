@@ -1,0 +1,30 @@
+{
+  "packs": {
+    "interface": "data/Packs/Interface.Mini.pak",
+    "video": "data/Packs/Video.pak"
+  },
+  "texture_prefixes": [
+    "Interface/Ingame/Medals/Textures/",
+    "Interface/Wrap/MainMenu/LoginAccount/",
+    "Interface/Wrap/MainMenu/Main2/",
+    "Interface/Common/Buttons/Cross/",
+    "Interface/Common/Buttons/Menu/",
+    "Interface/Common/Buttons/Standard/",
+    "Interface/Common/Elements/MsgBox/textures/"
+  ],
+  "texture_files": [
+    "Interface/Icons/Equipment/Helm/Armor_Light_Helmet.(UITexture).bin",
+    "Interface/Icons/Special/VeteranRewards/VeteranRankMaster.(UITexture).bin",
+    "Interface/Icons/Misc/Event/GoldMedal.(UITexture).bin",
+    "Interface/Icons/Special/Currency/DiamondMedal.(UITexture).bin"
+  ],
+  "dims_overrides": {
+    "Interface/Wrap/MainMenu/LoginAccount/ButtonLoginNormal.(UITexture).bin": [256, 256],
+    "Interface/Wrap/MainMenu/LoginAccount/ButtonLoginHighlighted.(UITexture).bin": [256, 256]
+  },
+  "cursor_prefix": "Interface/System/Cursors/",
+  "videos": {
+    "intro": "Video/16_0Events/MainMenu/Intro.ogv",
+    "mainmenu": "Video/16_0Events/MainMenu/MainMenu.ogv"
+  }
+}
