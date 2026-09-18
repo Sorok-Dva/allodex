@@ -25,5 +25,5 @@ Les assets extraits sous `public/game/` appartiennent à My.Games et ne sont pas
 
 ## État du POC (2026-09)
 - `/` : intro (première visite), puis menu vidéo avec panneau de connexion transformé en menu du site.
-- `/succes` : panneau Succès fidèle au jeu, données mockées (`src/data/medals.mock.json`). 4 des 20 succès mockés ont des textes partiellement inventés (nom/description réels du jeu, progression et paliers fictifs).
+- `/succes` : panneau Succès fidèle au jeu, données mockées (`src/data/medals.mock.json`). 3 des 20 succès mockés (Collectionneur, Vétéran de Sarnaut, Vétéran de la Grande Campagne Astrale) ont des textes partiellement inventés ; les 17 autres reprennent les textes du jeu. La progression et les paliers sont fictifs pour tous.
 - Non fait : comptes, addon d'export, import de progression, icônes réelles des succès.
