@@ -19,7 +19,7 @@
 - Textes UI en français, repris du jeu : « Succès », « points de succès », « Recherche de succès... », « Tout », « Terminés », « En cours », « X sur Y ».
 - Couleurs du jeu : vert foncé texte `#122c14`, contour clair `#658e7c`, vert libellé recherche `#618b5e`, or titres `#e8c877`, vert coche `#3fae4a`.
 - Commits fréquents, messages en français, suffixe `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`.
-- Le dépôt est `/home/llyam/projects/allods-medals`, branche `main`. Toutes les commandes s'exécutent depuis cette racine.
+- Le dépôt est `/home/llyam/projects/allodex`, branche `main`. Toutes les commandes s'exécutent depuis cette racine.
 
 ---
 

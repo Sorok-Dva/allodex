@@ -39,7 +39,7 @@ Inférence des dimensions d'une texture : le payload donne le nombre de blocs 4�
 ## 4. Architecture
 
 ```
-allods-medals/
+allodex/
 ├── tools/                    # pipeline d'assets (Python 3, Pillow, numpy, ffmpeg)
 │   ├── extract_assets.py     # lit le client, écrit public/game/
 │   ├── uitexture.py          # décodeur UITexture → PNG (+ inférence dimensions)

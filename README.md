@@ -1,6 +1,6 @@
-# allods-medals
+# Allodex
 
-Site fan Allods Online. POC : écran d'ouverture du jeu + panneau Succès, rendus avec les assets du client.
+Allodex, site fan Allods Online. POC : écran d'ouverture du jeu + panneau Succès, rendus avec les assets du client.
 
 ## Prérequis
 - Node 20+, Python 3.10+, ffmpeg (avec libvpx-vp9 et libx264)
