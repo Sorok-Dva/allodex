@@ -1,0 +1,168 @@
+{
+  "totalScore": 24690,
+  "categories": [
+    { "name": "Progression", "subCategories": [{ "name": "Général" }] },
+    { "name": "Personnage", "subCategories": [{ "name": "Équipement" }, { "name": "Professions" }, { "name": "Divers" }, { "name": "Long service" }] },
+    { "name": "Batailles", "subCategories": [{ "name": "Escarmouches" }, { "name": "Domination" }] },
+    { "name": "Astral", "subCategories": [{ "name": "Général" }] },
+    { "name": "Raids précédents", "subCategories": [{ "name": "Laboratoire central" }] },
+    { "name": "Zones de l'histoire", "subCategories": [{ "name": "Ferris" }] },
+    { "name": "Ordre", "subCategories": [{ "name": "Général" }] },
+    { "name": "Raids actuels", "subCategories": [{ "name": "Général" }] },
+    { "name": "Aventures héroïques", "subCategories": [{ "name": "Bestiaire" }] },
+    { "name": "Succès rares", "subCategories": [{ "name": "Général" }] }
+  ],
+  "medals": [
+    {
+      "id": "equip-immortalite", "name": "Paré pour l'aventure ! (Immortalité)",
+      "description": "Augmentez la côte d'équipement maximum à 100 000 points.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet", "categoryIndex": 1, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 100000, "name": "Paré pour l'aventure ! (Immortalité)", "description": "Augmentez la côte d'équipement maximum à 100 000 points.", "score": 10 }],
+      "currentRank": 1, "progress": { "value": 100000 }, "finishDate": "2017-09-13"
+    },
+    {
+      "id": "equip-reveil", "name": "Paré pour l'aventure ! (Réveil)",
+      "description": "Augmentez la côte d'équipement maximum à 21 500 points.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet", "categoryIndex": 1, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 21500, "name": "Paré pour l'aventure ! (Réveil)", "description": "Augmentez la côte d'équipement maximum à 21 500 points.", "score": 10 }],
+      "currentRank": 1, "progress": { "value": 21500 }, "finishDate": "2019-01-28"
+    },
+    {
+      "id": "dragon-temps-nouveaux", "name": "Dragon des temps nouveaux",
+      "description": "Équipez un ensemble complet de Reliques du dragon.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal", "categoryIndex": 1, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 1, "name": "Dragon des temps nouveaux", "description": "Équipez un ensemble complet de Reliques du dragon.", "score": 100 }],
+      "currentRank": 1, "finishDate": "2020-01-29",
+      "dressCollection": [
+        { "slot": "chest", "description": "Torse", "success": true }, { "slot": "waist", "description": "Taille", "success": true },
+        { "slot": "feet", "description": "Pieds", "success": true }, { "slot": "wrist", "description": "Poignets", "success": true },
+        { "slot": "ear1", "description": "Oreilles", "success": true }, { "slot": "ear2", "description": "Oreilles", "success": true },
+        { "slot": "hands", "description": "Mains", "success": true }, { "slot": "head", "description": "Tête", "success": true },
+        { "slot": "shoulders", "description": "Épaules", "success": true }, { "slot": "neck", "description": "Cou", "success": true }
+      ]
+    },
+    {
+      "id": "divin", "name": "Divin", "description": "Équipez-vous d'un ensemble complet d'équipement fabuleux.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal", "categoryIndex": 1, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 1, "name": "Divin", "description": "Équipez-vous d'un ensemble complet d'équipement fabuleux.", "score": 50 }],
+      "currentRank": 1, "finishDate": "2021-03-02"
+    },
+    {
+      "id": "glaneur", "name": "Glaneur", "description": "Créez des Amalgames avec des gouttes d'Amalgame.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal", "categoryIndex": 1, "subCategoryIndex": 1,
+      "ranks": [
+        { "completeProgress": 10, "name": "Goutte à goutte", "description": "Créez 10 Amalgames avec des gouttes d'Amalgame.", "score": 10 },
+        { "completeProgress": 50, "name": "Glaneur", "description": "Créez 50 Amalgames avec des gouttes d'Amalgame.", "score": 10 },
+        { "completeProgress": 100, "name": "Glaneur", "description": "Créez 100 Amalgames avec des gouttes d'Amalgame.", "score": 30 },
+        { "completeProgress": 1000, "name": "Magnat de l'Amalgame", "description": "Créez 1000 Amalgames avec des gouttes d'Amalgame.", "score": 100 }
+      ],
+      "currentRank": 2, "progress": { "value": 73, "title": "Amalgame récolté" }
+    },
+    {
+      "id": "escarmouches", "name": "Légende du Goblinoball", "description": "Remportez des Escarmouches.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal", "categoryIndex": 2, "subCategoryIndex": 0,
+      "ranks": [
+        { "completeProgress": 5, "name": "Parties gagnées", "description": "Remportez 5 Escarmouches.", "score": 10 },
+        { "completeProgress": 50, "name": "Parties gagnées", "description": "Remportez 50 Escarmouches.", "score": 30 },
+        { "completeProgress": 500, "name": "Légende du Goblinoball", "description": "Remportez 500 Escarmouches.", "score": 100 }
+      ],
+      "currentRank": 1, "progress": { "value": 23, "title": "Parties gagnées" }
+    },
+    {
+      "id": "vieille-querelle", "name": "Vieille querelle", "description": "Éliminez votre tueur.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal", "categoryIndex": 2, "subCategoryIndex": 1,
+      "ranks": [
+        { "completeProgress": 5, "name": "Vieille querelle", "description": "Éliminez votre tueur 5 fois.", "score": 10 },
+        { "completeProgress": 100, "name": "Vieille querelle", "description": "Éliminez votre tueur 100 fois.", "score": 50 },
+        { "completeProgress": 500, "name": "Vieille querelle", "description": "Éliminez votre tueur 500 fois.", "score": 500 }
+      ],
+      "currentRank": 0, "progress": { "value": 2 }
+    },
+    {
+      "id": "faux-semblants", "name": "Faux semblants", "description": "Battez le clone d'Herbert dans le Laboratoire central.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 4, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 1, "name": "Faux semblants", "description": "Battez le clone d'Herbert dans le Laboratoire central.", "score": 30 }],
+      "currentRank": 1, "finishDate": "2016-11-05"
+    },
+    {
+      "id": "variable-indefinie", "name": "Variable indéfinie", "description": "Battez le Mécanoïde dans le Laboratoire central.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 4, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 1, "name": "Variable indéfinie", "description": "Battez le Mécanoïde dans le Laboratoire central.", "score": 30 }],
+      "currentRank": 0
+    },
+    {
+      "id": "partie-terminee", "name": "Partie terminée", "description": "Battez Negus Jeeg dans le Laboratoire central.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 4, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 1, "name": "Partie terminée", "description": "Battez Negus Jeeg dans le Laboratoire central.", "score": 50 }],
+      "currentRank": 0
+    },
+    {
+      "id": "petit-chef", "name": "Petit chef", "description": "Battez le chef Tungar dans les grandes batailles de Ferris.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 5, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 1, "name": "Petit chef", "description": "Battez le chef Tungar dans les grandes batailles de Ferris.", "score": 10 }],
+      "currentRank": 1, "finishDate": "2018-06-14"
+    },
+    {
+      "id": "provisions-hiver", "name": "Provisions pour l'hiver", "description": "Battez Toros dans les grandes batailles de Ferris.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 5, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 1, "name": "Provisions pour l'hiver", "description": "Battez Toros dans les grandes batailles de Ferris.", "score": 10 }],
+      "currentRank": 0
+    },
+    {
+      "id": "gros-gibier", "name": "Gros gibier", "description": "Éliminez Courlis-Khan dans le Bestiaire.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 8, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 1, "name": "Gros gibier", "description": "Éliminez Courlis-Khan dans le Bestiaire.", "score": 30 }],
+      "currentRank": 1, "finishDate": "2022-02-11"
+    },
+    {
+      "id": "cavaliers-tempete", "name": "Cavaliers de la tempête", "description": "Éliminez Havoc dans le Bestiaire.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 8, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 1, "name": "Cavaliers de la tempête", "description": "Éliminez Havoc dans le Bestiaire.", "score": 30 }],
+      "currentRank": 0
+    },
+    {
+      "id": "tenu-en-laisse", "name": "Tenu en laisse", "description": "Éliminez Rustle dans le Bestiaire.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 8, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 1, "name": "Tenu en laisse", "description": "Éliminez Rustle dans le Bestiaire.", "score": 30 }],
+      "currentRank": 1, "finishDate": "2022-02-18"
+    },
+    {
+      "id": "licorne-magique", "name": "Licorne magique", "description": "Devenez un véritable chevaucheur de bâton en ramassant et en utilisant 100 poils de licorne.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal", "categoryIndex": 9, "subCategoryIndex": 0,
+      "ranks": [{ "completeProgress": 100, "name": "Licorne magique", "description": "Devenez un véritable chevaucheur de bâton en ramassant et en utilisant 100 poils de licorne.", "score": 500 }],
+      "currentRank": 0, "progress": { "value": 41, "title": "Je suis un chevaucheur de bâton." }
+    },
+    {
+      "id": "collectionneur-montures", "name": "Collectionneur",
+      "description": "Apprenez des montures.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal", "categoryIndex": 1, "subCategoryIndex": 2,
+      "ranks": [
+        { "completeProgress": 10, "name": "Collectionneur", "description": "Apprenez 10 montures.", "score": 10 },
+        { "completeProgress": 50, "name": "Collectionneur", "description": "Apprenez 50 montures.", "score": 30 },
+        { "completeProgress": 100, "name": "Collectionneur", "description": "Apprenez 100 montures.", "score": 50 }
+      ],
+      "currentRank": 2, "progress": { "value": 63, "title": "Montures apprises" }
+    },
+    {
+      "id": "roi-de-la-piste", "name": "Roi de la piste",
+      "description": "Gagnez une médaille d'or à la course de chariots à Ammer.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal", "categoryIndex": 1, "subCategoryIndex": 2,
+      "ranks": [{ "completeProgress": 1, "name": "Roi de la piste", "description": "Gagnez une médaille d'or à la course de chariots à Ammer.", "score": 10 }],
+      "currentRank": 1, "finishDate": "2021-07-04"
+    },
+    {
+      "id": "veteran-sarnaut", "name": "Vétéran de Sarnaut",
+      "description": "Jouez pendant 1 an.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 1, "subCategoryIndex": 3,
+      "ranks": [{ "completeProgress": 365, "name": "Vétéran de Sarnaut", "description": "Jouez pendant 1 an.", "score": 30 }],
+      "currentRank": 1, "progress": { "value": 365 }, "finishDate": "2020-05-12"
+    },
+    {
+      "id": "veteran-grande-campagne", "name": "Vétéran de la Grande Campagne Astrale",
+      "description": "Jouez pendant 3 ans.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 1, "subCategoryIndex": 3,
+      "ranks": [{ "completeProgress": 1095, "name": "Vétéran de la Grande Campagne Astrale", "description": "Jouez pendant 3 ans.", "score": 100 }],
+      "currentRank": 0, "progress": { "value": 740, "title": "Jours joués" }
+    }
+  ]
+}
