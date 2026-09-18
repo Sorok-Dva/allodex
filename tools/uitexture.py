@@ -45,6 +45,33 @@ def build_dds(width: int, height: int, fourcc: bytes, payload: bytes) -> bytes:
     return b"DDS " + header + payload
 
 
+def _aspect_ratio(w: int, h: int) -> float:
+    return max(w, h) / min(w, h)
+
+
+def _is_better(score: float, w: int, h: int, best_score: float, best_w: int, best_h: int, tol: float = 1e-6) -> bool:
+    """(score, w, h) doit-il remplacer (best_score, best_w, best_h) ?
+
+    Les textures d'UI répétitives (bordures, barres de progression) peuvent rendre
+    plusieurs découpages tout aussi « lisses » (score identique à `tol` près) :
+    on départage alors par la forme la plus proche du carré, puis, à égalité de
+    forme, on préfère le format paysage (largeur >= hauteur), le plus courant
+    pour ces textures. À n'appliquer qu'entre candidats d'un même fourcc : deux
+    fourcc différents peuvent produire un score identique sur les mêmes octets
+    sans que la forme soit un indice fiable (l'un des deux est alors un artefact).
+    """
+    if score < best_score - tol:
+        return True
+    if score > best_score + tol:
+        return False
+    ratio, best_ratio = _aspect_ratio(w, h), _aspect_ratio(best_w, best_h)
+    if ratio < best_ratio - tol:
+        return True
+    if ratio > best_ratio + tol:
+        return False
+    return w >= h and not (best_w >= best_h)
+
+
 def row_smoothness(img: Image.Image) -> float:
     a = np.asarray(img.convert("L"), dtype=np.float32)
     if a.shape[0] < 2:
@@ -74,6 +101,9 @@ def decode_uitexture(data: bytes, dims_hint: tuple[int, int] | None = None) -> t
             continue
         n_blocks = size // block_bytes
         dims = [dims_hint] if dims_hint else candidate_dims(n_blocks)
+        # Meilleur candidat pour CE fourcc : le départage forme carrée/paysage
+        # (_is_better) n'a de sens qu'entre décodages du même fourcc.
+        fourcc_best: tuple[float, int, int, Image.Image] | None = None
         for w, h in dims:
             if (w // 4) * (h // 4) != n_blocks:
                 continue
@@ -81,8 +111,16 @@ def decode_uitexture(data: bytes, dims_hint: tuple[int, int] | None = None) -> t
             if img is None:
                 continue
             score = row_smoothness(img)
-            if best is None or score < best[0]:
-                best = (score, img, DecodeInfo(w, h, fourcc.decode()))
+            if fourcc_best is None or _is_better(score, w, h, fourcc_best[0], fourcc_best[1], fourcc_best[2]):
+                fourcc_best = (score, w, h, img)
+        if fourcc_best is None:
+            continue
+        score, w, h, img = fourcc_best
+        # Entre fourcc différents, à score égal on garde le premier trouvé (DXT1
+        # avant DXT5 dans BLOCK_BYTES) : la forme ne départage pas ici, elle
+        # départagerait un artefact au même titre qu'un vrai résultat.
+        if best is None or score < best[0]:
+            best = (score, img, DecodeInfo(w, h, fourcc.decode()))
     if best is None:
         raise ValueError("aucun décodage DXT possible")
     return best[1], best[2]
