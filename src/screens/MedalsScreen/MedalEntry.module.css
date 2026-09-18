@@ -12,10 +12,21 @@
 .bar { margin: 4px 8px 2px; }
 .conditions { list-style: none; margin: 6px 0 0; padding: 0 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 16px; font: 600 15px var(--font-serif); }
 .check { display: inline-block; width: 18px; color: var(--check-green); font-size: 14px; }
+.ok { color: var(--ink); }
 .ko .check { color: #8a8a8a; }
 .ko { color: #6e6a5e; }
+/*
+ * `left`/`top` sont posés en style inline depuis MedalEntry.tsx (calculés via
+ * getBoundingClientRect() sur l'entrée survolée : left = rect.left + 72, où 72 =
+ * 64px de badge + 8px de gap, cf. `.entry { gap: 8px }` ci-dessus). Le tooltip est
+ * donc en `position: fixed` (coordonnées viewport) plutôt qu'`absolute` : `.list`
+ * (MedalsList.module.css) a `overflow-y: auto`, qui rognerait un tooltip positionné
+ * relativement à `.entry` dès que la ligne est proche du bord de la zone de scroll.
+ * `pointer-events: none` évite que le tooltip lui-même ne déclenche mouseenter/leave
+ * sur les entrées voisines (flicker au survol).
+ */
 .tooltip {
-  position: absolute; left: 72px; top: calc(100% - 4px); z-index: 5; min-width: 320px; max-width: 460px;
+  position: fixed; z-index: 50; pointer-events: none; min-width: 320px; max-width: 460px;
   padding: 10px 12px; background: rgba(12, 22, 12, 0.94); border: 1px solid #8fae7a; border-radius: 4px;
   color: #dfe9d8; font-size: 14px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
 }
