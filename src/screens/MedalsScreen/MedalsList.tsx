@@ -1,4 +1,4 @@
-import type { MedalFilter, MedalsDataset } from '@/data/medals.types';
+import type { MedalFilter } from '@/data/medals.types';
 import { T, tex } from '@/lib/assets';
 import type { MedalsState } from './useMedalsState';
 import { MedalEntry } from './MedalEntry';
@@ -8,7 +8,7 @@ const FILTERS: { value: MedalFilter; label: string }[] = [
   { value: 'all', label: 'Tout' }, { value: 'completed', label: 'Terminés' }, { value: 'inProgress', label: 'En cours' },
 ];
 
-export function MedalsList({ state }: { ds: MedalsDataset; state: MedalsState }) {
+export function MedalsList({ state }: { state: MedalsState }) {
   return (
     <section className={s.content} style={{ backgroundImage: `url(${tex(`${T.medals}/FrameContent02`)})` }}>
       <header className={s.header} style={{ backgroundImage: `url(${tex(`${T.medals}/MedalHeader`)})` }}>

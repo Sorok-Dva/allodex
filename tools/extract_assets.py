@@ -23,6 +23,8 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+from PIL import Image
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from tools.uitexture import decode_uitexture, trim_transparent_padding  # noqa: E402
 
@@ -75,14 +77,17 @@ def extract_textures(pak: zipfile.ZipFile, manifest: dict, out: Path, force: boo
         target = out / "textures" / f"{rel}.png"
         target.parent.mkdir(parents=True, exist_ok=True)
         if target.exists() and not force:
-            from PIL import Image
             with Image.open(target) as im:
                 index[rel] = {"w": im.width, "h": im.height}
             continue
-        img, info = decode_uitexture(pak.read(entry), overrides.get(entry))
-        if trim and entry not in no_trim:
-            img = trim_transparent_padding(img)
-        img.save(target)
+        try:
+            img, info = decode_uitexture(pak.read(entry), overrides.get(entry))
+            if trim and entry not in no_trim:
+                img = trim_transparent_padding(img)
+            img.save(target)
+        except Exception as exc:
+            print(f"AVERTISSEMENT : décodage impossible pour {entry} : {exc}", file=sys.stderr)
+            continue
         index[rel] = {"w": img.width, "h": img.height}
         print(f"texture  {rel}  {img.width}x{img.height} (src {info.width}x{info.height} {info.fourcc})")
     return index

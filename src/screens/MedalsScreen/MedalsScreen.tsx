@@ -30,7 +30,7 @@ export function MedalsScreen() {
         <div className={s.points}>{ds.totalScore.toLocaleString('fr-FR')} points de succès</div>
         <div className={s.columns}>
           <MedalsNavigation ds={ds} state={state} />
-          <MedalsList ds={ds} state={state} />
+          <MedalsList state={state} />
         </div>
       </GameFrame>
     </div>

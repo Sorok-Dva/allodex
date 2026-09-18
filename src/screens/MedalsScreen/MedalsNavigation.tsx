@@ -8,7 +8,13 @@ export function MedalsNavigation({ ds, state }: { ds: MedalsDataset; state: Meda
   return (
     <aside className={s.nav} style={{ backgroundImage: `url(${tex(`${T.medals}/FrameNavigation`)})` }}>
       <label className={s.search} style={{ backgroundImage: `url(${tex(`${T.login}/EditlineFrame`)})` }}>
-        <input value={state.query} onChange={e => state.setQuery(e.target.value)} placeholder="Recherche de succès..." spellCheck={false} />
+        <input
+          value={state.query}
+          onChange={e => state.setQuery(e.target.value)}
+          placeholder="Recherche de succès..."
+          spellCheck={false}
+          aria-label="Recherche de succès"
+        />
       </label>
 
       <ul className={s.categories}>
@@ -16,7 +22,7 @@ export function MedalsNavigation({ ds, state }: { ds: MedalsDataset; state: Meda
           const open = state.openCategory === c;
           return (
             <li key={cat.name} className={s.category}>
-              <button type="button" className={`${s.catButton} ${open ? s.catOpen : ''}`} onClick={() => state.toggleCategory(c)}>
+              <button type="button" className={`${s.catButton} ${open ? s.catOpen : ''}`} aria-expanded={open} onClick={() => state.toggleCategory(c)}>
                 <span>{cat.name}</span>
                 <span className={s.toggle}>{open ? '−' : '+'}</span>
               </button>

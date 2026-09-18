@@ -107,6 +107,8 @@ Séquence :
 
 Le choix « voir l'intro » est mémorisé en `localStorage` : après une première visite, l'intro est sautée par défaut, un petit lien « Rejouer l'intro » la relance.
 
+(amendé 2026-09-18) La page Crédits distincte n'a pas été implémentée : la mention légale (« Site fan non officiel… propriété de My.Games ») est affichée dans la bande `BottomLine` en bas de l'écran, et le bouton `ButtonCredits` a été réaffecté à l'action « Rejouer l'intro ».
+
 ### 4.4 Panneau Succès (`MedalsScreen`)
 
 Réplique de la capture, sur fond de la vidéo `mainmenu` floutée/assombrie pour rester dans l'ambiance.
@@ -119,7 +121,7 @@ Réplique de la capture, sur fond de la vidéo `mainmenu` floutée/assombrie pou
   - barre de progression `ProgressBar` + `ProgressBarGauge` avec libellé « X sur Y » si le palier a un `completeProgress` > 1 ;
   - checklist à deux colonnes pour `dressCollection` / `medalCollection` avec coche verte ou grise ;
   - survol : tooltip listant tous les paliers (`MedalRanks`).
-- **Ascenseur** : éléments `Interface/Common/Elements` (flèches haut/bas, piste) reconstruits ; la liste native reste scrollable à la molette.
+- **Ascenseur** (amendé 2026-09-18) : implémenté en CSS (`scrollbar-width`/`scrollbar-color` + pseudo-éléments `::-webkit-scrollbar*`) plutôt que reconstruit depuis les textures `Interface/Common/Elements` ; la liste native reste scrollable à la molette.
 - **Typographie** : la police du jeu « AllodsWest » (`allods.ttf`, récupérée dans le launcher ADC, `~/projects/adc-launcher-public/public/fonts/`) est copiée dans `public/fonts/` et déclarée en `@font-face`. Elle couvre latin étendu et cyrillique. Couleurs prises dans les balises des textes FR (`0xff122c14` vert foncé, `0xff658e7c` contour clair, or des titres).
 
 ### 4.5 Navigation

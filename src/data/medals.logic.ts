@@ -29,7 +29,7 @@ export function filterMedals(medals: Medal[], filter: MedalFilter): Medal[] {
 }
 
 export function normalize(s: string): string {
-  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 }
 
 export function searchMedals(ds: MedalsDataset, query: string): Medal[] {
@@ -46,13 +46,22 @@ export function parseDataset(raw: unknown): MedalsDataset {
   const ds = raw as MedalsDataset;
   if (!ds || !Array.isArray(ds.categories) || !Array.isArray(ds.medals)) fail('root', 'categories/medals manquants');
   if (typeof ds.totalScore !== 'number') fail('totalScore', 'nombre attendu');
+  const seenIds = new Set<string>();
   ds.medals.forEach((m, i) => {
     const p = `medals[${i}]`;
     if (!m.id || !m.name) fail(p, 'id/name manquants');
+    if (seenIds.has(m.id)) fail(`${p}.id`, 'id dupliqué');
+    seenIds.add(m.id);
     if (!Array.isArray(m.ranks) || m.ranks.length === 0) fail(`${p}.ranks`, 'au moins un palier requis');
+    m.ranks.forEach((r, j) => {
+      const valid = typeof r.completeProgress === 'number' && r.completeProgress >= 1
+        && typeof r.score === 'number' && typeof r.name === 'string' && typeof r.description === 'string';
+      if (!valid) fail(`${p}.ranks[${j}]`, 'palier invalide');
+    });
     const cat = ds.categories[m.categoryIndex];
     if (!cat) fail(`${p}.categoryIndex`, `catégorie ${m.categoryIndex} inexistante`);
     if (!cat.subCategories[m.subCategoryIndex]) fail(`${p}.subCategoryIndex`, `sous-catégorie ${m.subCategoryIndex} inexistante`);
+    if (typeof m.currentRank !== 'number' || !Number.isInteger(m.currentRank)) fail(`${p}.currentRank`, 'nombre entier attendu');
     if (m.currentRank < 0 || m.currentRank > m.ranks.length) fail(`${p}.currentRank`, 'hors bornes');
   });
   return ds;

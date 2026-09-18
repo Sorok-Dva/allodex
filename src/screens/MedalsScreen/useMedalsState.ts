@@ -11,6 +11,10 @@ export function firstNonEmpty(ds: MedalsDataset): Selection {
   return { categoryIndex: 0, subCategoryIndex: 0 };
 }
 
+export function titleFor(ds: MedalsDataset, sel: Selection): string {
+  return ds.categories[sel.categoryIndex]?.subCategories[sel.subCategoryIndex]?.name ?? '';
+}
+
 export function useMedalsState(ds: MedalsDataset, initialQuery = '') {
   const [selected, setSelected] = useState<Selection>(() => firstNonEmpty(ds));
   const [openCategory, setOpenCategory] = useState<number | null>(selected.categoryIndex);
@@ -23,7 +27,7 @@ export function useMedalsState(ds: MedalsDataset, initialQuery = '') {
   const { visible, title } = useMemo(() => {
     if (query.trim()) return { visible: filterMedals(searchMedals(ds, query), filter), title: 'Résultats de la recherche' };
     const list = medalsOf(ds, selected.categoryIndex, selected.subCategoryIndex);
-    return { visible: filterMedals(list, filter), title: ds.categories[selected.categoryIndex].subCategories[selected.subCategoryIndex].name };
+    return { visible: filterMedals(list, filter), title: titleFor(ds, selected) };
   }, [ds, query, filter, selected]);
 
   return { selected, select, openCategory, toggleCategory, query, setQuery, filter, setFilter, visible: visible as Medal[], title };

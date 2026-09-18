@@ -3,6 +3,8 @@ dist/
 public/game/
 .env
 __pycache__/
+.superpowers/
+.pytest_cache/
 
 # Vite
 dist-ssr/

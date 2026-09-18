@@ -80,4 +80,17 @@ describe('parseDataset', () => {
     expect(parsed.medals.length).toBeGreaterThanOrEqual(16);
     expect(subCategoryCounts(parsed, 1, 0)).toEqual({ done: 4, total: 4 });
   });
+
+  it('rejette un currentRank manquant ou non entier', () => {
+    expect(() => parseDataset({ ...ds, medals: [medal({ currentRank: undefined as unknown as number })] })).toThrow(/currentRank/);
+    expect(() => parseDataset({ ...ds, medals: [medal({ currentRank: 0.5 })] })).toThrow(/currentRank/);
+  });
+
+  it('rejette un palier avec completeProgress à 0', () => {
+    expect(() => parseDataset({ ...ds, medals: [medal({ ranks: [rank(10, 0)] })] })).toThrow(/ranks\[0\]/);
+  });
+
+  it('rejette les id dupliqués', () => {
+    expect(() => parseDataset({ ...ds, medals: [medal({ id: 'dup' }), medal({ id: 'dup' })] })).toThrow(/id dupliqué/);
+  });
 });

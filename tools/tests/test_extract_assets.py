@@ -48,6 +48,15 @@ def _make_pak() -> zipfile.ZipFile:
     return zipfile.ZipFile(buf)
 
 
+def _make_pak_two_entries() -> zipfile.ZipFile:
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        zf.writestr("Interface/Ingame/Medals/Textures/Bad.(UITexture).bin", b"\0")
+        zf.writestr("Interface/Ingame/Medals/Textures/Good.(UITexture).bin", b"\0")
+    buf.seek(0)
+    return zipfile.ZipFile(buf)
+
+
 def _img_with_padding() -> Image.Image:
     img = Image.new("RGBA", (8, 8), (0, 0, 0, 0))
     for y in range(2):
@@ -94,3 +103,21 @@ def test_extract_textures_respects_no_trim_list(monkeypatch, tmp_path):
     with _make_pak() as pak:
         index = extract_textures(pak, manifest, tmp_path, force=True)
     assert index["Interface/Ingame/Medals/Textures/X"] == {"w": 8, "h": 8}
+
+
+def test_extract_textures_skips_bad_entry_and_keeps_going(monkeypatch, tmp_path):
+    # L'ordre des entrées suit celui d'écriture dans le pak (Bad puis Good) :
+    # le premier appel à decode_uitexture échoue, le second réussit.
+    calls = {"n": 0}
+
+    def fake_decode(data, hint=None):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise ValueError("texture corrompue")
+        return _img_with_padding(), DecodeInfo(8, 8, "DXT5")
+
+    monkeypatch.setattr("tools.extract_assets.decode_uitexture", fake_decode)
+    with _make_pak_two_entries() as pak:
+        index = extract_textures(pak, TRIM_MANIFEST, tmp_path, force=True)
+    assert list(index.keys()) == ["Interface/Ingame/Medals/Textures/Good"]
+    assert not (tmp_path / "textures" / "Interface/Ingame/Medals/Textures/Bad.png").exists()

@@ -31,8 +31,10 @@ export function MedalEntry({ medal }: { medal: Medal }) {
     // décider de l'afficher au-dessus si le bas de l'écran est trop proche.
     const estimatedHeight = medal.ranks.length * 24 + 24;
     const below = rect.bottom - 4;
-    const top = below + estimatedHeight > window.innerHeight ? rect.top - estimatedHeight : below;
-    setTip({ left: rect.left + 72, top }); // 72 = 64px de badge + 8px de gap (.entry { gap: 8px })
+    const rawTop = below + estimatedHeight > window.innerHeight ? rect.top - estimatedHeight : below;
+    const top = Math.max(8, rawTop);
+    const left = Math.min(rect.left + 72, window.innerWidth - 470); // 72 = 64px de badge + 8px de gap (.entry { gap: 8px })
+    setTip({ left: Math.max(8, left), top });
   };
 
   return (
