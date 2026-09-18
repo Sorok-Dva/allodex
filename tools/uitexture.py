@@ -2,7 +2,8 @@
 
 Format : zlib( u32 zéro + u32 taille_payload + payload DXT1/DXT5 ).
 Les dimensions ne sont pas stockées ; on les infère parmi les puissances de deux
-en choisissant le décodage dont les lignes consécutives se ressemblent le plus.
+en choisissant le décodage dont les pixels voisins (lignes ET colonnes
+consécutives, sur les 4 canaux RGBA) se ressemblent le plus.
 """
 from __future__ import annotations
 
@@ -72,11 +73,26 @@ def _is_better(score: float, w: int, h: int, best_score: float, best_w: int, bes
     return w >= h and not (best_w >= best_h)
 
 
-def row_smoothness(img: Image.Image) -> float:
-    a = np.asarray(img.convert("L"), dtype=np.float32)
-    if a.shape[0] < 2:
+def smoothness_score(img: Image.Image) -> float:
+    """Mesure la rugosité d'un décodage candidat.
+
+    Moyenne des écarts absolus entre pixels voisins, sur les 4 canaux RGBA, à la
+    fois verticalement (lignes consécutives) et horizontalement (colonnes
+    consécutives). Un score bas signale un décodage plausible.
+
+    Le score précédent ne regardait que les lignes d'une image convertie en
+    niveaux de gris : un payload DXT1 relu en DXT5 peut alors sembler lisse (le
+    canal alpha, bruité mais ignoré par `.convert("L")`, ne pénalisait pas ce
+    mauvais décodage) et l'emporter à tort sur le DXT1 correct. Sommer sur les 4
+    canaux et sur les deux axes réduit ce risque.
+    """
+    a = np.asarray(img.convert("RGBA"), dtype=np.float32)
+    if a.shape[0] < 2 or a.shape[1] < 2:
         return float("inf")
-    return float(np.abs(np.diff(a, axis=0)).mean())
+    return float(np.abs(np.diff(a, axis=0)).mean() + np.abs(np.diff(a, axis=1)).mean())
+
+
+row_smoothness = smoothness_score  # alias conservé : tools/tests/test_uitexture.py l'utilise encore.
 
 
 def _try_decode(width: int, height: int, fourcc: bytes, payload: bytes) -> Image.Image | None:
@@ -110,7 +126,7 @@ def decode_uitexture(data: bytes, dims_hint: tuple[int, int] | None = None) -> t
             img = _try_decode(w, h, fourcc, payload)
             if img is None:
                 continue
-            score = row_smoothness(img)
+            score = smoothness_score(img)
             if fourcc_best is None or _is_better(score, w, h, fourcc_best[0], fourcc_best[1], fourcc_best[2]):
                 fourcc_best = (score, w, h, img)
         if fourcc_best is None:

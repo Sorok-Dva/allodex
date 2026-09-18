@@ -37,13 +37,16 @@ def test_decode_solid_dxt1_texture_with_hint():
 
 
 def test_decode_infers_dims_from_gradient():
-    # Dégradé horizontal 64x16 en DXT1 : la bonne largeur donne des lignes identiques.
-    # (128, 8) obtient aussi un score de 0.0 (même fourcc, motif périodique) : c'est
-    # justement le cas que le départage forme-carrée/paysage doit résoudre en (64, 16).
+    # Dégradé horizontal 64x16 en DXT1 : la bonne largeur donne des lignes identiques
+    # (composante verticale du score nulle) et un dégradé continu par colonne. La
+    # mauvaise largeur (128, 8) replie le même flux d'octets en deux passages du
+    # dégradé sur une même ligne, ce qui introduit une rupture brutale (240 → 0) et
+    # alourdit son score (composante horizontale) : (64, 16) l'emporte désormais sur
+    # le score seul, sans même recourir au départage forme carrée/paysage.
     blocks = b"".join(_dxt1_solid_block(x * 16, 0, 0) for _y in range(4) for x in range(16))
     img, info = decode_uitexture(_make_uitexture(64, 16, blocks))
     assert (info.width, info.height) == (64, 16)
-    assert row_smoothness(img) == 0.0
+    assert row_smoothness(img) < 1.0  # lignes identiques, dégradé continu par colonne : score bas
     assert img.getpixel((0, 0))[0] < 40  # début du dégradé (rouge ≈ 0)
     assert img.getpixel((63, 0))[0] > 200  # fin du dégradé (rouge ≈ 240)
 
@@ -77,3 +80,34 @@ def test_decode_real_medal_frame():
     img, info = decode_uitexture(data)
     assert (info.width, info.height, info.fourcc) == (128, 256, "DXT5")
     assert img.getpixel((0, 0))[3] == 0  # coin transparent
+
+
+@pytest.mark.skipif(not os.path.isdir(CLIENT), reason="client Allods absent")
+def test_decode_real_gold_medal_is_dxt1_not_dxt5():
+    # Régression : l'ancien score (niveaux de gris, lignes seules) laissait un
+    # DXT1 relu en DXT5 (32x64, image bruitée) l'emporter à tort sur le vrai
+    # DXT1 64x64 (icône nette).
+    pak = zipfile.ZipFile(os.path.join(CLIENT, "data/Packs/Interface.Mini.pak"))
+    data = pak.read("Interface/Icons/Misc/Event/GoldMedal.(UITexture).bin")
+    _img, info = decode_uitexture(data)
+    assert (info.width, info.height, info.fourcc) == (64, 64, "DXT1")
+
+
+@pytest.mark.skipif(not os.path.isdir(CLIENT), reason="client Allods absent")
+def test_decode_real_diamond_medal_is_genuinely_dxt5():
+    # Contre-exemple : celle-ci est réellement en 32x64 DXT5, le nouveau score ne
+    # doit pas la faire basculer à tort vers un DXT1.
+    pak = zipfile.ZipFile(os.path.join(CLIENT, "data/Packs/Interface.Mini.pak"))
+    data = pak.read("Interface/Icons/Special/Currency/DiamondMedal.(UITexture).bin")
+    _img, info = decode_uitexture(data)
+    assert (info.width, info.height, info.fourcc) == (32, 64, "DXT5")
+
+
+@pytest.mark.skipif(not os.path.isdir(CLIENT), reason="client Allods absent")
+def test_decode_real_button_login_normal_without_hint():
+    # Cette texture nécessitait un dims_hint (256, 256) avant la correction du
+    # score ; elle doit maintenant s'inférer correctement sans indice.
+    pak = zipfile.ZipFile(os.path.join(CLIENT, "data/Packs/Interface.Mini.pak"))
+    data = pak.read("Interface/Wrap/MainMenu/LoginAccount/ButtonLoginNormal.(UITexture).bin")
+    _img, info = decode_uitexture(data)
+    assert (info.width, info.height, info.fourcc) == (256, 256, "DXT5")

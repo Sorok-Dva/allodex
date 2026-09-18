@@ -18,10 +18,7 @@
     "Interface/Icons/Misc/Event/GoldMedal.(UITexture).bin",
     "Interface/Icons/Special/Currency/DiamondMedal.(UITexture).bin"
   ],
-  "dims_overrides": {
-    "Interface/Wrap/MainMenu/LoginAccount/ButtonLoginNormal.(UITexture).bin": [256, 256],
-    "Interface/Wrap/MainMenu/LoginAccount/ButtonLoginHighlighted.(UITexture).bin": [256, 256]
-  },
+  "dims_overrides": {},
   "cursor_prefix": "Interface/System/Cursors/",
   "videos": {
     "intro": "Video/16_0Events/MainMenu/Intro.ogv",

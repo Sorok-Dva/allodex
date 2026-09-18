@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -21,12 +22,32 @@ from tools.uitexture import decode_uitexture  # noqa: E402
 HERE = Path(__file__).resolve().parent
 DEFAULT_CLIENT = os.environ.get("ALLODS_CLIENT_DIR", "/mnt/h/MyGames/Allods Online FR (FR)")
 TEXTURE_SUFFIX = ".(UITexture).bin"
+_DRIVE_LETTER_RE = re.compile(r"^[A-Za-z]:")
+
+
+def is_safe_entry(name: str) -> bool:
+    """Refuse une entrée de pak dont le nom pourrait faire sortir la sortie du dossier cible."""
+    if ".." in name:
+        return False
+    if name.startswith("/") or name.startswith("\\"):
+        return False
+    if _DRIVE_LETTER_RE.match(name):
+        return False
+    return True
 
 
 def select_entries(names: list[str], manifest: dict) -> list[str]:
     prefixes = tuple(manifest.get("texture_prefixes", []))
     explicit = set(manifest.get("texture_files", []))
-    return [n for n in names if n.endswith(TEXTURE_SUFFIX) and (n.startswith(prefixes) or n in explicit)]
+    selected = []
+    for n in names:
+        if not (n.endswith(TEXTURE_SUFFIX) and (n.startswith(prefixes) or n in explicit)):
+            continue
+        if not is_safe_entry(n):
+            print(f"AVERTISSEMENT : entrée de pak rejetée (chemin dangereux) : {n}", file=sys.stderr)
+            continue
+        selected.append(n)
+    return selected
 
 
 def output_path_for(entry: str) -> str:
