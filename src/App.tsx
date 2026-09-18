@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { loadManifest, cursor, hasAssets } from '@/lib/assets';
 import { useRoute } from '@/lib/router';
 import { OpeningScreen } from '@/screens/OpeningScreen/OpeningScreen';
+import { MedalsScreen } from '@/screens/MedalsScreen/MedalsScreen';
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -16,7 +17,7 @@ export default function App() {
           Assets du jeu absents : lancez <code>npm run extract</code>
         </div>
       )}
-      {path === '/succes' ? <div style={{ color: '#fff' }}>succès (Task 7)</div> : <OpeningScreen />}
+      {path === '/succes' ? <MedalsScreen /> : <OpeningScreen />}
     </>
   );
 }

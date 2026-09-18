@@ -1,0 +1,22 @@
+.nav {
+  width: 268px; padding: 14px 12px 12px; display: flex; flex-direction: column; gap: 10px;
+  background: center / 100% 100% no-repeat;
+}
+.search { display: block; height: 36px; background: center / 100% 100% no-repeat; padding: 6px 16px; }
+.search input { width: 100%; height: 100%; background: transparent; border: 0; outline: 0; color: #dfe9d8; font: italic 16px var(--font-serif); }
+.search input::placeholder { color: var(--search-green); }
+
+.categories { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
+.catButton {
+  width: 100%; height: 30px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px;
+  background: linear-gradient(#3d5a3d, #22361f); border: 1px solid #6c8a5a; border-radius: 4px;
+  color: var(--gold); font: 700 17px var(--font-caps); text-shadow: 0 1px 1px #000;
+}
+.catButton:hover { filter: brightness(1.15); }
+.catOpen { border-color: #d9b45a; }
+.toggle { width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(#e6d18a, #8f6a1c); color: #2a1f05; font-size: 14px; line-height: 18px; text-align: center; }
+
+.subList { list-style: none; margin: 4px 0 0; padding: 10px 14px; background: center / 100% 100% no-repeat; }
+.subButton { width: 100%; text-align: left; padding: 4px 6px; color: var(--ink); font: 600 16px var(--font-serif); }
+.subButton:hover { background: rgba(255, 255, 255, 0.18); }
+.subActive { background: rgba(255, 255, 255, 0.35); box-shadow: inset 0 0 0 1px rgba(60, 40, 10, 0.25); }
