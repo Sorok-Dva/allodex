@@ -1,0 +1,30 @@
+@font-face {
+  font-family: 'AllodsWest';
+  src: url('/fonts/allods.ttf') format('truetype');
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+:root {
+  --ink: #122c14;
+  --ink-outline: #658e7c;
+  --search-green: #618b5e;
+  --gold: #e8c877;
+  --gold-dark: #b9923f;
+  --check-green: #3fae4a;
+  --paper: #e9dcbf;
+  --font-serif: 'AllodsWest', Georgia, serif;   /* police du jeu, fournie par le launcher ADC */
+  --font-caps: 'AllodsWest', Georgia, serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #root { margin: 0; height: 100%; }
+body {
+  background: #000;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 16px;
+  overflow: hidden;
+  user-select: none;
+}
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: inherit; }
