@@ -1,21 +1,29 @@
 /*
- * MedalFrame{,Complete}{30,50,100,500}.png sont des textures 128x256, mais le
- * dessin utile (bouclier + banderole) tient dans les ~122 premiers pixels de
- * hauteur ; le reste est transparent. Mesuré sur MedalFrame100.png :
- *   - shield + banderole : x 4-97, y 0-121 (sur 128x256)
- *   - plaque de l'icône (zone plate à l'intérieur du cadre) : x 25-71, y 24-62
- *   - plaque de la banderole (zone sombre du score) : x 25-74, y 68-96
- * background-size 64px 128px applique un facteur d'échelle uniforme de 0.5
- * (aucune déformation, ratio natif 128:256 conservé). Avec une largeur de
- * badge fixée à 64px (cf. Task 8 : `.badge { flex: 0 0 64px }`), le bouclier
- * est donc affiché à taille moitié. Une hauteur de badge de 64px ne montre
- * que la moitié supérieure de l'image mise à l'échelle (soit les lignes
- * sources 0-128 sur 256), ce qui contient tout le dessin visible (jusqu'à la
- * ligne ~122) sans le rogner, tout en masquant le bas totalement transparent.
+ * Recalibration (Task 8) : depuis l'extraction des textures, MedalFrame{,Complete}
+ * {30,50,100,500}.png sont désormais ROGNÉES au dessin utile (transparence retirée),
+ * avec des tailles natives légèrement différentes par palier :
+ *   30 = 90x113, 50 = 94x120, 100 = 98x121, 500 = 100x129 (mêmes tailles pour
+ * les variantes *Complete*). Mesures faites au pixel sur MedalFrame100.png
+ * (voir grille + overlay produits pendant le calibrage) :
+ *   - plaque de l'icône (zone plate en haut du bouclier) : x 23-77, y 20-66
+ *     (centre ≈ 50,43 sur 98x121)
+ *   - plaque/banderole du score (zone en bas du bouclier) : x 28-72, y 76-96
+ *     (centre ≈ 50,86 sur 98x121)
+ * Le badge est affiché dans une boîte 64x80 (aligne pile sur le flex-basis
+ * 64px de `.badge` dans MedalEntry.module.css) avec `background-size: contain`
+ * pour ne jamais déformer ni rogner le bouclier — le ratio 64:80 (0.8) est très
+ * proche du ratio natif de chaque palier (0.775 à 0.81), donc le letterboxing
+ * introduit par `contain` est minime (<1px) quel que soit le palier affiché.
+ * Facteur d'échelle ≈ 0.65 (64/98 ≈ 0.653, 80/121 ≈ 0.661).
+ * Icône (34x34 natif → ici 32x32 rendu, pour rester dans la plaque sans
+ * déborder) centrée sur le centre de plaque mis à l'échelle (50,43)*0.65 ≈
+ * (33,28) → left = 33 - 16 = 17px, top = 28 - 16 = 12px.
+ * Score : centré sur le centre de plaque mis à l'échelle (50,86)*0.65 ≈
+ * (33,57) sur une boîte de 80px de haut → ≈ 15px du bas.
  */
-.badge { position: relative; width: 64px; height: 64px; background: top center / 64px 128px no-repeat; }
-.icon { position: absolute; top: 8px; left: 11px; width: 26px; height: 26px; border-radius: 4px; }
+.badge { position: relative; width: 64px; height: 80px; background: center / contain no-repeat; }
+.icon { position: absolute; top: 12px; left: 17px; width: 32px; height: 32px; border-radius: 3px; }
 .score {
-  position: absolute; bottom: 12px; left: 0; right: 0; text-align: center;
-  font-family: var(--font-caps); font-weight: 700; font-size: 12px; color: #fff; text-shadow: 0 0 3px #000, 0 1px 0 #000;
+  position: absolute; bottom: 15px; left: 0; right: 0; text-align: center;
+  font-family: var(--font-caps); font-weight: 700; font-size: 14px; color: #fff; text-shadow: 0 0 3px #000, 0 1px 0 #000;
 }

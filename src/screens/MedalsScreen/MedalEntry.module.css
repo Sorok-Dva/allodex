@@ -1,0 +1,24 @@
+.entry { position: relative; display: flex; align-items: flex-start; gap: 8px; padding: 6px 4px; }
+.badge { flex: 0 0 64px; padding-top: 6px; }
+.paper {
+  flex: 1; min-height: 96px; padding: 10px 18px 12px 22px;
+  background: center / 100% 100% no-repeat; color: var(--ink);
+}
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.name { margin: 0; font: 700 17px var(--font-caps); color: #7a4a10; text-shadow: 0 0 1px rgba(255, 240, 200, 0.6); }
+.complete .name { color: #6b3f0a; }
+.date { font: 600 15px var(--font-serif); color: #4a3a20; white-space: nowrap; }
+.desc { margin: 8px 0 6px; text-align: center; font: 600 15.5px var(--font-serif); line-height: 1.25; }
+.bar { margin: 4px 8px 2px; }
+.conditions { list-style: none; margin: 6px 0 0; padding: 0 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 16px; font: 600 15px var(--font-serif); }
+.check { display: inline-block; width: 18px; color: var(--check-green); font-size: 14px; }
+.ko .check { color: #8a8a8a; }
+.ko { color: #6e6a5e; }
+.tooltip {
+  position: absolute; left: 72px; top: calc(100% - 4px); z-index: 5; min-width: 320px; max-width: 460px;
+  padding: 10px 12px; background: rgba(12, 22, 12, 0.94); border: 1px solid #8fae7a; border-radius: 4px;
+  color: #dfe9d8; font-size: 14px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+}
+.tipRank { display: flex; gap: 10px; padding: 2px 0; }
+.tipDone { color: #9fd08a; }
+.tipScore { flex: 0 0 34px; text-align: right; color: var(--gold); font-weight: 700; }
