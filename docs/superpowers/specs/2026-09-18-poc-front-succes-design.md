@@ -120,7 +120,7 @@ Réplique de la capture, sur fond de la vidéo `mainmenu` floutée/assombrie pou
   - checklist à deux colonnes pour `dressCollection` / `medalCollection` avec coche verte ou grise ;
   - survol : tooltip listant tous les paliers (`MedalRanks`).
 - **Ascenseur** : éléments `Interface/Common/Elements` (flèches haut/bas, piste) reconstruits ; la liste native reste scrollable à la molette.
-- **Typographie** : police serif proche de celle du jeu (le client embarque une `.ttf` dans `Interface.Mini.pak`, à vérifier ; sinon Google Fonts « Cormorant Garamond » ou équivalent). Couleurs prises dans les balises des textes FR (`0xff122c14` vert foncé, `0xff658e7c` contour clair, or des titres).
+- **Typographie** : la police du jeu « AllodsWest » (`allods.ttf`, récupérée dans le launcher ADC, `~/projects/adc-launcher-public/public/fonts/`) est copiée dans `public/fonts/` et déclarée en `@font-face`. Elle couvre latin étendu et cyrillique. Couleurs prises dans les balises des textes FR (`0xff122c14` vert foncé, `0xff658e7c` contour clair, or des titres).
 
 ### 4.5 Navigation
 
