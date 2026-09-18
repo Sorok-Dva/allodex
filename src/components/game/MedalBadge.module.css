@@ -1,0 +1,21 @@
+/*
+ * MedalFrame{,Complete}{30,50,100,500}.png sont des textures 128x256, mais le
+ * dessin utile (bouclier + banderole) tient dans les ~122 premiers pixels de
+ * hauteur ; le reste est transparent. Mesuré sur MedalFrame100.png :
+ *   - shield + banderole : x 4-97, y 0-121 (sur 128x256)
+ *   - plaque de l'icône (zone plate à l'intérieur du cadre) : x 25-71, y 24-62
+ *   - plaque de la banderole (zone sombre du score) : x 25-74, y 68-96
+ * background-size 64px 128px applique un facteur d'échelle uniforme de 0.5
+ * (aucune déformation, ratio natif 128:256 conservé). Avec une largeur de
+ * badge fixée à 64px (cf. Task 8 : `.badge { flex: 0 0 64px }`), le bouclier
+ * est donc affiché à taille moitié. Une hauteur de badge de 64px ne montre
+ * que la moitié supérieure de l'image mise à l'échelle (soit les lignes
+ * sources 0-128 sur 256), ce qui contient tout le dessin visible (jusqu'à la
+ * ligne ~122) sans le rogner, tout en masquant le bas totalement transparent.
+ */
+.badge { position: relative; width: 64px; height: 64px; background: top center / 64px 128px no-repeat; }
+.icon { position: absolute; top: 8px; left: 11px; width: 26px; height: 26px; border-radius: 4px; }
+.score {
+  position: absolute; bottom: 12px; left: 0; right: 0; text-align: center;
+  font-family: var(--font-caps); font-weight: 700; font-size: 12px; color: #fff; text-shadow: 0 0 3px #000, 0 1px 0 #000;
+}

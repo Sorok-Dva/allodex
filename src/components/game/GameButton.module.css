@@ -1,0 +1,6 @@
+.btn { display: inline-flex; align-items: center; justify-content: center; background: center / 100% 100% no-repeat; }
+.btn:disabled { filter: saturate(0.4); }
+.label {
+  font-family: var(--font-caps); font-weight: 700; color: var(--gold);
+  text-shadow: 0 0 2px #000, 0 1px 0 #000; letter-spacing: 0.02em;
+}
