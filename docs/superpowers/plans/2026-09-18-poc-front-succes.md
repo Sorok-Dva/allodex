@@ -476,7 +476,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
     "Interface/Common/Elements/MsgBox/textures/"
   ],
   "texture_files": [
-    "Interface/Icons/Equipment/Helm/LionHelmet.(UITexture).bin",
+    "Interface/Icons/Equipment/Helm/Armor_Light_Helmet.(UITexture).bin",
     "Interface/Icons/Special/VeteranRewards/VeteranRankMaster.(UITexture).bin",
     "Interface/Icons/Misc/Event/GoldMedal.(UITexture).bin",
     "Interface/Icons/Special/Currency/DiamondMedal.(UITexture).bin"
@@ -493,7 +493,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 }
 ```
 
-Note : `LionHelmet` est présent dans `Interface.HiRes.pak` en `.(Texture).hi.bin`, format différent. Si l'entrée n'existe pas dans `Interface.Mini.pak` en `(UITexture).bin`, le script doit **avertir et continuer**, pas planter. Vérifier avec `unzip -l ".../Interface.Mini.pak" | grep LionHelmet` ; si absent, remplacer par la première entrée listée sous `Interface/Icons/Equipment/Helm/`.
+Note : toutes ces entrées existent dans `Interface.Mini.pak` (vérifié). Si une entrée de `texture_files` manque malgré tout, le script doit **avertir et continuer**, pas planter.
 
 - [ ] **Step 2 : Test échouant — sélection et chemins**
 
@@ -929,14 +929,14 @@ Attendu : tous PASS.
     {
       "id": "equip-immortalite", "name": "Paré pour l'aventure ! (Immortalité)",
       "description": "Augmentez la côte d'équipement maximum à 100 000 points.",
-      "icon": "Interface/Icons/Equipment/Helm/LionHelmet", "categoryIndex": 1, "subCategoryIndex": 0,
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet", "categoryIndex": 1, "subCategoryIndex": 0,
       "ranks": [{ "completeProgress": 100000, "name": "Paré pour l'aventure ! (Immortalité)", "description": "Augmentez la côte d'équipement maximum à 100 000 points.", "score": 10 }],
       "currentRank": 1, "progress": { "value": 100000 }, "finishDate": "2017-09-13"
     },
     {
       "id": "equip-reveil", "name": "Paré pour l'aventure ! (Réveil)",
       "description": "Augmentez la côte d'équipement maximum à 21 500 points.",
-      "icon": "Interface/Icons/Equipment/Helm/LionHelmet", "categoryIndex": 1, "subCategoryIndex": 0,
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet", "categoryIndex": 1, "subCategoryIndex": 0,
       "ranks": [{ "completeProgress": 21500, "name": "Paré pour l'aventure ! (Réveil)", "description": "Augmentez la côte d'équipement maximum à 21 500 points.", "score": 10 }],
       "currentRank": 1, "progress": { "value": 21500 }, "finishDate": "2019-01-28"
     },
