@@ -1,0 +1,5 @@
+node_modules/
+dist/
+public/game/
+.env
+__pycache__/
