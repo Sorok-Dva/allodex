@@ -27,7 +27,10 @@ export function OpeningScreen() {
 
   useEffect(() => {
     if (phase !== 'intro') return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === ' ' || e.key === 'Escape' || e.key === 'Enter') skipIntro(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === ' ' || e.key === 'Enter') e.preventDefault();
+      if (e.key === ' ' || e.key === 'Escape' || e.key === 'Enter') skipIntro();
+    };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [phase, skipIntro]);
@@ -40,7 +43,7 @@ export function OpeningScreen() {
   if (phase === 'intro') {
     return (
       <div className={s.screen} onClick={skipIntro}>
-        <Video name="intro" className={s.video} onEnded={skipIntro} onError={skipIntro} />
+        <Video key="intro" name="intro" className={s.video} onEnded={skipIntro} onError={skipIntro} />
         <span className={s.skipHint}>Cliquez pour passer</span>
       </div>
     );
@@ -48,17 +51,21 @@ export function OpeningScreen() {
 
   return (
     <div className={s.screen}>
-      <Video name="mainmenu" loop className={`${s.video} ${s.fadeIn}`} />
+      <Video key="mainmenu" name="mainmenu" loop className={`${s.video} ${s.fadeIn}`} />
       <div className={s.vignette} />
 
       <form className={s.loginPanel} onSubmit={goMedals}>
-        <label className={s.field} style={{ backgroundImage: `url(${tex(`${T.login}/EditlineFrame`)})` }}>
-          <input
-            className={s.input} value={query} onChange={e => setQuery(e.target.value)}
-            placeholder="Recherche de succès..." autoFocus spellCheck={false}
-          />
-        </label>
-        <GameButton base={`${T.login}/ButtonLogin`} width={220} height={64} label="Succès" onClick={() => goMedals()} className={s.mainButton} />
+        <div className={s.title}>Succès</div>
+        <div className={s.searchRow}>
+          <label className={s.field} style={{ backgroundImage: `url(${tex(`${T.login}/EditlineFrame`)})` }}>
+            <input
+              className={s.input} value={query} onChange={e => setQuery(e.target.value)}
+              placeholder="Recherche de succès..." autoFocus spellCheck={false}
+              aria-label="Recherche de succès"
+            />
+          </label>
+          <GameButton base={`${T.login}/ButtonLogin`} width={72} height={72} title="Voir les succès" onClick={() => goMedals()} />
+        </div>
         <div className={s.roundRow}>
           <GameButton base={`${T.login}/ButtonOptions`} width={56} height={56} title="Mon compte (bientôt)" disabled />
           <GameButton base={`${T.login}/ButtonKeyboard`} width={56} height={56} title="Addon d'export (bientôt)" disabled />

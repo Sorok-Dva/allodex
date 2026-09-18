@@ -9,13 +9,17 @@
   position: absolute; left: 50%; bottom: 18%; transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; gap: 14px;
 }
+.title {
+  font-family: var(--font-caps); font-size: 22px; color: var(--gold);
+  text-shadow: 0 0 3px #000, 0 2px 2px #000; letter-spacing: 0.04em; margin: 0;
+}
+.searchRow { display: flex; align-items: center; gap: 10px; }
 .field { display: block; width: 320px; height: 44px; background: center / 100% 100% no-repeat; padding: 8px 22px; }
 .input {
   width: 100%; height: 100%; background: transparent; border: 0; outline: none;
   color: #e6efe0; font-family: var(--font-serif); font-size: 18px;
 }
 .input::placeholder { color: var(--search-green); font-style: italic; }
-.mainButton span { font-size: 22px; }
 .roundRow { display: flex; gap: 12px; margin-top: 4px; }
 
 .bottomLine {
