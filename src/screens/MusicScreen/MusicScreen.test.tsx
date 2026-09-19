@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render } from '@testing-library/react';
 import { MusicScreen, cleanMusicName } from './MusicScreen';
 import type { MusicTrack } from '@/lib/assets';
 import { I18nProvider } from '@/lib/i18n';
+import { AudioProgressContext } from '@/lib/audio/AudioProvider';
 
 const fixture: MusicTrack[] = [
   { id: 'a', name: 'MainMenu_A_NM', title: { fr: 'Premier thème', en: 'First theme' }, bank: 'Music_Menu', group: 'Menu', duration: 123, ogg: '/game/music/a.ogg', mp3: '/game/music/a.mp3', client: '16.0' },
@@ -10,7 +11,7 @@ const fixture: MusicTrack[] = [
   { id: 'c', name: 'Zone_C', title: null, bank: 'Music_Zone', group: 'Zones', duration: 180, ogg: '/game/music/c.ogg', mp3: '/game/music/c.mp3', client: '16.0' },
 ];
 let tracks = fixture;
-const audio = { playSfx: vi.fn(), playExternal: vi.fn(), pauseMusic: vi.fn(), resumeAmbient: vi.fn(), playing: false, external: null as string | null, ended: null as string | null, muted: false, toggleMuted: vi.fn() };
+const audio = { playSfx: vi.fn(), playExternal: vi.fn(), pauseMusic: vi.fn(), seekMusic: vi.fn(), resumeAmbient: vi.fn(), playing: false, external: null as string | null, ended: null as string | null, muted: false, toggleMuted: vi.fn() };
 vi.mock('@/lib/assets', async original => ({ ...await original<typeof import('@/lib/assets')>(), musicTracks: () => tracks }));
 vi.mock('@/lib/audio/useGameAudio', () => ({ useGameAudio: () => audio }));
 vi.mock('@/lib/router', () => ({ navigate: vi.fn() }));
@@ -20,10 +21,41 @@ beforeEach(() => { vi.clearAllMocks(); tracks = fixture; audio.playing = false; 
 afterEach(cleanup);
 
 describe('MusicScreen', () => {
+  it('recherche dans toutes les catégories, sans distinction de casse ou accents', () => {
+    const page = render(<MusicScreen />);
+    const input = page.getByRole('searchbox');
+    fireEvent.change(input, { target: { value: 'zone c' } });
+    expect(page.getByText('Zone C')).toBeTruthy();
+    expect(page.queryByText('Premier thème')).toBeNull();
+    fireEvent.change(input, { target: { value: 'PREMIER THEME' } });
+    expect(page.getByText('Premier thème')).toBeTruthy();
+    fireEvent.change(input, { target: { value: 'introuvable' } });
+    expect(page.getByRole('status').textContent).toBe('Aucune musique trouvée');
+    fireEvent.click(page.getByRole('button', { name: 'Zones' }));
+    expect((input as HTMLInputElement).value).toBe('');
+    expect(page.getByText('Zone C')).toBeTruthy();
+  });
+  it('garde le curseur du morceau en cours visible pendant une recherche', () => {
+    const page = render(<AudioProgressContext.Provider value={{ position: 30, duration: 123 }}><MusicScreen /></AudioProgressContext.Provider>);
+    fireEvent.click(page.getByRole('button', { name: 'Lire Premier thème' }));
+    fireEvent.change(page.getByRole('searchbox'), { target: { value: 'introuvable' } });
+    const slider = page.getByRole('slider', { name: 'Position de lecture' });
+    expect(slider.getAttribute('aria-valuetext')).toBe('0:30 / 2:03');
+    fireEvent.change(slider, { target: { value: '75' } });
+    expect(audio.seekMusic).toHaveBeenCalledWith(75);
+  });
+  it('affiche Xadagan dans les deux langues', () => {
+    tracks = [{ ...fixture[2], group: 'Kadagan' }];
+    const page = render(<I18nProvider initial="en"><MusicScreen /></I18nProvider>);
+    expect(page.getByRole('button', { name: 'Xadagan' })).toBeTruthy();
+    page.unmount();
+    expect(render(<MusicScreen />).getByRole('button', { name: 'Xadagan' })).toBeTruthy();
+  });
   it('nettoie les noms sans inventer de titre', () => {
     expect(cleanMusicName('AC5_Main_NM')).toBe('AC5 Main');
     expect(cleanMusicName('MainMenu_Adaptive.wav')).toBe('MainMenu');
     expect(cleanMusicName('JungleAdaptive')).toBe('Jungle');
+    expect(cleanMusicName('Kadagan_Town_Adaptive')).toBe('Xadagan Town');
   });
   it('affiche les catégories, les pistes et leur durée', () => {
     const page = render(<MusicScreen />);

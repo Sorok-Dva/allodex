@@ -2,7 +2,7 @@
 .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .45; }
 .holder { position: absolute; transform-origin: top left; }
 .column { position: relative; width: 100%; height: 100%; }
-.navViewport { position: absolute; left: 21px; top: 22px; width: 242px; bottom: 12px; overflow: hidden auto; scrollbar-width: none; }
+.navViewport { position: absolute; left: 21px; top: 59px; width: 242px; bottom: 12px; overflow: hidden auto; scrollbar-width: none; }
 .group { display: block; width: 242px; height: 28px; margin-bottom: 5px; padding: 0 25px; text-align: left; background-size: 100% 100%; color: #b0bf88; font-size: 14px; white-space: nowrap; }
 .group[aria-pressed="true"] { color: #ffe77b; }
 .heading { position: absolute; top: 18px; left: 26px; right: 35px; margin: 0; font-size: 18px; font-weight: normal; color: #ffeb73; }
@@ -15,8 +15,18 @@
 .trackText { min-width: 0; flex: 1; }
 .title { font-size: 15px; line-height: 19px; color: #ffe77b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .internal { font-size: 11px; line-height: 16px; color: #c2cfb2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.navScrollbar { left: 277px; top: 15px; bottom: 8px; }
+.navScrollbar { left: 277px; top: 48px; bottom: 8px; }
 .scrollbar { right: 3px; top: 15px; bottom: 8px; }
 .empty { margin: 45px 20px; text-align: center; color: #ffeb73; }
 .close { position: absolute; right: 24px; top: 20px; width: 30px; height: 30px; background-repeat: no-repeat; }
 .speaker { position: absolute; right: 66px; top: 19px; }
+.withPlayer .viewport { bottom: 85px; }
+.withPlayer .scrollbar { bottom: 79px; }
+.transport { position: absolute; bottom: 10px; left: 22px; right: 30px; height: 64px; padding-top: 9px; border-top: 1px solid #849361; }
+.transportTitle { color: #ffe77b; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.timeline { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+.timeline > span { min-width: 35px; }
+.seek { flex: 1; position: relative; padding: 6px 0; }
+.seek input { position: absolute; inset: 0; margin: 0; width: 100%; height: 24px; opacity: 0; cursor: pointer; }
+.seek:focus-within { outline: 1px solid #ffe77b; outline-offset: 2px; }
+.seek:has(input:disabled) { opacity: .5; }

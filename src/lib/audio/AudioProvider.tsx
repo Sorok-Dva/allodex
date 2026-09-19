@@ -40,6 +40,7 @@ export type GameAudio = GameAudioState & {
   playExternal: (id: string, src: TrackSource, opts?: { loop?: boolean; crossfadeMs?: number }) => void;
   /** Met la musique en pause en conservant sa position (et la piste du site en mémoire). */
   pauseMusic: () => void;
+  seekMusic: (seconds: number) => void;
   /** Revient à la piste du site là où elle en était, en fondu depuis la source externe. */
   resumeAmbient: (opts?: { crossfadeMs?: number }) => void;
   playSfx: (name: string, volume?: number) => void;
@@ -55,6 +56,8 @@ const DEFAULT_CROSSFADE_MS = 1500;
 const MEDIA_EVENTS = ['play', 'playing', 'pause', 'ended'] as const;
 
 export const AudioContext = createContext<GameAudio | null>(null);
+// Séparé des commandes pour ne pas rafraîchir toute la page à chaque timeupdate.
+export const AudioProgressContext = createContext({ position: 0, duration: 0 });
 
 function readMuted(storage: Storage): boolean {
   try { return storage.getItem(MUTE_KEY) === '1'; } catch { return false; }
@@ -91,6 +94,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   const [paused, setPausedState] = useState(false);
   const [playing, setPlayingState] = useState(false);
   const [ready, setReady] = useState(false);
+  const [progress, setProgress] = useState({ position: 0, duration: 0 });
 
   // Deux éléments <audio> pour la musique : celui qui joue actuellement et celui qui
   // reçoit la piste suivante pendant le fondu croisé (`activeRef` pointe l'actif).
@@ -111,6 +115,29 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     pausedRef.current = value;
     setPausedState(value);
   }, []);
+
+  const syncProgress = useCallback(() => {
+    const el = activeRef.current;
+    const position = el && Number.isFinite(el.currentTime) ? el.currentTime : 0;
+    const duration = el && Number.isFinite(el.duration) ? el.duration : 0;
+    setProgress(prev => prev.position === position && prev.duration === duration ? prev : { position, duration });
+  }, []);
+
+  useEffect(() => {
+    const events = ['timeupdate', 'loadedmetadata', 'durationchange', 'seeked', 'emptied'];
+    const els = [musicRefA.current, musicRefB.current];
+    const sync = (event: Event) => { if (event.target === activeRef.current) syncProgress(); };
+    els.forEach(el => events.forEach(event => el?.addEventListener(event, sync)));
+    return () => els.forEach(el => events.forEach(event => el?.removeEventListener(event, sync)));
+  }, [syncProgress]);
+
+  const seekMusic = useCallback((seconds: number) => {
+    const el = activeRef.current;
+    if (!el || !Number.isFinite(seconds) || !Number.isFinite(el.duration) || el.duration <= 0) return;
+    el.currentTime = Math.max(0, Math.min(seconds, el.duration));
+    setEnded(null);
+    syncProgress();
+  }, [syncProgress]);
 
   useEffect(() => {
     activeRef.current = musicRefA.current;
@@ -204,6 +231,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     setExternalState(null);
     setPaused(false);
     activeRef.current = toEl;
+    setProgress({ position: 0, duration: 0 });
     if (gestureRef.current && !mutedRef.current) {
       crossfade(toEl, fromEl, fromEl ? crossfadeMs : 0);
     } else {
@@ -232,6 +260,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     setEnded(null);
     setPaused(false);
     activeRef.current = toEl;
+    setProgress({ position: 0, duration: 0 });
     if (gestureRef.current && !mutedRef.current) {
       crossfade(toEl, fromEl, fromEl ? crossfadeMs : 0);
     } else {
@@ -262,10 +291,11 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     setEnded(null);
     setPaused(false);
     activeRef.current = toEl;
+    syncProgress();
     if (!gestureRef.current || mutedRef.current) { toEl.muted = mutedRef.current; return; }
     // `restart: false` : la piste du site repart là où la visite l'avait laissée.
     crossfade(toEl, fromEl, fromEl ? (opts.crossfadeMs ?? DEFAULT_CROSSFADE_MS) : 0, { restart: false });
-  }, [crossfade, setPaused]);
+  }, [crossfade, setPaused, syncProgress]);
 
   // Rien ne joue avant un geste utilisateur (politique d'autoplay). Au premier
   // pointerdown/keydown : si le son est coupé au chargement, on ne démarre jamais rien
@@ -346,15 +376,15 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   }, []);
 
   const api = useMemo<GameAudio>(
-    () => ({ muted, track, external, ended, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, resumeAmbient, playSfx }),
-    [muted, track, external, ended, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, resumeAmbient, playSfx],
+    () => ({ muted, track, external, ended, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, seekMusic, resumeAmbient, playSfx }),
+    [muted, track, external, ended, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, seekMusic, resumeAmbient, playSfx],
   );
 
   return (
     <AudioContext.Provider value={api}>
       <audio ref={musicRefA} data-testid="music-a" />
       <audio ref={musicRefB} data-testid="music-b" />
-      {children}
+      <AudioProgressContext.Provider value={progress}>{children}</AudioProgressContext.Provider>
     </AudioContext.Provider>
   );
 }

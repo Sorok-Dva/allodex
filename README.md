@@ -36,6 +36,10 @@ Les assets extraits sous `public/game/` appartiennent à My.Games et ne sont pas
 banque (menus, zones, peuples, instruments, Astral et donjons). Le bouton trompette
 de l'accueil ouvre la fenêtre du jeu : lecture/pause, durée, enchaînement des pistes
 du groupe et interrupteur sonore. L'interface est disponible en français et anglais.
+Le champ de recherche parcourt les titres et noms internes de toutes les catégories,
+sans distinction de casse ou d'accents. La barre du morceau en cours affiche le temps
+écoulé et permet de déplacer la lecture par clic, glissement ou touches du clavier,
+y compris en pause. La catégorie interne Kadagan est affichée « Xadagan » en FR/EN.
 
 `npm run extract` extrait aussi ce catalogue. Pour ne refaire que les musiques :
 

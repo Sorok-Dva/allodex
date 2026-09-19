@@ -57,6 +57,22 @@ function useFakeAnimationClock() {
 }
 
 describe('AudioProvider / useGameAudio', () => {
+  it('seek borne la position et conserve la pause sans relancer le morceau', () => {
+    const { getByTestId } = setup();
+    act(() => { api!.playExternal('music:a', { ogg: '/a.ogg', mp3: '/a.mp3' }); });
+    const el = getByTestId('music-a') as HTMLAudioElement;
+    Object.defineProperty(el, 'duration', { value: 120, configurable: true });
+    act(() => { api!.pauseMusic(); api!.seekMusic(50); });
+    expect(el.currentTime).toBe(50);
+    expect(api!.paused).toBe(true);
+    expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+    act(() => { api!.seekMusic(999); });
+    expect(el.currentTime).toBe(120);
+    act(() => { api!.seekMusic(-10); });
+    expect(el.currentTime).toBe(0);
+    act(() => { api!.seekMusic(Number.NaN); });
+    expect(el.currentTime).toBe(0);
+  });
   it("ne joue rien avant un geste utilisateur", () => {
     setup();
     act(() => { api!.setTrack('menu'); });

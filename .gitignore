@@ -1,6 +1,5 @@
 node_modules/
 dist/
-public/game/
 .env
 __pycache__/
 .superpowers/

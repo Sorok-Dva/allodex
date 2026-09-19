@@ -11,6 +11,8 @@ import { MedalsWindow } from '@/screens/MedalsScreen/MedalsWindow';
 import { Duration } from '@/screens/ChroniclesScreen/ThemePlayer';
 import player from '@/screens/ChroniclesScreen/ThemePlayer.module.css';
 import s from './MusicScreen.module.css';
+import navStyles from '@/screens/MedalsScreen/MedalsNavigation.module.css';
+import { MusicProgress } from './MusicProgress';
 
 const GROUP_KEYS: Record<string, MessageKey> = {
   Menu: 'music.group.menu', Zones: 'music.group.zones', 'Zones de départ': 'music.group.start',
@@ -21,8 +23,9 @@ const GROUP_KEYS: Record<string, MessageKey> = {
 };
 
 export function cleanMusicName(name: string): string {
-  return name.replace(/\.(wav|mp3|ogg|fsb)$/i, '').replace(/(?:_NM|_?adaptive)+$/i, '').replace(/_/g, ' ').trim();
+  return name.replace(/\.(wav|mp3|ogg|fsb)$/i, '').replace(/(?:_NM|_?adaptive)+$/i, '').replace(/_/g, ' ').replace(/\bKadagan\b/gi, 'Xadagan').trim();
 }
+const normalizeSearch = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/_/g, ' ');
 
 function placement() {
   const scale = Math.min(1, (window.innerWidth - 12) / 890, (window.innerHeight - 76) / 592);
@@ -37,6 +40,7 @@ export function MusicScreen() {
   const tracks = useMemo(() => musicTracks(), []);
   const groups = useMemo(() => [...new Set(tracks.map(track => track.group))], [tracks]);
   const [group, setGroup] = useState(groups[0] ?? '');
+  const [query, setQuery] = useState('');
   const [current, setCurrent] = useState<MusicTrack | null>(null);
   const [pos, setPos] = useState(placement);
   const listRef = useRef<HTMLDivElement>(null);
@@ -44,9 +48,13 @@ export function MusicScreen() {
   const consumedEnd = useRef<string | null>(null);
   const { t, lang } = useI18n();
   const { playSfx, pauseMusic, resumeAmbient, playExternal, playing, external, ended } = useGameAudio();
-  const visible = tracks.filter(track => track.group === group);
   const groupLabel = (value: string) => GROUP_KEYS[value] ? t(GROUP_KEYS[value]) : value;
   const title = (track: MusicTrack) => pick(track.title ?? undefined, lang) ?? cleanMusicName(track.name);
+  const search = normalizeSearch(query.trim());
+  const visible = tracks.filter(track => search
+    ? normalizeSearch(`${title(track)} ${track.name}`).includes(search)
+    : track.group === group);
+  const heading = search ? t('music.results', { count: visible.length }) : groupLabel(group);
   const bg = video('mainmenu');
 
   useEffect(() => {
@@ -92,20 +100,27 @@ export function MusicScreen() {
         <MedalsWindow title={t('music.title')} subtitle={t('music.count', { count: tracks.length })}
           onClose={close} externalClose
           nav={<nav className={s.column} aria-label={t('music.groups')}>
+            <div className={navStyles.search}>
+              <span className={navStyles.searchFrame} style={nineSlice('search-field', [5, 6, 5, 6], { fill: true })} aria-hidden="true" />
+              <input type="search" className={navStyles.searchInput} value={query}
+                placeholder={t('music.searchPlaceholder')} aria-label={t('music.search')} spellCheck={false}
+                onChange={event => { setQuery(event.target.value); if (listRef.current) listRef.current.scrollTop = 0; }} />
+            </div>
             <div className={s.navViewport} ref={navRef}>
               {groups.map(value => <button key={value} type="button" className={s.group}
-                aria-pressed={value === group}
-                style={{ backgroundImage: `url(${sprite(value === group ? 'pill-full-open' : 'pill-full')})` }}
-                onClick={() => { setGroup(value); if (listRef.current) listRef.current.scrollTop = 0; }}>
+                aria-pressed={!search && value === group}
+                style={{ backgroundImage: `url(${sprite(!search && value === group ? 'pill-full-open' : 'pill-full')})` }}
+                onClick={() => { setQuery(''); setGroup(value); if (listRef.current) listRef.current.scrollTop = 0; }}>
                 {groupLabel(value)}
               </button>)}
             </div>
             <GameScrollbar targetRef={navRef} className={s.navScrollbar} />
           </nav>}
-          content={<section className={s.column} aria-label={groupLabel(group) || t('music.title')}>
+          content={<section className={`${s.column} ${current ? s.withPlayer : ''}`} aria-label={heading || t('music.title')}>
             {!tracks.length ? <p className={s.empty}>{t('music.missing')}</p> : <>
-              <h1 className={s.heading}>{groupLabel(group)}</h1>
+              <h1 className={s.heading}>{heading}</h1>
               <div className={s.viewport} ref={listRef}>
+                {!visible.length && <p className={s.empty} role="status">{t('music.noResults')}</p>}
                 <ul className={s.list}>
                   {visible.map(track => {
                     const active = external === `music:${track.id}`;
@@ -127,6 +142,7 @@ export function MusicScreen() {
                 </ul>
               </div>
               <GameScrollbar targetRef={listRef} className={s.scrollbar} />
+              {current && <MusicProgress title={title(current)} />}
             </>}
           </section>}
         />
