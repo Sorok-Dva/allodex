@@ -1,9 +1,10 @@
 import json
+from pathlib import Path
 
 import pytest
 from PIL import Image
 
-from tools.cut_sprites import build_sheet, cut_sprite, resolve_texture, run, validate_box
+from tools.cut_sprites import build_sheet, cut_sprite, main, resolve_texture, run, validate_box
 
 
 def test_validate_box_rejects_outside_medals_window():
@@ -182,6 +183,39 @@ def test_run_rejects_a_box_outside_the_window(tmp_path):
     mpath.write_text(json.dumps(manifest))
     with pytest.raises(ValueError):
         run(mpath, tmp_path / "sprites")
+
+
+def _manifest(tmp_path, sprites) -> Path:
+    ref = tmp_path / "astral.png"
+    Image.new("RGB", (1920, 1009), (0, 0, 0)).save(ref)
+    mpath = tmp_path / "m.json"
+    mpath.write_text(json.dumps({"captures": {"astral": str(ref)}, "sprites": sprites}))
+    return mpath
+
+
+def test_run_names_the_faulty_sprite_in_the_error(tmp_path):
+    mpath = _manifest(tmp_path, {"hud": {"capture": "astral", "box": [10, 20, 60, 48], "slice": None}})
+    with pytest.raises(ValueError, match="sprite « hud »"):
+        run(mpath, tmp_path / "sprites")
+
+
+def test_run_names_the_sprite_whose_manifest_key_is_missing(tmp_path):
+    mpath = _manifest(tmp_path, {"pill-mid": {"capture": "astral", "slice": None}})
+    with pytest.raises(ValueError, match="sprite « pill-mid » : clé absente"):
+        run(mpath, tmp_path / "sprites")
+
+
+def test_main_exits_2_with_a_readable_message_on_a_bad_sprite(tmp_path, capsys):
+    mpath = _manifest(tmp_path, {"hud": {"capture": "astral", "box": [10, 20, 60, 48], "slice": None}})
+    code = main(["--manifest", str(mpath), "--out", str(tmp_path / "sprites")])
+    assert code == 2
+    err = capsys.readouterr().err
+    assert "Manifeste invalide" in err and "sprite « hud »" in err
+
+
+def test_main_exits_0_on_a_valid_manifest(tmp_path):
+    mpath = _manifest(tmp_path, {"pill-mid": {"capture": "astral", "box": [600, 300, 640, 328], "slice": None}})
+    assert main(["--manifest", str(mpath), "--out", str(tmp_path / "sprites")]) == 0
 
 
 def test_build_sheet_writes_a_labelled_contact_sheet(tmp_path):

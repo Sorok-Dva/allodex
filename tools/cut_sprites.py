@@ -202,22 +202,29 @@ def run(manifest_path: Path, out_dir: Path) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     index: dict[str, dict] = {}
     for name, spec in manifest["sprites"].items():
-        if spec.get("texture"):
-            src = Image.open(resolve_texture(tex_dir, spec["texture"]))
-        else:
-            validate_box(spec["box"])
-            src = captures[spec["capture"]]
-        img = cut_sprite(
-            src,
-            spec.get("box"),
-            alpha_key=spec.get("alpha_key"),
-            clear_center=bool(spec.get("clear_center")),
-            slice_=spec.get("slice"),
-            fill=spec.get("fill"),
-            repeat_x=spec.get("repeat_x"),
-            repeat_y=spec.get("repeat_y"),
-            alpha_poly=spec.get("alpha_poly"),
-        )
+        # Toute erreur de découpe est renvoyée avec le nom du sprite fautif : sans lui,
+        # « rectangle vide » ne dit pas quelle entrée du manifeste corriger.
+        try:
+            if spec.get("texture"):
+                src = Image.open(resolve_texture(tex_dir, spec["texture"]))
+            else:
+                validate_box(spec["box"])
+                src = captures[spec["capture"]]
+            img = cut_sprite(
+                src,
+                spec.get("box"),
+                alpha_key=spec.get("alpha_key"),
+                clear_center=bool(spec.get("clear_center")),
+                slice_=spec.get("slice"),
+                fill=spec.get("fill"),
+                repeat_x=spec.get("repeat_x"),
+                repeat_y=spec.get("repeat_y"),
+                alpha_poly=spec.get("alpha_poly"),
+            )
+        except KeyError as exc:
+            raise ValueError(f"sprite « {name} » : clé absente du manifeste {exc}") from exc
+        except ValueError as exc:
+            raise ValueError(f"sprite « {name} » : {exc}") from exc
         img.save(out_dir / f"{name}.png")
         index[name] = {"w": img.width, "h": img.height, "slice": spec.get("slice")}
         print(f"sprite  {name}  {img.width}x{img.height}")
@@ -246,6 +253,12 @@ def main(argv=None) -> int:
     except FileNotFoundError as exc:
         print(
             f"Capture introuvable : {exc} (voir refs/ et tools/capture_game.ps1)",
+            file=sys.stderr,
+        )
+        return 2
+    except (ValueError, KeyError) as exc:
+        print(
+            f"Manifeste invalide ({a.manifest}) : {exc}",
             file=sys.stderr,
         )
         return 2

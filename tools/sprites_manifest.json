@@ -68,11 +68,6 @@
    "box": [617, 762, 625, 783],
    "slice": null
   },
-  "rail-left": {
-   "capture": "astral",
-   "box": [520, 510, 540, 518],
-   "slice": null
-  },
   "rail-right": {
    "capture": "astral",
    "box": [1390, 494, 1404, 502],
@@ -104,23 +99,11 @@
    "slice": null,
    "_note": "séparateur vertical entre colonnes : liseré vert 816-818 + montant de bois 819-834"
   },
-  "pill-left": {
-   "capture": "astral",
-   "box": [539, 575, 561, 603],
-   "slice": null,
-   "_note": "pilule « Ordre » repliée, extrémité gauche ornée, avant le texte (x 563+)"
-  },
   "pill-mid": {
    "capture": "astral",
    "box": [636, 575, 644, 603],
    "slice": null,
    "_note": "tranche parfaitement uniforme (écart-type 0) entre le texte et le médaillon"
-  },
-  "pill-right": {
-   "capture": "astral",
-   "box": [759, 318, 781, 346],
-   "slice": null,
-   "_note": "pilule « Progression », seule sans médaillon : extrémité droite ornée intacte"
   },
   "medallion-plus": {
    "capture": "astral",
@@ -199,13 +182,6 @@
    "slice": [4, 4, 4, 4],
    "clear_center": true,
    "_note": "cadre du menu déroulé ; le centre (qui porte « Tout / Terminé / Pas terminé ») est mis à alpha 0"
-  },
-  "badge-icon-frame": {
-   "capture": "astral",
-   "box": [847, 327, 901, 378],
-   "slice": [4, 5, 5, 6],
-   "clear_center": true,
-   "_note": "cadre or de l'icône du succès « Connecté avec les étoiles » ; l'icône est effacée par clear_center"
   },
   "rank-tag": {
    "capture": "astral",
