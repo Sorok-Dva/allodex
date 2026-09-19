@@ -820,3 +820,43 @@ def test_extract_theme_from_file_encodes_a_local_mp3_relative_to_the_repo(tmp_pa
     assert err is None and theme["name"] == "MainMenu_CallOfLegends" and theme["source"] == "refs/t.mp3"
     theme, err = ea.extract_theme_from_url({"file": "refs/absent.mp3"}, tmp_path / "x", force=True, base_dir=tmp_path)
     assert theme is None and "fichier introuvable" in err
+
+
+def test_run_indexes_the_menu_scene_when_its_files_are_there(tmp_path, monkeypatch):
+    # `tools/extract_menu_scene.py` dépose scene.glb + scene.json : l'entrée doit les porter,
+    # sans perdre `background`, qui reste l'illustration de repli.
+    client = _fake_client(tmp_path)
+    _spy_on_the_expensive_steps(monkeypatch)
+    out = tmp_path / "out"
+    version_dir = out / "2.0"
+    version_dir.mkdir(parents=True)
+    (version_dir / "scene.glb").write_bytes(b"glTF")
+    (version_dir / "scene.json").write_text("{}", encoding="utf-8")
+    manifest = _manifest(str(client))
+    manifest["versions"] = manifest["versions"][:1]
+
+    index, _ = run(manifest, out, Path("/nonexistent/vgmstream"))
+
+    assert index[0]["scene"] == {"glb": "scene.glb", "meta": "scene.json"}
+    assert index[0]["background"] == "background.png"
+
+
+def test_run_does_not_resurrect_a_menu_scene_whose_files_are_gone(tmp_path, monkeypatch):
+    client = _fake_client(tmp_path)
+    _spy_on_the_expensive_steps(monkeypatch)
+    out = tmp_path / "out"
+    out.mkdir()
+    (tmp_path / "out.json").write_text(
+        json.dumps([{
+            "version": "2.0", "label": "Allods Online 2.0", "media": "image",
+            "background": "background.png",
+            "scene": {"glb": "scene.glb", "meta": "scene.json"},
+        }]),
+        encoding="utf-8",
+    )
+    manifest = _manifest(str(client))
+    manifest["versions"] = manifest["versions"][:1]
+
+    index, _ = run(manifest, out, Path("/nonexistent/vgmstream"))
+
+    assert "scene" not in index[0]

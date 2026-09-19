@@ -1,0 +1,143 @@
+{
+  "_note": "Scènes de menu animées (4.0 → 8.0). `server_root` = arbre serveur décompressé (xdb) ; les .bin viennent des paks des clients. La caméra n'existe pas dans les données du jeu (elle est codée dans le client) : les valeurs ci-dessous sont celles du cadrage retenu, à recaler à la main si besoin (voir README, « Scènes de menu »).",
+  "server_root": "/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data",
+  "bin_dirs": [],
+  "pak_globs": [
+    "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0/data/Packs/World_MainMenu_Animated_Background*.pak",
+    "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0/data/Packs/Spells_FX_Textures*.pak",
+    "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0/data/Packs/World_Sky_Textures*.pak",
+    "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0/data/Packs/World_MainMenu_Animated_Background*.pak",
+    "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0/data/Packs/Spells_FX_Textures*.pak",
+    "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0/data/Packs/World_Sky_Textures*.pak"
+  ],
+  "max_texture": 512,
+  "versions": {
+    "4.0": {
+      "dir": "Animated_Background",
+      "roots": [
+        "Animated_Background"
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "background": "#2b3c55",
+      "camera": {
+        "position": [
+          178.41,
+          -0.1,
+          -9.3
+        ],
+        "target": [
+          29.51,
+          -0.1,
+          -9.3
+        ],
+        "fov": 45
+      }
+    },
+    "5.0": {
+      "dir": "Animated_Background_5_0",
+      "roots": [
+        "Animated_Background_5_0"
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "background": "#1b2440",
+      "camera": {
+        "position": [
+          205.27,
+          1.31,
+          -9.09
+        ],
+        "target": [
+          41.14,
+          1.31,
+          -9.09
+        ],
+        "fov": 45
+      }
+    },
+    "6.0": {
+      "dir": "Animated_Background_6_0",
+      "roots": [
+        "Animated_Background_6_0"
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "background": "#4a6a8c",
+      "camera": {
+        "position": [
+          -20,
+          0,
+          25
+        ],
+        "target": [
+          85,
+          0,
+          5
+        ],
+        "fov": 45
+      }
+    },
+    "7.0": {
+      "dir": "Animated_Background_7_0",
+      "roots": [
+        "AMM_7_0",
+        "AMM_7_0_FrontShips",
+        "AMM_7_0_Ships_Attack"
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "background": "#3a2f56",
+      "camera": {
+        "position": [
+          0,
+          70,
+          18
+        ],
+        "target": [
+          0,
+          -160,
+          10
+        ],
+        "fov": 42
+      }
+    },
+    "8.0": {
+      "dir": "Animated_Background_8_0",
+      "roots": [
+        "AMM_8_0"
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "background": "#5a7ea8",
+      "camera": {
+        "position": [
+          1.79,
+          -398.88,
+          15.67
+        ],
+        "target": [
+          1.79,
+          -129.36,
+          15.67
+        ],
+        "fov": 45
+      }
+    }
+  }
+}

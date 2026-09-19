@@ -31,7 +31,11 @@ Pour chaque version décrite dans `tools/clients_manifest.json` :
 Sorties : `public/game/archive/<version>/…`, l'emblème de chargement commun
 (`public/game/archive/_common/`) et l'index `public/game/archive.json` (tableau
 trié par version : `{version, name?, label, media, background?, background_note?,
-logo?, video?, intro?, theme?, note?, theme_note?}`).
+scene?, logo?, video?, intro?, theme?, note?, theme_note?}`).
+
+`scene` apparaît quand `tools/extract_menu_scene.py` a déposé `scene.glb` + `scene.json`
+dans le dossier de la version : la page Chroniques affiche alors la scène 3D du menu et
+`background` reste l'illustration de repli (navigateur sans WebGL, animation désactivée).
 
 Idempotent : une version dont les sorties existent déjà est ignorée (son entrée
 d'index est reprise de l'index précédent), sauf `--force` — à une exception près,
@@ -82,7 +86,7 @@ DEFAULT_CANVAS = (1920, 1080)
 
 # Ordre des clés de chaque entrée d'index (spec § 3), pour un JSON lisible en diff.
 KEY_ORDER = ("version", "name", "label", "media", "duration", "background", "background_note",
-             "logo", "video", "intro", "theme", "note", "theme_note")
+             "scene", "logo", "video", "intro", "theme", "note", "theme_note")
 ALWAYS_KEYS = ("version", "label", "media")
 
 # Langues du logo, de la meilleure à la moins bonne ; `None` = texture non localisée (russe).
@@ -697,6 +701,13 @@ def process_version(
                     entry["background"] = "background.png"
                     print(f"{version:>5}  background.png")
 
+    # -- scène 3D du menu (déposée par tools/extract_menu_scene.py)
+    scene_glb, scene_meta = ver_dir / "scene.glb", ver_dir / "scene.json"
+    has_scene = scene_glb.is_file() and scene_meta.is_file()
+    if has_scene:
+        entry["scene"] = {"glb": scene_glb.name, "meta": scene_meta.name}
+        print(f"{version:>5}  scene.glb / scene.json")
+
     # -- logo de l'add-on
     if logo_spec and logo_spec.get("url"):
         logo, err = extract_logo_from_url(logo_spec, ver_dir / "logo.png", force)
@@ -754,6 +765,9 @@ def process_version(
         "media": bool(video_spec or bg_spec),
         "duration": bool(video_spec),
         "background": bool(bg_spec),
+        # La scène 3D vient d'un autre outil : elle n'est reprise de l'index précédent que si
+        # les fichiers sont toujours là (sinon on ne la ressuscite pas).
+        "scene": has_scene,
         "video": bool(video_spec),
         "intro": bool(video_spec),
         "logo": bool(logo_spec),

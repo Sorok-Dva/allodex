@@ -186,6 +186,54 @@ passage suivant, sans `--force`.
 Un disque non monté n'est pas une erreur : l'outil avertit, laisse `media: null` dans
 l'index et conserve les versions déjà extraites (il est idempotent).
 
+## Scènes de menu
+
+Jusqu'à la 8.0 le menu principal est une **scène 3D animée** (`World/MainMenu/Animated_Background*`).
+`tools/extract_menu_scene.py` la rejoue hors du jeu : il lit les `.xdb` (XML) de l'arbre serveur
+décompressé, va chercher les `.bin` dans les paks des clients archivés, et écrit par version —
+dans `public/game/archive/<version>/`, donc **non versionné** :
+
+- `scene.glb` — glTF 2.0 binaire écrit à la main (aucune dépendance Python nouvelle) : un maillage
+  par objet (`POSITION`, `TEXCOORD_0`, `COLOR_0`, et `JOINTS_0`/`WEIGHTS_0` quand la géométrie est
+  skinnée), matériaux `KHR_materials_unlit` (`alphaMode`, `extras: {blend: "add"}` pour les
+  matériaux additifs), textures DXT décodées en PNG et intégrées au tampon, hiérarchie d'attaches
+  (les objets fixés à un locator du parent) et animations squelettiques ;
+- `scene.json` — ce que le glTF ne porte pas : caméra, axe « haut », couleur de fond, noms des
+  animations, quelques compteurs.
+
+Lancement :
+
+    python3 tools/extract_menu_scene.py                       # les cinq versions
+    python3 tools/extract_menu_scene.py --only 7.0
+    python3 tools/extract_menu_scene.py --check-dir /mnt/c/Users/<vous>/allodex-captures/chroniques-scenes
+
+`--check-dir` écrit une **planche de contrôle** par version (`glb-check-<version>.png`) : le `.glb`
+relu et rendu par un rasteriseur logiciel interne, à la pose de repos puis trois secondes plus tard,
+pour voir d'un coup d'œil ce que contient le fichier et si les animations bougent. Ce n'est pas le
+moteur de rendu du site.
+
+`tools/extract_archive.py` ajoute ensuite `scene: {glb, meta}` à l'entrée d'index quand les deux
+fichiers sont là ; `background` reste l'illustration de repli (navigateur sans WebGL, mouvement
+désactivé).
+
+**Recaler une caméra.** La caméra du menu n'existe nulle part dans les données du jeu (elle est
+codée dans le client) : `tools/scenes_manifest.json` en porte une **par version**
+(`camera.position`, `camera.target`, `camera.fov`, en unités du jeu, axe Z vers le haut). Pour la
+corriger, modifier ces valeurs puis relancer l'outil avec `--only <version> --check-dir …` et
+comparer la planche à une capture du menu réel (`refs/captures-ui/menu-<version>-*.png`). Le repère
+du jeu est en main gauche : l'export enveloppe la scène dans un nœud `scale: [-1, 1, 1]`, les
+coordonnées de la caméra sont donc dans ce repère miroir (celui du `.glb`). Les cadrages des 4.0 et
+5.0 restent approximatifs — ces scènes sont noyées dans leurs sphères de brume, que l'export
+reproduit fidèlement mais sans le brouillard du moteur.
+
+**Animations.** Le blob `(SkeletalAnimation).bin` a été rétro-conçu (format décrit en tête de
+`tools/extract_menu_scene.py`) : pointeurs auto-relatifs, une piste par articulation, translation en
+`base + u16 × échelle` et quaternion en `i16 / 32767` sur les seules composantes animées. Le nombre
+de composantes animées se déduit de la taille du bloc ; quelques nœuds rares restent ambigus et sont
+alors exportés figés (l'outil les compte dans ses avertissements). Les matrices inverses de bind du
+jeu ne sont pas reprises : elles sont recalculées depuis l'image 0, ce qui garantit que la pose de
+repos redonne exactement la géométrie statique.
+
 ## Itération 2 (2026-09)
 
 Reprise des deux écrans pour qu'ils soient visuellement identiques au jeu, à partir de captures live du client (spec détaillée : `docs/superpowers/specs/2026-09-19-iteration-2-fidelite-design.md`).
