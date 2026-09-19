@@ -32,6 +32,13 @@ Options par sprite dans le manifeste :
               ce qui est en dehors passe à alpha 0. Sert aux ornements non
               rectangulaires (extrémités de la plaque de titre) dont les coins
               laisseraient voir le décor du jeu.
+  derive      {"from": "<sprite>", "matrix": [...20 valeurs...]} ou
+              {"from": "<sprite>", "offset": [dr, dg, db]} : le sprite est calculé à
+              partir d'un sprite **déjà produit** (donc déclaré plus haut dans le
+              manifeste) par une transformation de couleur, au lieu d'être découpé.
+              Sert aux états dont les captures ne montrent qu'une variante (pilule
+              dépliée, flèches d'ascenseur inactives) : la transformation est cuite
+              dans le PNG, le site n'applique aucun filtre (spec § 7.1).
 """
 from __future__ import annotations
 
@@ -143,6 +150,44 @@ def cut_sprite(
     return out
 
 
+def color_matrix(img: Image.Image, matrix) -> Image.Image:
+    """Applique une matrice de couleur 4×5 façon `feColorMatrix` (canaux en 0–1).
+
+    R' = m0·R + m1·V + m2·B + m3·A + m4, etc. ; la quatrième ligne donne l'alpha.
+    Les valeurs sont celles que portait le filtre SVG du site : elles sont désormais
+    cuites dans le sprite, aucun filtre n'est appliqué par le navigateur.
+    """
+    m = np.asarray(matrix, dtype=float)
+    if m.size != 20:
+        raise ValueError(f"matrice de couleur : 20 valeurs attendues, {m.size} reçues")
+    m = m.reshape(4, 5)
+    a = np.asarray(img.convert("RGBA")).astype(float) / 255.0
+    out = a @ m[:, :4].T + m[:, 4]
+    return Image.fromarray(np.clip(np.rint(out * 255.0), 0, 255).astype(np.uint8), "RGBA")
+
+
+def color_offset(img: Image.Image, offset) -> Image.Image:
+    """Ajoute un décalage constant (dr, dg, db) aux canaux RVB, alpha inchangé."""
+    a = np.asarray(img.convert("RGBA")).astype(np.int16)
+    a[:, :, 0:3] = np.clip(a[:, :, 0:3] + np.array(offset, dtype=np.int16), 0, 255)
+    return Image.fromarray(a.astype(np.uint8), "RGBA")
+
+
+def derive_sprite(produced: dict, spec: dict) -> Image.Image:
+    """Calcule un sprite à partir d'un sprite déjà produit (clé `derive`)."""
+    src_name = spec.get("from")
+    if src_name not in produced:
+        raise ValueError(
+            f"`derive.from` inconnu ou déclaré plus bas dans le manifeste : {src_name!r}"
+        )
+    src = produced[src_name]
+    if "matrix" in spec:
+        return color_matrix(src, spec["matrix"])
+    if "offset" in spec:
+        return color_offset(src, spec["offset"])
+    raise ValueError("`derive` exige `matrix` (20 valeurs) ou `offset` (3 valeurs)")
+
+
 def build_sheet(index: dict, sprites_dir: Path, out_path: Path, scale: int = 3, maxw: int = 1400) -> Path:
     """Planche de contrôle : tous les sprites agrandis sur damier gris, avec étiquettes."""
     pad, label = 12, 13
@@ -201,30 +246,35 @@ def run(manifest_path: Path, out_dir: Path) -> dict:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     index: dict[str, dict] = {}
+    produced: dict[str, Image.Image] = {}
     for name, spec in manifest["sprites"].items():
         # Toute erreur de découpe est renvoyée avec le nom du sprite fautif : sans lui,
         # « rectangle vide » ne dit pas quelle entrée du manifeste corriger.
         try:
-            if spec.get("texture"):
-                src = Image.open(resolve_texture(tex_dir, spec["texture"]))
+            if spec.get("derive"):
+                img = derive_sprite(produced, spec["derive"])
             else:
-                validate_box(spec["box"])
-                src = captures[spec["capture"]]
-            img = cut_sprite(
-                src,
-                spec.get("box"),
-                alpha_key=spec.get("alpha_key"),
-                clear_center=bool(spec.get("clear_center")),
-                slice_=spec.get("slice"),
-                fill=spec.get("fill"),
-                repeat_x=spec.get("repeat_x"),
-                repeat_y=spec.get("repeat_y"),
-                alpha_poly=spec.get("alpha_poly"),
-            )
+                if spec.get("texture"):
+                    src = Image.open(resolve_texture(tex_dir, spec["texture"]))
+                else:
+                    validate_box(spec["box"])
+                    src = captures[spec["capture"]]
+                img = cut_sprite(
+                    src,
+                    spec.get("box"),
+                    alpha_key=spec.get("alpha_key"),
+                    clear_center=bool(spec.get("clear_center")),
+                    slice_=spec.get("slice"),
+                    fill=spec.get("fill"),
+                    repeat_x=spec.get("repeat_x"),
+                    repeat_y=spec.get("repeat_y"),
+                    alpha_poly=spec.get("alpha_poly"),
+                )
         except KeyError as exc:
             raise ValueError(f"sprite « {name} » : clé absente du manifeste {exc}") from exc
         except ValueError as exc:
             raise ValueError(f"sprite « {name} » : {exc}") from exc
+        produced[name] = img
         img.save(out_dir / f"{name}.png")
         index[name] = {"w": img.width, "h": img.height, "slice": spec.get("slice")}
         print(f"sprite  {name}  {img.width}x{img.height}")

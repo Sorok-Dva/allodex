@@ -23,6 +23,16 @@
   ],
   "dims_overrides": {},
   "no_trim": [],
+  "_note_color_offsets": "Décalage RVB constant cuit dans le PNG à l'extraction : le moteur du jeu affiche ces textures plus claires que ce que contient le pak. Valeurs ajustées aux moindres carrés en itération 2 sur les zones nues des captures (voir le rapport de la tâche 1 de l'itération 2), reprises telles quelles des filtres SVG supprimés en itération 2b (spec § 7.1 : aucun filtre côté navigateur).",
+  "color_offsets": {
+    "Interface/Ingame/Medals/Textures/FrameNavigation.(UITexture).bin": [15, 14, 9],
+    "Interface/Ingame/Medals/Textures/FrameContent02.(UITexture).bin": [18, 15, 9],
+    "Interface/Ingame/Medals/Textures/CategoryContent.(UITexture).bin": [8, 12, 18],
+    "Interface/Ingame/Medals/Textures/MedalPaper.(UITexture).bin": [19, 21, 24],
+    "Interface/Ingame/Medals/Textures/MedalPaperComplete.(UITexture).bin": [5, 8, 18],
+    "Interface/Ingame/Medals/Textures/ProgressBar.(UITexture).bin": [43, 50, 36],
+    "Interface/Ingame/Medals/Textures/ProgressBarGauge.(UITexture).bin": [43, 50, 36]
+  },
   "cursor_prefix": "Interface/System/Cursors/",
   "videos": {
     "intro": "Video/16_0Events/MainMenu/Intro.ogv",

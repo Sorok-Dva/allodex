@@ -63,6 +63,25 @@
    "box": [1216, 258, 1224, 269],
    "slice": null
   },
+  "rail-top-left": {
+   "capture": "astral",
+   "box": [518, 205, 592, 223],
+   "slice": null,
+   "_note": "rail vert au-dessus du bandeau turquoise, à gauche de la plaque de titre : le cadre de la fenêtre commence à y 205 (test d'identité pixel entre equip.png et astral.png : lignes 205+ identiques, lignes <205 = décor variable). Va jusqu'à x 592 pour passer sous l'ornement gauche de la plaque, dessiné par-dessus, dont le coin bas-gauche est transparent (alpha_poly)"
+  },
+  "rail-top-right": {
+   "capture": "astral",
+   "box": [1331, 205, 1378, 223],
+   "slice": null,
+   "repeat_x": [
+    {
+     "src": 39,
+     "x0": 45,
+     "x1": 47
+    }
+   ],
+   "_note": "symétrique : passe sous le coin bas-droit transparent de l'ornement droit de la plaque (x 1331) et va jusqu'au bouton de fermeture (x 1376). Les deux dernières colonnes, qui portent le bord du bouton dans la capture, sont recopiées depuis la colonne 1370 (bande uniforme)"
+  },
   "rail-bottom": {
    "capture": "astral",
    "box": [617, 762, 625, 783],
@@ -249,6 +268,45 @@
     }
    ],
    "_note": "cadre de l'infobulle ; l'intérieur (texte du succès du joueur) est remplacé par l'aplat relevé ligne 432, zone de l'infobulle posée sur le fond sombre"
+  },
+  "pill-full-open": {
+   "derive": {
+    "from": "pill-full",
+    "matrix": [
+     0.3864, -0.2177, 0.4408, 0, 0.1048,
+     -0.0996, 0.6037, -0.0142, 0, 0.1108,
+     -0.0854, 0.3505, 0.0898, 0, 0.0607,
+     0, 0, 0, 1, 0
+    ]
+   },
+   "slice": null,
+   "_note": "pilule dépliée (liseré vert au lieu du liseré or) : transformation affine ajustée aux moindres carrés entre « Batailles » (y 378, repliée) et « Astral » (y 408, dépliée) de astral.png, erreur moyenne ~3/255. Cuite dans le PNG (spec § 7.1 : aucun filtre côté navigateur)"
+  },
+  "scroll-up-off": {
+   "derive": {
+    "from": "scroll-up",
+    "matrix": [
+     0.2899, 0.0909, 0.4844, 0, 0.0510,
+     0.2447, 0.1927, 0.5433, 0, 0.0586,
+     0.2157, 0.0936, 0.3210, 0, 0.0315,
+     0, 0, 0, 1, 0
+    ]
+   },
+   "slice": null,
+   "_note": "flèche d'ascenseur inactive (grisée) : transformation ajustée entre navscroll.png (flèche haut active) et astral.png (inactive), y 307"
+  },
+  "scroll-down-off": {
+   "derive": {
+    "from": "scroll-down",
+    "matrix": [
+     0.2899, 0.0909, 0.4844, 0, 0.0510,
+     0.2447, 0.1927, 0.5433, 0, 0.0586,
+     0.2157, 0.0936, 0.3210, 0, 0.0315,
+     0, 0, 0, 1, 0
+    ]
+   },
+   "slice": null,
+   "_note": "même transformation que scroll-up-off, appliquée à la flèche bas"
   }
  }
 }

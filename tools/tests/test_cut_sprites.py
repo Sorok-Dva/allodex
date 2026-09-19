@@ -4,7 +4,16 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-from tools.cut_sprites import build_sheet, cut_sprite, main, resolve_texture, run, validate_box
+from tools.cut_sprites import (
+    build_sheet,
+    color_matrix,
+    color_offset,
+    cut_sprite,
+    main,
+    resolve_texture,
+    run,
+    validate_box,
+)
 
 
 def test_validate_box_rejects_outside_medals_window():
@@ -236,3 +245,67 @@ def test_build_sheet_writes_a_labelled_contact_sheet(tmp_path):
     assert sheet.exists()
     with Image.open(sheet) as im:
         assert im.width > 40 * 3 and im.height > 28 * 3
+
+
+def test_color_matrix_applies_the_fecolormatrix_of_the_game_and_keeps_alpha():
+    # Matrice identité sauf +0,5 sur le rouge : 20 valeurs, comme un feColorMatrix SVG.
+    img = Image.new("RGBA", (2, 1))
+    img.putpixel((0, 0), (100, 40, 20, 200))
+    img.putpixel((1, 0), (250, 0, 0, 0))
+    m = [1, 0, 0, 0, 0.5,
+         0, 1, 0, 0, 0,
+         0, 0, 1, 0, 0,
+         0, 0, 0, 1, 0]
+    out = color_matrix(img, m)
+    assert out.getpixel((0, 0)) == (227, 40, 20, 200)  # 100 + 0,5×255 (arrondi au plus proche)
+    assert out.getpixel((1, 0)) == (255, 0, 0, 0)  # saturé, alpha intact
+
+
+def test_color_matrix_mixes_channels_and_clamps_at_zero():
+    img = Image.new("RGBA", (1, 1), (100, 200, 50, 255))
+    m = [0, 0.5, 0, 0, 0,
+         -1, 0, 0, 0, 0,
+         0, 0, 0.5, 0, 0,
+         0, 0, 0, 1, 0]
+    out = color_matrix(img, m)
+    assert out.getpixel((0, 0)) == (100, 0, 25, 255)
+
+
+def test_color_offset_adds_a_constant_to_each_channel():
+    img = Image.new("RGBA", (1, 1), (10, 20, 250, 77))
+    assert color_offset(img, (15, 14, 9)).getpixel((0, 0)) == (25, 34, 255, 77)
+
+
+def test_run_derives_a_sprite_from_a_previous_one(tmp_path):
+    ref = tmp_path / "astral.png"
+    Image.new("RGB", (1920, 1009), (40, 60, 80)).save(ref)
+    manifest = {
+        "captures": {"astral": str(ref)},
+        "sprites": {
+            "pill-full": {"capture": "astral", "box": [600, 300, 620, 328], "slice": None},
+            "pill-full-open": {
+                "derive": {"from": "pill-full", "offset": [10, 0, -20]},
+                "slice": None,
+            },
+        },
+    }
+    mpath = tmp_path / "m.json"
+    mpath.write_text(json.dumps(manifest))
+    out = tmp_path / "sprites"
+    index = run(mpath, out)
+    assert index["pill-full-open"] == {"w": 20, "h": 28, "slice": None}
+    with Image.open(out / "pill-full-open.png") as im:
+        assert im.convert("RGBA").getpixel((5, 5)) == (50, 60, 60, 255)
+
+
+def test_run_rejects_a_derive_from_an_unknown_sprite(tmp_path):
+    ref = tmp_path / "astral.png"
+    Image.new("RGB", (1920, 1009), (0, 0, 0)).save(ref)
+    manifest = {
+        "captures": {"astral": str(ref)},
+        "sprites": {"scroll-up-off": {"derive": {"from": "scroll-up", "offset": [1, 2, 3]}}},
+    }
+    mpath = tmp_path / "m.json"
+    mpath.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="scroll-up"):
+        run(mpath, tmp_path / "sprites")

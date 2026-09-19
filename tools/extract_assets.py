@@ -8,6 +8,11 @@ enregistrée dans le manifest est la taille utile, rognée. `--no-trim`
 désactive ce rognage globalement ; la clé `no_trim` du manifest liste les
 entrées (chemin de pak complet) à ne jamais rogner.
 
+La clé `color_offsets` du manifest (`{"<entrée de pak>": [dr, dg, db]}`) ajoute
+après rognage un décalage constant aux canaux RVB : c'est la correction de
+couleur que le jeu applique au rendu, cuite dans le PNG pour que le site n'ait
+aucun filtre à appliquer dans le navigateur (spec § 7.1).
+
 Usage : python3 tools/extract_assets.py [--client DIR] [--out public/game] [--force] [--skip-video] [--no-trim]
 """
 from __future__ import annotations
@@ -23,6 +28,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+import numpy as np
 from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -63,6 +69,19 @@ def output_path_for(entry: str) -> str:
     return entry[: -len(TEXTURE_SUFFIX)] if entry.endswith(TEXTURE_SUFFIX) else entry
 
 
+def apply_color_offset(img: Image.Image, offset) -> Image.Image:
+    """Ajoute un décalage constant (dr, dg, db) aux canaux RVB, alpha inchangé.
+
+    Le jeu affiche plusieurs textures plus claires que ce que contient le pak (le moteur
+    les éclaircit au rendu). Le décalage mesuré sur les captures est **cuit dans le PNG**
+    à l'extraction : le site n'applique plus aucun filtre côté navigateur, dont le rendu
+    varie entre Chrome logiciel et Chrome GPU (spec § 7.1).
+    """
+    a = np.asarray(img.convert("RGBA")).astype(np.int16)
+    a[:, :, 0:3] = np.clip(a[:, :, 0:3] + np.array(offset, dtype=np.int16), 0, 255)
+    return Image.fromarray(a.astype(np.uint8), "RGBA")
+
+
 def extract_textures(pak: zipfile.ZipFile, manifest: dict, out: Path, force: bool, trim: bool = True) -> dict:
     index: dict[str, dict] = {}
     names = pak.namelist()
@@ -72,6 +91,7 @@ def extract_textures(pak: zipfile.ZipFile, manifest: dict, out: Path, force: boo
         print(f"AVERTISSEMENT : introuvable dans le pak : {m}", file=sys.stderr)
     overrides = {k: tuple(v) for k, v in manifest.get("dims_overrides", {}).items()}
     no_trim = set(manifest.get("no_trim", []))
+    color_offsets = {k: tuple(v) for k, v in manifest.get("color_offsets", {}).items()}
     for entry in entries:
         rel = output_path_for(entry)
         target = out / "textures" / f"{rel}.png"
@@ -84,6 +104,8 @@ def extract_textures(pak: zipfile.ZipFile, manifest: dict, out: Path, force: boo
             img, info = decode_uitexture(pak.read(entry), overrides.get(entry))
             if trim and entry not in no_trim:
                 img = trim_transparent_padding(img)
+            if entry in color_offsets:
+                img = apply_color_offset(img, color_offsets[entry])
             img.save(target)
         except Exception as exc:
             print(f"AVERTISSEMENT : décodage impossible pour {entry} : {exc}", file=sys.stderr)

@@ -3,7 +3,7 @@ import zipfile
 
 from PIL import Image
 
-from tools.extract_assets import select_entries, output_path_for, extract_textures
+from tools.extract_assets import apply_color_offset, select_entries, output_path_for, extract_textures
 from tools.uitexture import DecodeInfo
 
 MANIFEST = {
@@ -121,3 +121,38 @@ def test_extract_textures_skips_bad_entry_and_keeps_going(monkeypatch, tmp_path)
         index = extract_textures(pak, TRIM_MANIFEST, tmp_path, force=True)
     assert list(index.keys()) == ["Interface/Ingame/Medals/Textures/Good"]
     assert not (tmp_path / "textures" / "Interface/Ingame/Medals/Textures/Bad.png").exists()
+
+
+def test_apply_color_offset_adds_and_clamps_without_touching_alpha():
+    # Les décalages de couleur du jeu (ex. FrameNavigation +15/+14/+9) sont cuits dans le
+    # PNG : plus aucun filtre côté navigateur (spec § 7.1).
+    img = Image.new("RGBA", (3, 1))
+    img.putpixel((0, 0), (10, 20, 250, 128))
+    img.putpixel((1, 0), (0, 0, 0, 0))
+    img.putpixel((2, 0), (255, 255, 255, 255))
+    out = apply_color_offset(img, (15, 14, 9))
+    assert out.getpixel((0, 0)) == (25, 34, 255, 128)  # bleu saturé à 255
+    assert out.getpixel((1, 0)) == (15, 14, 9, 0)  # alpha intact
+    assert out.getpixel((2, 0)) == (255, 255, 255, 255)
+
+
+def test_apply_color_offset_clamps_at_zero():
+    img = Image.new("RGBA", (1, 1), (10, 5, 200, 255))
+    out = apply_color_offset(img, (-30, -4, -9))
+    assert out.getpixel((0, 0)) == (0, 1, 191, 255)
+
+
+def test_extract_textures_applies_color_offset_after_trim(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        "tools.extract_assets.decode_uitexture",
+        lambda data, hint=None: (_img_with_padding(), DecodeInfo(8, 8, "DXT5")),
+    )
+    manifest = dict(
+        TRIM_MANIFEST,
+        color_offsets={"Interface/Ingame/Medals/Textures/X.(UITexture).bin": [8, 12, 18]},
+    )
+    with _make_pak() as pak:
+        index = extract_textures(pak, manifest, tmp_path, force=True)
+    assert index["Interface/Ingame/Medals/Textures/X"] == {"w": 3, "h": 2}  # rognage conservé
+    with Image.open(tmp_path / "textures" / "Interface/Ingame/Medals/Textures/X.png") as im:
+        assert im.convert("RGBA").getpixel((0, 0)) == (255, 12, 18, 255)
