@@ -10,42 +10,146 @@
  "sprites": {
   "title-plate-left": {
    "capture": "tooltip",
-   "box": [574, 191, 612, 222],
+   "box": [
+    574,
+    191,
+    612,
+    222
+   ],
    "slice": null,
    "_note": "ornement en losange de l'extrémité gauche ; capture tooltip.png (astral/dropdown/navscroll portent un artefact vert du décor au-dessus de l'ornement droit) ; alpha_poly efface les coins où l'on verrait le décor du jeu",
    "alpha_poly": [
-    [[ 16, 0 ], [ 10, 5 ], [ 3, 11 ], [ 1, 14 ], [ 3, 18 ], [ 9, 25 ], [ 16, 31 ], [ 38, 31 ], [ 38, 0 ]]
+    [
+     [
+      16,
+      0
+     ],
+     [
+      10,
+      5
+     ],
+     [
+      3,
+      11
+     ],
+     [
+      1,
+      14
+     ],
+     [
+      3,
+      18
+     ],
+     [
+      9,
+      25
+     ],
+     [
+      16,
+      31
+     ],
+     [
+      38,
+      31
+     ],
+     [
+      38,
+      0
+     ]
+    ]
    ]
   },
   "title-plate-mid": {
    "capture": "tooltip",
-   "box": [620, 191, 628, 222],
+   "box": [
+    620,
+    191,
+    628,
+    222
+   ],
    "slice": null,
    "_note": "tranche répétable la plus uniforme (écart-type 0,29) hors du mot « Succès »"
   },
   "title-plate-right": {
    "capture": "tooltip",
-   "box": [1311, 191, 1349, 222],
+   "box": [
+    1311,
+    191,
+    1349,
+    222
+   ],
    "slice": null,
    "alpha_poly": [
-    [[ 22, 0 ], [ 28, 5 ], [ 35, 11 ], [ 37, 14 ], [ 35, 18 ], [ 29, 25 ], [ 22, 31 ], [ 0, 31 ], [ 0, 0 ]]
+    [
+     [
+      22,
+      0
+     ],
+     [
+      28,
+      5
+     ],
+     [
+      35,
+      11
+     ],
+     [
+      37,
+      14
+     ],
+     [
+      35,
+      18
+     ],
+     [
+      29,
+      25
+     ],
+     [
+      22,
+      31
+     ],
+     [
+      0,
+      31
+     ],
+     [
+      0,
+      0
+     ]
+    ]
    ],
    "_note": "symétrique de title-plate-left autour de x=961,5 (plaque x 574->1349) ; alpha_poly ajusté pour effacer les pixels verts/magenta du décor au-dessus de la pointe droite"
   },
   "band-left": {
    "capture": "astral",
-   "box": [518, 222, 630, 259],
+   "box": [
+    518,
+    222,
+    630,
+    259
+   ],
    "slice": null,
    "_note": "montant du rail + volute et arabesque gauches du bandeau turquoise (x 518->630) ; symétrique de band-right autour de x=961"
   },
   "band-mid": {
    "capture": "astral",
-   "box": [770, 222, 778, 259],
+   "box": [
+    770,
+    222,
+    778,
+    259
+   ],
    "slice": null
   },
   "band-right": {
    "capture": "astral",
-   "box": [1292, 222, 1404, 259],
+   "box": [
+    1292,
+    222,
+    1404,
+    259
+   ],
    "slice": null,
    "repeat_y": [
     {
@@ -60,18 +164,33 @@
   },
   "rail-top": {
    "capture": "astral",
-   "box": [1216, 258, 1224, 269],
+   "box": [
+    1216,
+    258,
+    1224,
+    269
+   ],
    "slice": null
   },
   "rail-top-left": {
    "capture": "astral",
-   "box": [518, 205, 592, 223],
+   "box": [
+    518,
+    205,
+    592,
+    223
+   ],
    "slice": null,
    "_note": "rail vert au-dessus du bandeau turquoise, à gauche de la plaque de titre : le cadre de la fenêtre commence à y 205 (test d'identité pixel entre equip.png et astral.png : lignes 205+ identiques, lignes <205 = décor variable). Va jusqu'à x 592 pour passer sous l'ornement gauche de la plaque, dessiné par-dessus, dont le coin bas-gauche est transparent (alpha_poly)"
   },
   "rail-top-right": {
    "capture": "astral",
-   "box": [1331, 205, 1378, 223],
+   "box": [
+    1331,
+    205,
+    1378,
+    223
+   ],
    "slice": null,
    "repeat_x": [
     {
@@ -84,62 +203,122 @@
   },
   "rail-bottom": {
    "capture": "astral",
-   "box": [617, 762, 625, 783],
+   "box": [
+    617,
+    762,
+    625,
+    783
+   ],
    "slice": null
   },
   "rail-right": {
    "capture": "astral",
-   "box": [1390, 494, 1404, 502],
+   "box": [
+    1390,
+    494,
+    1404,
+    502
+   ],
    "slice": null
   },
   "corner-tl": {
    "capture": "astral",
-   "box": [520, 259, 538, 277],
+   "box": [
+    520,
+    259,
+    538,
+    277
+   ],
    "slice": null
   },
   "corner-tr": {
    "capture": "astral",
-   "box": [1386, 259, 1404, 277],
+   "box": [
+    1386,
+    259,
+    1404,
+    277
+   ],
    "slice": null
   },
   "corner-bl": {
    "capture": "astral",
-   "box": [520, 765, 538, 783],
+   "box": [
+    520,
+    765,
+    538,
+    783
+   ],
    "slice": null
   },
   "corner-br": {
    "capture": "astral",
-   "box": [1386, 765, 1404, 783],
+   "box": [
+    1386,
+    765,
+    1404,
+    783
+   ],
    "slice": null
   },
   "divider-v": {
    "capture": "astral",
-   "box": [814, 474, 835, 482],
+   "box": [
+    814,
+    474,
+    835,
+    482
+   ],
    "slice": null,
    "_note": "séparateur vertical entre colonnes : liseré vert 816-818 + montant de bois 819-834"
   },
   "pill-mid": {
    "capture": "astral",
-   "box": [636, 575, 644, 603],
+   "box": [
+    636,
+    575,
+    644,
+    603
+   ],
    "slice": null,
    "_note": "tranche parfaitement uniforme (écart-type 0) entre le texte et le médaillon"
   },
   "medallion-plus": {
    "capture": "astral",
-   "box": [753, 352, 777, 373],
+   "box": [
+    753,
+    352,
+    777,
+    373
+   ],
    "slice": null,
    "_note": "médaillon « + » de la pilule « Personnage » ; boîte serrée sur le disque, fond = fond de pilule normale"
   },
   "medallion-minus": {
    "capture": "astral",
-   "box": [753, 412, 777, 433],
+   "box": [
+    753,
+    412,
+    777,
+    433
+   ],
    "slice": null,
    "_note": "médaillon « − » de la pilule « Astral » (dépliée et sélectionnée)"
   },
   "search-field": {
    "capture": "astral",
-   "box": [557, 274, 789, 298],
-   "slice": [5, 6, 5, 6],
+   "box": [
+    557,
+    274,
+    789,
+    298
+   ],
+   "slice": [
+    5,
+    6,
+    5,
+    6
+   ],
    "repeat_x": [
     {
      "src": 203,
@@ -151,36 +330,81 @@
   },
   "scroll-up": {
    "capture": "navscroll",
-   "box": [795, 307, 817, 330],
+   "box": [
+    795,
+    307,
+    817,
+    330
+   ],
    "slice": null,
    "_note": "navscroll.png : liste défilée en bas, donc flèche haut active (dorée)"
   },
   "scroll-down": {
    "capture": "astral",
-   "box": [795, 737, 817, 760],
+   "box": [
+    795,
+    737,
+    817,
+    760
+   ],
    "slice": null
   },
   "scroll-track": {
    "capture": "astral",
-   "box": [795, 400, 817, 408],
-   "slice": [2, 0, 2, 0],
+   "box": [
+    795,
+    400,
+    817,
+    408
+   ],
+   "slice": [
+    2,
+    0,
+    2,
+    0
+   ],
    "_note": "tranche de piste répétable verticalement"
   },
   "scroll-thumb": {
    "capture": "astral",
-   "box": [797, 330, 816, 350],
+   "box": [
+    797,
+    330,
+    816,
+    350
+   ],
    "slice": null
   },
   "content-header": {
    "capture": "astral",
-   "box": [1015, 264, 1023, 302],
-   "slice": [10, 0, 10, 0],
+   "box": [
+    1015,
+    264,
+    1023,
+    302
+   ],
+   "slice": [
+    10,
+    0,
+    10,
+    0
+   ],
    "_note": "tranche verticale de l'en-tête sombre, hors du titre doré (x 841+) et du champ « Tout » (x 1230+)"
   },
   "dropdown-field": {
    "capture": "astral",
-   "box": [1230, 274, 1356, 298],
-   "slice": [5, 6, 5, 6],
+   "box": [
+    1230,
+    274,
+    1356,
+    298
+   ],
+   "slice": [
+    5,
+    6,
+    5,
+    6
+   ],
    "repeat_x": [
     {
      "src": 40,
@@ -192,36 +416,89 @@
   },
   "dropdown-button": {
    "capture": "astral",
-   "box": [1356, 274, 1379, 297],
+   "box": [
+    1356,
+    274,
+    1379,
+    297
+   ],
    "slice": null
   },
   "dropdown-frame": {
    "capture": "dropdown",
-   "box": [1227, 299, 1380, 386],
-   "slice": [4, 4, 4, 4],
+   "box": [
+    1227,
+    299,
+    1380,
+    386
+   ],
+   "slice": [
+    4,
+    4,
+    4,
+    4
+   ],
    "clear_center": true,
    "_note": "cadre du menu déroulé ; le centre (qui porte « Tout / Terminé / Pas terminé ») est mis à alpha 0"
   },
   "rank-tag": {
    "capture": "astral",
-   "box": [886, 470, 896, 483],
-   "slice": [2, 2, 2, 2],
+   "box": [
+    886,
+    470,
+    896,
+    483
+   ],
+   "slice": [
+    2,
+    2,
+    2,
+    2
+   ],
    "fill": [
     {
-     "rgb": [150, 104, 0],
-     "box": [0, 0, 10, 13]
+     "rgb": [
+      150,
+      104,
+      0
+     ],
+     "box": [
+      0,
+      0,
+      10,
+      13
+     ]
     },
     {
-     "rgb": [233, 137, 3],
-     "box": [1, 1, 9, 12]
+     "rgb": [
+      233,
+      137,
+      3
+     ],
+     "box": [
+      1,
+      1,
+      9,
+      12
+     ]
     }
    ],
    "_note": "étiquette du chiffre romain : aucune étiquette vierge dans les captures, donc aplat aux deux couleurs relevées sur l'étiquette « II » de « Propriétaire »"
   },
   "series-slot": {
    "capture": "astral",
-   "box": [1012, 641, 1047, 676],
-   "slice": [3, 3, 3, 3],
+   "box": [
+    1012,
+    641,
+    1047,
+    676
+   ],
+   "slice": [
+    3,
+    3,
+    3,
+    3
+   ],
    "clear_center": true,
    "_note": "cadre d'une icône de la série de « Parfait ! » ; l'icône et le chiffre romain sont effacés par clear_center"
   },
@@ -237,16 +514,59 @@
   },
   "close-button": {
    "capture": "astral",
-   "box": [1378, 200, 1408, 230],
+   "box": [
+    1378,
+    200,
+    1408,
+    230
+   ],
    "slice": null,
    "alpha_poly": [
-    [[ 6, 0 ], [ 24, 0 ], [ 30, 6 ], [ 30, 24 ], [ 24, 30 ], [ 6, 30 ], [ 0, 24 ], [ 0, 6 ]]
+    [
+     [
+      6,
+      0
+     ],
+     [
+      24,
+      0
+     ],
+     [
+      30,
+      6
+     ],
+     [
+      30,
+      24
+     ],
+     [
+      24,
+      30
+     ],
+     [
+      6,
+      30
+     ],
+     [
+      0,
+      24
+     ],
+     [
+      0,
+      6
+     ]
+    ]
    ],
    "_note": "bouton rond de fermeture en haut à droite de la fenêtre : plaque olive x 1378->1407, y 200->231, anneau doré + disque orange x 1383->1407, y 201->225 ; alpha_poly coupe les coins, où l'on verrait le décor du jeu et le bandeau turquoise. Identique au pixel près sur les quatre captures : aucun état survolé disponible (éclairci en CSS)"
   },
   "pill-full": {
    "capture": "astral",
-   "box": [539, 318, 781, 346],
+   "box": [
+    539,
+    318,
+    781,
+    346
+   ],
    "slice": null,
    "repeat_x": [
     {
@@ -259,12 +579,31 @@
   },
   "tooltip-frame": {
    "capture": "tooltip",
-   "box": [898, 330, 1231, 443],
-   "slice": [4, 4, 4, 4],
+   "box": [
+    898,
+    330,
+    1231,
+    443
+   ],
+   "slice": [
+    4,
+    4,
+    4,
+    4
+   ],
    "fill": [
     {
-     "rgb": [73, 76, 50],
-     "box": [4, 4, 329, 109]
+     "rgb": [
+      73,
+      76,
+      50
+     ],
+     "box": [
+      4,
+      4,
+      329,
+      109
+     ]
     }
    ],
    "_note": "cadre de l'infobulle ; l'intérieur (texte du succès du joueur) est remplacé par l'aplat relevé ligne 432, zone de l'infobulle posée sur le fond sombre"
@@ -273,10 +612,26 @@
    "derive": {
     "from": "pill-full",
     "matrix": [
-     0.3864, -0.2177, 0.4408, 0, 0.1048,
-     -0.0996, 0.6037, -0.0142, 0, 0.1108,
-     -0.0854, 0.3505, 0.0898, 0, 0.0607,
-     0, 0, 0, 1, 0
+     0.3864,
+     -0.2177,
+     0.4408,
+     0,
+     0.1048,
+     -0.0996,
+     0.6037,
+     -0.0142,
+     0,
+     0.1108,
+     -0.0854,
+     0.3505,
+     0.0898,
+     0,
+     0.0607,
+     0,
+     0,
+     0,
+     1,
+     0
     ]
    },
    "slice": null,
@@ -286,10 +641,26 @@
    "derive": {
     "from": "scroll-up",
     "matrix": [
-     0.2899, 0.0909, 0.4844, 0, 0.0510,
-     0.2447, 0.1927, 0.5433, 0, 0.0586,
-     0.2157, 0.0936, 0.3210, 0, 0.0315,
-     0, 0, 0, 1, 0
+     0.2899,
+     0.0909,
+     0.4844,
+     0,
+     0.051,
+     0.2447,
+     0.1927,
+     0.5433,
+     0,
+     0.0586,
+     0.2157,
+     0.0936,
+     0.321,
+     0,
+     0.0315,
+     0,
+     0,
+     0,
+     1,
+     0
     ]
    },
    "slice": null,
@@ -299,14 +670,39 @@
    "derive": {
     "from": "scroll-down",
     "matrix": [
-     0.2899, 0.0909, 0.4844, 0, 0.0510,
-     0.2447, 0.1927, 0.5433, 0, 0.0586,
-     0.2157, 0.0936, 0.3210, 0, 0.0315,
-     0, 0, 0, 1, 0
+     0.2899,
+     0.0909,
+     0.4844,
+     0,
+     0.051,
+     0.2447,
+     0.1927,
+     0.5433,
+     0,
+     0.0586,
+     0.2157,
+     0.0936,
+     0.321,
+     0,
+     0.0315,
+     0,
+     0,
+     0,
+     1,
+     0
     ]
    },
    "slice": null,
    "_note": "même transformation que scroll-up-off, appliquée à la flèche bas"
+  },
+  "medallion-normal": {
+   "_note": "bouton rond vierge du jeu, fabriqué à partir du bouton « ? » des fenêtres (glyphe effacé par médiane radiale) : sert d'habillage au haut-parleur",
+   "texture": "Interface/Ingame/Contextructor/CornerQuestion/CornerQuestionNormal.png",
+   "inpaint_disc": 10
+  },
+  "medallion-pressed": {
+   "texture": "Interface/Ingame/Contextructor/CornerQuestion/CornerQuestionPressed.png",
+   "inpaint_disc": 10
   }
  }
 }

@@ -1,13 +1,20 @@
+/* Bouton rond du jeu (32 px) : médaillon, halo au survol, glyphe or par-dessus. */
 .toggle {
-  width: 20px;
-  height: 20px;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #b9c9b4;
-  transition: color 120ms ease;
+  color: #ffe9a8;
+  cursor: inherit;
 }
-.toggle:hover,
-.toggle:focus-visible {
-  color: var(--gold);
-}
+.base, .glow { position: absolute; inset: 0; background: center / contain no-repeat; pointer-events: none; }
+/* Le halo est en DXT1 sans alpha (fond noir) : fondu « screen » pour que seul le vert s'ajoute. */
+.glow { opacity: 0; mix-blend-mode: screen; transition: opacity 100ms ease-out; }
+.toggle:hover .glow, .toggle:focus-visible .glow { opacity: 1; }
+.glyph { position: relative; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.8)); }
+.glyphMuted { color: #d9b8a0; }

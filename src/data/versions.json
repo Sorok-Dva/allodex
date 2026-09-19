@@ -1,14 +1,524 @@
 {
-  "_note": "Fiche de chaque version affichée par le bouton « ? » des Chroniques : `release` = AAAA-MM (ou AAAA) de la sortie EU/FR, `lore` = résumé de l'histoire de l'add-on, `changes` = grands changements (phrases courtes). Une version absente affiche « Fiche à venir ». Fichier à relire et corriger à la main : les fiches autres que la 4.0 viennent d'une recherche web (notes de patch, wikis) et non du client.",
+  "_note": "Fiche de chaque version affichée par le bouton « ? » des Chroniques. `release` = AAAA-MM (ou AAAA) de la sortie EU/FR ; `lore` et `changes` sont bilingues ({fr, en}) ; `release_note`, `confidence` et `sources` ne sont pas affichés : ils documentent la recherche web (notes de patch, wikis, presse) dont viennent ces fiches, À RELIRE ET CORRIGER À LA MAIN. La 4.0 (fr) reprend le texte fourni par l'utilisateur. Une version sans fiche affiche « Fiche à venir ».",
+  "1.0": {
+    "release": "2010-02",
+    "lore": {
+      "fr": "Sarnaut, un monde jadis détruit par une catastrophe astrale, ne subsiste plus qu'en îles flottantes appelées allods. La Ligue et l'Empire s'affrontent pour la suprématie tout en explorant l'Astral à bord de vaisseaux volants.",
+      "en": "Sarnaut, a world shattered by an ancient astral catastrophe, survives only as floating islands called allods. The League and the Empire fight for supremacy while exploring the Astral aboard flying ships."
+    },
+    "changes": {
+      "fr": [
+        "Deux factions jouables (Ligue et Empire) regroupant plusieurs peuples chacune",
+        "Navigation astrale à bord de vaisseaux volants et combats navals",
+        "Système de classes complet (guerrier, mage, prêtre, paladin, etc.)",
+        "RvR permanent entre Ligue et Empire",
+        "Mécanique de « Peur de la Mort » réduisant les statistiques à chaque décès"
+      ],
+      "en": [
+        "Two playable factions (League and Empire), each with several peoples",
+        "Astral travel and ship-to-ship combat aboard flying vessels",
+        "Full class roster at launch (warrior, mage, priest, paladin, etc.)",
+        "Persistent League-vs-Empire RvR",
+        "\"Fear of Death\" penalty reducing stats on every death"
+      ]
+    },
+    "release_note": "Bêta ouverte EU (gPotato) le 16 février 2010 ; sortie officielle mondiale/RU le 21 octobre 2010 (fin de bêta actée avec le patch 2.0)",
+    "confidence": "medium",
+    "sources": [
+      "https://worthplaying.com/article/2010/2/16/news/72361-allods-online-enters-open-beta-stage-screens/",
+      "https://en.wikipedia.org/wiki/Allods_Online",
+      "https://www.videogamer.com/news/allods-online-officially-launches-in-europe-next-week/"
+    ]
+  },
+  "2.0": {
+    "release": "2010-10",
+    "lore": {
+      "fr": "Une faille temporelle s'ouvre sur l'allod impérial de Kirah, jadis riche en minerai météoritique et théâtre de l'invasion des démons astraux ; les aventuriers y remontent le temps pour changer le cours de l'histoire de Sarnaut.",
+      "en": "A time rift opens on the Imperial allod of Kirah, once rich in meteoric ore and the site of the astral demons' invasion; adventurers travel back in time there to alter the course of Sarnaut's history."
+    },
+    "changes": {
+      "fr": [
+        "Niveau maximum porté à 47",
+        "Nouvel allod : Kirah, avec quête de voyage dans le temps",
+        "Nouvelle zone/patch : Astral Odyssey (île de la Révélation)",
+        "Nouvelles instances astrales de fin de jeu",
+        "Sortie officielle du jeu en free-to-play (fin de la bêta ouverte)"
+      ],
+      "en": [
+        "Level cap raised to 47",
+        "New allod: Kirah, featuring a time-travel storyline",
+        "New zone/patch: Astral Odyssey (Isle of Revelation)",
+        "New end-game Astral instances",
+        "Official free-to-play launch (end of open beta)"
+      ]
+    },
+    "release_note": "EU/RU, 21 octobre 2010 (sortie officielle du jeu hors bêta, coïncidant avec le patch russe « Покорители времени »)",
+    "confidence": "medium",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Allods_Online",
+      "https://www.videogamer.com/news/allods-online-officially-launches-in-europe-next-week/",
+      "https://allods.ru/news.php?article=717",
+      "https://www.cyberludus.com/2011/04/allods-online-esce-l-11-maggio-2011-con-volume-4-astral-odyssey/"
+    ]
+  },
+  "3.0": {
+    "release": "2012-02",
+    "lore": {
+      "fr": "Sur l'île de la Révélation, les aventuriers percent le voile d'un savoir interdit et se mêlent aux jeux de pouvoir des dieux de Sarnaut, dans une cité des morts où sommeillent d'anciennes puissances.",
+      "en": "On the Isle of Revelation, adventurers uncover forbidden knowledge and get drawn into the power games of Sarnaut's gods, within a city of the dead where ancient powers still slumber."
+    },
+    "changes": {
+      "fr": [
+        "Niveau maximum porté à 51",
+        "Nouvelle classe : Barde",
+        "Nouveau raid à 10 boss : la Cité des Morts (Dead City)",
+        "Plus de 100 nouvelles quêtes",
+        "Nouveaux champs de bataille JcJ en équipe de 12 joueurs",
+        "Nouvelle zone : île de la Révélation"
+      ],
+      "en": [
+        "Level cap raised to 51",
+        "New class: Bard",
+        "New 10-boss raid: Dead City",
+        "Over 100 new quests",
+        "New 12-player team PvP battlegrounds",
+        "New zone: Isle of Revelation"
+      ]
+    },
+    "release_note": "EU/US (serveurs anglophones), 15 février 2012",
+    "confidence": "high",
+    "sources": [
+      "https://forums.mmorpg.com/discussion/338513/allods-online-game-of-the-gods-expansion-coming-in-february",
+      "https://www.engadget.com/2012-02-01-allods-online-game-of-gods-coming-february-15th.html",
+      "https://www.tentonhammer.com/news/allods-online-announces-game-of-gods-expansion"
+    ]
+  },
   "4.0": {
     "release": "2013-03",
-    "lore": "Lords of Destiny ouvre le Dominion et la pyramide de Tep : les Ligueux et les Impériaux se disputent la maîtrise du destin de Sarnaut.",
-    "changes": [
-      "niveau maximum porté à 55",
-      "Tep et son raid",
-      "le Dominion",
-      "de nouvelles zones et les Tekyans",
-      "les glyphes et du nouveau contenu astral"
+    "lore": {
+      "fr": "Lords of Destiny ouvre le Dominion et la pyramide de Tep : les Ligueux et les Impériaux se disputent la maîtrise du destin de Sarnaut.",
+      "en": "Deep within his pyramid, the necromancer Tep, who once studied the very essence of life, still haunts his stronghold; his research gave rise to the Arisen, and he waits as a vengeful shade to harvest more life."
+    },
+    "changes": {
+      "fr": [
+        "niveau maximum porté à 55",
+        "Tep et son raid",
+        "le Dominion",
+        "de nouvelles zones et les Tekyans",
+        "les glyphes et du nouveau contenu astral"
+      ],
+      "en": [
+        "Level cap raised to 55",
+        "New raid: Tep's Pyramid",
+        "Eight new astral allods with 6-player instances",
+        "New open-world PvP system",
+        "Dominion War (pet collection and territory control)",
+        "Billed as the biggest expansion in the game's history at the time"
+      ]
+    },
+    "release_note": "EU (FR inclus), 12 mars 2013 ; RU « Lords of Fate », environ 5 mois plus tôt (octobre-décembre 2012)",
+    "confidence": "high",
+    "sources": [
+      "https://allods.jeuxonline.info/actualite/38872/allods-devoile-extension-lords-of-destiny",
+      "https://www.f2p.com/allod-online-the-lord-of-destiny-expansion-is-coming/",
+      "https://www.mmogratuit.com/allods-online-lords-of-destiny-disponible-en-mars/",
+      "https://mmozg.net/allods/2014/12/19/istoriya-v-patchnoutah.html"
+    ]
+  },
+  "5.0": {
+    "release": "2014-03",
+    "lore": {
+      "fr": "Un nouvel allod révèle des secrets sur le cœur battant du monde de Sarnaut, tandis qu'une jeune organisation de bâtisseurs et d'inventeurs, les Ingénieurs, met sa science mécanique au service des deux factions.",
+      "en": "A new allod reveals secrets about the beating heart of the world of Sarnaut, while a young order of builders and inventors, the Engineers, puts its mechanical science at the service of both factions."
+    },
+    "changes": {
+      "fr": [
+        "Niveau maximum porté à 60",
+        "Nouvelle classe : Ingénieur",
+        "Refonte complète du système de statistiques des personnages",
+        "Système de garde-robe (apparence dissociée de l'équipement)",
+        "Nouveau raid : l'Éclipse",
+        "Allods Online quitte le portail gPotato pour My.com"
+      ],
+      "en": [
+        "Level cap raised to 60",
+        "New class: Engineer",
+        "Complete overhaul of the character stat system",
+        "Wardrobe system (cosmetic appearance decoupled from gear)",
+        "New raid: Eclipse",
+        "Allods Online moves from the gPotato portal to My.com"
+      ]
+    },
+    "release_note": "EU, 27 mars 2014 (maintenance de déploiement) ; RU vers le 17 février 2014",
+    "confidence": "medium",
+    "sources": [
+      "https://www.engadget.com/2014-02-17-allods-online-heart-of-the-world-update-patch-notes-translated.html",
+      "https://www.mmorpg.com/allods-online/news/heart-of-the-world-update-to-bring-new-class-and-more-1000030084",
+      "https://allods.jeuxonline.info/actualite/43400/allods-online-retire-portail-gpotato-direction-mailru"
+    ]
+  },
+  "6.0": {
+    "release": "2015-03",
+    "lore": {
+      "fr": "Les Pridiens, race de guerriers mi-hommes mi-bêtes vénérant la nature, brisent leurs chaînes et rejoignent Sarnaut ; sous leurs traits sauvages se cache une culture et une société sophistiquées, prêtes à en découdre.",
+      "en": "The Pridiens, a race of nature-worshipping half-man, half-beast warriors, break their chains and join Sarnaut; beneath their savage looks lies a sophisticated culture and society ready for battle."
+    },
+    "changes": {
+      "fr": [
+        "Nouvelle race jouable : les Pridiens",
+        "Niveau maximum porté à 65",
+        "Nouvelle zone : Ferris",
+        "Nouveau mode de raid : Projet « Portails »",
+        "Nouvelle zone : la Falaise de Tautlan (Royaume des Éléments)",
+        "Nouveau système d'amélioration d'équipement"
+      ],
+      "en": [
+        "New playable race: the Pridiens",
+        "Level cap raised to 65",
+        "New zone: Ferris",
+        "New raid mode: Project \"Portals\"",
+        "New zone: Tautlan Cliff (Realm of Elements)",
+        "New gear-upgrading system"
+      ]
+    },
+    "release_note": "EU/FR, 5 mars 2015",
+    "confidence": "high",
+    "sources": [
+      "https://allods.my.games/fr/news/announcements/600-red%C3%A9couvrez-les-pridiens",
+      "https://www.keengamer.com/articles/news/latest-expansion-for-allods-online-is-out-and-adds-new-race/",
+      "https://www.jeux-mmorpg.com/actualites/les-pridiens-nouvelle-race-d-allods-online-broken-chains-1279.html",
+      "https://mmos.com/news/allods-online-updates-with-broken-chains"
+    ]
+  },
+  "7.0": {
+    "release": "2016-03",
+    "lore": {
+      "fr": "Après la chute de l'archi-ennemi Locus, les héros croisent à nouveau la route des Architectes : leur conflit embrase l'allod de Dane, patrie prospère des Marchands Libres, désormais champ de bataille d'une guerre des mondes.",
+      "en": "After the fall of the archvillain Locus, the heroes cross paths with the Architects once more: their conflict engulfs Dane, the thriving homeland of the Free Traders, now the battlefield of a war of worlds."
+    },
+    "changes": {
+      "fr": [
+        "Niveau maximum porté à 70",
+        "Nouvel allod : Dane, patrie des Marchands Libres",
+        "Quatre nouveaux allods astraux et six aventures solo (« Distorsions »)",
+        "Voyage dans le temps créant des réalités alternatives (niveaux 65-70)",
+        "Refonte complète de toutes les classes",
+        "Nouveau système de saisons et d'accès au contenu"
+      ],
+      "en": [
+        "Level cap raised to 70",
+        "New allod: Dane, homeland of the Free Traders",
+        "Four new astral allods and six solo adventures (\"Distortions\")",
+        "Time-travel questing creating alternate realities (levels 65-70)",
+        "Complete redesign of every class",
+        "New season and content-access system"
+      ]
+    },
+    "release_note": "EU/FR, 31 mars 2016",
+    "confidence": "high",
+    "sources": [
+      "https://massivelyop.com/2016/02/19/allods-online-is-getting-a-big-update-called-new-order/",
+      "https://allods.my.games/fr/news/announcements/mise-jour-70-new-order-resume",
+      "https://allods.my.games/fr/news/announcements/mise-jour-70-new-order-allods-et-distorsions"
+    ]
+  },
+  "8.0": {
+    "release": "2016-12",
+    "lore": {
+      "fr": "Une huitième lignée, les Aèdes, rejoint Sarnaut, porteuse de pouvoirs de contrôle et de soin ; la promesse d'une forme d'immortalité bouleverse l'équilibre entre la Ligue et l'Empire.",
+      "en": "An eighth people, the Aeidos, joins Sarnaut, wielding powers of control and support; the promise of a form of immortality upsets the balance between the League and the Empire."
+    },
+    "changes": {
+      "fr": [
+        "Nouvelle race jouable : les Aèdes (8e race du jeu)",
+        "Niveau maximum porté à 75",
+        "Nouveau système d'Ordres transfactions",
+        "Système de réincarnation et de synchronisation de niveau",
+        "Nouvelle zone hivernale : l'Atoll d'Hiver"
+      ],
+      "en": [
+        "New playable race: the Aeidos (the game's 8th race)",
+        "Level cap raised to 75",
+        "New cross-faction Orders system",
+        "Reincarnation and level-syncing system",
+        "New winter zone: Winter Atoll"
+      ]
+    },
+    "release_note": "EU/FR, 22-23 décembre 2016",
+    "confidence": "high",
+    "sources": [
+      "https://massivelyop.com/2016/12/15/allods-online-launches-update-8-0-on-december-22/",
+      "https://mein-mmo.de/en/allods-online-update-8-0-aed,129094/",
+      "https://allods.my.games/fr/news/announcements/mise-jour-80-nouvelle-race-les-aedes",
+      "https://allods.jeuxonline.info/actualite/51853/allods-online-evolue-version-80-accede-immortalite"
+    ]
+  },
+  "9.0": {
+    "release": "2018-02",
+    "lore": {
+      "fr": "Sur l'allod fracturé de Sogot, des démons libérés de l'emprise de Sarn s'affrontent aux Chasseurs de démons et à la Sainte Église ; une jeune organisation de Démonologues y perce les mystères de ces créatures au prix de sombres rituels.",
+      "en": "On the fractured allod of Sogot, demons freed from Sarn's grip clash with Demon Hunters and the Holy Church; a young order of Demonologists uncovers the mysteries of these creatures through dark rituals."
+    },
+    "changes": {
+      "fr": [
+        "Nouvelle classe : Démonologue",
+        "Nouvel allod : Sogot",
+        "Niveau maximum porté à 80",
+        "Nouveau système de Talents d'Étincelle (Spark Talents)",
+        "Conflit à trois entre Chasseurs de démons, Sainte Église et Démonologues"
+      ],
+      "en": [
+        "New class: Demonologist",
+        "New allod: Sogot",
+        "Level cap raised to 80",
+        "New Spark Talents system",
+        "Three-way conflict between Demon Hunters, the Holy Church, and the Demonologists"
+      ]
+    },
+    "release_note": "EU, aux alentours de février-mars 2018 (annonces du 14 et du 19 février 2018 ; date précise de mise en ligne non confirmée)",
+    "confidence": "medium",
+    "sources": [
+      "https://massivelyop.com/2018/02/15/allods-online-outlines-the-upcoming-spark-talents-system/",
+      "https://allods.my.games/forum/index.php?page=Thread&threadID=23879",
+      "https://allods.my.games/en/news/announcements/collectors-editions-90-awakening-update"
+    ]
+  },
+  "10.0": {
+    "release": "2019-03",
+    "lore": {
+      "fr": "Pour son dixième anniversaire, Sarnaut s'ouvre à de nouveaux horizons : trois nouvelles voies de héros émergent tandis que le monde se pare de nouveaux visages et de nouvelles technologies de combat.",
+      "en": "For its tenth anniversary, Sarnaut opens onto new horizons: three new hero paths emerge as the world gets a fresh look and new combat technologies."
+    },
+    "changes": {
+      "fr": [
+        "Trois nouvelles classes : Traqueur, Croisé et Sorcier (Witcher)",
+        "Refonte graphique des personnages",
+        "Nouvelle activité : Terrain Fantôme (Phantom Ground)",
+        "Système de capture de familiers rares",
+        "Mise à jour célébrant le 10e anniversaire du jeu"
+      ],
+      "en": [
+        "Three new classes: Tracker, Crusader, and Witcher",
+        "Character graphics overhaul",
+        "New activity: Phantom Ground",
+        "Rare-pet-catching system",
+        "Update celebrating the game's 10th anniversary"
+      ]
+    },
+    "release_note": "EU, vers mars 2019 (mise à jour du 10e anniversaire ; date précise incertaine, pré-patch évoqué au 11 mars 2019)",
+    "confidence": "medium",
+    "sources": [
+      "https://massivelyop.com/2019/02/25/allods-online-preps-three-new-classes-for-its-next-expansion/",
+      "https://mein-mmo.de/en/giant-update-is-supposed-to-turn-allods-online-into-almost-a-new-mmorpg-3-new-classes,322038/"
+    ]
+  },
+  "11.0": {
+    "release": "2020-02",
+    "lore": {
+      "fr": "Le vaisseau de recherche Infinity découvre dans l'Astral les plans de Nihaz pour anéantir Sarnaut ; les héros doivent lever leur propre armée de morts-vivants pour l'affronter dans sa Citadelle.",
+      "en": "The research vessel Infinity discovers in the Astral that Nihaz plans to destroy Sarnaut; the heroes must raise their own army of the undead to confront him in his Citadel."
+    },
+    "changes": {
+      "fr": [
+        "Nouveau raid : la Citadelle de Nihaz",
+        "Refonte du système de forteresses de guilde (récompenses individuelles)",
+        "Accumulation continue de l'Expérience d'Étincelle sur tous les modes de jeu",
+        "Simplification de l'Aspect Draconique",
+        "Professions portées au niveau 90",
+        "Retour sur les anciens allods d'Umoir et de Gipat"
+      ],
+      "en": [
+        "New raid: Nihaz's Citadel",
+        "Guild stronghold system reworked (individual contribution rewards)",
+        "Spark Experience now accumulates continuously across all game modes",
+        "Draconic Aspect simplified",
+        "Professions raised to level 90",
+        "Return to the older Umoir and Gipat allods"
+      ]
+    },
+    "release_note": "EU, 10 février 2020",
+    "confidence": "high",
+    "sources": [
+      "https://massivelyop.com/2020/02/10/allods-online-adds-new-story-content-overhauls-strongholds-and-crafting-in-soul-of-darkness-expansion/",
+      "https://www.mmobomb.com/news/allods-onlines-huge-soul-darkness-update-finally-continues-story",
+      "https://allods.my.games/en/news/announcements/development-update-110-soul-darkness"
+    ]
+  },
+  "12.0": {
+    "release": "2021-03",
+    "lore": {
+      "fr": "Sur l'allod désertique de Suslanger, jadis foulé par Ath-Zak et conquis par le grand Nezeb sur les djinns locaux, des événements mystérieux survenus dans un centre de villégiature réveillent la magie ancienne des ifrits.",
+      "en": "On the desert allod of Suslanger, once walked by Ath-Zak and conquered from the local djinn by the great Nezeb, mysterious events at a resort awaken the ancient magic of the ifrits."
+    },
+    "changes": {
+      "fr": [
+        "Niveau maximum porté à 95",
+        "Nouvelle zone : Suslanger",
+        "Refonte du système d'artefacts",
+        "Nouvelle monnaie : l'Ambroisie",
+        "Fusion de serveurs",
+        "Tempêtes de sable et conditions climatiques dynamiques"
+      ],
+      "en": [
+        "Level cap raised to 95",
+        "New zone: Suslanger",
+        "Artifact system overhaul",
+        "New currency: Ambrosia",
+        "Server merge",
+        "Sandstorms and dynamic weather events"
+      ]
+    },
+    "release_note": "EU, 18 mars 2021",
+    "confidence": "high",
+    "sources": [
+      "https://massivelyop.com/2021/03/09/allods-online-plans-for-desert-dreams-update-launch-and-server-merge-on-march-11/",
+      "https://massivelyop.com/2021/05/23/allods-online-adds-the-suslanger-zone-increases-the-level-cap/"
+    ]
+  },
+  "13.0": {
+    "release": "2022-04",
+    "lore": {
+      "fr": "La Ligue et l'Empire unissent leurs forces pour franchir la Troisième Porte et découvrir Eden, un monde florissant incarnant la Vie et patrie de la Mère Universelle, où leur expédition entre en conflit avec les Enfants de la Mère.",
+      "en": "The League and the Empire join forces to pass through the Third Gate and discover Eden, a blossoming world embodying Life and home to the All-Mother, where their expedition clashes with the Children of the All-Mother."
+    },
+    "changes": {
+      "fr": [
+        "Nouveau monde : Eden",
+        "Niveau maximum porté à 100",
+        "Nouvelle zone : la Vallée de la Création",
+        "Nouveau système de factions avec PvP dédié",
+        "Recentrage de l'Île de la Fonte sur le solo-PvP (groupes interdits)",
+        "Rééquilibrage des classes"
+      ],
+      "en": [
+        "New world: Eden",
+        "Level cap raised to 100",
+        "New zone: Valley of Creation",
+        "New faction system with dedicated PvP",
+        "Melting Island refocused on solo PvP (grouping disabled)",
+        "Class balance changes"
+      ]
+    },
+    "release_note": "EU, 21 avril 2022",
+    "confidence": "high",
+    "sources": [
+      "https://massivelyop.com/2022/04/20/allods-online-confirms-an-april-21-release-date-for-gates-of-worlds-update/",
+      "https://massivelyop.com/2022/04/25/allods-online-walks-a-star-trail-to-eden-in-update-13-now-live/",
+      "https://allods.my.games/en/news/announcements/update-130-gates-worlds-successfully-installed"
+    ]
+  },
+  "14.0": {
+    "release": "2023-03",
+    "lore": {
+      "fr": "Sur l'allod d'Isa, patrie retrouvée des Gibberlings, Nihaz a disparu tandis que sa fille Irkalla s'empare du trône et que la déesse-créatrice, la Mère Universelle, se retrouve emprisonnée : aux héros de rétablir l'ordre.",
+      "en": "On the allod of Isa, the rediscovered homeland of the Gibberlings, Nihaz has vanished while his daughter Irkalla seizes the throne and the creator goddess, the All-Mother, is imprisoned: it falls to the heroes to set things right."
+    },
+    "changes": {
+      "fr": [
+        "Niveau maximum porté à 105",
+        "Nouvel allod : Isa, patrie des Gibberlings",
+        "Refonte du système d'équipement (gearing)",
+        "Changements d'équilibrage de classes",
+        "Nouvelle intrigue centrée sur Irkalla et la Mère Universelle"
+      ],
+      "en": [
+        "Level cap raised to 105",
+        "New allod: Isa, homeland of the Gibberlings",
+        "Gearing system overhaul",
+        "Class balance changes",
+        "New storyline centered on Irkalla and the All-Mother"
+      ]
+    },
+    "release_note": "EU, 30 mars 2023",
+    "confidence": "medium",
+    "sources": [
+      "https://game-news24.com/2022/12/02/the-mmorpg-allods-online-version-released-14-00-call-of-legends/",
+      "https://allods.my.games/en/news/announcements/140-gearing-system-changes",
+      "https://allods.my.games/en/news/announcements/140-class-changes"
+    ]
+  },
+  "15.0": {
+    "release": "2024-08",
+    "lore": {
+      "fr": "Sur l'allod brumeux de Jigran, devenu la nouvelle capitale de Sarnaut, Hirkalla, déesse des Ténèbres et fille de Nihaz, règne depuis la cité de Dar-Ulgorn, tandis que le templier Hiero et l'Église de la Lumière lui opposent une résistance acharnée.",
+      "en": "On the misty allod of Jigran, now the new capital of Sarnaut, Hirkalla, goddess of Darkness and daughter of Nihaz, rules from the city of Dar-Ulgorn, while the Templar Hiero and the Church of Light mount a fierce resistance against her."
+    },
+    "changes": {
+      "fr": [
+        "Niveau maximum porté à 110",
+        "Nouvel allod-capitale : Jigran (cité de Dar-Ulgorn)",
+        "Refonte des classes Psionique, Ingénieur, Barde et Éclaireur",
+        "Nouveau système d'amélioration d'équipement via l'artisanat",
+        "Conclusion d'un arc narratif majeur (suite annoncée en 15.1)"
+      ],
+      "en": [
+        "Level cap raised to 110",
+        "New capital allod: Jigran (city of Dar-Ulgorn)",
+        "Psionicist, Engineer, Bard, and Scout classes reworked",
+        "New crafting-based gear-upgrade system",
+        "Conclusion of a major story arc (continued in 15.1)"
+      ]
+    },
+    "release_note": "EU, 8 août 2024",
+    "confidence": "high",
+    "sources": [
+      "https://allods.my.games/en/news/announcements/update-150-successfully-installed",
+      "https://allods.my.games/en/news/sales/150-capital-shadows-collectors-editions",
+      "https://allods.my.games/en/news/announcements/150-jigran"
+    ]
+  },
+  "16.0": {
+    "release": "2025-12",
+    "lore": {
+      "fr": "L'allod de Xadagan, ancien foyer du peuple Zem et de la civilisation disparue de Hikuta anéantie par une peste, referme les cicatrices du passé alors que les Zem luttent pour leur survie et leur liberté.",
+      "en": "The allod of Xadagan, ancestral home of the Zem people and of the vanished Hikuta civilization wiped out by a plague, reopens old scars as the Zem fight for their survival and freedom."
+    },
+    "changes": {
+      "fr": [
+        "Niveau maximum porté à 115",
+        "Nouvel allod : Xadagan",
+        "Refonte complète du système d'équipement et de progression",
+        "Cinq mini-saisons remaniées (dont une plus longue)",
+        "Fusion de la boutique du site avec le système de Marques d'Accomplissement",
+        "Objets non liés tant qu'ils ne sont pas équipés ou améliorés"
+      ],
+      "en": [
+        "Level cap raised to 115",
+        "New allod: Xadagan",
+        "Complete overhaul of the gear and progression system",
+        "Five reworked mini-seasons (one of them longer)",
+        "Website store merged into the Marks of Accomplishment system",
+        "Items stay tradeable/unbound until equipped or upgraded"
+      ]
+    },
+    "release_note": "EU, 11 décembre 2025",
+    "confidence": "high",
+    "sources": [
+      "https://allods.my.games/en/news/announcements/update-160-successfully-installed",
+      "https://allods.my.games/en/news/announcements/160-updated-mini-seasons-and-equpment-system",
+      "https://allods.my.games/en/news/announcements/160-allod-heart-metal",
+      "https://zarium.com/en/a/vlast-metalla-nastaiot-v-allodah-onlain"
+    ]
+  },
+  "17.0": {
+    "lore": {
+      "fr": "Aucune information de lore officielle n'a été publiée à ce jour pour cette mise à jour non sortie.",
+      "en": "No official lore information has been published yet for this unreleased update."
+    },
+    "changes": {
+      "fr": [
+        "Abandon annoncé du client 32 bits (x86) à partir de cette mise à jour"
+      ],
+      "en": [
+        "Announced end of 32-bit (x86) client support starting with this update"
+      ]
+    },
+    "release_note": "Non sorti à la date de rédaction (19 septembre 2026) ; la dernière mise à jour live sur allods.my.games est 16.0.01.78.1 (13 août 2026). Seule la bande originale a été publiée (30 octobre 2025) et un plan de mise à jour 2026 a été teasé en vidéo.",
+    "confidence": "low",
+    "sources": [
+      "https://www.youtube.com/watch?v=MOZ7YrLg2iE",
+      "https://allods.my.games/forum/index.php?page=Thread&threadID=37136",
+      "https://allods.my.games/en/news"
     ]
   }
 }

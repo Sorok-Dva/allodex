@@ -21,7 +21,7 @@ export type ArchiveTheme = {
  */
 export type ArchiveEntry = {
   version: string;
-  /** Nom de l'add-on (« Power of Metal »), absent avant les add-ons (1.1). */
+  /** Nom de l'add-on (« Power of Metal »), absent avant les add-ons (1.0). */
   name?: string;
   label: string;
   media: 'video' | 'image' | null;

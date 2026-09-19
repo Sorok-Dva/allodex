@@ -78,7 +78,7 @@
   },
   "versions": [
     {
-      "version": "1.1",
+      "version": "1.0",
       "client": "1.1",
       "note": "écran recomposé : le menu des clients 1.x empile le ciel, les vaisseaux et les héros des deux factions",
       "_note_logo": "le client 1.1 ne conserve aucune texture WrapAllodsLogo (aucun BaseLoc*, un seul Interface.pak sans le dossier Common/Elements/WrapAllodsLogo) : on réutilise celle du client 3.0, le logo classique « Allods Online » sans sous-titre confirmé par une capture d'écran du menu 3.0",

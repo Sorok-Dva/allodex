@@ -11,14 +11,17 @@ export function formatGameDateTime(iso: string): string {
   return time.length === 5 ? `${time} ${datePart}` : datePart;
 }
 
-const MONTHS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const MONTHS = {
+  fr: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+} as const;
 
-/** « AAAA-MM » → « mars 2013 » ; « AAAA » seul est rendu tel quel ; autre chose est renvoyé intact. */
-export function formatReleaseMonth(release: string): string {
+/** « AAAA-MM » → « mars 2013 » (ou « March 2013 ») ; « AAAA » seul est rendu tel quel ; autre chose est renvoyé intact. */
+export function formatReleaseMonth(release: string, lang: keyof typeof MONTHS = 'fr'): string {
   const match = /^(\d{4})(?:-(\d{2}))?$/.exec(release.trim());
   if (!match) return release;
   const [, year, month] = match;
   if (!month) return year;
-  const name = MONTHS_FR[Number(month) - 1];
+  const name = MONTHS[lang][Number(month) - 1];
   return name ? `${name} ${year}` : release;
 }

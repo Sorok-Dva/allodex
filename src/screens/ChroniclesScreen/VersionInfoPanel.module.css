@@ -16,7 +16,6 @@
 .key { color: #b0d9be; font-size: 13px; line-height: 17px; margin: 10px 0 2px; }
 .release { margin: 0; color: #f1e6c2; font-size: 14px; line-height: 18px; }
 .release .key { display: inline; margin: 0 4px 0 0; }
-.release .key::after { content: ' :'; }
 .lore { margin: 10px 0 0; color: #f1e6c2; font-size: 14px; line-height: 19px; }
 .pending { margin: 0; color: #b0d9be; font-size: 14px; line-height: 18px; }
 .changes { margin: 0; padding-left: 18px; color: #f1e6c2; font-size: 14px; line-height: 19px; }

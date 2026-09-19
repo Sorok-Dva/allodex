@@ -1,5 +1,6 @@
 import { nineSlice } from '@/lib/nineSlice';
 import type { ArchiveEntry } from '@/lib/assets';
+import { useI18n } from '@/lib/i18n';
 import s from './ThemePlayer.module.css';
 
 /**
@@ -42,10 +43,11 @@ type Props = {
  */
 export function ThemePlayer({ entry, playing, onToggle, className }: Props) {
   const theme = entry.theme;
+  const { t } = useI18n();
   return (
     <div className={`${s.player} ${className ?? ''}`} style={nineSlice('tooltip-frame', [4, 4, 4, 4])}>
       {!theme && (
-        <button type="button" className={`${s.button} ${s.buttonOff}`} disabled aria-label="Thème indisponible">
+        <button type="button" className={`${s.button} ${s.buttonOff}`} disabled aria-label={t('theme.unavailable')}>
           <span className={s.buttonSkin} aria-hidden="true" style={nineSlice('pill-full', [0, 24, 0, 24], { fill: true })} />
           <svg className={s.glyph} viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
             <path d="M4.5 2.5 13 8l-8.5 5.5z" fill="currentColor" />
@@ -58,7 +60,7 @@ export function ThemePlayer({ entry, playing, onToggle, className }: Props) {
             type="button"
             className={s.button}
             onClick={onToggle}
-            aria-label={playing ? 'Mettre le thème en pause' : 'Lire le thème'}
+            aria-label={playing ? t('theme.pause') : t('theme.play')}
           >
             <span className={s.buttonSkin} aria-hidden="true" style={nineSlice('pill-full', [0, 24, 0, 24], { fill: true })} />
             <svg className={s.glyph} viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
@@ -71,14 +73,14 @@ export function ThemePlayer({ entry, playing, onToggle, className }: Props) {
           <div className={s.text}>
             <div className={s.name}>{theme.name}</div>
             <div className={s.meta}>
-              <span className={s.kind}>Thème du menu</span>
+              <span className={s.kind}>{t('theme.kind')}</span>
               <Duration seconds={theme.duration} />
             </div>
           </div>
         </>
       ) : (
         <div className={s.text}>
-          <div className={s.missing}>{entry.theme_note ? 'Thème non disponible' : 'Thème non extrait'}</div>
+          <div className={s.missing}>{entry.theme_note ? t('theme.notAvailable') : t('theme.notExtracted')}</div>
         </div>
       )}
     </div>

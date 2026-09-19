@@ -56,7 +56,7 @@ position, `resumeAmbient` la reprend en fondu. L'interrupteur haut-parleur (band
 
 ## Chroniques
 
-`/chroniques` présente, version par version (1.1 → 17.0), l'écran de lancement du jeu
+`/chroniques` présente, version par version (1.0 → 17.0), l'écran de lancement du jeu
 en plein écran — la vidéo du menu en boucle quand le client en avait une, sinon une
 image de fond — surmonté du **logo de l'add-on** (centré en haut, à sa taille native,
 avec un halo qui respire). Le thème musical du menu de la version est jouable en bas à
@@ -70,16 +70,32 @@ là où elle en était à la sortie (croix en haut à droite). Une version dont 
 n'était pas monté à l'extraction s'affiche sur le fond de secours assombri, avec la
 mention « Média non extrait ».
 
+Le bouton « ? » du jeu (à gauche du haut-parleur) ouvre la **fiche de la version** :
+date de sortie, histoire de l'add-on et grands changements, lus dans
+`src/data/versions.json` (bilingue `{fr, en}` ; les champs `release_note`, `confidence`
+et `sources` documentent la recherche dont viennent ces fiches et ne sont pas affichés —
+le fichier est à relire et corriger à la main). Tant que la fiche est ouverte, le
+défilement automatique attend.
+
+### Langue
+
+L'interface est en français par défaut et en anglais si le navigateur est en anglais ;
+`?lang=en` (ou `fr`) force la langue et la mémorise (`localStorage` `allodex:lang`).
+Les chaînes vivent dans `src/lib/i18n/messages.ts` (un test vérifie que chaque clé
+existe dans les deux langues) ; les données bilingues (fiches) sont des objets
+`{fr, en}` lus avec `pick()`. Pour l'instant seuls les Chroniques et le bouton son sont
+traduits ; les autres écrans restent à passer par `useI18n().t()`.
+
 Trois libellés sont construits à partir du manifeste et non écrits à la main :
 
 - **`label`** — « Allods Online - <`name`> (<`version`>) », p. ex. « Allods Online -
-  Game of Gods (3.0) » ; sans `name` (1.1, antérieure aux add-ons) : « Allods Online
-  (1.1) ». C'est le texte du cartouche en haut à gauche, et le grand titre central des
+  Game of Gods (3.0) » ; sans `name` (1.0, antérieure aux add-ons) : « Allods Online
+  (1.0) ». C'est le texte du cartouche en haut à gauche, et le grand titre central des
   versions sans logo.
 - **`logo`** — `logo.png`, extrait de
   `Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV<N>` dans la meilleure langue
   disponible (`fra` > `eng_eu`/`eng` > texture non localisée, qui est le russe). Les
-  versions dont aucun client archivé ne conserve le logo (1.1, 2.0, 10.0, 11.0, 12.0)
+  versions dont aucun client archivé ne conserve le logo (1.0, 2.0, 11.0, 12.0)
   n'ont pas de clé `logo` : la page affiche alors le libellé en toutes lettres dans la
   police du jeu.
 - **`theme_note`** — une version dont aucun client archivé ne garde le thème (10.0,

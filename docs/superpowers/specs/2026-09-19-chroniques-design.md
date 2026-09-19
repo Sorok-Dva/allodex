@@ -9,7 +9,7 @@ Une page `/chroniques` qui présente, version par version, l'écran de lancement
 
 | Version affichée | Client | Fond | Thème |
 |---|---|---|---|
-| 1.1 | `F:\ALLODS ONLINE SERVER\Allods 1.0\allods\Client` (game.version 1.1.02.0) — `Interface.pak`, `SFX_Music.pak` | texture `Interface/Wrap/MainMenu/Main2/Background*` | `Music_Menu.fsb` (nom du subsong menu à déterminer) |
+| 1.0 (affichée ; client 1.1.02.0) | `F:\ALLODS ONLINE SERVER\Allods 1.0\allods\Client` (game.version 1.1.02.0) — `Interface.pak`, `SFX_Music.pak` | texture `Interface/Wrap/MainMenu/Main2/Background*` | `Music_Menu.fsb` (nom du subsong menu à déterminer) |
 | 2.0 | `F:\ALLODS ONLINE SERVER\Clients\Allods 2.0.04` (2.0.04.49) | `Main2/Background` | idem |
 | 3.0 | `F:\ALLODS ONLINE SERVER\Clients\AllodsOnline3.0.2.19[5.12GB]-20200522T111620Z-001\AllodsOnline3.0.2.19[5.12GB]` | idem | idem |
 | 4.0 | `F:\ALLODS ONLINE SERVER\Allods 4.2\Allods Nova\Allods Nova` (4.0.02.42) | idem | idem |
@@ -28,7 +28,7 @@ Le fond statique est décodé avec `tools/uitexture.py` (même format sur toutes
 - Tests pytest : sélection du subsong thème par nom/durée (fonction pure), génération de l'index, tolérance aux clients absents (monkeypatch).
 
 ## 4. Page
-- Route `/chroniques`. Fond : l'écran de lancement de la version courante en plein écran (vidéo en boucle ou image), avec le même traitement que l'accueil. Par-dessus, en bas, une **frise horizontale** de versions (pilules du jeu, 1.1 → 17.0) ; la version active est en surbrillance ; flèches gauche/droite (sprites `scroll-*` ou touches ← →).
+- Route `/chroniques`. Fond : l'écran de lancement de la version courante en plein écran (vidéo en boucle ou image), avec le même traitement que l'accueil. Par-dessus, en bas, une **frise horizontale** de versions (pilules du jeu, 1.0 → 17.0) ; la version active est en surbrillance ; flèches gauche/droite (sprites `scroll-*` ou touches ← →).
 - Cartouche en haut à gauche dans le style plaque de titre : « Allods Online 8.0 » + note éventuelle (« Game of Gods », etc. si fournie plus tard) ; en bas à droite le lecteur du thème : nom de la piste, durée, bouton lecture/pause dans le style des boutons du jeu.
 - Changer de version : fondu croisé de la vidéo/image et du thème (via `useGameAudio.setTrack` étendu pour accepter une source arbitraire, ou une piste `archive` dédiée) ; la musique d'ambiance du site est mise en pause pendant la visite, reprise à la sortie.
 - Retour à l'accueil par la croix du jeu en haut à droite (comme le panneau Succès) ; son d'ouverture/fermeture identiques à ceux du panneau.

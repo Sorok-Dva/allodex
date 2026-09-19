@@ -309,3 +309,30 @@ def test_run_rejects_a_derive_from_an_unknown_sprite(tmp_path):
     mpath.write_text(json.dumps(manifest))
     with pytest.raises(ValueError, match="scroll-up"):
         run(mpath, tmp_path / "sprites")
+
+
+def test_inpaint_disc_erases_the_glyph_and_keeps_the_ring_and_alpha():
+    from tools.cut_sprites import inpaint_disc
+    import numpy as np
+    from PIL import Image, ImageDraw
+
+    # Médaillon vert à dégradé radial, bord doré, glyphe blanc au centre, coins transparents.
+    img = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.ellipse((0, 0, 31, 31), fill=(200, 170, 60, 255))
+    for r in range(13, 0, -1):
+        g = 60 + (13 - r) * 6
+        d.ellipse((15.5 - r, 15.5 - r, 15.5 + r, 15.5 + r), fill=(20, g, 20, 255))
+    d.rectangle((13, 8, 18, 23), fill=(250, 250, 250, 255))  # le « ? »
+
+    out = np.asarray(inpaint_disc(img, 10))
+    src = np.asarray(img)
+    assert out[16, 16, 3] == 255 and out[0, 0, 3] == 0, "alpha intact"
+    assert (out[..., 3] == src[..., 3]).all()
+    # Plus aucun pixel très clair dans le disque reconstruit.
+    yy, xx = np.mgrid[0:32, 0:32]
+    disc = np.hypot(yy - 15.5, xx - 15.5) <= 10
+    assert out[disc][:, 0].max() < 100
+    # Le bord doré n'a pas bougé, et le dégradé vert est conservé (centre plus clair que la périphérie).
+    assert tuple(out[16, 1, :3]) == (200, 170, 60)
+    assert out[16, 16, 1] > out[16, 7, 1]

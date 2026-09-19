@@ -32,6 +32,7 @@ Options par sprite dans le manifeste :
               ce qui est en dehors passe à alpha 0. Sert aux ornements non
               rectangulaires (extrémités de la plaque de titre) dont les coins
               laisseraient voir le décor du jeu.
+  inpaint_disc <rayon> : reconstruit le disque central d'un médaillon rond (efface le glyphe)
   derive      {"from": "<sprite>", "matrix": [...20 valeurs...]} ou
               {"from": "<sprite>", "offset": [dr, dg, db]} : le sprite est calculé à
               partir d'un sprite **déjà produit** (donc déclaré plus haut dans le
@@ -173,6 +174,41 @@ def color_offset(img: Image.Image, offset) -> Image.Image:
     return Image.fromarray(a.astype(np.uint8), "RGBA")
 
 
+def inpaint_disc(img: Image.Image, radius: float) -> Image.Image:
+    """Efface le glyphe au centre d'un médaillon rond en reconstruisant le disque.
+
+    Les médaillons du jeu sont peints avec un dégradé radial. On mesure ce dégradé sur
+    les anneaux « fiables » (ceux dont au moins 40 % des pixels ne sont ni très clairs
+    ni très sombres — le glyphe et son ombre), on ajuste par canal une droite
+    couleur = a·r + b sur ces anneaux, et chaque pixel à moins de `radius` du centre
+    reçoit la valeur de la droite à sa distance : le dégradé continue sous le glyphe,
+    sans bande ni couture. L'alpha est conservé. Sert à fabriquer un bouton rond
+    « vierge » à partir du bouton « ? » (CornerQuestion), le jeu n'en fournissant aucun.
+    """
+    a = np.asarray(img.convert("RGBA")).astype(np.int32)  # int16 déborderait sur 255·299
+    h, w = a.shape[:2]
+    cy, cx = (h - 1) / 2.0, (w - 1) / 2.0
+    yy, xx = np.mgrid[0:h, 0:w]
+    dist = np.hypot(yy - cy, xx - cx)
+    luma = (a[:, :, 0] * 299 + a[:, :, 1] * 587 + a[:, :, 2] * 114) // 1000
+    clean = (luma > 40) & (luma < 150) & (a[:, :, 3] > 0)
+    rs, medians = [], []
+    for r in range(int(np.ceil(radius)) + 2):
+        ring = (dist >= r - 0.5) & (dist < r + 0.5)
+        if ring.sum() == 0 or (ring & clean).sum() < 0.4 * ring.sum():
+            continue
+        rs.append(r)
+        medians.append(np.median(a[ring & clean][:, :3], axis=0))
+    if len(rs) < 2:
+        raise ValueError("inpaint_disc : pas assez d'anneaux sans glyphe pour mesurer le dégradé")
+    fit = np.polyfit(np.array(rs, dtype=float), np.array(medians), 1)  # (2, 3) : pente, ordonnée par canal
+    out = a.copy()
+    disc = dist <= radius
+    values = np.outer(dist[disc], fit[0]) + fit[1]
+    out[disc, 0:3] = np.clip(np.rint(values), 0, 255).astype(np.int32)
+    return Image.fromarray(out.astype(np.uint8), "RGBA")
+
+
 def derive_sprite(produced: dict, spec: dict) -> Image.Image:
     """Calcule un sprite à partir d'un sprite déjà produit (clé `derive`)."""
     src_name = spec.get("from")
@@ -270,6 +306,8 @@ def run(manifest_path: Path, out_dir: Path) -> dict:
                     repeat_y=spec.get("repeat_y"),
                     alpha_poly=spec.get("alpha_poly"),
                 )
+                if spec.get("inpaint_disc") is not None:
+                    img = inpaint_disc(img, float(spec["inpaint_disc"]))
         except KeyError as exc:
             raise ValueError(f"sprite « {name} » : clé absente du manifeste {exc}") from exc
         except ValueError as exc:

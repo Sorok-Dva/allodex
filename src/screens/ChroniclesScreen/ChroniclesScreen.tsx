@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { T, archiveEntries, archiveFile, sprite, tex, type ArchiveEntry } from '@/lib/assets';
 import { navigate, useRoute } from '@/lib/router';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
+import { useI18n } from '@/lib/i18n';
 import { nineSlice } from '@/lib/nineSlice';
 import { GameStrip } from '@/components/game/GameStrip';
 import { SpeakerToggle } from '@/components/game/SpeakerToggle';
@@ -36,6 +37,7 @@ const hasMedia = (entry: ArchiveEntry) =>
  * extrait (client absent) : fond `Background_14_0_Temp` assombri.
  */
 function MediaLayer({ entry }: { entry: ArchiveEntry }) {
+  const { t } = useI18n();
   if (entry.media === 'video' && entry.video) {
     return (
       <video className={s.media} autoPlay loop muted playsInline>
@@ -45,7 +47,7 @@ function MediaLayer({ entry }: { entry: ArchiveEntry }) {
     );
   }
   if (entry.media === 'image' && entry.background) {
-    return <img className={s.media} src={archiveFile(entry.version, entry.background)} alt={`Écran de lancement — ${entry.label}`} />;
+    return <img className={s.media} src={archiveFile(entry.version, entry.background)} alt={t('chronicles.launchScreen', { label: entry.label })} />;
   }
   return (
     <div
@@ -59,7 +61,7 @@ function MediaLayer({ entry }: { entry: ArchiveEntry }) {
 /**
  * Titre de l'écran de lancement : le logo de l'add-on, à sa taille native, centré un
  * peu au-dessus du premier tiers comme dans le jeu. Les versions dont aucun client
- * archivé ne conserve le logo (1.1, 2.0, 10.0 → 12.0) affichent le libellé en toutes
+ * archivé ne conserve le logo (1.0, 2.0, 11.0, 12.0) affichent le libellé en toutes
  * lettres dans la police du jeu. Le `key` sur la version relance l'apparition en fondu
  * à chaque changement.
  */
@@ -89,6 +91,7 @@ export function ChroniclesScreen() {
   const entries = useMemo(() => archiveEntries(), []);
   const { query } = useRoute();
   const { playSfx, playExternal, pauseMusic, resumeAmbient, playing, external, ended } = useGameAudio();
+  const { t } = useI18n();
 
   // La version affichée vit dans l'URL (`?v=8.0`) : partageable, et le bouton
   // « précédent » ramène d'où l'on venait (la frise remplace l'entrée d'historique).
@@ -222,15 +225,15 @@ export function ChroniclesScreen() {
         </div>
       ) : (
         <div className={s.card} style={nineSlice('tooltip-frame', [4, 4, 4, 4])}>
-          <div className={s.cardTitle}>Archive non extraite</div>
-          <div className={s.cardHint}>Lancez <code>python3 tools/extract_archive.py</code></div>
+          <div className={s.cardTitle}>{t('chronicles.archiveMissing')}</div>
+          <div className={s.cardHint}>{t('chronicles.archiveMissingHint')} <code>python3 tools/extract_archive.py</code></div>
         </div>
       )}
 
       {entry && !hasMedia(entry) && (
         <div className={s.card} style={nineSlice('tooltip-frame', [4, 4, 4, 4])}>
-          <div className={s.cardTitle}>Média non extrait</div>
-          <div className={s.cardHint}>Le client de cette version n'était pas monté au moment de l'extraction.</div>
+          <div className={s.cardTitle}>{t('chronicles.mediaMissing')}</div>
+          <div className={s.cardHint}>{t('chronicles.mediaMissingHint')}</div>
         </div>
       )}
 
@@ -239,7 +242,7 @@ export function ChroniclesScreen() {
         className={s.close}
         style={{ backgroundImage: `url(${sprite('close-button')})` }}
         onClick={handleClose}
-        aria-label="Fermer"
+        aria-label={t('common.close')}
       />
       <SpeakerToggle className={s.speaker} />
       {entry && (
@@ -250,7 +253,7 @@ export function ChroniclesScreen() {
           onPointerDown={() => setHelpPressed(true)}
           onPointerUp={() => setHelpPressed(false)}
           onPointerLeave={() => setHelpPressed(false)}
-          aria-label="À propos de cette version"
+          aria-label={t('chronicles.about')}
           aria-expanded={infoOpen}
           aria-controls="version-info"
         >

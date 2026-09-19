@@ -35,7 +35,7 @@ vi.mock('@/lib/assets', async importOriginal => {
 vi.mock('@/data/versions.json', () => ({
   default: {
     _note: 'doc',
-    '8.0': { release: '2016-11', lore: 'Les dieux reviennent.', changes: ['niveau maximum porté à 75', 'nouvelle zone'] },
+    '8.0': { release: '2016-11', lore: { fr: 'Les dieux reviennent.', en: 'The gods return.' }, changes: { fr: ['niveau maximum porté à 75', 'nouvelle zone'], en: ['level cap raised to 75'] } },
   },
 }));
 

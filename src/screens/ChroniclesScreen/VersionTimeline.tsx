@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { sprite, type ArchiveEntry } from '@/lib/assets';
 import { nineSlice } from '@/lib/nineSlice';
+import { useI18n } from '@/lib/i18n';
 import s from './VersionTimeline.module.css';
 
 /**
@@ -26,6 +27,7 @@ type Props = {
  * la version active y est toujours ramenée.
  */
 export function VersionTimeline({ entries, active, onSelect, className }: Props) {
+  const { t } = useI18n();
   const railRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<HTMLButtonElement>(null);
   const index = entries.findIndex(e => e.version === active);
@@ -45,7 +47,7 @@ export function VersionTimeline({ entries, active, onSelect, className }: Props)
       <button
         type="button"
         className={s.arrow}
-        aria-label="Version précédente"
+        aria-label={t('chronicles.previous')}
         disabled={index <= 0}
         style={{ backgroundImage: `url(${sprite(index <= 0 ? 'scroll-up-off' : 'scroll-up')})` }}
         onClick={() => step(-1)}
@@ -83,7 +85,7 @@ export function VersionTimeline({ entries, active, onSelect, className }: Props)
       <button
         type="button"
         className={s.arrow}
-        aria-label="Version suivante"
+        aria-label={t('chronicles.next')}
         disabled={index < 0 || index >= entries.length - 1}
         style={{ backgroundImage: `url(${sprite(index >= entries.length - 1 ? 'scroll-down-off' : 'scroll-down')})` }}
         onClick={() => step(1)}

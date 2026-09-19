@@ -18,6 +18,7 @@ describe('formatGameDateTime', () => {
 describe('formatReleaseMonth', () => {
   it('rend le mois en français, l\'année seule telle quelle, et laisse passer le reste', () => {
     expect(formatReleaseMonth('2013-03')).toBe('mars 2013');
+    expect(formatReleaseMonth('2013-03', 'en')).toBe('March 2013');
     expect(formatReleaseMonth('2010')).toBe('2010');
     expect(formatReleaseMonth('2013-13')).toBe('2013-13');
     expect(formatReleaseMonth('printemps 2010')).toBe('printemps 2010');
