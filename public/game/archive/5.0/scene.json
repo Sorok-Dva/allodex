@@ -1,0 +1,31 @@
+{
+  "version": "5.0",
+  "up": [
+    0,
+    0,
+    1
+  ],
+  "camera": {
+    "position": [
+      205.27,
+      1.31,
+      -9.09
+    ],
+    "target": [
+      41.14,
+      1.31,
+      -9.09
+    ],
+    "fov": 45
+  },
+  "background": "#1b2440",
+  "animations": [
+    "Animated_Background_5_0"
+  ],
+  "stats": {
+    "triangles": 23945,
+    "textures": 48,
+    "animations": 1,
+    "objects": 2
+  }
+}

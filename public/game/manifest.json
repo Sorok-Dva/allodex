@@ -1,0 +1,1124 @@
+{
+ "textures": {
+  "Interface/Common/Buttons/Cross/CloseDisabled": {
+   "w": 19,
+   "h": 19
+  },
+  "Interface/Common/Buttons/Cross/CloseHighlight": {
+   "w": 19,
+   "h": 19
+  },
+  "Interface/Common/Buttons/Cross/CloseNormal": {
+   "w": 19,
+   "h": 19
+  },
+  "Interface/Common/Buttons/Cross/ClosePressed": {
+   "w": 19,
+   "h": 19
+  },
+  "Interface/Common/Buttons/Menu/Back": {
+   "w": 64,
+   "h": 64
+  },
+  "Interface/Common/Buttons/Menu/Button_137_27_Disabled": {
+   "w": 140,
+   "h": 28
+  },
+  "Interface/Common/Buttons/Menu/Button_137_27_Highlight": {
+   "w": 137,
+   "h": 27
+  },
+  "Interface/Common/Buttons/Menu/Button_137_27_Normal": {
+   "w": 140,
+   "h": 28
+  },
+  "Interface/Common/Buttons/Menu/Button_137_27_Pressed": {
+   "w": 140,
+   "h": 28
+  },
+  "Interface/Common/Buttons/Menu/Button_200_40_Highlight": {
+   "w": 200,
+   "h": 40
+  },
+  "Interface/Common/Buttons/Menu/Button_276_37_Disabled": {
+   "w": 276,
+   "h": 40
+  },
+  "Interface/Common/Buttons/Menu/Button_276_37_Highlight": {
+   "w": 276,
+   "h": 37
+  },
+  "Interface/Common/Buttons/Menu/Button_276_37_Normal": {
+   "w": 276,
+   "h": 40
+  },
+  "Interface/Common/Buttons/Menu/Button_276_37_Pressed": {
+   "w": 276,
+   "h": 40
+  },
+  "Interface/Common/Buttons/Standard/StandardDisabled": {
+   "w": 140,
+   "h": 28
+  },
+  "Interface/Common/Buttons/Standard/StandardHighlight": {
+   "w": 137,
+   "h": 27
+  },
+  "Interface/Common/Buttons/Standard/StandardNormal": {
+   "w": 140,
+   "h": 28
+  },
+  "Interface/Common/Buttons/Standard/StandardPressed": {
+   "w": 140,
+   "h": 28
+  },
+  "Interface/Common/Elements/Editline/EditlineFrame": {
+   "w": 128,
+   "h": 30
+  },
+  "Interface/Common/Elements/Editline/EditlineFrameHighlight": {
+   "w": 128,
+   "h": 36
+  },
+  "Interface/Common/Elements/MsgBox/textures/ButtonToggleBottomHighlight": {
+   "w": 59,
+   "h": 4
+  },
+  "Interface/Common/Elements/MsgBox/textures/ButtonToggleBottomNormal": {
+   "w": 59,
+   "h": 4
+  },
+  "Interface/Common/Elements/MsgBox/textures/ButtonToggleBottomPressed": {
+   "w": 59,
+   "h": 4
+  },
+  "Interface/Common/Elements/MsgBox/textures/ButtonToggleTopHighlight": {
+   "w": 47,
+   "h": 4
+  },
+  "Interface/Common/Elements/MsgBox/textures/ButtonToggleTopNormal": {
+   "w": 47,
+   "h": 4
+  },
+  "Interface/Common/Elements/MsgBox/textures/ButtonToggleTopPressed": {
+   "w": 47,
+   "h": 4
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnColorSample": {
+   "w": 40,
+   "h": 40
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnColorSampleHighlight": {
+   "w": 40,
+   "h": 40
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnCrossHighlighted": {
+   "w": 63,
+   "h": 4
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnCrossNormal": {
+   "w": 64,
+   "h": 4
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnCrossPressed": {
+   "w": 63,
+   "h": 4
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnPointBack": {
+   "w": 16,
+   "h": 32
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnPointDisabled": {
+   "w": 24,
+   "h": 24
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnPointFrame": {
+   "w": 26,
+   "h": 26
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnPointFrameLeft": {
+   "w": 26,
+   "h": 26
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnPointFrameRight": {
+   "w": 26,
+   "h": 26
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnPointFrameRightDouble": {
+   "w": 26,
+   "h": 26
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnPointHighlighted": {
+   "w": 24,
+   "h": 24
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnPointNormal": {
+   "w": 24,
+   "h": 24
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnPointPressed": {
+   "w": 24,
+   "h": 24
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnPointPressedHighlighted": {
+   "w": 24,
+   "h": 24
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnSliderBack": {
+   "w": 24,
+   "h": 24
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnSliderDisabled": {
+   "w": 21,
+   "h": 21
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnSliderFrame": {
+   "w": 24,
+   "h": 24
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnSliderHighlighted": {
+   "w": 21,
+   "h": 21
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnSliderNormal": {
+   "w": 21,
+   "h": 21
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxBtnSliderPressed": {
+   "w": 21,
+   "h": 21
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxButtonBack": {
+   "w": 64,
+   "h": 32
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxButtonDisabled": {
+   "w": 92,
+   "h": 28
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxButtonFrame": {
+   "w": 94,
+   "h": 30
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxButtonFrameSelected": {
+   "w": 94,
+   "h": 30
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxButtonHighlighted": {
+   "w": 92,
+   "h": 28
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxButtonNormal": {
+   "w": 92,
+   "h": 28
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxButtonPressed": {
+   "w": 92,
+   "h": 28
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxButtonPressedHighlighted": {
+   "w": 92,
+   "h": 28
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxCheckBoxCheckedHighlighted": {
+   "w": 20,
+   "h": 20
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxCheckBoxCheckedNormal": {
+   "w": 20,
+   "h": 20
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxCheckBoxCheckedPressed": {
+   "w": 20,
+   "h": 20
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxCheckBoxDisabledHighlighted": {
+   "w": 20,
+   "h": 20
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxCheckBoxDisabledNormal": {
+   "w": 20,
+   "h": 20
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxCheckBoxDisabledPressed": {
+   "w": 20,
+   "h": 20
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxCheckBoxHollowHighlighted": {
+   "w": 20,
+   "h": 20
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxCheckBoxHollowNormal": {
+   "w": 20,
+   "h": 20
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxCheckBoxHollowPressed": {
+   "w": 20,
+   "h": 20
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxHeader": {
+   "w": 182,
+   "h": 24
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxLight": {
+   "w": 148,
+   "h": 148
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxProgressBackground": {
+   "w": 52,
+   "h": 16
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxProgressGauge": {
+   "w": 38,
+   "h": 8
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxSeparator": {
+   "w": 72,
+   "h": 12
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxShaded": {
+   "w": 104,
+   "h": 104
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxSliderBackground": {
+   "w": 64,
+   "h": 24
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxSpinner": {
+   "w": 136,
+   "h": 30
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxSubMenuPointer": {
+   "w": 57,
+   "h": 4
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxTextEditLine": {
+   "w": 84,
+   "h": 84
+  },
+  "Interface/Common/Elements/MsgBox/textures/MsgBoxTextFieldHighlight": {
+   "w": 64,
+   "h": 40
+  },
+  "Interface/Icons/Equipment/Helm/Armor_Light_Helmet": {
+   "w": 63,
+   "h": 63
+  },
+  "Interface/Icons/Misc/Event/GoldMedal": {
+   "w": 63,
+   "h": 63
+  },
+  "Interface/Icons/Special/Currency/DiamondMedal": {
+   "w": 32,
+   "h": 38
+  },
+  "Interface/Icons/Special/Emotions/PlayedTrumpet": {
+   "w": 64,
+   "h": 64
+  },
+  "Interface/Icons/Special/VeteranRewards/VeteranRankMaster": {
+   "w": 57,
+   "h": 64
+  },
+  "Interface/Ingame/ContextActionbar2/ActionBar": {
+   "w": 930,
+   "h": 59
+  },
+  "Interface/Ingame/ContextActionbar2/ActionBarAddHorisontal": {
+   "w": 285,
+   "h": 50
+  },
+  "Interface/Ingame/ContextActionbar2/ActionBarBottomLine": {
+   "w": 256,
+   "h": 32
+  },
+  "Interface/Ingame/ContextActionbar2/ActionBarFlare": {
+   "w": 128,
+   "h": 128
+  },
+  "Interface/Ingame/ContextActionbar2/ActionBarMono": {
+   "w": 722,
+   "h": 57
+  },
+  "Interface/Ingame/ContextActionbar2/ActionBarMonoExtended": {
+   "w": 912,
+   "h": 57
+  },
+  "Interface/Ingame/ContextActionbar2/ActionBarProcFlare": {
+   "w": 128,
+   "h": 128
+  },
+  "Interface/Ingame/ContextActionbar2/ActionSlot01": {
+   "w": 50,
+   "h": 50
+  },
+  "Interface/Ingame/ContextActionbar2/ActionSlot02": {
+   "w": 50,
+   "h": 50
+  },
+  "Interface/Ingame/ContextActionbar2/ActionSlot03": {
+   "w": 50,
+   "h": 50
+  },
+  "Interface/Ingame/ContextActionbar2/ActionSlot04": {
+   "w": 50,
+   "h": 50
+  },
+  "Interface/Ingame/ContextActionbar2/ActionSlot05": {
+   "w": 50,
+   "h": 50
+  },
+  "Interface/Ingame/ContextActionbar2/ActionSlot06": {
+   "w": 50,
+   "h": 50
+  },
+  "Interface/Ingame/ContextActionbar2/ButtonLockedNormal": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/ContextActionbar2/ButtonLockedPressed": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/ContextActionbar2/ButtonSettingsNormal": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/ContextActionbar2/ButtonSettingsPressed": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/ContextActionbar2/ButtonUnlockedNormal": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/ContextActionbar2/ButtonUnlockedPressed": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/ContextActionbar2/ActionProcsReady/SlotProcsReadyBlink": {
+   "w": 64,
+   "h": 64
+  },
+  "Interface/Ingame/ContextActionbar2/ActionProcsReady/SlotProcsReadyFrame": {
+   "w": 64,
+   "h": 64
+  },
+  "Interface/Ingame/ContextActionbar2/ActionProcsReady/SlotProcsReadyFrameMask": {
+   "w": 64,
+   "h": 64
+  },
+  "Interface/Ingame/ContextActionbar2/ExperienceBar/ExpBarBack": {
+   "w": 64,
+   "h": 422
+  },
+  "Interface/Ingame/ContextActionbar2/ExperienceBar/ExpBarFlare": {
+   "w": 12,
+   "h": 18
+  },
+  "Interface/Ingame/ContextActionbar2/ExperienceBar/ExpBarFront": {
+   "w": 64,
+   "h": 296
+  },
+  "Interface/Ingame/ContextActionbar2/ExperienceBar/ExpBarGauge": {
+   "w": 32,
+   "h": 10
+  },
+  "Interface/Ingame/ContextActionbar2/ExperienceBar/IconLocked": {
+   "w": 41,
+   "h": 48
+  },
+  "Interface/Ingame/ContextActionbar2/ExperienceBar/SkipQuestIcon": {
+   "w": 52,
+   "h": 64
+  },
+  "Interface/Ingame/ContextActionbar2/ExperienceBar/StarFlicker": {
+   "w": 64,
+   "h": 64
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonAvatarSaleTutorialHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonAvatarSaleTutorialNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonAvatarSaleTutorialPressed": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonBagHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonBagNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonBagPressed": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonBulletinBoardHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonBulletinBoardNormal": {
+   "w": 48,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonBulletinBoardPressed": {
+   "w": 48,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonCalendarHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonCalendarNormal": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonCalendarPressed": {
+   "w": 48,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonCheckroomHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonCheckroomNormal": {
+   "w": 45,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonCheckroomPressed": {
+   "w": 48,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonEquipmentHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonEquipmentNormal": {
+   "w": 45,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonEquipmentPressed": {
+   "w": 48,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonGuildHighlight": {
+   "w": 45,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonGuildNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonGuildPressed": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonItemMallHighlight": {
+   "w": 64,
+   "h": 64
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonItemMallNormal": {
+   "w": 64,
+   "h": 64
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonItemMallPressed": {
+   "w": 64,
+   "h": 64
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonLoginLotteryNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonLoginLotteryPressed": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonLootRerollHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonLootRerollNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonLootRerollPressed": {
+   "w": 48,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonMapHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonMapNormal": {
+   "w": 45,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonMapPressed": {
+   "w": 48,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonMatchMakingHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonMatchMakingNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonMatchMakingPressed": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonMedalsHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonMedalsNormal": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonMedalsPressed": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonOrderHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonOrderNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonOrderPressed": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonPopDownNormal": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonPopDownPressed": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonPopHighlight": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonPopUpNormal": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonPopUpPressed": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonQuestlogHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonQuestlogNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonQuestlogPressed": {
+   "w": 45,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonRunesHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonRunesNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonRunesPressed": {
+   "w": 45,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSettingsHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSettingsNormal": {
+   "w": 45,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSettingsPressed": {
+   "w": 48,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSinkLotteryNormal": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSinkLotteryPressed": {
+   "w": 48,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSocialHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSocialNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSocialPressed": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSoulTalentsNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSoulTalentsPressed": {
+   "w": 45,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSpellbookHighlight": {
+   "w": 45,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSpellbookNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonSpellbookPressed": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonStableHighlight": {
+   "w": 46,
+   "h": 50
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonStableNormal": {
+   "w": 45,
+   "h": 48
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonStablePressed": {
+   "w": 46,
+   "h": 49
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonTalentsHighlight": {
+   "w": 46,
+   "h": 49
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonTalentsNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonTalentsPressed": {
+   "w": 48,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonTutorialHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonTutorialNormal": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/ButtonTutorialPressed": {
+   "w": 44,
+   "h": 52
+  },
+  "Interface/Ingame/ContextPinMenu3/textures/Flicker": {
+   "w": 64,
+   "h": 64
+  },
+  "Interface/Ingame/Contextructor/CornerQuestion/CornerQuestionHighlight": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/Contextructor/CornerQuestion/CornerQuestionNormal": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/Contextructor/CornerQuestion/CornerQuestionPressed": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/Contextructor/CornerQuestion/GoldenCorner": {
+   "w": 40,
+   "h": 40
+  },
+  "Interface/Ingame/Medals/Textures/CategoryContent": {
+   "w": 264,
+   "h": 124
+  },
+  "Interface/Ingame/Medals/Textures/CheckboxHighlight": {
+   "w": 46,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/CheckboxNormal": {
+   "w": 20,
+   "h": 20
+  },
+  "Interface/Ingame/Medals/Textures/CheckboxSelected": {
+   "w": 20,
+   "h": 20
+  },
+  "Interface/Ingame/Medals/Textures/EmptyIcon": {
+   "w": 63,
+   "h": 63
+  },
+  "Interface/Ingame/Medals/Textures/FrameContent": {
+   "w": 630,
+   "h": 630
+  },
+  "Interface/Ingame/Medals/Textures/FrameContent02": {
+   "w": 630,
+   "h": 630
+  },
+  "Interface/Ingame/Medals/Textures/FrameNavigation": {
+   "w": 329,
+   "h": 630
+  },
+  "Interface/Ingame/Medals/Textures/GlobalSeparator": {
+   "w": 192,
+   "h": 12
+  },
+  "Interface/Ingame/Medals/Textures/LastMedalFrame": {
+   "w": 64,
+   "h": 64
+  },
+  "Interface/Ingame/Medals/Textures/MedalDecor": {
+   "w": 224,
+   "h": 92
+  },
+  "Interface/Ingame/Medals/Textures/MedalDecorComplete": {
+   "w": 224,
+   "h": 92
+  },
+  "Interface/Ingame/Medals/Textures/MedalFrame": {
+   "w": 81,
+   "h": 109
+  },
+  "Interface/Ingame/Medals/Textures/MedalFrame100": {
+   "w": 98,
+   "h": 121
+  },
+  "Interface/Ingame/Medals/Textures/MedalFrame30": {
+   "w": 90,
+   "h": 113
+  },
+  "Interface/Ingame/Medals/Textures/MedalFrame50": {
+   "w": 94,
+   "h": 120
+  },
+  "Interface/Ingame/Medals/Textures/MedalFrame500": {
+   "w": 100,
+   "h": 129
+  },
+  "Interface/Ingame/Medals/Textures/MedalFrameComplete": {
+   "w": 81,
+   "h": 109
+  },
+  "Interface/Ingame/Medals/Textures/MedalFrameComplete100": {
+   "w": 98,
+   "h": 121
+  },
+  "Interface/Ingame/Medals/Textures/MedalFrameComplete30": {
+   "w": 90,
+   "h": 113
+  },
+  "Interface/Ingame/Medals/Textures/MedalFrameComplete50": {
+   "w": 94,
+   "h": 120
+  },
+  "Interface/Ingame/Medals/Textures/MedalFrameComplete500": {
+   "w": 100,
+   "h": 129
+  },
+  "Interface/Ingame/Medals/Textures/MedalHeader": {
+   "w": 316,
+   "h": 37
+  },
+  "Interface/Ingame/Medals/Textures/MedalPaper": {
+   "w": 520,
+   "h": 120
+  },
+  "Interface/Ingame/Medals/Textures/MedalPaperComplete": {
+   "w": 520,
+   "h": 120
+  },
+  "Interface/Ingame/Medals/Textures/Ornament": {
+   "w": 13,
+   "h": 170
+  },
+  "Interface/Ingame/Medals/Textures/ProgressBar": {
+   "w": 154,
+   "h": 13
+  },
+  "Interface/Ingame/Medals/Textures/ProgressBarGauge": {
+   "w": 146,
+   "h": 9
+  },
+  "Interface/Ingame/Medals/Textures/RanksHeader": {
+   "w": 260,
+   "h": 36
+  },
+  "Interface/Ingame/Medals/Textures/RanksHeaderComplete": {
+   "w": 260,
+   "h": 36
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num1": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num10": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num11": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num12": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num13": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num14": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num15": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num16": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num17": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num18": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num19": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num2": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num20": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num3": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num4": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num5": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num6": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num7": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num8": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Ingame/Medals/Textures/Numbers/Num9": {
+   "w": 98,
+   "h": 52
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonCreditsDisabled": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonCreditsHighlighted": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonCreditsNormal": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonCreditsPressed": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonCreditsPressedHighlighted": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonExitDisabled": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonExitHighlighted": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonExitNormal": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonExitPressed": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonExitPressedHighlighted": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonKeyboardDisabled": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonKeyboardHighlighted": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonKeyboardNormal": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonKeyboardPressed": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonKeyboardPressedHighlighted": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLanguageDisabled": {
+   "w": 50,
+   "h": 53
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLanguageHighlighted": {
+   "w": 50,
+   "h": 53
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLanguageNormal": {
+   "w": 50,
+   "h": 53
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLanguagePressed": {
+   "w": 50,
+   "h": 53
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLanguagePressedHighlighted": {
+   "w": 50,
+   "h": 53
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLocalDisabled": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLocalHighlighted": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLocalNormal": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLocalPressed": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLocalPressedHighlighted": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLoginDisabled": {
+   "w": 132,
+   "h": 130
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLoginHighlighted": {
+   "w": 132,
+   "h": 132
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLoginNormal": {
+   "w": 132,
+   "h": 132
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLoginPressed": {
+   "w": 132,
+   "h": 130
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonLoginPressedHighlighted": {
+   "w": 132,
+   "h": 130
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonOptionsDisabled": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonOptionsHighlighted": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonOptionsNormal": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonOptionsPressed": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/ButtonOptionsPressedHighlighted": {
+   "w": 102,
+   "h": 102
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/EditlineFrame": {
+   "w": 228,
+   "h": 52
+  },
+  "Interface/Wrap/MainMenu/LoginAccount/NegativeWarning": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Wrap/MainMenu/Main2/BackgroundFade": {
+   "w": 256,
+   "h": 256
+  },
+  "Interface/Wrap/MainMenu/Main2/Background_14_0_Temp": {
+   "w": 1820,
+   "h": 1024
+  },
+  "Interface/Wrap/MainMenu/Main2/BottomLine": {
+   "w": 288,
+   "h": 67
+  },
+  "Interface/Wrap/MainMenu/Main2/BottomLineHighlight": {
+   "w": 288,
+   "h": 68
+  },
+  "Interface/Wrap/MainMenu/Main2/CameraTip": {
+   "w": 176,
+   "h": 170
+  }
+ }
+}

@@ -1,0 +1,22 @@
+{
+  "ambient": {
+    "duration": 332.39,
+    "loop": true
+  },
+  "medals-close": {
+    "duration": 0.688,
+    "loop": false
+  },
+  "medals-open": {
+    "duration": 0.751,
+    "loop": false
+  },
+  "menu": {
+    "duration": 153.6,
+    "loop": true
+  },
+  "ui-click": {
+    "duration": 0.021,
+    "loop": false
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "version": "8.0",
+  "up": [
+    0,
+    0,
+    1
+  ],
+  "camera": {
+    "position": [
+      1.79,
+      -398.88,
+      15.67
+    ],
+    "target": [
+      1.79,
+      -129.36,
+      15.67
+    ],
+    "fov": 45
+  },
+  "background": "#5a7ea8",
+  "animations": [
+    "AMM_8_0"
+  ],
+  "stats": {
+    "triangles": 9429,
+    "textures": 29,
+    "animations": 1,
+    "objects": 1
+  }
+}
