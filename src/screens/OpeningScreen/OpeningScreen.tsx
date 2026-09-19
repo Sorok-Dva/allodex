@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { T, tex, video } from '@/lib/assets';
 import { navigate } from '@/lib/router';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
+import { useI18n } from '@/lib/i18n';
 import { GameActionBar, type ActionItem } from '@/components/game/GameActionBar';
 import { SpeakerToggle } from '@/components/game/SpeakerToggle';
 import { useIntroState } from './useIntroState';
@@ -30,13 +31,20 @@ function Video({ name, loop, onEnded, onError, className }: { name: 'intro' | 'm
 }
 
 export function OpeningScreen() {
+  const { t } = useI18n();
+  const items: ActionItem[] = [
+    ...ACTION_ITEMS.slice(0, 2),
+    { id: 'music', base: `${T.pinMenu}/ButtonMedals`, spriteBase: 'music-action',
+      icon: 'Interface/Icons/Special/Emotions/PlayedTrumpet', label: t('music.title'), onClick: () => navigate('/musiques') },
+    ...ACTION_ITEMS.slice(2),
+  ];
   const { phase, skipIntro, replayIntro } = useIntroState();
-  const { setTrack, playSfx } = useGameAudio();
+  const { track, setTrack, playSfx } = useGameAudio();
   const firstInteractionRef = useRef(false);
 
   // Demandé dès le montage, intro comprise : la piste `menu` ne joue vraiment qu'après
   // le premier geste utilisateur (politique d'autoplay gérée par le moteur audio).
-  useEffect(() => { setTrack('menu'); }, [setTrack]);
+  useEffect(() => { if (track === null) setTrack('menu'); }, [track, setTrack]);
 
   const handleItemInteract = useCallback(() => {
     if (firstInteractionRef.current) return;
@@ -69,7 +77,7 @@ export function OpeningScreen() {
       <Video key="mainmenu" name="mainmenu" loop className={`${s.video} ${s.fadeIn}`} />
       <div className={s.vignette} />
 
-      <GameActionBar items={ACTION_ITEMS} className={s.actionBar} onItemInteract={handleItemInteract} />
+      <GameActionBar items={items} className={s.actionBar} onItemInteract={handleItemInteract} />
 
       {/* Le jeu rejoue sa cinématique depuis le menu ; ici un simple lien texte,
           posé au-dessus du bandeau légal pour ne pas empiéter dessus. */}

@@ -703,6 +703,15 @@
   "medallion-pressed": {
    "texture": "Interface/Ingame/Contextructor/CornerQuestion/CornerQuestionPressed.png",
    "inpaint_disc": 10
+  },
+  "music-action-normal": {
+   "_note": "Fond vierge du bouton Musiques, dérivé du bouton Succès ; l'icône trompette est superposée par GameActionBar.",
+   "texture": "Interface/Ingame/ContextPinMenu3/textures/ButtonMedalsNormal.png",
+   "inpaint_disc": 18
+  },
+  "music-action-pressed": {
+   "texture": "Interface/Ingame/ContextPinMenu3/textures/ButtonMedalsPressed.png",
+   "inpaint_disc": 18
   }
  }
 }

@@ -229,6 +229,35 @@ describe('AudioProvider / useGameAudio', () => {
     expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
   });
 
+  it('restaure la source et la position du site après plusieurs pistes externes', () => {
+    const { getByTestId } = setup();
+    const a = getByTestId('music-a') as HTMLAudioElement;
+    const b = getByTestId('music-b') as HTMLAudioElement;
+    act(() => { window.dispatchEvent(new Event('pointerdown')); });
+    a.currentTime = 42;
+    act(() => { api!.pauseMusic(); });
+    act(() => { api!.playExternal('music:a', { ogg: '/a.ogg', mp3: '/a.mp3' }, { crossfadeMs: 0 }); });
+    act(() => { api!.playExternal('music:b', { ogg: '/b.ogg', mp3: '/b.mp3' }, { crossfadeMs: 0 }); });
+    act(() => { api!.resumeAmbient({ crossfadeMs: 0 }); });
+    expect(b.querySelector('source')?.getAttribute('src')).toBe('/game/audio/menu.ogg');
+    expect(b.currentTime).toBe(42);
+    expect(api!.external).toBeNull();
+  });
+
+  it('pauseMusic arrête les deux pistes pendant un fondu', () => {
+    useFakeAnimationClock();
+    const { getByTestId } = setup();
+    act(() => { window.dispatchEvent(new Event('pointerdown')); });
+    act(() => { api!.playExternal('music:a', { ogg: '/a.ogg', mp3: '/a.mp3' }); });
+    const a = vi.fn();
+    const b = vi.fn();
+    (getByTestId('music-a') as HTMLAudioElement).pause = a;
+    (getByTestId('music-b') as HTMLAudioElement).pause = b;
+    act(() => { api!.pauseMusic(); });
+    expect(a).toHaveBeenCalledOnce();
+    expect(b).toHaveBeenCalledOnce();
+  });
+
   it('annule le fondu en cours (aucune mutation de volume après) quand AudioProvider est démonté', () => {
     useFakeAnimationClock();
     const { getByTestId, unmount } = setup();

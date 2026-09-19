@@ -100,6 +100,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   const mutedRef = useRef(muted);
   const trackRef = useRef<TrackName | null>(null);
   const externalRef = useRef<string | null>(null);
+  const ambientPositionRef = useRef(0);
   const pausedRef = useRef(false);
   const gestureRef = useRef(false);
   const fadeFrameRef = useRef<number | null>(null);
@@ -180,6 +181,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   const resumeActive = useCallback(() => {
     setPaused(false);
     const el = activeRef.current;
+    if (el?.ended) { el.currentTime = 0; setEnded(null); }
     if (!el || !gestureRef.current || mutedRef.current) return;
     el.muted = mutedRef.current;
     el.volume = MUSIC_VOLUME;
@@ -214,10 +216,11 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
 
   // Le thème d'une version des Chroniques n'est pas une piste du site : il ne figure
   // pas dans `audio.json` et ne doit pas effacer `track`, qu'on retrouve en sortant de
-  // la page (`resumeAmbient`). Les deux éléments <audio> suffisent : l'un porte la
-  // piste du site en pause, l'autre la source externe.
+  // la page (`resumeAmbient`). Les deux éléments alternent pendant les fondus ; la
+  // position du site est mémorisée avant leur réutilisation par les pistes externes.
   const playExternal = useCallback((id: string, src: TrackSource, opts: { loop?: boolean; crossfadeMs?: number } = {}) => {
     if (externalRef.current === id) { resumeActive(); return; }
+    if (externalRef.current === null) ambientPositionRef.current = activeRef.current?.currentTime ?? 0;
     const crossfadeMs = opts.crossfadeMs ?? DEFAULT_CROSSFADE_MS;
     const hadMusic = trackRef.current !== null || externalRef.current !== null;
     const fromEl = hadMusic ? activeRef.current : null;
@@ -240,7 +243,8 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   const pauseMusic = useCallback(() => {
     stopFade();
     setPaused(true);
-    activeRef.current?.pause();
+    musicRefA.current?.pause();
+    musicRefB.current?.pause();
   }, [setPaused, stopFade]);
 
   const resumeAmbient = useCallback((opts: { crossfadeMs?: number } = {}) => {
@@ -248,6 +252,11 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     const fromEl = externalRef.current !== null ? activeRef.current : null;
     const toEl = fromEl ? (fromEl === musicRefA.current ? musicRefB.current : musicRefA.current) : activeRef.current;
     if (!toEl) return;
+    if (fromEl) {
+      // Après plusieurs pistes externes, les deux éléments ont été réutilisés.
+      assignTrack(toEl, trackRef.current);
+      toEl.currentTime = ambientPositionRef.current;
+    }
     externalRef.current = null;
     setExternalState(null);
     setEnded(null);

@@ -1,11 +1,13 @@
 import { useRef, useState } from 'react';
-import { tex } from '@/lib/assets';
+import { sprite, tex } from '@/lib/assets';
 import { GameTooltip } from './GameTooltip';
 import s from './GameActionBar.module.css';
 
 export type ActionItem = {
   id: string;
   base: string;
+  spriteBase?: string;
+  icon?: string;
   label: string;
   hint?: string;
   onClick?: () => void;
@@ -61,8 +63,9 @@ export function GameActionBar({ items, className, onItemInteract }: Props) {
             <span
               className={s.base}
               data-testid={`action-base-${item.id}`}
-              style={{ backgroundImage: `url(${tex(`${item.base}${isPressed ? 'Pressed' : 'Normal'}`)})` }}
+              style={{ backgroundImage: `url(${item.spriteBase ? sprite(`${item.spriteBase}-${isPressed ? 'pressed' : 'normal'}`) : tex(`${item.base}${isPressed ? 'Pressed' : 'Normal'}`)})` }}
             />
+            {item.icon && <img className={s.icon} src={tex(item.icon)} alt="" />}
             <span
               className={s.highlight}
               data-testid={`action-highlight-${item.id}`}

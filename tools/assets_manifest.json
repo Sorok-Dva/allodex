@@ -1,4 +1,5 @@
 {
+  "_note": "Textures du client pour les écrans du site ; PlayedTrumpet fournit l'icône de la page Musiques, superposée à un bouton vierge dérivé par cut_sprites.py.",
   "packs": {
     "interface": "data/Packs/Interface.Mini.pak",
     "video": "data/Packs/Video.pak"
@@ -17,6 +18,7 @@
     "Interface/Ingame/Contextructor/CornerQuestion/"
   ],
   "texture_files": [
+    "Interface/Icons/Special/Emotions/PlayedTrumpet.(UITexture).bin",
     "Interface/Icons/Equipment/Helm/Armor_Light_Helmet.(UITexture).bin",
     "Interface/Icons/Special/VeteranRewards/VeteranRankMaster.(UITexture).bin",
     "Interface/Icons/Misc/Event/GoldMedal.(UITexture).bin",

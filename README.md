@@ -27,6 +27,7 @@ Les assets extraits sous `public/game/` appartiennent à My.Games et ne sont pas
 - `/` : intro (première visite), puis menu vidéo avec, en bas à droite, la barre de boutons du jeu (voir « Itération 2 » ci-dessous — le panneau de connexion et le champ de recherche du POC v1 ont été retirés).
 - `/succes` : panneau Succès fidèle au jeu, données mockées (`src/data/medals.mock.json`). La progression et les paliers restent fictifs.
 - `/chroniques` : archive des écrans de lancement, version par version, avec leur thème musical (voir « Chroniques » ci-dessous).
+- `/musiques` : catalogue musical FR/RU, accessible par le bouton trompette, avec lecture par catégorie.
 - Non fait : comptes, addon d'export, import de progression, icônes réelles de tous les succès.
 
 ## Musiques
@@ -52,6 +53,10 @@ exports précédents sont conservés ; `--only` conserve les autres banques.
 
 Sorties non versionnées : `public/game/music/*.{ogg,mp3}` et `public/game/music.json`.
 Sans index, la page affiche « Musiques non extraites ».
+Après extraction des textures, `python3 tools/cut_sprites.py` régénère aussi le fond
+vierge du bouton trompette à partir du bouton Succès, avec les captures déjà requises
+par le chrome du site. Le cadre conserve ses dimensions natives sur ordinateur et
+est réduit sur les petits écrans.
 
 ## Audio du site
 
@@ -107,7 +112,7 @@ L'interface est en français par défaut et en anglais si le navigateur est en a
 `?lang=en` (ou `fr`) force la langue et la mémorise (`localStorage` `allodex:lang`).
 Les chaînes vivent dans `src/lib/i18n/messages.ts` (un test vérifie que chaque clé
 existe dans les deux langues) ; les données bilingues (fiches) sont des objets
-`{fr, en}` lus avec `pick()`. Pour l'instant seuls les Chroniques et le bouton son sont
+`{fr, en}` lus avec `pick()`. Pour l'instant seuls les Chroniques, les Musiques et le bouton son sont
 traduits ; les autres écrans restent à passer par `useI18n().t()`.
 
 Quand aucun client archivé ne conserve un média, le manifeste peut pointer hors client :

@@ -59,7 +59,8 @@ def run(manifest: dict, titles: dict, out: Path, vgmstream: Path = DEFAULT_VGMST
                 payload = fsb_payload_from_bytes(data, available[bank]) if data else None
                 if not payload:
                     raise ValueError("banque FSB absente")
-                with tempfile.TemporaryDirectory(prefix="allodex-music-") as tmp:
+                # Même système de fichiers que la destination pour les remplacements atomiques.
+                with tempfile.TemporaryDirectory(prefix=".extract-", dir=out) as tmp:
                     fsb = Path(tmp) / "bank.fsb"
                     fsb.write_bytes(payload)
                     for stream in list_subsongs(vgmstream, fsb, payload):

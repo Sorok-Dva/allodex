@@ -15,7 +15,7 @@ export function formatDuration(seconds: number): string {
 }
 
 /** `3:02` avec un deux-points un peu plus grand et aéré, sinon illisible à 13 px. */
-function Duration({ seconds }: { seconds: number }) {
+export function Duration({ seconds }: { seconds: number }) {
   const [minutes, rest] = formatDuration(seconds).split(':');
   return (
     <span className={s.duration} data-testid="theme-duration">

@@ -5,7 +5,10 @@ import s from './MedalsWindow.module.css';
 
 type Props = {
   title: string;
-  points: number;
+  points?: number;
+  subtitle?: string;
+  closeLabel?: string;
+  externalClose?: boolean;
   onClose: () => void;
   nav: ReactNode;
   content: ReactNode;
@@ -27,7 +30,7 @@ type Props = {
  * couleur sont cuites dans les PNG par `tools/extract_assets.py` (`color_offsets`) et
  * `tools/cut_sprites.py` (`derive`).
  */
-export function MedalsWindow({ title, points, onClose, nav, content }: Props) {
+export function MedalsWindow({ title, points, subtitle, closeLabel = 'Fermer', externalClose = false, onClose, nav, content }: Props) {
   return (
     <div className={s.window}>
       {/* Fond de la colonne de navigation : texture du client, placée par recalage
@@ -47,7 +50,7 @@ export function MedalsWindow({ title, points, onClose, nav, content }: Props) {
       <div className={s.band}>
         <GameStrip base="band" cap={112} />
         {/* Le jeu n'insère pas d'espace avant « points ». */}
-        <span className={s.points}>{String(points)}points de succès</span>
+        <span className={s.points}>{subtitle ?? `${String(points)}points de succès`}</span>
       </div>
 
       <div className={s.railTop} style={{ backgroundImage: `url(${sprite('rail-top')})` }} />
@@ -73,13 +76,13 @@ export function MedalsWindow({ title, points, onClose, nav, content }: Props) {
       {/* Les textures `Cross/Close*` du client sont des aplats rouges sans rapport avec le
           bouton du jeu : celui-ci est découpé dans la capture (`close-button`, 30 × 30,
           coins effacés). Aucune capture ne montre l'état survolé, d'où l'éclaircissement CSS. */}
-      <button
+      {!externalClose && <button
         type="button"
         className={s.close}
         style={{ backgroundImage: `url(${sprite('close-button')})` }}
         onClick={onClose}
-        aria-label="Fermer"
-      />
+        aria-label={closeLabel}
+      />}
     </div>
   );
 }

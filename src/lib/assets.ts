@@ -3,6 +3,17 @@ type Size = { w: number; h: number };
 type SpriteSlice = [top: number, right: number, bottom: number, left: number];
 type SpriteInfo = { w: number; h: number; slice: SpriteSlice | null };
 export type AudioMeta = { duration: number; loop: boolean };
+export type MusicTrack = {
+  id: string;
+  name: string;
+  title: { fr: string; en: string } | null;
+  bank: string;
+  group: string;
+  duration: number;
+  ogg: string;
+  mp3: string;
+  client: string;
+};
 
 /** Fichiers des deux formats d'un média, relatifs au dossier de la version. */
 type MediaPair = { webm: string; mp4: string };
@@ -44,6 +55,7 @@ let manifest: Record<string, Size> | null = null;
 let sprites: Record<string, SpriteInfo> | null = null;
 let audioIndex: Record<string, AudioMeta> | null = null;
 let archive: ArchiveEntry[] | null = null;
+let music: MusicTrack[] = [];
 
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
@@ -56,16 +68,18 @@ async function fetchJson<T>(url: string): Promise<T | null> {
 }
 
 export async function loadManifest(): Promise<void> {
-  const [texturesJson, spritesJson, audioJson, archiveJson] = await Promise.all([
+  const [texturesJson, spritesJson, audioJson, archiveJson, musicJson] = await Promise.all([
     fetchJson<{ textures?: Record<string, Size> }>(`${BASE}/manifest.json`),
     fetchJson<Record<string, SpriteInfo>>(`${BASE}/sprites.json`),
     fetchJson<Record<string, AudioMeta>>(`${BASE}/audio.json`),
     fetchJson<ArchiveEntry[]>(`${BASE}/archive.json`),
+    fetchJson<MusicTrack[]>(`${BASE}/music.json`),
   ]);
   manifest = texturesJson?.textures ?? {};
   sprites = spritesJson ?? {};
   audioIndex = audioJson ?? {};
   archive = archiveJson ?? [];
+  music = Array.isArray(musicJson) ? musicJson : [];
   if (import.meta.env.DEV && !texturesJson) console.warn('[assets] manifest.json absent : lancez `npm run extract`');
 }
 
@@ -81,6 +95,7 @@ export const audioSrc = (name: string) => ({ ogg: `${BASE}/audio/${name}.ogg`, m
 export const audioMeta = (name: string): AudioMeta | undefined => audioIndex?.[name];
 /** Versions archivées, dans l'ordre de l'index (croissant) ; tableau vide si absent. */
 export const archiveEntries = (): ArchiveEntry[] => archive ?? [];
+export const musicTracks = (): MusicTrack[] => music;
 /** URL d'un fichier d'une version archivée (`background.png`, `menu.webm`, `theme.ogg`…). */
 export const archiveFile = (version: string, file: string) => `${BASE}/archive/${version}/${file}`;
 /** URL d'un fichier commun à toutes les versions (emblème de chargement). */

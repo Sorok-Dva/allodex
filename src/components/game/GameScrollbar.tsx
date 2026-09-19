@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type RefObject } from 'react';
 import { sprite } from '@/lib/assets';
+import { useI18n } from '@/lib/i18n';
 import s from './GameScrollbar.module.css';
 
 /** Hauteur des sprites `scroll-up` / `scroll-down`. */
@@ -32,6 +33,7 @@ type Props = {
 };
 
 export function GameScrollbar({ targetRef, thumbSize = THUMB, step = STEP, className, style }: Props) {
+  const { t } = useI18n();
   const [m, setMetrics] = useState<Metrics>(ZERO);
   const trackRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ y: number; top: number } | null>(null);
@@ -103,7 +105,7 @@ export function GameScrollbar({ targetRef, thumbSize = THUMB, step = STEP, class
     <div className={`${s.bar} ${className ?? ''}`} style={style}>
       <button
         type="button" className={`${s.arrow} ${s.up}`} data-testid="scrollbar-up"
-        aria-label="Défiler vers le haut" disabled={!canScroll || m.top <= 0}
+        aria-label={t('scroll.up')} disabled={!canScroll || m.top <= 0}
         style={{ height: ARROW, backgroundImage: `url(${sprite(m.top <= 0 ? 'scroll-up-off' : 'scroll-up')})` }}
         onClick={() => scrollBy(-step)}
       />
@@ -121,7 +123,7 @@ export function GameScrollbar({ targetRef, thumbSize = THUMB, step = STEP, class
       </div>
       <button
         type="button" className={`${s.arrow} ${s.down}`} data-testid="scrollbar-down"
-        aria-label="Défiler vers le bas" disabled={!canScroll || m.top >= max}
+        aria-label={t('scroll.down')} disabled={!canScroll || m.top >= max}
         style={{ height: ARROW, backgroundImage: `url(${sprite(m.top >= max ? 'scroll-down-off' : 'scroll-down')})` }}
         onClick={() => scrollBy(step)}
       />

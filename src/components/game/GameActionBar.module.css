@@ -22,6 +22,7 @@
   inset: 0;
   background: center / contain no-repeat;
 }
+.icon { position: absolute; width: 30px; height: 30px; left: 9px; top: 11px; object-fit: contain; border-radius: 50%; }
 .highlight {
   opacity: 0;
   pointer-events: none;

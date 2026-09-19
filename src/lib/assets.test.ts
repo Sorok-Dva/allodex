@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { tex, video, cursor, sprite, audioSrc, audioMeta, archiveEntries, archiveFile } from './assets';
+import { loadManifest, musicTracks } from './assets';
 
 describe('assets', () => {
   it('construit les URLs publiques', () => {
@@ -27,5 +28,14 @@ describe('assets', () => {
 
   it("renvoie une archive vide tant que l'index n'est pas chargé", () => {
     expect(archiveEntries()).toEqual([]);
+  });
+
+  it('tolère un index musical absent', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => ({
+      ok: !url.endsWith('/music.json'), status: 404,
+      json: async () => url.endsWith('/manifest.json') ? { textures: {} } : {},
+    })));
+    try { await loadManifest(); expect(musicTracks()).toEqual([]); }
+    finally { vi.unstubAllGlobals(); }
   });
 });

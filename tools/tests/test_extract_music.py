@@ -78,3 +78,17 @@ def test_failed_track_does_not_stop_following_tracks(tmp_path, monkeypatch):
     index, warnings = music.run(manifest, {}, tmp_path / "game/music")
     assert [e["name"] for e in index] == ["Good"]
     assert len(warnings) == 1
+
+
+def test_russian_only_tracks_are_appended_without_replacing_french(tmp_path, monkeypatch):
+    manifest, _ = setup_clients(tmp_path, monkeypatch)
+    ru = Path(manifest["clients"][1]["root"]) / "music.pak"
+    with zipfile.ZipFile(ru, "w") as archive:
+        archive.writestr("SFX/Music/Music_Menu.fsb", b"FSB5russian")
+    def streams(vgmstream, fsb, payload):
+        common = [dict(index=1, name="Main_NM", duration=12)]
+        return common + ([dict(index=2, name="New_Theme", duration=12)] if payload.endswith(b"russian") else [])
+    monkeypatch.setattr(music, "list_subsongs", streams)
+    index, warnings = music.run(manifest, {}, tmp_path / "game/music")
+    assert not warnings
+    assert [(entry["name"], entry["client"]) for entry in index] == [("Main_NM", "16.0"), ("New_Theme", "17.0")]

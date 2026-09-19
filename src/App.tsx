@@ -6,6 +6,7 @@ import { I18nProvider } from '@/lib/i18n';
 import { OpeningScreen } from '@/screens/OpeningScreen/OpeningScreen';
 import { MedalsScreen } from '@/screens/MedalsScreen/MedalsScreen';
 import { ChroniclesScreen } from '@/screens/ChroniclesScreen/ChroniclesScreen';
+import { MusicScreen } from '@/screens/MusicScreen/MusicScreen';
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -21,7 +22,7 @@ export default function App() {
           Assets du jeu absents : lancez <code>npm run extract</code>
         </div>
       )}
-      {path === '/succes' ? <MedalsScreen /> : path === '/chroniques' ? <ChroniclesScreen /> : <OpeningScreen />}
+      {path === '/succes' ? <MedalsScreen /> : path === '/chroniques' ? <ChroniclesScreen /> : path === '/musiques' ? <MusicScreen /> : <OpeningScreen />}
     </AudioProvider>
     </I18nProvider>
   );
