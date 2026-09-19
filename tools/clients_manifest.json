@@ -83,7 +83,6 @@
         "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogo"
       },
       "background": {
-        "capture": "refs/menu-1.1.png",
         "pak": "data/Packs/Interface.pak",
         "canvas": [1920, 1080],
         "layers": [
@@ -106,7 +105,6 @@
         "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogo"
       },
       "background": {
-        "capture": "refs/menu-2.0.png",
         "pak": "data/Packs/Interface.pak",
         "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
       },
@@ -117,7 +115,6 @@
       "name": "Game of Gods",
       "client": "3.0",
       "background": {
-        "capture": "refs/menu-3.0.png",
         "pak": "data/Packs/Interface.pak",
         "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
       },
@@ -133,7 +130,6 @@
       "name": "Lords of Destiny",
       "client": "4.0",
       "background": {
-        "capture": "refs/menu-4.0.png",
         "pak": "data/Packs/Interface.Mini.pak",
         "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
       },
@@ -154,7 +150,6 @@
       "name": "Heart of the World",
       "client": "5.0",
       "background": {
-        "capture": "refs/menu-5.0.png",
         "pak": "data/Packs/Interface.Mini.pak",
         "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
       },
@@ -174,7 +169,6 @@
       "name": "Broken Chains",
       "client": "6.0",
       "background": {
-        "capture": "refs/menu-6.0.png",
         "pak": "data/Packs/Interface.Mini.pak",
         "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
       },
@@ -194,7 +188,6 @@
       "name": "New Order",
       "client": "7.0",
       "background": {
-        "capture": "refs/menu-7.0.png",
         "pak": "data/Packs/Interface.Mini.pak",
         "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
       },
@@ -210,7 +203,6 @@
       "name": "Immortality",
       "client": "8.0",
       "background": {
-        "capture": "refs/menu-8.0.png",
         "pak": "data/Packs/Interface.Mini.pak",
         "entry": "Interface/Wrap/MainMenu/Main2/BackgroundGOG.(UITexture).bin"
       },
