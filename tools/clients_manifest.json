@@ -17,9 +17,24 @@
       "root": "/mnt/f/ALLODS ONLINE SERVER/Allods 4.2/Allods Nova/Allods Nova",
       "game_version": "4.0.02.42"
     },
+    "5.0": {
+      "root": "/home/llyam/allods-clients/5.0/AllodsWar.com",
+      "game_version": "5.0.02.55.4",
+      "note": "extrait côté serveur (packs Interface/SFX_Music/SFX_Interface/World_MainMenu + Profiles/game.version uniquement) depuis « Allods Online client 5.0.rar »"
+    },
+    "6.0": {
+      "root": "/home/llyam/allods-clients/6.0/bladeallods",
+      "game_version": "6.0.03.55.2",
+      "note": "extrait côté serveur (packs Interface/SFX_Music/SFX_Interface/World_MainMenu + Profiles/game.version uniquement) depuis « Allods Client 6.0.rar »"
+    },
     "7.0": {
       "root": "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0",
       "game_version": "7.0.00.00"
+    },
+    "7.0-adc": {
+      "root": "/home/llyam/allods-clients/7.0/game",
+      "game_version": "7.0.00.00",
+      "note": "source alternative pour le client 7.0 (archive ADC « [ADC]Game_7_0.rar », extraite côté serveur) : ne remplace pas l'entrée « 7.0 » ci-dessus, qui reste la source utilisée. Ne contient que Interface(.h).pak et Video.pak, pas de SFX_Music ni de World_MainMenu"
     },
     "8.0": {
       "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0",
@@ -91,6 +106,22 @@
         "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
       },
       "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "5.0",
+      "label": "Allods Online 5.0",
+      "client": "5.0",
+      "background": null,
+      "theme": null,
+      "_note": "à déterminer par le spike : fond dans data/Packs/Interface.pak (+ .HiRes/.Mini) — chercher une entrée Wrap/MainMenu ; thème dans data/Packs/SFX_Music.p0.pak à .p3.pak (+ .Mini.pak), la banque est fragmentée en plusieurs volumes sur ce client contrairement aux versions plus récentes"
+    },
+    {
+      "version": "6.0",
+      "label": "Allods Online 6.0",
+      "client": "6.0",
+      "background": null,
+      "theme": null,
+      "_note": "à déterminer par le spike : fond dans data/Packs/Interface.pak (+ .Mini) — chercher une entrée Wrap/MainMenu ; thème dans data/Packs/SFX_Music.p0.pak / .p3.pak (+ .Mini.pak) ; data/Packs/World_MainMenu_ASS_Interface.pak suggère déjà un menu 3D façon 7.0"
     },
     {
       "version": "7.0",
