@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { T, archiveCommon, archiveEntries, archiveFile, sprite, tex, type ArchiveEntry } from '@/lib/assets';
+import { T, archiveEntries, archiveFile, sprite, tex, type ArchiveEntry } from '@/lib/assets';
 import { navigate, useRoute } from '@/lib/router';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { nineSlice } from '@/lib/nineSlice';
@@ -69,19 +69,6 @@ function LaunchTitle({ entry }: { entry: ArchiveEntry }) {
   );
 }
 
-/**
- * Emblème du bas de l'écran de lancement : l'anneau doré (`LoadingGlobeFront`) avec le
- * tourbillon (`LoadingCyclone`) qui tourne lentement derrière, comme sur l'écran de
- * chargement du jeu. Décoratif : masqué aux lecteurs d'écran.
- */
-function LoadingEmblem() {
-  return (
-    <div className={s.emblem} aria-hidden="true" data-testid="loading-emblem">
-      <img className={s.cyclone} src={archiveCommon('loading-cyclone.png')} alt="" />
-      <img className={s.globe} src={archiveCommon('loading-globe.png')} alt="" />
-    </div>
-  );
-}
 
 export function ChroniclesScreen() {
   const entries = useMemo(() => archiveEntries(), []);
@@ -180,7 +167,6 @@ export function ChroniclesScreen() {
       <div className={s.vignette} />
 
       {entry && <LaunchTitle entry={entry} />}
-      {entry && <LoadingEmblem />}
 
       {entry ? (
         <div className={s.cartouche}>
@@ -188,8 +174,6 @@ export function ChroniclesScreen() {
             <GameStrip base="title-plate" cap={38} />
             <span className={s.plateTitle}>{entry.label}</span>
           </div>
-          {entry.note && <p className={s.note}>{entry.note}</p>}
-          {entry.background_note && <p className={s.note}>{entry.background_note}</p>}
         </div>
       ) : (
         <div className={s.card} style={nineSlice('tooltip-frame', [4, 4, 4, 4])}>

@@ -13,11 +13,15 @@
   font-family: var(--font-serif);
 }
 
-/* Bouton lecture/pause : pilule du jeu réduite au carré, glyphe or par-dessus. */
+/* Bouton lecture/pause : pilule du jeu raccourcie, assez large pour que ses deux
+   ornements (24 px chacun) ne se chevauchent pas, glyphe or centré entre eux. */
 .button {
   position: relative;
-  width: 40px;
+  width: 62px;
   height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
   flex: none;
   display: flex;
   align-items: center;
@@ -31,7 +35,7 @@
 .buttonSkin { position: absolute; inset: 0; display: block; border-color: transparent; pointer-events: none; }
 .button:hover .buttonSkin { filter: brightness(1.15); }
 .button:active .buttonSkin { filter: brightness(0.9); }
-.glyph { position: relative; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7)); }
+.glyph { position: relative; display: block; width: 14px; height: 14px; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7)); }
 
 .text { min-width: 0; }
 .name {
@@ -48,10 +52,4 @@
 /* Le deux-points de la police du jeu disparaît entre deux chiffres à cette taille :
    on l'agrandit et on l'aère (« 302 » lu sur la capture de la 8.0). */
 .colon { font-size: 15px; padding: 0 1.5px; }
-.note {
-  margin-top: 3px;
-  color: #8fae96;
-  font-size: 11.5px;
-  line-height: 13px;
-}
 .missing { color: #b0d9be; font-size: 14px; line-height: 16px; }

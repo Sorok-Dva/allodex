@@ -37,7 +37,8 @@ type Props = {
  *
  * Sans thème, le lecteur reste en place, bouton grisé : « Thème non disponible »
  * quand aucun client archivé ne le conserve (`theme_note` du manifeste), « Thème non
- * extrait » quand c'est l'extraction qui n'a rien produit (disque non monté).
+ * extrait » quand c'est l'extraction qui n'a rien produit (disque non monté). Le détail
+ * de la note reste dans l'index, il n'est pas affiché.
  */
 export function ThemePlayer({ entry, playing, onToggle, className }: Props) {
   const theme = entry.theme;
@@ -45,7 +46,7 @@ export function ThemePlayer({ entry, playing, onToggle, className }: Props) {
     <div className={`${s.player} ${className ?? ''}`} style={nineSlice('tooltip-frame', [4, 4, 4, 4])}>
       {!theme && (
         <button type="button" className={`${s.button} ${s.buttonOff}`} disabled aria-label="Thème indisponible">
-          <span className={s.buttonSkin} aria-hidden="true" style={nineSlice('pill-full', [0, 30, 0, 24], { fill: true })} />
+          <span className={s.buttonSkin} aria-hidden="true" style={nineSlice('pill-full', [0, 24, 0, 24], { fill: true })} />
           <svg className={s.glyph} viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
             <path d="M4.5 2.5 13 8l-8.5 5.5z" fill="currentColor" />
           </svg>
@@ -59,7 +60,7 @@ export function ThemePlayer({ entry, playing, onToggle, className }: Props) {
             onClick={onToggle}
             aria-label={playing ? 'Mettre le thème en pause' : 'Lire le thème'}
           >
-            <span className={s.buttonSkin} aria-hidden="true" style={nineSlice('pill-full', [0, 30, 0, 24], { fill: true })} />
+            <span className={s.buttonSkin} aria-hidden="true" style={nineSlice('pill-full', [0, 24, 0, 24], { fill: true })} />
             <svg className={s.glyph} viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
               {playing
                 ? <path d="M4 2.5h3v11H4zM9 2.5h3v11H9z" fill="currentColor" />
@@ -73,13 +74,11 @@ export function ThemePlayer({ entry, playing, onToggle, className }: Props) {
               <span className={s.kind}>Thème du menu</span>
               <Duration seconds={theme.duration} />
             </div>
-            {entry.theme_note && <div className={s.note}>{entry.theme_note}</div>}
           </div>
         </>
       ) : (
         <div className={s.text}>
           <div className={s.missing}>{entry.theme_note ? 'Thème non disponible' : 'Thème non extrait'}</div>
-          {entry.theme_note && <div className={s.note}>{entry.theme_note}</div>}
         </div>
       )}
     </div>

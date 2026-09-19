@@ -71,50 +71,22 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .logo, .plainTitle { animation: titleIn 600ms ease-out both; }
-  .cyclone { animation: none; }
 }
 
-/* Emblème du bas de l'écran (`LoadingGlobeFront` + `LoadingCyclone`), centré juste
-   au-dessus de la frise des versions. */
-.emblem {
-  position: absolute;
-  left: 50%;
-  bottom: 56px;
-  transform: translateX(-50%);
-  width: 84px;
-  height: 84px;
-  pointer-events: none;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
-}
-.globe, .cyclone { position: absolute; inset: 0; width: 100%; height: 100%; }
-/* Le tourbillon tourne lentement derrière l'anneau, comme à l'écran de chargement. La
-   texture du client est un carré en niveaux de gris sans alpha, destiné à être dessiné
-   en additif dans le disque de l'anneau : on la découpe au disque intérieur et on la
-   compose en `screen`, ce qui rend le noir transparent — l'équivalent web de l'additif. */
-.cyclone {
-  clip-path: circle(34% at 50% 50%);
-  mix-blend-mode: screen;
-  opacity: 0.6;
-  animation: cyclone 26s linear infinite;
-}
-@keyframes cyclone { to { transform: rotate(360deg); } }
 
 /* Cartouche : plaque de titre du jeu (31 px, hauteur native du sprite) en haut à
-   gauche, note de la version dessous. */
+   gauche ; le libellé est réduit pour ne pas mordre sur les bords gravés. */
 .cartouche { position: absolute; left: 28px; top: 24px; max-width: 520px; }
 .plate {
   position: relative; display: inline-block; height: 31px;
   min-width: 220px; padding: 0 48px;
 }
 .plateTitle {
-  position: relative; display: block; height: 31px; line-height: 31px;
-  text-align: center; white-space: nowrap;
-  font-size: 17px; color: #ffeb73; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
-}
-.note {
-  margin: 8px 2px 0; max-width: 460px;
-  font-size: 13px; line-height: 17px; color: #cfe0c8;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  /* Même calage que la plaque du panneau Succès (mesuré sur le jeu) : le texte est
+     posé en haut de la plaque, pas centré sur sa hauteur, sinon il mord la bordure. */
+  position: relative; display: flex; align-items: flex-start; justify-content: center;
+  height: 31px; padding-top: 4px; line-height: 19px; white-space: nowrap;
+  font-size: 15px; color: #ffeb73; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
 }
 
 /* Carte centrale (média ou archive manquants) : cadre d'infobulle du jeu. */

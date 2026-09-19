@@ -77,12 +77,12 @@ describe('ChroniclesScreen — frise des versions', () => {
     expect(pills.filter(el => el.getAttribute('aria-current') === 'true').map(el => el.textContent)).toEqual(['8.0']);
   });
 
-  it('affiche le cartouche de la version active, sa note et celle du fond', () => {
-    const { getAllByText, getByText } = setup('?v=1.1');
+  it('affiche le cartouche de la version active, sans ses notes techniques', () => {
+    const { getAllByText, queryByText } = setup('?v=1.1');
     // 1.1 n'a pas de logo : le libellé est aussi le grand titre, d'où les deux occurrences.
     expect(getAllByText('Allods Online (1.1)').length).toBe(2);
-    expect(getByText('écran recomposé')).toBeTruthy();
-    expect(getByText('capture de la scène 3D à venir (illustration de repli)')).toBeTruthy();
+    expect(queryByText('écran recomposé')).toBeNull();
+    expect(queryByText('capture de la scène 3D à venir (illustration de repli)')).toBeNull();
   });
 
   it('ouvre sur la version la plus récente quand `?v=` est absent ou inconnu', () => {
@@ -133,11 +133,6 @@ describe('ChroniclesScreen — logo et emblème', () => {
     expect(getByTestId('version-title').textContent).toBe('Allods Online (1.1)');
   });
 
-  it("affiche l'emblème de chargement (anneau + tourbillon)", () => {
-    const { getByTestId } = setup();
-    const srcs = [...getByTestId('loading-emblem').querySelectorAll('img')].map(el => el.getAttribute('src'));
-    expect(srcs).toEqual(['/game/archive/_common/loading-cyclone.png', '/game/archive/_common/loading-globe.png']);
-  });
 
   it('signale un thème indisponible sans tenter de le jouer', () => {
     const { getByText, getByLabelText } = setup('?v=11.0');

@@ -36,10 +36,10 @@ describe('ThemePlayer', () => {
     expect(getByLabelText('Mettre le thème en pause')).toBeTruthy();
   });
 
-  it('affiche la note du thème quand elle existe', () => {
+  it("n'affiche pas la note technique du thème", () => {
     const entry = { ...ENTRY, theme_note: 'thème du client 15.0 (approximation)' };
-    const { getByText } = render(<ThemePlayer entry={entry} playing={false} onToggle={vi.fn()} />);
-    expect(getByText('thème du client 15.0 (approximation)')).toBeTruthy();
+    const { queryByText } = render(<ThemePlayer entry={entry} playing={false} onToggle={vi.fn()} />);
+    expect(queryByText('thème du client 15.0 (approximation)')).toBeNull();
   });
 
   it('signale un thème non extrait, sans bouton de lecture', () => {
@@ -52,11 +52,11 @@ describe('ThemePlayer', () => {
   it('signale un thème indisponible et grise le bouton (aucun client ne le conserve)', () => {
     const { theme: _theme, ...rest } = ENTRY;
     const entry = { ...rest, theme_note: 'Thème non disponible dans les clients archivés' };
-    const { getByText, getByLabelText, queryByLabelText } = render(
+    const { getByText, getByLabelText, queryByLabelText, queryByText } = render(
       <ThemePlayer entry={entry} playing={false} onToggle={vi.fn()} />,
     );
     expect(getByText('Thème non disponible')).toBeTruthy();
-    expect(getByText('Thème non disponible dans les clients archivés')).toBeTruthy();
+    expect(queryByText('Thème non disponible dans les clients archivés')).toBeNull();
     expect((getByLabelText('Thème indisponible') as HTMLButtonElement).disabled).toBe(true);
     expect(queryByLabelText('Lire le thème')).toBeNull();
   });
