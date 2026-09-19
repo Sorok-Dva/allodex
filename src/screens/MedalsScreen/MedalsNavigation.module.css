@@ -23,12 +23,17 @@
 .list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 .item { display: flex; flex-direction: column; }
 
-/* Pilule : sprites pill-left/mid/right, 242 × 28, pas de 30. */
+/* Pilule : sprite entier `pill-full` (242 × 28), pas de 30. Une seule image conserve
+   le dégradé horizontal et le chevron décoratif que la répétition de `pill-mid` perdait. */
 .pill {
   position: relative; width: 242px; height: 28px; flex: none; display: block;
   cursor: inherit; text-align: left;
 }
-.pillSkin { transition: filter 80ms linear; }
+.pillSkin {
+  position: absolute; inset: 0; display: block; pointer-events: none;
+  background-repeat: no-repeat; background-position: 0 0;
+  transition: filter 80ms linear;
+}
 .pill:hover .pillSkin { filter: brightness(1.12); }
 /* Catégorie dépliée : le jeu remplace le liseré or par un liseré vert (voir GameFilters). */
 .pillOpen, .pill:hover .pillOpen { filter: url(#game-pill-open); }

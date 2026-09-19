@@ -1,28 +1,43 @@
+import { useRef } from 'react';
 import type { MedalFilter } from '@/data/medals.types';
-import { T, tex } from '@/lib/assets';
+import { FILTER_LABELS } from '@/data/medals.logic';
+import { sprite } from '@/lib/assets';
+import { GameDropdown } from '@/components/game/GameDropdown';
+import { GameScrollbar } from '@/components/game/GameScrollbar';
 import type { MedalsState } from './useMedalsState';
 import { MedalEntry } from './MedalEntry';
 import s from './MedalsList.module.css';
 
 const FILTERS: { value: MedalFilter; label: string }[] = [
-  { value: 'all', label: 'Tout' }, { value: 'completed', label: 'Terminés' }, { value: 'inProgress', label: 'En cours' },
+  { value: 'all', label: FILTER_LABELS.all },
+  { value: 'completed', label: FILTER_LABELS.completed },
+  { value: 'inProgress', label: FILTER_LABELS.inProgress },
 ];
 
+/** Le jeu utilise un curseur d'ascenseur de taille fixe, comme dans la navigation. */
+const THUMB = 20;
+
 export function MedalsList({ state }: { state: MedalsState }) {
+  const listRef = useRef<HTMLDivElement>(null);
+
   return (
-    <section className={s.content} style={{ backgroundImage: `url(${tex(`${T.medals}/FrameContent02`)})` }}>
-      <header className={s.header} style={{ backgroundImage: `url(${tex(`${T.medals}/MedalHeader`)})` }}>
+    <div className={s.content}>
+      <header className={s.header} style={{ backgroundImage: `url(${sprite('content-header')})` }}>
         <h2 className={s.title}>{state.title}</h2>
-        <label className={s.filter}>
-          <select value={state.filter} onChange={e => state.setFilter(e.target.value as MedalFilter)}>
-            {FILTERS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
-          </select>
-        </label>
+        <GameDropdown
+          className={s.filter}
+          value={state.filter}
+          options={FILTERS}
+          onChange={state.setFilter}
+          label="Filtrer les succès"
+        />
       </header>
-      <div className={s.list}>
-        {state.visible.length === 0 && <p className={s.empty}>Aucun succès.</p>}
-        {state.visible.map(m => <MedalEntry key={m.id} medal={m} />)}
+
+      <div className={s.viewport} ref={listRef}>
+        {state.visible.map(m => <MedalEntry key={m.id} medal={m} onTrack={state.setTracked} />)}
       </div>
-    </section>
+
+      <GameScrollbar targetRef={listRef} thumbSize={THUMB} className={s.scrollbar} />
+    </div>
   );
 }

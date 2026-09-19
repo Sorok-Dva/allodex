@@ -1,0 +1,38 @@
+/*
+ * Géométrie relevée : champ x 1230→1356, y 274→298 (126 × 24) ; bouton doré
+ * x 1356→1379, y 273→296 (23 × 23) ; cadre déroulé x 1227→1381, y 300→386
+ * (154 × 87, soit −3 px à gauche et +26 px sous le haut du champ).
+ * Textes : 14 px, alignés à droite, `#e6f3e6` ; lignes de base 289 (champ), 325, 347, 370.
+ */
+.root { position: absolute; height: 24px; }
+
+.field {
+  position: absolute; left: 0; top: 0; height: 24px; display: block;
+  border-style: solid; border-color: transparent; border-image-repeat: stretch;
+  cursor: inherit; text-align: right;
+}
+.value {
+  position: absolute; left: 0; right: 2px; top: -1.8px;
+  font-size: 14px; line-height: 14px; color: #e6f3e6;
+  white-space: nowrap;
+}
+.button {
+  position: absolute; top: -1px; width: 23px; height: 23px;
+  background-repeat: no-repeat; background-position: 0 0; cursor: inherit;
+}
+.root:hover .button { filter: brightness(1.12); }
+
+/* Panneau déroulé : cadre 9 tranches sans `fill`, fond noir à 67 % (mesuré : le menu
+   multiplie le décor par 0,33, cf. GameTooltip.module.css). */
+.list {
+  position: absolute; left: -3px; right: -2px; top: 26px; z-index: 40;
+  margin: 0; padding: 5px 11px 6.5px 0; list-style: none;
+  border-style: solid; border-color: transparent; border-image-repeat: stretch;
+  background: rgba(0, 0, 0, 0.67);
+}
+.option {
+  display: block; width: 100%; height: 22.5px; line-height: 22.5px;
+  font-size: 14px; color: #e6f3e6; text-align: right; cursor: inherit;
+  white-space: nowrap;
+}
+.option:hover { color: #ffeb73; }

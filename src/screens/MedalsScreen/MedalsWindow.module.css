@@ -47,6 +47,17 @@
   filter: url(#game-navframe);
 }
 
+/* Fond de la colonne de droite : la texture `FrameContent02` (628 × 628 utiles) est
+   dessinée en 565 × 590 avec son coin haut-gauche à l'écran (842, 200), soit (7, −59)
+   dans le repère de la colonne. Recalage ajusté à l'erreur absolue minimale sur la bande
+   de bois nue x 1355→1369 (6,63 contre 13,4 pour un aplat). */
+.contentBack { left: 317px; top: 68px; width: 555px; height: 503px; overflow: hidden; }
+.contentBack > span {
+  position: absolute; left: 7px; top: -59px; width: 565px; height: 590px;
+  background-repeat: no-repeat; background-size: 565px 590px;
+  filter: url(#game-contentframe);
+}
+
 /* Séparateur vertical : x 814→835, y 264→762. */
 .divider { left: 296px; top: 73px; width: 21px; height: 498px; background-repeat: repeat-y; }
 
@@ -54,26 +65,11 @@
 .navSlot { left: 0; top: 68px; width: 314px; height: 503px; }
 .contentSlot { left: 317px; top: 68px; width: 555px; height: 503px; display: flex; }
 
-/* Croix de fermeture : plaque olive 30 × 30 à x 1378→1408, y 199→229 ; disque orange de
-   22 px cerclé d'or, croix sombre. */
+/* Bouton rond de fermeture : sprite découpé dans la capture, plaque x 1378→1408,
+   y 200→230, soit (860, 9) dans le repère de la fenêtre. */
 .close {
-  left: 860px; top: 8px; width: 30px; height: 30px;
-  display: grid; place-items: center; cursor: inherit; border-radius: 3px;
-  background: linear-gradient(155deg, #737a38, #565e26 55%, #454c1f);
-  box-shadow: inset 0 0 0 1px rgba(26, 30, 10, 0.9), inset 0 1px 0 rgba(168, 178, 96, 0.4);
+  left: 860px; top: 9px; width: 30px; height: 30px;
+  background-repeat: no-repeat; background-position: 0 0; cursor: inherit;
 }
-.closeDisc {
-  width: 22px; height: 22px; border-radius: 50%;
-  background: radial-gradient(circle at 45% 38%, #ffb02c 0%, #de8a04 55%, #9c5a00 100%);
-  box-shadow: 0 0 0 2px #b5b03c, 0 0 0 3px rgba(30, 34, 12, 0.85), inset 0 0 3px rgba(90, 34, 0, 0.55);
-  display: grid; place-items: center;
-}
-.closeCross { position: relative; width: 14px; height: 14px; }
-.closeCross::before, .closeCross::after {
-  content: ''; position: absolute; left: 0; top: 5.5px; width: 14px; height: 3px;
-  background: #1a0d00; border-radius: 1px;
-}
-.closeCross::before { transform: rotate(45deg); }
-.closeCross::after { transform: rotate(-45deg); }
-.close:hover .closeDisc { filter: brightness(1.15); }
-.close:active .closeDisc { filter: brightness(0.85); }
+.close:hover { filter: brightness(1.18); }
+.close:active { filter: brightness(0.88); }

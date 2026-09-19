@@ -1,6 +1,17 @@
-.bar { position: relative; height: 16px; background: center / 100% 100% no-repeat; border-radius: 8px; overflow: hidden; }
-.gauge { position: absolute; inset: 0 auto 0 0; background: left / auto 100% no-repeat; }
+/* La barre du jeu occupe 12 lignes (y 388→399 sur `refs/astral.png`), une de moins que
+   la hauteur native de la texture (13 px). Le texte « X sur Y » est mesuré à
+   13 px, blanc pur, ligne de base 10 px sous le haut de la barre. Les deux textures du
+   client sont nettement plus sombres que le rendu du jeu (intérieur 93,32,0 contre
+   136,82,36 mesuré) : décalage constant `game-progress`, voir GameFilters. */
+.bar { position: relative; height: 12px; }
+.track, .gauge {
+  position: absolute; left: 0; top: 0; height: 12px;
+  border-style: solid; border-color: transparent; border-image-repeat: stretch;
+  filter: url(#game-progress);
+}
+.track { right: 0; }
 .text {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700; color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000;
+  position: absolute; left: 0; right: 6px; top: 0; bottom: 0; text-align: center;
+  font-size: 13px; line-height: 9px; color: #fff;
+  text-shadow: 0 0 2px #2a1000, 1px 0 0 #2a1000, -1px 0 0 #2a1000, 0 1px 0 #2a1000, 0 -1px 0 #2a1000;
 }

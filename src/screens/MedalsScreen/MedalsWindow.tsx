@@ -50,17 +50,29 @@ export function MedalsWindow({ title, points, onClose, nav, content }: Props) {
       <div className={`${s.corner} ${s.cornerBl}`} style={{ backgroundImage: `url(${sprite('corner-bl')})` }} />
       <div className={`${s.corner} ${s.cornerBr}`} style={{ backgroundImage: `url(${sprite('corner-br')})` }} />
 
+      {/* Fond de la colonne de contenu : `FrameContent02` recalé sur la capture
+          (565 × 590 à l'écran (842, 200) ; erreur 13,4 → 6,6 sur la bande de bois
+          visible entre le parchemin et l'ascenseur). */}
+      <div className={s.contentBack}>
+        <span style={{ backgroundImage: `url(${tex(`${T.medals}/FrameContent02`)})` }} />
+      </div>
+
       <div className={s.navSlot}>{nav}</div>
       <div className={s.contentSlot}>{content}</div>
 
       <div className={s.divider} style={{ backgroundImage: `url(${sprite('divider-v')})` }} />
 
-      {/* Les textures `Cross/Close*` extraites du client sont des aplats rouges
-          inutilisables ; le bouton du jeu (plaque olive, anneau or, disque orange,
-          croix sombre) est reconstitué en CSS à partir des couleurs relevées. */}
-      <button type="button" className={s.close} onClick={onClose} aria-label="Fermer" title="Fermer">
-        <span className={s.closeDisc}><span className={s.closeCross} /></span>
-      </button>
+      {/* Les textures `Cross/Close*` du client sont des aplats rouges sans rapport avec le
+          bouton du jeu : celui-ci est découpé dans la capture (`close-button`, 30 × 30,
+          coins effacés). Aucune capture ne montre l'état survolé, d'où l'éclaircissement CSS. */}
+      <button
+        type="button"
+        className={s.close}
+        style={{ backgroundImage: `url(${sprite('close-button')})` }}
+        onClick={onClose}
+        aria-label="Fermer"
+        title="Fermer"
+      />
     </div>
   );
 }

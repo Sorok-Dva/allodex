@@ -1,35 +1,56 @@
+/*
+ * Infobulle du jeu, relevée au pixel sur `refs/tooltip.png` (survol de « Connecté avec
+ * les étoiles ») : cadre `tooltip-frame` en 9 tranches (sans `fill`, donc l'intérieur
+ * opaque du sprite n'est pas dessiné) posé sur un fond translucide.
+ *
+ * Translucidité mesurée en comparant `refs/tooltip.png` et `refs/astral.png` au même
+ * pixel : l'infobulle multiplie le fond par 0,33 (parchemin 215,200,130 → 71,66,44 ;
+ * bois 73,83,48 → 24,28,16), soit un noir à 67 % d'opacité.
+ *
+ * Boîte relevée : x 899→1231, y 331→442 (333 × 112, bordures comprises).
+ * Lignes de base : titre 357, date 375, description 391, filet 403, aide 423.
+ */
 .tooltip {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 60;
   pointer-events: none;
-  max-width: 280px;
-  padding: 8px 12px;
+  width: 333px;
+  padding: 8.5px 13px 14.97px;
   border-style: solid;
   border-repeat: stretch;
-  border-color: #8fae7a;
-  background: rgba(24, 34, 20, 0.92);
+  border-color: transparent;
+  background: rgba(0, 0, 0, 0.67);
   font-family: var(--font-serif);
 }
+/* Titre et date partagent le même vert vif relevé (0, 234, 56). */
 .title {
-  color: #7ad66b;
+  color: #00ea38;
   font-size: 16px;
-  font-family: var(--font-caps);
-  font-weight: 700;
-  margin-bottom: 4px;
+  line-height: 16px;
 }
+.date {
+  color: #00ea38;
+  font-size: 15px;
+  line-height: 15px;
+  margin-top: 2.85px;
+}
+/* La description du jeu est jaune vif (255, 220, 0), pas blanc cassé. */
 .body {
-  color: #e6efe0;
+  color: #ffdc00;
   font-size: 14px;
-  line-height: 1.35;
+  line-height: 14px;
+  margin-top: 1.84px;
 }
 .sep {
   height: 1px;
-  margin: 6px 0;
-  background: rgba(185, 201, 180, 0.3);
+  margin-top: 9.81px;
+  background: #445f4a;
 }
 .hint {
-  color: #b9c9b4;
+  color: #b0d9be;
   font-size: 13px;
+  line-height: 13px;
+  margin-top: 8.03px;
 }

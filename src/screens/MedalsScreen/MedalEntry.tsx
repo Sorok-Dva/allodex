@@ -1,75 +1,122 @@
-import { useRef, useState } from 'react';
+import { useState, type MouseEvent as ReactMouseEvent } from 'react';
 import type { Medal } from '@/data/medals.types';
 import { currentRankOf, isComplete } from '@/data/medals.logic';
-import { T, tex } from '@/lib/assets';
+import { T, sprite, tex } from '@/lib/assets';
 import { MedalBadge } from '@/components/game/MedalBadge';
 import { ProgressBar } from '@/components/game/ProgressBar';
-import { formatGameDate } from '@/lib/dates';
+import { GameTooltip } from '@/components/game/GameTooltip';
+import { formatGameDate, formatGameDateTime } from '@/lib/dates';
+import { toRoman } from '@/lib/roman';
 import s from './MedalEntry.module.css';
 
-type TipPos = { left: number; top: number };
+/**
+ * Hauteurs du parchemin relevées sur `refs/astral.png` (bords de la texture, x 1340) :
+ * « Connecté avec les étoiles » y 315→420 (106 px) et « Propriétaire » y 426→530 (105) :
+ * 105,5 px reproduit le pas relevé (111 puis 110). « Parfait ! » y 536→694
+ * (159 px, avec la série). Les entrées sans barre ni série n'apparaissent pas en entier
+ * dans la capture : 84 px = bas de la description (63) + les 21 px de marge basse mesurés
+ * sous la barre. Écart constant de 5 px entre deux parchemins (pas de 111 px).
+ */
+const H_BAR = 105.5;
+const H_SERIES = 159;
+const H_PLAIN = 84;
+/** La texture MedalPaper fait 520 × 120 mais n'est opaque que sur 117 lignes. */
+const PAPER_RATIO = 120 / 117;
+/** Pas mesuré entre deux cases de la série : 1012, 1050, 1087, 1124, 1162, 1199. */
+const SLOT = 35;
+const SLOT_GAP = 2.4;
 
-export function MedalEntry({ medal }: { medal: Medal }) {
+export type MedalEntryProps = {
+  medal: Medal;
+  onTrack?: (medalId: string, value: boolean) => void;
+};
+
+export function MedalEntry({ medal, onTrack }: MedalEntryProps) {
   const complete = isComplete(medal);
   const rank = currentRankOf(medal);
-  const articleRef = useRef<HTMLElement>(null);
-  const [tip, setTip] = useState<TipPos | null>(null);
-  const conditions = [...(medal.dressCollection ?? []), ...(medal.medalCollection ?? [])];
+  const series = medal.medalCollection ?? [];
   const showBar = rank.completeProgress > 1;
   const value = complete ? rank.completeProgress : medal.progress?.value ?? 0;
+  const height = showBar ? H_BAR : series.length ? H_SERIES : H_PLAIN;
+  const [cursor, setCursor] = useState<DOMRect | null>(null);
 
-  // Le panneau Succès est dans une liste `overflow-y: auto` (voir MedalsList.module.css)
-  // qui rognerait un tooltip positionné en `absolute` dès qu'une entrée est proche du
-  // bord de la fenêtre de défilement. On calcule donc des coordonnées viewport via
-  // `getBoundingClientRect()` sur l'entrée survolée et on affiche le tooltip en
-  // `position: fixed` (voir .tooltip), ce qui l'affranchit du clipping du conteneur.
-  const showTip = () => {
-    const el = articleRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    // hauteur estimée du tooltip (une ligne de ~24px par palier + le padding) pour
-    // décider de l'afficher au-dessus si le bas de l'écran est trop proche.
-    const estimatedHeight = medal.ranks.length * 24 + 24;
-    const below = rect.bottom - 4;
-    const rawTop = below + estimatedHeight > window.innerHeight ? rect.top - estimatedHeight : below;
-    const top = Math.max(8, rawTop);
-    const left = Math.min(rect.left + 72, window.innerWidth - 470); // 72 = 64px de badge + 8px de gap (.entry { gap: 8px })
-    setTip({ left: Math.max(8, left), top });
+  // L'infobulle du jeu suit le pointeur (coin haut-gauche à +9, +11 : relevé en comparant
+  // `refs/tooltip.png` à `refs/astral.png`), pas le centre de l'élément survolé.
+  const track = (e: ReactMouseEvent) => {
+    const { clientX: x, clientY: y } = e;
+    setCursor({ x, y, left: x, top: y, right: x, bottom: y, width: 0, height: 0, toJSON: () => ({}) });
   };
+  const hover = { onMouseEnter: track, onMouseMove: track, onMouseLeave: () => setCursor(null) };
 
   return (
-    <article
-      ref={articleRef}
-      className={`${s.entry} ${complete ? s.complete : ''}`}
-      onMouseEnter={showTip}
-      onMouseLeave={() => setTip(null)}
-    >
-      <div className={s.badge}><MedalBadge score={rank.score} icon={medal.icon} complete={complete} /></div>
-      <div className={s.paper} style={{ backgroundImage: `url(${tex(`${T.medals}/MedalPaper${complete ? 'Complete' : ''}`)})` }}>
-        <header className={s.head}>
-          <h3 className={s.name}>{medal.name}</h3>
-          {medal.finishDate && <time className={s.date}>{formatGameDate(medal.finishDate)}</time>}
-        </header>
-        <p className={s.desc}>{rank.description}</p>
-        {showBar && <div className={s.bar}><ProgressBar value={value} max={rank.completeProgress} /></div>}
-        {conditions.length > 0 && (
-          <ul className={s.conditions}>
-            {conditions.map((c, i) => (
-              <li key={i} className={c.success ? s.ok : s.ko}><span className={s.check}>✔</span>{c.description ?? ''}</li>
+    <article className={s.entry} style={{ height }}>
+      <div
+        className={`${s.paper} ${complete ? s.paperComplete : s.paperPlain}`}
+        style={{
+          backgroundImage: `url(${tex(`${T.medals}/MedalPaper${complete ? 'Complete' : ''}`)})`,
+          backgroundSize: `100% ${height * PAPER_RATIO}px`,
+        }}
+      />
+
+      <div className={s.badgeZone} {...hover}>
+        <MedalBadge score={rank.score} icon={rank.image ?? medal.icon} complete={complete} />
+      </div>
+
+      <h3 className={`${s.name} ${complete ? s.done : ''}`} {...hover}>{medal.name}</h3>
+
+      {complete && medal.finishDate ? (
+        <time className={`${s.date} ${s.done}`} dateTime={medal.finishDate}>{formatGameDate(medal.finishDate)}</time>
+      ) : (
+        <button
+          type="button"
+          className={s.checkbox}
+          role="checkbox"
+          aria-checked={!!medal.tracked}
+          aria-label={`Suivre « ${medal.name} »`}
+          style={{ backgroundImage: `url(${sprite(medal.tracked ? 'checkbox-on' : 'checkbox-off')})` }}
+          onClick={() => onTrack?.(medal.id, !medal.tracked)}
+        />
+      )}
+
+      <p className={s.desc}>{rank.description}</p>
+
+      {showBar && <ProgressBar className={s.bar} value={value} max={rank.completeProgress} />}
+
+      {!showBar && series.length > 0 && (
+        <>
+          <p className={s.seriesLabel}>Série de succès :</p>
+          <ul className={s.series} style={{ gap: `${SLOT_GAP}px` }}>
+            {series.map(item => (
+              <li
+                key={item.medalId}
+                className={s.slot}
+                style={{
+                  width: SLOT, height: SLOT,
+                  borderImageSource: `url(${sprite('series-slot')})`,
+                }}
+              >
+                <img
+                  className={`${s.slotIcon} ${item.success ? '' : s.locked}`}
+                  src={tex(item.icon)}
+                  alt=""
+                  draggable={false}
+                />
+                <span className={s.slotRank}>{toRoman(item.rank)}</span>
+              </li>
             ))}
           </ul>
-        )}
-      </div>
-      {tip && medal.ranks.length > 1 && (
-        <div className={s.tooltip} style={{ left: tip.left, top: tip.top }}>
-          {medal.ranks.map((r, i) => (
-            <div key={i} className={`${s.tipRank} ${i < medal.currentRank ? s.tipDone : ''}`}>
-              <span className={s.tipScore}>{r.score}</span>
-              <span>{r.description}</span>
-            </div>
-          ))}
-        </div>
+        </>
       )}
+
+      <GameTooltip
+        anchor={cursor}
+        align="cursor"
+        title={medal.name}
+        date={complete && medal.finishDate ? `Date : ${formatGameDateTime(medal.finishDate)}` : undefined}
+        hint="Shift + clic : Lien vers les succès"
+      >
+        {rank.description}
+      </GameTooltip>
     </article>
   );
 }

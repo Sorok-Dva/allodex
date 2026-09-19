@@ -1,35 +1,80 @@
-.entry { position: relative; display: flex; align-items: flex-start; gap: 8px; padding: 6px 4px; }
-.badge { flex: 0 0 64px; padding-top: 6px; }
-.paper {
-  flex: 1; min-height: 96px; padding: 10px 18px 12px 22px;
-  background: center / 100% 100% no-repeat; color: var(--ink);
-}
-.head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.name { margin: 0; font: 700 17px var(--font-caps); color: #7a4a10; text-shadow: 0 0 1px rgba(255, 240, 200, 0.6); }
-.complete .name { color: #6b3f0a; }
-.date { font: 600 15px var(--font-serif); color: #4a3a20; white-space: nowrap; }
-.desc { margin: 8px 0 6px; text-align: center; font: 600 15.5px var(--font-serif); line-height: 1.25; }
-.bar { margin: 4px 8px 2px; }
-.conditions { list-style: none; margin: 6px 0 0; padding: 0 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 16px; font: 600 15px var(--font-serif); }
-.check { display: inline-block; width: 18px; color: var(--check-green); font-size: 14px; }
-.ok { color: var(--ink); }
-.ko .check { color: #8a8a8a; }
-.ko { color: #6e6a5e; }
 /*
- * `left`/`top` sont posés en style inline depuis MedalEntry.tsx (calculés via
- * getBoundingClientRect() sur l'entrée survolée : left = rect.left + 72, où 72 =
- * 64px de badge + 8px de gap, cf. `.entry { gap: 8px }` ci-dessus). Le tooltip est
- * donc en `position: fixed` (coordonnées viewport) plutôt qu'`absolute` : `.list`
- * (MedalsList.module.css) a `overflow-y: auto`, qui rognerait un tooltip positionné
- * relativement à `.entry` dès que la ligne est proche du bord de la zone de scroll.
- * `pointer-events: none` évite que le tooltip lui-même ne déclenche mouseenter/leave
- * sur les entrées voisines (flicker au survol).
+ * Entrée de succès, repère local = coin haut-gauche du parchemin (écran x 836, 518 px de
+ * large). Toutes les constantes sont relevées au pixel sur `refs/astral.png` :
+ *
+ * | Élément              | Écran (entrée 1 / entrée 3)      | Local                     |
+ * |----------------------|----------------------------------|---------------------------|
+ * | Parchemin            | x 836→1354, y 315→420            | 0,0 / 518 × 106           |
+ * | Nom                  | x 943, ligne de base y 344       | left 107, base 29         |
+ * | Date                 | x 1261→1330, base y 344          | right 24, base 29         |
+ * | Case de suivi        | x 1299→1318, y 552→571           | left 463, top 16, 20 × 20 |
+ * | Description          | centrée sur x 1121, base y 374,5 | centre 285, base 59,5     |
+ * | Barre                | x 925→1312, y 388→399            | left 89, top 73, 388 × 12 |
+ * | « Série de succès : »| centrée, ligne de base y 628     | base 92                   |
+ * | Cases de la série    | x 1012→1233, y 641→676           | top 105, 35 × 35, pas 37,4|
+ *
+ * Tailles de police ajustées sur la largeur des glyphes de la capture, police du jeu :
+ * nom 16 px, date 15 px, description et libellé de série 14 px (Chrome quantifie la
+ * taille de police : seuls les entiers changent l'avance des glyphes avec cette police).
+ * Couleurs relevées : terminé → nom et date `#681d0d` ; sinon tout le texte `#502a0e`.
  */
-.tooltip {
-  position: fixed; z-index: 50; pointer-events: none; min-width: 320px; max-width: 460px;
-  padding: 10px 12px; background: rgba(12, 22, 12, 0.94); border: 1px solid #8fae7a; border-radius: 4px;
-  color: #dfe9d8; font-size: 14px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+.entry { position: relative; width: 518px; margin-bottom: 5px; }
+
+/* La texture est étirée sur toute la boîte ; ses 3 dernières lignes sont transparentes,
+   d'où le facteur 120/117 pour que le bord déchiré tombe pile sur le bas du parchemin. */
+.paper { position: absolute; inset: 0; background-repeat: no-repeat; }
+/* Les textures du client sont plus sombres que le rendu du jeu : décalage constant
+   mesuré sur les zones nues du parchemin (voir GameFilters). */
+.paperComplete { filter: url(#game-paper-complete); }
+.paperPlain { filter: url(#game-paper); }
+
+.badgeZone { position: absolute; left: 0; top: 0; width: 100px; height: 100%; }
+
+.name {
+  position: absolute; left: 106px; right: 100px; top: 15.5px;
+  margin: 0; font-size: 16px; line-height: 16px; font-weight: 400;
+  color: #502a0e; white-space: nowrap; overflow: hidden;
 }
-.tipRank { display: flex; gap: 10px; padding: 2px 0; }
-.tipDone { color: #9fd08a; }
-.tipScore { flex: 0 0 34px; text-align: right; color: var(--gold); font-weight: 700; }
+.date {
+  position: absolute; right: 24px; top: 16.35px;
+  font-size: 15px; line-height: 15px; color: #502a0e; white-space: nowrap;
+}
+.done { color: #681d0d; }
+
+.checkbox {
+  position: absolute; left: 463px; top: 16px; width: 20px; height: 20px;
+  background-repeat: no-repeat; background-position: 0 0; cursor: inherit;
+}
+.checkbox:hover { filter: brightness(1.15); }
+
+.desc {
+  position: absolute; left: 64px; right: 12px; top: 48.2px;
+  margin: 0; text-align: center; font-size: 14px; line-height: 14px; color: #502a0e;
+}
+
+.bar { position: absolute; left: 89px; top: 73px; width: 388px; }
+
+.seriesLabel {
+  position: absolute; left: 64px; right: 12px; top: 81.2px;
+  margin: 0; text-align: center; font-size: 14px; line-height: 14px; color: #502a0e;
+}
+
+.series {
+  position: absolute; left: 68px; right: 12px; top: 105px;
+  margin: 0; padding: 0; list-style: none; display: flex; justify-content: center;
+}
+.slot {
+  position: relative; flex: none;
+  border-style: solid; border-width: 3px; border-color: transparent;
+  border-image-slice: 3; border-image-width: 3px; border-image-repeat: stretch;
+}
+/* `left`/`top` partent du bord intérieur de la bordure 9-tranches (3 px) : −1 place
+   l'icône à 2 px du bord extérieur de la case, comme dans la capture. */
+.slotIcon { position: absolute; left: -1px; top: -1px; width: 32px; height: 32px; }
+/* Les paliers non obtenus sont affichés en niveaux de gris (mesuré : R = V = B). */
+.locked { filter: grayscale(1); }
+.slotRank {
+  position: absolute; right: 0; bottom: -1px;
+  font-size: 10px; line-height: 11px; color: #e0e0e0;
+  text-shadow: 0 0 2px #000, 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000;
+}

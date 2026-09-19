@@ -38,7 +38,6 @@ export const T = {
   medals: 'Interface/Ingame/Medals/Textures',
   login: 'Interface/Wrap/MainMenu/LoginAccount',
   main2: 'Interface/Wrap/MainMenu/Main2',
-  cross: 'Interface/Common/Buttons/Cross/Close',
   msgbox: 'Interface/Common/Elements/MsgBox/textures',
   pinMenu: 'Interface/Ingame/ContextPinMenu3/textures',
 } as const;

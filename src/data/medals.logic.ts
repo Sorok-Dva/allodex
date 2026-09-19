@@ -8,9 +8,25 @@ export function currentRankOf(m: Medal): MedalRank {
   return m.ranks[Math.min(m.currentRank, m.ranks.length - 1)];
 }
 
-const FRAMES = [500, 100, 50, 30] as const;
-export function frameForScore(score: number): 30 | 50 | 100 | 500 {
-  return FRAMES.find(f => score >= f) ?? 30;
+/**
+ * Palier de l'écu, relevé sur `refs/astral.png` : « Connecté avec les étoiles » (20 pts)
+ * et « Parfait ! » (10 pts) portent le cadre nu `MedalFrame*` avec le chiffre romain « I »,
+ * « Propriétaire » (30 pts) le cadre à pointes `MedalFrame*30` avec « II ». Le seuil du
+ * palier est donc le score : < 30 → I, 30 → II, 50 → III, 100 → IV, 500 → V.
+ */
+const FRAME_TIERS = [30, 50, 100, 500] as const;
+export type MedalTier = 1 | 2 | 3 | 4 | 5;
+
+export function medalTier(score: number): MedalTier {
+  let tier = 1;
+  for (const threshold of FRAME_TIERS) if (score >= threshold) tier += 1;
+  return tier as MedalTier;
+}
+
+/** Suffixe de texture : `''` pour le palier I (`MedalFrame`), sinon `30`/`50`/`100`/`500`. */
+export function frameSuffix(score: number): '' | '30' | '50' | '100' | '500' {
+  const tier = medalTier(score);
+  return tier === 1 ? '' : (String(FRAME_TIERS[tier - 2]) as '30' | '50' | '100' | '500');
 }
 
 export function medalsOf(ds: MedalsDataset, categoryIndex: number, subCategoryIndex: number): Medal[] {

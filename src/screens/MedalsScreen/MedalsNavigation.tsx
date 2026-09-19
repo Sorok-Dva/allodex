@@ -2,7 +2,6 @@ import { useRef } from 'react';
 import { T, sprite, tex } from '@/lib/assets';
 import { subCategoryCounts } from '@/data/medals.logic';
 import type { MedalsDataset } from '@/data/medals.types';
-import { GameStrip } from '@/components/game/GameStrip';
 import { GameScrollbar } from '@/components/game/GameScrollbar';
 import type { MedalsState } from './useMedalsState';
 import s from './MedalsNavigation.module.css';
@@ -50,7 +49,11 @@ export function MedalsNavigation({ ds, state }: { ds: MedalsDataset; state: Meda
                   aria-expanded={foldable ? open : undefined}
                   onClick={foldable ? () => state.toggleCategory(c) : undefined}
                 >
-                  <GameStrip base="pill" cap={22} className={`${s.pillSkin} ${open ? s.pillOpen : ''}`} />
+                  <span
+                    className={`${s.pillSkin} ${open ? s.pillOpen : ''}`}
+                    style={{ backgroundImage: `url(${sprite('pill-full')})` }}
+                    aria-hidden="true"
+                  />
                   <span className={s.pillLabel}>{cat.name}</span>
                   {foldable && (
                     <span

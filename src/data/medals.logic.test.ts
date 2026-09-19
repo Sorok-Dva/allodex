@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import type { Medal, MedalsDataset } from './medals.types';
 import {
-  parseDataset, isComplete, currentRankOf, frameForScore,
+  parseDataset, isComplete, currentRankOf, medalTier, frameSuffix,
   subCategoryCounts, filterMedals, searchMedals, medalsOf, FILTER_LABELS,
 } from './medals.logic';
 import mock from './medals.mock.json';
@@ -34,13 +34,21 @@ describe('isComplete / currentRankOf', () => {
   });
 });
 
-describe('frameForScore', () => {
-  it('choisit le cadre par seuil', () => {
-    expect(frameForScore(10)).toBe(30);
-    expect(frameForScore(30)).toBe(30);
-    expect(frameForScore(75)).toBe(50);
-    expect(frameForScore(100)).toBe(100);
-    expect(frameForScore(1000)).toBe(500);
+describe('medalTier / frameSuffix', () => {
+  it('choisit le palier par seuil de score (relevé sur refs/astral.png)', () => {
+    expect(medalTier(10)).toBe(1);
+    expect(medalTier(20)).toBe(1);
+    expect(medalTier(30)).toBe(2);
+    expect(medalTier(75)).toBe(3);
+    expect(medalTier(100)).toBe(4);
+    expect(medalTier(1000)).toBe(5);
+  });
+  it('donne le suffixe de texture correspondant', () => {
+    expect(frameSuffix(20)).toBe('');
+    expect(frameSuffix(30)).toBe('30');
+    expect(frameSuffix(75)).toBe('50');
+    expect(frameSuffix(100)).toBe('100');
+    expect(frameSuffix(1000)).toBe('500');
   });
 });
 
