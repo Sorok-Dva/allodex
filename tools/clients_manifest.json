@@ -1,0 +1,232 @@
+{
+  "_note": "Clients Allods Online archivés (lecture seule) et, pour chaque version affichée dans les Chroniques, l'écran de lancement du menu principal et sa banque de thème. Les chemins sont des montages WSL des disques externes de l'utilisateur ; un disque non monté n'est pas une erreur (tools/extract_archive.py avertit et laisse media: null). Pour ajouter une version : ajouter son client dans `clients`, puis une entrée dans `versions` avec soit `video` (Video/<N>_0Events/MainMenu/*.ogv), soit `background` (texture Interface/Wrap/MainMenu/…), plus `theme` (banque SFX/Music/Music_Menu.fsb). `theme.prefer` force un subsong par son nom, sinon pick_theme_subsong choisit (MainMenu* > MainTitle > Menu* > la plus longue).",
+  "clients": {
+    "1.1": {
+      "root": "/mnt/f/ALLODS ONLINE SERVER/Allods 1.0/allods/Client",
+      "game_version": "1.1.02.0"
+    },
+    "2.0": {
+      "root": "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods 2.0.04",
+      "game_version": "2.0.04.49"
+    },
+    "3.0": {
+      "root": "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsOnline3.0.2.19[5.12GB]-20200522T111620Z-001/AllodsOnline3.0.2.19[5.12GB]",
+      "game_version": "3.0.02.19"
+    },
+    "4.0": {
+      "root": "/mnt/f/ALLODS ONLINE SERVER/Allods 4.2/Allods Nova/Allods Nova",
+      "game_version": "4.0.02.42"
+    },
+    "7.0": {
+      "root": "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0",
+      "game_version": "7.0.00.00"
+    },
+    "8.0": {
+      "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0",
+      "game_version": "8.0.02.61.1"
+    },
+    "9.0": {
+      "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 9.0.01.89",
+      "game_version": "9.0.01.89"
+    },
+    "15.0": {
+      "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR (FR) 15.0.03.23.2 (end of patch)",
+      "game_version": "15.0.03.23.2"
+    },
+    "16.0": {
+      "root": "/mnt/h/MyGames/Allods Online FR (FR)",
+      "game_version": "16.0"
+    },
+    "17.0": {
+      "root": "/mnt/h/MyGames/AllodsRU",
+      "game_version": "17.0.01.64"
+    }
+  },
+  "versions": [
+    {
+      "version": "1.1",
+      "label": "Allods Online 1.1",
+      "client": "1.1",
+      "note": "écran recomposé : le menu des clients 1.x empile le ciel, les vaisseaux et les héros des deux factions",
+      "background": {
+        "pak": "data/Packs/Interface.pak",
+        "canvas": [1920, 1080],
+        "layers": [
+          { "entry": "Interface/Wrap/MainMenu/Main/WrapBackground.(UITexture).bin", "fit": "cover" },
+          { "entry": "Interface/Wrap/MainMenu/Main/WrapBackgroundShipsLeft.(UITexture).bin", "anchor": "top-left" },
+          { "entry": "Interface/Wrap/MainMenu/Main/WrapBackgroundShipsRight.(UITexture).bin", "anchor": "top-right" },
+          { "entry": "Interface/Wrap/MainMenu/Main/WrapBackgroundLeft.(UITexture).bin", "anchor": "bottom-left" },
+          { "entry": "Interface/Wrap/MainMenu/Main/WrapBackgroundRight.(UITexture).bin", "anchor": "bottom-right" }
+        ]
+      },
+      "theme": { "pak": "data/Packs/SFX_Music.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "2.0",
+      "label": "Allods Online 2.0",
+      "client": "2.0",
+      "background": {
+        "pak": "data/Packs/Interface.pak",
+        "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
+      },
+      "theme": { "pak": "data/Packs/SFX_Music.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "3.0",
+      "label": "Allods Online 3.0",
+      "client": "3.0",
+      "note": "fond identique à celui du client 2.0 (même texture)",
+      "background": {
+        "pak": "data/Packs/Interface.pak",
+        "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
+      },
+      "theme": { "pak": "data/Packs/SFX_Music.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "4.0",
+      "label": "Allods Online 4.0",
+      "client": "4.0",
+      "background": {
+        "pak": "data/Packs/Interface.Mini.pak",
+        "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
+      },
+      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "7.0",
+      "label": "Allods Online 7.0",
+      "client": "7.0",
+      "note": "le menu de 7.0 est une scène 3D (World_MainMenu_ASS) : on affiche la texture de fond du client, identique à celle du 4.0",
+      "background": {
+        "pak": "data/Packs/Interface.Mini.pak",
+        "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
+      },
+      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "8.0",
+      "label": "Allods Online 8.0",
+      "client": "8.0",
+      "background": {
+        "pak": "data/Packs/Interface.Mini.pak",
+        "entry": "Interface/Wrap/MainMenu/Main2/BackgroundGOG.(UITexture).bin"
+      },
+      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "9.0",
+      "label": "Allods Online 9.0",
+      "client": "9.0",
+      "video": {
+        "pak": "data/Packs/Video.pak",
+        "entry": "Video/9_0Events/MainMenu/MainMenu.ogv",
+        "intro": "Video/9_0Events/MainMenu/Intro.ogv"
+      },
+      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "10.0",
+      "label": "Allods Online 10.0",
+      "client": "16.0",
+      "note": "vidéo conservée dans le client 16.0",
+      "theme_note": "approximation (client 15.0)",
+      "video": {
+        "pak": "data/Packs/Video.pak",
+        "entry": "Video/10_0Events/MainMenu/MainMenu.ogv",
+        "intro": "Video/10_0Events/MainMenu/Intro.ogv"
+      },
+      "theme": { "client": "15.0", "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "11.0",
+      "label": "Allods Online 11.0",
+      "client": "16.0",
+      "note": "vidéo conservée dans le client 16.0",
+      "theme_note": "approximation (client 15.0)",
+      "video": {
+        "pak": "data/Packs/Video.pak",
+        "entry": "Video/11_0Events/MainMenu/MainMenu.ogv",
+        "intro": "Video/11_0Events/MainMenu/Intro.ogv"
+      },
+      "theme": { "client": "15.0", "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "12.0",
+      "label": "Allods Online 12.0",
+      "client": "16.0",
+      "note": "vidéo conservée dans le client 16.0",
+      "theme_note": "approximation (client 15.0)",
+      "video": {
+        "pak": "data/Packs/Video.pak",
+        "entry": "Video/12_0Events/MainMenu/MainMenu.ogv",
+        "intro": "Video/12_0Events/MainMenu/Intro.ogv"
+      },
+      "theme": { "client": "15.0", "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "13.0",
+      "label": "Allods Online 13.0",
+      "client": "16.0",
+      "note": "vidéo conservée dans le client 16.0",
+      "theme_note": "approximation (client 15.0)",
+      "video": {
+        "pak": "data/Packs/Video.pak",
+        "entry": "Video/13_0Events/MainMenu/MainMenu.ogv",
+        "intro": "Video/13_0Events/MainMenu/Intro.ogv"
+      },
+      "theme": { "client": "15.0", "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "14.0",
+      "label": "Allods Online 14.0",
+      "client": "16.0",
+      "note": "vidéo conservée dans le client 16.0",
+      "theme_note": "approximation (client 15.0)",
+      "video": {
+        "pak": "data/Packs/Video.pak",
+        "entry": "Video/14_0Events/MainMenu/MainMenu.ogv",
+        "intro": "Video/14_0Events/MainMenu/Intro.ogv"
+      },
+      "theme": { "client": "15.0", "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "15.0",
+      "label": "Allods Online 15.0",
+      "client": "16.0",
+      "note": "vidéo conservée dans le client 16.0",
+      "video": {
+        "pak": "data/Packs/Video.pak",
+        "entry": "Video/15_0Events/MainMenu/MainMenu.ogv",
+        "intro": "Video/15_0Events/MainMenu/Intro.ogv"
+      },
+      "theme": {
+        "client": "15.0",
+        "pak": "data/Packs/SFX_Music.Mini.pak",
+        "entry": "SFX/Music/Music_Menu.fsb",
+        "prefer": "MainMenu_DesertDreams"
+      }
+    },
+    {
+      "version": "16.0",
+      "label": "Allods Online 16.0",
+      "client": "16.0",
+      "video": {
+        "pak": "data/Packs/Video.pak",
+        "entry": "Video/16_0Events/MainMenu/MainMenu.ogv",
+        "intro": "Video/16_0Events/MainMenu/Intro.ogv"
+      },
+      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    },
+    {
+      "version": "17.0",
+      "label": "Allods Online 17.0",
+      "client": "17.0",
+      "video": {
+        "pak": "data/Packs/Video.pak",
+        "entry": "Video/17_0Events/MainMenu/MainMenu.ogv",
+        "intro": "Video/17_0Events/MainMenu/Intro.ogv"
+      },
+      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+    }
+  ]
+}
