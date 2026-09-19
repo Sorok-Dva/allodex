@@ -1,50 +1,99 @@
-import { T, tex } from '@/lib/assets';
+import { useRef } from 'react';
+import { T, sprite, tex } from '@/lib/assets';
 import { subCategoryCounts } from '@/data/medals.logic';
 import type { MedalsDataset } from '@/data/medals.types';
+import { GameStrip } from '@/components/game/GameStrip';
+import { GameScrollbar } from '@/components/game/GameScrollbar';
 import type { MedalsState } from './useMedalsState';
 import s from './MedalsNavigation.module.css';
 
+/** Pas entre deux lignes de la sous-liste (`refs/astral.png` : textes à y 453 et 476). */
+const SUB_ROW = 23;
+/** Marges verticales du parchemin autour des lignes (12 px en haut, 15 px en bas). */
+const SUB_PADDING = 27;
+/** Le jeu utilise un curseur d'ascenseur de taille fixe (20 px), pas proportionnel. */
+const THUMB = 20;
+/**
+ * « Progression » est une vue, pas une catégorie dépliable : elle n'a pas de médaillon
+ * +/− et le clic reste sans effet (spec § 7.2). C'est toujours la première entrée de
+ * l'ordre du jeu.
+ */
+const PROGRESSION_INDEX = 0;
+
 export function MedalsNavigation({ ds, state }: { ds: MedalsDataset; state: MedalsState }) {
+  const listRef = useRef<HTMLDivElement>(null);
+
   return (
-    <aside className={s.nav} style={{ backgroundImage: `url(${tex(`${T.medals}/FrameNavigation`)})` }}>
-      <label className={s.search} style={{ backgroundImage: `url(${tex(`${T.login}/EditlineFrame`)})` }}>
+    <div className={s.nav}>
+      <div className={s.search}>
+        <span className={s.searchFrame} style={{ borderImageSource: `url(${sprite('search-field')})` }} aria-hidden="true" />
         <input
+          className={s.searchInput}
           value={state.query}
           onChange={e => state.setQuery(e.target.value)}
           placeholder="Recherche de succès..."
           spellCheck={false}
           aria-label="Recherche de succès"
         />
-      </label>
+      </div>
 
-      <ul className={s.categories}>
-        {ds.categories.map((cat, c) => {
-          const open = state.openCategory === c;
-          return (
-            <li key={cat.name} className={s.category}>
-              <button type="button" className={`${s.catButton} ${open ? s.catOpen : ''}`} aria-expanded={open} onClick={() => state.toggleCategory(c)}>
-                <span>{cat.name}</span>
-                <span className={s.toggle}>{open ? '−' : '+'}</span>
-              </button>
-              {open && (
-                <ul className={s.subList} style={{ backgroundImage: `url(${tex(`${T.medals}/CategoryContent`)})` }}>
-                  {cat.subCategories.map((sub, i) => {
-                    const { done, total } = subCategoryCounts(ds, c, i);
-                    const active = !state.query && state.selected.categoryIndex === c && state.selected.subCategoryIndex === i;
-                    return (
-                      <li key={sub.name}>
-                        <button type="button" className={`${s.subButton} ${active ? s.subActive : ''}`} onClick={() => state.select(c, i)}>
-                          {sub.name} - {done}/{total}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-    </aside>
+      <div className={s.viewport} ref={listRef}>
+        <ul className={s.list}>
+          {ds.categories.map((cat, c) => {
+            const open = state.openCategory === c;
+            const foldable = c !== PROGRESSION_INDEX;
+            return (
+              <li key={cat.name} className={s.item}>
+                <button
+                  type="button"
+                  className={s.pill}
+                  aria-expanded={foldable ? open : undefined}
+                  onClick={foldable ? () => state.toggleCategory(c) : undefined}
+                >
+                  <GameStrip base="pill" cap={22} className={`${s.pillSkin} ${open ? s.pillOpen : ''}`} />
+                  <span className={s.pillLabel}>{cat.name}</span>
+                  {foldable && (
+                    <span
+                      className={s.medallion}
+                      style={{ backgroundImage: `url(${sprite(open ? 'medallion-minus' : 'medallion-plus')})` }}
+                    />
+                  )}
+                </button>
+
+                {open && (
+                  <div className={s.subWrap} style={{ height: cat.subCategories.length * SUB_ROW + SUB_PADDING }}>
+                    <span
+                      className={s.parchment}
+                      style={{ backgroundImage: `url(${tex(`${T.medals}/CategoryContent`)})` }}
+                      aria-hidden="true"
+                    />
+                    <ul className={s.subList}>
+                      {cat.subCategories.map((sub, i) => {
+                        const { done, total } = subCategoryCounts(ds, c, i);
+                        const active = state.selected?.categoryIndex === c && state.selected.subCategoryIndex === i;
+                        return (
+                          <li key={sub.name}>
+                            <button
+                              type="button"
+                              className={`${s.subRow} ${active ? s.subActive : ''}`}
+                              style={{ top: 12 + i * SUB_ROW }}
+                              onClick={() => state.select(c, i)}
+                            >
+                              {sub.name} - {done}/{total}
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      <GameScrollbar targetRef={listRef} thumbSize={THUMB} className={s.scrollbar} />
+    </div>
   );
 }

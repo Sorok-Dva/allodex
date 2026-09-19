@@ -1,0 +1,4 @@
+.strip { position: absolute; inset: 0; display: block; pointer-events: none; }
+.strip > span { position: absolute; top: 0; bottom: 0; background-position: 0 0; }
+.mid { background-repeat: repeat-x; }
+.cap { background-repeat: no-repeat; }

@@ -1,0 +1,19 @@
+.bar { position: absolute; width: 22px; }
+
+.arrow {
+  position: absolute; left: 0; width: 22px; display: block;
+  background-repeat: no-repeat; background-position: 0 0; cursor: inherit;
+}
+.up { top: 0; }
+.down { bottom: 0; }
+/* Le jeu grise la flèche quand on ne peut plus défiler dans ce sens ; les captures ne
+   fournissent que l'état actif, la variante inactive est calculée (voir GameFilters). */
+.off { filter: url(#game-arrow-off); }
+
+.track { position: absolute; left: 0; width: 22px; background-repeat: repeat-y; background-position: 0 0; }
+
+.thumb {
+  position: absolute; left: 2px; width: 19px;
+  background-repeat: no-repeat; background-size: 100% 100%;
+  cursor: inherit; touch-action: none;
+}

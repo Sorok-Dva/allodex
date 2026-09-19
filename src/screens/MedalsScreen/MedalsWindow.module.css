@@ -1,0 +1,79 @@
+/* Géométrie relevée sur refs/astral.png (1920 × 1009) ; repère local = écran − (518, 191).
+   Fenêtre 886 × 592 : rails verts x 518→1404, y 191→783. */
+.window {
+  position: relative;
+  width: 886px;
+  height: 592px;
+  flex: none;
+  font-family: var(--font-serif);
+}
+.window > div, .window > button { position: absolute; }
+
+/* Plaque de titre brune : x 574→1349 (775 px), y 191→222 (31 px). */
+.plate { left: 56px; top: 0; width: 775px; height: 31px; }
+.title {
+  position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 4px; font-size: 16px; line-height: 19px; color: #ffeb73;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
+}
+
+/* Bandeau turquoise : y 222→259 (37 px), toute la largeur. */
+.band { left: 0; top: 31px; width: 886px; height: 37px; }
+.points {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 17.5px; color: #1f3f21;
+  text-shadow: 0 0 2px rgba(196, 232, 216, 0.9), 0 1px 0 rgba(196, 232, 216, 0.75);
+}
+
+/* Rails verts : haut y 258→269, bas y 762→783, droite 14 px. Le rail gauche (20 px)
+   n'a pas de sprite dédié : il est porté par FrameNavigation, qui en reproduit aussi
+   les rivets périodiques (erreur 11,5 avec la tranche répétée, 4,0 avec la texture). */
+.railTop { left: 0; top: 67px; width: 886px; height: 11px; background-repeat: repeat-x; }
+.railBottom { left: 0; top: 571px; width: 886px; height: 21px; background-repeat: repeat-x; }
+.railRight { left: 872px; top: 86px; width: 14px; height: 488px; background-repeat: repeat-y; }
+.corner { width: 18px; height: 18px; background-repeat: no-repeat; }
+.cornerTl { left: 2px; top: 68px; }
+.cornerTr { left: 868px; top: 68px; }
+.cornerBl { left: 2px; top: 574px; }
+.cornerBr { left: 868px; top: 574px; }
+
+/* Fond de la colonne gauche (FrameNavigation, 329 × 630) : recalage affine mesuré,
+   échelle 0,935 ; l'élément commence sous le bandeau pour ne pas déborder sur le décor. */
+.navBack {
+  left: 0; top: 68px; width: 302px; height: 524px;
+  background-repeat: no-repeat;
+  background-size: 307.5px 590.7px;
+  background-position: -5.5px -58.5px;
+  filter: url(#game-navframe);
+}
+
+/* Séparateur vertical : x 814→835, y 264→762. */
+.divider { left: 296px; top: 73px; width: 21px; height: 498px; background-repeat: repeat-y; }
+
+/* Colonnes : navigation x 518→832, contenu x 835→1390, sous le bandeau (y 259→762). */
+.navSlot { left: 0; top: 68px; width: 314px; height: 503px; }
+.contentSlot { left: 317px; top: 68px; width: 555px; height: 503px; display: flex; }
+
+/* Croix de fermeture : plaque olive 30 × 30 à x 1378→1408, y 199→229 ; disque orange de
+   22 px cerclé d'or, croix sombre. */
+.close {
+  left: 860px; top: 8px; width: 30px; height: 30px;
+  display: grid; place-items: center; cursor: inherit; border-radius: 3px;
+  background: linear-gradient(155deg, #737a38, #565e26 55%, #454c1f);
+  box-shadow: inset 0 0 0 1px rgba(26, 30, 10, 0.9), inset 0 1px 0 rgba(168, 178, 96, 0.4);
+}
+.closeDisc {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: radial-gradient(circle at 45% 38%, #ffb02c 0%, #de8a04 55%, #9c5a00 100%);
+  box-shadow: 0 0 0 2px #b5b03c, 0 0 0 3px rgba(30, 34, 12, 0.85), inset 0 0 3px rgba(90, 34, 0, 0.55);
+  display: grid; place-items: center;
+}
+.closeCross { position: relative; width: 14px; height: 14px; }
+.closeCross::before, .closeCross::after {
+  content: ''; position: absolute; left: 0; top: 5.5px; width: 14px; height: 3px;
+  background: #1a0d00; border-radius: 1px;
+}
+.closeCross::before { transform: rotate(45deg); }
+.closeCross::after { transform: rotate(-45deg); }
+.close:hover .closeDisc { filter: brightness(1.15); }
+.close:active .closeDisc { filter: brightness(0.85); }

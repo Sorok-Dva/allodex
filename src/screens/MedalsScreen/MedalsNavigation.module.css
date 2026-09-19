@@ -1,22 +1,76 @@
-.nav {
-  width: 268px; padding: 14px 12px 12px; display: flex; flex-direction: column; gap: 10px;
-  background: center / 100% 100% no-repeat;
-}
-.search { display: block; height: 36px; background: center / 100% 100% no-repeat; padding: 6px 16px; }
-.search input { width: 100%; height: 100%; background: transparent; border: 0; outline: 0; color: #dfe9d8; font: italic 16px var(--font-serif); }
-.search input::placeholder { color: var(--search-green); }
+/* Repère local : origine de la colonne = écran (518, 259), soit le haut du rail sous le bandeau. */
+.nav { position: relative; width: 100%; height: 100%; }
 
-.categories { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
-.catButton {
-  width: 100%; height: 30px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px;
-  background: linear-gradient(#3d5a3d, #22361f); border: 1px solid #6c8a5a; border-radius: 4px;
-  color: var(--gold); font: 700 17px var(--font-caps); text-shadow: 0 1px 1px #000;
+/* Champ de recherche : sprite 232 × 24 en 9-tranches, écran x 557→789, y 274→298. */
+.search { position: absolute; left: 39px; top: 15px; width: 232px; height: 24px; }
+.searchFrame {
+  position: absolute; inset: 0; border-style: solid; border-width: 5px 6px;
+  border-image-slice: 5 6 5 6 fill; border-image-width: 5px 6px 5px 6px; border-image-repeat: stretch;
 }
-.catButton:hover { filter: brightness(1.15); }
-.catOpen { border-color: #d9b45a; }
-.toggle { width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(#e6d18a, #8f6a1c); color: #2a1f05; font-size: 14px; line-height: 18px; text-align: center; }
+.searchInput {
+  position: absolute; inset: 0; width: 100%; padding: 0 6px 2px 7px;
+  background: transparent; border: 0; outline: 0;
+  font: 15.5px var(--font-serif); color: #cfe0c8; cursor: inherit;
+}
+.searchInput::placeholder { color: #769d73; opacity: 1; }
 
-.subList { list-style: none; margin: 4px 0 0; padding: 10px 14px; background: center / 100% 100% no-repeat; }
-.subButton { width: 100%; text-align: left; padding: 4px 6px; color: var(--ink); font: 600 16px var(--font-serif); }
-.subButton:hover { background: rgba(255, 255, 255, 0.18); }
-.subActive { background: rgba(255, 255, 255, 0.35); box-shadow: inset 0 0 0 1px rgba(60, 40, 10, 0.25); }
+/* Liste des catégories : écran x 539→781, y 318→752 (clipée par le cadre de bois). */
+.viewport {
+  position: absolute; left: 21px; top: 59px; width: 242px; height: 434px;
+  overflow: hidden auto; scrollbar-width: none;
+}
+.viewport::-webkit-scrollbar { width: 0; height: 0; }
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.item { display: flex; flex-direction: column; }
+
+/* Pilule : sprites pill-left/mid/right, 242 × 28, pas de 30. */
+.pill {
+  position: relative; width: 242px; height: 28px; flex: none; display: block;
+  cursor: inherit; text-align: left;
+}
+.pillSkin { transition: filter 80ms linear; }
+.pill:hover .pillSkin { filter: brightness(1.12); }
+/* Catégorie dépliée : le jeu remplace le liseré or par un liseré vert (voir GameFilters). */
+.pillOpen, .pill:hover .pillOpen { filter: url(#game-pill-open); }
+
+.pillLabel {
+  position: absolute; left: 25px; right: 34px; top: 2px; height: 28px; line-height: 27px;
+  font-size: 14px; color: #b0bf88; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
+  overflow: hidden; white-space: nowrap;
+}
+.medallion { position: absolute; left: 214px; top: 4px; width: 24px; height: 21px; background-repeat: no-repeat; }
+
+/* Sous-liste : parchemin CategoryContent, écran x 539→779 et y 437→509 ; 23 px de pas
+   entre lignes, 27 px de marges verticales (voir SUB_ROW / SUB_PADDING). */
+.subWrap { position: relative; width: 240px; margin: 1px 0 3px; flex: none; }
+/* Le jeu étire la texture 264 × 124 sur toute la boîte (mesuré : l'étirement intégral
+   colle deux fois mieux à la capture qu'un 9-tranches) et l'éclaircit légèrement. */
+.parchment {
+  position: absolute; inset: 0;
+  background-repeat: no-repeat; background-size: 100% 100%;
+  filter: url(#game-parchment);
+}
+.subList { list-style: none; margin: 0; padding: 0; }
+.subRow {
+  position: absolute; left: 0; width: 240px; height: 24px; line-height: 24px;
+  padding-left: 28px; font-size: 14px; color: #351f09; text-align: left; cursor: inherit;
+}
+/* Sous-catégorie active : le jeu pose un voile brun dégradé, fort à gauche du texte
+   (x 575) et éteint vers x 755. Couleur et profil d'opacité ajustés aux moindres
+   carrés sur refs/astral.png (erreur moyenne 19 → 3,5). */
+.subActive::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to right,
+    rgba(80, 20, 20, 0) 11%, rgba(80, 20, 20, 0.285) 15%, rgba(80, 20, 20, 0.245) 27.5%,
+    rgba(80, 20, 20, 0.195) 40%, rgba(80, 20, 20, 0.145) 52.5%, rgba(80, 20, 20, 0.115) 65%,
+    rgba(80, 20, 20, 0.05) 77.5%, rgba(80, 20, 20, 0) 90%);
+}
+.subRow:not(.subActive):hover::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to right,
+    rgba(80, 20, 20, 0) 11%, rgba(80, 20, 20, 0.13) 15%, rgba(80, 20, 20, 0.09) 52.5%,
+    rgba(80, 20, 20, 0) 90%);
+}
+
+/* Ascenseur : écran x 795→817, y 307→760. */
+.scrollbar { left: 277px; top: 48px; height: 453px; }
