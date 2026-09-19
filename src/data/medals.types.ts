@@ -3,6 +3,7 @@ export type MedalRank = {
   name: string;
   description: string;
   score: number;              // points de succès gagnés
+  image?: string;             // chemin logique de texture spécifique au palier, si différent de l'icône du succès
   reward?: { description: string };
 };
 
@@ -18,9 +19,11 @@ export type Medal = {
   ranks: MedalRank[];         // longueur >= 1
   currentRank: number;        // 0 = aucun palier atteint ; ranks.length = terminé
   progress?: { value: number; title?: string };
-  finishDate?: string;        // ISO 8601, présent si terminé
+  finishDate?: string;        // ISO 8601 (date ou date-heure), présent si terminé
   dressCollection?: (ConditionItem & { slot: string })[];
-  medalCollection?: (ConditionItem & { medalId: string })[];
+  medalCollection?: (ConditionItem & { medalId: string; icon: string; rank: number })[];
+  tracked?: boolean;          // succès suivi par le joueur (barre de suivi HUD)
+  placeholder?: boolean;      // texte/valeurs approximatifs, à défaut de capture réelle du jeu
 };
 
 export type MedalSubCategory = { name: string };

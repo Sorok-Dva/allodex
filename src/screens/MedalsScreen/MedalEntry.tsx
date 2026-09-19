@@ -4,7 +4,7 @@ import { currentRankOf, isComplete } from '@/data/medals.logic';
 import { T, tex } from '@/lib/assets';
 import { MedalBadge } from '@/components/game/MedalBadge';
 import { ProgressBar } from '@/components/game/ProgressBar';
-import { formatGameDate } from './formatDate';
+import { formatGameDate } from '@/lib/dates';
 import s from './MedalEntry.module.css';
 
 type TipPos = { left: number; top: number };

@@ -28,6 +28,12 @@ export function filterMedals(medals: Medal[], filter: MedalFilter): Medal[] {
   return medals;
 }
 
+export const FILTER_LABELS: Record<MedalFilter, string> = {
+  all: 'Tout',
+  completed: 'Terminé',
+  inProgress: 'Pas terminé',
+};
+
 export function normalize(s: string): string {
   return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 }
@@ -63,6 +69,9 @@ export function parseDataset(raw: unknown): MedalsDataset {
     if (!cat.subCategories[m.subCategoryIndex]) fail(`${p}.subCategoryIndex`, `sous-catégorie ${m.subCategoryIndex} inexistante`);
     if (typeof m.currentRank !== 'number' || !Number.isInteger(m.currentRank)) fail(`${p}.currentRank`, 'nombre entier attendu');
     if (m.currentRank < 0 || m.currentRank > m.ranks.length) fail(`${p}.currentRank`, 'hors bornes');
+    m.medalCollection?.forEach((c, k) => {
+      if (!Number.isInteger(c.rank) || c.rank < 1) fail(`${p}.medalCollection[${k}].rank`, 'entier >= 1 attendu');
+    });
   });
   return ds;
 }

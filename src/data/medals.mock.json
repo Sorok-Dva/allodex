@@ -1,168 +1,1503 @@
 {
   "totalScore": 24690,
   "categories": [
-    { "name": "Progression", "subCategories": [{ "name": "Général" }] },
-    { "name": "Personnage", "subCategories": [{ "name": "Équipement" }, { "name": "Professions" }, { "name": "Divers" }, { "name": "Long service" }] },
-    { "name": "Batailles", "subCategories": [{ "name": "Escarmouches" }, { "name": "Domination" }] },
-    { "name": "Astral", "subCategories": [{ "name": "Général" }] },
-    { "name": "Raids précédents", "subCategories": [{ "name": "Laboratoire central" }] },
-    { "name": "Zones de l'histoire", "subCategories": [{ "name": "Ferris" }] },
-    { "name": "Ordre", "subCategories": [{ "name": "Général" }] },
-    { "name": "Raids actuels", "subCategories": [{ "name": "Général" }] },
-    { "name": "Aventures héroïques", "subCategories": [{ "name": "Bestiaire" }] },
-    { "name": "Succès rares", "subCategories": [{ "name": "Général" }] }
-  ],
-  "medals": [
     {
-      "id": "equip-immortalite", "name": "Paré pour l'aventure ! (Immortalité)",
-      "description": "Augmentez la côte d'équipement maximum à 100 000 points.",
-      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet", "categoryIndex": 1, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 100000, "name": "Paré pour l'aventure ! (Immortalité)", "description": "Augmentez la côte d'équipement maximum à 100 000 points.", "score": 10 }],
-      "currentRank": 1, "progress": { "value": 100000 }, "finishDate": "2017-09-13"
-    },
-    {
-      "id": "equip-reveil", "name": "Paré pour l'aventure ! (Réveil)",
-      "description": "Augmentez la côte d'équipement maximum à 21 500 points.",
-      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet", "categoryIndex": 1, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 21500, "name": "Paré pour l'aventure ! (Réveil)", "description": "Augmentez la côte d'équipement maximum à 21 500 points.", "score": 10 }],
-      "currentRank": 1, "progress": { "value": 21500 }, "finishDate": "2019-01-28"
-    },
-    {
-      "id": "dragon-temps-nouveaux", "name": "Dragon des temps nouveaux",
-      "description": "Équipez un ensemble complet de Reliques du dragon.",
-      "icon": "Interface/Icons/Special/Currency/DiamondMedal", "categoryIndex": 1, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 1, "name": "Dragon des temps nouveaux", "description": "Équipez un ensemble complet de Reliques du dragon.", "score": 100 }],
-      "currentRank": 1, "finishDate": "2020-01-29",
-      "dressCollection": [
-        { "slot": "chest", "description": "Torse", "success": true }, { "slot": "waist", "description": "Taille", "success": true },
-        { "slot": "feet", "description": "Pieds", "success": true }, { "slot": "wrist", "description": "Poignets", "success": true },
-        { "slot": "ear1", "description": "Oreilles", "success": true }, { "slot": "ear2", "description": "Oreilles", "success": true },
-        { "slot": "hands", "description": "Mains", "success": true }, { "slot": "head", "description": "Tête", "success": true },
-        { "slot": "shoulders", "description": "Épaules", "success": true }, { "slot": "neck", "description": "Cou", "success": true }
+      "name": "Progression",
+      "subCategories": [
+        {
+          "name": "Général"
+        }
       ]
     },
     {
-      "id": "divin", "name": "Divin", "description": "Équipez-vous d'un ensemble complet d'équipement fabuleux.",
-      "icon": "Interface/Icons/Special/Currency/DiamondMedal", "categoryIndex": 1, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 1, "name": "Divin", "description": "Équipez-vous d'un ensemble complet d'équipement fabuleux.", "score": 50 }],
-      "currentRank": 1, "finishDate": "2021-03-02"
+      "name": "Personnage",
+      "subCategories": [
+        {
+          "name": "Équipement"
+        },
+        {
+          "name": "Professions"
+        },
+        {
+          "name": "Divers"
+        },
+        {
+          "name": "Long service"
+        }
+      ]
     },
     {
-      "id": "glaneur", "name": "Glaneur", "description": "Créez des Amalgames avec des gouttes d'Amalgame.",
-      "icon": "Interface/Icons/Misc/Event/GoldMedal", "categoryIndex": 1, "subCategoryIndex": 1,
+      "name": "Batailles",
+      "subCategories": [
+        {
+          "name": "Escarmouches"
+        },
+        {
+          "name": "Domination"
+        }
+      ]
+    },
+    {
+      "name": "Astral",
+      "subCategories": [
+        {
+          "name": "Astral ouvert"
+        },
+        {
+          "name": "Allods Astraux"
+        }
+      ]
+    },
+    {
+      "name": "Raids précédents",
+      "subCategories": [
+        {
+          "name": "Laboratoire central"
+        }
+      ]
+    },
+    {
+      "name": "Zones de l'histoire",
+      "subCategories": [
+        {
+          "name": "Ferris"
+        }
+      ]
+    },
+    {
+      "name": "Ordre",
+      "subCategories": [
+        {
+          "name": "Général"
+        }
+      ]
+    },
+    {
+      "name": "Raids actuels",
+      "subCategories": [
+        {
+          "name": "Général"
+        }
+      ]
+    },
+    {
+      "name": "Aventures héroïques",
+      "subCategories": [
+        {
+          "name": "Bestiaire"
+        }
+      ]
+    },
+    {
+      "name": "Succès rares",
+      "subCategories": [
+        {
+          "name": "Général"
+        }
+      ]
+    },
+    {
+      "name": "Étincelle",
+      "subCategories": [
+        {
+          "name": "Général"
+        }
+      ]
+    },
+    {
+      "name": "Royaume des éléments",
+      "subCategories": [
+        {
+          "name": "Général"
+        }
+      ]
+    },
+    {
+      "name": "Exploration du monde",
+      "subCategories": [
+        {
+          "name": "Général"
+        }
+      ]
+    },
+    {
+      "name": "Parchemins de retour",
+      "subCategories": [
+        {
+          "name": "Général"
+        }
+      ]
+    },
+    {
+      "name": "Allod privé",
+      "subCategories": [
+        {
+          "name": "Général"
+        }
+      ]
+    },
+    {
+      "name": "Événements",
+      "subCategories": [
+        {
+          "name": "Général"
+        }
+      ]
+    },
+    {
+      "name": "Forteresse de guilde",
+      "subCategories": [
+        {
+          "name": "Général"
+        }
+      ]
+    }
+  ],
+  "medals": [
+    {
+      "id": "equip-immortalite",
+      "name": "Paré pour l'aventure ! (Immortalité)",
+      "description": "Augmentez la côte d'équipement maximum à 100 000 points.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet",
+      "categoryIndex": 1,
+      "subCategoryIndex": 0,
       "ranks": [
-        { "completeProgress": 10, "name": "Goutte à goutte", "description": "Créez 10 Amalgames avec des gouttes d'Amalgame.", "score": 10 },
-        { "completeProgress": 50, "name": "Glaneur", "description": "Créez 50 Amalgames avec des gouttes d'Amalgame.", "score": 10 },
-        { "completeProgress": 100, "name": "Glaneur", "description": "Créez 100 Amalgames avec des gouttes d'Amalgame.", "score": 30 },
-        { "completeProgress": 1000, "name": "Magnat de l'Amalgame", "description": "Créez 1000 Amalgames avec des gouttes d'Amalgame.", "score": 100 }
+        {
+          "completeProgress": 100000,
+          "name": "Paré pour l'aventure ! (Immortalité)",
+          "description": "Augmentez la côte d'équipement maximum à 100 000 points.",
+          "score": 10
+        }
       ],
-      "currentRank": 2, "progress": { "value": 73, "title": "Amalgame récolté" }
+      "currentRank": 1,
+      "progress": {
+        "value": 100000
+      },
+      "finishDate": "2017-09-13"
     },
     {
-      "id": "escarmouches", "name": "Légende du Goblinoball", "description": "Remportez des Escarmouches.",
-      "icon": "Interface/Icons/Misc/Event/GoldMedal", "categoryIndex": 2, "subCategoryIndex": 0,
+      "id": "equip-reveil",
+      "name": "Paré pour l'aventure ! (Réveil)",
+      "description": "Augmentez la côte d'équipement maximum à 21 500 points.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet",
+      "categoryIndex": 1,
+      "subCategoryIndex": 0,
       "ranks": [
-        { "completeProgress": 5, "name": "Parties gagnées", "description": "Remportez 5 Escarmouches.", "score": 10 },
-        { "completeProgress": 50, "name": "Parties gagnées", "description": "Remportez 50 Escarmouches.", "score": 30 },
-        { "completeProgress": 500, "name": "Légende du Goblinoball", "description": "Remportez 500 Escarmouches.", "score": 100 }
+        {
+          "completeProgress": 21500,
+          "name": "Paré pour l'aventure ! (Réveil)",
+          "description": "Augmentez la côte d'équipement maximum à 21 500 points.",
+          "score": 10
+        }
       ],
-      "currentRank": 1, "progress": { "value": 23, "title": "Parties gagnées" }
+      "currentRank": 1,
+      "progress": {
+        "value": 21500
+      },
+      "finishDate": "2019-01-28"
     },
     {
-      "id": "vieille-querelle", "name": "Vieille querelle", "description": "Éliminez votre tueur.",
-      "icon": "Interface/Icons/Misc/Event/GoldMedal", "categoryIndex": 2, "subCategoryIndex": 1,
+      "id": "dragon-temps-nouveaux",
+      "name": "Dragon des temps nouveaux",
+      "description": "Équipez un ensemble complet de Reliques du dragon.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 1,
+      "subCategoryIndex": 0,
       "ranks": [
-        { "completeProgress": 5, "name": "Vieille querelle", "description": "Éliminez votre tueur 5 fois.", "score": 10 },
-        { "completeProgress": 100, "name": "Vieille querelle", "description": "Éliminez votre tueur 100 fois.", "score": 50 },
-        { "completeProgress": 500, "name": "Vieille querelle", "description": "Éliminez votre tueur 500 fois.", "score": 500 }
+        {
+          "completeProgress": 1,
+          "name": "Dragon des temps nouveaux",
+          "description": "Équipez un ensemble complet de Reliques du dragon.",
+          "score": 100
+        }
       ],
-      "currentRank": 0, "progress": { "value": 2 }
+      "currentRank": 1,
+      "finishDate": "2020-01-29",
+      "dressCollection": [
+        {
+          "slot": "chest",
+          "description": "Torse",
+          "success": true
+        },
+        {
+          "slot": "waist",
+          "description": "Taille",
+          "success": true
+        },
+        {
+          "slot": "feet",
+          "description": "Pieds",
+          "success": true
+        },
+        {
+          "slot": "wrist",
+          "description": "Poignets",
+          "success": true
+        },
+        {
+          "slot": "ear1",
+          "description": "Oreilles",
+          "success": true
+        },
+        {
+          "slot": "ear2",
+          "description": "Oreilles",
+          "success": true
+        },
+        {
+          "slot": "hands",
+          "description": "Mains",
+          "success": true
+        },
+        {
+          "slot": "head",
+          "description": "Tête",
+          "success": true
+        },
+        {
+          "slot": "shoulders",
+          "description": "Épaules",
+          "success": true
+        },
+        {
+          "slot": "neck",
+          "description": "Cou",
+          "success": true
+        }
+      ]
     },
     {
-      "id": "faux-semblants", "name": "Faux semblants", "description": "Battez le clone d'Herbert dans le Laboratoire central.",
-      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 4, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 1, "name": "Faux semblants", "description": "Battez le clone d'Herbert dans le Laboratoire central.", "score": 30 }],
-      "currentRank": 1, "finishDate": "2016-11-05"
+      "id": "divin",
+      "name": "Divin",
+      "description": "Équipez-vous d'un ensemble complet d'équipement fabuleux.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 1,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Divin",
+          "description": "Équipez-vous d'un ensemble complet d'équipement fabuleux.",
+          "score": 50
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2021-03-02"
     },
     {
-      "id": "variable-indefinie", "name": "Variable indéfinie", "description": "Battez le Mécanoïde dans le Laboratoire central.",
-      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 4, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 1, "name": "Variable indéfinie", "description": "Battez le Mécanoïde dans le Laboratoire central.", "score": 30 }],
+      "id": "glaneur",
+      "name": "Glaneur",
+      "description": "Créez des Amalgames avec des gouttes d'Amalgame.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 1,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 10,
+          "name": "Goutte à goutte",
+          "description": "Créez 10 Amalgames avec des gouttes d'Amalgame.",
+          "score": 10
+        },
+        {
+          "completeProgress": 50,
+          "name": "Glaneur",
+          "description": "Créez 50 Amalgames avec des gouttes d'Amalgame.",
+          "score": 10
+        },
+        {
+          "completeProgress": 100,
+          "name": "Glaneur",
+          "description": "Créez 100 Amalgames avec des gouttes d'Amalgame.",
+          "score": 30
+        },
+        {
+          "completeProgress": 1000,
+          "name": "Magnat de l'Amalgame",
+          "description": "Créez 1000 Amalgames avec des gouttes d'Amalgame.",
+          "score": 100
+        }
+      ],
+      "currentRank": 2,
+      "progress": {
+        "value": 73,
+        "title": "Amalgame récolté"
+      }
+    },
+    {
+      "id": "escarmouches",
+      "name": "Légende du Goblinoball",
+      "description": "Remportez des Escarmouches.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 2,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 5,
+          "name": "Parties gagnées",
+          "description": "Remportez 5 Escarmouches.",
+          "score": 10
+        },
+        {
+          "completeProgress": 50,
+          "name": "Parties gagnées",
+          "description": "Remportez 50 Escarmouches.",
+          "score": 30
+        },
+        {
+          "completeProgress": 500,
+          "name": "Légende du Goblinoball",
+          "description": "Remportez 500 Escarmouches.",
+          "score": 100
+        }
+      ],
+      "currentRank": 1,
+      "progress": {
+        "value": 23,
+        "title": "Parties gagnées"
+      }
+    },
+    {
+      "id": "vieille-querelle",
+      "name": "Vieille querelle",
+      "description": "Éliminez votre tueur.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 2,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 5,
+          "name": "Vieille querelle",
+          "description": "Éliminez votre tueur 5 fois.",
+          "score": 10
+        },
+        {
+          "completeProgress": 100,
+          "name": "Vieille querelle",
+          "description": "Éliminez votre tueur 100 fois.",
+          "score": 50
+        },
+        {
+          "completeProgress": 500,
+          "name": "Vieille querelle",
+          "description": "Éliminez votre tueur 500 fois.",
+          "score": 500
+        }
+      ],
+      "currentRank": 0,
+      "progress": {
+        "value": 2
+      }
+    },
+    {
+      "id": "faux-semblants",
+      "name": "Faux semblants",
+      "description": "Battez le clone d'Herbert dans le Laboratoire central.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 4,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Faux semblants",
+          "description": "Battez le clone d'Herbert dans le Laboratoire central.",
+          "score": 30
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2016-11-05"
+    },
+    {
+      "id": "variable-indefinie",
+      "name": "Variable indéfinie",
+      "description": "Battez le Mécanoïde dans le Laboratoire central.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 4,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Variable indéfinie",
+          "description": "Battez le Mécanoïde dans le Laboratoire central.",
+          "score": 30
+        }
+      ],
       "currentRank": 0
     },
     {
-      "id": "partie-terminee", "name": "Partie terminée", "description": "Battez Negus Jeeg dans le Laboratoire central.",
-      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 4, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 1, "name": "Partie terminée", "description": "Battez Negus Jeeg dans le Laboratoire central.", "score": 50 }],
+      "id": "partie-terminee",
+      "name": "Partie terminée",
+      "description": "Battez Negus Jeeg dans le Laboratoire central.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 4,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Partie terminée",
+          "description": "Battez Negus Jeeg dans le Laboratoire central.",
+          "score": 50
+        }
+      ],
       "currentRank": 0
     },
     {
-      "id": "petit-chef", "name": "Petit chef", "description": "Battez le chef Tungar dans les grandes batailles de Ferris.",
-      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 5, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 1, "name": "Petit chef", "description": "Battez le chef Tungar dans les grandes batailles de Ferris.", "score": 10 }],
-      "currentRank": 1, "finishDate": "2018-06-14"
+      "id": "petit-chef",
+      "name": "Petit chef",
+      "description": "Battez le chef Tungar dans les grandes batailles de Ferris.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 5,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Petit chef",
+          "description": "Battez le chef Tungar dans les grandes batailles de Ferris.",
+          "score": 10
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2018-06-14"
     },
     {
-      "id": "provisions-hiver", "name": "Provisions pour l'hiver", "description": "Battez Toros dans les grandes batailles de Ferris.",
-      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 5, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 1, "name": "Provisions pour l'hiver", "description": "Battez Toros dans les grandes batailles de Ferris.", "score": 10 }],
+      "id": "provisions-hiver",
+      "name": "Provisions pour l'hiver",
+      "description": "Battez Toros dans les grandes batailles de Ferris.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 5,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Provisions pour l'hiver",
+          "description": "Battez Toros dans les grandes batailles de Ferris.",
+          "score": 10
+        }
+      ],
       "currentRank": 0
     },
     {
-      "id": "gros-gibier", "name": "Gros gibier", "description": "Éliminez Courlis-Khan dans le Bestiaire.",
-      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 8, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 1, "name": "Gros gibier", "description": "Éliminez Courlis-Khan dans le Bestiaire.", "score": 30 }],
-      "currentRank": 1, "finishDate": "2022-02-11"
+      "id": "gros-gibier",
+      "name": "Gros gibier",
+      "description": "Éliminez Courlis-Khan dans le Bestiaire.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 8,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Gros gibier",
+          "description": "Éliminez Courlis-Khan dans le Bestiaire.",
+          "score": 30
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2022-02-11"
     },
     {
-      "id": "cavaliers-tempete", "name": "Cavaliers de la tempête", "description": "Éliminez Havoc dans le Bestiaire.",
-      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 8, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 1, "name": "Cavaliers de la tempête", "description": "Éliminez Havoc dans le Bestiaire.", "score": 30 }],
+      "id": "cavaliers-tempete",
+      "name": "Cavaliers de la tempête",
+      "description": "Éliminez Havoc dans le Bestiaire.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 8,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Cavaliers de la tempête",
+          "description": "Éliminez Havoc dans le Bestiaire.",
+          "score": 30
+        }
+      ],
       "currentRank": 0
     },
     {
-      "id": "tenu-en-laisse", "name": "Tenu en laisse", "description": "Éliminez Rustle dans le Bestiaire.",
-      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 8, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 1, "name": "Tenu en laisse", "description": "Éliminez Rustle dans le Bestiaire.", "score": 30 }],
-      "currentRank": 1, "finishDate": "2022-02-18"
+      "id": "tenu-en-laisse",
+      "name": "Tenu en laisse",
+      "description": "Éliminez Rustle dans le Bestiaire.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 8,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Tenu en laisse",
+          "description": "Éliminez Rustle dans le Bestiaire.",
+          "score": 30
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2022-02-18"
     },
     {
-      "id": "licorne-magique", "name": "Licorne magique", "description": "Devenez un véritable chevaucheur de bâton en ramassant et en utilisant 100 poils de licorne.",
-      "icon": "Interface/Icons/Misc/Event/GoldMedal", "categoryIndex": 9, "subCategoryIndex": 0,
-      "ranks": [{ "completeProgress": 100, "name": "Licorne magique", "description": "Devenez un véritable chevaucheur de bâton en ramassant et en utilisant 100 poils de licorne.", "score": 500 }],
-      "currentRank": 0, "progress": { "value": 41, "title": "Je suis un chevaucheur de bâton." }
+      "id": "licorne-magique",
+      "name": "Licorne magique",
+      "description": "Devenez un véritable chevaucheur de bâton en ramassant et en utilisant 100 poils de licorne.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 9,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 100,
+          "name": "Licorne magique",
+          "description": "Devenez un véritable chevaucheur de bâton en ramassant et en utilisant 100 poils de licorne.",
+          "score": 500
+        }
+      ],
+      "currentRank": 0,
+      "progress": {
+        "value": 41,
+        "title": "Je suis un chevaucheur de bâton."
+      }
     },
     {
-      "id": "collectionneur-montures", "name": "Collectionneur",
+      "id": "collectionneur-montures",
+      "name": "Collectionneur",
       "description": "Apprenez des montures.",
-      "icon": "Interface/Icons/Misc/Event/GoldMedal", "categoryIndex": 1, "subCategoryIndex": 2,
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 1,
+      "subCategoryIndex": 2,
       "ranks": [
-        { "completeProgress": 10, "name": "Collectionneur", "description": "Apprenez 10 montures.", "score": 10 },
-        { "completeProgress": 50, "name": "Collectionneur", "description": "Apprenez 50 montures.", "score": 30 },
-        { "completeProgress": 100, "name": "Collectionneur", "description": "Apprenez 100 montures.", "score": 50 }
+        {
+          "completeProgress": 10,
+          "name": "Collectionneur",
+          "description": "Apprenez 10 montures.",
+          "score": 10
+        },
+        {
+          "completeProgress": 50,
+          "name": "Collectionneur",
+          "description": "Apprenez 50 montures.",
+          "score": 30
+        },
+        {
+          "completeProgress": 100,
+          "name": "Collectionneur",
+          "description": "Apprenez 100 montures.",
+          "score": 50
+        }
       ],
-      "currentRank": 2, "progress": { "value": 63, "title": "Montures apprises" }
+      "currentRank": 2,
+      "progress": {
+        "value": 63,
+        "title": "Montures apprises"
+      }
     },
     {
-      "id": "roi-de-la-piste", "name": "Roi de la piste",
+      "id": "roi-de-la-piste",
+      "name": "Roi de la piste",
       "description": "Gagnez une médaille d'or à la course de chariots à Ammer.",
-      "icon": "Interface/Icons/Special/Currency/DiamondMedal", "categoryIndex": 1, "subCategoryIndex": 2,
-      "ranks": [{ "completeProgress": 1, "name": "Roi de la piste", "description": "Gagnez une médaille d'or à la course de chariots à Ammer.", "score": 10 }],
-      "currentRank": 1, "finishDate": "2021-07-04"
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 1,
+      "subCategoryIndex": 2,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Roi de la piste",
+          "description": "Gagnez une médaille d'or à la course de chariots à Ammer.",
+          "score": 10
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2021-07-04"
     },
     {
-      "id": "veteran-sarnaut", "name": "Vétéran de Sarnaut",
+      "id": "veteran-sarnaut",
+      "name": "Vétéran de Sarnaut",
       "description": "Jouez pendant 1 an.",
-      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 1, "subCategoryIndex": 3,
-      "ranks": [{ "completeProgress": 365, "name": "Vétéran de Sarnaut", "description": "Jouez pendant 1 an.", "score": 30 }],
-      "currentRank": 1, "progress": { "value": 365 }, "finishDate": "2020-05-12"
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 1,
+      "subCategoryIndex": 3,
+      "ranks": [
+        {
+          "completeProgress": 365,
+          "name": "Vétéran de Sarnaut",
+          "description": "Jouez pendant 1 an.",
+          "score": 30
+        }
+      ],
+      "currentRank": 1,
+      "progress": {
+        "value": 365
+      },
+      "finishDate": "2020-05-12"
     },
     {
-      "id": "veteran-grande-campagne", "name": "Vétéran de la Grande Campagne Astrale",
+      "id": "veteran-grande-campagne",
+      "name": "Vétéran de la Grande Campagne Astrale",
       "description": "Jouez pendant 3 ans.",
-      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster", "categoryIndex": 1, "subCategoryIndex": 3,
-      "ranks": [{ "completeProgress": 1095, "name": "Vétéran de la Grande Campagne Astrale", "description": "Jouez pendant 3 ans.", "score": 100 }],
-      "currentRank": 0, "progress": { "value": 740, "title": "Jours joués" }
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 1,
+      "subCategoryIndex": 3,
+      "ranks": [
+        {
+          "completeProgress": 1095,
+          "name": "Vétéran de la Grande Campagne Astrale",
+          "description": "Jouez pendant 3 ans.",
+          "score": 100
+        }
+      ],
+      "currentRank": 0,
+      "progress": {
+        "value": 740,
+        "title": "Jours joués"
+      }
+    },
+    {
+      "id": "connecte-avec-les-etoiles",
+      "name": "Connecté avec les étoiles",
+      "description": "Restez connecté à l'Astral ouvert lors de 5 sessions d'observation stellaire.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 5,
+          "name": "Connecté avec les étoiles",
+          "description": "Restez connecté à l'Astral ouvert lors de 5 sessions d'observation stellaire.",
+          "score": 20,
+          "image": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster"
+        }
+      ],
+      "currentRank": 1,
+      "progress": {
+        "value": 5
+      },
+      "finishDate": "2026-08-29T20:54",
+      "tracked": true
+    },
+    {
+      "id": "proprietaire",
+      "name": "Propriétaire",
+      "description": "Devenez propriétaire de 10 Allods personnels.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 10,
+          "name": "Propriétaire",
+          "description": "Devenez propriétaire de 10 Allods personnels.",
+          "score": 30
+        }
+      ],
+      "currentRank": 1,
+      "progress": {
+        "value": 10
+      },
+      "finishDate": "2026-05-25"
+    },
+    {
+      "id": "parfait-astral",
+      "name": "Parfait !",
+      "description": "Obtenez un résultat parfait à l'ensemble des médailles Astrales suivies.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Parfait !",
+          "description": "Obtenez un résultat parfait à l'ensemble des médailles Astrales suivies.",
+          "score": 10
+        }
+      ],
+      "currentRank": 0,
+      "medalCollection": [
+        {
+          "medalId": "astral-medaille-1",
+          "description": "Médaille Astrale n° 1",
+          "success": false,
+          "icon": "Interface/Icons/Misc/Event/GoldMedal",
+          "rank": 1
+        },
+        {
+          "medalId": "astral-medaille-2",
+          "description": "Médaille Astrale n° 2",
+          "success": false,
+          "icon": "Interface/Icons/Misc/Event/GoldMedal",
+          "rank": 2
+        },
+        {
+          "medalId": "astral-medaille-3",
+          "description": "Médaille Astrale n° 3",
+          "success": false,
+          "icon": "Interface/Icons/Misc/Event/GoldMedal",
+          "rank": 3
+        },
+        {
+          "medalId": "astral-medaille-4",
+          "description": "Médaille Astrale n° 4",
+          "success": false,
+          "icon": "Interface/Icons/Misc/Event/GoldMedal",
+          "rank": 4
+        },
+        {
+          "medalId": "astral-medaille-5",
+          "description": "Médaille Astrale n° 5",
+          "success": false,
+          "icon": "Interface/Icons/Misc/Event/GoldMedal",
+          "rank": 5
+        },
+        {
+          "medalId": "astral-medaille-6",
+          "description": "Médaille Astrale n° 6",
+          "success": false,
+          "icon": "Interface/Icons/Misc/Event/GoldMedal",
+          "rank": 6
+        }
+      ]
+    },
+    {
+      "id": "tissu-d-ether",
+      "name": "Tissu d'Éther",
+      "description": "Récupérez un fragment de Tissu d'Éther dans l'Astral profond.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Tissu d'Éther",
+          "description": "Récupérez un fragment de Tissu d'Éther dans l'Astral profond.",
+          "score": 10
+        }
+      ],
+      "currentRank": 0
+    },
+    {
+      "id": "astralographiste",
+      "name": "Astralographiste",
+      "description": "Cartographiez les strates de l'Astral ouvert.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Astralographiste",
+          "description": "Cartographiez les strates de l'Astral ouvert.",
+          "score": 10
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-11-02"
+    },
+    {
+      "id": "biologiste-astrale",
+      "name": "Biologiste Astrale",
+      "description": "Étudiez la faune des Allods Astraux.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Biologiste Astrale",
+          "description": "Étudiez la faune des Allods Astraux.",
+          "score": 20
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2026-01-15"
+    },
+    {
+      "id": "voyageur-astral",
+      "name": "Voyageur Astral",
+      "description": "Parcourez l'Astral ouvert à bord de votre navire.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Voyageur Astral",
+          "description": "Parcourez l'Astral ouvert à bord de votre navire.",
+          "score": 30
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2026-03-10"
+    },
+    {
+      "id": "astral-immunite",
+      "name": "Immunité Astrale",
+      "description": "Résistez aux effets de la Pandémie Astrale à 10 reprises.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Immunité Astrale",
+          "description": "Résistez aux effets de la Pandémie Astrale à 10 reprises.",
+          "score": 10
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-pandemie",
+      "name": "Pandémie Astrale",
+      "description": "Survivez à une contamination par la Pandémie Astrale.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Pandémie Astrale",
+          "description": "Survivez à une contamination par la Pandémie Astrale.",
+          "score": 20
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-tempete",
+      "name": "Tempête Astrale",
+      "description": "Traversez une Tempête Astrale sans quitter l'Astral ouvert.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Tempête Astrale",
+          "description": "Traversez une Tempête Astrale sans quitter l'Astral ouvert.",
+          "score": 30
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-anomalie",
+      "name": "Anomalie Astrale",
+      "description": "Explorez une Anomalie Astrale jusqu'à son terme.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Anomalie Astrale",
+          "description": "Explorez une Anomalie Astrale jusqu'à son terme.",
+          "score": 50
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-apparition",
+      "name": "Apparition Astrale",
+      "description": "Rencontrez une Apparition Astrale dans les strates profondes.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Apparition Astrale",
+          "description": "Rencontrez une Apparition Astrale dans les strates profondes.",
+          "score": 10
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-arc-en-ciel",
+      "name": "Arc-en-ciel Astral",
+      "description": "Observez un Arc-en-ciel Astral depuis votre navire.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Arc-en-ciel Astral",
+          "description": "Observez un Arc-en-ciel Astral depuis votre navire.",
+          "score": 20
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-ardent",
+      "name": "Astral ardent",
+      "description": "Survivez à la traversée d'un Astral ardent.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Astral ardent",
+          "description": "Survivez à la traversée d'un Astral ardent.",
+          "score": 30
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-cotier",
+      "name": "Astral côtier",
+      "description": "Explorez entièrement un Astral côtier.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Astral côtier",
+          "description": "Explorez entièrement un Astral côtier.",
+          "score": 50
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-glacial",
+      "name": "Astral glacial",
+      "description": "Explorez entièrement un Astral glacial.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Astral glacial",
+          "description": "Explorez entièrement un Astral glacial.",
+          "score": 10
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-hostile",
+      "name": "Astral hostile",
+      "description": "Nettoyez un secteur d'Astral hostile.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Astral hostile",
+          "description": "Nettoyez un secteur d'Astral hostile.",
+          "score": 20
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-mysterieux",
+      "name": "Astral mystérieux",
+      "description": "Percez les secrets d'un Astral mystérieux.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Astral mystérieux",
+          "description": "Percez les secrets d'un Astral mystérieux.",
+          "score": 30
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-obscur",
+      "name": "Astral obscur",
+      "description": "Traversez un Astral obscur sans perdre votre navire.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Astral obscur",
+          "description": "Traversez un Astral obscur sans perdre votre navire.",
+          "score": 50
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-ambre",
+      "name": "Ambre Astral",
+      "description": "Récoltez un fragment d'Ambre Astral.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Ambre Astral",
+          "description": "Récoltez un fragment d'Ambre Astral.",
+          "score": 10
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-ambre-brise",
+      "name": "Ambre Astral brisé",
+      "description": "Récupérez un Ambre Astral brisé sur une épave.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Ambre Astral brisé",
+          "description": "Récupérez un Ambre Astral brisé sur une épave.",
+          "score": 20
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-ambre-inhabituel",
+      "name": "Ambre Astral inhabituel",
+      "description": "Identifiez un Ambre Astral inhabituel.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Ambre Astral inhabituel",
+          "description": "Identifiez un Ambre Astral inhabituel.",
+          "score": 30
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-amulette-argent",
+      "name": "Amulette d'Argent Astral",
+      "description": "Forgez une Amulette d'Argent Astral.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Amulette d'Argent Astral",
+          "description": "Forgez une Amulette d'Argent Astral.",
+          "score": 50
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-ailes-conquerant",
+      "name": "Ailes du Conquérant Astral",
+      "description": "Obtenez les Ailes du Conquérant Astral.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Ailes du Conquérant Astral",
+          "description": "Obtenez les Ailes du Conquérant Astral.",
+          "score": 10
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-ailettes-chasseur",
+      "name": "Ailettes du Chasseur Astral",
+      "description": "Obtenez les Ailettes du Chasseur Astral.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Ailettes du Chasseur Astral",
+          "description": "Obtenez les Ailettes du Chasseur Astral.",
+          "score": 20
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-armure-conquerant",
+      "name": "Armure du Conquérant Astral",
+      "description": "Équipez l'Armure du Conquérant Astral.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Armure du Conquérant Astral",
+          "description": "Équipez l'Armure du Conquérant Astral.",
+          "score": 30
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-armure-voyageur",
+      "name": "Armure du Voyageur de l'Astral",
+      "description": "Équipez l'Armure du Voyageur de l'Astral.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Armure du Voyageur de l'Astral",
+          "description": "Équipez l'Armure du Voyageur de l'Astral.",
+          "score": 50
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-assassin-sauvage",
+      "name": "Assassin Astral sauvage",
+      "description": "Éliminez un Assassin Astral sauvage.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Assassin Astral sauvage",
+          "description": "Éliminez un Assassin Astral sauvage.",
+          "score": 10
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "astral-assassin-zele",
+      "name": "Assassin Astral zélé",
+      "description": "Éliminez un Assassin Astral zélé.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 0,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Assassin Astral zélé",
+          "description": "Éliminez un Assassin Astral zélé.",
+          "score": 20
+        }
+      ],
+      "currentRank": 0,
+      "placeholder": true
+    },
+    {
+      "id": "allod-astral",
+      "name": "Allod Astral",
+      "description": "Découvrez un Allod Astral flottant dans l'Astral lointain.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod Astral",
+          "description": "Découvrez un Allod Astral flottant dans l'Astral lointain.",
+          "score": 10
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-01-10",
+      "placeholder": true
+    },
+    {
+      "id": "allod-astral-lointain",
+      "name": "Allod Astral lointain",
+      "description": "Explorez un Allod Astral lointain.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod Astral lointain",
+          "description": "Explorez un Allod Astral lointain.",
+          "score": 10
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-02-14",
+      "placeholder": true
+    },
+    {
+      "id": "allod-astraux-visites",
+      "name": "Allod Astraux visités",
+      "description": "Visitez plusieurs Allods Astraux.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod Astraux visités",
+          "description": "Visitez plusieurs Allods Astraux.",
+          "score": 20
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-03-22",
+      "placeholder": true
+    },
+    {
+      "id": "allods-astraux-termines",
+      "name": "Allods astraux terminés",
+      "description": "Terminez l'exploration de tous les Allods Astraux recensés.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allods astraux terminés",
+          "description": "Terminez l'exploration de tous les Allods Astraux recensés.",
+          "score": 50
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-04-30",
+      "placeholder": true
+    },
+    {
+      "id": "allod-astral-adversaire-redoutable",
+      "name": "Adversaire le plus redoutable d'un Allod Astral vaincu",
+      "description": "Vainquez l'adversaire le plus redoutable d'un Allod Astral.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Adversaire le plus redoutable d'un Allod Astral vaincu",
+          "description": "Vainquez l'adversaire le plus redoutable d'un Allod Astral.",
+          "score": 30
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-05-18",
+      "placeholder": true
+    },
+    {
+      "id": "allod-du-vortex",
+      "name": "Allod du Vortex",
+      "description": "Survivez à la traversée de l'Allod du Vortex.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod du Vortex",
+          "description": "Survivez à la traversée de l'Allod du Vortex.",
+          "score": 20
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-06-09",
+      "placeholder": true
+    },
+    {
+      "id": "allod-de-pouvoir",
+      "name": "Allod de Pouvoir",
+      "description": "Prenez le contrôle d'un Allod de Pouvoir.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod de Pouvoir",
+          "description": "Prenez le contrôle d'un Allod de Pouvoir.",
+          "score": 30
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-07-21",
+      "placeholder": true
+    },
+    {
+      "id": "allod-des-elements",
+      "name": "Allod des éléments",
+      "description": "Domptez les éléments d'un Allod qui leur est dédié.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod des éléments",
+          "description": "Domptez les éléments d'un Allod qui leur est dédié.",
+          "score": 20
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-08-15",
+      "placeholder": true
+    },
+    {
+      "id": "allod-du-crepuscule",
+      "name": "Allod du Crépuscule",
+      "description": "Explorez l'Allod du Crépuscule jusqu'à sa Forteresse du Maître.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod du Crépuscule",
+          "description": "Explorez l'Allod du Crépuscule jusqu'à sa Forteresse du Maître.",
+          "score": 30
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-09-03",
+      "placeholder": true
+    },
+    {
+      "id": "allod-de-la-revelation",
+      "name": "Allod de la Révélation",
+      "description": "Découvrez les secrets de l'Allod de la Révélation.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod de la Révélation",
+          "description": "Découvrez les secrets de l'Allod de la Révélation.",
+          "score": 50
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-10-27",
+      "placeholder": true
+    },
+    {
+      "id": "allod-des-dangers",
+      "name": "Allod des dangers",
+      "description": "Survivez à l'Allod des dangers.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod des dangers",
+          "description": "Survivez à l'Allod des dangers.",
+          "score": 10
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-11-11",
+      "placeholder": true
+    },
+    {
+      "id": "allod-de-la-liberte",
+      "name": "Allod de la liberté",
+      "description": "Libérez l'Allod de la liberté de ses occupants.",
+      "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod de la liberté",
+          "description": "Libérez l'Allod de la liberté de ses occupants.",
+          "score": 20
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2025-12-05",
+      "placeholder": true
+    },
+    {
+      "id": "allod-de-la-quietude",
+      "name": "Allod de la quiétude",
+      "description": "Retrouvez la quiétude d'un Allod paisible.",
+      "icon": "Interface/Icons/Equipment/Helm/Armor_Light_Helmet",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod de la quiétude",
+          "description": "Retrouvez la quiétude d'un Allod paisible.",
+          "score": 10
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2026-01-19",
+      "placeholder": true
+    },
+    {
+      "id": "allod-perdu",
+      "name": "Allod perdu",
+      "description": "Retrouvez un Allod perdu dans l'Astral lointain.",
+      "icon": "Interface/Icons/Misc/Event/GoldMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod perdu",
+          "description": "Retrouvez un Allod perdu dans l'Astral lointain.",
+          "score": 20
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2026-02-24",
+      "placeholder": true
+    },
+    {
+      "id": "allod-inconnu",
+      "name": "Allod inconnu",
+      "description": "Explorez un Allod inconnu jamais cartographié.",
+      "icon": "Interface/Icons/Special/Currency/DiamondMedal",
+      "categoryIndex": 3,
+      "subCategoryIndex": 1,
+      "ranks": [
+        {
+          "completeProgress": 1,
+          "name": "Allod inconnu",
+          "description": "Explorez un Allod inconnu jamais cartographié.",
+          "score": 30
+        }
+      ],
+      "currentRank": 1,
+      "finishDate": "2026-03-08",
+      "placeholder": true
     }
   ]
 }

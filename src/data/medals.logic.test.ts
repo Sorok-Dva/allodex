@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import type { Medal, MedalsDataset } from './medals.types';
 import {
   parseDataset, isComplete, currentRankOf, frameForScore,
-  subCategoryCounts, filterMedals, searchMedals, medalsOf,
+  subCategoryCounts, filterMedals, searchMedals, medalsOf, FILTER_LABELS,
 } from './medals.logic';
 import mock from './medals.mock.json';
 
@@ -81,6 +81,14 @@ describe('parseDataset', () => {
     expect(subCategoryCounts(parsed, 1, 0)).toEqual({ done: 4, total: 4 });
   });
 
+  it('le mock a 17 catégories dans le nouvel ordre, Astral ouvert (5/29) et Allods Astraux (15/15)', () => {
+    const parsed = parseDataset(mock);
+    expect(parsed.categories.length).toBe(17);
+    expect(parsed.categories[16].name).toBe('Forteresse de guilde');
+    expect(subCategoryCounts(parsed, 3, 0)).toEqual({ done: 5, total: 29 });
+    expect(subCategoryCounts(parsed, 3, 1)).toEqual({ done: 15, total: 15 });
+  });
+
   it('rejette un currentRank manquant ou non entier', () => {
     expect(() => parseDataset({ ...ds, medals: [medal({ currentRank: undefined as unknown as number })] })).toThrow(/currentRank/);
     expect(() => parseDataset({ ...ds, medals: [medal({ currentRank: 0.5 })] })).toThrow(/currentRank/);
@@ -92,5 +100,30 @@ describe('parseDataset', () => {
 
   it('rejette les id dupliqués', () => {
     expect(() => parseDataset({ ...ds, medals: [medal({ id: 'dup' }), medal({ id: 'dup' })] })).toThrow(/id dupliqué/);
+  });
+
+  it('accepte tracked, placeholder et un medalCollection enrichi (medalId/success/icon/rank)', () => {
+    const enriched = medal({
+      tracked: true,
+      placeholder: true,
+      medalCollection: [
+        { medalId: 'm1', success: true, icon: 'i', rank: 1, description: 'd' },
+        { medalId: 'm2', success: false, icon: 'i', rank: 2, description: 'd' },
+      ],
+    });
+    expect(parseDataset({ ...ds, medals: [enriched] }).medals[0].tracked).toBe(true);
+  });
+
+  it('rejette un medalCollection avec rank 0', () => {
+    const bad = medal({
+      medalCollection: [{ medalId: 'm1', success: true, icon: 'i', rank: 0, description: 'd' }],
+    });
+    expect(() => parseDataset({ ...ds, medals: [bad] })).toThrow(/medalCollection/);
+  });
+});
+
+describe('FILTER_LABELS', () => {
+  it('fournit les libellés français des filtres', () => {
+    expect(FILTER_LABELS).toEqual({ all: 'Tout', completed: 'Terminé', inProgress: 'Pas terminé' });
   });
 });
