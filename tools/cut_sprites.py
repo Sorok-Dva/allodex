@@ -14,13 +14,17 @@ Succès (x 470-1490, y 180-790) est refusée : on ne découpe jamais le HUD du j
 Options par sprite dans le manifeste :
   capture     clé de `captures` (source = capture écran) ; alternative : `texture`
   texture     chemin PNG relatif à `textures_dir` (texture du client déjà extraite) ;
-              la boîte n'est alors pas contrainte à la fenêtre Succès
+              la boîte n'est alors pas contrainte à la fenêtre Succès. Le chemin doit
+              rester sous `textures_dir` (ni absolu, ni `..`).
   box         [x0, y0, x1, y1]  obligatoire pour une capture, optionnel pour une texture
   slice       [top, right, bottom, left] ou null (9-slice CSS `border-image`)
   alpha_key   {"rgb": [r, g, b], "tol": n}  rend transparents les pixels proches
   clear_center  true : met l'intérieur des tranches `slice` à alpha 0
   fill        {"rgb": [r,g,b], "box": [x0,y0,x1,y1], "alpha": 255} ou liste : aplat
-              posé dans le sprite (coordonnées locales), pour effacer du texte
+              posé dans le sprite (coordonnées locales), pour effacer du texte.
+              Un rectangle qui déborde du sprite est rogné ; un rectangle vide,
+              inversé ou entièrement hors du sprite lève ValueError (il trahit
+              presque toujours des coordonnées écran laissées par erreur).
   repeat_x    [{"src": x, "x0": a, "x1": b, "y0": c?, "y1": d?}] : recopie la colonne
               locale `src` sur les colonnes a..b (efface un texte sans casser le dégradé)
   repeat_y    [{"src": y, "y0": a, "y1": b, "x0": c?, "x1": d?}] : idem par lignes
@@ -28,7 +32,6 @@ Options par sprite dans le manifeste :
               ce qui est en dehors passe à alpha 0. Sert aux ornements non
               rectangulaires (extrémités de la plaque de titre) dont les coins
               laisseraient voir le décor du jeu.
-  mirror      "x" | "y" : miroir après découpe
 """
 from __future__ import annotations
 
@@ -43,6 +46,32 @@ from PIL import Image, ImageDraw
 HERE = Path(__file__).resolve().parent
 WINDOW = (470, 180, 1490, 790)
 DEFAULT_TEXTURES = HERE.parent / "public" / "game" / "textures"
+
+
+def _clip_rect(rect: list[int], width: int, height: int, what: str) -> tuple[int, int, int, int]:
+    """Rogne un rectangle local aux dimensions du sprite ; refuse ce qui n'y touche pas."""
+    x0, y0, x1, y1 = (int(v) for v in rect)
+    if x0 >= x1 or y0 >= y1:
+        raise ValueError(f"rectangle `{what}` vide ou inversé : {rect}")
+    cx0, cy0 = max(0, x0), max(0, y0)
+    cx1, cy1 = min(width, x1), min(height, y1)
+    if cx0 >= cx1 or cy0 >= cy1:
+        raise ValueError(
+            f"rectangle `{what}` entièrement hors du sprite {width}x{height} : {rect} "
+            "(coordonnées locales attendues, pas des coordonnées écran)"
+        )
+    return cx0, cy0, cx1, cy1
+
+
+def resolve_texture(tex_dir: Path, rel: str) -> Path:
+    """Chemin d'une texture du client, confiné à `tex_dir` (pas de `..`, pas d'absolu)."""
+    p = Path(rel)
+    if p.is_absolute() or ".." in p.parts or rel.startswith(("/", "\\")):
+        raise ValueError(f"chemin de texture non confiné à textures_dir : {rel}")
+    target = (tex_dir / p).resolve()
+    if not target.is_relative_to(tex_dir.resolve()):
+        raise ValueError(f"chemin de texture non confiné à textures_dir : {rel}")
+    return target
 
 
 def validate_box(box: list[int]) -> None:
@@ -61,7 +90,6 @@ def cut_sprite(
     repeat_x: list[dict] | None = None,
     repeat_y: list[dict] | None = None,
     alpha_poly: list[list] | None = None,
-    mirror: str | None = None,
 ) -> Image.Image:
     out = img.convert("RGBA")
     if box is not None:
@@ -84,9 +112,8 @@ def cut_sprite(
         fills = fill if isinstance(fill, list) else [fill]
         a = np.asarray(out).astype(np.uint8).copy()
         for f in fills:
-            fx0, fy0, fx1, fy1 = f["box"]
-            rgb = f["rgb"]
-            a[fy0:fy1, fx0:fx1, 0:3] = rgb
+            fx0, fy0, fx1, fy1 = _clip_rect(f["box"], out.width, out.height, "fill")
+            a[fy0:fy1, fx0:fx1, 0:3] = f["rgb"]
             a[fy0:fy1, fx0:fx1, 3] = int(f.get("alpha", 255))
         out = Image.fromarray(a, "RGBA")
     if alpha_key:
@@ -113,10 +140,6 @@ def cut_sprite(
         x0, x1 = left, max(left, out.width - right)
         a[y0:y1, x0:x1, 3] = 0
         out = Image.fromarray(a, "RGBA")
-    if mirror == "x":
-        out = out.transpose(Image.FLIP_LEFT_RIGHT)
-    elif mirror == "y":
-        out = out.transpose(Image.FLIP_TOP_BOTTOM)
     return out
 
 
@@ -180,7 +203,7 @@ def run(manifest_path: Path, out_dir: Path) -> dict:
     index: dict[str, dict] = {}
     for name, spec in manifest["sprites"].items():
         if spec.get("texture"):
-            src = Image.open(tex_dir / spec["texture"])
+            src = Image.open(resolve_texture(tex_dir, spec["texture"]))
         else:
             validate_box(spec["box"])
             src = captures[spec["capture"]]
@@ -194,7 +217,6 @@ def run(manifest_path: Path, out_dir: Path) -> dict:
             repeat_x=spec.get("repeat_x"),
             repeat_y=spec.get("repeat_y"),
             alpha_poly=spec.get("alpha_poly"),
-            mirror=spec.get("mirror"),
         )
         img.save(out_dir / f"{name}.png")
         index[name] = {"w": img.width, "h": img.height, "slice": spec.get("slice")}

@@ -3,7 +3,7 @@ import json
 import pytest
 from PIL import Image
 
-from tools.cut_sprites import build_sheet, cut_sprite, run, validate_box
+from tools.cut_sprites import build_sheet, cut_sprite, resolve_texture, run, validate_box
 
 
 def test_validate_box_rejects_outside_medals_window():
@@ -32,6 +32,77 @@ def test_cut_sprite_clear_center_uses_slice():
     assert out.getpixel((20, 20))[3] == 0  # centre vidé
     assert out.getpixel((5, 20))[3] == 255  # dernière colonne du bord gauche
     assert out.getpixel((6, 20))[3] == 0  # première colonne du centre
+
+
+def test_cut_sprite_fill_paints_one_rect_and_leaves_the_rest():
+    img = Image.new("RGB", (20, 12), (10, 20, 30))
+    out = cut_sprite(img, [0, 0, 20, 12], fill={"rgb": [73, 76, 50], "box": [4, 3, 16, 9]})
+    assert out.getpixel((4, 3)) == (73, 76, 50, 255)  # premier pixel du rectangle
+    assert out.getpixel((15, 8)) == (73, 76, 50, 255)  # dernier pixel du rectangle
+    assert out.getpixel((3, 3))[:3] == (10, 20, 30)  # une colonne avant
+    assert out.getpixel((16, 8))[:3] == (10, 20, 30)  # une colonne après
+    assert out.getpixel((4, 2))[:3] == (10, 20, 30)  # une ligne au-dessus
+    assert out.getpixel((15, 9))[:3] == (10, 20, 30)  # une ligne en dessous
+
+
+def test_cut_sprite_fill_accepts_a_list_of_rects_and_an_alpha():
+    img = Image.new("RGB", (20, 12), (10, 20, 30))
+    out = cut_sprite(
+        img,
+        [0, 0, 20, 12],
+        fill=[
+            {"rgb": [150, 104, 0], "box": [0, 0, 20, 12]},
+            {"rgb": [233, 137, 3], "box": [1, 1, 19, 11]},
+            {"rgb": [0, 0, 0], "box": [8, 5, 10, 7], "alpha": 0},
+        ],
+    )
+    assert out.getpixel((0, 0)) == (150, 104, 0, 255)  # premier aplat (bord)
+    assert out.getpixel((10, 3)) == (233, 137, 3, 255)  # deuxième aplat par-dessus
+    assert out.getpixel((8, 5))[3] == 0  # troisième aplat, alpha explicite
+    assert out.getpixel((7, 5))[3] == 255
+
+
+def test_cut_sprite_fill_clips_a_rect_that_overflows_the_sprite():
+    img = Image.new("RGB", (10, 10), (10, 20, 30))
+    out = cut_sprite(img, [0, 0, 10, 10], fill={"rgb": [1, 2, 3], "box": [-4, 6, 40, 40]})
+    assert out.size == (10, 10)
+    assert out.getpixel((0, 6)) == (1, 2, 3, 255)
+    assert out.getpixel((9, 9)) == (1, 2, 3, 255)
+    assert out.getpixel((0, 5))[:3] == (10, 20, 30)
+
+
+def test_cut_sprite_fill_rejects_a_rect_outside_or_inverted():
+    img = Image.new("RGB", (10, 10), (10, 20, 30))
+    with pytest.raises(ValueError, match="hors du sprite"):
+        # coordonnées écran laissées par erreur dans le manifeste
+        cut_sprite(img, [0, 0, 10, 10], fill={"rgb": [1, 2, 3], "box": [898, 330, 1231, 443]})
+    with pytest.raises(ValueError, match="vide ou inversé"):
+        cut_sprite(img, [0, 0, 10, 10], fill={"rgb": [1, 2, 3], "box": [8, 2, 3, 6]})
+
+
+def test_resolve_texture_refuses_paths_outside_textures_dir(tmp_path):
+    tex = tmp_path / "textures"
+    (tex / "Sub").mkdir(parents=True)
+    (tex / "Sub" / "Box.png").write_bytes(b"")
+    assert resolve_texture(tex, "Sub/Box.png") == (tex / "Sub" / "Box.png").resolve()
+    for bad in ("../secret.png", "Sub/../../secret.png", "/etc/passwd"):
+        with pytest.raises(ValueError, match="confiné"):
+            resolve_texture(tex, bad)
+
+
+def test_run_refuses_a_texture_escaping_textures_dir(tmp_path):
+    (tmp_path / "textures").mkdir()
+    ref = tmp_path / "astral.png"
+    Image.new("RGB", (1920, 1009), (0, 0, 0)).save(ref)
+    manifest = {
+        "captures": {"astral": str(ref)},
+        "textures_dir": str(tmp_path / "textures"),
+        "sprites": {"evade": {"texture": "../astral.png", "slice": None}},
+    }
+    mpath = tmp_path / "m.json"
+    mpath.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="confiné"):
+        run(mpath, tmp_path / "sprites")
 
 
 def test_cut_sprite_repeat_x_erases_a_column_range():
