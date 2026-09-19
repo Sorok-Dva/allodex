@@ -71,7 +71,6 @@ export function MedalsWindow({ title, points, onClose, nav, content }: Props) {
         style={{ backgroundImage: `url(${sprite('close-button')})` }}
         onClick={onClose}
         aria-label="Fermer"
-        title="Fermer"
       />
     </div>
   );

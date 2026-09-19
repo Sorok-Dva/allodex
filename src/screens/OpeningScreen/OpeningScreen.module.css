@@ -7,6 +7,14 @@
 
 .actionBar { position: absolute; right: 24px; bottom: 72px; }
 
+/* « Rejouer l'intro » : lien texte en bas à gauche, juste au-dessus du bandeau légal
+   (56 px de haut), même couleur et même taille que celui-ci. */
+.replay {
+  position: absolute; left: 24px; bottom: 64px;
+  color: #b9c9b4; font-size: 13px; text-shadow: 0 1px 1px #000;
+}
+.replay:hover { text-decoration: underline; }
+
 .bottomLine {
   position: absolute; left: 0; right: 0; bottom: 0; height: 56px;
   background: center bottom / 100% 100% no-repeat;

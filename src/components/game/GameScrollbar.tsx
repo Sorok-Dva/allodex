@@ -4,7 +4,12 @@ import s from './GameScrollbar.module.css';
 
 /** Hauteur des sprites `scroll-up` / `scroll-down`. */
 const ARROW = 23;
-/** Hauteur minimale du curseur proportionnel (px). */
+/**
+ * Hauteur du curseur, fixe comme dans le jeu (20 px, relevé sur `refs/astral.png` et
+ * `refs/navscroll.png`) : c'est la valeur par défaut des deux ascenseurs du site.
+ */
+const THUMB = 20;
+/** Hauteur minimale du curseur proportionnel (`thumbSize={null}`). */
 const MIN_THUMB = 18;
 /** Défilement d'un clic sur une flèche (px). */
 const STEP = 40;
@@ -16,18 +21,17 @@ type Props = {
   /** Conteneur défilant piloté par l'ascenseur. */
   targetRef: RefObject<HTMLElement | null>;
   /**
-   * Hauteur fixe du curseur, en pixels. Le jeu utilise un curseur de taille constante
-   * (20 px, relevé sur `refs/astral.png` et `refs/navscroll.png`) ; sans cette
-   * propriété le curseur est proportionnel au contenu, avec un minimum de 18 px.
+   * Hauteur fixe du curseur, en pixels ; 20 px par défaut, comme le jeu. `null`
+   * rétablit un curseur proportionnel au contenu, avec un minimum de 18 px.
    */
-  thumbSize?: number;
+  thumbSize?: number | null;
   /** Pas des flèches, 40 px par défaut. */
   step?: number;
   className?: string;
   style?: CSSProperties;
 };
 
-export function GameScrollbar({ targetRef, thumbSize, step = STEP, className, style }: Props) {
+export function GameScrollbar({ targetRef, thumbSize = THUMB, step = STEP, className, style }: Props) {
   const [m, setMetrics] = useState<Metrics>(ZERO);
   const trackRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ y: number; top: number } | null>(null);

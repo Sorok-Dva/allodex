@@ -14,9 +14,6 @@ const FILTERS: { value: MedalFilter; label: string }[] = [
   { value: 'inProgress', label: FILTER_LABELS.inProgress },
 ];
 
-/** Le jeu utilise un curseur d'ascenseur de taille fixe, comme dans la navigation. */
-const THUMB = 20;
-
 export function MedalsList({ state }: { state: MedalsState }) {
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +36,7 @@ export function MedalsList({ state }: { state: MedalsState }) {
           : state.visible.map(m => <MedalEntry key={m.id} medal={m} onTrack={state.setTracked} />)}
       </div>
 
-      <GameScrollbar targetRef={listRef} thumbSize={THUMB} className={s.scrollbar} />
+      <GameScrollbar targetRef={listRef} className={s.scrollbar} />
     </div>
   );
 }

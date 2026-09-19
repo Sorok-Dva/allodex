@@ -34,10 +34,9 @@ export const cursor = (name: string) => `${BASE}/cursors/${name}.cur`;
 export const sprite = (name: string) => `${BASE}/sprites/${name}.png`;
 export const spriteSize = (name: string): SpriteInfo | undefined => sprites?.[name];
 
+/** Racines de textures du client effectivement utilisées par le site. */
 export const T = {
   medals: 'Interface/Ingame/Medals/Textures',
-  login: 'Interface/Wrap/MainMenu/LoginAccount',
   main2: 'Interface/Wrap/MainMenu/Main2',
-  msgbox: 'Interface/Common/Elements/MsgBox/textures',
   pinMenu: 'Interface/Ingame/ContextPinMenu3/textures',
 } as const;

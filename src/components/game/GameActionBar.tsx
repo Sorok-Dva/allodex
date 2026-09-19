@@ -15,14 +15,25 @@ type Props = { items: ActionItem[]; className?: string };
 
 // Les textures `…Highlight` de ContextPinMenu3 ne sont qu'un halo lumineux (pas d'icône) :
 // on empile une couche `Normal`/`Pressed` toujours visible et une couche `Highlight`
-// en surimpression, révélée uniquement au survol — GameButton ne gère qu'un seul fond
-// et ne peut pas exprimer cet empilement, d'où un rendu dédié ici.
+// en surimpression, révélée uniquement au survol. Un bouton à fond unique ne peut pas
+// exprimer cet empilement, d'où un rendu dédié ici.
 export function GameActionBar({ items, className }: Props) {
   const [hover, setHover] = useState<{ id: string; anchor: DOMRect } | null>(null);
   const [pressedId, setPressedId] = useState<string | null>(null);
   const slots = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const hovered = hover ? items.find(item => item.id === hover.id) : undefined;
+
+  // Infobulle au survol **et** au focus clavier : sans cela la barre serait muette
+  // pour qui navigue au clavier.
+  const show = (id: string) => {
+    const el = slots.current[id];
+    if (el) setHover({ id, anchor: el.getBoundingClientRect() });
+  };
+  const hide = (id: string) => {
+    setHover(current => (current?.id === id ? null : current));
+    setPressedId(current => (current === id ? null : current));
+  };
 
   return (
     <div className={`${s.bar} ${className ?? ''}`}>
@@ -36,15 +47,14 @@ export function GameActionBar({ items, className }: Props) {
             ref={el => { slots.current[item.id] = el; }}
             className={s.slot}
             aria-label={item.label}
+            // Les entrées sans action restent atteignables au clavier (leur infobulle
+            // annonce « bientôt ») mais sont signalées comme inactives.
+            aria-disabled={item.onClick ? undefined : true}
             onClick={item.onClick}
-            onMouseEnter={() => {
-              const el = slots.current[item.id];
-              if (el) setHover({ id: item.id, anchor: el.getBoundingClientRect() });
-            }}
-            onMouseLeave={() => {
-              setHover(current => (current?.id === item.id ? null : current));
-              setPressedId(current => (current === item.id ? null : current));
-            }}
+            onMouseEnter={() => show(item.id)}
+            onMouseLeave={() => hide(item.id)}
+            onFocus={() => show(item.id)}
+            onBlur={() => hide(item.id)}
             onMouseDown={() => setPressedId(item.id)}
             onMouseUp={() => setPressedId(null)}
           >

@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { T, sprite, tex } from '@/lib/assets';
+import { nineSlice } from '@/lib/nineSlice';
 import { subCategoryCounts } from '@/data/medals.logic';
 import type { MedalsDataset } from '@/data/medals.types';
 import { GameScrollbar } from '@/components/game/GameScrollbar';
@@ -10,8 +11,6 @@ import s from './MedalsNavigation.module.css';
 const SUB_ROW = 23;
 /** Marges verticales du parchemin autour des lignes (12 px en haut, 15 px en bas). */
 const SUB_PADDING = 27;
-/** Le jeu utilise un curseur d'ascenseur de taille fixe (20 px), pas proportionnel. */
-const THUMB = 20;
 /**
  * « Progression » est une vue, pas une catégorie dépliable : elle n'a pas de médaillon
  * +/− et le clic reste sans effet (spec § 7.2). C'est toujours la première entrée de
@@ -25,7 +24,7 @@ export function MedalsNavigation({ ds, state }: { ds: MedalsDataset; state: Meda
   return (
     <div className={s.nav}>
       <div className={s.search}>
-        <span className={s.searchFrame} style={{ borderImageSource: `url(${sprite('search-field')})` }} aria-hidden="true" />
+        <span className={s.searchFrame} style={nineSlice('search-field', [5, 6, 5, 6], { fill: true })} aria-hidden="true" />
         <input
           className={s.searchInput}
           value={state.query}
@@ -47,6 +46,7 @@ export function MedalsNavigation({ ds, state }: { ds: MedalsDataset; state: Meda
                   type="button"
                   className={s.pill}
                   aria-expanded={foldable ? open : undefined}
+                  aria-disabled={foldable ? undefined : true}
                   onClick={foldable ? () => state.toggleCategory(c) : undefined}
                 >
                   <span
@@ -96,7 +96,7 @@ export function MedalsNavigation({ ds, state }: { ds: MedalsDataset; state: Meda
         </ul>
       </div>
 
-      <GameScrollbar targetRef={listRef} thumbSize={THUMB} className={s.scrollbar} />
+      <GameScrollbar targetRef={listRef} className={s.scrollbar} />
     </div>
   );
 }

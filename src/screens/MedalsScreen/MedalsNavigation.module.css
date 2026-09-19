@@ -4,8 +4,8 @@
 /* Champ de recherche : sprite 232 × 24 en 9-tranches, écran x 557→789, y 274→298. */
 .search { position: absolute; left: 39px; top: 15px; width: 232px; height: 24px; }
 .searchFrame {
-  position: absolute; inset: 0; border-style: solid; border-width: 5px 6px;
-  border-image-slice: 5 6 5 6 fill; border-image-width: 5px 6px 5px 6px; border-image-repeat: stretch;
+  /* Bordure, tranches et image : `nineSlice('search-field')`, en style en ligne. */
+  position: absolute; inset: 0; border-color: transparent;
 }
 .searchInput {
   position: absolute; inset: 0; width: 100%; padding: 0 6px 2px 7px;

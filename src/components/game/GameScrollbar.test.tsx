@@ -8,7 +8,7 @@ import { GameScrollbar } from './GameScrollbar';
  * sont figés à 0. On les remplace par de vrais accesseurs sur le conteneur, posés par
  * la ref de rappel (attachée avant les effets de disposition de `GameScrollbar`).
  */
-function Harness({ scrollHeight, clientHeight, thumbSize }: { scrollHeight: number; clientHeight: number; thumbSize?: number }) {
+function Harness({ scrollHeight, clientHeight, thumbSize }: { scrollHeight: number; clientHeight: number; thumbSize?: number | null }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const attach = useCallback((el: HTMLDivElement | null) => {
     if (el && ref.current !== el) {
@@ -28,15 +28,15 @@ function Harness({ scrollHeight, clientHeight, thumbSize }: { scrollHeight: numb
 }
 
 describe('GameScrollbar', () => {
-  it('donne au curseur une hauteur proportionnelle au contenu', () => {
-    render(<Harness scrollHeight={400} clientHeight={100} />);
+  it('donne au curseur une hauteur proportionnelle au contenu avec thumbSize={null}', () => {
+    render(<Harness scrollHeight={400} clientHeight={100} thumbSize={null} />);
     const thumb = screen.getByTestId('scrollbar-thumb');
     expect(thumb.style.height).toBe('25%');
     expect(thumb.style.top).toBe('0%');
   });
 
   it('fait défiler de 40 px au clic sur la flèche du bas et déplace le curseur', () => {
-    render(<Harness scrollHeight={400} clientHeight={100} />);
+    render(<Harness scrollHeight={400} clientHeight={100} thumbSize={null} />);
     const target = screen.getByTestId('target');
     fireEvent.click(screen.getByTestId('scrollbar-down'));
     expect(target.scrollTop).toBe(40);
@@ -53,9 +53,14 @@ describe('GameScrollbar', () => {
     expect(target.scrollTop).toBe(40);
   });
 
-  it('accepte un curseur de taille fixe comme dans le jeu', () => {
-    render(<Harness scrollHeight={400} clientHeight={100} thumbSize={20} />);
+  it('utilise par défaut le curseur de taille fixe du jeu (20 px)', () => {
+    render(<Harness scrollHeight={400} clientHeight={100} />);
     expect(screen.getByTestId('scrollbar-thumb').style.height).toBe('20px');
+  });
+
+  it('accepte une taille fixe explicite', () => {
+    render(<Harness scrollHeight={400} clientHeight={100} thumbSize={32} />);
+    expect(screen.getByTestId('scrollbar-thumb').style.height).toBe('32px');
   });
 
   it('masque le curseur quand il n’y a rien à défiler', () => {

@@ -57,18 +57,18 @@
 .bar { position: absolute; left: 89px; top: 73px; width: 388px; }
 
 .seriesLabel {
-  position: absolute; left: 64px; right: 12px; top: 81.2px;
+  position: absolute; left: 64px; right: 12px; top: calc(81.2px + var(--series-shift, 0px));
   margin: 0; text-align: center; font-size: 14px; line-height: 14px; color: #502a0e;
 }
 
 .series {
-  position: absolute; left: 68px; right: 12px; top: 105px;
+  position: absolute; left: 68px; right: 12px; top: calc(105px + var(--series-shift, 0px));
   margin: 0; padding: 0; list-style: none; display: flex; justify-content: center;
 }
 .slot {
   position: relative; flex: none;
-  border-style: solid; border-width: 3px; border-color: transparent;
-  border-image-slice: 3; border-image-width: 3px; border-image-repeat: stretch;
+  /* Bordure, tranches et image : `nineSlice('series-slot')`, en style en ligne. */
+  border-color: transparent;
 }
 /* `left`/`top` partent du bord intérieur de la bordure 9-tranches (3 px) : −1 place
    l'icône à 2 px du bord extérieur de la case, comme dans la capture. */

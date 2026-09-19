@@ -8,7 +8,8 @@
 
 .field {
   position: absolute; left: 0; top: 0; height: 24px; display: block;
-  border-style: solid; border-color: transparent; border-image-repeat: stretch;
+  /* Bordure, tranches et image : `nineSlice('dropdown-field')`, en style en ligne. */
+  border-color: transparent;
   cursor: inherit; text-align: right;
 }
 .value {
@@ -27,7 +28,8 @@
 .list {
   position: absolute; left: -3px; right: -2px; top: 26px; z-index: 40;
   margin: 0; padding: 5px 11px 6.5px 0; list-style: none;
-  border-style: solid; border-color: transparent; border-image-repeat: stretch;
+  /* Bordure, tranches et image : `nineSlice('dropdown-frame')`, en style en ligne. */
+  border-color: transparent;
   background: rgba(0, 0, 0, 0.67);
 }
 .option {
@@ -35,4 +37,5 @@
   font-size: 14px; color: #e6f3e6; text-align: right; cursor: inherit;
   white-space: nowrap;
 }
-.option:hover { color: #ffeb73; }
+/* Survol souris et option désignée au clavier (`aria-activedescendant`) : même doré. */
+.option:hover, .optionActive { color: #ffeb73; }

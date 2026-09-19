@@ -64,6 +64,51 @@ describe('GameDropdown', () => {
     expect(queryByRole('listbox')).toBeNull();
   });
 
+  it('expose le motif ARIA listbox : trois options, li neutralisés', () => {
+    const { combobox, getByRole, getAllByRole } = setup();
+    fireEvent.click(combobox);
+    const listbox = getByRole('listbox');
+    expect(getAllByRole('option')).toHaveLength(3);
+    expect(listbox.querySelectorAll('li[role="presentation"]')).toHaveLength(3);
+    // Un `li` neutralisé n'est plus exposé comme élément de liste.
+    expect(listbox.querySelectorAll('li:not([role="presentation"])')).toHaveLength(0);
+  });
+
+  it('ouvre la liste à la flèche bas et choisit l\'option active avec Entrée', () => {
+    const { combobox, onChange, getAllByRole } = setup();
+    combobox.focus();
+
+    // Fermée : la flèche bas ouvre et désigne l'option courante (« Tout »).
+    fireEvent.keyDown(combobox, { key: 'ArrowDown' });
+    expect(combobox.getAttribute('aria-expanded')).toBe('true');
+    expect(combobox.getAttribute('aria-activedescendant')).toBe(getAllByRole('option')[0].id);
+
+    // Ouverte : la flèche bas descend d'un cran, Entrée valide.
+    fireEvent.keyDown(combobox, { key: 'ArrowDown' });
+    expect(combobox.getAttribute('aria-activedescendant')).toBe(getAllByRole('option')[1].id);
+    fireEvent.keyDown(combobox, { key: 'Enter' });
+    expect(onChange).toHaveBeenCalledWith('completed');
+  });
+
+  it('remonte à la flèche haut et va aux extrémités avec Début et Fin', () => {
+    const { combobox, onChange, getAllByRole } = setup();
+    combobox.focus();
+    fireEvent.keyDown(combobox, { key: 'ArrowDown' });
+    fireEvent.keyDown(combobox, { key: 'End' });
+    expect(combobox.getAttribute('aria-activedescendant')).toBe(getAllByRole('option')[2].id);
+    fireEvent.keyDown(combobox, { key: 'ArrowUp' });
+    expect(combobox.getAttribute('aria-activedescendant')).toBe(getAllByRole('option')[1].id);
+    fireEvent.keyDown(combobox, { key: 'Home' });
+    fireEvent.keyDown(combobox, { key: ' ' });
+    expect(onChange).toHaveBeenCalledWith('all');
+  });
+
+  it('n\'affiche aucune option active tant qu\'on ouvre à la souris', () => {
+    const { combobox } = setup();
+    fireEvent.click(combobox);
+    expect(combobox.getAttribute('aria-activedescendant')).toBeNull();
+  });
+
   it('se ferme au clic à l\'extérieur', () => {
     const { combobox, queryByRole } = setup();
     fireEvent.click(combobox);

@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { T, tex } from '@/lib/assets';
+import { nineSlice } from '@/lib/nineSlice';
 import s from './ProgressBar.module.css';
 
 /** Pointes des textures `ProgressBar` (154 × 13) et `ProgressBarGauge` (146 × 9). */
@@ -13,12 +14,12 @@ type Props = {
   style?: CSSProperties;
 };
 
-const nineSlice = (texture: string): CSSProperties => ({
-  borderImageSource: `url(${tex(`${T.medals}/${texture}`)})`,
-  borderImageSlice: `0 ${CAP} 0 ${CAP} fill`,
-  borderImageWidth: `0 ${CAP}px 0 ${CAP}px`,
-  borderWidth: `0 ${CAP}px`,
-});
+/**
+ * Les deux textures sont celles du client, pas des sprites découpés : elles n'ont pas
+ * d'entrée dans `sprites.json`, d'où l'URL explicite et les tranches en dur.
+ */
+const barSlice = (texture: string): CSSProperties =>
+  nineSlice(texture, [0, CAP, 0, CAP], { fill: true, source: tex(`${T.medals}/${texture}`) });
 
 /**
  * Barre de progression du jeu : les textures `ProgressBar` (piste) et `ProgressBarGauge`
@@ -33,8 +34,8 @@ export function ProgressBar({ value, max, label, className, style }: Props) {
 
   return (
     <div className={`${s.bar} ${className ?? ''}`} style={style}>
-      <span className={s.track} style={nineSlice('ProgressBar')} aria-hidden="true" />
-      <span className={s.gauge} style={{ ...nineSlice('ProgressBarGauge'), width: `${pct * 100}%` }} aria-hidden="true" />
+      <span className={s.track} style={barSlice('ProgressBar')} aria-hidden="true" />
+      <span className={s.gauge} style={{ ...barSlice('ProgressBarGauge'), width: `${pct * 100}%` }} aria-hidden="true" />
       <span className={s.text}>{label ?? `${value.toLocaleString('fr-FR')} sur ${max.toLocaleString('fr-FR')}`}</span>
     </div>
   );

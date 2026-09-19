@@ -27,7 +27,7 @@ function Video({ name, loop, onEnded, onError, className }: { name: 'intro' | 'm
 }
 
 export function OpeningScreen() {
-  const { phase, skipIntro } = useIntroState();
+  const { phase, skipIntro, replayIntro } = useIntroState();
 
   useEffect(() => {
     if (phase !== 'intro') return;
@@ -54,6 +54,10 @@ export function OpeningScreen() {
       <div className={s.vignette} />
 
       <GameActionBar items={ACTION_ITEMS} className={s.actionBar} />
+
+      {/* Le jeu rejoue sa cinématique depuis le menu ; ici un simple lien texte,
+          posé au-dessus du bandeau légal pour ne pas empiéter dessus. */}
+      <button type="button" className={s.replay} onClick={replayIntro}>Rejouer l'intro</button>
 
       <div className={s.bottomLine} style={{ backgroundImage: `url(${tex(`${T.main2}/BottomLine`)})` }}>
         <span>Site fan non officiel. Allods Online, ses images et vidéos sont la propriété de My.Games.</span>

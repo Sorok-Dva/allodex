@@ -3,7 +3,7 @@ import { sprite } from '@/lib/assets';
 import s from './GameStrip.module.css';
 
 type Props = {
-  /** Préfixe des sprites : « pill » → `pill-left`, `pill-mid`, `pill-right`. */
+  /** Préfixe des sprites : « band » → `band-left`, `band-mid`, `band-right`. */
   base: string;
   /** Largeur des deux extrémités ornées, en pixels (jamais mise à l'échelle). */
   cap: number;

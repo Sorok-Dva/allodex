@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
-import { T, sprite, spriteSize, tex } from '@/lib/assets';
+import { T, tex } from '@/lib/assets';
+import { nineSlice } from '@/lib/nineSlice';
 import { frameSuffix, medalTier, type MedalTier } from '@/data/medals.logic';
 import { toRoman } from '@/lib/roman';
 import s from './MedalBadge.module.css';
@@ -51,12 +52,8 @@ export function MedalBadge({ score, icon, complete }: { score: number; icon: str
   const iconLeft = g.cx * SCALE - ICON / 2;
   const iconTop = g.cy * SCALE - ICON / 2;
 
-  const [tt, tr, tb, tl] = spriteSize('rank-tag')?.slice ?? [2, 2, 2, 2];
   const tagStyle: CSSProperties = {
-    borderImageSource: `url(${sprite('rank-tag')})`,
-    borderImageSlice: `${tt} ${tr} ${tb} ${tl} fill`,
-    borderImageWidth: `${tt}px ${tr}px ${tb}px ${tl}px`,
-    borderWidth: `${tt}px ${tr}px ${tb}px ${tl}px`,
+    ...nineSlice('rank-tag', [2, 2, 2, 2], { fill: true }),
     right: g.w * SCALE - (iconLeft + ICON) + 2,
     top: iconTop + ICON - 3 - 11,
   };

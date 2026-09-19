@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { sprite, spriteSize } from '@/lib/assets';
+import { nineSlice } from '@/lib/nineSlice';
 import s from './GameTooltip.module.css';
 
 const MARGIN = 8;
@@ -51,15 +51,9 @@ export function GameTooltip({ anchor, title, date, hint, align = 'center', child
 
   if (!anchor) return null;
 
-  const info = spriteSize('tooltip-frame');
-  const [top, right, bottom, left] = info?.slice ?? [4, 4, 4, 4];
-  const frameStyle: CSSProperties = {
-    borderImageSource: `url(${sprite('tooltip-frame')})`,
-    borderImageSlice: `${top} ${right} ${bottom} ${left}`,
-    borderImageWidth: `${top}px ${right}px ${bottom}px ${left}px`,
-    borderWidth: `${top}px ${right}px ${bottom}px ${left}px`,
-    ...pos,
-  };
+  // Sans `fill` : l'intérieur opaque du sprite n'est pas dessiné, le fond translucide
+  // du CSS reste visible.
+  const frameStyle: CSSProperties = { ...nineSlice('tooltip-frame', [4, 4, 4, 4]), ...pos };
 
   return (
     <div ref={ref} className={`${s.tooltip} ${className ?? ''}`} style={frameStyle}>
