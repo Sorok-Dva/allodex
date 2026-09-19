@@ -240,6 +240,28 @@
    "slice": null,
    "_note": "même famille de textures que checkbox-off ; aucune case cochée dans les captures"
   },
+  "close-button": {
+   "capture": "astral",
+   "box": [1378, 200, 1408, 230],
+   "slice": null,
+   "alpha_poly": [
+    [[ 6, 0 ], [ 24, 0 ], [ 30, 6 ], [ 30, 24 ], [ 24, 30 ], [ 6, 30 ], [ 0, 24 ], [ 0, 6 ]]
+   ],
+   "_note": "bouton rond de fermeture en haut à droite de la fenêtre : plaque olive x 1378->1407, y 200->231, anneau doré + disque orange x 1383->1407, y 201->225 ; alpha_poly coupe les coins, où l'on verrait le décor du jeu et le bandeau turquoise. Identique au pixel près sur les quatre captures : aucun état survolé disponible (éclairci en CSS)"
+  },
+  "pill-full": {
+   "capture": "astral",
+   "box": [539, 318, 781, 346],
+   "slice": null,
+   "repeat_x": [
+    {
+     "src": 110,
+     "x0": 24,
+     "x1": 106
+    }
+   ],
+   "_note": "pilule entière (242x28) : « Progression », la seule sans médaillon, donc son ornement droit est intact ; le libellé (colonnes 26->104) est effacé en recopiant la colonne 110, uniforme. Conserve le dégradé horizontal et le chevron décoratif que la répétition de pill-mid perdait"
+  },
   "tooltip-frame": {
    "capture": "tooltip",
    "box": [898, 330, 1231, 443],
