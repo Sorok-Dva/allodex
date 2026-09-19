@@ -744,3 +744,65 @@ def test_extract_theme_prefer_overrides_the_automatic_choice(tmp_path, monkeypat
     assert auto["name"] == "MainMenu_CapitalOfShadows" and auto["subsong"] == 3  # la plus longue
     assert forced["name"] == "MainMenu_DesertDreams" and forced["subsong"] == 2
     assert forced["alternatives"] == ["MainMenu_CapitalOfShadows"]
+
+
+def test_extract_theme_from_url_downloads_encodes_and_indexes(tmp_path, monkeypatch):
+    from tools import extract_archive as ea
+
+    calls = {}
+
+    def fake_download(url, target):
+        calls["url"] = url
+        target.write_bytes(b"mp3")
+
+    def fake_encode(src, out_base, category):
+        assert src.read_bytes() == b"mp3" and category == "tracks"
+        out_base.with_suffix(".ogg").write_bytes(b"ogg")
+        out_base.with_suffix(".mp3").write_bytes(b"mp3")
+
+    monkeypatch.setattr(ea, "download", fake_download)
+    monkeypatch.setattr(ea, "encode_outputs", fake_encode)
+    monkeypatch.setattr(ea, "probe_duration", lambda p: 174.456)
+
+    spec = {"url": "https://allods.ru/media/mp3/abc.mp3", "name": "MainMenu_SoulOfDarkness"}
+    theme, err = ea.extract_theme_from_url(spec, tmp_path / "11.0", force=False)
+
+    assert err is None
+    assert calls["url"] == spec["url"]
+    assert theme == {"name": "MainMenu_SoulOfDarkness", "duration": 174.456, "ogg": "theme.ogg", "mp3": "theme.mp3", "source": spec["url"]}
+    # Idempotent : les fichiers existent, plus de téléchargement sans --force.
+    calls.clear()
+    ea.extract_theme_from_url(spec, tmp_path / "11.0", force=False)
+    assert calls == {}
+
+
+def test_extract_theme_from_url_reports_a_network_failure(tmp_path, monkeypatch):
+    from tools import extract_archive as ea
+
+    def failing(url, target):
+        raise OSError("hors ligne")
+
+    monkeypatch.setattr(ea, "download", failing)
+    theme, err = ea.extract_theme_from_url({"url": "https://x/y.mp3"}, tmp_path / "v", force=True)
+    assert theme is None and "téléchargement impossible" in err and "hors ligne" in err
+
+
+def test_extract_logo_from_url_downloads_and_trims_the_png(tmp_path, monkeypatch):
+    from PIL import Image
+    from tools import extract_archive as ea
+
+    def fake_download(url, target):
+        img = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
+        img.paste((255, 0, 0, 255), (0, 0, 40, 20))  # logo ancré en haut à gauche, padding transparent
+        img.save(target, format="PNG")
+
+    monkeypatch.setattr(ea, "download", fake_download)
+    name, err = ea.extract_logo_from_url({"url": "https://x/logo.png"}, tmp_path / "10.0" / "logo.png", force=False)
+    assert err is None and name == "logo.png"
+    with Image.open(tmp_path / "10.0" / "logo.png") as out:
+        assert out.size == (40, 20)
+
+    monkeypatch.setattr(ea, "download", lambda url, target: (_ for _ in ()).throw(OSError("404")))
+    assert ea.extract_logo_from_url({"url": "https://x/logo.png"}, tmp_path / "10.0" / "logo.png", force=False) == ("logo.png", None), "déjà extrait : pas de nouveau téléchargement"
+    name, err = ea.extract_logo_from_url({"url": "https://x/nope.png"}, tmp_path / "11.0" / "logo.png", force=True)
+    assert name is None and "logo introuvable" in err

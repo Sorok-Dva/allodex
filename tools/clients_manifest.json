@@ -248,11 +248,10 @@
         "intro": "Video/10_0Events/MainMenu/Intro.ogv"
       },
       "logo": {
-        "client": "10.0-warp",
-        "pak": "data/Packs/BaseLocWarprus.pak",
-        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV10"
+        "url": "https://allods.my.games/sites/allods.my.com/themes/allods/images/en/logo_front100_forum.png",
+        "note": "logo anglais publié par l'éditeur (thème du forum allods.my.games), identique à celui du jeu"
       },
-      "_note_logo": "seule texture V10 connue, en russe (« Аллоды Онлайн — Край мира », le nom russe de Destination Horizon) : aucun client 10.0 occidental archivé",
+      "_note_logo": "aucun client 10.0 occidental archivé : le client Warp (10.0-warp) n'a que la texture russe WrapAllodsLogoV10 (« Край мира ») ; le forum de l'éditeur publie le logo anglais avec son sous-titre. Les autres logos du forum (logo_front<NN>0_forum.png) sont des variantes SANS sous-titre, sauf 80/90/100",
       "theme": {
         "client": "10.0-warp",
         "pak": "data/Packs/SFX_Music.Mini.pak",
@@ -264,14 +263,17 @@
       "version": "11.0",
       "name": "Soul of Darkness",
       "client": "16.0",
-      "note": "vidéo conservée dans le client 16.0",
-      "theme_note": "Thème non disponible dans les clients archivés",
+      "note": "vidéo conservée dans le client 16.0 ; thème téléchargé depuis la bande originale officielle (allods.ru)",
       "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/11_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/11_0Events/MainMenu/Intro.ogv"
       },
-      "theme": null
+      "theme": {
+        "url": "https://allods.ru/media/mp3/5fc0f02772d9b.mp3",
+        "name": "MainMenu_SoulOfDarkness",
+        "note": "« Душа Тьмы (2019) », section « Главная тема » de https://allods.ru/about.php?show=soundtrack — aucun client 11.0 archivé ne conserve la banque Music_Menu"
+      }
     },
     {
       "version": "12.0",

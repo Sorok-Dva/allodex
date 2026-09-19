@@ -55,6 +55,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.request
 from pathlib import Path
 
 from PIL import Image
@@ -280,6 +281,25 @@ def extract_logo(spec: dict, root: Path, target: Path, force: bool) -> tuple[str
                 return None, f"logo illisible ({candidate}) : {type(exc).__name__} : {exc}"
             return target.name, None
     return None, f"logo introuvable : {spec['entry']} dans {', '.join(paks)}"
+
+
+def extract_logo_from_url(spec: dict, target: Path, force: bool) -> tuple[str | None, str | None]:
+    """Logo publié par l'éditeur (site/forum allods.my.games) quand aucun client archivé
+    ne conserve la texture : `logo: {url, note?}`. Le PNG est détouré de son padding
+    transparent comme les textures du client. Renvoie (nom du fichier, erreur)."""
+    if target.exists() and not force:
+        return target.name, None
+    with tempfile.TemporaryDirectory(prefix="allodex-archive-") as tmp:
+        src = Path(tmp) / "logo-source"
+        try:
+            download(spec["url"], src)
+            with Image.open(src) as img:
+                out = trim_transparent_padding(img.convert("RGBA"))
+                target.parent.mkdir(parents=True, exist_ok=True)
+                out.save(target)
+        except (OSError, ValueError) as exc:
+            return None, f"logo introuvable : {spec['url']} ({exc})"
+    return target.name, None
 
 
 def extract_common(manifest: dict, out_dir: Path, overrides: dict, force: bool, report: list[str]) -> None:
@@ -513,6 +533,39 @@ def extract_theme(spec: dict, root: Path, out_dir: Path, vgmstream: Path, force:
     }, None
 
 
+def download(url: str, target: Path) -> None:
+    """Télécharge `url` dans `target` (User-Agent de navigateur : allods.ru refuse le défaut)."""
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Allodex)"})
+    with urllib.request.urlopen(req, timeout=60) as resp, target.open("wb") as out:
+        shutil.copyfileobj(resp, out)
+
+
+def extract_theme_from_url(spec: dict, out_dir: Path, force: bool) -> tuple[dict | None, str | None]:
+    """Thème publié par l'éditeur (bande originale d'allods.ru) quand aucun client ne le
+    conserve : `theme: {url, name, note?}`. Le MP3 est téléchargé puis réencodé en
+    `theme.ogg`/`theme.mp3` comme les banques FMOD. Renvoie (entrée d'index, erreur)."""
+    out_base = out_dir / "theme"
+    if not (out_base.with_suffix(".ogg").exists() and out_base.with_suffix(".mp3").exists() and not force):
+        with tempfile.TemporaryDirectory(prefix="allodex-archive-") as tmp:
+            src = Path(tmp) / "theme-source"
+            try:
+                download(spec["url"], src)
+            except (OSError, ValueError) as exc:
+                return None, f"téléchargement impossible : {spec['url']} ({exc})"
+            out_dir.mkdir(parents=True, exist_ok=True)
+            try:
+                encode_outputs(src, out_base, "tracks")
+            except RuntimeError as exc:
+                return None, str(exc)
+    return {
+        "name": spec.get("name") or Path(spec["url"]).stem,
+        "duration": probe_duration(out_base.with_suffix(".ogg")),
+        "ogg": "theme.ogg",
+        "mp3": "theme.mp3",
+        "source": spec["url"],
+    }, None
+
+
 # --- pilotage -----------------------------------------------------------------------------
 
 def _client_root(manifest: dict, version_spec: dict, spec: dict, overrides: dict) -> Path:
@@ -636,7 +689,15 @@ def process_version(
                     print(f"{version:>5}  background.png")
 
     # -- logo de l'add-on
-    if logo_spec:
+    if logo_spec and logo_spec.get("url"):
+        logo, err = extract_logo_from_url(logo_spec, ver_dir / "logo.png", force)
+        if err:
+            problems.append(err)
+            report.append(f"AVERTISSEMENT : {version} — {err}")
+        else:
+            entry["logo"] = logo
+            print(f"{version:>5}  logo.png (allods.my.games)")
+    elif logo_spec:
         root = _client_root(manifest, version_spec, logo_spec, overrides)
         if not root.is_dir():
             msg = f"client absent : {root}"
@@ -653,7 +714,15 @@ def process_version(
                 print(f"{version:>5}  logo.png")
 
     # -- thème
-    if theme_spec:
+    if theme_spec and theme_spec.get("url"):
+        theme, err = extract_theme_from_url(theme_spec, ver_dir, force)
+        if err:
+            problems.append(f"thème indisponible : {err}")
+            report.append(f"AVERTISSEMENT : {version} — thème indisponible : {err}")
+        else:
+            entry["theme"] = theme
+            print(f"{version:>5}  theme.ogg / theme.mp3  « {theme['name']} » ({theme['duration']:.1f}s, allods.ru)")
+    elif theme_spec:
         root = _client_root(manifest, version_spec, theme_spec, overrides)
         if not root.is_dir():
             msg = f"client absent : {root}"
