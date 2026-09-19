@@ -21,15 +21,16 @@ describe('formatDuration', () => {
 
 describe('ThemePlayer', () => {
   it('affiche le nom du thème et sa durée', () => {
-    const { getByText } = render(<ThemePlayer entry={ENTRY} playing={false} onToggle={vi.fn()} />);
+    const { getByText, getByTestId } = render(<ThemePlayer entry={ENTRY} playing={false} onToggle={vi.fn()} />);
     expect(getByText('MainMenu_Immortality')).toBeTruthy();
-    expect(getByText('3:02')).toBeTruthy();
+    // Le deux-points est un élément à part (lisibilité) : on lit le texte complet.
+    expect(getByTestId('theme-duration').textContent).toBe('3:02');
   });
 
   it('bascule lecture/pause par le bouton', () => {
     const onToggle = vi.fn();
     const { getByLabelText, rerender } = render(<ThemePlayer entry={ENTRY} playing={false} onToggle={onToggle} />);
-    fireEvent.click(getByLabelText('Écouter le thème'));
+    fireEvent.click(getByLabelText('Lire le thème'));
     expect(onToggle).toHaveBeenCalledTimes(1);
     rerender(<ThemePlayer entry={ENTRY} playing onToggle={onToggle} />);
     expect(getByLabelText('Mettre le thème en pause')).toBeTruthy();
@@ -45,6 +46,6 @@ describe('ThemePlayer', () => {
     const { theme: _theme, ...entry } = ENTRY;
     const { getByText, queryByLabelText } = render(<ThemePlayer entry={entry} playing={false} onToggle={vi.fn()} />);
     expect(getByText('Thème non extrait')).toBeTruthy();
-    expect(queryByLabelText('Écouter le thème')).toBeNull();
+    expect(queryByLabelText('Lire le thème')).toBeNull();
   });
 });

@@ -44,7 +44,7 @@ function MediaLayer({ entry }: { entry: ArchiveEntry }) {
 export function ChroniclesScreen() {
   const entries = useMemo(() => archiveEntries(), []);
   const { query } = useRoute();
-  const { playSfx, playExternal, pauseMusic, resumeAmbient } = useGameAudio();
+  const { playSfx, playExternal, pauseMusic, resumeAmbient, playing, external } = useGameAudio();
 
   // La version affichée vit dans l'URL (`?v=8.0`) : partageable, et le bouton
   // « précédent » ramène d'où l'on venait (la frise remplace l'entrée d'historique).
@@ -58,6 +58,10 @@ export function ChroniclesScreen() {
 
   // Fondu croisé du fond : la couche sortante reste montée le temps du fondu, la
   // nouvelle apparaît par-dessus (`fadeIn`), puis on ne garde que la dernière.
+  // Retirer la couche démonte son `<video>` : le navigateur met alors le média en
+  // pause et abandonne son décodage — jamais deux vidéos décodées au-delà du fondu,
+  // et rien à arrêter à la main (les vidéos sont muettes, elles ne passent pas par le
+  // moteur audio).
   const layerKey = useRef(0);
   const [layers, setLayers] = useState<{ key: number; entry: ArchiveEntry }[]>(() => (entry ? [{ key: 0, entry }] : []));
   useEffect(() => {
@@ -80,7 +84,10 @@ export function ChroniclesScreen() {
     return () => { resumeAmbient({ crossfadeMs: CROSSFADE_MS }); };
   }, [playSfx, pauseMusic, resumeAmbient]);
 
-  const [playing, setPlaying] = useState(true);
+  // `wanted` est l'intention (« le thème doit suivre les changements de version »), à ne
+  // pas confondre avec la lecture réelle rapportée par le moteur (`playing`) : la
+  // politique d'autoplay peut refuser le démarrage sur une arrivée directe.
+  const [wanted, setWanted] = useState(true);
   const theme = entry?.theme;
   const themeId = entry && theme ? `archive:${entry.version}` : null;
   const themeSrc = useMemo(
@@ -89,14 +96,20 @@ export function ChroniclesScreen() {
   );
 
   useEffect(() => {
-    if (!themeId || !themeSrc || !playing) return;
+    if (!themeId || !themeSrc || !wanted) return;
     playExternal(themeId, themeSrc, { loop: true, crossfadeMs: CROSSFADE_MS });
-  }, [themeId, themeSrc, playing, playExternal]);
+  }, [themeId, themeSrc, wanted, playExternal]);
+
+  /** Le thème de la version affichée joue vraiment (et pas une autre piste). */
+  const themePlaying = playing && external === themeId;
 
   const toggleTheme = useCallback(() => {
-    if (playing) { pauseMusic(); setPlaying(false); }
-    else setPlaying(true);   // l'effet ci-dessus reprend la lecture
-  }, [playing, pauseMusic]);
+    if (themePlaying) { pauseMusic(); setWanted(false); return; }
+    // Le clic est lui-même le geste utilisateur qui débloque l'autoplay : on relance
+    // sans attendre l'effet, qui ne se redéclencherait pas si `wanted` était déjà vrai.
+    setWanted(true);
+    if (themeId && themeSrc) playExternal(themeId, themeSrc, { loop: true, crossfadeMs: CROSSFADE_MS });
+  }, [themePlaying, pauseMusic, playExternal, themeId, themeSrc]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -155,7 +168,7 @@ export function ChroniclesScreen() {
       />
       <SpeakerToggle className={s.speaker} />
 
-      {entry && <ThemePlayer entry={entry} playing={playing} onToggle={toggleTheme} className={s.player} />}
+      {entry && <ThemePlayer entry={entry} playing={themePlaying} onToggle={toggleTheme} className={s.player} />}
 
       {entry && (
         <VersionTimeline entries={entries} active={entry.version} onSelect={select} className={s.timeline} />

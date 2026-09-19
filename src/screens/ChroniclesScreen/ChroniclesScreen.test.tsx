@@ -37,15 +37,20 @@ const playSfx = vi.fn();
 const playExternal = vi.fn();
 const pauseMusic = vi.fn();
 const resumeAmbient = vi.fn();
+// Lecture réelle rapportée par le moteur : les tests la pilotent (le vrai moteur est
+// éprouvé par `ChroniclesScreen.autoplay.test.tsx` et `AudioProvider.test.tsx`).
+const engine = { playing: false, external: null as string | null };
 vi.mock('@/lib/audio/useGameAudio', () => ({
   useGameAudio: () => ({
-    muted: false, track: 'ambient', external: null, paused: false, ready: true,
+    muted: false, track: 'ambient', external: engine.external, paused: false, playing: engine.playing, ready: true,
     toggleMuted: vi.fn(), setTrack: vi.fn(), playSfx, playExternal, pauseMusic, resumeAmbient,
   }),
 }));
 
 beforeEach(() => {
   [navigateSpy, playSfx, playExternal, pauseMusic, resumeAmbient].forEach(fn => fn.mockClear());
+  engine.playing = false;
+  engine.external = null;
   HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined);
   HTMLMediaElement.prototype.pause = vi.fn();
   HTMLMediaElement.prototype.load = vi.fn();
@@ -127,12 +132,24 @@ describe('ChroniclesScreen — audio et fermeture', () => {
   });
 
   it('met le thème en pause puis le relance par le bouton du lecteur', () => {
-    const { getByLabelText } = setup();
+    engine.playing = true;
+    engine.external = 'archive:8.0';
+    const { getByLabelText, rerender } = setup();
     fireEvent.click(getByLabelText('Mettre le thème en pause'));
     expect(pauseMusic).toHaveBeenCalledTimes(2); // montage + bouton
+
+    engine.playing = false;
+    rerender(<ChroniclesScreen />);
     playExternal.mockClear();
-    fireEvent.click(getByLabelText('Écouter le thème'));
+    fireEvent.click(getByLabelText('Lire le thème'));
     expect(playExternal).toHaveBeenCalledWith('archive:8.0', expect.anything(), expect.anything());
+  });
+
+  it("n'annonce pas la lecture du thème quand le moteur joue autre chose", () => {
+    engine.playing = true;
+    engine.external = null;          // l'ambiance du site, pas le thème de la version
+    const { getByLabelText } = setup();
+    expect(getByLabelText('Lire le thème')).toBeTruthy();
   });
 
   it('la croix joue « medals-close » et revient à l\'accueil', () => {

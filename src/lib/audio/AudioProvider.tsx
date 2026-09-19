@@ -13,6 +13,13 @@ export type GameAudioState = {
   external: string | null;
   /** Vrai quand la musique a été mise en pause (`pauseMusic`), sans oublier sa position. */
   paused: boolean;
+  /**
+   * Lecture **réelle** de l'élément musical actif, déduite de ses événements
+   * `play`/`playing`/`pause`/`ended` — pas de l'intention du site. Un `play()` refusé
+   * par la politique d'autoplay laisse donc `playing` à `false`, et l'interface ne
+   * prétend pas jouer une piste muette.
+   */
+  playing: boolean;
   ready: boolean;
 };
 
@@ -38,6 +45,8 @@ const MUSIC_VOLUME = 0.3;
 /** Volume par défaut d'un son d'interface joué par `playSfx`, 0..1. */
 const SFX_VOLUME = 0.5;
 const DEFAULT_CROSSFADE_MS = 1500;
+/** Événements qui suffisent à suivre la lecture réelle d'un `<audio>`. */
+const MEDIA_EVENTS = ['play', 'playing', 'pause', 'ended'] as const;
 
 export const AudioContext = createContext<GameAudio | null>(null);
 
@@ -73,6 +82,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   const [track, setTrackState] = useState<TrackName | null>(null);
   const [external, setExternalState] = useState<string | null>(null);
   const [paused, setPausedState] = useState(false);
+  const [playing, setPlayingState] = useState(false);
   const [ready, setReady] = useState(false);
 
   // Deux éléments <audio> pour la musique : celui qui joue actuellement et celui qui
@@ -97,6 +107,19 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   useEffect(() => {
     activeRef.current = musicRefA.current;
     setReady(true);
+  }, []);
+
+  // Lecture réelle : on écoute les deux éléments (l'actif change à chaque fondu) et on
+  // ne retient que les événements de celui qui est actif. C'est le navigateur qui a le
+  // dernier mot — un `play()` bloqué par l'autoplay n'émet pas d'événement `play`.
+  useEffect(() => {
+    const els = [musicRefA.current, musicRefB.current].filter((el): el is HTMLAudioElement => el !== null);
+    const sync = (e: Event) => {
+      if (e.target !== activeRef.current) return;
+      setPlayingState(e.type === 'play' || e.type === 'playing');
+    };
+    els.forEach(el => MEDIA_EVENTS.forEach(name => el.addEventListener(name, sync)));
+    return () => els.forEach(el => MEDIA_EVENTS.forEach(name => el.removeEventListener(name, sync)));
   }, []);
 
   const stopFade = useCallback(() => {
@@ -304,8 +327,8 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   }, []);
 
   const api = useMemo<GameAudio>(
-    () => ({ muted, track, external, paused, ready, toggleMuted, setTrack, playExternal, pauseMusic, resumeAmbient, playSfx }),
-    [muted, track, external, paused, ready, toggleMuted, setTrack, playExternal, pauseMusic, resumeAmbient, playSfx],
+    () => ({ muted, track, external, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, resumeAmbient, playSfx }),
+    [muted, track, external, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, resumeAmbient, playSfx],
   );
 
   return (

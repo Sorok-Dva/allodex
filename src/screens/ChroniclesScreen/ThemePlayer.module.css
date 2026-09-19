@@ -41,7 +41,10 @@
 }
 .meta { display: flex; gap: 10px; align-items: baseline; margin-top: 2px; }
 .kind { color: #b0d9be; font-size: 12.5px; line-height: 14px; }
-.duration { color: #b0d9be; font-size: 12.5px; line-height: 14px; }
+.duration { color: #b0d9be; font-size: 13px; line-height: 14px; font-variant-numeric: tabular-nums; }
+/* Le deux-points de la police du jeu disparaît entre deux chiffres à cette taille :
+   on l'agrandit et on l'aère (« 302 » lu sur la capture de la 8.0). */
+.colon { font-size: 15px; padding: 0 1.5px; }
 .note {
   margin-top: 3px;
   color: #8fae96;

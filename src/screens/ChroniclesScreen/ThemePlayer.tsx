@@ -2,11 +2,25 @@ import { nineSlice } from '@/lib/nineSlice';
 import type { ArchiveEntry } from '@/lib/assets';
 import s from './ThemePlayer.module.css';
 
-/** Durée en `m:ss`, secondes tronquées comme les lecteurs de musique. */
+/**
+ * Durée en `m:ss`, secondes tronquées comme les lecteurs de musique. Le rendu détache
+ * le deux-points (voir `Duration`) : dans la police du jeu, à cette taille, « 3:02 » se
+ * lisait « 302 » sur les captures.
+ */
 export function formatDuration(seconds: number): string {
   const total = Math.max(0, Math.floor(seconds));
   const m = Math.floor(total / 60);
   return `${m}:${String(total - m * 60).padStart(2, '0')}`;
+}
+
+/** `3:02` avec un deux-points un peu plus grand et aéré, sinon illisible à 13 px. */
+function Duration({ seconds }: { seconds: number }) {
+  const [minutes, rest] = formatDuration(seconds).split(':');
+  return (
+    <span className={s.duration} data-testid="theme-duration">
+      {minutes}<span className={s.colon}>:</span>{rest}
+    </span>
+  );
 }
 
 type Props = {
@@ -31,7 +45,7 @@ export function ThemePlayer({ entry, playing, onToggle, className }: Props) {
             type="button"
             className={s.button}
             onClick={onToggle}
-            aria-label={playing ? 'Mettre le thème en pause' : 'Écouter le thème'}
+            aria-label={playing ? 'Mettre le thème en pause' : 'Lire le thème'}
           >
             <span className={s.buttonSkin} aria-hidden="true" style={nineSlice('pill-full', [0, 30, 0, 24], { fill: true })} />
             <svg className={s.glyph} viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
@@ -45,7 +59,7 @@ export function ThemePlayer({ entry, playing, onToggle, className }: Props) {
             <div className={s.name}>{theme.name}</div>
             <div className={s.meta}>
               <span className={s.kind}>Thème du menu</span>
-              <span className={s.duration}>{formatDuration(theme.duration)}</span>
+              <Duration seconds={theme.duration} />
             </div>
             {entry.theme_note && <div className={s.note}>{entry.theme_note}</div>}
           </div>
