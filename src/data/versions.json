@@ -1,0 +1,14 @@
+{
+  "_note": "Fiche de chaque version affichée par le bouton « ? » des Chroniques : `release` = AAAA-MM (ou AAAA) de la sortie EU/FR, `lore` = résumé de l'histoire de l'add-on, `changes` = grands changements (phrases courtes). Une version absente affiche « Fiche à venir ». Fichier à relire et corriger à la main : les fiches autres que la 4.0 viennent d'une recherche web (notes de patch, wikis) et non du client.",
+  "4.0": {
+    "release": "2013-03",
+    "lore": "Lords of Destiny ouvre le Dominion et la pyramide de Tep : les Ligueux et les Impériaux se disputent la maîtrise du destin de Sarnaut.",
+    "changes": [
+      "niveau maximum porté à 55",
+      "Tep et son raid",
+      "le Dominion",
+      "de nouvelles zones et les Tekyans",
+      "les glyphes et du nouveau contenu astral"
+    ]
+  }
+}

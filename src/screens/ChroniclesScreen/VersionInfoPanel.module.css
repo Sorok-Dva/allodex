@@ -1,0 +1,23 @@
+/* Panneau d'information : sous les boutons du coin haut droit, largeur fixe, même
+   habillage que le lecteur du thème (cadre d'infobulle, fond noir à 67 %). */
+.panel {
+  position: absolute; right: 24px; top: 64px; width: 440px;
+  max-height: calc(100vh - 220px); overflow-y: auto;
+  padding: 12px 18px 16px;
+  border-style: solid; border-color: transparent;
+  background: rgba(0, 0, 0, 0.67);
+  font-family: var(--font-serif);
+  animation: panelIn 160ms ease-out both;
+}
+@keyframes panelIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .panel { animation: none; } }
+
+.title { margin: 0 0 8px; color: #ffdc00; font-size: 17px; line-height: 21px; font-weight: normal; }
+.key { color: #b0d9be; font-size: 13px; line-height: 17px; margin: 10px 0 2px; }
+.release { margin: 0; color: #f1e6c2; font-size: 14px; line-height: 18px; }
+.release .key { display: inline; margin: 0 4px 0 0; }
+.release .key::after { content: ' :'; }
+.lore { margin: 10px 0 0; color: #f1e6c2; font-size: 14px; line-height: 19px; }
+.pending { margin: 0; color: #b0d9be; font-size: 14px; line-height: 18px; }
+.changes { margin: 0; padding-left: 18px; color: #f1e6c2; font-size: 14px; line-height: 19px; }
+.changes li { margin: 2px 0; }

@@ -32,6 +32,13 @@ vi.mock('@/lib/assets', async importOriginal => {
   return { ...actual, archiveEntries: () => ENTRIES };
 });
 
+vi.mock('@/data/versions.json', () => ({
+  default: {
+    _note: 'doc',
+    '8.0': { release: '2016-11', lore: 'Les dieux reviennent.', changes: ['niveau maximum porté à 75', 'nouvelle zone'] },
+  },
+}));
+
 const navigateSpy = vi.fn();
 vi.mock('@/lib/router', async importOriginal => {
   const actual = await importOriginal<typeof import('@/lib/router')>();
@@ -235,5 +242,38 @@ describe('ChroniclesScreen — défilement automatique', () => {
     engine.ended = 'archive:8.0';
     rerender(<ChroniclesScreen />);
     expect(navigateSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe('ChroniclesScreen — panneau « À propos de cette version »', () => {
+  it('le bouton « ? » ouvre la fiche (date, histoire, changements) et la referme', () => {
+    const { getByLabelText, getByTestId, queryByTestId, getByText } = setup('?v=8.0');
+    expect(queryByTestId('version-info')).toBeNull();
+    fireEvent.click(getByLabelText('À propos de cette version'));
+    expect(playSfx).toHaveBeenCalledWith('ui-click');
+    expect(getByTestId('version-info').textContent).toContain('Allods Online - Immortality (8.0)');
+    expect(getByText('novembre 2016')).toBeTruthy();
+    expect(getByText('Les dieux reviennent.')).toBeTruthy();
+    expect(getByText('niveau maximum porté à 75')).toBeTruthy();
+    fireEvent.click(getByLabelText('À propos de cette version'));
+    expect(queryByTestId('version-info')).toBeNull();
+  });
+
+  it('une version sans fiche affiche « Fiche à venir », et Échap ferme le panneau', () => {
+    const { getByLabelText, getByText, queryByTestId } = setup('?v=1.1');
+    fireEvent.click(getByLabelText('À propos de cette version'));
+    expect(getByText('Fiche à venir.')).toBeTruthy();
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(queryByTestId('version-info')).toBeNull();
+  });
+
+  it('le défilement automatique attend tant que la fiche est ouverte, puis reprend', () => {
+    const { getByLabelText, rerender } = setup('?v=8.0');
+    fireEvent.click(getByLabelText('À propos de cette version'));
+    engine.ended = 'archive:8.0';
+    rerender(<ChroniclesScreen />);
+    expect(navigateSpy).not.toHaveBeenCalled();
+    fireEvent.click(getByLabelText('À propos de cette version'));
+    expect(navigateSpy).toHaveBeenCalledWith('/chroniques?v=11.0', { replace: true });
   });
 });
