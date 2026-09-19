@@ -50,6 +50,19 @@ Géométrie relevée sur `refs/astral.png` (échelle 1:1, pixels écran) :
 | Infobulle | cadre sombre vert bordé, titre vert clair, « Date : 20:54 29.08.2026 », description, séparateur, « [Shift] 🖱 Lien vers les succès » |
 | Menu « Tout » | liste sombre à bord or : « Tout », « Terminé », « Pas terminé », alignés à droite |
 
+**(amendé 2026-09-19)** Géométrie ci-dessus remplacée par les mesures faites en tâche 1 sur les
+quatre captures (profils numpy, recherche de fenêtres uniformes, test d'identité pixel entre
+lignes/colonnes ; voir `.superpowers/sdd/2026-09-19-iteration-2-fidelite/task-1-report.md`) :
+
+| Élément | Mesure amendée |
+|---|---|
+| Fenêtre (rails verts) | x **518 → 1404** (886 px), y **191 → 783** (592 px) |
+| Plaque de titre brune « Succès » | x **574 → 1349** (775 px, pas toute la largeur de l'écran), y 191 → 222 |
+
+Le reste du tableau (bandeau, colonnes, entrées, badge, infobulle, menu) est confirmé à ±3 px
+près par les captures de vérification de la tâche 6, à l'exception des couleurs de l'infobulle
+et de la taille du curseur d'ascenseur, amendées séparément en §7.2 et §7.3.
+
 Catégories (ordre du jeu, 17) : Progression, Personnage, Batailles, Astral, Raids précédents, Zones de l'histoire, Ordre, Raids actuels, Aventures héroïques, Succès rares, Étincelle, Royaume des éléments, Exploration du monde, Parchemins de retour, Allod privé, Événements, Forteresse de guilde. « Progression » n'a pas de médaillon +/− (c'est une vue, pas une catégorie dépliable).
 
 ## 5. Sources d'assets
@@ -69,7 +82,7 @@ Toute image dérivée des captures est nettoyée : aucun texte, aucun élément 
 
 ## 7. Panneau Succès
 
-Rendu à **l'échelle 1:1** (fenêtre 880×590), centré dans la vue, fond vidéo flouté conservé.
+Rendu à **l'échelle 1:1** (fenêtre 880×590 — **amendé 2026-09-19** : 886×592, voir §4), centré dans la vue, fond vidéo flouté conservé.
 
 ### 7.1 Chrome
 Plaque de titre brune débordante avec « Succès » doré centré et ornements aux extrémités ; bandeau turquoise avec « N points de succès » (sans espace avant « points », comme le jeu) ; rails verts ; croix de fermeture (`Cross/Close*`) dans le coin supérieur droit ; séparateur vertical entre les deux colonnes.
@@ -78,14 +91,16 @@ Plaque de titre brune débordante avec « Succès » doré centré et ornements 
 - Champ « Recherche de succès... » (sprite du jeu).
 - Liste des 17 catégories en pilules, **toutes repliées** au chargement ; « Progression » sans médaillon (clic : rien pour l'instant, la vue arrive à l'itération suivante) ; les autres avec médaillon « + » (repliée) / « − » (dépliée). Une seule dépliée à la fois ; déplier une catégorie sélectionne automatiquement sa première sous-catégorie.
 - Sous-liste sur parchemin `CategoryContent` : « Nom - terminés/total », sous-catégorie active surlignée.
-- Ascenseur du jeu à droite : flèche haut, piste, curseur, flèche bas (sprites), synchronisé avec le défilement natif de la liste (molette).
+- Ascenseur du jeu à droite : flèche haut, piste, curseur, flèche bas (sprites), synchronisé avec le défilement natif de la liste (molette). **(amendé 2026-09-19)** Le curseur d'ascenseur est à **taille fixe (20 px)** comme dans le jeu, et non proportionnel au ratio contenu visible / contenu total — la même règle s'applique à l'ascenseur de la colonne de contenu (§7.3).
 - Au chargement, aucune sous-catégorie sélectionnée ; le contenu affiche l'en-tête « Astral ouvert » **uniquement** si une sous-catégorie est choisie ; sinon le contenu reste vide (la vue Progression prendra cette place plus tard). Exception pratique pour le POC : à l'ouverture, la catégorie **Astral** est dépliée et « Astral ouvert » sélectionnée, pour que l'écran ne soit pas vide.
 
 ### 7.3 Contenu (droite)
 - En-tête sombre : titre de la sous-catégorie (doré, à gauche) ; à droite champ « Tout » + bouton or ; clic → menu déroulé du jeu avec « Tout », « Terminé », « Pas terminé » (composant maison, plus de `<select>`).
 - Liste d'entrées, pas ≈ 111 px, ascenseur du jeu à droite.
 - Entrée : badge (icône 48×48 en cadre or, chiffre romain du palier atteint en bas à droite de l'icône, écu rouge avec le score) ; parchemin doré (terminé) ou gris (non terminé) ; nom brun en haut à gauche ; date `JJ.MM.AAAA` en haut à droite si terminé, sinon case de suivi (sprite, cochable localement, état non persisté) ; description centrée ; barre « X sur Y » si `completeProgress > 1` ; si `medalCollection` non vide : « Série de succès : » centré puis rangée d'icônes 32×32 avec chiffre romain (I, II, III…) et état terminé/non terminé (icône pleine / assombrie).
+  **(amendé 2026-09-19)** Le chiffre romain du badge est celui du **palier du score** (`toRoman(medalTier(score))`), **pas** celui de `currentRank`, comme le montre `refs/astral.png` : « Parfait ! » (`currentRank: 0`) affiche « I », et « Connecté avec les étoiles » (`currentRank: 1`, 20 pts) affiche « I » quand « Propriétaire » (`currentRank: 1`, 30 pts) affiche « II » — deux succès au même `currentRank` mais deux chiffres différents, donc le chiffre suit le score, pas le rang courant.
 - Infobulle au survol du badge ou du nom : cadre du jeu, titre vert clair, « Date : HH:MM JJ.MM.AAAA » si terminé, description, séparateur, « Shift + clic : Lien vers les succès » (texte décoratif). Position fixe calculée, jamais coupée.
+  **(amendé 2026-09-19)** Couleurs mesurées sur `refs/tooltip.png` (profils numpy sur les lignes de texte) : titre **et** date en `#00ea38` (vert vif, pas « vert clair »), description en `#ffdc00` (jaune), filet de séparation `#445f4a`, ligne d'aide `#b0d9be`. L'infobulle est ancrée au curseur (décalage +9, +11 depuis le coin haut-gauche), pas centrée sur l'élément survolé.
 
 ### 7.4 Données
 - `medals.types.ts` : `Medal.tracked?: boolean` ; `MedalRank.image?: string` (icône du palier) ; `medalCollection` items gagnent `icon: string` et `rank: number` (chiffre romain) ; `finishDate` peut porter l'heure (`2026-08-29T20:54`).
