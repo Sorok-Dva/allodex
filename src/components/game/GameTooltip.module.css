@@ -1,0 +1,34 @@
+.tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  pointer-events: none;
+  max-width: 280px;
+  padding: 8px 12px;
+  border-style: solid;
+  border-repeat: stretch;
+  background: rgba(24, 34, 20, 0.92);
+  font-family: var(--font-serif);
+}
+.title {
+  color: #7ad66b;
+  font-size: 16px;
+  font-family: var(--font-caps);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.body {
+  color: #e6efe0;
+  font-size: 14px;
+  line-height: 1.35;
+}
+.sep {
+  height: 1px;
+  margin: 6px 0;
+  background: rgba(185, 201, 180, 0.3);
+}
+.hint {
+  color: #b9c9b4;
+  font-size: 13px;
+}

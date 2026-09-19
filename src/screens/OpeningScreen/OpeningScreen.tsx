@@ -1,9 +1,14 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef } from 'react';
 import { T, tex, video } from '@/lib/assets';
 import { navigate } from '@/lib/router';
-import { GameButton } from '@/components/game/GameButton';
+import { GameActionBar, type ActionItem } from '@/components/game/GameActionBar';
 import { useIntroState } from './useIntroState';
 import s from './OpeningScreen.module.css';
+
+const ACTION_ITEMS: ActionItem[] = [
+  { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: 'Succès', onClick: () => navigate('/succes') },
+  { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: 'Personnage', hint: 'Mon compte — bientôt' },
+];
 
 function Video({ name, loop, onEnded, onError, className }: { name: 'intro' | 'mainmenu'; loop?: boolean; onEnded?: () => void; onError?: () => void; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -22,8 +27,7 @@ function Video({ name, loop, onEnded, onError, className }: { name: 'intro' | 'm
 }
 
 export function OpeningScreen() {
-  const { phase, skipIntro, replayIntro } = useIntroState();
-  const [query, setQuery] = useState('');
+  const { phase, skipIntro } = useIntroState();
 
   useEffect(() => {
     if (phase !== 'intro') return;
@@ -34,11 +38,6 @@ export function OpeningScreen() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [phase, skipIntro]);
-
-  const goMedals = (e?: FormEvent) => {
-    e?.preventDefault();
-    navigate(query.trim() ? `/succes?q=${encodeURIComponent(query.trim())}` : '/succes');
-  };
 
   if (phase === 'intro') {
     return (
@@ -54,24 +53,7 @@ export function OpeningScreen() {
       <Video key="mainmenu" name="mainmenu" loop className={`${s.video} ${s.fadeIn}`} />
       <div className={s.vignette} />
 
-      <form className={s.loginPanel} onSubmit={goMedals}>
-        <div className={s.title}>Succès</div>
-        <div className={s.searchRow}>
-          <label className={s.field} style={{ backgroundImage: `url(${tex(`${T.login}/EditlineFrame`)})` }}>
-            <input
-              className={s.input} value={query} onChange={e => setQuery(e.target.value)}
-              placeholder="Recherche de succès..." autoFocus spellCheck={false}
-              aria-label="Recherche de succès"
-            />
-          </label>
-          <GameButton base={`${T.login}/ButtonLogin`} width={72} height={72} title="Voir les succès" onClick={() => goMedals()} />
-        </div>
-        <div className={s.roundRow}>
-          <GameButton base={`${T.login}/ButtonOptions`} width={56} height={56} title="Mon compte (bientôt)" disabled />
-          <GameButton base={`${T.login}/ButtonKeyboard`} width={56} height={56} title="Addon d'export (bientôt)" disabled />
-          <GameButton base={`${T.login}/ButtonCredits`} width={56} height={56} title="Rejouer l'intro" onClick={replayIntro} />
-        </div>
-      </form>
+      <GameActionBar items={ACTION_ITEMS} className={s.actionBar} />
 
       <div className={s.bottomLine} style={{ backgroundImage: `url(${tex(`${T.main2}/BottomLine`)})` }}>
         <span>Site fan non officiel. Allods Online, ses images et vidéos sont la propriété de My.Games.</span>
