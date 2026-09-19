@@ -1,5 +1,5 @@
 {
-  "_note": "Clients Allods Online archivés (lecture seule) et, pour chaque version affichée dans les Chroniques, l'écran de lancement du menu principal, son logo et sa banque de thème. Les chemins sont des montages WSL des disques externes de l'utilisateur ; un disque non monté n'est pas une erreur (tools/extract_archive.py avertit et laisse media: null). Pour ajouter une version : ajouter son client dans `clients`, puis une entrée dans `versions` avec `version`, `name` (le libellé est construit : « Allods Online - <name> (<version>) »), soit `video` (Video/<N>_0Events/MainMenu/*.ogv), soit `background` (capture d'écran `capture` et/ou texture Interface/Wrap/MainMenu/…), `logo` (texture Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV<N>, sans locale ni suffixe : l'outil choisit la variante fra > eng_eu/eng > non localisée) et `theme` (banque SFX/Music/Music_Menu.fsb). `theme.prefer` force un subsong par son nom, sinon pick_theme_subsong choisit (MainMenu* > MainTitle > Menu* > la plus longue) ; `theme: null` + `theme_note` pour une version dont aucun client archivé ne conserve le thème.",
+  "_note": "Clients Allods Online archivés (lecture seule) et, pour chaque version affichée dans les Chroniques, l'écran de lancement du menu principal, son logo et sa banque de thème. Les chemins sont des montages WSL des disques externes de l'utilisateur ; un disque non monté n'est pas une erreur (tools/extract_archive.py avertit et laisse media: null). Pour ajouter une version : ajouter son client dans `clients`, puis une entrée dans `versions` avec `version`, `name` (le libellé est construit : « Allods Online - <name> (<version>) »), soit `video` (Video/<N>_0Events/MainMenu/*.ogv), soit `background` (capture d'écran `capture` et/ou texture Interface/Wrap/MainMenu/…), `logo` (texture Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV<N>, sans locale ni suffixe : l'outil choisit la variante fra > eng_eu/eng > non localisée) et `theme` (banque SFX/Music/Music_Menu.fsb). `theme.prefer` force un subsong par son nom, sinon pick_theme_subsong choisit (MainMenu* > MainTitle > Menu* > la plus longue) ; `theme: null` + `theme_note` pour une version dont aucun client archivé ne conserve le thème ; sinon `theme: {url, name}` (MP3 de la bande originale officielle, https://allods.ru/about.php?show=soundtrack) ou `theme: {file, name}` (MP3 local, chemin relatif au dépôt, dans refs/themes/ git-ignoré). De même `logo: {url}` télécharge un PNG publié par l'éditeur (forum allods.my.games : logo_front<NN>0_forum.png, avec sous-titre seulement pour 80/90/100).",
   "clients": {
     "1.1": {
       "root": "/mnt/f/ALLODS ONLINE SERVER/Allods 1.0/allods/Client",
@@ -297,8 +297,7 @@
       "name": "Gates of Worlds",
       "client": "16.0",
       "note": "vidéo conservée dans le client 16.0",
-      "theme_note": "Thème non disponible dans les clients archivés",
-      "video": {
+            "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/13_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/13_0Events/MainMenu/Intro.ogv"
@@ -307,15 +306,18 @@
         "pak": "data/Packs/BaseLocfra_x64.pak",
         "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV13"
       },
-      "theme": null
+      "theme": {
+        "file": "refs/themes/theme-13.0.mp3",
+        "name": "MainMenu_GatesOfWorlds",
+        "note": "MP3 fourni par l'utilisateur (refs/themes/, git-ignoré) : aucun client 13.0 archivé ne conserve la banque Music_Menu"
+      }
     },
     {
       "version": "14.0",
       "name": "Call of Legends",
       "client": "16.0",
       "note": "vidéo conservée dans le client 16.0",
-      "theme_note": "Thème non disponible dans les clients archivés",
-      "video": {
+            "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/14_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/14_0Events/MainMenu/Intro.ogv"
@@ -324,7 +326,11 @@
         "pak": "data/Packs/BaseLocfra_x64.pak",
         "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV14"
       },
-      "theme": null
+      "theme": {
+        "file": "refs/themes/theme-14.0.mp3",
+        "name": "MainMenu_CallOfLegends",
+        "note": "MP3 fourni par l'utilisateur (refs/themes/, git-ignoré) : aucun client 14.0 archivé ne conserve la banque Music_Menu"
+      }
     },
     {
       "version": "15.0",

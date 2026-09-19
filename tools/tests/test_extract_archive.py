@@ -806,3 +806,17 @@ def test_extract_logo_from_url_downloads_and_trims_the_png(tmp_path, monkeypatch
     assert ea.extract_logo_from_url({"url": "https://x/logo.png"}, tmp_path / "10.0" / "logo.png", force=False) == ("logo.png", None), "déjà extrait : pas de nouveau téléchargement"
     name, err = ea.extract_logo_from_url({"url": "https://x/nope.png"}, tmp_path / "11.0" / "logo.png", force=True)
     assert name is None and "logo introuvable" in err
+
+
+def test_extract_theme_from_file_encodes_a_local_mp3_relative_to_the_repo(tmp_path, monkeypatch):
+    from tools import extract_archive as ea
+
+    (tmp_path / "refs").mkdir()
+    (tmp_path / "refs" / "t.mp3").write_bytes(b"mp3")
+    monkeypatch.setattr(ea, "encode_outputs", lambda src, out_base, cat: [out_base.with_suffix(s).write_bytes(b"x") for s in (".ogg", ".mp3")])
+    monkeypatch.setattr(ea, "probe_duration", lambda p: 187.4)
+
+    theme, err = ea.extract_theme_from_url({"file": "refs/t.mp3", "name": "MainMenu_CallOfLegends"}, tmp_path / "14.0", force=True, base_dir=tmp_path)
+    assert err is None and theme["name"] == "MainMenu_CallOfLegends" and theme["source"] == "refs/t.mp3"
+    theme, err = ea.extract_theme_from_url({"file": "refs/absent.mp3"}, tmp_path / "x", force=True, base_dir=tmp_path)
+    assert theme is None and "fichier introuvable" in err

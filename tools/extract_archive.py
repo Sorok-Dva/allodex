@@ -540,29 +540,38 @@ def download(url: str, target: Path) -> None:
         shutil.copyfileobj(resp, out)
 
 
-def extract_theme_from_url(spec: dict, out_dir: Path, force: bool) -> tuple[dict | None, str | None]:
-    """Thème publié par l'éditeur (bande originale d'allods.ru) quand aucun client ne le
-    conserve : `theme: {url, name, note?}`. Le MP3 est téléchargé puis réencodé en
-    `theme.ogg`/`theme.mp3` comme les banques FMOD. Renvoie (entrée d'index, erreur)."""
+def extract_theme_from_url(spec: dict, out_dir: Path, force: bool, base_dir: Path | None = None) -> tuple[dict | None, str | None]:
+    """Thème hors client : `theme: {url, name, note?}` (bande originale publiée par
+    l'éditeur, allods.ru) ou `theme: {file, name, note?}` (fichier local, chemin relatif
+    au dépôt, p. ex. `refs/themes/theme-14.0.mp3`, git-ignoré). La source est réencodée
+    en `theme.ogg`/`theme.mp3` comme les banques FMOD. Renvoie (entrée d'index, erreur)."""
+    source = spec.get("url") or spec.get("file")
     out_base = out_dir / "theme"
     if not (out_base.with_suffix(".ogg").exists() and out_base.with_suffix(".mp3").exists() and not force):
         with tempfile.TemporaryDirectory(prefix="allodex-archive-") as tmp:
-            src = Path(tmp) / "theme-source"
-            try:
-                download(spec["url"], src)
-            except (OSError, ValueError) as exc:
-                return None, f"téléchargement impossible : {spec['url']} ({exc})"
+            if spec.get("url"):
+                src = Path(tmp) / "theme-source"
+                try:
+                    download(spec["url"], src)
+                except (OSError, ValueError) as exc:
+                    return None, f"téléchargement impossible : {spec['url']} ({exc})"
+            else:
+                src = Path(spec["file"])
+                if not src.is_absolute():
+                    src = (base_dir or HERE.parent) / src
+                if not src.is_file():
+                    return None, f"fichier introuvable : {src}"
             out_dir.mkdir(parents=True, exist_ok=True)
             try:
                 encode_outputs(src, out_base, "tracks")
             except RuntimeError as exc:
                 return None, str(exc)
     return {
-        "name": spec.get("name") or Path(spec["url"]).stem,
+        "name": spec.get("name") or Path(source).stem,
         "duration": probe_duration(out_base.with_suffix(".ogg")),
         "ogg": "theme.ogg",
         "mp3": "theme.mp3",
-        "source": spec["url"],
+        "source": source,
     }, None
 
 
@@ -714,14 +723,14 @@ def process_version(
                 print(f"{version:>5}  logo.png")
 
     # -- thème
-    if theme_spec and theme_spec.get("url"):
+    if theme_spec and (theme_spec.get("url") or theme_spec.get("file")):
         theme, err = extract_theme_from_url(theme_spec, ver_dir, force)
         if err:
             problems.append(f"thème indisponible : {err}")
             report.append(f"AVERTISSEMENT : {version} — thème indisponible : {err}")
         else:
             entry["theme"] = theme
-            print(f"{version:>5}  theme.ogg / theme.mp3  « {theme['name']} » ({theme['duration']:.1f}s, allods.ru)")
+            print(f"{version:>5}  theme.ogg / theme.mp3  « {theme['name']} » ({theme['duration']:.1f}s, hors client)")
     elif theme_spec:
         root = _client_root(manifest, version_spec, theme_spec, overrides)
         if not root.is_dir():

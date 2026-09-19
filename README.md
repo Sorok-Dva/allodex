@@ -86,6 +86,11 @@ existe dans les deux langues) ; les données bilingues (fiches) sont des objets
 `{fr, en}` lus avec `pick()`. Pour l'instant seuls les Chroniques et le bouton son sont
 traduits ; les autres écrans restent à passer par `useI18n().t()`.
 
+Quand aucun client archivé ne conserve un média, le manifeste peut pointer hors client :
+`theme: {url}` (bande originale officielle sur allods.ru), `theme: {file}` (MP3 local dans
+`refs/themes/`, git-ignoré) ou `logo: {url}` (PNG du forum allods.my.games). Les 17
+versions ont ainsi leur thème.
+
 Trois libellés sont construits à partir du manifeste et non écrits à la main :
 
 - **`label`** — « Allods Online - <`name`> (<`version`>) », p. ex. « Allods Online -
