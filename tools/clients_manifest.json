@@ -41,6 +41,11 @@
       "game_version": "7.0.00.76",
       "note": "second client 7.0 archivé (Allods Developers Community, Profiles/game.version = 7.0.00.76) : vérifié pour le logo (WrapAllodsLogoV7 et l'atlas V7Animation, tous deux dans BaseLoceng_eu.pak, uniquement en eng_eu) — n'apporte rien de mieux que la source « 8.0 » déjà utilisée pour le logo de 7.0, qui a en plus une variante fra. Ne remplace donc aucune entrée."
     },
+    "10.0-warp": {
+      "root": "/home/llyam/allods-clients/11.0",
+      "game_version": "11.0.00.37",
+      "note": "extrait (7z) de « I:\\Backups\\GameClients\\AllodsClient\\MyGames\\allods warp (19-02-2020) (11.0).7z » : Packs BaseLocWarprus(.HiRes)/Interface.Mini/SFX_Music.Mini/Video + Profiles/game.version. Malgré son game.version 11.0, ce client Warp (russe) est de l'ère 10.0 : logo WrapAllodsLogoV10 (russe uniquement, « Край мира »), vidéo 10_0Events et thème MainMenu_TheEdgeOfTheWorld — c'est la source de la 10.0, pas de la 11.0"
+    },
     "8.0": {
       "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0",
       "game_version": "8.0.02.61.1"
@@ -236,14 +241,24 @@
       "version": "10.0",
       "name": "Destination Horizon",
       "client": "16.0",
-      "note": "vidéo conservée dans le client 16.0",
-      "theme_note": "Thème non disponible dans les clients archivés",
+      "note": "vidéo conservée dans le client 16.0 ; logo et thème du client Warp 10.0-warp",
       "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/10_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/10_0Events/MainMenu/Intro.ogv"
       },
-      "theme": null
+      "logo": {
+        "client": "10.0-warp",
+        "pak": "data/Packs/BaseLocWarprus.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV10"
+      },
+      "_note_logo": "seule texture V10 connue, en russe (« Аллоды Онлайн — Край мира », le nom russe de Destination Horizon) : aucun client 10.0 occidental archivé",
+      "theme": {
+        "client": "10.0-warp",
+        "pak": "data/Packs/SFX_Music.Mini.pak",
+        "entry": "SFX/Music/Music_Menu.fsb",
+        "prefer": "MainMenu_TheEdgeOfTheWorld"
+      }
     },
     {
       "version": "11.0",
