@@ -1,0 +1,256 @@
+{
+ "_note": "Boîtes en pixels écran des captures 1920x1009 (refs/, git-ignoré). Géométrie relevée au pixel : fenêtre x 518->1404 (886 px), y 191->783 ; plaque de titre x 574->1349, y 191->222 ; bandeau turquoise y 222->259 ; rail haut y 258->269 ; rail bas y 762->783 ; colonne de navigation x 540->792, ascenseur x 795->817, séparateur x 814->835 ; colonne de contenu x 836->1390, ascenseur x 1369->1391 ; pilules x 539->781, hauteur 28, pas 30 (première à y 318). Aucune boîte ne contient de texte lisible ni d'élément du HUD du joueur.",
+ "captures": {
+  "astral": "refs/astral.png",
+  "tooltip": "refs/tooltip.png",
+  "dropdown": "refs/dropdown.png",
+  "navscroll": "refs/navscroll.png"
+ },
+ "textures_dir": "public/game/textures",
+ "sprites": {
+  "title-plate-left": {
+   "capture": "tooltip",
+   "box": [574, 191, 612, 222],
+   "slice": null,
+   "_note": "ornement en losange de l'extrémité gauche ; capture tooltip.png (astral/dropdown/navscroll portent un artefact vert du décor au-dessus de l'ornement droit) ; alpha_poly efface les coins où l'on verrait le décor du jeu",
+   "alpha_poly": [
+    [[ 16, 0 ], [ 10, 5 ], [ 3, 11 ], [ 1, 14 ], [ 3, 18 ], [ 9, 25 ], [ 16, 31 ], [ 38, 31 ], [ 38, 0 ]]
+   ]
+  },
+  "title-plate-mid": {
+   "capture": "tooltip",
+   "box": [620, 191, 628, 222],
+   "slice": null,
+   "_note": "tranche répétable la plus uniforme (écart-type 0,29) hors du mot « Succès »"
+  },
+  "title-plate-right": {
+   "capture": "tooltip",
+   "box": [1311, 191, 1349, 222],
+   "slice": null,
+   "alpha_poly": [
+    [[ 22, 0 ], [ 28, 5 ], [ 35, 11 ], [ 37, 14 ], [ 35, 18 ], [ 29, 25 ], [ 22, 31 ], [ 0, 31 ], [ 0, 0 ]]
+   ],
+   "_note": "symétrique de title-plate-left autour de x=961,5 (plaque x 574->1349) ; alpha_poly ajusté pour effacer les pixels verts/magenta du décor au-dessus de la pointe droite"
+  },
+  "band-left": {
+   "capture": "astral",
+   "box": [518, 222, 630, 259],
+   "slice": null,
+   "_note": "montant du rail + volute et arabesque gauches du bandeau turquoise (x 518->630) ; symétrique de band-right autour de x=961"
+  },
+  "band-mid": {
+   "capture": "astral",
+   "box": [770, 222, 778, 259],
+   "slice": null
+  },
+  "band-right": {
+   "capture": "astral",
+   "box": [1292, 222, 1404, 259],
+   "slice": null,
+   "repeat_y": [
+    {
+     "src": 18,
+     "y0": 0,
+     "y1": 12,
+     "x0": 82,
+     "x1": 112
+    }
+   ],
+   "_note": "arabesque droite + montant du rail ; la croix de fermeture déborde sur les lignes 222-233 à droite : reconstruites en recopiant la ligne 240 (montant vertical uniforme)"
+  },
+  "rail-top": {
+   "capture": "astral",
+   "box": [1216, 258, 1224, 269],
+   "slice": null
+  },
+  "rail-bottom": {
+   "capture": "astral",
+   "box": [617, 762, 625, 783],
+   "slice": null
+  },
+  "rail-left": {
+   "capture": "astral",
+   "box": [520, 510, 540, 518],
+   "slice": null
+  },
+  "rail-right": {
+   "capture": "astral",
+   "box": [1390, 494, 1404, 502],
+   "slice": null
+  },
+  "corner-tl": {
+   "capture": "astral",
+   "box": [520, 259, 538, 277],
+   "slice": null
+  },
+  "corner-tr": {
+   "capture": "astral",
+   "box": [1386, 259, 1404, 277],
+   "slice": null
+  },
+  "corner-bl": {
+   "capture": "astral",
+   "box": [520, 765, 538, 783],
+   "slice": null
+  },
+  "corner-br": {
+   "capture": "astral",
+   "box": [1386, 765, 1404, 783],
+   "slice": null
+  },
+  "divider-v": {
+   "capture": "astral",
+   "box": [814, 474, 835, 482],
+   "slice": null,
+   "_note": "séparateur vertical entre colonnes : liseré vert 816-818 + montant de bois 819-834"
+  },
+  "pill-left": {
+   "capture": "astral",
+   "box": [539, 575, 561, 603],
+   "slice": null,
+   "_note": "pilule « Ordre » repliée, extrémité gauche ornée, avant le texte (x 563+)"
+  },
+  "pill-mid": {
+   "capture": "astral",
+   "box": [636, 575, 644, 603],
+   "slice": null,
+   "_note": "tranche parfaitement uniforme (écart-type 0) entre le texte et le médaillon"
+  },
+  "pill-right": {
+   "capture": "astral",
+   "box": [759, 318, 781, 346],
+   "slice": null,
+   "_note": "pilule « Progression », seule sans médaillon : extrémité droite ornée intacte"
+  },
+  "medallion-plus": {
+   "capture": "astral",
+   "box": [753, 352, 777, 373],
+   "slice": null,
+   "_note": "médaillon « + » de la pilule « Personnage » ; boîte serrée sur le disque, fond = fond de pilule normale"
+  },
+  "medallion-minus": {
+   "capture": "astral",
+   "box": [753, 412, 777, 433],
+   "slice": null,
+   "_note": "médaillon « − » de la pilule « Astral » (dépliée et sélectionnée)"
+  },
+  "search-field": {
+   "capture": "astral",
+   "box": [557, 274, 789, 298],
+   "slice": [5, 6, 5, 6],
+   "repeat_x": [
+    {
+     "src": 203,
+     "x0": 6,
+     "x1": 226
+    }
+   ],
+   "_note": "champ « Recherche de succès... » ; le texte est effacé en recopiant la colonne vide x=760"
+  },
+  "scroll-up": {
+   "capture": "navscroll",
+   "box": [795, 307, 817, 330],
+   "slice": null,
+   "_note": "navscroll.png : liste défilée en bas, donc flèche haut active (dorée)"
+  },
+  "scroll-down": {
+   "capture": "astral",
+   "box": [795, 737, 817, 760],
+   "slice": null
+  },
+  "scroll-track": {
+   "capture": "astral",
+   "box": [795, 400, 817, 408],
+   "slice": [2, 0, 2, 0],
+   "_note": "tranche de piste répétable verticalement"
+  },
+  "scroll-thumb": {
+   "capture": "astral",
+   "box": [797, 330, 816, 350],
+   "slice": null
+  },
+  "content-header": {
+   "capture": "astral",
+   "box": [1015, 264, 1023, 302],
+   "slice": [10, 0, 10, 0],
+   "_note": "tranche verticale de l'en-tête sombre, hors du titre doré (x 841+) et du champ « Tout » (x 1230+)"
+  },
+  "dropdown-field": {
+   "capture": "astral",
+   "box": [1230, 274, 1356, 298],
+   "slice": [5, 6, 5, 6],
+   "repeat_x": [
+    {
+     "src": 40,
+     "x0": 6,
+     "x1": 120
+    }
+   ],
+   "_note": "champ « Tout » ; texte effacé en recopiant la colonne vide x=1270"
+  },
+  "dropdown-button": {
+   "capture": "astral",
+   "box": [1356, 274, 1379, 297],
+   "slice": null
+  },
+  "dropdown-frame": {
+   "capture": "dropdown",
+   "box": [1227, 299, 1380, 386],
+   "slice": [4, 4, 4, 4],
+   "clear_center": true,
+   "_note": "cadre du menu déroulé ; le centre (qui porte « Tout / Terminé / Pas terminé ») est mis à alpha 0"
+  },
+  "badge-icon-frame": {
+   "capture": "astral",
+   "box": [847, 327, 901, 378],
+   "slice": [4, 5, 5, 6],
+   "clear_center": true,
+   "_note": "cadre or de l'icône du succès « Connecté avec les étoiles » ; l'icône est effacée par clear_center"
+  },
+  "rank-tag": {
+   "capture": "astral",
+   "box": [886, 470, 896, 483],
+   "slice": [2, 2, 2, 2],
+   "fill": [
+    {
+     "rgb": [150, 104, 0],
+     "box": [0, 0, 10, 13]
+    },
+    {
+     "rgb": [233, 137, 3],
+     "box": [1, 1, 9, 12]
+    }
+   ],
+   "_note": "étiquette du chiffre romain : aucune étiquette vierge dans les captures, donc aplat aux deux couleurs relevées sur l'étiquette « II » de « Propriétaire »"
+  },
+  "series-slot": {
+   "capture": "astral",
+   "box": [1012, 641, 1047, 676],
+   "slice": [3, 3, 3, 3],
+   "clear_center": true,
+   "_note": "cadre d'une icône de la série de « Parfait ! » ; l'icône et le chiffre romain sont effacés par clear_center"
+  },
+  "checkbox-off": {
+   "texture": "Interface/Ingame/Medals/Textures/CheckboxNormal.png",
+   "slice": null,
+   "_note": "texture du client, identique au pixel près à la case de suivi de « Parfait ! » (x 1298-1317, y 552-567)"
+  },
+  "checkbox-on": {
+   "texture": "Interface/Ingame/Medals/Textures/CheckboxSelected.png",
+   "slice": null,
+   "_note": "même famille de textures que checkbox-off ; aucune case cochée dans les captures"
+  },
+  "tooltip-frame": {
+   "capture": "tooltip",
+   "box": [898, 330, 1231, 443],
+   "slice": [4, 4, 4, 4],
+   "fill": [
+    {
+     "rgb": [73, 76, 50],
+     "box": [4, 4, 329, 109]
+    }
+   ],
+   "_note": "cadre de l'infobulle ; l'intérieur (texte du succès du joueur) est remplacé par l'aplat relevé ligne 432, zone de l'infobulle posée sur le fond sombre"
+  }
+ }
+}

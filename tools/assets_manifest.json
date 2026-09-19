@@ -10,7 +10,10 @@
     "Interface/Common/Buttons/Cross/",
     "Interface/Common/Buttons/Menu/",
     "Interface/Common/Buttons/Standard/",
-    "Interface/Common/Elements/MsgBox/textures/"
+    "Interface/Common/Elements/MsgBox/textures/",
+    "Interface/Ingame/ContextPinMenu3/textures/",
+    "Interface/Ingame/ContextActionbar2/",
+    "Interface/Common/Elements/Editline/"
   ],
   "texture_files": [
     "Interface/Icons/Equipment/Helm/Armor_Light_Helmet.(UITexture).bin",
