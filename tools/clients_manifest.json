@@ -188,9 +188,10 @@
       "name": "New Order",
       "client": "7.0",
       "background": {
-        "pak": "data/Packs/Interface.Mini.pak",
-        "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
+        "pak": "data/Packs/World_MainMenu_Animated_Background_7_0.HiRes.pak",
+        "entry": "World/MainMenu/Animated_Background_7_0/AMM_Background_01.(Texture).hi.bin"
       },
+      "_note_background": "le menu des clients 4.0 à 8.0 est une scène animée par calques (packs World_MainMenu_Animated_Background*) ; la texture Main2/Background de l'interface n'en est qu'un repli, identique entre 4.0 et 7.0. Pour 7.0 le calque de fond AMM_Background_01 (1024×512) est à lui seul le décor complet : la cité céleste de New Order. Les autres versions n'ont pas de calque unique équivalent (4.0/5.0/6.0/8.0 : décor éclaté en dizaines de calques positionnés par la géométrie)",
       "logo": {
         "client": "8.0",
         "pak": "data/Packs/Interface.Mini.pak",
