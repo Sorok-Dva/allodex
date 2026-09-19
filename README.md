@@ -57,29 +57,76 @@ position, `resumeAmbient` la reprend en fondu. L'interrupteur haut-parleur (band
 ## Chroniques
 
 `/chroniques` présente, version par version (1.1 → 17.0), l'écran de lancement du jeu
-en plein écran — la vidéo du menu en boucle quand le client en avait une, sinon le fond
-statique — et le thème musical du menu de cette version, jouable. La version affichée
-vit dans l'URL (`/chroniques?v=8.0`) ; la frise de pilules en bas d'écran, les touches
-← → et les flèches du jeu en changent, avec un fondu croisé de 600 ms sur l'image
-**et** sur la musique. Pendant la visite, la musique d'ambiance du site est mise en
-pause et reprend là où elle en était à la sortie (croix en haut à droite). Une version
-dont le client n'était pas monté à l'extraction s'affiche sur le fond de secours
-assombri, avec la mention « Média non extrait ».
+en plein écran — la vidéo du menu en boucle quand le client en avait une, sinon une
+image de fond — surmonté du **logo de l'add-on** (centré en haut, à sa taille native,
+avec un halo qui respire) et, en bas, de l'**emblème de chargement** du jeu (l'anneau
+`LoadingGlobeFront` et le tourbillon `LoadingCyclone` qui tourne derrière). Le thème
+musical du menu de la version est jouable en bas à droite. La version affichée vit dans
+l'URL (`/chroniques?v=8.0`) ; la frise de pilules en bas d'écran, les touches ← → et les
+flèches du jeu en changent, avec un fondu croisé de 600 ms sur l'image **et** sur la
+musique. Pendant la visite, la musique d'ambiance du site est mise en pause et reprend
+là où elle en était à la sortie (croix en haut à droite). Une version dont le client
+n'était pas monté à l'extraction s'affiche sur le fond de secours assombri, avec la
+mention « Média non extrait ».
+
+Trois libellés sont construits à partir du manifeste et non écrits à la main :
+
+- **`label`** — « Allods Online - <`name`> (<`version`>) », p. ex. « Allods Online -
+  Game of Gods (3.0) » ; sans `name` (1.1, antérieure aux add-ons) : « Allods Online
+  (1.1) ». C'est le texte du cartouche en haut à gauche, et le grand titre central des
+  versions sans logo.
+- **`logo`** — `logo.png`, extrait de
+  `Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV<N>` dans la meilleure langue
+  disponible (`fra` > `eng_eu`/`eng` > texture non localisée, qui est le russe). Les
+  versions dont aucun client archivé ne conserve le logo (1.1, 2.0, 10.0, 11.0, 12.0)
+  n'ont pas de clé `logo` : la page affiche alors le libellé en toutes lettres dans la
+  police du jeu.
+- **`theme_note`** — une version dont aucun client archivé ne garde le thème (10.0,
+  11.0, 13.0, 14.0) a `theme: null` dans le manifeste : le lecteur reste affiché,
+  bouton grisé, « Thème non disponible ». Aucun thème approchant n'est substitué.
 
 Les médias viennent de `tools/extract_archive.py`, qui écrit — comme le reste de
 `public/game/`, donc **non versionné** — `public/game/archive/<version>/`
-(`background.png` ou `menu.{webm,mp4}` + `intro.{webm,mp4}`, `theme.{ogg,mp3}`) et
-l'index `public/game/archive.json`.
+(`background.png` ou `menu.{webm,mp4}` + `intro.{webm,mp4}`, `logo.png`,
+`theme.{ogg,mp3}`), l'emblème commun `public/game/archive/_common/` et l'index
+`public/game/archive.json`.
+
+**Fonds des versions ≤ 8.0 : une capture, pas une texture.** Jusqu'à la 8.0 le menu
+principal est une scène 3D (`World_MainMenu_*`) que le client ne stocke pas comme
+image : `Interface/Wrap/MainMenu/Main2/Background*` n'en est qu'une illustration de
+repli, identique d'une version à l'autre. Le fond de ces versions est donc une **capture
+d'écran du jeu**, déclarée par `background.capture` (`refs/menu-<version>.png`).
+Tant que le fichier n'existe pas, l'outil retombe sur la texture du client et l'entrée
+d'index porte `background_note: "capture de la scène 3D à venir (illustration de
+repli)"`, affiché sous le cartouche.
+
+Pour ajouter une capture (client ancien ouvert sur son écran de connexion) :
+
+    powershell.exe -NoProfile -ExecutionPolicy Bypass \
+      -File "C:\Users\<vous>\allodex-captures\capture_game.ps1" \
+      -Out "C:\Users\<vous>\allodex-captures\menu-3.0.png"
+    cp /mnt/c/Users/<vous>/allodex-captures/menu-3.0.png refs/menu-3.0.png
+    python3 tools/extract_archive.py --only 3.0 --skip-video
+
+`tools/capture_game.ps1` capture la zone client de la fenêtre `AOgame` (1920 × 1009 en
+plein écran fenêtré) ; le fichier n'est ni recadré ni redimensionné par l'outil, et
+`refs/` n'est **pas versionné**. La capture l'emporte sur la texture de repli dès le
+passage suivant, sans `--force`.
 
 **Ajouter une version.** Éditer `tools/clients_manifest.json` :
 1. Déclarer le client dans `clients` (`root` : chemin WSL du client archivé, en lecture
    seule ; `game_version` pour mémoire).
-2. Ajouter une entrée dans `versions` avec `version`, `label`, `client`, puis soit
-   `video` (`Video/<N>_0Events/MainMenu/{Intro,MainMenu}.ogv`), soit `background`
-   (pack + entrée `(UITexture).bin`, ou `layers` pour les menus composés des clients
-   1.x), plus `theme` (banque `SFX/Music/Music_Menu.fsb` ; `prefer` force un subsong par
-   son nom, sinon le choix est `MainMenu*` > `MainTitle` > `Menu*` > la plus longue).
-   `note` et `theme_note` sont repris tels quels par la page.
+2. Ajouter une entrée dans `versions` avec `version`, `name` (nom de l'add-on, dont le
+   libellé est construit), `client`, puis soit `video`
+   (`Video/<N>_0Events/MainMenu/{Intro,MainMenu}.ogv`), soit `background` (`capture`
+   et/ou pack + entrée `(UITexture).bin`, ou `layers` pour les menus composés des
+   clients 1.x), `logo` (pack — ou liste de packs — + entrée
+   `…/WrapAllodsLogoV<N>` sans locale ni suffixe) et `theme` (banque
+   `SFX/Music/Music_Menu.fsb` ; `prefer` force un subsong par son nom, sinon le choix
+   est `MainMenu*` > `MainTitle` > `Menu*` > la plus longue ; `null` = thème
+   indisponible). Chaque source accepte `client` pour piocher dans un autre client que
+   celui de la version — c'est ainsi que les logos des 5.0/6.0 viennent des clients
+   6.0/7.0. `note` et `theme_note` sont repris tels quels par la page.
 3. Extraire cette seule version :
 
         python3 tools/extract_archive.py --only 8.0          # --force pour réécrire

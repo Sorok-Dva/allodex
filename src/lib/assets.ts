@@ -21,10 +21,16 @@ export type ArchiveTheme = {
  */
 export type ArchiveEntry = {
   version: string;
+  /** Nom de l'add-on (« Power of Metal »), absent avant les add-ons (1.1). */
+  name?: string;
   label: string;
   media: 'video' | 'image' | null;
   /** Nom du PNG de fond (`media: 'image'`). */
   background?: string;
+  /** Mention affichée quand le fond est une illustration de repli et non la vraie scène. */
+  background_note?: string;
+  /** Nom du PNG du logo de l'add-on ; absent = aucun client archivé ne le conserve. */
+  logo?: string;
   /** Durée de la vidéo de menu, en secondes. */
   duration?: number;
   video?: MediaPair;
@@ -77,6 +83,8 @@ export const audioMeta = (name: string): AudioMeta | undefined => audioIndex?.[n
 export const archiveEntries = (): ArchiveEntry[] => archive ?? [];
 /** URL d'un fichier d'une version archivée (`background.png`, `menu.webm`, `theme.ogg`…). */
 export const archiveFile = (version: string, file: string) => `${BASE}/archive/${version}/${file}`;
+/** URL d'un fichier commun à toutes les versions (emblème de chargement). */
+export const archiveCommon = (file: string) => `${BASE}/archive/_common/${file}`;
 
 /** Racines de textures du client effectivement utilisées par le site. */
 export const T = {

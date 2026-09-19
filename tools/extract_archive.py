@@ -1,31 +1,46 @@
 #!/usr/bin/env python3
 """Extrait, pour chaque version archivée du client Allods Online, l'écran de
-lancement du menu principal et son thème musical (page « Chroniques »).
+lancement du menu principal, son logo et son thème musical (page « Chroniques »).
 
 Pour chaque version décrite dans `tools/clients_manifest.json` :
 
 * **écran de lancement** — la vidéo de menu (`Video/<N>_0Events/MainMenu/MainMenu.ogv`)
   quand le client en possède une, transcodée en `menu.webm` + `menu.mp4` (avec
-  `intro.*` si une intro existe) ; sinon la texture de fond du menu
-  (`Interface/Wrap/MainMenu/Main2/Background*.(UITexture).bin`) décodée en
-  `background.png` via `tools.uitexture`. Les clients 1.x n'ont pas de fond
-  unique mais un empilement (ciel + héros gauche/droite + vaisseaux) : le
-  manifeste décrit alors des `layers` que l'on compose ici (voir
+  `intro.*` si une intro existe) ; sinon `background.png`. Jusqu'à la 8.0 le vrai
+  menu est une scène 3D que le client ne stocke pas comme image : le fond est
+  alors une **capture d'écran** du jeu (`background.capture`, p. ex.
+  `refs/menu-3.0.png`, voir `tools/capture_game.ps1`). Tant que la capture
+  n'existe pas, on retombe sur la texture de repli du client
+  (`Interface/Wrap/MainMenu/Main2/Background*.(UITexture).bin`, décodée par
+  `tools.uitexture`) et l'entrée d'index porte `background_note`. Les clients 1.x
+  n'ont pas de fond unique mais un empilement (ciel + héros gauche/droite +
+  vaisseaux) : le manifeste décrit alors des `layers` que l'on compose ici (voir
   `compose_background`).
+* **logo** — la texture `Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV<N>`
+  de l'add-on, dans la meilleure langue disponible (`fra` > `eng_eu`/`eng` > non
+  localisée, voir `LOGO_LOCALES`), détourée en `logo.png`. Les versions dont
+  aucun client archivé ne conserve le logo n'ont pas de clé `logo` : la page
+  affiche le titre en toutes lettres.
 * **thème musical** — la banque `SFX/Music/Music_Menu.fsb` du client, dont on
   énumère les subsongs avec vgmstream ; `pick_theme_subsong` choisit le thème
-  (`MainMenu*` > `MainTitle` > `Menu*` > la plus longue), décodé puis encodé en
-  `theme.ogg` + `theme.mp3` (mêmes réglages que `tools/extract_audio.py`).
+  (`MainMenu*` > `MainTitle` > `Menu*` > la plus longue) sauf si `theme.prefer`
+  le nomme, décodé puis encodé en `theme.ogg` + `theme.mp3` (mêmes réglages que
+  `tools/extract_audio.py`). `theme: null` (+ `theme_note`) = version dont aucun
+  client archivé ne conserve le thème : on n'en invente pas.
 
-Sorties : `public/game/archive/<version>/…` et l'index `public/game/archive.json`
-(tableau trié par version : `{version, label, media, background?, video?, intro?,
-theme?, note?, theme_note?}`).
+Sorties : `public/game/archive/<version>/…`, l'emblème de chargement commun
+(`public/game/archive/_common/`) et l'index `public/game/archive.json` (tableau
+trié par version : `{version, name?, label, media, background?, background_note?,
+logo?, video?, intro?, theme?, note?, theme_note?}`).
 
 Idempotent : une version dont les sorties existent déjà est ignorée (son entrée
-d'index est reprise de l'index précédent), sauf `--force`. Un client absent (les
-disques externes ne sont pas toujours montés) ou une entrée introuvable
-déclenche un avertissement sur stderr et laisse une entrée `media: null` : la
-page Chroniques sait afficher « Média non extrait ».
+d'index est reprise de l'index précédent), sauf `--force` — à une exception près,
+la capture d'écran d'un fond, recopiée à chaque passage (c'est une seconde de
+travail, et c'est ce qui fait basculer une version de l'illustration de repli à
+sa vraie capture dès que le fichier apparaît). Un client absent (les disques
+externes ne sont pas toujours montés) ou une entrée introuvable déclenche un
+avertissement sur stderr et laisse une entrée `media: null` : la page Chroniques
+sait afficher « Média non extrait ».
 
 Usage : python3 tools/extract_archive.py [--only 8.0 --only 9.0] [--force]
                                          [--skip-video] [--skip-intro]
@@ -60,11 +75,21 @@ DEFAULT_MANIFEST = HERE / "clients_manifest.json"
 # Build WebAssembly de vgmstream, seule capable de décoder les banques CELT (clients 3.0/4.0).
 DEFAULT_VGMSTREAM_WASM = DEFAULT_VGMSTREAM.parent.parent / "vgmstream_wasm" / "vgmstream-node-wrapper.js"
 DEFAULT_OUT = HERE.parent / "public" / "game" / "archive"
+# Racine des captures d'écran du manifeste (`background.capture`), relatives au dépôt.
+REPO_ROOT = HERE.parent
 DEFAULT_CANVAS = (1920, 1080)
 
 # Ordre des clés de chaque entrée d'index (spec § 3), pour un JSON lisible en diff.
-KEY_ORDER = ("version", "label", "media", "duration", "background", "video", "intro", "theme", "note", "theme_note")
+KEY_ORDER = ("version", "name", "label", "media", "duration", "background", "background_note",
+             "logo", "video", "intro", "theme", "note", "theme_note")
 ALWAYS_KEYS = ("version", "label", "media")
+
+# Langues du logo, de la meilleure à la moins bonne ; `None` = texture non localisée (russe).
+LOGO_LOCALES = ("fra", "fr", "eng_eu", "eng", None)
+TEXTURE_SUFFIX = ".(UITexture).bin"
+
+# Fond affiché tant que la capture de la scène 3D du menu n'a pas été fournie.
+CAPTURE_PENDING_NOTE = "capture de la scène 3D à venir (illustration de repli)"
 
 _FSB5_MAGIC = b"FSB5"
 
@@ -120,6 +145,16 @@ def pick_theme_subsong(streams: list[dict]) -> int:
 def version_key(version: str) -> tuple[int, ...]:
     """Clé de tri numérique : « 9.0 » doit précéder « 10.0 »."""
     return tuple(int(p) for p in re.findall(r"\d+", str(version))) or (0,)
+
+
+def build_label(name: str | None, version: str) -> str:
+    """Libellé affiché : « Allods Online - Game of Gods (3.0) ».
+
+    Le manifeste ne porte que le nom de l'add-on (`name`) ; les versions qui n'en
+    ont pas (1.1, avant les add-ons) donnent « Allods Online (1.1) ».
+    """
+    name = (name or "").strip()
+    return f"Allods Online - {name} ({version})" if name else f"Allods Online ({version})"
 
 
 def build_index(entries: list[dict]) -> list[dict]:
@@ -191,6 +226,95 @@ def write_background(data: bytes, spec: dict, pak_path: Path, target: Path) -> s
     except Exception as exc:  # décodage DXT, Pillow, disque…
         return f"{type(exc).__name__} : {exc}"
     return None
+
+
+def write_capture(source: Path, target: Path) -> str | None:
+    """Recopie une capture d'écran du jeu en `background.png` (aucun recadrage).
+
+    Les captures sont prises sur la zone client du jeu (1920 × 1009 avec
+    `tools/capture_game.ps1`) : on ne recadre rien et on ne redimensionne rien,
+    la page les affiche en `object-fit: cover`. Renvoie None, ou l'erreur.
+    """
+    try:
+        with Image.open(source) as img:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            img.convert("RGB").save(target)
+    except Exception as exc:  # fichier tronqué, format inconnu, disque…
+        return f"{type(exc).__name__} : {exc}"
+    return None
+
+
+# --- logo ---------------------------------------------------------------------------------
+
+def logo_candidates(entry: str) -> list[str]:
+    """Entrées de pak à essayer pour un logo, de la meilleure langue à la moins bonne.
+
+    `entry` est le chemin de la texture sans locale ni suffixe
+    (`…/WrapAllodsLogoV16`) : le client range chaque traduction dans un fichier
+    distinct (`….fra.(UITexture).bin`), la version non localisée étant le russe.
+    """
+    return [f"{entry}.{loc}{TEXTURE_SUFFIX}" if loc else f"{entry}{TEXTURE_SUFFIX}" for loc in LOGO_LOCALES]
+
+
+def extract_logo(spec: dict, root: Path, target: Path, force: bool) -> tuple[str | None, str | None]:
+    """Écrit `logo.png` (détouré, alpha conservé). Renvoie (nom du fichier, erreur).
+
+    `spec.pak` accepte un pak ou une liste de paks : les logos récents vivent
+    dans les `BaseLoc<langue>_x64.pak`, les anciens dans `Interface.Mini.pak`. La
+    langue prime sur l'ordre des paks — on cherche d'abord la variante française
+    partout, puis l'anglaise, etc.
+    """
+    if target.exists() and not force:
+        return target.name, None
+    paks = spec["pak"] if isinstance(spec["pak"], list) else [spec["pak"]]
+    for candidate in logo_candidates(spec["entry"]):
+        for pak in paks:
+            data = extract_pak_entry_bytes(root / pak, candidate)
+            if data is None:
+                continue
+            try:
+                img = _decode_texture(data)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                img.convert("RGBA").save(target)
+            except Exception as exc:  # décodage DXT, Pillow, disque…
+                return None, f"logo illisible ({candidate}) : {type(exc).__name__} : {exc}"
+            return target.name, None
+    return None, f"logo introuvable : {spec['entry']} dans {', '.join(paks)}"
+
+
+def extract_common(manifest: dict, out_dir: Path, overrides: dict, force: bool, report: list[str]) -> None:
+    """Extrait les textures communes à toutes les versions dans `<out>/_common/`.
+
+    L'emblème du bas de l'écran de lancement (`LoadingGlobeFront` + `LoadingCyclone`)
+    est identique des clients 9.0 à 17.0 : un seul jeu de fichiers, pas un par version.
+    """
+    spec = manifest.get("common")
+    if not spec:
+        return
+    key = spec.get("client", "")
+    root = Path(overrides.get(key) or manifest.get("clients", {}).get(key, {}).get("root", ""))
+    targets = {name: out_dir / "_common" / name for name in spec.get("textures", {})}
+    if not force and all(t.exists() for t in targets.values()):
+        return
+    if not root.is_dir():
+        report.append(f"AVERTISSEMENT : _common — client absent : {root}")
+        return
+    pak_path = root / spec["pak"]
+    for name, entry in spec.get("textures", {}).items():
+        target = targets[name]
+        if target.exists() and not force:
+            continue
+        data = extract_pak_entry_bytes(pak_path, entry)
+        if data is None:
+            report.append(f"AVERTISSEMENT : _common — texture introuvable : {entry} dans {pak_path}")
+            continue
+        try:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            _decode_texture(data).convert("RGBA").save(target)
+        except Exception as exc:  # décodage DXT, Pillow, disque…
+            report.append(f"AVERTISSEMENT : _common — texture illisible ({entry}) : {type(exc).__name__} : {exc}")
+            continue
+        print(f"_common  {name}")
 
 
 # --- vidéo --------------------------------------------------------------------------------
@@ -414,19 +538,23 @@ def process_version(
     previous: dict,
     report: list[str],
     wasm: Path | None = None,
+    capture_root: Path | None = None,
 ) -> dict:
     version = version_spec["version"]
     entry = {
         "version": version,
-        "label": version_spec.get("label", f"Allods Online {version}"),
+        "name": version_spec.get("name"),
+        "label": build_label(version_spec.get("name"), version),
         "media": None,
         "theme_note": version_spec.get("theme_note"),
     }
     problems: list[str] = []
     ver_dir = out_dir / version
+    capture_root = Path(capture_root) if capture_root else REPO_ROOT
 
     video_spec = version_spec.get("video")
     bg_spec = version_spec.get("background")
+    logo_spec = version_spec.get("logo")
     theme_spec = version_spec.get("theme")
 
     # -- média
@@ -466,7 +594,25 @@ def process_version(
     elif bg_spec:
         root = _client_root(manifest, version_spec, bg_spec, overrides)
         target = ver_dir / "background.png"
-        if target.exists() and not force:
+        # Capture de la scène 3D du menu : elle prime sur la texture de repli, et on
+        # la recopie à chaque passage pour qu'elle remplace le repli dès qu'elle arrive.
+        capture = capture_root / bg_spec["capture"] if bg_spec.get("capture") else None
+        if capture is not None and capture.is_file():
+            err = write_capture(capture, target)
+            if err:
+                problems.append(f"capture illisible ({capture}) : {err}")
+                report.append(f"AVERTISSEMENT : {version} — capture illisible ({capture}) : {err}")
+            else:
+                entry["media"] = "image"
+                entry["background"] = "background.png"
+                print(f"{version:>5}  background.png (capture {capture.name})")
+        elif capture is not None:
+            entry["background_note"] = CAPTURE_PENDING_NOTE
+
+        # Pas (ou plus) de capture : texture de repli du client, sauf si elle est déjà là.
+        if entry["media"] == "image":
+            pass  # la capture a fait le travail
+        elif target.exists() and not force:
             entry["media"] = "image"
             entry["background"] = "background.png"
         elif not root.is_dir():
@@ -489,6 +635,23 @@ def process_version(
                     entry["background"] = "background.png"
                     print(f"{version:>5}  background.png")
 
+    # -- logo de l'add-on
+    if logo_spec:
+        root = _client_root(manifest, version_spec, logo_spec, overrides)
+        if not root.is_dir():
+            msg = f"client absent : {root}"
+            if msg not in problems:
+                problems.append(msg)
+                report.append(f"AVERTISSEMENT : {version} — logo : client absent : {root}")
+        else:
+            logo, err = extract_logo(logo_spec, root, ver_dir / "logo.png", force)
+            if err:
+                problems.append(err)
+                report.append(f"AVERTISSEMENT : {version} — {err}")
+            else:
+                entry["logo"] = logo
+                print(f"{version:>5}  logo.png")
+
     # -- thème
     if theme_spec:
         root = _client_root(manifest, version_spec, theme_spec, overrides)
@@ -506,10 +669,21 @@ def process_version(
                 entry["theme"] = theme
                 print(f"{version:>5}  theme.ogg / theme.mp3  « {theme['name']} » ({theme['duration']:.1f}s)")
 
-    # Rien de neuf cette fois mais une extraction précédente existe : on la garde.
+    # Rien de neuf cette fois mais une extraction précédente existe : on la garde —
+    # sauf ce que le manifeste ne demande plus (un thème retiré du manifeste ne doit
+    # pas ressusciter depuis l'index précédent : `theme: null` est une décision).
+    declared = {
+        "media": bool(video_spec or bg_spec),
+        "duration": bool(video_spec),
+        "background": bool(bg_spec),
+        "video": bool(video_spec),
+        "intro": bool(video_spec),
+        "logo": bool(logo_spec),
+        "theme": bool(theme_spec),
+    }
     if previous:
-        for key in ("media", "duration", "background", "video", "intro", "theme"):
-            if entry.get(key) is None and previous.get(key) is not None:
+        for key, wanted in declared.items():
+            if wanted and entry.get(key) is None and previous.get(key) is not None:
                 entry[key] = previous[key]
 
     entry["note"] = _note(version_spec.get("note"), *problems)
@@ -526,6 +700,7 @@ def run(
     skip_intro: bool = False,
     overrides: dict | None = None,
     wasm: Path | None = None,
+    capture_root: Path | None = None,
 ) -> tuple[list[dict], list[str]]:
     out_dir = Path(out_dir)
     index_path = out_dir.parent / f"{out_dir.name}.json"
@@ -537,6 +712,7 @@ def run(
             previous = {}
 
     report: list[str] = []
+    extract_common(manifest, out_dir, overrides or {}, force, report)
     entries = []
     for version_spec in manifest.get("versions", []):
         if only and version_spec["version"] not in only:
@@ -548,7 +724,7 @@ def run(
         entries.append(
             process_version(
                 version_spec, manifest, out_dir, vgmstream, force, skip_video, skip_intro,
-                overrides or {}, previous.get(version_spec["version"], {}), report, wasm,
+                overrides or {}, previous.get(version_spec["version"], {}), report, wasm, capture_root,
             )
         )
     return build_index(entries), report
@@ -574,6 +750,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--only", action="append", help="ne traiter que cette version (répétable)")
     p.add_argument("--client-root-override", action="append", metavar="VERSION=CHEMIN",
                    help="remplace la racine du client d'une version (répétable)")
+    p.add_argument("--capture-root", default=str(REPO_ROOT),
+                   help="racine des captures d'écran de fond du manifeste (`background.capture`)")
     p.add_argument("--force", action="store_true", help="réécrire les sorties existantes")
     p.add_argument("--skip-video", action="store_true", help="ne pas transcoder les vidéos")
     p.add_argument("--skip-intro", action="store_true", help="ne transcoder que la boucle de menu")
@@ -595,6 +773,7 @@ def main(argv: list[str] | None = None) -> int:
         manifest, out_dir, Path(args.vgmstream), force=args.force, only=args.only,
         skip_video=args.skip_video, skip_intro=args.skip_intro,
         overrides=parse_overrides(args.client_root_override), wasm=Path(args.vgmstream_wasm),
+        capture_root=Path(args.capture_root),
     )
 
     for line in report:

@@ -5,11 +5,15 @@ from pathlib import Path
 import pytest
 
 from tools.extract_archive import (
+    CAPTURE_PENDING_NOTE,
     build_index,
+    build_label,
     compose_background,
     decode_subsong,
+    extract_logo,
     extract_theme,
     fsb_subsong_count,
+    logo_candidates,
     pick_theme_subsong,
     run,
     version_key,
@@ -124,6 +128,29 @@ def test_build_index_drops_empty_optional_keys_and_orders_them():
     assert list(out) == ["version", "label", "media", "video", "theme"]
 
 
+# --- build_label --------------------------------------------------------------------------
+
+
+def test_build_label_joins_the_addon_name_and_the_version():
+    assert build_label("Game of Gods", "3.0") == "Allods Online - Game of Gods (3.0)"
+    assert build_label("Power of Metal", "16.0") == "Allods Online - Power of Metal (16.0)"
+
+
+def test_build_label_without_a_name_keeps_only_the_version():
+    # 1.1 est antérieure aux add-ons : pas de sous-titre à afficher.
+    assert build_label(None, "1.1") == "Allods Online (1.1)"
+    assert build_label("   ", "1.1") == "Allods Online (1.1)"
+
+
+def test_run_builds_the_label_from_the_name_of_the_manifest(tmp_path):
+    index, _ = run(_manifest(str(tmp_path / "absent")), tmp_path / "out", Path("/nonexistent/vgmstream"))
+    assert [e["label"] for e in index] == [
+        "Allods Online - Conquerors of Time (2.0)",
+        "Allods Online - Power of Metal (16.0)",
+    ]
+    assert index[0]["name"] == "Conquerors of Time"
+
+
 # --- compose_background -------------------------------------------------------------------
 
 
@@ -223,7 +250,7 @@ def _manifest(root: str) -> dict:
         "versions": [
             {
                 "version": "2.0",
-                "label": "Allods Online 2.0",
+                "name": "Conquerors of Time",
                 "client": "test",
                 "background": {"pak": "Interface.pak", "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"},
                 "theme": {"pak": "SFX_Music.pak", "entry": "SFX/Music/Music_Menu.fsb"},
@@ -231,7 +258,7 @@ def _manifest(root: str) -> dict:
             },
             {
                 "version": "16.0",
-                "label": "Allods Online 16.0",
+                "name": "Power of Metal",
                 "client": "test",
                 "video": {"pak": "Video.pak", "entry": "Video/16_0Events/MainMenu/MainMenu.ogv"},
             },
@@ -452,6 +479,249 @@ def test_run_force_redoes_every_step_even_when_the_outputs_exist(tmp_path, monke
     assert [e["version"] for e in index] == ["2.0", "16.0"]
     assert (out / "2.0" / "background.png").read_bytes() == b"png"
     assert (out / "16.0" / "menu.webm").read_bytes() == b"webm"
+
+
+# --- fond : capture de la scène 3D, sinon illustration de repli -----------------------------
+
+
+def _capture_manifest(root: str, capture: str = "refs/menu-2.0.png") -> dict:
+    manifest = _manifest(root)
+    manifest["versions"] = manifest["versions"][:1]
+    manifest["versions"][0]["background"]["capture"] = capture
+    return manifest
+
+
+def test_run_uses_the_screen_capture_as_background_when_the_file_exists(tmp_path, monkeypatch):
+    from PIL import Image
+
+    client = _fake_client(tmp_path)
+    spies = _spy_on_the_expensive_steps(monkeypatch)
+    captures = tmp_path / "captures"
+    (captures / "refs").mkdir(parents=True)
+    Image.new("RGB", (1920, 1009), (12, 34, 56)).save(captures / "refs" / "menu-2.0.png")
+
+    out = tmp_path / "out"
+    index, report = run(_capture_manifest(str(client)), out, Path("/nonexistent/vgmstream"), capture_root=captures)
+
+    assert report == []
+    assert index[0]["media"] == "image" and index[0]["background"] == "background.png"
+    assert "background_note" not in index[0], "une vraie capture ne porte pas la mention de repli"
+    assert spies.background == 0, "la capture remplace la texture du client, on ne décode rien"
+    with Image.open(out / "2.0" / "background.png") as written:
+        assert written.size == (1920, 1009)  # aucun recadrage
+
+
+def test_run_falls_back_to_the_client_texture_and_notes_it_when_the_capture_is_missing(tmp_path, monkeypatch):
+    client = _fake_client(tmp_path)
+    spies = _spy_on_the_expensive_steps(monkeypatch)
+    out = tmp_path / "out"
+
+    index, report = run(_capture_manifest(str(client)), out, Path("/nonexistent/vgmstream"),
+                        capture_root=tmp_path / "captures")
+
+    assert report == []
+    assert index[0]["media"] == "image" and index[0]["background"] == "background.png"
+    assert index[0]["background_note"] == CAPTURE_PENDING_NOTE
+    assert spies.background == 1
+
+
+def test_run_replaces_an_existing_fallback_background_as_soon_as_the_capture_appears(tmp_path, monkeypatch):
+    from PIL import Image
+
+    client = _fake_client(tmp_path)
+    _spy_on_the_expensive_steps(monkeypatch)
+    out = tmp_path / "out"
+    (out / "2.0").mkdir(parents=True)
+    (out / "2.0" / "background.png").write_bytes(b"illustration-de-repli")
+    captures = tmp_path / "captures"
+    (captures / "refs").mkdir(parents=True)
+    Image.new("RGB", (1920, 1009), (12, 34, 56)).save(captures / "refs" / "menu-2.0.png")
+
+    # Sans --force : la capture prime quand même, sinon la version resterait sur le repli.
+    index, _ = run(_capture_manifest(str(client)), out, Path("/nonexistent/vgmstream"), capture_root=captures)
+
+    assert "background_note" not in index[0]
+    with Image.open(out / "2.0" / "background.png") as written:
+        assert written.size == (1920, 1009)
+
+
+# --- logo ----------------------------------------------------------------------------------
+
+
+def test_logo_candidates_prefers_french_then_english_then_the_unlocalised_texture():
+    assert logo_candidates("W/WrapAllodsLogoV16") == [
+        "W/WrapAllodsLogoV16.fra.(UITexture).bin",
+        "W/WrapAllodsLogoV16.fr.(UITexture).bin",
+        "W/WrapAllodsLogoV16.eng_eu.(UITexture).bin",
+        "W/WrapAllodsLogoV16.eng.(UITexture).bin",
+        "W/WrapAllodsLogoV16.(UITexture).bin",
+    ]
+
+
+def _logo_pak(path: Path, base: str, locales) -> None:
+    with zipfile.ZipFile(path, "w") as zf:
+        for loc in locales:
+            zf.writestr(f"{base}.{loc}.(UITexture).bin" if loc else f"{base}.(UITexture).bin", loc or "ru")
+
+
+def _decode_to_marker(monkeypatch) -> list[str]:
+    """Remplace le décodage DXT et note la variante lue (chaque entrée du pak factice
+    a pour contenu le nom de sa locale). La liste renvoyée est le journal des lectures."""
+    from PIL import Image
+
+    seen: list[str] = []
+
+    def fake(data: bytes) -> Image.Image:
+        seen.append(data.decode())
+        return Image.new("RGBA", (4, 4), (0, 0, 0, 0))
+
+    monkeypatch.setattr("tools.extract_archive._decode_texture", fake)
+    return seen
+
+
+BASE = "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV7"
+
+
+def test_extract_logo_picks_the_french_variant_over_the_others(tmp_path, monkeypatch):
+    seen = _decode_to_marker(monkeypatch)
+    client = tmp_path / "client"
+    client.mkdir()
+    _logo_pak(client / "Interface.Mini.pak", BASE, [None, "eng_eu", "fra", "ger", "tr"])
+
+    name, err = extract_logo({"pak": "Interface.Mini.pak", "entry": BASE}, client, tmp_path / "logo.png", force=False)
+
+    assert (name, err) == ("logo.png", None)
+    assert seen == ["fra"]
+    assert (tmp_path / "logo.png").exists()
+
+
+def test_extract_logo_falls_back_to_english_then_to_the_unlocalised_texture(tmp_path, monkeypatch):
+    seen = _decode_to_marker(monkeypatch)
+    client = tmp_path / "client"
+    client.mkdir()
+    _logo_pak(client / "eng.pak", BASE, [None, "eng_eu", "tw"])
+    _logo_pak(client / "ru.pak", BASE, [None])
+
+    name, err = extract_logo({"pak": ["eng.pak", "ru.pak"], "entry": BASE}, client, tmp_path / "a.png", force=False)
+    assert (name, err) == ("a.png", None)
+
+    russian, err2 = extract_logo({"pak": "ru.pak", "entry": BASE}, client, tmp_path / "b.png", force=False)
+    assert (russian, err2) == ("b.png", None)
+    assert seen == ["eng_eu", "ru"]
+
+
+def test_extract_logo_prefers_the_language_over_the_order_of_the_paks(tmp_path, monkeypatch):
+    # Les logos récents sont éclatés entre plusieurs paks : la langue prime sur le pak.
+    seen = _decode_to_marker(monkeypatch)
+    client = tmp_path / "client"
+    client.mkdir()
+    _logo_pak(client / "Interface.Mini.pak", BASE, ["eng"])
+    _logo_pak(client / "BaseLocfra_x64.pak", BASE, ["fra"])
+
+    name, err = extract_logo(
+        {"pak": ["Interface.Mini.pak", "BaseLocfra_x64.pak"], "entry": BASE}, client, tmp_path / "logo.png", force=False,
+    )
+
+    assert (name, err) == ("logo.png", None)
+    assert seen == ["fra"]
+
+
+def test_extract_logo_reports_a_missing_logo_without_writing_anything(tmp_path, monkeypatch):
+    _decode_to_marker(monkeypatch)
+    client = tmp_path / "client"
+    client.mkdir()
+    _logo_pak(client / "Interface.Mini.pak", BASE + "V99", ["fra"])
+
+    name, err = extract_logo({"pak": "Interface.Mini.pak", "entry": BASE}, client, tmp_path / "logo.png", force=False)
+
+    assert name is None and "logo introuvable" in err
+    assert not (tmp_path / "logo.png").exists()
+
+
+def test_run_records_the_logo_in_the_index(tmp_path, monkeypatch):
+    _decode_to_marker(monkeypatch)
+    client = _fake_client(tmp_path)
+    _spy_on_the_expensive_steps(monkeypatch)
+    _logo_pak(client / "BaseLocfra.pak", BASE, ["fra"])
+    manifest = _manifest(str(client))
+    manifest["versions"] = manifest["versions"][:1]
+    manifest["versions"][0]["logo"] = {"pak": "BaseLocfra.pak", "entry": BASE}
+
+    index, report = run(manifest, tmp_path / "out", Path("/nonexistent/vgmstream"))
+
+    assert report == []
+    assert index[0]["logo"] == "logo.png"
+    assert (tmp_path / "out" / "2.0" / "logo.png").exists()
+
+
+def test_run_leaves_the_logo_out_of_the_index_when_the_manifest_has_none(tmp_path, monkeypatch):
+    client = _fake_client(tmp_path)
+    _spy_on_the_expensive_steps(monkeypatch)
+    index, _ = run(_manifest(str(client)), tmp_path / "out", Path("/nonexistent/vgmstream"))
+    assert "logo" not in index[0]
+
+
+# --- emblème commun ------------------------------------------------------------------------
+
+
+def test_run_extracts_the_shared_loading_emblem_once(tmp_path, monkeypatch):
+    _decode_to_marker(monkeypatch)
+    client = _fake_client(tmp_path)
+    _spy_on_the_expensive_steps(monkeypatch)
+    with zipfile.ZipFile(client / "Interface.Mini.pak", "w") as zf:
+        zf.writestr("Interface/Wrap/SystemState/LoadingScreen2/LoadingGlobeFront.(UITexture).bin", "globe")
+    manifest = _manifest(str(client))
+    manifest["common"] = {
+        "client": "test",
+        "pak": "Interface.Mini.pak",
+        "textures": {"loading-globe.png": "Interface/Wrap/SystemState/LoadingScreen2/LoadingGlobeFront.(UITexture).bin"},
+    }
+
+    out = tmp_path / "out"
+    _, report = run(manifest, out, Path("/nonexistent/vgmstream"))
+
+    assert report == []
+    assert (out / "_common" / "loading-globe.png").exists()
+
+
+# --- thème absent des clients archivés -----------------------------------------------------
+
+
+def test_run_keeps_a_version_without_theme_and_carries_its_note(tmp_path, monkeypatch):
+    client = _fake_client(tmp_path)
+    _spy_on_the_expensive_steps(monkeypatch)
+    manifest = _manifest(str(client))
+    manifest["versions"] = manifest["versions"][:1]
+    manifest["versions"][0]["theme"] = None
+    manifest["versions"][0]["theme_note"] = "Thème non disponible dans les clients archivés"
+
+    index, report = run(manifest, tmp_path / "out", Path("/nonexistent/vgmstream"))
+
+    assert report == []
+    assert "theme" not in index[0]
+    assert index[0]["theme_note"] == "Thème non disponible dans les clients archivés"
+
+
+def test_run_does_not_resurrect_a_theme_removed_from_the_manifest(tmp_path, monkeypatch):
+    # L'index précédent gardait une approximation : `theme: null` doit l'effacer.
+    client = _fake_client(tmp_path)
+    _spy_on_the_expensive_steps(monkeypatch)
+    out = tmp_path / "out"
+    out.mkdir()
+    (tmp_path / "out.json").write_text(
+        json.dumps([{
+            "version": "2.0", "label": "Allods Online 2.0", "media": "image", "background": "background.png",
+            "theme": {"name": "MainMenu_CapitalOfShadows", "duration": 161.5, "ogg": "theme.ogg", "mp3": "theme.mp3"},
+        }]),
+        encoding="utf-8",
+    )
+    manifest = _manifest(str(client))
+    manifest["versions"] = manifest["versions"][:1]
+    manifest["versions"][0]["theme"] = None
+
+    index, _ = run(manifest, out, Path("/nonexistent/vgmstream"))
+
+    assert "theme" not in index[0]
 
 
 def test_extract_theme_prefer_overrides_the_automatic_choice(tmp_path, monkeypatch):

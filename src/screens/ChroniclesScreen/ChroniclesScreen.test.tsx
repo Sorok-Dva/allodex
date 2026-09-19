@@ -5,16 +5,24 @@ import { ChroniclesScreen } from './ChroniclesScreen';
 
 const ENTRIES: ArchiveEntry[] = [
   {
-    version: '1.1', label: 'Allods Online 1.1', media: 'image', background: 'background.png',
-    note: 'écran recomposé', theme: { name: 'MainTitle', duration: 168.046, ogg: 'theme.ogg', mp3: 'theme.mp3' },
+    version: '1.1', label: 'Allods Online (1.1)', media: 'image', background: 'background.png',
+    note: 'écran recomposé', background_note: 'capture de la scène 3D à venir (illustration de repli)',
+    theme: { name: 'MainTitle', duration: 168.046, ogg: 'theme.ogg', mp3: 'theme.mp3' },
   },
-  { version: '5.0', label: 'Allods Online 5.0', media: null },
+  { version: '5.0', name: 'Heart of the World', label: 'Allods Online - Heart of the World (5.0)', media: null },
   {
-    version: '8.0', label: 'Allods Online 8.0', media: 'image', background: 'background.png',
+    version: '8.0', name: 'Immortality', label: 'Allods Online - Immortality (8.0)',
+    media: 'image', background: 'background.png', logo: 'logo.png',
     theme: { name: 'MainMenu_Immortality', duration: 182.687, ogg: 'theme.ogg', mp3: 'theme.mp3' },
   },
   {
-    version: '16.0', label: 'Allods Online 16.0', media: 'video', video: { webm: 'menu.webm', mp4: 'menu.mp4' },
+    version: '11.0', name: 'Soul of Darkness', label: 'Allods Online - Soul of Darkness (11.0)',
+    media: 'video', video: { webm: 'menu.webm', mp4: 'menu.mp4' },
+    theme_note: 'Thème non disponible dans les clients archivés',
+  },
+  {
+    version: '16.0', name: 'Power of Metal', label: 'Allods Online - Power of Metal (16.0)',
+    media: 'video', video: { webm: 'menu.webm', mp4: 'menu.mp4' }, logo: 'logo.png',
     theme: { name: 'MainMenu_ThePowerOfMetal', duration: 169.846, ogg: 'theme.ogg', mp3: 'theme.mp3' },
   },
 ];
@@ -69,31 +77,33 @@ describe('ChroniclesScreen — frise des versions', () => {
     expect(pills.filter(el => el.getAttribute('aria-current') === 'true').map(el => el.textContent)).toEqual(['8.0']);
   });
 
-  it('affiche le cartouche de la version active et sa note', () => {
-    const { getByText } = setup('?v=1.1');
-    expect(getByText('Allods Online 1.1')).toBeTruthy();
+  it('affiche le cartouche de la version active, sa note et celle du fond', () => {
+    const { getAllByText, getByText } = setup('?v=1.1');
+    // 1.1 n'a pas de logo : le libellé est aussi le grand titre, d'où les deux occurrences.
+    expect(getAllByText('Allods Online (1.1)').length).toBe(2);
     expect(getByText('écran recomposé')).toBeTruthy();
+    expect(getByText('capture de la scène 3D à venir (illustration de repli)')).toBeTruthy();
   });
 
   it('ouvre sur la version la plus récente quand `?v=` est absent ou inconnu', () => {
     const { getByText, unmount } = setup('');
-    expect(getByText('Allods Online 16.0')).toBeTruthy();
+    expect(getByText('Allods Online - Power of Metal (16.0)')).toBeTruthy();
     unmount();
-    expect(setup('?v=42.0').getByText('Allods Online 16.0')).toBeTruthy();
+    expect(setup('?v=42.0').getByText('Allods Online - Power of Metal (16.0)')).toBeTruthy();
   });
 
   it('→ passe à la version suivante et met `?v=` à jour', () => {
-    const { getByText } = setup();
+    const { getAllByText } = setup();
     fireEvent.keyDown(window, { key: 'ArrowRight' });
-    expect(window.location.search).toBe('?v=16.0');
-    expect(getByText('Allods Online 16.0')).toBeTruthy();
+    expect(window.location.search).toBe('?v=11.0');
+    expect(getAllByText('Allods Online - Soul of Darkness (11.0)').length).toBe(2);
   });
 
   it('← revient à la version précédente', () => {
-    const { getByText } = setup();
+    const { getAllByText } = setup();
     fireEvent.keyDown(window, { key: 'ArrowLeft' });
     expect(window.location.search).toBe('?v=5.0');
-    expect(getByText('Allods Online 5.0')).toBeTruthy();
+    expect(getAllByText('Allods Online - Heart of the World (5.0)').length).toBe(2);
   });
 
   it('ne dépasse pas les extrémités de la frise', () => {
@@ -105,6 +115,35 @@ describe('ChroniclesScreen — frise des versions', () => {
   it('affiche « Média non extrait » pour une version sans média', () => {
     const { getByText } = setup('?v=5.0');
     expect(getByText('Média non extrait')).toBeTruthy();
+  });
+});
+
+describe('ChroniclesScreen — logo et emblème', () => {
+  it("affiche le logo de la version, et pas de titre en toutes lettres", () => {
+    const { getByTestId, queryByTestId } = setup('?v=16.0');
+    const logo = getByTestId('version-logo') as HTMLImageElement;
+    expect(logo.getAttribute('src')).toBe('/game/archive/16.0/logo.png');
+    expect(logo.getAttribute('alt')).toBe('Allods Online - Power of Metal (16.0)');
+    expect(queryByTestId('version-title')).toBeNull();
+  });
+
+  it('remplace le logo absent par le libellé en grand', () => {
+    const { getByTestId, queryByTestId } = setup('?v=1.1');
+    expect(queryByTestId('version-logo')).toBeNull();
+    expect(getByTestId('version-title').textContent).toBe('Allods Online (1.1)');
+  });
+
+  it("affiche l'emblème de chargement (anneau + tourbillon)", () => {
+    const { getByTestId } = setup();
+    const srcs = [...getByTestId('loading-emblem').querySelectorAll('img')].map(el => el.getAttribute('src'));
+    expect(srcs).toEqual(['/game/archive/_common/loading-cyclone.png', '/game/archive/_common/loading-globe.png']);
+  });
+
+  it('signale un thème indisponible sans tenter de le jouer', () => {
+    const { getByText, getByLabelText } = setup('?v=11.0');
+    expect(getByText('Thème non disponible')).toBeTruthy();
+    expect((getByLabelText('Thème indisponible') as HTMLButtonElement).disabled).toBe(true);
+    expect(playExternal).not.toHaveBeenCalled();
   });
 });
 

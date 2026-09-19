@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { T, archiveEntries, archiveFile, sprite, tex, type ArchiveEntry } from '@/lib/assets';
+import { T, archiveCommon, archiveEntries, archiveFile, sprite, tex, type ArchiveEntry } from '@/lib/assets';
 import { navigate, useRoute } from '@/lib/router';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { nineSlice } from '@/lib/nineSlice';
@@ -38,6 +38,48 @@ function MediaLayer({ entry }: { entry: ArchiveEntry }) {
       style={{ backgroundImage: `url(${tex(`${T.main2}/Background_14_0_Temp`)})` }}
       aria-hidden="true"
     />
+  );
+}
+
+/**
+ * Titre de l'écran de lancement : le logo de l'add-on, à sa taille native, centré un
+ * peu au-dessus du premier tiers comme dans le jeu. Les versions dont aucun client
+ * archivé ne conserve le logo (1.1, 2.0, 10.0 → 12.0) affichent le libellé en toutes
+ * lettres dans la police du jeu. Le `key` sur la version relance l'apparition en fondu
+ * à chaque changement.
+ */
+function LaunchTitle({ entry }: { entry: ArchiveEntry }) {
+  if (entry.logo) {
+    return (
+      <div className={s.title}>
+        <img
+          key={entry.version}
+          className={s.logo}
+          src={archiveFile(entry.version, entry.logo)}
+          alt={entry.label}
+          data-testid="version-logo"
+        />
+      </div>
+    );
+  }
+  return (
+    <div className={s.title}>
+      <h1 key={entry.version} className={s.plainTitle} data-testid="version-title">{entry.label}</h1>
+    </div>
+  );
+}
+
+/**
+ * Emblème du bas de l'écran de lancement : l'anneau doré (`LoadingGlobeFront`) avec le
+ * tourbillon (`LoadingCyclone`) qui tourne lentement derrière, comme sur l'écran de
+ * chargement du jeu. Décoratif : masqué aux lecteurs d'écran.
+ */
+function LoadingEmblem() {
+  return (
+    <div className={s.emblem} aria-hidden="true" data-testid="loading-emblem">
+      <img className={s.cyclone} src={archiveCommon('loading-cyclone.png')} alt="" />
+      <img className={s.globe} src={archiveCommon('loading-globe.png')} alt="" />
+    </div>
   );
 }
 
@@ -137,6 +179,9 @@ export function ChroniclesScreen() {
       ))}
       <div className={s.vignette} />
 
+      {entry && <LaunchTitle entry={entry} />}
+      {entry && <LoadingEmblem />}
+
       {entry ? (
         <div className={s.cartouche}>
           <div className={s.plate}>
@@ -144,6 +189,7 @@ export function ChroniclesScreen() {
             <span className={s.plateTitle}>{entry.label}</span>
           </div>
           {entry.note && <p className={s.note}>{entry.note}</p>}
+          {entry.background_note && <p className={s.note}>{entry.background_note}</p>}
         </div>
       ) : (
         <div className={s.card} style={nineSlice('tooltip-frame', [4, 4, 4, 4])}>

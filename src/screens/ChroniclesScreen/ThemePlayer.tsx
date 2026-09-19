@@ -34,11 +34,23 @@ type Props = {
  * Lecteur du thème musical de la version affichée : nom de la piste, durée et bouton
  * lecture/pause. Le son lui-même est joué par le moteur audio du site (fondu croisé
  * d'une version à l'autre) ; ce composant n'est que la façade.
+ *
+ * Sans thème, le lecteur reste en place, bouton grisé : « Thème non disponible »
+ * quand aucun client archivé ne le conserve (`theme_note` du manifeste), « Thème non
+ * extrait » quand c'est l'extraction qui n'a rien produit (disque non monté).
  */
 export function ThemePlayer({ entry, playing, onToggle, className }: Props) {
   const theme = entry.theme;
   return (
     <div className={`${s.player} ${className ?? ''}`} style={nineSlice('tooltip-frame', [4, 4, 4, 4])}>
+      {!theme && (
+        <button type="button" className={`${s.button} ${s.buttonOff}`} disabled aria-label="Thème indisponible">
+          <span className={s.buttonSkin} aria-hidden="true" style={nineSlice('pill-full', [0, 30, 0, 24], { fill: true })} />
+          <svg className={s.glyph} viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+            <path d="M4.5 2.5 13 8l-8.5 5.5z" fill="currentColor" />
+          </svg>
+        </button>
+      )}
       {theme ? (
         <>
           <button
@@ -65,7 +77,10 @@ export function ThemePlayer({ entry, playing, onToggle, className }: Props) {
           </div>
         </>
       ) : (
-        <div className={s.text}><div className={s.missing}>Thème non extrait</div></div>
+        <div className={s.text}>
+          <div className={s.missing}>{entry.theme_note ? 'Thème non disponible' : 'Thème non extrait'}</div>
+          {entry.theme_note && <div className={s.note}>{entry.theme_note}</div>}
+        </div>
       )}
     </div>
   );

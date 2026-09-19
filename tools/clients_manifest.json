@@ -1,5 +1,5 @@
 {
-  "_note": "Clients Allods Online archivés (lecture seule) et, pour chaque version affichée dans les Chroniques, l'écran de lancement du menu principal et sa banque de thème. Les chemins sont des montages WSL des disques externes de l'utilisateur ; un disque non monté n'est pas une erreur (tools/extract_archive.py avertit et laisse media: null). Pour ajouter une version : ajouter son client dans `clients`, puis une entrée dans `versions` avec soit `video` (Video/<N>_0Events/MainMenu/*.ogv), soit `background` (texture Interface/Wrap/MainMenu/…), plus `theme` (banque SFX/Music/Music_Menu.fsb). `theme.prefer` force un subsong par son nom, sinon pick_theme_subsong choisit (MainMenu* > MainTitle > Menu* > la plus longue).",
+  "_note": "Clients Allods Online archivés (lecture seule) et, pour chaque version affichée dans les Chroniques, l'écran de lancement du menu principal, son logo et sa banque de thème. Les chemins sont des montages WSL des disques externes de l'utilisateur ; un disque non monté n'est pas une erreur (tools/extract_archive.py avertit et laisse media: null). Pour ajouter une version : ajouter son client dans `clients`, puis une entrée dans `versions` avec `version`, `name` (le libellé est construit : « Allods Online - <name> (<version>) »), soit `video` (Video/<N>_0Events/MainMenu/*.ogv), soit `background` (capture d'écran `capture` et/ou texture Interface/Wrap/MainMenu/…), `logo` (texture Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV<N>, sans locale ni suffixe : l'outil choisit la variante fra > eng_eu/eng > non localisée) et `theme` (banque SFX/Music/Music_Menu.fsb). `theme.prefer` force un subsong par son nom, sinon pick_theme_subsong choisit (MainMenu* > MainTitle > Menu* > la plus longue) ; `theme: null` + `theme_note` pour une version dont aucun client archivé ne conserve le thème.",
   "clients": {
     "1.1": {
       "root": "/mnt/f/ALLODS ONLINE SERVER/Allods 1.0/allods/Client",
@@ -57,13 +57,22 @@
       "game_version": "17.0.01.64"
     }
   },
+  "common": {
+    "_note": "Emblème de chargement du bas de l'écran de lancement, commun à toutes les versions (identique des clients 9.0 à 17.0) : extrait une seule fois dans public/game/archive/_common/.",
+    "client": "16.0",
+    "pak": "data/Packs/Interface.Mini.pak",
+    "textures": {
+      "loading-globe.png": "Interface/Wrap/SystemState/LoadingScreen2/LoadingGlobeFront.(UITexture).bin",
+      "loading-cyclone.png": "Interface/Wrap/SystemState/LoadingScreen2/LoadingCyclone.(UITexture).bin"
+    }
+  },
   "versions": [
     {
       "version": "1.1",
-      "label": "Allods Online 1.1",
       "client": "1.1",
       "note": "écran recomposé : le menu des clients 1.x empile le ciel, les vaisseaux et les héros des deux factions",
       "background": {
+        "capture": "refs/menu-1.1.png",
         "pak": "data/Packs/Interface.pak",
         "canvas": [1920, 1080],
         "layers": [
@@ -74,155 +83,225 @@
           { "entry": "Interface/Wrap/MainMenu/Main/WrapBackgroundRight.(UITexture).bin", "anchor": "bottom-right" }
         ]
       },
-      "theme": { "pak": "data/Packs/SFX_Music.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "theme": { "pak": "data/Packs/SFX_Music.pak", "entry": "SFX/Music/Music_Menu.fsb", "prefer": "MainTitle" }
     },
     {
       "version": "2.0",
-      "label": "Allods Online 2.0",
+      "name": "Conquerors of Time",
       "client": "2.0",
+      "_note_logo": "le client 2.0 n'a qu'un logo sans sous-titre (WrapAllodsLogo) : la page affiche le titre en toutes lettres",
       "background": {
+        "capture": "refs/menu-2.0.png",
         "pak": "data/Packs/Interface.pak",
         "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
       },
-      "theme": { "pak": "data/Packs/SFX_Music.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "theme": { "pak": "data/Packs/SFX_Music.pak", "entry": "SFX/Music/Music_Menu.fsb", "prefer": "MainTitle" }
     },
     {
       "version": "3.0",
-      "label": "Allods Online 3.0",
+      "name": "Game of Gods",
       "client": "3.0",
-      "note": "fond identique à celui du client 2.0 (même texture)",
       "background": {
+        "capture": "refs/menu-3.0.png",
         "pak": "data/Packs/Interface.pak",
         "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
       },
-      "theme": { "pak": "data/Packs/SFX_Music.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "logo": {
+        "client": "4.0",
+        "pak": "data/Packs/Interface.Mini.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV3"
+      },
+      "theme": { "pak": "data/Packs/SFX_Music.pak", "entry": "SFX/Music/Music_Menu.fsb", "prefer": "MainMenu_adaptive" }
     },
     {
       "version": "4.0",
-      "label": "Allods Online 4.0",
+      "name": "Lords of Destiny",
       "client": "4.0",
       "background": {
+        "capture": "refs/menu-4.0.png",
         "pak": "data/Packs/Interface.Mini.pak",
         "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
       },
-      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "logo": {
+        "pak": "data/Packs/BaseLoceng.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV4"
+      },
+      "theme": {
+        "pak": "data/Packs/SFX_Music.Mini.pak",
+        "entry": "SFX/Music/Music_Menu.fsb",
+        "prefer": "MainMenu_LordsOfDestiny_lpp"
+      }
     },
     {
       "version": "5.0",
-      "label": "Allods Online 5.0",
+      "name": "Heart of the World",
       "client": "5.0",
-      "background": null,
-      "theme": null,
-      "_note": "à déterminer par le spike : fond dans data/Packs/Interface.pak (+ .HiRes/.Mini) — chercher une entrée Wrap/MainMenu ; thème dans data/Packs/SFX_Music.p0.pak à .p3.pak (+ .Mini.pak), la banque est fragmentée en plusieurs volumes sur ce client contrairement aux versions plus récentes"
-    },
-    {
-      "version": "6.0",
-      "label": "Allods Online 6.0",
-      "client": "6.0",
-      "background": null,
-      "theme": null,
-      "_note": "à déterminer par le spike : fond dans data/Packs/Interface.pak (+ .Mini) — chercher une entrée Wrap/MainMenu ; thème dans data/Packs/SFX_Music.p0.pak / .p3.pak (+ .Mini.pak) ; data/Packs/World_MainMenu_ASS_Interface.pak suggère déjà un menu 3D façon 7.0"
-    },
-    {
-      "version": "7.0",
-      "label": "Allods Online 7.0",
-      "client": "7.0",
-      "note": "le menu de 7.0 est une scène 3D (World_MainMenu_ASS) : on affiche la texture de fond du client, identique à celle du 4.0",
       "background": {
+        "capture": "refs/menu-5.0.png",
         "pak": "data/Packs/Interface.Mini.pak",
         "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
       },
-      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "logo": {
+        "client": "6.0",
+        "pak": "data/Packs/Interface.Mini.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV5"
+      },
+      "theme": {
+        "pak": "data/Packs/SFX_Music.Mini.pak",
+        "entry": "SFX/Music/Music_Menu.fsb",
+        "prefer": "MainMenu_HeartOfTheWorld"
+      }
+    },
+    {
+      "version": "6.0",
+      "name": "Broken Chains",
+      "client": "6.0",
+      "background": {
+        "capture": "refs/menu-6.0.png",
+        "pak": "data/Packs/Interface.Mini.pak",
+        "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
+      },
+      "logo": {
+        "client": "7.0",
+        "pak": "data/Packs/Interface.Mini.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV6"
+      },
+      "theme": {
+        "pak": "data/Packs/SFX_Music.Mini.pak",
+        "entry": "SFX/Music/Music_Menu.fsb",
+        "prefer": "MainMenu_BrokenChains"
+      }
+    },
+    {
+      "version": "7.0",
+      "name": "New Order",
+      "client": "7.0",
+      "background": {
+        "capture": "refs/menu-7.0.png",
+        "pak": "data/Packs/Interface.Mini.pak",
+        "entry": "Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin"
+      },
+      "logo": {
+        "client": "8.0",
+        "pak": "data/Packs/Interface.Mini.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV7"
+      },
+      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb", "prefer": "MainMenu_NewOrder" }
     },
     {
       "version": "8.0",
-      "label": "Allods Online 8.0",
+      "name": "Immortality",
       "client": "8.0",
       "background": {
+        "capture": "refs/menu-8.0.png",
         "pak": "data/Packs/Interface.Mini.pak",
         "entry": "Interface/Wrap/MainMenu/Main2/BackgroundGOG.(UITexture).bin"
       },
-      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "logo": {
+        "pak": "data/Packs/BaseLocfra.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV8"
+      },
+      "theme": {
+        "pak": "data/Packs/SFX_Music.Mini.pak",
+        "entry": "SFX/Music/Music_Menu.fsb",
+        "prefer": "MainMenu_Immortality"
+      }
     },
     {
       "version": "9.0",
-      "label": "Allods Online 9.0",
+      "name": "Awakening",
       "client": "9.0",
       "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/9_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/9_0Events/MainMenu/Intro.ogv"
       },
-      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "logo": {
+        "pak": "data/Packs/BaseLocfra.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV9"
+      },
+      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb", "prefer": "MainMenu_Awakening" }
     },
     {
       "version": "10.0",
-      "label": "Allods Online 10.0",
+      "name": "Destination Horizon",
       "client": "16.0",
       "note": "vidéo conservée dans le client 16.0",
-      "theme_note": "approximation (client 15.0)",
+      "theme_note": "Thème non disponible dans les clients archivés",
       "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/10_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/10_0Events/MainMenu/Intro.ogv"
       },
-      "theme": { "client": "15.0", "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "theme": null
     },
     {
       "version": "11.0",
-      "label": "Allods Online 11.0",
+      "name": "Soul of Darkness",
       "client": "16.0",
       "note": "vidéo conservée dans le client 16.0",
-      "theme_note": "approximation (client 15.0)",
+      "theme_note": "Thème non disponible dans les clients archivés",
       "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/11_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/11_0Events/MainMenu/Intro.ogv"
       },
-      "theme": { "client": "15.0", "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "theme": null
     },
     {
       "version": "12.0",
-      "label": "Allods Online 12.0",
+      "name": "Desert Dreams",
       "client": "16.0",
       "note": "vidéo conservée dans le client 16.0",
-      "theme_note": "approximation (client 15.0)",
       "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/12_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/12_0Events/MainMenu/Intro.ogv"
       },
-      "theme": { "client": "15.0", "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "theme": {
+        "client": "16.0",
+        "pak": "data/Packs/SFX_Music.Mini.pak",
+        "entry": "SFX/Music/Music_Menu.fsb",
+        "prefer": "MainMenu_DesertDreams"
+      }
     },
     {
       "version": "13.0",
-      "label": "Allods Online 13.0",
+      "name": "Gates of Worlds",
       "client": "16.0",
       "note": "vidéo conservée dans le client 16.0",
-      "theme_note": "approximation (client 15.0)",
+      "theme_note": "Thème non disponible dans les clients archivés",
       "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/13_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/13_0Events/MainMenu/Intro.ogv"
       },
-      "theme": { "client": "15.0", "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "logo": {
+        "pak": "data/Packs/BaseLocfra_x64.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV13"
+      },
+      "theme": null
     },
     {
       "version": "14.0",
-      "label": "Allods Online 14.0",
+      "name": "Call of Legends",
       "client": "16.0",
       "note": "vidéo conservée dans le client 16.0",
-      "theme_note": "approximation (client 15.0)",
+      "theme_note": "Thème non disponible dans les clients archivés",
       "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/14_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/14_0Events/MainMenu/Intro.ogv"
       },
-      "theme": { "client": "15.0", "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "logo": {
+        "pak": "data/Packs/BaseLocfra_x64.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV14"
+      },
+      "theme": null
     },
     {
       "version": "15.0",
-      "label": "Allods Online 15.0",
+      "name": "Capital of Shadows",
       "client": "16.0",
       "note": "vidéo conservée dans le client 16.0",
       "video": {
@@ -230,34 +309,54 @@
         "entry": "Video/15_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/15_0Events/MainMenu/Intro.ogv"
       },
+      "logo": {
+        "pak": "data/Packs/BaseLocfra_x64.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV15"
+      },
       "theme": {
         "client": "15.0",
         "pak": "data/Packs/SFX_Music.Mini.pak",
         "entry": "SFX/Music/Music_Menu.fsb",
-        "prefer": "MainMenu_DesertDreams"
+        "prefer": "MainMenu_CapitalOfShadows"
       }
     },
     {
       "version": "16.0",
-      "label": "Allods Online 16.0",
+      "name": "Power of Metal",
       "client": "16.0",
       "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/16_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/16_0Events/MainMenu/Intro.ogv"
       },
-      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "logo": {
+        "pak": "data/Packs/BaseLocfra_x64.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV16"
+      },
+      "theme": {
+        "pak": "data/Packs/SFX_Music.Mini.pak",
+        "entry": "SFX/Music/Music_Menu.fsb",
+        "prefer": "MainMenu_ThePowerOfMetal"
+      }
     },
     {
       "version": "17.0",
-      "label": "Allods Online 17.0",
+      "name": "Blood of Kings",
       "client": "17.0",
       "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/17_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/17_0Events/MainMenu/Intro.ogv"
       },
-      "theme": { "pak": "data/Packs/SFX_Music.Mini.pak", "entry": "SFX/Music/Music_Menu.fsb" }
+      "logo": {
+        "pak": "data/Packs/BaseLocall_x64.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV17"
+      },
+      "theme": {
+        "pak": "data/Packs/SFX_Music.Mini.pak",
+        "entry": "SFX/Music/Music_Menu.fsb",
+        "prefer": "MainMenu_TheBloodOfKings"
+      }
     }
   ]
 }

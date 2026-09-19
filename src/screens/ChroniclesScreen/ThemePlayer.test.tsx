@@ -48,4 +48,16 @@ describe('ThemePlayer', () => {
     expect(getByText('Thème non extrait')).toBeTruthy();
     expect(queryByLabelText('Lire le thème')).toBeNull();
   });
+
+  it('signale un thème indisponible et grise le bouton (aucun client ne le conserve)', () => {
+    const { theme: _theme, ...rest } = ENTRY;
+    const entry = { ...rest, theme_note: 'Thème non disponible dans les clients archivés' };
+    const { getByText, getByLabelText, queryByLabelText } = render(
+      <ThemePlayer entry={entry} playing={false} onToggle={vi.fn()} />,
+    );
+    expect(getByText('Thème non disponible')).toBeTruthy();
+    expect(getByText('Thème non disponible dans les clients archivés')).toBeTruthy();
+    expect((getByLabelText('Thème indisponible') as HTMLButtonElement).disabled).toBe(true);
+    expect(queryByLabelText('Lire le thème')).toBeNull();
+  });
 });

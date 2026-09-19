@@ -25,6 +25,9 @@
   cursor: inherit;
   color: var(--gold);
 }
+/* Version sans thème : le bouton reste, éteint, pour que le lecteur garde sa forme. */
+.buttonOff { color: #6d7a67; cursor: default; }
+.buttonOff .buttonSkin { filter: grayscale(0.7) brightness(0.65); }
 .buttonSkin { position: absolute; inset: 0; display: block; border-color: transparent; pointer-events: none; }
 .button:hover .buttonSkin { filter: brightness(1.15); }
 .button:active .buttonSkin { filter: brightness(0.9); }
