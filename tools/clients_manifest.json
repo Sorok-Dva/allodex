@@ -46,6 +46,11 @@
       "game_version": "11.0.00.37",
       "note": "extrait (7z) de « I:\\Backups\\GameClients\\AllodsClient\\MyGames\\allods warp (19-02-2020) (11.0).7z » : Packs BaseLocWarprus(.HiRes)/Interface.Mini/SFX_Music.Mini/Video + Profiles/game.version. Malgré son game.version 11.0, ce client Warp (russe) est de l'ère 10.0 : logo WrapAllodsLogoV10 (russe uniquement, « Край мира »), vidéo 10_0Events et thème MainMenu_TheEdgeOfTheWorld — c'est la source de la 10.0, pas de la 11.0"
     },
+    "11.0-steam": {
+      "root": "/home/llyam/allods-clients/11.0-steam/Allods Online EN",
+      "game_version": "11.0.00.12.1",
+      "note": "client EU 11.0 récupéré depuis Steam (app 459160, dépôt 459161, manifeste 4939607390692377778 du 2 mars 2020, le dernier build complet avant le passage au lanceur My.Games) avec DepotDownloader et le compte de l'utilisateur : seuls BaseLoceng_eu(.HiRes)/Interface.Mini/SFX_Music.Mini.pak + Profiles ont été téléchargés (filelist.txt à côté)"
+    },
     "8.0": {
       "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0",
       "game_version": "8.0.02.61.1"
@@ -248,9 +253,11 @@
         "intro": "Video/10_0Events/MainMenu/Intro.ogv"
       },
       "logo": {
-        "url": "https://allods.my.games/sites/allods.my.com/themes/allods/images/en/logo_front100_forum.png",
-        "note": "logo anglais publié par l'éditeur (thème du forum allods.my.games), identique à celui du jeu"
+        "client": "11.0-steam",
+        "pak": "data/Packs/Interface.Mini.pak",
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV10"
       },
+      "_note_logo_alt": "équivalent hors client : https://allods.my.games/sites/allods.my.com/themes/allods/images/en/logo_front100_forum.png (identique)",
       "_note_logo": "aucun client 10.0 occidental archivé : le client Warp (10.0-warp) n'a que la texture russe WrapAllodsLogoV10 (« Край мира ») ; le forum de l'éditeur publie le logo anglais avec son sous-titre. Les autres logos du forum (logo_front<NN>0_forum.png) sont des variantes SANS sous-titre, sauf 80/90/100",
       "theme": {
         "client": "10.0-warp",
@@ -263,16 +270,23 @@
       "version": "11.0",
       "name": "Soul of Darkness",
       "client": "16.0",
-      "note": "vidéo conservée dans le client 16.0 ; thème téléchargé depuis la bande originale officielle (allods.ru)",
+      "note": "vidéo conservée dans le client 16.0 ; logo et thème du client Steam 11.0-steam",
       "video": {
         "pak": "data/Packs/Video.pak",
         "entry": "Video/11_0Events/MainMenu/MainMenu.ogv",
         "intro": "Video/11_0Events/MainMenu/Intro.ogv"
       },
+      "logo": {
+        "client": "11.0-steam",
+        "pak": ["data/Packs/BaseLoceng_eu.pak", "data/Packs/Interface.Mini.pak"],
+        "entry": "Interface/Common/Elements/WrapAllodsLogo/WrapAllodsLogoV11"
+      },
       "theme": {
-        "url": "https://allods.ru/media/mp3/5fc0f02772d9b.mp3",
-        "name": "MainMenu_SoulOfDarkness",
-        "note": "« Душа Тьмы (2019) », section « Главная тема » de https://allods.ru/about.php?show=soundtrack — aucun client 11.0 archivé ne conserve la banque Music_Menu"
+        "client": "11.0-steam",
+        "pak": "data/Packs/SFX_Music.Mini.pak",
+        "entry": "SFX/Music/Music_Menu.fsb",
+        "prefer": "main_theme_soul_of_darkness",
+        "note": "banque d'origine du client Steam 11.0 ; équivalent public : https://allods.ru/media/mp3/5fc0f02772d9b.mp3 (« Душа Тьмы (2019) »)"
       }
     },
     {
