@@ -29,7 +29,31 @@ Les assets extraits sous `public/game/` appartiennent à My.Games et ne sont pas
 - `/chroniques` : archive des écrans de lancement, version par version, avec leur thème musical (voir « Chroniques » ci-dessous).
 - Non fait : comptes, addon d'export, import de progression, icônes réelles de tous les succès.
 
-## Audio
+## Musiques
+
+`/musiques` rassemble les musiques des clients FR 16.0 et RU 17.0, regroupées par
+banque (menus, zones, peuples, instruments, Astral et donjons). Le bouton trompette
+de l'accueil ouvre la fenêtre du jeu : lecture/pause, durée, enchaînement des pistes
+du groupe et interrupteur sonore. L'interface est disponible en français et anglais.
+
+`npm run extract` extrait aussi ce catalogue. Pour ne refaire que les musiques :
+
+    python3 tools/extract_music.py
+    python3 tools/extract_music.py --only Music_Menu
+    python3 tools/extract_music.py --force
+
+Les clients et catégories sont déclarés dans `tools/music_manifest.json`, les titres
+certains dans `tools/music_titles.json`. La première occurrence d'un nom interne
+gagne (FR avant RU) ; les ajouts RU portent `client: "17.0"`. Sans titre documenté,
+la page nettoie simplement le nom interne. Les pistes adaptatives gardent leur
+première paire stéréo, sans sommer les calques. Le décodeur natif utilise le repli
+WASM existant si nécessaire. Un client absent produit un avertissement et les
+exports précédents sont conservés ; `--only` conserve les autres banques.
+
+Sorties non versionnées : `public/game/music/*.{ogg,mp3}` et `public/game/music.json`.
+Sans index, la page affiche « Musiques non extraites ».
+
+## Audio du site
 
 Musique de menu, musique d'ambiance et sons d'interface (ouverture/fermeture de la
 fenêtre Succès, clic) sont extraits des banques `.fsb`/`.bsb` du client par

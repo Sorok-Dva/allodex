@@ -1,0 +1,24 @@
+{
+  "_note": "Toutes les banques musicales ; première occurrence du nom interne conservée, FR avant RU. Les groupes et leur ordre sont déclarés ici. Sorties générées non versionnées sous public/game/music/.",
+  "clients": [
+    {"id": "16.0", "root": "/mnt/h/MyGames/Allods Online FR (FR)", "pak": "data/Packs/SFX_Music.Mini.pak"},
+    {"id": "17.0", "root": "/mnt/h/MyGames/AllodsRU", "pak": "data/Packs/SFX_Music.Mini.pak"}
+  ],
+  "banks": {
+    "Music_Menu": "Menu",
+    "Music_Zone": "Zones",
+    "Music_StartZones": "Zones de départ",
+    "Music_Race": "Peuples",
+    "Music_RacesInstruments": "Instruments des peuples",
+    "Music_Astral": "Astral",
+    "Music_Astral_hangar": "Astral",
+    "Music_Ingame": "Donjons/Combat",
+    "Music_Ingame01": "Donjons/Combat",
+    "Music_ASS": "Donjons/Combat",
+    "Music_Zone_Eden": "Eden",
+    "Music_Zone_Jigran": "Jigran",
+    "Music_Zone_Kadagan": "Kadagan",
+    "Music_Zone_Kvator": "Kvator",
+    "Music_Isa": "Isa"
+  }
+}

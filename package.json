@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "extract": "python3 tools/extract_assets.py"
+    "extract": "python3 tools/extract_assets.py --music"
   },
   "dependencies": {
     "react": "^19.2.8",

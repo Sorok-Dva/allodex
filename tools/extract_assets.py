@@ -151,6 +151,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--out", default=str(HERE.parent / "public" / "game"))
     p.add_argument("--force", action="store_true")
     p.add_argument("--skip-video", action="store_true")
+    p.add_argument("--music", action="store_true", help="extrait aussi le catalogue musical FR/RU")
     p.add_argument("--no-trim", action="store_true", help="désactive le rognage du padding transparent")
     args = p.parse_args(argv)
 
@@ -170,6 +171,10 @@ def main(argv: list[str] | None = None) -> int:
 
     (out / "manifest.json").write_text(json.dumps({"textures": textures}, indent=1, ensure_ascii=False), encoding="utf-8")
     print(f"OK : {len(textures)} textures → {out}")
+    if args.music:
+        from tools.extract_music import main as extract_music
+        return extract_music(["--client", str(client), "--out", str(out / "music")]
+                             + (["--force"] if args.force else []))
     return 0
 
 
