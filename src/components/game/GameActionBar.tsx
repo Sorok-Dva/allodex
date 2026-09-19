@@ -11,13 +11,13 @@ export type ActionItem = {
   onClick?: () => void;
 };
 
-type Props = { items: ActionItem[]; className?: string };
+type Props = { items: ActionItem[]; className?: string; onItemInteract?: (id: string) => void };
 
 // Les textures `…Highlight` de ContextPinMenu3 ne sont qu'un halo lumineux (pas d'icône) :
 // on empile une couche `Normal`/`Pressed` toujours visible et une couche `Highlight`
 // en surimpression, révélée uniquement au survol. Un bouton à fond unique ne peut pas
 // exprimer cet empilement, d'où un rendu dédié ici.
-export function GameActionBar({ items, className }: Props) {
+export function GameActionBar({ items, className, onItemInteract }: Props) {
   const [hover, setHover] = useState<{ id: string; anchor: DOMRect } | null>(null);
   const [pressedId, setPressedId] = useState<string | null>(null);
   const slots = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -50,7 +50,7 @@ export function GameActionBar({ items, className }: Props) {
             // Les entrées sans action restent atteignables au clavier (leur infobulle
             // annonce « bientôt ») mais sont signalées comme inactives.
             aria-disabled={item.onClick ? undefined : true}
-            onClick={item.onClick}
+            onClick={() => { onItemInteract?.(item.id); item.onClick?.(); }}
             onMouseEnter={() => show(item.id)}
             onMouseLeave={() => hide(item.id)}
             onFocus={() => show(item.id)}

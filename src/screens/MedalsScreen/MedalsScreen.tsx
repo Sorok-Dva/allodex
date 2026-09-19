@@ -3,6 +3,8 @@ import mock from '@/data/medals.mock.json';
 import { parseDataset } from '@/data/medals.logic';
 import { T, tex, video } from '@/lib/assets';
 import { navigate, useRoute } from '@/lib/router';
+import { useGameAudio } from '@/lib/audio/useGameAudio';
+import { SpeakerToggle } from '@/components/game/SpeakerToggle';
 import { MedalsWindow } from './MedalsWindow';
 import { MedalsNavigation } from './MedalsNavigation';
 import { MedalsList } from './MedalsList';
@@ -34,12 +36,21 @@ export function MedalsScreen() {
   const state = useMedalsState(ds, query.get('q') ?? '');
   const bg = video('mainmenu');
   const [pos, setPos] = useState(place);
+  const { playSfx } = useGameAudio();
 
   useEffect(() => {
     const onResize = () => setPos(place());
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  // Son d'ouverture de la fenêtre du jeu, une seule fois au montage de l'écran.
+  useEffect(() => { playSfx('medals-open'); }, [playSfx]);
+
+  const handleClose = () => {
+    playSfx('medals-close');
+    navigate('/');
+  };
 
   return (
     <div className={s.screen}>
@@ -51,11 +62,13 @@ export function MedalsScreen() {
         <MedalsWindow
           title="Succès"
           points={ds.totalScore}
-          onClose={() => navigate('/')}
+          onClose={handleClose}
           nav={<MedalsNavigation ds={ds} state={state} />}
           content={<MedalsList state={state} />}
         />
       </div>
+
+      <SpeakerToggle className={s.speaker} />
     </div>
   );
 }

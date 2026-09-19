@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { tex, video, cursor, sprite } from './assets';
+import { tex, video, cursor, sprite, audioSrc, audioMeta } from './assets';
 
 describe('assets', () => {
   it('construit les URLs publiques', () => {
@@ -10,5 +10,13 @@ describe('assets', () => {
 
   it("construit l'URL d'un sprite découpé", () => {
     expect(sprite('pill-mid')).toBe('/game/sprites/pill-mid.png');
+  });
+
+  it("construit les URLs ogg/mp3 d'une piste audio, ogg d'abord", () => {
+    expect(audioSrc('menu')).toEqual({ ogg: '/game/audio/menu.ogg', mp3: '/game/audio/menu.mp3' });
+  });
+
+  it("renvoie undefined pour les métadonnées audio tant que l'index n'est pas chargé", () => {
+    expect(audioMeta('menu')).toBeUndefined();
   });
 });

@@ -28,6 +28,29 @@ Les assets extraits sous `public/game/` appartiennent à My.Games et ne sont pas
 - `/succes` : panneau Succès fidèle au jeu, données mockées (`src/data/medals.mock.json`). La progression et les paliers restent fictifs.
 - Non fait : comptes, addon d'export, import de progression, icônes réelles de tous les succès.
 
+## Audio
+
+Musique de menu, musique d'ambiance et sons d'interface (ouverture/fermeture de la
+fenêtre Succès, clic) sont extraits des banques `.fsb`/`.bsb` du client par
+`tools/extract_audio.py` (`python3 tools/extract_audio.py`, options `--client`/
+`ALLODS_CLIENT_DIR` comme pour `npm run extract`). Il écrit, comme le reste de
+`public/game/` : `public/game/audio/<nom>.{ogg,mp3}` et l'index
+`public/game/audio.json` (`{nom: {duration, loop}}`), ni l'un ni l'autre versionnés.
+
+Le morceau/son associé à chaque nom logique (`menu`, `ambient`, `medals-open`,
+`medals-close`, `ui-click`) est déclaré dans `tools/audio_manifest.json` (banque,
+entrée, numéro de subsong) : pour changer une piste, éditer ce fichier puis relancer
+l'extraction. Le rapport de spike (`.superpowers/sdd/2026-09-19-iteration-2b-corrections/
+audio-spike-report.md`) documente les choix retenus et les alternatives écoutables.
+
+Côté site, un unique moteur audio (`src/lib/audio/AudioProvider.tsx` +
+`useGameAudio()`) est monté dans `App` : rien ne joue avant un premier geste
+utilisateur (politique d'autoplay des navigateurs), la musique change de piste avec
+un fondu croisé, et l'état muet est persisté dans `localStorage`
+(`allodex:audio-muted`) — jamais relancé automatiquement si l'utilisateur avait coupé
+le son. L'interrupteur haut-parleur (bandeau du bas sur `/`, coin bas-droit sur
+`/succes`) coupe la sortie (`.muted`) sans jamais mettre en pause la musique.
+
 ## Itération 2 (2026-09)
 
 Reprise des deux écrans pour qu'ils soient visuellement identiques au jeu, à partir de captures live du client (spec détaillée : `docs/superpowers/specs/2026-09-19-iteration-2-fidelite-design.md`).

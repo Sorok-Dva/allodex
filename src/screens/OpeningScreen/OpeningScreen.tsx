@@ -1,7 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { T, tex, video } from '@/lib/assets';
 import { navigate } from '@/lib/router';
+import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { GameActionBar, type ActionItem } from '@/components/game/GameActionBar';
+import { SpeakerToggle } from '@/components/game/SpeakerToggle';
 import { useIntroState } from './useIntroState';
 import s from './OpeningScreen.module.css';
 
@@ -28,6 +30,19 @@ function Video({ name, loop, onEnded, onError, className }: { name: 'intro' | 'm
 
 export function OpeningScreen() {
   const { phase, skipIntro, replayIntro } = useIntroState();
+  const { setTrack, playSfx } = useGameAudio();
+  const firstInteractionRef = useRef(false);
+
+  // Demandé dès le montage, intro comprise : la piste `menu` ne joue vraiment qu'après
+  // le premier geste utilisateur (politique d'autoplay gérée par le moteur audio).
+  useEffect(() => { setTrack('menu'); }, [setTrack]);
+
+  const handleItemInteract = useCallback(() => {
+    if (firstInteractionRef.current) return;
+    firstInteractionRef.current = true;
+    setTrack('ambient');
+    playSfx('ui-click');
+  }, [setTrack, playSfx]);
 
   useEffect(() => {
     if (phase !== 'intro') return;
@@ -53,7 +68,7 @@ export function OpeningScreen() {
       <Video key="mainmenu" name="mainmenu" loop className={`${s.video} ${s.fadeIn}`} />
       <div className={s.vignette} />
 
-      <GameActionBar items={ACTION_ITEMS} className={s.actionBar} />
+      <GameActionBar items={ACTION_ITEMS} className={s.actionBar} onItemInteract={handleItemInteract} />
 
       {/* Le jeu rejoue sa cinématique depuis le menu ; ici un simple lien texte,
           posé au-dessus du bandeau légal pour ne pas empiéter dessus. */}
@@ -61,6 +76,7 @@ export function OpeningScreen() {
 
       <div className={s.bottomLine} style={{ backgroundImage: `url(${tex(`${T.main2}/BottomLine`)})` }}>
         <span>Site fan non officiel. Allods Online, ses images et vidéos sont la propriété de My.Games.</span>
+        <SpeakerToggle className={s.speaker} />
       </div>
     </div>
   );

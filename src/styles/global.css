@@ -6,6 +6,7 @@
 }
 
 :root {
+  color-scheme: dark;
   --ink: #122c14;
   --ink-outline: #658e7c;
   --search-green: #618b5e;

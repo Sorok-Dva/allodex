@@ -2,9 +2,11 @@ const BASE = '/game';
 type Size = { w: number; h: number };
 type SpriteSlice = [top: number, right: number, bottom: number, left: number];
 type SpriteInfo = { w: number; h: number; slice: SpriteSlice | null };
+export type AudioMeta = { duration: number; loop: boolean };
 
 let manifest: Record<string, Size> | null = null;
 let sprites: Record<string, SpriteInfo> | null = null;
+let audioIndex: Record<string, AudioMeta> | null = null;
 
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
@@ -17,12 +19,14 @@ async function fetchJson<T>(url: string): Promise<T | null> {
 }
 
 export async function loadManifest(): Promise<void> {
-  const [texturesJson, spritesJson] = await Promise.all([
+  const [texturesJson, spritesJson, audioJson] = await Promise.all([
     fetchJson<{ textures?: Record<string, Size> }>(`${BASE}/manifest.json`),
     fetchJson<Record<string, SpriteInfo>>(`${BASE}/sprites.json`),
+    fetchJson<Record<string, AudioMeta>>(`${BASE}/audio.json`),
   ]);
   manifest = texturesJson?.textures ?? {};
   sprites = spritesJson ?? {};
+  audioIndex = audioJson ?? {};
   if (import.meta.env.DEV && !texturesJson) console.warn('[assets] manifest.json absent : lancez `npm run extract`');
 }
 
@@ -33,6 +37,9 @@ export const video = (name: 'intro' | 'mainmenu') => ({ webm: `${BASE}/video/${n
 export const cursor = (name: string) => `${BASE}/cursors/${name}.cur`;
 export const sprite = (name: string) => `${BASE}/sprites/${name}.png`;
 export const spriteSize = (name: string): SpriteInfo | undefined => sprites?.[name];
+/** URLs des deux formats d'une piste audio, ogg d'abord (ordre attendu des `<source>`). */
+export const audioSrc = (name: string) => ({ ogg: `${BASE}/audio/${name}.ogg`, mp3: `${BASE}/audio/${name}.mp3` });
+export const audioMeta = (name: string): AudioMeta | undefined => audioIndex?.[name];
 
 /** Racines de textures du client effectivement utilisées par le site. */
 export const T = {
