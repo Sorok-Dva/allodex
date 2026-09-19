@@ -8,6 +8,7 @@
   padding: 8px 12px;
   border-style: solid;
   border-repeat: stretch;
+  border-color: #8fae7a;
   background: rgba(24, 34, 20, 0.92);
   font-family: var(--font-serif);
 }
