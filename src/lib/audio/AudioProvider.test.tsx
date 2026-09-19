@@ -181,6 +181,22 @@ describe('AudioProvider / useGameAudio', () => {
     expect(menuEl.volume).toBeCloseTo(0, 5);
   });
 
+  it("`ended` signale la fin d'une source externe non bouclée, puis s'efface à la suivante", () => {
+    useFakeAnimationClock();
+    const { getByTestId } = setup();
+    const themeEl = getByTestId('music-b') as HTMLAudioElement;
+    act(() => { window.dispatchEvent(new Event('pointerdown')); });
+    act(() => { api!.playExternal('archive:8.0', { ogg: '/a.ogg', mp3: '/a.mp3' }, { loop: false, crossfadeMs: 0 }); });
+    expect(api!.ended).toBeNull();
+
+    act(() => { themeEl.dispatchEvent(new Event('ended')); });
+    expect(api!.ended).toBe('archive:8.0');
+    expect(api!.playing).toBe(false);
+
+    act(() => { api!.playExternal('archive:9.0', { ogg: '/b.ogg', mp3: '/b.mp3' }, { loop: false, crossfadeMs: 0 }); });
+    expect(api!.ended).toBeNull();
+  });
+
   it("resumeAmbient revient à la piste du site sans la rembobiner", () => {
     useFakeAnimationClock();
     const { getByTestId } = setup();

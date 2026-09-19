@@ -11,6 +11,12 @@ export type GameAudioState = {
   track: TrackName | null;
   /** Identifiant de la source externe en cours, `null` si le site joue sa propre piste. */
   external: string | null;
+  /**
+   * Identifiant de la source externe arrivée au bout de sa lecture (non bouclée),
+   * `null` sinon ; remis à `null` dès qu'une autre source démarre. Les Chroniques
+   * s'en servent pour enchaîner la version suivante à la fin du thème.
+   */
+  ended: string | null;
   /** Vrai quand la musique a été mise en pause (`pauseMusic`), sans oublier sa position. */
   paused: boolean;
   /**
@@ -81,6 +87,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   const [muted, setMutedState] = useState<boolean>(() => readMuted(storage));
   const [track, setTrackState] = useState<TrackName | null>(null);
   const [external, setExternalState] = useState<string | null>(null);
+  const [ended, setEnded] = useState<string | null>(null);
   const [paused, setPausedState] = useState(false);
   const [playing, setPlayingState] = useState(false);
   const [ready, setReady] = useState(false);
@@ -117,6 +124,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     const sync = (e: Event) => {
       if (e.target !== activeRef.current) return;
       setPlayingState(e.type === 'play' || e.type === 'playing');
+      if (e.type === 'ended' && externalRef.current !== null) setEnded(externalRef.current);
     };
     els.forEach(el => MEDIA_EVENTS.forEach(name => el.addEventListener(name, sync)));
     return () => els.forEach(el => MEDIA_EVENTS.forEach(name => el.removeEventListener(name, sync)));
@@ -218,6 +226,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     assignSource(toEl, src, opts.loop ?? false);
     externalRef.current = id;
     setExternalState(id);
+    setEnded(null);
     setPaused(false);
     activeRef.current = toEl;
     if (gestureRef.current && !mutedRef.current) {
@@ -241,6 +250,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     if (!toEl) return;
     externalRef.current = null;
     setExternalState(null);
+    setEnded(null);
     setPaused(false);
     activeRef.current = toEl;
     if (!gestureRef.current || mutedRef.current) { toEl.muted = mutedRef.current; return; }
@@ -327,8 +337,8 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   }, []);
 
   const api = useMemo<GameAudio>(
-    () => ({ muted, track, external, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, resumeAmbient, playSfx }),
-    [muted, track, external, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, resumeAmbient, playSfx],
+    () => ({ muted, track, external, ended, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, resumeAmbient, playSfx }),
+    [muted, track, external, ended, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, resumeAmbient, playSfx],
   );
 
   return (

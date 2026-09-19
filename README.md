@@ -59,12 +59,13 @@ position, `resumeAmbient` la reprend en fondu. L'interrupteur haut-parleur (band
 `/chroniques` présente, version par version (1.1 → 17.0), l'écran de lancement du jeu
 en plein écran — la vidéo du menu en boucle quand le client en avait une, sinon une
 image de fond — surmonté du **logo de l'add-on** (centré en haut, à sa taille native,
-avec un halo qui respire) et, en bas, de l'**emblème de chargement** du jeu (l'anneau
-`LoadingGlobeFront` et le tourbillon `LoadingCyclone` qui tourne derrière). Le thème
-musical du menu de la version est jouable en bas à droite. La version affichée vit dans
-l'URL (`/chroniques?v=8.0`) ; la frise de pilules en bas d'écran, les touches ← → et les
-flèches du jeu en changent, avec un fondu croisé de 600 ms sur l'image **et** sur la
-musique. Pendant la visite, la musique d'ambiance du site est mise en pause et reprend
+avec un halo qui respire). Le thème musical du menu de la version est jouable en bas à
+droite. La version affichée vit dans l'URL (`/chroniques?v=8.0`) ; la frise de pilules
+en bas d'écran, les touches ← → et les flèches du jeu en changent, avec un fondu croisé
+de 600 ms sur l'image **et** sur la musique. La page **défile toute seule** : le thème
+n'est pas bouclé et, quand il se termine, la version suivante s'affiche (la dernière
+ramène à la première) ; une version sans thème reste 20 s ; mettre le thème en pause
+suspend l'enchaînement. Pendant la visite, la musique d'ambiance du site est mise en pause et reprend
 là où elle en était à la sortie (croix en haut à droite). Une version dont le client
 n'était pas monté à l'extraction s'affiche sur le fond de secours assombri, avec la
 mention « Média non extrait ».

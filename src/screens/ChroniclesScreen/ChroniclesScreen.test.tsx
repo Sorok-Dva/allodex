@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import type { ArchiveEntry } from '@/lib/assets';
 import { ChroniclesScreen } from './ChroniclesScreen';
 
@@ -47,10 +47,10 @@ const pauseMusic = vi.fn();
 const resumeAmbient = vi.fn();
 // Lecture réelle rapportée par le moteur : les tests la pilotent (le vrai moteur est
 // éprouvé par `ChroniclesScreen.autoplay.test.tsx` et `AudioProvider.test.tsx`).
-const engine = { playing: false, external: null as string | null };
+const engine = { playing: false, external: null as string | null, ended: null as string | null };
 vi.mock('@/lib/audio/useGameAudio', () => ({
   useGameAudio: () => ({
-    muted: false, track: 'ambient', external: engine.external, paused: false, playing: engine.playing, ready: true,
+    muted: false, track: 'ambient', external: engine.external, ended: engine.ended, paused: false, playing: engine.playing, ready: true,
     toggleMuted: vi.fn(), setTrack: vi.fn(), playSfx, playExternal, pauseMusic, resumeAmbient,
   }),
 }));
@@ -59,6 +59,7 @@ beforeEach(() => {
   [navigateSpy, playSfx, playExternal, pauseMusic, resumeAmbient].forEach(fn => fn.mockClear());
   engine.playing = false;
   engine.external = null;
+  engine.ended = null;
   HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined);
   HTMLMediaElement.prototype.pause = vi.fn();
   HTMLMediaElement.prototype.load = vi.fn();
@@ -154,7 +155,7 @@ describe('ChroniclesScreen — audio et fermeture', () => {
     expect(playExternal).toHaveBeenCalledWith(
       'archive:8.0',
       { ogg: '/game/archive/8.0/theme.ogg', mp3: '/game/archive/8.0/theme.mp3' },
-      expect.objectContaining({ loop: true }),
+      expect.objectContaining({ loop: false }),
     );
   });
 
@@ -192,5 +193,47 @@ describe('ChroniclesScreen — audio et fermeture', () => {
     fireEvent.click(getByLabelText('Fermer'));
     expect(playSfx).toHaveBeenCalledWith('medals-close');
     expect(navigateSpy).toHaveBeenCalledWith('/');
+  });
+});
+
+describe('ChroniclesScreen — défilement automatique', () => {
+  it('passe à la version suivante quand le thème arrive au bout', () => {
+    engine.ended = 'archive:8.0';
+    setup('?v=8.0');
+    expect(navigateSpy).toHaveBeenCalledWith('/chroniques?v=11.0', { replace: true });
+  });
+
+  it('ne bouge pas tant que le thème joue ou si c\'est un autre thème qui a fini', () => {
+    engine.ended = 'archive:1.1';
+    setup('?v=8.0');
+    expect(navigateSpy).not.toHaveBeenCalled();
+  });
+
+  it('une version sans thème laisse la main après le temps d\'affichage, et la dernière ramène à la première', () => {
+    vi.useFakeTimers();
+    try {
+      setup('?v=11.0');
+      act(() => { vi.advanceTimersByTime(19_999); });
+      expect(navigateSpy).not.toHaveBeenCalled();
+      act(() => { vi.advanceTimersByTime(1); });
+      expect(navigateSpy).toHaveBeenCalledWith('/chroniques?v=16.0', { replace: true });
+
+      navigateSpy.mockClear();
+      engine.ended = 'archive:16.0';
+      setup('?v=16.0');
+      expect(navigateSpy).toHaveBeenCalledWith('/chroniques?v=1.1', { replace: true });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('un thème mis en pause suspend l\'enchaînement', () => {
+    engine.playing = true;
+    engine.external = 'archive:8.0';
+    const { getByLabelText, rerender } = setup('?v=8.0');
+    fireEvent.click(getByLabelText('Mettre le thème en pause'));
+    engine.ended = 'archive:8.0';
+    rerender(<ChroniclesScreen />);
+    expect(navigateSpy).not.toHaveBeenCalled();
   });
 });

@@ -11,6 +11,8 @@ import s from './ChroniclesScreen.module.css';
 
 /** Fondu croisé d'une version à l'autre (image/vidéo et thème), spec § 4. */
 const CROSSFADE_MS = 600;
+/** Temps d'affichage d'une version sans thème avant de passer à la suivante. */
+const NO_THEME_DWELL_MS = 20_000;
 
 const hasMedia = (entry: ArchiveEntry) =>
   (entry.media === 'video' && !!entry.video) || (entry.media === 'image' && !!entry.background);
@@ -73,7 +75,7 @@ function LaunchTitle({ entry }: { entry: ArchiveEntry }) {
 export function ChroniclesScreen() {
   const entries = useMemo(() => archiveEntries(), []);
   const { query } = useRoute();
-  const { playSfx, playExternal, pauseMusic, resumeAmbient, playing, external } = useGameAudio();
+  const { playSfx, playExternal, pauseMusic, resumeAmbient, playing, external, ended } = useGameAudio();
 
   // La version affichée vit dans l'URL (`?v=8.0`) : partageable, et le bouton
   // « précédent » ramène d'où l'on venait (la frise remplace l'entrée d'historique).
@@ -126,8 +128,23 @@ export function ChroniclesScreen() {
 
   useEffect(() => {
     if (!themeId || !themeSrc || !wanted) return;
-    playExternal(themeId, themeSrc, { loop: true, crossfadeMs: CROSSFADE_MS });
+    playExternal(themeId, themeSrc, { loop: false, crossfadeMs: CROSSFADE_MS });
   }, [themeId, themeSrc, wanted, playExternal]);
+
+  // Défilement automatique : à la fin du thème (lecture non bouclée), la version
+  // suivante prend le relais, et la dernière ramène à la première. Une version sans
+  // thème reste affichée `NO_THEME_DWELL_MS` avant de passer la main. Mettre le thème
+  // en pause (`wanted` faux) suspend l'enchaînement.
+  const nextVersion = entries[(index + 1) % entries.length]?.version;
+  useEffect(() => {
+    if (!wanted || !nextVersion || !entry || nextVersion === entry.version) return;
+    if (themeId) {
+      if (ended === themeId) select(nextVersion);
+      return;
+    }
+    const timer = window.setTimeout(() => select(nextVersion), NO_THEME_DWELL_MS);
+    return () => window.clearTimeout(timer);
+  }, [wanted, nextVersion, entry, themeId, ended, select]);
 
   /** Le thème de la version affichée joue vraiment (et pas une autre piste). */
   const themePlaying = playing && external === themeId;
@@ -137,7 +154,7 @@ export function ChroniclesScreen() {
     // Le clic est lui-même le geste utilisateur qui débloque l'autoplay : on relance
     // sans attendre l'effet, qui ne se redéclencherait pas si `wanted` était déjà vrai.
     setWanted(true);
-    if (themeId && themeSrc) playExternal(themeId, themeSrc, { loop: true, crossfadeMs: CROSSFADE_MS });
+    if (themeId && themeSrc) playExternal(themeId, themeSrc, { loop: false, crossfadeMs: CROSSFADE_MS });
   }, [themePlaying, pauseMusic, playExternal, themeId, themeSrc]);
 
   useEffect(() => {
