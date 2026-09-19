@@ -14,11 +14,11 @@
     },
     "ambient": {
       "pak": "music",
-      "entry": "SFX/Music/Music_Ingame.fsb",
-      "subsong": 2,
-      "_name": "JungleAdaptive",
-      "_duration_hint": "3:05",
-      "_note": "Choisi au hasard parmi les pistes >=90s d'un autre bank (ici Music_Ingame.fsb, 13 subsongs) pour avoir un deuxième morceau à faire boucler en jeu ; l'utilisateur le changera. Autres candidats >=90s dans ce même fichier : IllusionWorldAdaptive (subsong 1, 5:38), NihazAdaptive (subsong 3, 4:55), Siege_warfare_adaptive (subsong 4, 5:04). Music_Zone.fsb (225 Mo, 90 subsongs) contient beaucoup d'autres pistes de zone, non énumérées ici pour limiter le temps d'extraction."
+      "entry": "SFX/Music/Music_Menu.fsb",
+      "subsong": 1,
+      "_name": "Credits_loop_NM",
+      "_duration_hint": "5:32",
+      "_note": "Choisi explicitement par l'utilisateur comme musique de l'écran des succès (achievements) : Music_Menu.fsb, subsong 1, 'Credits_loop_NM' (5:32), repérée à l'origine comme boucle de générique de fin (cf. _candidates.menu) mais jugée adaptée à cet écran. Remplace l'ancien tirage au hasard sur Music_Ingame.fsb (JungleAdaptive, subsong 2, 3:05). Anciens candidats >=90s de ce même Music_Ingame.fsb (13 subsongs), si on veut revenir dessus : IllusionWorldAdaptive (subsong 1, 5:38), NihazAdaptive (subsong 3, 4:55), Siege_warfare_adaptive (subsong 4, 5:04). Music_Zone.fsb (225 Mo, 90 subsongs) contient beaucoup d'autres pistes de zone, non énumérées ici pour limiter le temps d'extraction."
     }
   },
   "sfx": {
