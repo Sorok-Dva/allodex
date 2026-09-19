@@ -102,9 +102,9 @@ export function GameScrollbar({ targetRef, thumbSize = THUMB, step = STEP, class
   return (
     <div className={`${s.bar} ${className ?? ''}`} style={style}>
       <button
-        type="button" className={`${s.arrow} ${s.up} ${m.top <= 0 ? s.off : ''}`} data-testid="scrollbar-up"
+        type="button" className={`${s.arrow} ${s.up}`} data-testid="scrollbar-up"
         aria-label="Défiler vers le haut" disabled={!canScroll || m.top <= 0}
-        style={{ height: ARROW, backgroundImage: `url(${sprite('scroll-up')})` }}
+        style={{ height: ARROW, backgroundImage: `url(${sprite(m.top <= 0 ? 'scroll-up-off' : 'scroll-up')})` }}
         onClick={() => scrollBy(-step)}
       />
       <div
@@ -120,9 +120,9 @@ export function GameScrollbar({ targetRef, thumbSize = THUMB, step = STEP, class
         )}
       </div>
       <button
-        type="button" className={`${s.arrow} ${s.down} ${m.top >= max ? s.off : ''}`} data-testid="scrollbar-down"
+        type="button" className={`${s.arrow} ${s.down}`} data-testid="scrollbar-down"
         aria-label="Défiler vers le bas" disabled={!canScroll || m.top >= max}
-        style={{ height: ARROW, backgroundImage: `url(${sprite('scroll-down')})` }}
+        style={{ height: ARROW, backgroundImage: `url(${sprite(m.top >= max ? 'scroll-down-off' : 'scroll-down')})` }}
         onClick={() => scrollBy(step)}
       />
     </div>

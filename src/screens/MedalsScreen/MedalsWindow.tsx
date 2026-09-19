@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { T, sprite, tex } from '@/lib/assets';
 import { GameStrip } from '@/components/game/GameStrip';
-import { GameFilters } from '@/components/game/GameFilters';
 import s from './MedalsWindow.module.css';
 
 type Props = {
@@ -18,18 +17,27 @@ type Props = {
  * constantes CSS sont exprimées dans le repère local de la fenêtre, c'est-à-dire en
  * pixels écran moins l'origine (518, 191).
  *
- * La plaque de titre flotte au-dessus du décor du jeu : au-dessus du bandeau turquoise
- * et en dehors de la plaque, on voit la scène, pas la fenêtre — d'où l'absence de fond
- * sur la bande y 0→31.
+ * La plaque de titre flotte au-dessus du décor du jeu, mais le cadre de la fenêtre
+ * commence **au-dessus** du bandeau turquoise : un rail vert court de y 205 à y 223 de
+ * part et d'autre de la plaque (mesuré par test d'identité pixel entre `refs/equip.png`
+ * et `refs/astral.png` : les lignes 205+ sont identiques dans les deux captures, celles
+ * d'au-dessus varient avec le décor). Au-dessus de y 205, on voit la scène.
+ *
+ * Aucun filtre SVG n'est appliqué côté navigateur (spec § 7.1) : les corrections de
+ * couleur sont cuites dans les PNG par `tools/extract_assets.py` (`color_offsets`) et
+ * `tools/cut_sprites.py` (`derive`).
  */
 export function MedalsWindow({ title, points, onClose, nav, content }: Props) {
   return (
     <div className={s.window}>
-      <GameFilters />
-
       {/* Fond de la colonne de navigation : texture du client, placée par recalage
           linéaire sur la capture (tex y 64 ↔ écran 260, tex y 598 ↔ écran 759). */}
       <div className={s.navBack} style={{ backgroundImage: `url(${tex(`${T.medals}/FrameNavigation`)})` }} />
+
+      {/* Rail vert au-dessus du bandeau, de part et d'autre de la plaque : posé avant
+          la plaque, qui le recouvre (ses ornements ont des coins transparents). */}
+      <div className={s.railTopLeft} style={{ backgroundImage: `url(${sprite('rail-top-left')})` }} />
+      <div className={s.railTopRight} style={{ backgroundImage: `url(${sprite('rail-top-right')})` }} />
 
       <div className={s.plate}>
         <GameStrip base="title-plate" cap={38} />

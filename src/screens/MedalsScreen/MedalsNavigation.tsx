@@ -50,8 +50,8 @@ export function MedalsNavigation({ ds, state }: { ds: MedalsDataset; state: Meda
                   onClick={foldable ? () => state.toggleCategory(c) : undefined}
                 >
                   <span
-                    className={`${s.pillSkin} ${open ? s.pillOpen : ''}`}
-                    style={{ backgroundImage: `url(${sprite('pill-full')})` }}
+                    className={s.pillSkin}
+                    style={{ backgroundImage: `url(${sprite(open ? 'pill-full-open' : 'pill-full')})` }}
                     aria-hidden="true"
                   />
                   <span className={s.pillLabel}>{cat.name}</span>

@@ -2,12 +2,12 @@
    la hauteur native de la texture (13 px). Le texte « X sur Y » est mesuré à
    13 px, blanc pur, ligne de base 10 px sous le haut de la barre. Les deux textures du
    client sont nettement plus sombres que le rendu du jeu (intérieur 93,32,0 contre
-   136,82,36 mesuré) : décalage constant `game-progress`, voir GameFilters. */
+   136,82,36 mesuré) : le décalage (+43, +50, +36) est cuit dans les PNG à l'extraction
+   (`color_offsets`), le navigateur n'applique aucun filtre (spec § 7.1). */
 .bar { position: relative; height: 12px; }
 .track, .gauge {
   position: absolute; left: 0; top: 0; height: 12px;
   border-style: solid; border-color: transparent; border-image-repeat: stretch;
-  filter: url(#game-progress);
 }
 .track { right: 0; }
 .text {

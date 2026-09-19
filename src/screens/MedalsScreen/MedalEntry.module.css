@@ -23,10 +23,11 @@
 /* La texture est étirée sur toute la boîte ; ses 3 dernières lignes sont transparentes,
    d'où le facteur 120/117 pour que le bord déchiré tombe pile sur le bas du parchemin. */
 .paper { position: absolute; inset: 0; background-repeat: no-repeat; }
-/* Les textures du client sont plus sombres que le rendu du jeu : décalage constant
-   mesuré sur les zones nues du parchemin (voir GameFilters). */
-.paperComplete { filter: url(#game-paper-complete); }
-.paperPlain { filter: url(#game-paper); }
+/* Les textures du client sont plus sombres que le rendu du jeu : le décalage mesuré sur
+   les zones nues du parchemin (+19, +21, +24 pour `MedalPaper`, +5, +8, +18 pour
+   `MedalPaperComplete`) est cuit dans les PNG à l'extraction (`color_offsets`). Le
+   navigateur n'applique plus aucun filtre : sur le Chrome GPU de l'utilisateur, le
+   filtre SVG délavait le texte brun des entrées en rose (spec § 7.1). */
 
 /* 106 px = le `left` du nom : les deux zones de survol de l'infobulle se touchent,
    sinon le pointeur traverse 6 px de vide entre elles et l'infobulle clignote. */

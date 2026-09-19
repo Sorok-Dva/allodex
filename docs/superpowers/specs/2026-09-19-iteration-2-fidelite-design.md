@@ -87,6 +87,34 @@ Rendu à **l'échelle 1:1** (fenêtre 880×590 — **amendé 2026-09-19** : 886�
 ### 7.1 Chrome
 Plaque de titre brune débordante avec « Succès » doré centré et ornements aux extrémités ; bandeau turquoise avec « N points de succès » (sans espace avant « points », comme le jeu) ; rails verts ; croix de fermeture (`Cross/Close*`) dans le coin supérieur droit ; séparateur vertical entre les deux colonnes.
 
+**(amendé 2026-09-19, itération 2b)** Le cadre de la fenêtre commence **au-dessus** du bandeau
+turquoise : un rail vert court de y 205 à y 223 de part et d'autre de la plaque de titre
+(sprites `rail-top-left`, x 518→592, et `rail-top-right`, x 1331→1378 ; les deux passent sous
+les ornements de la plaque, dont les coins bas sont transparents, et s'arrêtent au bouton de
+fermeture). Le haut du cadre a été relevé par test d'identité pixel entre `refs/equip.png` et
+`refs/astral.png` : les lignes 205 et suivantes sont identiques dans les deux captures (donc
+opaques, c'est la fenêtre), celles d'au-dessus varient avec le décor du jeu. Sans ces sprites,
+on voyait la vidéo de fond à la place du cadre.
+
+**(amendé 2026-09-19, itération 2b) Aucun filtre appliqué par le navigateur.** Les corrections
+de couleur du jeu (textures du client plus sombres que leur rendu, variantes d'état absentes
+des captures) sont **cuites dans les PNG** au moment de l'extraction et de la découpe :
+`tools/assets_manifest.json` porte `color_offsets` (`{"<entrée de pak>": [dr, dg, db]}`,
+appliqué après rognage par `extract_assets.py` : `FrameNavigation`, `FrameContent02`,
+`CategoryContent`, `MedalPaper`, `MedalPaperComplete`, `ProgressBar`, `ProgressBarGauge`) et
+`tools/sprites_manifest.json` porte `derive` (`{"from": "<sprite>", "matrix" | "offset"}`,
+appliqué par `cut_sprites.py` : `pill-full-open`, `scroll-up-off`, `scroll-down-off`). Les
+règles `filter: url(#…)` et le composant `GameFilters` sont supprimés : le Chrome GPU de
+l'utilisateur appliquait ces filtres SVG autrement que le Chromium headless et délavait en
+rose le texte brun des entrées, alors que les captures headless étaient correctes. Seuls
+restent des filtres CSS sans référence externe (`brightness`, `grayscale`), identiques
+partout.
+
+Le fond de la colonne de contenu couvre toute la colonne (x 835→1390) : la texture
+`FrameContent02` est étirée de 7 px (572 au lieu de 565) au lieu d'être décalée de 7 px vers
+la droite, qui laissait une bande verticale transparente sur toute la hauteur (vidéo de fond
+visible, constatée sur la vue « Professions »).
+
 ### 7.2 Navigation (gauche)
 - Champ « Recherche de succès... » (sprite du jeu).
 - Liste des 17 catégories en pilules, **toutes repliées** au chargement ; « Progression » sans médaillon (clic : rien pour l'instant, la vue arrive à l'itération suivante) ; les autres avec médaillon « + » (repliée) / « − » (dépliée). Une seule dépliée à la fois ; déplier une catégorie sélectionne automatiquement sa première sous-catégorie.
@@ -98,6 +126,29 @@ Plaque de titre brune débordante avec « Succès » doré centré et ornements 
 - En-tête sombre : titre de la sous-catégorie (doré, à gauche) ; à droite champ « Tout » + bouton or ; clic → menu déroulé du jeu avec « Tout », « Terminé », « Pas terminé » (composant maison, plus de `<select>`).
 - Liste d'entrées, pas ≈ 111 px, ascenseur du jeu à droite.
 - Entrée : badge (icône 48×48 en cadre or, chiffre romain du palier atteint en bas à droite de l'icône, écu rouge avec le score) ; parchemin doré (terminé) ou gris (non terminé) ; nom brun en haut à gauche ; date `JJ.MM.AAAA` en haut à droite si terminé, sinon case de suivi (sprite, cochable localement, état non persisté) ; description centrée ; barre « X sur Y » si `completeProgress > 1` ; si `medalCollection` non vide : « Série de succès : » centré puis rangée d'icônes 32×32 avec chiffre romain (I, II, III…) et état terminé/non terminé (icône pleine / assombrie).
+  **(amendé 2026-09-19, itération 2b)** Géométrie du badge : les cinq textures `MedalFrame*`
+  portent **la même plaque aux mêmes coordonnées** (région y 20→70 / x 25→76 identique au pixel
+  près entre `MedalFrame`, `…30`, `…50`, `…100` et `…500`, écart moyen 0,2/255), seul l'ornement
+  qui l'entoure grandit. Le cadre est donc posé pour tous les paliers en ancrant le centre de la
+  plaque (50,5 ; 44,5 en pixels de texture) au même point du parchemin (38,5 ; 37,5), à l'échelle
+  0,875 — le palier IV n'a pas de centre propre à extrapoler. Vérifié sur `refs/equip.png`
+  (entrée « Divin », 100 pts, parchemin à y 366) : cadre relevé à (832 ; 365,6), prédit à
+  (830,3 ; 364,6) ; bas du badge relevé à y 468,7, prédit à 467,9. L'écu est centré sur la
+  **plaque**, pas sur la texture (qui déborde à droite au palier I) : sans cela le score était
+  8 px trop à gauche. `scoreY` est réglé pour que le centre des glyphes tombe à +70 px du haut
+  du parchemin aux trois paliers mesurés (I « 20 » et II « 30 » sur `refs/astral.png`, IV « 100 »
+  sur `refs/equip.png`) ; les paliers III et V, absents des captures, sont extrapolés sur ce même
+  centre. Au palier IV le badge (106 px) est plus haut qu'un parchemin sans barre ni série
+  (84 px) : il déborde sur l'entrée suivante, qui le recouvre — dans le jeu, l'entrée « Divin »
+  qui porte ce badge est bien plus haute (liste d'emplacements).
+
+  **(à trancher)** Les deux badges 100 pts de `refs/equip.png` (« Divin », « Dragon des temps
+  nouveaux ») n'affichent **aucun** chiffre romain, alors que les trois badges de
+  `refs/astral.png` (10, 20 et 30 pts) en affichent un. Les captures ne permettent pas de
+  déterminer le critère (palier ≥ IV ? succès hors série ?) : le rendu actuel affiche le chiffre
+  à tous les paliers. À vérifier sur une capture du jeu montrant un succès 100 pts appartenant à
+  une série.
+
   **(amendé 2026-09-19)** Le chiffre romain du badge est celui du **palier du score** (`toRoman(medalTier(score))`), **pas** celui de `currentRank`, comme le montre `refs/astral.png` : « Parfait ! » (`currentRank: 0`) affiche « I », et « Connecté avec les étoiles » (`currentRank: 1`, 20 pts) affiche « I » quand « Propriétaire » (`currentRank: 1`, 30 pts) affiche « II » — deux succès au même `currentRank` mais deux chiffres différents, donc le chiffre suit le score, pas le rang courant.
 - Infobulle au survol du badge ou du nom : cadre du jeu, titre vert clair, « Date : HH:MM JJ.MM.AAAA » si terminé, description, séparateur, « Shift + clic : Lien vers les succès » (texte décoratif). Position fixe calculée, jamais coupée.
   **(amendé 2026-09-19)** Couleurs mesurées sur `refs/tooltip.png` (profils numpy sur les lignes de texte) : titre **et** date en `#00ea38` (vert vif, pas « vert clair »), description en `#ffdc00` (jaune), filet de séparation `#445f4a`, ligne d'aide `#b0d9be`. L'infobulle est ancrée au curseur (décalage +9, +11 depuis le coin haut-gauche), pas centrée sur l'élément survolé.

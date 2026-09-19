@@ -11,6 +11,13 @@
 
 /* Plaque de titre brune : x 574→1349 (775 px), y 191→222 (31 px). */
 .plate { left: 56px; top: 0; width: 775px; height: 31px; }
+
+/* Rail vert du haut du cadre, visible de part et d'autre de la plaque : écran y 205→223,
+   x 518→592 à gauche et x 1331→1378 à droite : les deux sprites passent sous les
+   ornements de la plaque, dont les coins bas sont transparents, et s'arrêtent au bouton
+   de fermeture. Sans eux, on voyait le décor à la place du cadre. */
+.railTopLeft { left: 0; top: 14px; width: 74px; height: 18px; background-repeat: no-repeat; }
+.railTopRight { left: 813px; top: 14px; width: 47px; height: 18px; background-repeat: no-repeat; }
 .title {
   position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center;
   padding-top: 4px; font-size: 16px; line-height: 19px; color: #ffeb73;
@@ -44,18 +51,21 @@
   background-repeat: no-repeat;
   background-size: 307.5px 590.7px;
   background-position: -5.5px -58.5px;
-  filter: url(#game-navframe);
 }
 
 /* Fond de la colonne de droite : la texture `FrameContent02` (628 × 628 utiles) est
    dessinée en 565 × 590 avec son coin haut-gauche à l'écran (842, 200), soit (7, −59)
    dans le repère de la colonne. Recalage ajusté à l'erreur absolue minimale sur la bande
-   de bois nue x 1355→1369 (6,63 contre 13,4 pour un aplat). */
+   de bois nue x 1355→1369 (6,63 contre 13,4 pour un aplat).
+
+   La texture est étirée de 7 px vers la gauche (572 au lieu de 565) pour couvrir toute
+   la colonne : avec `left: 7px`, les colonnes écran 835→842 restaient transparentes et
+   laissaient voir la vidéo de fond sur toute la hauteur (bande verticale constatée sur
+   « Professions »). 7 px sur 565, c'est 1,2 % d'étirement horizontal du bois. */
 .contentBack { left: 317px; top: 68px; width: 555px; height: 503px; overflow: hidden; }
 .contentBack > span {
-  position: absolute; left: 7px; top: -59px; width: 565px; height: 590px;
-  background-repeat: no-repeat; background-size: 565px 590px;
-  filter: url(#game-contentframe);
+  position: absolute; left: 0; top: -59px; width: 572px; height: 590px;
+  background-repeat: no-repeat; background-size: 572px 590px;
 }
 
 /* Séparateur vertical : x 814→835, y 264→762. */

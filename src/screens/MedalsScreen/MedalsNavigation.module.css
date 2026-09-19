@@ -34,9 +34,10 @@
   background-repeat: no-repeat; background-position: 0 0;
   transition: filter 80ms linear;
 }
+/* Catégorie dépliée : le jeu remplace le liseré or par un liseré vert. La variante est
+   un sprite à part (`pill-full-open`, dérivé de `pill-full` par `tools/cut_sprites.py`),
+   plus aucun filtre côté navigateur (spec § 7.1). */
 .pill:hover .pillSkin { filter: brightness(1.12); }
-/* Catégorie dépliée : le jeu remplace le liseré or par un liseré vert (voir GameFilters). */
-.pillOpen, .pill:hover .pillOpen { filter: url(#game-pill-open); }
 
 .pillLabel {
   position: absolute; left: 25px; right: 34px; top: 2px; height: 28px; line-height: 27px;
@@ -49,11 +50,11 @@
    entre lignes, 27 px de marges verticales (voir SUB_ROW / SUB_PADDING). */
 .subWrap { position: relative; width: 240px; margin: 1px 0 3px; flex: none; }
 /* Le jeu étire la texture 264 × 124 sur toute la boîte (mesuré : l'étirement intégral
-   colle deux fois mieux à la capture qu'un 9-tranches) et l'éclaircit légèrement. */
+   colle deux fois mieux à la capture qu'un 9-tranches) ; l'éclaircissement mesuré
+   (+8, +12, +18) est cuit dans la texture à l'extraction (`color_offsets`). */
 .parchment {
   position: absolute; inset: 0;
   background-repeat: no-repeat; background-size: 100% 100%;
-  filter: url(#game-parchment);
 }
 .subList { list-style: none; margin: 0; padding: 0; }
 .subRow {

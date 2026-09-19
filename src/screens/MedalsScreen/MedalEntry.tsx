@@ -71,7 +71,7 @@ export function MedalEntry({ medal, onTrack }: MedalEntryProps) {
   return (
     <article className={s.entry} style={{ height, '--series-shift': `${seriesShift}px` } as CSSProperties}>
       <div
-        className={`${s.paper} ${complete ? s.paperComplete : s.paperPlain}`}
+        className={s.paper}
         data-testid="medal-paper"
         data-complete={complete ? 'true' : 'false'}
         style={{

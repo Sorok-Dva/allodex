@@ -67,6 +67,16 @@ describe('MedalsNavigation', () => {
     expect(screen.queryByRole('button', { name: /^Astral ouvert/ })).toBeNull();
   });
 
+  // Spec § 7.1 : aucun filtre côté navigateur. La pilule dépliée (liseré vert) est un
+  // sprite à part, dérivé de `pill-full` à la découpe (`tools/cut_sprites.py`).
+  it('utilise le sprite de pilule dépliée pour la catégorie ouverte', () => {
+    render(<Harness ds={DATASET} />);
+    const skin = (name: string) => pill(name).querySelector('span[class*="pillSkin"]') as HTMLElement;
+    expect(skin('Astral').style.backgroundImage).toContain('pill-full-open.png');
+    expect(skin('Personnage').style.backgroundImage).toContain('pill-full.png');
+    expect(skin('Personnage').style.backgroundImage).not.toContain('pill-full-open.png');
+  });
+
   it('affiche « Nom - terminés/total » sur les sous-catégories dépliées', () => {
     const { container } = render(<Harness ds={DATASET} />);
     const astral = categories(container)[3] as HTMLElement;

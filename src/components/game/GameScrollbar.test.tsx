@@ -68,4 +68,19 @@ describe('GameScrollbar', () => {
     expect(screen.queryByTestId('scrollbar-thumb')).toBeNull();
     expect((screen.getByTestId('scrollbar-down') as HTMLButtonElement).disabled).toBe(true);
   });
+
+  // Spec § 7.1 : aucun filtre côté navigateur. L'état inactif d'une flèche est un sprite
+  // à part, dérivé du sprite actif à la découpe (`tools/cut_sprites.py`).
+  it('utilise les sprites grisés pour les flèches inactives', () => {
+    render(<Harness scrollHeight={400} clientHeight={100} />);
+    const up = screen.getByTestId('scrollbar-up');
+    const down = screen.getByTestId('scrollbar-down');
+    expect(up.style.backgroundImage).toContain('scroll-up-off.png');
+    expect(down.style.backgroundImage).toContain('scroll-down.png');
+
+    fireEvent.click(down);
+
+    expect(screen.getByTestId('scrollbar-up').style.backgroundImage).toContain('scroll-up.png');
+    expect(screen.getByTestId('scrollbar-up').style.backgroundImage).not.toContain('scroll-up-off.png');
+  });
 });

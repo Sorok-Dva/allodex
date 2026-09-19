@@ -7,8 +7,8 @@
 .up { top: 0; }
 .down { bottom: 0; }
 /* Le jeu grise la flèche quand on ne peut plus défiler dans ce sens ; les captures ne
-   fournissent que l'état actif, la variante inactive est calculée (voir GameFilters). */
-.off { filter: url(#game-arrow-off); }
+   fournissent que l'état actif, la variante inactive est un sprite dérivé
+   (`scroll-up-off` / `scroll-down-off`, voir `tools/cut_sprites.py`). */
 
 .track { position: absolute; left: 0; width: 22px; background-repeat: repeat-y; background-position: 0 0; }
 
