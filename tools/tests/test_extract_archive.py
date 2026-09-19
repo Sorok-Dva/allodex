@@ -8,6 +8,8 @@ from tools.extract_archive import (
     build_index,
     compose_background,
     decode_subsong,
+    extract_theme,
+    fsb_subsong_count,
     pick_theme_subsong,
     run,
     version_key,
@@ -138,6 +140,42 @@ def test_compose_background_covers_the_canvas_and_anchors_the_layers():
     assert out.getpixel((31, 0))[:3] == (10, 20, 30)  # le ciel est étiré sur tout le cadre
     assert out.getpixel((0, 31))[:3] == (255, 0, 0)  # le calque est ancré en bas à gauche
     assert out.getpixel((31, 31))[:3] == (10, 20, 30)
+
+
+# --- fsb_subsong_count --------------------------------------------------------------------
+
+
+def _fsb5(count: int, tail: bytes = b"\0" * 16) -> bytes:
+    # FSB5 : magic, version, nombre d'échantillons (8..12), taille des en-têtes…
+    return b"FSB5" + (1).to_bytes(4, "little") + count.to_bytes(4, "little") + tail
+
+
+def _fsb4(count: int, tail: bytes = b"\0" * 16) -> bytes:
+    # FSB4/FSB3/FSB2 : magic, nombre d'échantillons (4..8), taille de la table d'en-têtes (8..12).
+    return b"FSB4" + count.to_bytes(4, "little") + (336).to_bytes(4, "little") + tail
+
+
+def test_fsb_subsong_count_reads_offset_8_on_fsb5():
+    assert fsb_subsong_count(_fsb5(5)) == 5
+
+
+def test_fsb_subsong_count_reads_offset_4_on_fsb4():
+    # La banque du client 1.1 : 4 subsongs, et 336 en 8..12 (la taille des en-têtes,
+    # que la lecture FSB5 prenait à tort pour un nombre de subsongs).
+    payload = _fsb4(4)
+    assert fsb_subsong_count(payload) == 4
+    assert int.from_bytes(payload[8:12], "little") == 336
+
+
+def test_fsb_subsong_count_handles_the_other_fsb_generations():
+    assert fsb_subsong_count(b"FSB3" + (7).to_bytes(4, "little") + b"\0" * 16) == 7
+
+
+def test_fsb_subsong_count_returns_none_on_a_non_fsb_or_truncated_buffer():
+    assert fsb_subsong_count(b"RIFF" + b"\0" * 32) is None
+    assert fsb_subsong_count(b"OggS" + b"\0" * 32) is None
+    assert fsb_subsong_count(b"FSB5\0\0") is None  # tronqué
+    assert fsb_subsong_count(b"") is None
 
 
 # --- decode_subsong : repli WASM sur les banques CELT --------------------------------------
@@ -307,3 +345,132 @@ def test_main_writes_the_index_next_to_the_output_directory(tmp_path, monkeypatc
     assert code == 0
     index = json.loads((tmp_path / "archive.json").read_text(encoding="utf-8"))
     assert [e["version"] for e in index] == ["2.0", "16.0"]
+
+
+# --- idempotence et --force ----------------------------------------------------------------
+
+
+class _Spies:
+    """Compte les appels aux étapes coûteuses (décodage, encodage, transcodage)."""
+
+    def __init__(self):
+        self.background = 0
+        self.video = 0
+        self.decode = 0
+        self.encode = 0
+
+    @property
+    def total(self) -> int:
+        return self.background + self.video + self.decode + self.encode
+
+
+def _fake_client(tmp_path: Path) -> Path:
+    """Client minimal : les trois paks du manifeste de test, avec les entrées attendues."""
+    client = tmp_path / "client"
+    client.mkdir()
+    with zipfile.ZipFile(client / "Interface.pak", "w") as zf:
+        zf.writestr("Interface/Wrap/MainMenu/Main2/Background.(UITexture).bin", b"texture")
+    with zipfile.ZipFile(client / "SFX_Music.pak", "w") as zf:
+        zf.writestr("SFX/Music/Music_Menu.fsb", _fsb5(1, b"\0" * 64))
+    with zipfile.ZipFile(client / "Video.pak", "w") as zf:
+        zf.writestr("Video/16_0Events/MainMenu/MainMenu.ogv", b"ogv")
+    return client
+
+
+def _spy_on_the_expensive_steps(monkeypatch) -> _Spies:
+    spies = _Spies()
+
+    def fake_background(data, spec, pak, target):
+        spies.background += 1
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(b"png")
+        return None
+
+    def fake_video(data, out_base):
+        spies.video += 1
+        out_base.parent.mkdir(parents=True, exist_ok=True)
+        out_base.with_suffix(".webm").write_bytes(b"webm")
+        out_base.with_suffix(".mp4").write_bytes(b"mp4")
+        return 12.0, None
+
+    def fake_decode(vgmstream, wasm, fsb, subsong, wav):
+        spies.decode += 1
+        wav.write_bytes(b"RIFF")
+
+    def fake_encode(wav, out_base, category):
+        spies.encode += 1
+        out_base.with_suffix(".ogg").write_bytes(b"ogg")
+        out_base.with_suffix(".mp3").write_bytes(b"mp3")
+
+    monkeypatch.setattr("tools.extract_archive.write_background", fake_background)
+    monkeypatch.setattr("tools.extract_archive.extract_video", fake_video)
+    monkeypatch.setattr("tools.extract_archive.decode_subsong", fake_decode)
+    monkeypatch.setattr("tools.extract_archive.encode_outputs", fake_encode)
+    monkeypatch.setattr("tools.extract_archive.fold_to_stereo", lambda wav: wav)
+    monkeypatch.setattr("tools.extract_archive.probe_duration", lambda path: 168.0)
+    monkeypatch.setattr(
+        "tools.extract_archive.list_subsongs",
+        lambda vgmstream, fsb, payload: [{"index": 1, "name": "MainTitle", "duration": 168.0, "channels": 2}],
+    )
+    return spies
+
+
+def test_run_is_idempotent_and_leaves_existing_outputs_alone(tmp_path, monkeypatch):
+    client = _fake_client(tmp_path)
+    spies = _spy_on_the_expensive_steps(monkeypatch)
+    out = tmp_path / "out"
+    for version, files in (("2.0", ("background.png", "theme.ogg", "theme.mp3")), ("16.0", ("menu.webm", "menu.mp4"))):
+        (out / version).mkdir(parents=True)
+        for name in files:
+            (out / version / name).write_bytes(b"deja-la")
+
+    index, report = run(_manifest(str(client)), out, Path("/nonexistent/vgmstream"), force=False)
+
+    assert spies.total == 0, "aucune sortie existante ne doit être redécodée sans --force"
+    assert [e["version"] for e in index] == ["2.0", "16.0"]
+    assert index[0]["media"] == "image" and index[0]["background"] == "background.png"
+    assert index[0]["theme"]["name"] == "MainTitle"
+    assert index[1]["media"] == "video" and index[1]["video"] == {"webm": "menu.webm", "mp4": "menu.mp4"}
+    assert report == []
+    assert (out / "2.0" / "background.png").read_bytes() == b"deja-la"
+    assert (out / "16.0" / "menu.webm").read_bytes() == b"deja-la"
+
+
+def test_run_force_redoes_every_step_even_when_the_outputs_exist(tmp_path, monkeypatch):
+    client = _fake_client(tmp_path)
+    spies = _spy_on_the_expensive_steps(monkeypatch)
+    out = tmp_path / "out"
+    for version, files in (("2.0", ("background.png", "theme.ogg", "theme.mp3")), ("16.0", ("menu.webm", "menu.mp4"))):
+        (out / version).mkdir(parents=True)
+        for name in files:
+            (out / version / name).write_bytes(b"deja-la")
+
+    index, report = run(_manifest(str(client)), out, Path("/nonexistent/vgmstream"), force=True)
+
+    assert (spies.background, spies.video, spies.decode, spies.encode) == (1, 1, 1, 1)
+    assert report == []
+    assert [e["version"] for e in index] == ["2.0", "16.0"]
+    assert (out / "2.0" / "background.png").read_bytes() == b"png"
+    assert (out / "16.0" / "menu.webm").read_bytes() == b"webm"
+
+
+def test_extract_theme_prefer_overrides_the_automatic_choice(tmp_path, monkeypatch):
+    client = _fake_client(tmp_path)
+    _spy_on_the_expensive_steps(monkeypatch)
+    streams = [
+        {"index": 2, "name": "MainMenu_DesertDreams", "duration": 153.6, "channels": 2},
+        {"index": 3, "name": "MainMenu_CapitalOfShadows", "duration": 161.5, "channels": 2},
+    ]
+    monkeypatch.setattr("tools.extract_archive.list_subsongs", lambda *a: streams)
+    spec = {"pak": "SFX_Music.pak", "entry": "SFX/Music/Music_Menu.fsb"}
+
+    auto, err = extract_theme(spec, client, tmp_path / "auto", Path("/nonexistent/vgmstream"), force=False)
+    forced, err2 = extract_theme(
+        {**spec, "prefer": "MainMenu_DesertDreams"}, client, tmp_path / "forced",
+        Path("/nonexistent/vgmstream"), force=False,
+    )
+
+    assert (err, err2) == (None, None)
+    assert auto["name"] == "MainMenu_CapitalOfShadows" and auto["subsong"] == 3  # la plus longue
+    assert forced["name"] == "MainMenu_DesertDreams" and forced["subsong"] == 2
+    assert forced["alternatives"] == ["MainMenu_CapitalOfShadows"]
