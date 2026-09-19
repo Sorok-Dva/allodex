@@ -16,7 +16,10 @@ export type GameAudio = GameAudioState & {
 };
 
 export const MUTE_KEY = 'allodex:audio-muted';
-const MUSIC_VOLUME = 0.5;
+/** Volume de base des deux pistes musicales (cible du fondu croisé), 0..1. */
+const MUSIC_VOLUME = 0.3;
+/** Volume par défaut d'un son d'interface joué par `playSfx`, 0..1. */
+const SFX_VOLUME = 0.5;
 const DEFAULT_CROSSFADE_MS = 1500;
 
 export const AudioContext = createContext<GameAudio | null>(null);
@@ -168,7 +171,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     });
   }, [storage]);
 
-  const playSfx = useCallback((name: string, volume = 0.8) => {
+  const playSfx = useCallback((name: string, volume = SFX_VOLUME) => {
     if (mutedRef.current) return;
     const meta = audioMeta(name);
     if (!meta) return;
