@@ -1,4 +1,4 @@
-import { useState, type MouseEvent as ReactMouseEvent } from 'react';
+import { useEffect, useState, type MouseEvent as ReactMouseEvent } from 'react';
 import type { Medal } from '@/data/medals.types';
 import { currentRankOf, isComplete } from '@/data/medals.logic';
 import { T, sprite, tex } from '@/lib/assets';
@@ -47,6 +47,17 @@ export function MedalEntry({ medal, onTrack }: MedalEntryProps) {
     setCursor({ x, y, left: x, top: y, right: x, bottom: y, width: 0, height: 0, toJSON: () => ({}) });
   };
   const hover = { onMouseEnter: track, onMouseMove: track, onMouseLeave: () => setCursor(null) };
+
+  // Le pointeur ne bouge pas quand on défile à la molette : sans cela l'infobulle resterait
+  // affichée au même endroit alors que son entrée a glissé. On n'écoute que tant qu'elle est
+  // visible, et en phase de capture pour attraper le défilement de la liste, qui ne remonte pas.
+  const shown = cursor !== null;
+  useEffect(() => {
+    if (!shown) return;
+    const hide = () => setCursor(null);
+    window.addEventListener('scroll', hide, true);
+    return () => window.removeEventListener('scroll', hide, true);
+  }, [shown]);
 
   return (
     <article className={s.entry} style={{ height }}>

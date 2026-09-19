@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import { T, sprite, spriteSize, tex } from '@/lib/assets';
-import { medalTier, type MedalTier } from '@/data/medals.logic';
+import { frameSuffix, medalTier, type MedalTier } from '@/data/medals.logic';
 import { toRoman } from '@/lib/roman';
 import s from './MedalBadge.module.css';
 
@@ -22,29 +22,32 @@ const ANCHOR_Y = 37.5;
 const ICON = 42;
 
 type TierGeom = {
-  /** Suffixe de la texture. */ suffix: string;
   w: number; h: number;
   /** Centre de la plaque, en pixels de texture. */ cx: number; cy: number;
   /** Ligne de base du score, en pixels de texture. */ scoreY: number;
 };
 
 /**
+ * Géométrie de chaque palier ; le **nom** de la texture vient de `frameSuffix`, seule source
+ * de vérité du seuil (voir `medals.logic.ts`), pour que le cadre affiché et le chiffre romain
+ * ne puissent pas diverger.
+ *
  * Plaques relevées dans les textures : `MedalFrame` x 21→80 / y 15→74 ;
  * `MedalFrame30` et `MedalFrame50` x 23→77 / y 16→70. Les paliers IV et V n'apparaissent
  * dans aucune capture : leur centre et la ligne de base du score sont extrapolés.
  */
 const TIERS: Record<MedalTier, TierGeom> = {
-  1: { suffix: '', w: 81, h: 109, cx: 50.5, cy: 44.5, scoreY: 88.5 },
-  2: { suffix: '30', w: 90, h: 113, cx: 50, cy: 43, scoreY: 86 },
-  3: { suffix: '50', w: 94, h: 120, cx: 50, cy: 43, scoreY: 92 },
-  4: { suffix: '100', w: 98, h: 121, cx: 50, cy: 38.5, scoreY: 88 },
-  5: { suffix: '500', w: 100, h: 129, cx: 50, cy: 38.5, scoreY: 96 },
+  1: { w: 81, h: 109, cx: 50.5, cy: 44.5, scoreY: 88.5 },
+  2: { w: 90, h: 113, cx: 50, cy: 43, scoreY: 86 },
+  3: { w: 94, h: 120, cx: 50, cy: 43, scoreY: 92 },
+  4: { w: 98, h: 121, cx: 50, cy: 38.5, scoreY: 88 },
+  5: { w: 100, h: 129, cx: 50, cy: 38.5, scoreY: 96 },
 };
 
 export function MedalBadge({ score, icon, complete }: { score: number; icon: string; complete: boolean }) {
   const tier = medalTier(score);
   const g = TIERS[tier];
-  const frame = `${T.medals}/MedalFrame${complete ? 'Complete' : ''}${g.suffix}`;
+  const frame = `${T.medals}/MedalFrame${complete ? 'Complete' : ''}${frameSuffix(score)}`;
   const iconLeft = g.cx * SCALE - ICON / 2;
   const iconTop = g.cy * SCALE - ICON / 2;
 

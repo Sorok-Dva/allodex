@@ -36,12 +36,20 @@ function frame(name: string, fallback: [number, number, number, number], fill: b
 export function GameDropdown<T extends string>({ value, options, onChange, width = 126, label, className, style }: Props<T>) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const listId = useId();
   const current = options.find(o => o.value === value);
 
+  /**
+   * La liste est démontée à la fermeture : sans cela le focus retomberait sur `<body>`
+   * et la navigation au clavier repartirait du début du document. On le rend au champ,
+   * qui est l'élément `combobox` de la paire.
+   */
+  const close = () => { setOpen(false); triggerRef.current?.focus(); };
+
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
     const onDown = (e: MouseEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
     };
@@ -54,6 +62,7 @@ export function GameDropdown<T extends string>({ value, options, onChange, width
     <div ref={rootRef} className={`${s.root} ${className ?? ''}`} style={{ width: width + 23, ...style }}>
       <button
         type="button"
+        ref={triggerRef}
         className={s.field}
         style={{ ...frame('dropdown-field', [5, 6, 5, 6], true), width }}
         role="combobox"
@@ -82,7 +91,7 @@ export function GameDropdown<T extends string>({ value, options, onChange, width
                 className={s.option}
                 role="option"
                 aria-selected={o.value === value}
-                onClick={() => { onChange(o.value); setOpen(false); }}
+                onClick={() => { onChange(o.value); close(); }}
               >
                 {o.label}
               </button>

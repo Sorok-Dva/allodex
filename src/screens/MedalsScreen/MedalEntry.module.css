@@ -28,7 +28,9 @@
 .paperComplete { filter: url(#game-paper-complete); }
 .paperPlain { filter: url(#game-paper); }
 
-.badgeZone { position: absolute; left: 0; top: 0; width: 100px; height: 100%; }
+/* 106 px = le `left` du nom : les deux zones de survol de l'infobulle se touchent,
+   sinon le pointeur traverse 6 px de vide entre elles et l'infobulle clignote. */
+.badgeZone { position: absolute; left: 0; top: 0; width: 106px; height: 100%; }
 
 .name {
   position: absolute; left: 106px; right: 100px; top: 15.5px;

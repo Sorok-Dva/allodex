@@ -40,6 +40,22 @@ describe('GameDropdown', () => {
     expect(queryByRole('listbox')).toBeNull();
   });
 
+  it('rend le focus au champ après une sélection', () => {
+    const { combobox, getByRole } = setup();
+    combobox.focus();
+    fireEvent.click(combobox);
+    fireEvent.click(getByRole('option', { name: 'Pas terminé' }));
+    expect(document.activeElement).toBe(combobox);
+  });
+
+  it('rend le focus au champ après Échap', () => {
+    const { combobox } = setup();
+    combobox.focus();
+    fireEvent.click(combobox);
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(document.activeElement).toBe(combobox);
+  });
+
   it('se ferme sur Échap', () => {
     const { combobox, queryByRole } = setup();
     fireEvent.click(combobox);

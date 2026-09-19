@@ -34,7 +34,9 @@ export function MedalsList({ state }: { state: MedalsState }) {
       </header>
 
       <div className={s.viewport} ref={listRef}>
-        {state.visible.map(m => <MedalEntry key={m.id} medal={m} onTrack={state.setTracked} />)}
+        {state.visible.length === 0
+          ? <p className={s.empty}>Aucun succès.</p>
+          : state.visible.map(m => <MedalEntry key={m.id} medal={m} onTrack={state.setTracked} />)}
       </div>
 
       <GameScrollbar targetRef={listRef} thumbSize={THUMB} className={s.scrollbar} />
