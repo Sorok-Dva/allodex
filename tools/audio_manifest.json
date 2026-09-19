@@ -25,16 +25,16 @@
     "medals-open": {
       "pak": "interface",
       "entry": "SFX/Interface/Interface.bsb",
-      "subsong": 109,
-      "_name": "WindowGenericOpen",
-      "_note": "Meilleure estimation, confiance MOYENNE. Aucun script Lua sous Interface/Ingame/Medals/Scripts/*.luac (ni ailleurs dans LuaCompiledIngame_x64.pak) n'appelle PlaySound avec un nom lié à Medals/Achievement : la fenêtre Succès n'a pas de .xdb et est construite entièrement en Lua (ClassMain.luac, widgets wtFrame/mainForm génériques). Test de contrôle : des fenêtres qui ONT un son dédié dans Interface.bsb/Interface2.bsb (GuildWindowOpen, CareerOpen, ReputationOpen, HintsWindowOpen, BattleInfoWindowOpen, etc.) n'apparaissent NULLE PART non plus dans le Lua -> ces sons sont déclenchés côté moteur (C++) via le nom interne de la fenêtre, pas scriptés. Comme aucun subsong ne s'appelle Medal*/Achiev*, l'hypothèse la plus probable est que Medals retombe sur le son générique de fenêtre sans nom dédié."
+      "subsong": 33,
+      "_name": "CharScreenOpen",
+      "_note": "Choisi à l'oreille par l'utilisateur (2026-09-19) parmi l'export complet d'Interface.bsb : CharScreenOpen (subsong 33)."
     },
     "medals-close": {
       "pak": "interface",
       "entry": "SFX/Interface/Interface.bsb",
-      "subsong": 108,
-      "_name": "WindowGenericClose",
-      "_note": "Pendant de medals-open, même raisonnement. Le bouton de fermeture de la fenêtre Succès utilise le widget partagé 'cross_close' (id présent dans 77 autres fenêtres du client), donc pas de signal distinctif côté Lua non plus."
+      "subsong": 32,
+      "_name": "CharScreenClose",
+      "_note": "Choisi à l'oreille par l'utilisateur (2026-09-19) parmi l'export complet d'Interface.bsb : CharScreenClose (subsong 32)."
     },
     "ui-click": {
       "pak": "interface",
@@ -46,23 +46,88 @@
   },
   "_candidates": {
     "menu": [
-      {"subsong": 1, "name": "Credits_loop_NM", "duration": "5:32", "note": "boucle de générique de fin, probablement pas le menu"},
-      {"subsong": 2, "name": "MainMenu_DesertDreams", "duration": "2:33", "note": "choix actuel"},
-      {"subsong": 3, "name": "MainMenu_ThePowerOfMetal", "duration": "2:49", "note": "alternative la plus probable si DesertDreams ne convient pas"},
-      {"subsong": 4, "name": "MainTitle", "duration": "2:45", "note": "pourrait être l'écran de titre avant le menu plutôt que le menu lui-même"},
-      {"subsong": 5, "name": "MenuAmbient", "duration": "2:03", "note": "nom suggère une texture/ambiance de fond, pas le thème mélodique"}
+      {
+        "subsong": 1,
+        "name": "Credits_loop_NM",
+        "duration": "5:32",
+        "note": "boucle de générique de fin, probablement pas le menu"
+      },
+      {
+        "subsong": 2,
+        "name": "MainMenu_DesertDreams",
+        "duration": "2:33",
+        "note": "choix actuel"
+      },
+      {
+        "subsong": 3,
+        "name": "MainMenu_ThePowerOfMetal",
+        "duration": "2:49",
+        "note": "alternative la plus probable si DesertDreams ne convient pas"
+      },
+      {
+        "subsong": 4,
+        "name": "MainTitle",
+        "duration": "2:45",
+        "note": "pourrait être l'écran de titre avant le menu plutôt que le menu lui-même"
+      },
+      {
+        "subsong": 5,
+        "name": "MenuAmbient",
+        "duration": "2:03",
+        "note": "nom suggère une texture/ambiance de fond, pas le thème mélodique"
+      }
     ],
     "medals-open": [
-      {"subsong": 109, "name": "WindowGenericOpen", "duration": "0.308s", "note": "choix actuel, fallback générique"},
-      {"subsong": 102, "name": "UIMenuOpen", "duration": "0.761s", "note": "utilisé pour les menus/overlays plein écran, catégorie proche"},
-      {"subsong": 55, "name": "HintsWindowOpen", "duration": "2.507s", "note": "fenêtre d'aide/référence, catégorie UX proche de Succès"},
-      {"subsong": 24, "name": "CareerOpen", "duration": "1.021s", "note": "'Carrière' est thématiquement proche de progression/succès"}
+      {
+        "subsong": 109,
+        "name": "WindowGenericOpen",
+        "duration": "0.308s",
+        "note": "choix actuel, fallback générique"
+      },
+      {
+        "subsong": 102,
+        "name": "UIMenuOpen",
+        "duration": "0.761s",
+        "note": "utilisé pour les menus/overlays plein écran, catégorie proche"
+      },
+      {
+        "subsong": 55,
+        "name": "HintsWindowOpen",
+        "duration": "2.507s",
+        "note": "fenêtre d'aide/référence, catégorie UX proche de Succès"
+      },
+      {
+        "subsong": 24,
+        "name": "CareerOpen",
+        "duration": "1.021s",
+        "note": "'Carrière' est thématiquement proche de progression/succès"
+      }
     ],
     "medals-close": [
-      {"subsong": 108, "name": "WindowGenericClose", "duration": "0.237s", "note": "choix actuel, fallback générique"},
-      {"subsong": 101, "name": "UIMenuClose", "duration": "0.108s", "note": "pendant de UIMenuOpen"},
-      {"subsong": 54, "name": "HintsWindowClose", "duration": "0.238s", "note": "pendant de HintsWindowOpen"},
-      {"subsong": 23, "name": "CareerClose", "duration": "0.686s", "note": "pendant de CareerOpen"}
+      {
+        "subsong": 108,
+        "name": "WindowGenericClose",
+        "duration": "0.237s",
+        "note": "choix actuel, fallback générique"
+      },
+      {
+        "subsong": 101,
+        "name": "UIMenuClose",
+        "duration": "0.108s",
+        "note": "pendant de UIMenuOpen"
+      },
+      {
+        "subsong": 54,
+        "name": "HintsWindowClose",
+        "duration": "0.238s",
+        "note": "pendant de HintsWindowOpen"
+      },
+      {
+        "subsong": 23,
+        "name": "CareerClose",
+        "duration": "0.686s",
+        "note": "pendant de CareerOpen"
+      }
     ]
   }
 }
