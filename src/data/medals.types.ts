@@ -21,7 +21,7 @@ export type Medal = {
   progress?: { value: number; title?: string };
   finishDate?: string;        // ISO 8601 (date ou date-heure), présent si terminé
   dressCollection?: (ConditionItem & { slot: string })[];
-  medalCollection?: (ConditionItem & { medalId: string; icon: string; rank: number })[];
+  medalCollection?: { medalId: string; success: boolean; icon: string; rank: number; description?: string }[];
   tracked?: boolean;          // succès suivi par le joueur (barre de suivi HUD)
   placeholder?: boolean;      // texte/valeurs approximatifs, à défaut de capture réelle du jeu
 };

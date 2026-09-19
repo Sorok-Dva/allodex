@@ -55,7 +55,7 @@ export function MedalEntry({ medal }: { medal: Medal }) {
         {conditions.length > 0 && (
           <ul className={s.conditions}>
             {conditions.map((c, i) => (
-              <li key={i} className={c.success ? s.ok : s.ko}><span className={s.check}>✔</span>{c.description}</li>
+              <li key={i} className={c.success ? s.ok : s.ko}><span className={s.check}>✔</span>{c.description ?? ''}</li>
             ))}
           </ul>
         )}

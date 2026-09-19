@@ -645,7 +645,7 @@
     {
       "id": "connecte-avec-les-etoiles",
       "name": "Connecté avec les étoiles",
-      "description": "Restez connecté à l'Astral ouvert lors de 5 sessions d'observation stellaire.",
+      "description": "Livrez des barils d'Étherium brut, 5 fois.",
       "icon": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster",
       "categoryIndex": 3,
       "subCategoryIndex": 0,
@@ -653,7 +653,7 @@
         {
           "completeProgress": 5,
           "name": "Connecté avec les étoiles",
-          "description": "Restez connecté à l'Astral ouvert lors de 5 sessions d'observation stellaire.",
+          "description": "Livrez des barils d'Étherium brut, 5 fois.",
           "score": 20,
           "image": "Interface/Icons/Special/VeteranRewards/VeteranRankMaster"
         }
@@ -668,7 +668,7 @@
     {
       "id": "proprietaire",
       "name": "Propriétaire",
-      "description": "Devenez propriétaire de 10 Allods personnels.",
+      "description": "Capturez 10 allods d'échange.",
       "icon": "Interface/Icons/Special/Currency/DiamondMedal",
       "categoryIndex": 3,
       "subCategoryIndex": 0,
@@ -676,7 +676,7 @@
         {
           "completeProgress": 10,
           "name": "Propriétaire",
-          "description": "Devenez propriétaire de 10 Allods personnels.",
+          "description": "Capturez 10 allods d'échange.",
           "score": 30
         }
       ],
@@ -689,7 +689,7 @@
     {
       "id": "parfait-astral",
       "name": "Parfait !",
-      "description": "Obtenez un résultat parfait à l'ensemble des médailles Astrales suivies.",
+      "description": "Livrez des Cristaux éthérés.",
       "icon": "Interface/Icons/Misc/Event/GoldMedal",
       "categoryIndex": 3,
       "subCategoryIndex": 0,
@@ -697,7 +697,7 @@
         {
           "completeProgress": 1,
           "name": "Parfait !",
-          "description": "Obtenez un résultat parfait à l'ensemble des médailles Astrales suivies.",
+          "description": "Livrez des Cristaux éthérés.",
           "score": 10
         }
       ],
@@ -705,42 +705,36 @@
       "medalCollection": [
         {
           "medalId": "astral-medaille-1",
-          "description": "Médaille Astrale n° 1",
           "success": false,
           "icon": "Interface/Icons/Misc/Event/GoldMedal",
           "rank": 1
         },
         {
           "medalId": "astral-medaille-2",
-          "description": "Médaille Astrale n° 2",
           "success": false,
           "icon": "Interface/Icons/Misc/Event/GoldMedal",
           "rank": 2
         },
         {
           "medalId": "astral-medaille-3",
-          "description": "Médaille Astrale n° 3",
           "success": false,
           "icon": "Interface/Icons/Misc/Event/GoldMedal",
           "rank": 3
         },
         {
           "medalId": "astral-medaille-4",
-          "description": "Médaille Astrale n° 4",
           "success": false,
           "icon": "Interface/Icons/Misc/Event/GoldMedal",
           "rank": 4
         },
         {
           "medalId": "astral-medaille-5",
-          "description": "Médaille Astrale n° 5",
           "success": false,
           "icon": "Interface/Icons/Misc/Event/GoldMedal",
           "rank": 5
         },
         {
           "medalId": "astral-medaille-6",
-          "description": "Médaille Astrale n° 6",
           "success": false,
           "icon": "Interface/Icons/Misc/Event/GoldMedal",
           "rank": 6
@@ -762,7 +756,8 @@
           "score": 10
         }
       ],
-      "currentRank": 0
+      "currentRank": 0,
+      "placeholder": true
     },
     {
       "id": "astralographiste",

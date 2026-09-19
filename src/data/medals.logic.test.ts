@@ -102,13 +102,13 @@ describe('parseDataset', () => {
     expect(() => parseDataset({ ...ds, medals: [medal({ id: 'dup' }), medal({ id: 'dup' })] })).toThrow(/id dupliqué/);
   });
 
-  it('accepte tracked, placeholder et un medalCollection enrichi (medalId/success/icon/rank)', () => {
+  it('accepte tracked, placeholder et un medalCollection enrichi (medalId/success/icon/rank), description optionnelle', () => {
     const enriched = medal({
       tracked: true,
       placeholder: true,
       medalCollection: [
         { medalId: 'm1', success: true, icon: 'i', rank: 1, description: 'd' },
-        { medalId: 'm2', success: false, icon: 'i', rank: 2, description: 'd' },
+        { medalId: 'm2', success: false, icon: 'i', rank: 2 },
       ],
     });
     expect(parseDataset({ ...ds, medals: [enriched] }).medals[0].tracked).toBe(true);
@@ -116,9 +116,16 @@ describe('parseDataset', () => {
 
   it('rejette un medalCollection avec rank 0', () => {
     const bad = medal({
-      medalCollection: [{ medalId: 'm1', success: true, icon: 'i', rank: 0, description: 'd' }],
+      medalCollection: [{ medalId: 'm1', success: true, icon: 'i', rank: 0 }],
     });
     expect(() => parseDataset({ ...ds, medals: [bad] })).toThrow(/medalCollection/);
+  });
+
+  it('reproduit le texte exact du succès Astral « Connecté avec les étoiles » (capture du jeu)', () => {
+    const parsed = parseDataset(mock);
+    const m = parsed.medals.find(x => x.id === 'connecte-avec-les-etoiles');
+    expect(m?.description).toBe("Livrez des barils d'Étherium brut, 5 fois.");
+    expect(m?.ranks[0].description).toBe("Livrez des barils d'Étherium brut, 5 fois.");
   });
 });
 

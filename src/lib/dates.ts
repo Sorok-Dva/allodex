@@ -1,3 +1,4 @@
+// Aucune conversion de fuseau horaire : la chaîne ISO est affichée littéralement (heure du jeu telle que capturée).
 export function formatGameDate(iso: string): string {
   const [y, m, d] = iso.slice(0, 10).split('-');
   return `${d}.${m}.${y}`;
