@@ -77,6 +77,10 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     }
   }, []);
 
+  // Sans ça, un fondu en cours continuerait de muter le volume des <audio> après le
+  // démontage du provider (aucun composant ne les possède plus).
+  useEffect(() => stopFade, [stopFade]);
+
   // Fondu linéaire par rAF : `toEl` monte de 0 (ou reste à `MUSIC_VOLUME` si rien à
   // fondre) pendant que `fromEl` redescend à 0, puis se met en pause.
   const crossfade = useCallback((toEl: HTMLAudioElement, fromEl: HTMLAudioElement | null, crossfadeMs: number) => {
@@ -91,7 +95,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     }
     toEl.volume = 0;
     toEl.play().catch(() => {});
-    const fromStart = fromEl.volume || MUSIC_VOLUME;
+    const fromStart = fromEl.paused ? MUSIC_VOLUME : fromEl.volume;
     const start = performance.now();
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / crossfadeMs);

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
 import { AudioProvider, MUTE_KEY } from './AudioProvider';
 import { useGameAudio } from './useGameAudio';
@@ -34,6 +34,27 @@ beforeEach(() => {
   HTMLMediaElement.prototype.pause = vi.fn();
   HTMLMediaElement.prototype.load = vi.fn();
 });
+
+// Filet de sécurité pour les tests à horloge/rAF factices ci-dessous : on revient
+// toujours à des timers réels et des globales non stubées, même si un test échoue.
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
+
+/**
+ * Installe une horloge factice pour `performance.now()` et un `requestAnimationFrame`
+ * asservi au fake timer de vitest (un `setTimeout` de 16 ms qui avance l'horloge lui-
+ * même) : `vi.useFakeTimers()` seul ne fait pas avancer `performance.now()` en
+ * lock-step avec `vi.advanceTimersByTime()`, ce qui bloquerait le fondu à `t≈0`.
+ */
+function useFakeAnimationClock() {
+  vi.useFakeTimers();
+  let clock = 0;
+  vi.spyOn(performance, 'now').mockImplementation(() => clock);
+  vi.stubGlobal('requestAnimationFrame', ((cb: (time: number) => void) => setTimeout(() => { clock += 16; cb(clock); }, 16)) as unknown as typeof requestAnimationFrame);
+  vi.stubGlobal('cancelAnimationFrame', ((id: number) => clearTimeout(id)) as unknown as typeof cancelAnimationFrame);
+}
 
 describe('AudioProvider / useGameAudio', () => {
   it("ne joue rien avant un geste utilisateur", () => {
@@ -97,5 +118,43 @@ describe('AudioProvider / useGameAudio', () => {
     setup();
     act(() => { api!.setTrack('ambient'); });
     expect(api!.track).toBe('ambient');
+  });
+
+  it("termine le fondu croisé après ~1500 ms : la sortante se met en pause à volume 0, l'entrante atteint MUSIC_VOLUME", () => {
+    useFakeAnimationClock();
+    const { getByTestId } = setup();
+    const menuEl = getByTestId('music-a') as HTMLAudioElement;
+    const ambientEl = getByTestId('music-b') as HTMLAudioElement;
+    const pauseSpy = vi.spyOn(menuEl, 'pause');
+
+    act(() => { api!.setTrack('menu'); });
+    act(() => { window.dispatchEvent(new Event('pointerdown')); }); // geste -> menu démarre réellement
+    act(() => { api!.setTrack('ambient'); }); // lance le fondu croisé menu -> ambient
+
+    act(() => { vi.advanceTimersByTime(1600); }); // dépasse les 1500 ms par défaut
+
+    expect(ambientEl.volume).toBeCloseTo(0.3, 5); // MUSIC_VOLUME
+    expect(menuEl.volume).toBeCloseTo(0, 5);
+    expect(pauseSpy).toHaveBeenCalled();
+  });
+
+  it('annule le fondu en cours (aucune mutation de volume après) quand AudioProvider est démonté', () => {
+    useFakeAnimationClock();
+    const { getByTestId, unmount } = setup();
+    const ambientEl = getByTestId('music-b') as HTMLAudioElement;
+
+    act(() => { api!.setTrack('menu'); });
+    act(() => { window.dispatchEvent(new Event('pointerdown')); });
+    act(() => { api!.setTrack('ambient'); });
+
+    act(() => { vi.advanceTimersByTime(750); }); // à mi-parcours du fondu de 1500 ms
+    const midVolume = ambientEl.volume;
+    expect(midVolume).toBeGreaterThan(0);
+    expect(midVolume).toBeLessThan(0.3);
+
+    unmount(); // doit annuler le rAF/tick en cours (`useEffect(() => stopFade, [stopFade])`)
+
+    act(() => { vi.advanceTimersByTime(3000); }); // laisserait le fondu se terminer si non annulé
+    expect(ambientEl.volume).toBe(midVolume);
   });
 });
