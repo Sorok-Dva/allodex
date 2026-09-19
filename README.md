@@ -26,6 +26,7 @@ Les assets extraits sous `public/game/` appartiennent à My.Games et ne sont pas
 ## État du POC (2026-09)
 - `/` : intro (première visite), puis menu vidéo avec, en bas à droite, la barre de boutons du jeu (voir « Itération 2 » ci-dessous — le panneau de connexion et le champ de recherche du POC v1 ont été retirés).
 - `/succes` : panneau Succès fidèle au jeu, données mockées (`src/data/medals.mock.json`). La progression et les paliers restent fictifs.
+- `/chroniques` : archive des écrans de lancement, version par version, avec leur thème musical (voir « Chroniques » ci-dessous).
 - Non fait : comptes, addon d'export, import de progression, icônes réelles de tous les succès.
 
 ## Audio
@@ -48,8 +49,44 @@ Côté site, un unique moteur audio (`src/lib/audio/AudioProvider.tsx` +
 utilisateur (politique d'autoplay des navigateurs), la musique change de piste avec
 un fondu croisé, et l'état muet est persisté dans `localStorage`
 (`allodex:audio-muted`) — jamais relancé automatiquement si l'utilisateur avait coupé
-le son. L'interrupteur haut-parleur (bandeau du bas sur `/`, coin bas-droit sur
+le son. Le même moteur joue aussi les sources hors index (`playExternal`, utilisé par
+les thèmes des Chroniques) : `pauseMusic` met la piste du site en pause sans oublier sa
+position, `resumeAmbient` la reprend en fondu. L'interrupteur haut-parleur (bandeau du bas sur `/`, coin bas-droit sur
 `/succes`) coupe la sortie (`.muted`) sans jamais mettre en pause la musique.
+
+## Chroniques
+
+`/chroniques` présente, version par version (1.1 → 17.0), l'écran de lancement du jeu
+en plein écran — la vidéo du menu en boucle quand le client en avait une, sinon le fond
+statique — et le thème musical du menu de cette version, jouable. La version affichée
+vit dans l'URL (`/chroniques?v=8.0`) ; la frise de pilules en bas d'écran, les touches
+← → et les flèches du jeu en changent, avec un fondu croisé de 600 ms sur l'image
+**et** sur la musique. Pendant la visite, la musique d'ambiance du site est mise en
+pause et reprend là où elle en était à la sortie (croix en haut à droite). Une version
+dont le client n'était pas monté à l'extraction s'affiche sur le fond de secours
+assombri, avec la mention « Média non extrait ».
+
+Les médias viennent de `tools/extract_archive.py`, qui écrit — comme le reste de
+`public/game/`, donc **non versionné** — `public/game/archive/<version>/`
+(`background.png` ou `menu.{webm,mp4}` + `intro.{webm,mp4}`, `theme.{ogg,mp3}`) et
+l'index `public/game/archive.json`.
+
+**Ajouter une version.** Éditer `tools/clients_manifest.json` :
+1. Déclarer le client dans `clients` (`root` : chemin WSL du client archivé, en lecture
+   seule ; `game_version` pour mémoire).
+2. Ajouter une entrée dans `versions` avec `version`, `label`, `client`, puis soit
+   `video` (`Video/<N>_0Events/MainMenu/{Intro,MainMenu}.ogv`), soit `background`
+   (pack + entrée `(UITexture).bin`, ou `layers` pour les menus composés des clients
+   1.x), plus `theme` (banque `SFX/Music/Music_Menu.fsb` ; `prefer` force un subsong par
+   son nom, sinon le choix est `MainMenu*` > `MainTitle` > `Menu*` > la plus longue).
+   `note` et `theme_note` sont repris tels quels par la page.
+3. Extraire cette seule version :
+
+        python3 tools/extract_archive.py --only 8.0          # --force pour réécrire
+        python3 tools/extract_archive.py --only 8.0 --skip-video   # sans transcodage vidéo
+
+Un disque non monté n'est pas une erreur : l'outil avertit, laisse `media: null` dans
+l'index et conserve les versions déjà extraites (il est idempotent).
 
 ## Itération 2 (2026-09)
 

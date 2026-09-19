@@ -138,6 +138,81 @@ describe('AudioProvider / useGameAudio', () => {
     expect(pauseSpy).toHaveBeenCalled();
   });
 
+  it("ne sort jamais du domaine [0, 1] quand rAF rappelle avec un horodatage antérieur au départ du fondu", () => {
+    // Le timestamp passé à un rAF est celui du **début de la frame** : il peut précéder
+    // le `performance.now()` lu au lancement du fondu, d'où un `t` négatif et un volume
+    // hors domaine (le navigateur lève alors une IndexSizeError). Constaté en vrai sur
+    // les fondus courts (600 ms) de la page Chroniques.
+    vi.useFakeTimers();
+    let clock = 1000;
+    vi.spyOn(performance, 'now').mockImplementation(() => clock);
+    vi.stubGlobal('requestAnimationFrame', ((cb: (time: number) => void) => setTimeout(() => { clock += 16; cb(clock - 50); }, 16)) as unknown as typeof requestAnimationFrame);
+    vi.stubGlobal('cancelAnimationFrame', ((id: number) => clearTimeout(id)) as unknown as typeof cancelAnimationFrame);
+
+    const { getByTestId } = setup();
+    const menuEl = getByTestId('music-a') as HTMLAudioElement;
+    const ambientEl = getByTestId('music-b') as HTMLAudioElement;
+    act(() => { window.dispatchEvent(new Event('pointerdown')); });
+    act(() => { api!.setTrack('ambient', { crossfadeMs: 600 }); });
+    act(() => { vi.advanceTimersByTime(700); });
+
+    expect(ambientEl.volume).toBeGreaterThanOrEqual(0);
+    expect(menuEl.volume).toBeGreaterThanOrEqual(0);
+  });
+
+  it("playExternal joue une source hors index sans effacer la piste du site", () => {
+    useFakeAnimationClock();
+    const { getByTestId } = setup();
+    const menuEl = getByTestId('music-a') as HTMLAudioElement;
+    const themeEl = getByTestId('music-b') as HTMLAudioElement;
+
+    act(() => { window.dispatchEvent(new Event('pointerdown')); }); // démarre `menu` sur A
+    act(() => { api!.pauseMusic(); });
+    expect(api!.paused).toBe(true);
+
+    act(() => { api!.playExternal('archive:8.0', { ogg: '/game/archive/8.0/theme.ogg', mp3: '/game/archive/8.0/theme.mp3' }, { loop: true, crossfadeMs: 600 }); });
+    expect(api!.external).toBe('archive:8.0');
+    expect(api!.track).toBe('menu');        // mémorisée pour la sortie de la page
+    expect(themeEl.querySelector('source')?.getAttribute('src')).toBe('/game/archive/8.0/theme.ogg');
+    expect(themeEl.loop).toBe(true);
+
+    act(() => { vi.advanceTimersByTime(700); });
+    expect(themeEl.volume).toBeCloseTo(0.3, 5);
+    expect(menuEl.volume).toBeCloseTo(0, 5);
+  });
+
+  it("resumeAmbient revient à la piste du site sans la rembobiner", () => {
+    useFakeAnimationClock();
+    const { getByTestId } = setup();
+    const menuEl = getByTestId('music-a') as HTMLAudioElement;
+    const themeEl = getByTestId('music-b') as HTMLAudioElement;
+    // jsdom ne gère pas `currentTime` : on l'instrumente pour vérifier l'absence de rembobinage.
+    let position = 0;
+    Object.defineProperty(menuEl, 'currentTime', { get: () => position, set: (v: number) => { position = v; }, configurable: true });
+
+    act(() => { window.dispatchEvent(new Event('pointerdown')); });
+    act(() => { api!.pauseMusic(); });
+    position = 42;
+    act(() => { api!.playExternal('archive:8.0', { ogg: '/a.ogg', mp3: '/a.mp3' }, { loop: true, crossfadeMs: 600 }); });
+    act(() => { vi.advanceTimersByTime(700); });
+
+    const pauseSpy = vi.spyOn(themeEl, 'pause');
+    act(() => { api!.resumeAmbient({ crossfadeMs: 600 }); });
+    act(() => { vi.advanceTimersByTime(700); });
+
+    expect(api!.external).toBeNull();
+    expect(api!.paused).toBe(false);
+    expect(position).toBe(42);
+    expect(menuEl.volume).toBeCloseTo(0.3, 5);
+    expect(pauseSpy).toHaveBeenCalled();
+  });
+
+  it('resumeAmbient ne joue rien si le site n\'avait pas encore de piste', () => {
+    setup();
+    act(() => { api!.resumeAmbient(); });
+    expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+  });
+
   it('annule le fondu en cours (aucune mutation de volume après) quand AudioProvider est démonté', () => {
     useFakeAnimationClock();
     const { getByTestId, unmount } = setup();

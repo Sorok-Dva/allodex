@@ -1,0 +1,145 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, fireEvent } from '@testing-library/react';
+import type { ArchiveEntry } from '@/lib/assets';
+import { ChroniclesScreen } from './ChroniclesScreen';
+
+const ENTRIES: ArchiveEntry[] = [
+  {
+    version: '1.1', label: 'Allods Online 1.1', media: 'image', background: 'background.png',
+    note: 'écran recomposé', theme: { name: 'MainTitle', duration: 168.046, ogg: 'theme.ogg', mp3: 'theme.mp3' },
+  },
+  { version: '5.0', label: 'Allods Online 5.0', media: null },
+  {
+    version: '8.0', label: 'Allods Online 8.0', media: 'image', background: 'background.png',
+    theme: { name: 'MainMenu_Immortality', duration: 182.687, ogg: 'theme.ogg', mp3: 'theme.mp3' },
+  },
+  {
+    version: '16.0', label: 'Allods Online 16.0', media: 'video', video: { webm: 'menu.webm', mp4: 'menu.mp4' },
+    theme: { name: 'MainMenu_ThePowerOfMetal', duration: 169.846, ogg: 'theme.ogg', mp3: 'theme.mp3' },
+  },
+];
+
+vi.mock('@/lib/assets', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/lib/assets')>();
+  return { ...actual, archiveEntries: () => ENTRIES };
+});
+
+const navigateSpy = vi.fn();
+vi.mock('@/lib/router', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/lib/router')>();
+  return {
+    ...actual,
+    navigate: (...args: Parameters<typeof actual.navigate>) => { navigateSpy(...args); actual.navigate(...args); },
+  };
+});
+
+const playSfx = vi.fn();
+const playExternal = vi.fn();
+const pauseMusic = vi.fn();
+const resumeAmbient = vi.fn();
+vi.mock('@/lib/audio/useGameAudio', () => ({
+  useGameAudio: () => ({
+    muted: false, track: 'ambient', external: null, paused: false, ready: true,
+    toggleMuted: vi.fn(), setTrack: vi.fn(), playSfx, playExternal, pauseMusic, resumeAmbient,
+  }),
+}));
+
+beforeEach(() => {
+  [navigateSpy, playSfx, playExternal, pauseMusic, resumeAmbient].forEach(fn => fn.mockClear());
+  HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined);
+  HTMLMediaElement.prototype.pause = vi.fn();
+  HTMLMediaElement.prototype.load = vi.fn();
+});
+
+function setup(search = '?v=8.0') {
+  window.history.pushState(null, '', `/chroniques${search}`);
+  return render(<ChroniclesScreen />);
+}
+
+describe('ChroniclesScreen — frise des versions', () => {
+  it('rend une pilule par version et met en surbrillance celle de `?v=`', () => {
+    const { getAllByTestId } = setup();
+    const pills = getAllByTestId('version-pill');
+    expect(pills).toHaveLength(ENTRIES.length);
+    expect(pills.filter(el => el.getAttribute('aria-current') === 'true').map(el => el.textContent)).toEqual(['8.0']);
+  });
+
+  it('affiche le cartouche de la version active et sa note', () => {
+    const { getByText } = setup('?v=1.1');
+    expect(getByText('Allods Online 1.1')).toBeTruthy();
+    expect(getByText('écran recomposé')).toBeTruthy();
+  });
+
+  it('ouvre sur la version la plus récente quand `?v=` est absent ou inconnu', () => {
+    const { getByText, unmount } = setup('');
+    expect(getByText('Allods Online 16.0')).toBeTruthy();
+    unmount();
+    expect(setup('?v=42.0').getByText('Allods Online 16.0')).toBeTruthy();
+  });
+
+  it('→ passe à la version suivante et met `?v=` à jour', () => {
+    const { getByText } = setup();
+    fireEvent.keyDown(window, { key: 'ArrowRight' });
+    expect(window.location.search).toBe('?v=16.0');
+    expect(getByText('Allods Online 16.0')).toBeTruthy();
+  });
+
+  it('← revient à la version précédente', () => {
+    const { getByText } = setup();
+    fireEvent.keyDown(window, { key: 'ArrowLeft' });
+    expect(window.location.search).toBe('?v=5.0');
+    expect(getByText('Allods Online 5.0')).toBeTruthy();
+  });
+
+  it('ne dépasse pas les extrémités de la frise', () => {
+    setup('?v=1.1');
+    fireEvent.keyDown(window, { key: 'ArrowLeft' });
+    expect(window.location.search).toBe('?v=1.1');
+  });
+
+  it('affiche « Média non extrait » pour une version sans média', () => {
+    const { getByText } = setup('?v=5.0');
+    expect(getByText('Média non extrait')).toBeTruthy();
+  });
+});
+
+describe('ChroniclesScreen — audio et fermeture', () => {
+  it("joue « medals-open » et met l'ambiance du site en pause au montage", () => {
+    setup();
+    expect(playSfx).toHaveBeenCalledWith('medals-open');
+    expect(pauseMusic).toHaveBeenCalled();
+  });
+
+  it('joue le thème de la version active via le moteur audio', () => {
+    setup();
+    expect(playExternal).toHaveBeenCalledWith(
+      'archive:8.0',
+      { ogg: '/game/archive/8.0/theme.ogg', mp3: '/game/archive/8.0/theme.mp3' },
+      expect.objectContaining({ loop: true }),
+    );
+  });
+
+  it("reprend l'ambiance du site au démontage", () => {
+    const { unmount } = setup();
+    expect(resumeAmbient).not.toHaveBeenCalled();
+    unmount();
+    expect(resumeAmbient).toHaveBeenCalled();
+  });
+
+  it('met le thème en pause puis le relance par le bouton du lecteur', () => {
+    const { getByLabelText } = setup();
+    fireEvent.click(getByLabelText('Mettre le thème en pause'));
+    expect(pauseMusic).toHaveBeenCalledTimes(2); // montage + bouton
+    playExternal.mockClear();
+    fireEvent.click(getByLabelText('Écouter le thème'));
+    expect(playExternal).toHaveBeenCalledWith('archive:8.0', expect.anything(), expect.anything());
+  });
+
+  it('la croix joue « medals-close » et revient à l\'accueil', () => {
+    const { getByLabelText } = setup();
+    playSfx.mockClear();
+    fireEvent.click(getByLabelText('Fermer'));
+    expect(playSfx).toHaveBeenCalledWith('medals-close');
+    expect(navigateSpy).toHaveBeenCalledWith('/');
+  });
+});

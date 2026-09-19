@@ -1,0 +1,73 @@
+/* Frise des versions : pilules du jeu (28 px de haut, hauteur native du sprite) entre
+   les deux flèches d'ascenseur, pivotées d'un quart de tour vers la gauche/la droite. */
+.timeline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 96px);
+}
+
+.arrow {
+  width: 22px;
+  height: 23px;
+  flex: none;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  /* `scroll-up` pivoté d'un quart de tour vers la gauche pointe à gauche, `scroll-down`
+     à droite : le jeu n'a pas de flèches horizontales. */
+  transform: rotate(-90deg);
+}
+.arrow:not(:disabled):hover { filter: brightness(1.15); }
+
+.rail {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  padding: 3px 0;
+}
+.rail::-webkit-scrollbar { width: 0; height: 0; }
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.pill {
+  position: relative;
+  display: block;
+  width: 88px;
+  height: 28px;
+  flex: none;
+  cursor: inherit;
+}
+.pillSkin {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+  border-color: transparent;   /* bordure, tranches et image : `nineSlice`, en style en ligne */
+  transition: filter 80ms linear;
+}
+.pill:hover .pillSkin { filter: brightness(1.12); }
+
+.pillLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 1px;
+  font-size: 14px;
+  color: #b0bf88;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
+}
+/* Version affichée : pilule ouverte (le jeu remplace le liseré or par un liseré vert),
+   libellé or et halo — sans ce renfort la pilule active se lisait moins bien que ses
+   voisines, alors qu'elle doit ressortir. */
+.pillActive .pillSkin { filter: brightness(1.22) drop-shadow(0 0 3px rgba(232, 200, 119, 0.5)); }
+.pillActive:hover .pillSkin { filter: brightness(1.32) drop-shadow(0 0 3px rgba(232, 200, 119, 0.6)); }
+.pillActive .pillLabel { color: var(--gold); }

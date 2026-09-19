@@ -2,16 +2,33 @@ import { createContext, useCallback, useEffect, useMemo, useRef, useState, type 
 import { audioMeta, audioSrc } from '@/lib/assets';
 
 export type TrackName = 'menu' | 'ambient';
+/** Source musicale hors `audio.json` (thème d'une version archivée, par exemple). */
+export type TrackSource = { ogg: string; mp3: string };
 
 export type GameAudioState = {
   muted: boolean;
+  /** Piste du site (`menu`/`ambient`) mémorisée, même pendant une source externe. */
   track: TrackName | null;
+  /** Identifiant de la source externe en cours, `null` si le site joue sa propre piste. */
+  external: string | null;
+  /** Vrai quand la musique a été mise en pause (`pauseMusic`), sans oublier sa position. */
+  paused: boolean;
   ready: boolean;
 };
 
 export type GameAudio = GameAudioState & {
   toggleMuted: () => void;
   setTrack: (name: TrackName, opts?: { crossfadeMs?: number }) => void;
+  /**
+   * Joue une source arbitraire sur le moteur musical, avec le même fondu croisé que
+   * `setTrack`. Rappelée avec le même `id`, elle reprend la lecture là où
+   * `pauseMusic` l'avait laissée au lieu de repartir du début.
+   */
+  playExternal: (id: string, src: TrackSource, opts?: { loop?: boolean; crossfadeMs?: number }) => void;
+  /** Met la musique en pause en conservant sa position (et la piste du site en mémoire). */
+  pauseMusic: () => void;
+  /** Revient à la piste du site là où elle en était, en fondu depuis la source externe. */
+  resumeAmbient: (opts?: { crossfadeMs?: number }) => void;
   playSfx: (name: string, volume?: number) => void;
 };
 
@@ -33,8 +50,7 @@ function writeMuted(storage: Storage, value: boolean) {
 }
 
 /** Pose les `<source>` ogg puis mp3 sur un élément musique et recharge le média. */
-function assignTrack(el: HTMLAudioElement, name: TrackName) {
-  const src = audioSrc(name);
+function assignSource(el: HTMLAudioElement, src: TrackSource, loop: boolean) {
   el.innerHTML = '';
   const ogg = document.createElement('source');
   ogg.src = src.ogg;
@@ -44,13 +60,19 @@ function assignTrack(el: HTMLAudioElement, name: TrackName) {
   mp3.type = 'audio/mpeg';
   el.appendChild(ogg);
   el.appendChild(mp3);
-  el.loop = audioMeta(name)?.loop ?? false;
+  el.loop = loop;
   el.load();
+}
+
+function assignTrack(el: HTMLAudioElement, name: TrackName) {
+  assignSource(el, audioSrc(name), audioMeta(name)?.loop ?? false);
 }
 
 export function AudioProvider({ children, storage = window.localStorage }: { children: ReactNode; storage?: Storage }) {
   const [muted, setMutedState] = useState<boolean>(() => readMuted(storage));
   const [track, setTrackState] = useState<TrackName | null>(null);
+  const [external, setExternalState] = useState<string | null>(null);
+  const [paused, setPausedState] = useState(false);
   const [ready, setReady] = useState(false);
 
   // Deux éléments <audio> pour la musique : celui qui joue actuellement et celui qui
@@ -60,10 +82,17 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   const activeRef = useRef<HTMLAudioElement | null>(null);
   const mutedRef = useRef(muted);
   const trackRef = useRef<TrackName | null>(null);
+  const externalRef = useRef<string | null>(null);
+  const pausedRef = useRef(false);
   const gestureRef = useRef(false);
   const fadeFrameRef = useRef<number | null>(null);
 
   mutedRef.current = muted;
+
+  const setPaused = useCallback((value: boolean) => {
+    pausedRef.current = value;
+    setPausedState(value);
+  }, []);
 
   useEffect(() => {
     activeRef.current = musicRefA.current;
@@ -82,11 +111,13 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   useEffect(() => stopFade, [stopFade]);
 
   // Fondu linéaire par rAF : `toEl` monte de 0 (ou reste à `MUSIC_VOLUME` si rien à
-  // fondre) pendant que `fromEl` redescend à 0, puis se met en pause.
-  const crossfade = useCallback((toEl: HTMLAudioElement, fromEl: HTMLAudioElement | null, crossfadeMs: number) => {
+  // fondre) pendant que `fromEl` redescend à 0, puis se met en pause. `restart: false`
+  // reprend `toEl` à sa position courante (retour à l'ambiance du site, reprise après
+  // pause) au lieu de le rembobiner.
+  const crossfade = useCallback((toEl: HTMLAudioElement, fromEl: HTMLAudioElement | null, crossfadeMs: number, opts: { restart?: boolean } = {}) => {
     stopFade();
     toEl.muted = mutedRef.current;
-    toEl.currentTime = 0;
+    if (opts.restart !== false) toEl.currentTime = 0;
     if (!fromEl || crossfadeMs <= 0) {
       toEl.volume = MUSIC_VOLUME;
       toEl.play().catch(() => {});
@@ -98,7 +129,10 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     const fromStart = fromEl.paused ? MUSIC_VOLUME : fromEl.volume;
     const start = performance.now();
     const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / crossfadeMs);
+      // `now` est l'horodatage du **début de la frame** : il peut précéder le
+      // `performance.now()` lu juste avant, d'où un `t` négatif et un volume hors
+      // domaine refusé par le navigateur si on ne borne pas des deux côtés.
+      const t = Math.min(1, Math.max(0, (now - start) / crossfadeMs));
       toEl.volume = MUSIC_VOLUME * t;
       fromEl.volume = fromStart * (1 - t);
       if (t < 1) {
@@ -111,16 +145,31 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     fadeFrameRef.current = requestAnimationFrame(tick);
   }, [stopFade]);
 
+  /** Reprend l'élément actif là où il en était (sortie de `pauseMusic`). */
+  const resumeActive = useCallback(() => {
+    setPaused(false);
+    const el = activeRef.current;
+    if (!el || !gestureRef.current || mutedRef.current) return;
+    el.muted = mutedRef.current;
+    el.volume = MUSIC_VOLUME;
+    el.play().catch(() => {});
+  }, [setPaused]);
+
   const setTrack = useCallback((name: TrackName, opts: { crossfadeMs?: number } = {}) => {
-    if (trackRef.current === name) return;
+    const sameTrack = trackRef.current === name && externalRef.current === null;
+    if (sameTrack && !pausedRef.current) return;
+    if (sameTrack) { resumeActive(); return; }
     const crossfadeMs = opts.crossfadeMs ?? DEFAULT_CROSSFADE_MS;
-    const hadTrack = trackRef.current !== null;
-    const fromEl = hadTrack ? activeRef.current : null;
+    const hadMusic = trackRef.current !== null || externalRef.current !== null;
+    const fromEl = hadMusic ? activeRef.current : null;
     const toEl = fromEl === musicRefA.current ? musicRefB.current : musicRefA.current;
     if (!toEl) return;
     assignTrack(toEl, name);
     trackRef.current = name;
     setTrackState(name);
+    externalRef.current = null;
+    setExternalState(null);
+    setPaused(false);
     activeRef.current = toEl;
     if (gestureRef.current && !mutedRef.current) {
       crossfade(toEl, fromEl, fromEl ? crossfadeMs : 0);
@@ -130,7 +179,51 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
       toEl.muted = mutedRef.current;
       toEl.volume = fromEl ? 0 : MUSIC_VOLUME;
     }
-  }, [crossfade]);
+  }, [crossfade, resumeActive, setPaused]);
+
+  // Le thème d'une version des Chroniques n'est pas une piste du site : il ne figure
+  // pas dans `audio.json` et ne doit pas effacer `track`, qu'on retrouve en sortant de
+  // la page (`resumeAmbient`). Les deux éléments <audio> suffisent : l'un porte la
+  // piste du site en pause, l'autre la source externe.
+  const playExternal = useCallback((id: string, src: TrackSource, opts: { loop?: boolean; crossfadeMs?: number } = {}) => {
+    if (externalRef.current === id) { resumeActive(); return; }
+    const crossfadeMs = opts.crossfadeMs ?? DEFAULT_CROSSFADE_MS;
+    const hadMusic = trackRef.current !== null || externalRef.current !== null;
+    const fromEl = hadMusic ? activeRef.current : null;
+    const toEl = fromEl === musicRefA.current ? musicRefB.current : musicRefA.current;
+    if (!toEl) return;
+    assignSource(toEl, src, opts.loop ?? false);
+    externalRef.current = id;
+    setExternalState(id);
+    setPaused(false);
+    activeRef.current = toEl;
+    if (gestureRef.current && !mutedRef.current) {
+      crossfade(toEl, fromEl, fromEl ? crossfadeMs : 0);
+    } else {
+      toEl.muted = mutedRef.current;
+      toEl.volume = fromEl ? 0 : MUSIC_VOLUME;
+    }
+  }, [crossfade, resumeActive, setPaused]);
+
+  const pauseMusic = useCallback(() => {
+    stopFade();
+    setPaused(true);
+    activeRef.current?.pause();
+  }, [setPaused, stopFade]);
+
+  const resumeAmbient = useCallback((opts: { crossfadeMs?: number } = {}) => {
+    if (trackRef.current === null) return;      // rien à reprendre (entrée directe sur la page)
+    const fromEl = externalRef.current !== null ? activeRef.current : null;
+    const toEl = fromEl ? (fromEl === musicRefA.current ? musicRefB.current : musicRefA.current) : activeRef.current;
+    if (!toEl) return;
+    externalRef.current = null;
+    setExternalState(null);
+    setPaused(false);
+    activeRef.current = toEl;
+    if (!gestureRef.current || mutedRef.current) { toEl.muted = mutedRef.current; return; }
+    // `restart: false` : la piste du site repart là où la visite l'avait laissée.
+    crossfade(toEl, fromEl, fromEl ? (opts.crossfadeMs ?? DEFAULT_CROSSFADE_MS) : 0, { restart: false });
+  }, [crossfade, setPaused]);
 
   // Rien ne joue avant un geste utilisateur (politique d'autoplay). Au premier
   // pointerdown/keydown : si le son est coupé au chargement, on ne démarre jamais rien
@@ -141,7 +234,18 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
       gestureRef.current = true;
       window.removeEventListener('pointerdown', onGesture);
       window.removeEventListener('keydown', onGesture);
-      if (mutedRef.current) return;
+      if (mutedRef.current || pausedRef.current) return;
+      // Entrée directe sur les Chroniques : c'est le thème de la version, déjà chargé,
+      // qui démarre — surtout pas la piste `menu` du site par-dessus.
+      if (externalRef.current !== null) {
+        const el = activeRef.current;
+        if (el) {
+          el.muted = mutedRef.current;
+          el.volume = MUSIC_VOLUME;
+          el.play().catch(() => {});
+        }
+        return;
+      }
       const name = trackRef.current;
       if (name === null) {
         setTrack('menu', { crossfadeMs: 0 });
@@ -199,7 +303,10 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     el.play().catch(() => {});
   }, []);
 
-  const api = useMemo<GameAudio>(() => ({ muted, track, ready, toggleMuted, setTrack, playSfx }), [muted, track, ready, toggleMuted, setTrack, playSfx]);
+  const api = useMemo<GameAudio>(
+    () => ({ muted, track, external, paused, ready, toggleMuted, setTrack, playExternal, pauseMusic, resumeAmbient, playSfx }),
+    [muted, track, external, paused, ready, toggleMuted, setTrack, playExternal, pauseMusic, resumeAmbient, playSfx],
+  );
 
   return (
     <AudioContext.Provider value={api}>

@@ -9,6 +9,7 @@ import s from './OpeningScreen.module.css';
 
 const ACTION_ITEMS: ActionItem[] = [
   { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: 'Succès', onClick: () => navigate('/succes') },
+  { id: 'chronicles', base: `${T.pinMenu}/ButtonQuestlog`, label: 'Chroniques', hint: "Les écrans de lancement du jeu, version par version", onClick: () => navigate('/chroniques') },
   { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: 'Personnage', hint: 'Mon compte — bientôt' },
 ];
 

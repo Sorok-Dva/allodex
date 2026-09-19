@@ -4,9 +4,40 @@ type SpriteSlice = [top: number, right: number, bottom: number, left: number];
 type SpriteInfo = { w: number; h: number; slice: SpriteSlice | null };
 export type AudioMeta = { duration: number; loop: boolean };
 
+/** Fichiers des deux formats d'un média, relatifs au dossier de la version. */
+type MediaPair = { webm: string; mp4: string };
+export type ArchiveTheme = {
+  name: string;
+  subsong?: number;
+  duration: number;
+  ogg: string;
+  mp3: string;
+  alternatives?: string[];
+};
+/**
+ * Une version archivée du jeu (`public/game/archive.json`, écrit par
+ * `tools/extract_archive.py`). `media: null` = client absent au moment de
+ * l'extraction : la page Chroniques affiche « Média non extrait ».
+ */
+export type ArchiveEntry = {
+  version: string;
+  label: string;
+  media: 'video' | 'image' | null;
+  /** Nom du PNG de fond (`media: 'image'`). */
+  background?: string;
+  /** Durée de la vidéo de menu, en secondes. */
+  duration?: number;
+  video?: MediaPair;
+  intro?: MediaPair;
+  theme?: ArchiveTheme;
+  note?: string;
+  theme_note?: string;
+};
+
 let manifest: Record<string, Size> | null = null;
 let sprites: Record<string, SpriteInfo> | null = null;
 let audioIndex: Record<string, AudioMeta> | null = null;
+let archive: ArchiveEntry[] | null = null;
 
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
@@ -19,14 +50,16 @@ async function fetchJson<T>(url: string): Promise<T | null> {
 }
 
 export async function loadManifest(): Promise<void> {
-  const [texturesJson, spritesJson, audioJson] = await Promise.all([
+  const [texturesJson, spritesJson, audioJson, archiveJson] = await Promise.all([
     fetchJson<{ textures?: Record<string, Size> }>(`${BASE}/manifest.json`),
     fetchJson<Record<string, SpriteInfo>>(`${BASE}/sprites.json`),
     fetchJson<Record<string, AudioMeta>>(`${BASE}/audio.json`),
+    fetchJson<ArchiveEntry[]>(`${BASE}/archive.json`),
   ]);
   manifest = texturesJson?.textures ?? {};
   sprites = spritesJson ?? {};
   audioIndex = audioJson ?? {};
+  archive = archiveJson ?? [];
   if (import.meta.env.DEV && !texturesJson) console.warn('[assets] manifest.json absent : lancez `npm run extract`');
 }
 
@@ -40,6 +73,10 @@ export const spriteSize = (name: string): SpriteInfo | undefined => sprites?.[na
 /** URLs des deux formats d'une piste audio, ogg d'abord (ordre attendu des `<source>`). */
 export const audioSrc = (name: string) => ({ ogg: `${BASE}/audio/${name}.ogg`, mp3: `${BASE}/audio/${name}.mp3` });
 export const audioMeta = (name: string): AudioMeta | undefined => audioIndex?.[name];
+/** Versions archivées, dans l'ordre de l'index (croissant) ; tableau vide si absent. */
+export const archiveEntries = (): ArchiveEntry[] => archive ?? [];
+/** URL d'un fichier d'une version archivée (`background.png`, `menu.webm`, `theme.ogg`…). */
+export const archiveFile = (version: string, file: string) => `${BASE}/archive/${version}/${file}`;
 
 /** Racines de textures du client effectivement utilisées par le site. */
 export const T = {

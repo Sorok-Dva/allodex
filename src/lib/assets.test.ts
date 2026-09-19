@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { tex, video, cursor, sprite, audioSrc, audioMeta } from './assets';
+import { tex, video, cursor, sprite, audioSrc, audioMeta, archiveEntries, archiveFile } from './assets';
 
 describe('assets', () => {
   it('construit les URLs publiques', () => {
@@ -18,5 +18,14 @@ describe('assets', () => {
 
   it("renvoie undefined pour les métadonnées audio tant que l'index n'est pas chargé", () => {
     expect(audioMeta('menu')).toBeUndefined();
+  });
+
+  it("construit l'URL d'un fichier de version archivée", () => {
+    expect(archiveFile('8.0', 'background.png')).toBe('/game/archive/8.0/background.png');
+    expect(archiveFile('16.0', 'theme.ogg')).toBe('/game/archive/16.0/theme.ogg');
+  });
+
+  it("renvoie une archive vide tant que l'index n'est pas chargé", () => {
+    expect(archiveEntries()).toEqual([]);
   });
 });

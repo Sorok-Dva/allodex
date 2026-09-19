@@ -4,6 +4,7 @@ import { useRoute } from '@/lib/router';
 import { AudioProvider } from '@/lib/audio/AudioProvider';
 import { OpeningScreen } from '@/screens/OpeningScreen/OpeningScreen';
 import { MedalsScreen } from '@/screens/MedalsScreen/MedalsScreen';
+import { ChroniclesScreen } from '@/screens/ChroniclesScreen/ChroniclesScreen';
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -18,7 +19,7 @@ export default function App() {
           Assets du jeu absents : lancez <code>npm run extract</code>
         </div>
       )}
-      {path === '/succes' ? <MedalsScreen /> : <OpeningScreen />}
+      {path === '/succes' ? <MedalsScreen /> : path === '/chroniques' ? <ChroniclesScreen /> : <OpeningScreen />}
     </AudioProvider>
   );
 }
