@@ -210,6 +210,10 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
         for (const material of converted) {
           if (!material.map) continue;
           material.map.anisotropy = anisotropy;
+          if (meta.version === '7.0') {
+            material.map.repeat.y = -1;
+            material.map.offset.y = 1;
+          }
           textures.add(material.map);
         }
         mesh.material = Array.isArray(mesh.material) ? converted : converted[0];

@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef } from 'react';
-import { T, tex, video } from '@/lib/assets';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { archiveFile, latestArchiveEntry, T, tex, video, type ArchiveEntry } from '@/lib/assets';
+import { hasWebGL } from '@/lib/webgl';
 import { Link, navigate } from '@/lib/router';
 import { LanguageSwitcher } from '@/components/game/LanguageSwitcher';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
@@ -8,6 +9,8 @@ import { GameActionBar, type ActionItem } from '@/components/game/GameActionBar'
 import { SpeakerToggle } from '@/components/game/SpeakerToggle';
 import { useIntroState } from './useIntroState';
 import s from './OpeningScreen.module.css';
+
+const MenuScene = lazy(() => import('@/components/game/MenuScene').then(m => ({ default: m.MenuScene })));
 
 function Video({ name, loop, onEnded, onError, className }: { name: 'intro' | 'mainmenu'; loop?: boolean; onEnded?: () => void; onError?: () => void; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -25,6 +28,37 @@ function Video({ name, loop, onEnded, onError, className }: { name: 'intro' | 'm
   );
 }
 
+function MainMedia({ latest }: { latest?: ArchiveEntry }) {
+  const [sceneReady, setSceneReady] = useState(false);
+  const scene = latest?.media === 'image' && latest.scene && hasWebGL() ? latest.scene : null;
+
+  if (latest?.media === 'image' && latest.background) {
+    const still = (
+      <img
+        className={`${s.video} ${s.fadeIn} ${scene && sceneReady ? s.mediaBehind : ''}`}
+        src={archiveFile(latest.version, latest.background)}
+        alt=""
+        aria-hidden="true"
+      />
+    );
+    if (!scene) return still;
+    return (
+      <>
+        {still}
+        <Suspense fallback={null}>
+          <MenuScene
+            glbUrl={archiveFile(latest.version, scene.glb)}
+            metaUrl={archiveFile(latest.version, scene.meta)}
+            onReady={() => setSceneReady(true)}
+          />
+        </Suspense>
+      </>
+    );
+  }
+
+  return <Video key="mainmenu" name="mainmenu" loop className={`${s.video} ${s.fadeIn}`} />;
+}
+
 export function OpeningScreen() {
   const { t } = useI18n();
   useEffect(() => { document.title = 'Allodex'; }, []);
@@ -35,7 +69,9 @@ export function OpeningScreen() {
       label: t('music.title'), onClick: () => navigate('/music') },
     { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: t('home.character'), hint: t('home.characterHint') },
   ];
-  const { phase, skipIntro, replayIntro } = useIntroState();
+  const latest = latestArchiveEntry();
+  const hasIntro = latest ? Boolean(latest.intro) : true;
+  const { phase, skipIntro, replayIntro } = useIntroState(undefined, !hasIntro);
   const { track, setTrack, playSfx } = useGameAudio();
   const firstInteractionRef = useRef(false);
 
@@ -60,7 +96,7 @@ export function OpeningScreen() {
     return () => window.removeEventListener('keydown', onKey);
   }, [phase, skipIntro]);
 
-  if (phase === 'intro') {
+  if (phase === 'intro' && hasIntro) {
     return (
       <div className={s.screen} onClick={skipIntro}>
         <Video key="intro" name="intro" className={s.video} onEnded={skipIntro} onError={skipIntro} />
@@ -71,14 +107,14 @@ export function OpeningScreen() {
 
   return (
     <div className={s.screen}>
-      <Video key="mainmenu" name="mainmenu" loop className={`${s.video} ${s.fadeIn}`} />
+      <MainMedia latest={latest} />
       <div className={s.vignette} />
 
       <GameActionBar items={items} className={s.actionBar} onItemInteract={handleItemInteract} />
 
       {/* Le jeu rejoue sa cinématique depuis le menu ; ici un simple lien texte,
           posé au-dessus du bandeau légal pour ne pas empiéter dessus. */}
-      <button type="button" className={s.replay} onClick={replayIntro}>{t('home.replay')}</button>
+      {hasIntro && <button type="button" className={s.replay} onClick={replayIntro}>{t('home.replay')}</button>}
 
       <div className={s.bottomLine} style={{ backgroundImage: `url(${tex(`${T.main2}/BottomLine`)})` }}>
         <LanguageSwitcher className={s.language} />

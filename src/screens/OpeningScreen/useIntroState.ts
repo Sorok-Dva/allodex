@@ -8,8 +8,8 @@ export function initialPhase(storage: Storage, forceMenu = false): Phase {
   try { return storage.getItem(INTRO_SEEN_KEY) === '1' ? 'menu' : 'intro'; } catch { return 'menu'; }
 }
 
-export function useIntroState(storage: Storage = window.localStorage) {
-  const [phase, setPhase] = useState<Phase>(() => initialPhase(storage, window.location.search.includes('skipIntro')));
+export function useIntroState(storage: Storage = window.localStorage, forceMenu = false) {
+  const [phase, setPhase] = useState<Phase>(() => initialPhase(storage, forceMenu || window.location.search.includes('skipIntro')));
   const skipIntro = useCallback(() => {
     try { storage.setItem(INTRO_SEEN_KEY, '1'); } catch { /* stockage indisponible */ }
     setPhase('menu');

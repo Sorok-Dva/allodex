@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { tex, video, cursor, sprite, audioSrc, audioMeta, archiveEntries, archiveFile } from './assets';
+import { tex, video, cursor, sprite, audioSrc, audioMeta, archiveEntries, archiveFile, latestArchiveEntry } from './assets';
 import { loadManifest, musicTracks } from './assets';
 
 describe('assets', () => {
@@ -28,6 +28,33 @@ describe('assets', () => {
 
   it("renvoie une archive vide tant que l'index n'est pas chargé", () => {
     expect(archiveEntries()).toEqual([]);
+    expect(latestArchiveEntry()).toBeUndefined();
+  });
+
+  it('résout automatiquement les vidéos et le thème de la dernière version du jeu', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => ({
+      ok: true, status: 200,
+      json: async () => {
+        if (url.endsWith('/archive.json')) {
+          return [
+            { version: '16.0', label: '16.0', media: 'video', video: { webm: 'menu.webm', mp4: 'menu.mp4' }, intro: { webm: 'intro.webm', mp4: 'intro.mp4' }, theme: { name: 'theme16', duration: 160, ogg: 'theme.ogg', mp3: 'theme.mp3' } },
+            { version: '17.0', label: '17.0', media: 'video', video: { webm: 'menu.webm', mp4: 'menu.mp4' }, intro: { webm: 'intro.webm', mp4: 'intro.mp4' }, theme: { name: 'MainMenu_TheBloodOfKings', duration: 186.4, ogg: 'theme.ogg', mp3: 'theme.mp3' } },
+          ];
+        }
+        if (url.endsWith('/manifest.json')) return { textures: {} };
+        return {};
+      },
+    })));
+    try {
+      await loadManifest();
+      expect(latestArchiveEntry()?.version).toBe('17.0');
+      expect(video('intro')).toEqual({ webm: '/game/archive/17.0/intro.webm', mp4: '/game/archive/17.0/intro.mp4' });
+      expect(video('mainmenu')).toEqual({ webm: '/game/archive/17.0/menu.webm', mp4: '/game/archive/17.0/menu.mp4' });
+      expect(audioSrc('menu')).toEqual({ ogg: '/game/archive/17.0/theme.ogg', mp3: '/game/archive/17.0/theme.mp3' });
+      expect(audioMeta('menu')).toEqual({ duration: 186.4, loop: true });
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it('tolère un index musical absent', async () => {

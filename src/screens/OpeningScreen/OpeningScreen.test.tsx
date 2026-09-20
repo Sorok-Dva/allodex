@@ -63,4 +63,32 @@ describe('OpeningScreen — audio', () => {
     expect(setTrack).not.toHaveBeenCalled();
     expect(playSfx).not.toHaveBeenCalled();
   });
+
+  it("affiche l'image de fond si la dernière version du jeu est de type image", async () => {
+    const assets = await import('@/lib/assets');
+    vi.spyOn(assets, 'latestArchiveEntry').mockReturnValue({
+      version: '8.0',
+      label: '8.0',
+      media: 'image',
+      background: 'background.png',
+    });
+    const { container } = renderMenu();
+    const img = container.querySelector('img');
+    expect(img?.getAttribute('src')).toBe('/game/archive/8.0/background.png');
+    vi.restoreAllMocks();
+  });
+
+  it("masque le bouton Replay intro et passe directement au menu si la dernière version n'a pas d'intro", async () => {
+    const assets = await import('@/lib/assets');
+    vi.spyOn(assets, 'latestArchiveEntry').mockReturnValue({
+      version: '1.0',
+      label: '1.0',
+      media: 'image',
+      background: 'background.png',
+    });
+    window.history.pushState(null, '', '/');
+    const { queryByRole } = render(<OpeningScreen />);
+    expect(queryByRole('button', { name: "Rejouer l'intro" })).toBeNull();
+    vi.restoreAllMocks();
+  });
 });

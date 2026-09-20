@@ -109,15 +109,56 @@ export async function loadManifest(): Promise<void> {
 export const hasAssets = () => manifest !== null && Object.keys(manifest).length > 0;
 export const tex = (path: string) => `${BASE}/textures/${path}.png`;
 export const texSize = (path: string): Size | undefined => manifest?.[path];
-export const video = (name: 'intro' | 'mainmenu') => ({ webm: `${BASE}/video/${name}.webm`, mp4: `${BASE}/video/${name}.mp4` });
 export const cursor = (name: string) => `${BASE}/cursors/${name}.cur`;
 export const sprite = (name: string) => `${BASE}/sprites/${name}.png`;
 export const spriteSize = (name: string): SpriteInfo | undefined => sprites?.[name];
-/** URLs des deux formats d'une piste audio, ogg d'abord (ordre attendu des `<source>`). */
-export const audioSrc = (name: string) => ({ ogg: `${BASE}/audio/${name}.ogg`, mp3: `${BASE}/audio/${name}.mp3` });
-export const audioMeta = (name: string): AudioMeta | undefined => audioIndex?.[name];
 /** Versions archivées, dans l'ordre de l'index (croissant) ; tableau vide si absent. */
 export const archiveEntries = (): ArchiveEntry[] => archive ?? [];
+/** Dernière version archivée du jeu (ou undefined si l'archive n'est pas chargée). */
+export const latestArchiveEntry = (): ArchiveEntry | undefined => {
+  const entries = archiveEntries();
+  return entries.length > 0 ? entries[entries.length - 1] : undefined;
+};
+export const video = (name: 'intro' | 'mainmenu') => {
+  const latest = latestArchiveEntry();
+  if (latest) {
+    if (name === 'intro' && latest.intro) {
+      return {
+        webm: archiveFile(latest.version, latest.intro.webm),
+        mp4: archiveFile(latest.version, latest.intro.mp4),
+      };
+    }
+    if (name === 'mainmenu' && latest.media === 'video' && latest.video) {
+      return {
+        webm: archiveFile(latest.version, latest.video.webm),
+        mp4: archiveFile(latest.version, latest.video.mp4),
+      };
+    }
+  }
+  return { webm: `${BASE}/video/${name}.webm`, mp4: `${BASE}/video/${name}.mp4` };
+};
+/** URLs des deux formats d'une piste audio, ogg d'abord (ordre attendu des `<source>`). */
+export const audioSrc = (name: string) => {
+  if (name === 'menu') {
+    const latest = latestArchiveEntry();
+    if (latest?.theme) {
+      return {
+        ogg: archiveFile(latest.version, latest.theme.ogg),
+        mp3: archiveFile(latest.version, latest.theme.mp3),
+      };
+    }
+  }
+  return { ogg: `${BASE}/audio/${name}.ogg`, mp3: `${BASE}/audio/${name}.mp3` };
+};
+export const audioMeta = (name: string): AudioMeta | undefined => {
+  if (name === 'menu') {
+    const latest = latestArchiveEntry();
+    if (latest?.theme) {
+      return { duration: latest.theme.duration, loop: true };
+    }
+  }
+  return audioIndex?.[name];
+};
 export const musicTracks = (): MusicTrack[] => music;
 /** URL d'un fichier d'une version archivée (`background.png`, `menu.webm`, `theme.ogg`…). */
 export const archiveFile = (version: string, file: string) => `${BASE}/archive/${version}/${file}`;
