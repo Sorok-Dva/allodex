@@ -23,7 +23,11 @@ export default function App() {
           Assets du jeu absents : lancez <code>npm run extract</code>
         </div>
       )}
-      {path === '/cgu' ? <LegalScreen /> : path === '/succes' ? <MedalsScreen /> : path === '/chroniques' ? <ChroniclesScreen /> : path === '/musiques' ? <MusicScreen /> : <OpeningScreen />}
+      {path === '/terms' || path === '/cgu' || path === '/legal' ? <LegalScreen /> :
+       path === '/achievements' || path === '/medals' || path === '/succes' ? <MedalsScreen /> :
+       path === '/chronicles' || path === '/chroniques' ? <ChroniclesScreen /> :
+       path === '/music' || path === '/musiques' ? <MusicScreen /> :
+       <OpeningScreen />}
     </AudioProvider>
     </I18nProvider>
   );

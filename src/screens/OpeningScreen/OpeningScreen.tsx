@@ -29,10 +29,10 @@ export function OpeningScreen() {
   const { t } = useI18n();
   useEffect(() => { document.title = 'Allodex'; }, []);
   const items: ActionItem[] = [
-    { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: t('home.medals'), onClick: () => navigate('/succes') },
-    { id: 'chronicles', base: `${T.pinMenu}/ButtonQuestlog`, label: t('home.chronicles'), hint: t('home.chroniclesHint'), onClick: () => navigate('/chroniques') },
+    { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: t('home.medals'), onClick: () => navigate('/achievements') },
+    { id: 'chronicles', base: `${T.pinMenu}/ButtonQuestlog`, label: t('home.chronicles'), hint: t('home.chroniclesHint'), onClick: () => navigate('/chronicles') },
     { id: 'music', base: `${T.pinMenu}/ButtonMedals`, image: 'Official/media_player',
-      label: t('music.title'), onClick: () => navigate('/musiques') },
+      label: t('music.title'), onClick: () => navigate('/music') },
     { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: t('home.character'), hint: t('home.characterHint') },
   ];
   const { phase, skipIntro, replayIntro } = useIntroState();
@@ -84,7 +84,7 @@ export function OpeningScreen() {
         <LanguageSwitcher className={s.language} />
         <div className={s.credits}>
           <span>{t('home.disclaimer')}</span>
-          <span>{t('home.copyright', { year: new Date().getFullYear() })} <a href="https://p-42.fr/allodex-developer" target="_blank" rel="noopener noreferrer">Sorok-Dva</a> · <Link to="/cgu">{t('legal.shortTitle')}</Link></span>
+          <span>{t('home.copyright', { year: new Date().getFullYear() })} <a href="https://p-42.fr/allodex-developer" target="_blank" rel="noopener noreferrer">Sorok-Dva</a> · <Link to="/terms">{t('legal.shortTitle')}</Link></span>
         </div>
         <SpeakerToggle className={s.speaker} />
       </div>

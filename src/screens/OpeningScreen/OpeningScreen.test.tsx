@@ -32,7 +32,7 @@ describe('OpeningScreen — audio', () => {
     expect(page.getByRole('button', { name: 'Achievements' })).toBeTruthy();
     expect(page.getByRole('button', { name: 'Chronicles' })).toBeTruthy();
     expect(page.getByRole('button', { name: 'Replay intro' })).toBeTruthy();
-    expect(page.getByRole('link', { name: 'Terms of use' }).getAttribute('href')).toBe('/cgu');
+    expect(page.getByRole('link', { name: 'Terms of use' }).getAttribute('href')).toBe('/terms');
     expect(page.getByRole('link', { name: 'Sorok-Dva' }).getAttribute('href')).toBe('https://p-42.fr/allodex-developer');
     expect(window.localStorage.getItem(LANG_KEY)).toBe('en');
     expect(document.documentElement.lang).toBe('en');

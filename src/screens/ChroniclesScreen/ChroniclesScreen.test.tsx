@@ -73,7 +73,7 @@ beforeEach(() => {
 });
 
 function setup(search = '?v=8.0') {
-  window.history.pushState(null, '', `/chroniques${search}`);
+  window.history.pushState(null, '', `/chronicles${search}`);
   return render(<ChroniclesScreen />);
 }
 
@@ -207,7 +207,7 @@ describe('ChroniclesScreen — défilement automatique', () => {
   it('passe à la version suivante quand le thème arrive au bout', () => {
     engine.ended = 'archive:8.0';
     setup('?v=8.0');
-    expect(navigateSpy).toHaveBeenCalledWith('/chroniques?v=11.0', { replace: true });
+    expect(navigateSpy).toHaveBeenCalledWith('/chronicles?v=11.0', { replace: true });
   });
 
   it('ne bouge pas tant que le thème joue ou si c\'est un autre thème qui a fini', () => {
@@ -223,12 +223,12 @@ describe('ChroniclesScreen — défilement automatique', () => {
       act(() => { vi.advanceTimersByTime(19_999); });
       expect(navigateSpy).not.toHaveBeenCalled();
       act(() => { vi.advanceTimersByTime(1); });
-      expect(navigateSpy).toHaveBeenCalledWith('/chroniques?v=16.0', { replace: true });
+      expect(navigateSpy).toHaveBeenCalledWith('/chronicles?v=16.0', { replace: true });
 
       navigateSpy.mockClear();
       engine.ended = 'archive:16.0';
       setup('?v=16.0');
-      expect(navigateSpy).toHaveBeenCalledWith('/chroniques?v=1.1', { replace: true });
+      expect(navigateSpy).toHaveBeenCalledWith('/chronicles?v=1.1', { replace: true });
     } finally {
       vi.useRealTimers();
     }
@@ -274,6 +274,6 @@ describe('ChroniclesScreen — panneau « À propos de cette version »', () => 
     rerender(<ChroniclesScreen />);
     expect(navigateSpy).not.toHaveBeenCalled();
     fireEvent.click(getByLabelText('À propos de cette version'));
-    expect(navigateSpy).toHaveBeenCalledWith('/chroniques?v=11.0', { replace: true });
+    expect(navigateSpy).toHaveBeenCalledWith('/chronicles?v=11.0', { replace: true });
   });
 });

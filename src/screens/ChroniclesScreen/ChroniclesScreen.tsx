@@ -130,7 +130,7 @@ export function ChroniclesScreen() {
   const entry: ArchiveEntry | undefined = entries[index];
 
   const select = useCallback((version: string) => {
-    navigate(`/chroniques?v=${encodeURIComponent(version)}`, { replace: true });
+    navigate(`/chronicles?v=${encodeURIComponent(version)}`, { replace: true });
   }, []);
 
   // Fondu croisé du fond : la couche sortante reste montée le temps du fondu, la

@@ -39,7 +39,7 @@ vi.mock('@/lib/audio/useGameAudio', () => ({
 beforeEach(() => {
   webgl.available = true;
   sceneProps.mockClear();
-  window.history.pushState(null, '', '/chroniques?v=7.0');
+  window.history.pushState(null, '', '/chronicles?v=7.0');
 });
 
 describe('ChroniclesScreen — scène de menu', () => {

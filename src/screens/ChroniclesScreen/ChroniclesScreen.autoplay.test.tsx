@@ -24,7 +24,7 @@ vi.mock('@/lib/assets', async importOriginal => {
 
 beforeEach(() => {
   window.localStorage.clear();
-  window.history.pushState(null, '', '/chroniques?v=8.0');
+  window.history.pushState(null, '', '/chronicles?v=8.0');
   HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined);
   HTMLMediaElement.prototype.pause = vi.fn();
   HTMLMediaElement.prototype.load = vi.fn();
