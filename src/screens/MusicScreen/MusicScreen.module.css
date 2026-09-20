@@ -18,7 +18,6 @@
 .navScrollbar { left: 277px; top: 48px; bottom: 8px; }
 .scrollbar { right: 3px; top: 15px; bottom: 8px; }
 .empty { margin: 45px 20px; text-align: center; color: #ffeb73; }
-.close { position: absolute; right: 24px; top: 20px; width: 30px; height: 30px; background-repeat: no-repeat; }
 .speaker { position: absolute; right: 66px; top: 19px; }
 .withPlayer .viewport { bottom: 85px; }
 .withPlayer .scrollbar { bottom: 79px; }
@@ -27,6 +26,12 @@
 .timeline { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
 .timeline > span { min-width: 35px; }
 .seek { flex: 1; position: relative; padding: 6px 0; }
-.seek input { position: absolute; inset: 0; margin: 0; width: 100%; height: 24px; opacity: 0; cursor: pointer; }
-.seek:focus-within { outline: 1px solid #ffe77b; outline-offset: 2px; }
+.seek input { appearance: none; -webkit-appearance: none; position: absolute; inset: 0; margin: 0; padding: 0; border: 0; outline: none; background: transparent; width: 100%; height: 24px; cursor: pointer; }
+.seek input::-webkit-slider-runnable-track { height: 12px; background: transparent; border: 0; }
+.seek input::-moz-range-track { height: 12px; background: transparent; border: 0; }
+.seek input::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 24px; height: 24px; margin-top: -6px; border: 0; background: url('/game/sprites/medallion-normal.png') center / contain no-repeat; }
+.seek input::-moz-range-thumb { width: 24px; height: 24px; border: 0; border-radius: 0; background: url('/game/sprites/medallion-normal.png') center / contain no-repeat; }
+.seek input:active::-webkit-slider-thumb { background-image: url('/game/sprites/medallion-pressed.png'); }
+.seek input:active::-moz-range-thumb { background-image: url('/game/sprites/medallion-pressed.png'); }
+.seek:has(input:focus-visible) { outline: 1px solid #ffe77b; outline-offset: 2px; }
 .seek:has(input:disabled) { opacity: .5; }

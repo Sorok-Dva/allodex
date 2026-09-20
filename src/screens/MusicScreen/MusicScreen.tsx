@@ -98,7 +98,7 @@ export function MusicScreen() {
       </video>
       <div className={s.holder} style={pos}>
         <MedalsWindow title={t('music.title')} subtitle={t('music.count', { count: tracks.length })}
-          onClose={close} externalClose
+          onClose={close} closeLabel={t('common.close')}
           nav={<nav className={s.column} aria-label={t('music.groups')}>
             <div className={navStyles.search}>
               <span className={navStyles.searchFrame} style={nineSlice('search-field', [5, 6, 5, 6], { fill: true })} aria-hidden="true" />
@@ -147,8 +147,6 @@ export function MusicScreen() {
           </section>}
         />
       </div>
-      <button type="button" className={s.close} aria-label={t('common.close')}
-        style={{ backgroundImage: `url(${sprite('close-button')})` }} onClick={close} />
       <SpeakerToggle className={s.speaker} />
     </main>
   );
