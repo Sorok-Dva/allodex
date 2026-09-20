@@ -18,7 +18,8 @@
     "Interface/Ingame/ContextPinMenu3/textures/",
     "Interface/Ingame/ContextActionbar2/",
     "Interface/Common/Elements/Editline/",
-    "Interface/Ingame/Contextructor/CornerQuestion/"
+    "Interface/Ingame/Contextructor/CornerQuestion/",
+    "Interface/Icons/Actions/"
   ],
   "texture_files": [
     "Interface/Icons/Special/Emotions/PlayedTrumpet.(UITexture).bin",

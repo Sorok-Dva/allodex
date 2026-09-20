@@ -107,21 +107,26 @@ export function OpeningScreen() {
     playSfx('ui-click');
   }, [setTrack, playSfx]);
 
+  const handleSkip = useCallback(() => {
+    playSfx('ui-click');
+    skipIntro();
+  }, [playSfx, skipIntro]);
+
   useEffect(() => {
     if (phase !== 'intro') return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === ' ' || e.key === 'Enter') e.preventDefault();
-      if (e.key === ' ' || e.key === 'Escape' || e.key === 'Enter') skipIntro();
+      if (e.key === ' ' || e.key === 'Escape' || e.key === 'Enter') handleSkip();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [phase, skipIntro]);
+  }, [phase, handleSkip]);
 
   /* Un seul arbre pour les trois phases : la vidéo d'intro et le logo gardent leur
      identité DOM pendant le fondu (pas de redémarrage, pas de saut), le menu se monte
      dessous dès la phase `fading` et la couche intro s'efface par-dessus. */
   return (
-    <div className={s.screen} onClick={inIntro ? skipIntro : undefined} data-phase={phase}>
+    <div className={s.screen} data-phase={phase}>
       {!inIntro && <MainMedia latest={latest} fade={!introRanRef.current} />}
       {!inIntro && <div className={s.vignette} />}
 
@@ -149,7 +154,18 @@ export function OpeningScreen() {
       </div>
 
       {inIntro ? (
-        <span className={s.skipHint}>{t('home.skip')}</span>
+        <button
+          type="button"
+          className={s.skipButton}
+          onClick={handleSkip}
+          style={{
+            backgroundImage: `url(${tex(`${T.actions}/RightButton`)})`,
+            ['--btn-pressed' as string]: `url(${tex(`${T.actions}/RightRedButton`)})`,
+          }}
+          data-testid="skip-button"
+          aria-label={t('home.skip')}
+          title={t('home.skip')}
+        />
       ) : (
         <>
           <GameActionBar items={items} className={s.actionBar} onItemInteract={handleItemInteract} />

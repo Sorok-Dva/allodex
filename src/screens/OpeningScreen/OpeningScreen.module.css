@@ -3,7 +3,36 @@
 .mediaBehind { opacity: 0; transition: opacity 400ms ease-out; }
 .fadeIn { animation: fade 900ms ease-out both; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-.skipHint { position: absolute; right: 24px; bottom: 20px; color: #ccc; font-size: 14px; opacity: 0.7; z-index: 3; animation: fade 900ms ease-out 1200ms both; }
+
+/* Bouton Skip officiel Allods (textures Interface/Icons/Actions/RightButton) */
+.skipButton {
+  position: absolute;
+  right: 28px;
+  bottom: 24px;
+  width: 54px;
+  height: 54px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 4;
+  user-select: none;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+  transition: transform 120ms ease-out, filter 120ms ease-out;
+  animation: fade 900ms ease-out 600ms both;
+}
+.skipButton:hover {
+  filter: drop-shadow(0 0 12px rgba(255, 215, 100, 0.75)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8)) brightness(1.15);
+  transform: scale(1.08);
+}
+.skipButton:active {
+  background-image: var(--btn-pressed) !important;
+  transform: scale(0.96) translate(1px, 1px);
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.8));
+}
 
 /* Couche vidéo de l'intro : au-dessus du menu (z 2) mais sous le logo (z 3) ; pendant
    la phase `fading` elle s'efface en fondu enchainé sur le menu déjà monté dessous.
@@ -128,6 +157,7 @@
   .logoStage { transition: none; }
   .logoRevealIntro { animation: fade 600ms ease-out 400ms both; }
   .logoHalo, .logoRays, .logoShine, .logoFlash { animation: none; opacity: 0; }
+  .skipButton { animation: none; }
 }
 
 .actionBar { position: absolute; right: 24px; bottom: 72px; }

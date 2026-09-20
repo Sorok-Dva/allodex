@@ -171,4 +171,6 @@ export const T = {
   medals: 'Interface/Ingame/Medals/Textures',
   main2: 'Interface/Wrap/MainMenu/Main2',
   pinMenu: 'Interface/Ingame/ContextPinMenu3/textures',
+  standardBtn: 'Interface/Common/Buttons/Standard',
+  actions: 'Interface/Icons/Actions',
 } as const;

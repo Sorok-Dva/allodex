@@ -68,9 +68,13 @@ export function MusicScreen() {
 
   useEffect(() => {
     playSfx('medals-open');
-    pauseMusic();
+    if (tracks[0]) {
+      play(tracks[0]);
+    } else {
+      pauseMusic();
+    }
     return () => { pauseMusic(); resumeAmbient({ crossfadeMs: 600 }); };
-  }, [playSfx, pauseMusic, resumeAmbient]);
+  }, [playSfx, pauseMusic, resumeAmbient, tracks, play]);
 
   useEffect(() => {
     const resize = () => setPos(placement());

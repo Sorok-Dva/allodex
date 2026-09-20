@@ -127,10 +127,21 @@ describe('OpeningScreen — intro', () => {
     expect(queryByTestId('intro-video')).toBeNull();
   });
 
-  it('un clic ou Espace passe l’intro (fondu immédiat), et « Rejouer » la relance', () => {
-    const { container, getByRole } = render(<OpeningScreen />);
+  it('le clic sur l’écran ne passe pas l’intro, seul le bouton Skip ou Espace la passe', () => {
+    const { container, getByRole, getByTestId } = render(<OpeningScreen />);
+    expect(container.firstElementChild?.getAttribute('data-phase')).toBe('intro');
+    // Clic sur l'écran général (pour débloquer l'audio Chrome) : ne skip pas !
     fireEvent.click(container.firstElementChild!);
+    expect(container.firstElementChild?.getAttribute('data-phase')).toBe('intro');
+
+    // Clic sur le bouton officiel Skip : passe immédiatement vers le fondu
+    const skipBtn = getByTestId('skip-button');
+    expect(skipBtn).toBeTruthy();
+    expect(skipBtn.getAttribute('aria-label')).toBe('Passer');
+    fireEvent.click(skipBtn);
+    expect(playSfx).toHaveBeenCalledWith('ui-click');
     expect(container.firstElementChild?.getAttribute('data-phase')).toBe('fading');
+
     act(() => { vi.advanceTimersByTime(FADE_MS); });
     fireEvent.click(getByRole('button', { name: "Rejouer l’intro" }));
     expect(container.firstElementChild?.getAttribute('data-phase')).toBe('intro');
