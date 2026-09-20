@@ -1,0 +1,2851 @@
+[
+  {
+    "id": "credits-loop-nm-7b58a198f5",
+    "name": "Credits_loop_NM",
+    "title": null,
+    "bank": "Music_Menu",
+    "group": "Menu",
+    "duration": 332.39,
+    "ogg": "/game/music/credits-loop-nm-7b58a198f5.ogg",
+    "mp3": "/game/music/credits-loop-nm-7b58a198f5.mp3",
+    "client": "16.0",
+    "maps": [
+      "Credits"
+    ],
+    "introducedIn": null,
+    "archiveConfidence": "inferred",
+    "archiveSources": [],
+    "archiveNote": "Credits music; not tied to an in-world map."
+  },
+  {
+    "id": "mainmenu-adaptive-b02d2d1074",
+    "name": "MainMenu_adaptive",
+    "title": null,
+    "bank": "Music_Menu",
+    "group": "Menu",
+    "duration": 239.188,
+    "ogg": "/game/music/mainmenu-adaptive-b02d2d1074.ogg",
+    "mp3": "/game/music/mainmenu-adaptive-b02d2d1074.mp3",
+    "client": "17.0",
+    "maps": [
+      "Main menu"
+    ],
+    "introducedIn": "17.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://allods.ru/news.php?article=11379"
+    ]
+  },
+  {
+    "id": "mainmenu-desertdreams-88f6c9cc79",
+    "name": "MainMenu_DesertDreams",
+    "title": {
+      "fr": "Desert Dreams",
+      "en": "Desert Dreams"
+    },
+    "bank": "Music_Menu",
+    "group": "Menu",
+    "duration": 153.6,
+    "ogg": "/game/music/mainmenu-desertdreams-88f6c9cc79.ogg",
+    "mp3": "/game/music/mainmenu-desertdreams-88f6c9cc79.mp3",
+    "client": "16.0",
+    "maps": [
+      "Main menu"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ]
+  },
+  {
+    "id": "mainmenu-heartoftheworld-7004d9f611",
+    "name": "MainMenu_HeartOfTheWorld",
+    "title": {
+      "fr": "Heart of the World",
+      "en": "Heart of the World"
+    },
+    "bank": "Music_Menu",
+    "group": "Menu",
+    "duration": 173.617,
+    "ogg": "/game/music/mainmenu-heartoftheworld-7004d9f611.ogg",
+    "mp3": "/game/music/mainmenu-heartoftheworld-7004d9f611.mp3",
+    "client": "17.0",
+    "maps": [
+      "Main menu"
+    ],
+    "introducedIn": "5.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://www.elitepvpers.com/forum/allods/5321638-reallods-allods-online-5-0-first-private-server.html"
+    ]
+  },
+  {
+    "id": "mainmenu-thebloodofkings-13b5ea3844",
+    "name": "MainMenu_TheBloodOfKings",
+    "title": {
+      "fr": "The Blood of Kings",
+      "en": "The Blood of Kings"
+    },
+    "bank": "Music_Menu",
+    "group": "Menu",
+    "duration": 186.425,
+    "ogg": "/game/music/mainmenu-thebloodofkings-13b5ea3844.ogg",
+    "mp3": "/game/music/mainmenu-thebloodofkings-13b5ea3844.mp3",
+    "client": "17.0",
+    "maps": [
+      "Main menu"
+    ],
+    "introducedIn": "17.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://allods.ru/news.php?article=11379"
+    ]
+  },
+  {
+    "id": "mainmenu-thepowerofmetal-c4d509e1e6",
+    "name": "MainMenu_ThePowerOfMetal",
+    "title": {
+      "fr": "The Power of Metal",
+      "en": "The Power of Metal"
+    },
+    "bank": "Music_Menu",
+    "group": "Menu",
+    "duration": 169.846,
+    "ogg": "/game/music/mainmenu-thepowerofmetal-c4d509e1e6.ogg",
+    "mp3": "/game/music/mainmenu-thepowerofmetal-c4d509e1e6.mp3",
+    "client": "16.0",
+    "maps": [
+      "Main menu"
+    ],
+    "introducedIn": "16.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-160-successfully-installed"
+    ]
+  },
+  {
+    "id": "maintitle-53b4cd92e0",
+    "name": "MainTitle",
+    "title": null,
+    "bank": "Music_Menu",
+    "group": "Menu",
+    "duration": 165.864,
+    "ogg": "/game/music/maintitle-53b4cd92e0.ogg",
+    "mp3": "/game/music/maintitle-53b4cd92e0.mp3",
+    "client": "16.0",
+    "maps": [
+      "Main menu"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "Present among the classic/original-era soundtrack assets; exact first client build not verified."
+  },
+  {
+    "id": "menuambient-49cc47fade",
+    "name": "MenuAmbient",
+    "title": null,
+    "bank": "Music_Menu",
+    "group": "Menu",
+    "duration": 122.667,
+    "ogg": "/game/music/menuambient-49cc47fade.ogg",
+    "mp3": "/game/music/menuambient-49cc47fade.mp3",
+    "client": "16.0",
+    "maps": [
+      "Main menu"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "Present among the classic/original-era soundtrack assets; exact first client build not verified."
+  },
+  {
+    "id": "ac5-main-nm-ae41d617a4",
+    "name": "AC5_Main_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 209.032,
+    "ogg": "/game/music/ac5-main-nm-ae41d617a4.ogg",
+    "mp3": "/game/music/ac5-main-nm-ae41d617a4.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "ac6-main-nm-12d37caf2e",
+    "name": "AC6_Main_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 129.438,
+    "ogg": "/game/music/ac6-main-nm-12d37caf2e.ogg",
+    "mp3": "/game/music/ac6-main-nm-12d37caf2e.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "ac7-main-nm-af2f5c971e",
+    "name": "AC7_Main_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 200.137,
+    "ogg": "/game/music/ac7-main-nm-af2f5c971e.ogg",
+    "mp3": "/game/music/ac7-main-nm-af2f5c971e.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "ac9-main-nm-ef1525bbe6",
+    "name": "AC9_Main_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 314.0,
+    "ogg": "/game/music/ac9-main-nm-ef1525bbe6.ogg",
+    "mp3": "/game/music/ac9-main-nm-ef1525bbe6.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "aedmainadaptive-1a8ebff827",
+    "name": "AedMainAdaptive",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 180.87,
+    "ogg": "/game/music/aedmainadaptive-1a8ebff827.ogg",
+    "mp3": "/game/music/aedmainadaptive-1a8ebff827.mp3",
+    "client": "16.0",
+    "maps": [
+      "Aoidos/Aed content"
+    ],
+    "introducedIn": "8.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/forum/index.php?page=Thread&postID=88096"
+    ],
+    "archiveNote": "Aoidos/Aed race was introduced in 8.0; exact map trigger for this cue was not verified."
+  },
+  {
+    "id": "ag1-main-1-nm-c0006d0ac1",
+    "name": "AG1_Main_1_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 99.553,
+    "ogg": "/game/music/ag1-main-1-nm-c0006d0ac1.ogg",
+    "mp3": "/game/music/ag1-main-1-nm-c0006d0ac1.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "ag1-main-2-nm-4387b6e0c1",
+    "name": "AG1_Main_2_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 89.208,
+    "ogg": "/game/music/ag1-main-2-nm-4387b6e0c1.ogg",
+    "mp3": "/game/music/ag1-main-2-nm-4387b6e0c1.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "ag1-village-nm-91f5fc28cc",
+    "name": "AG1_Village_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 121.025,
+    "ogg": "/game/music/ag1-village-nm-91f5fc28cc.ogg",
+    "mp3": "/game/music/ag1-village-nm-91f5fc28cc.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "ai71-horror-694fd5f283",
+    "name": "AI71_Horror",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 123.871,
+    "ogg": "/game/music/ai71-horror-694fd5f283.ogg",
+    "mp3": "/game/music/ai71-horror-694fd5f283.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": "7.1",
+    "archiveConfidence": "inferred",
+    "archiveSources": [],
+    "archiveNote": "Internal filename appears version-coded; exact map not verified."
+  },
+  {
+    "id": "airin-castle-indoor-94f45d5f3b",
+    "name": "Airin_Castle_Indoor",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 192.0,
+    "ogg": "/game/music/airin-castle-indoor-94f45d5f3b.ogg",
+    "mp3": "/game/music/airin-castle-indoor-94f45d5f3b.mp3",
+    "client": "16.0",
+    "maps": [
+      "Irene"
+    ],
+    "introducedIn": "11.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/forum/index.php?page=Thread&postID=120977"
+    ],
+    "archiveNote": "“Airin” appears to be an internal/transliterated naming for Irene; the map/update association is very likely but not directly documented for this filename."
+  },
+  {
+    "id": "airin-castle-outdoor-291b298ca9",
+    "name": "Airin_Castle_Outdoor",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 120.0,
+    "ogg": "/game/music/airin-castle-outdoor-291b298ca9.ogg",
+    "mp3": "/game/music/airin-castle-outdoor-291b298ca9.mp3",
+    "client": "16.0",
+    "maps": [
+      "Irene"
+    ],
+    "introducedIn": "11.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/forum/index.php?page=Thread&postID=120977"
+    ],
+    "archiveNote": "“Airin” appears to be an internal/transliterated naming for Irene; the map/update association is very likely but not directly documented for this filename."
+  },
+  {
+    "id": "al3-main-nm-5400358e60",
+    "name": "AL3_Main_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 177.058,
+    "ogg": "/game/music/al3-main-nm-5400358e60.ogg",
+    "mp3": "/game/music/al3-main-nm-5400358e60.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "alizbar-estuary-1aef14ae0c",
+    "name": "Alizbar_-_Estuary",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 254.613,
+    "ogg": "/game/music/alizbar-estuary-1aef14ae0c.ogg",
+    "mp3": "/game/music/alizbar-estuary-1aef14ae0c.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "alizbar-fairy-of-melted-snow-0685565596",
+    "name": "Alizbar_-_Fairy_Of_Melted_Snow",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 167.587,
+    "ogg": "/game/music/alizbar-fairy-of-melted-snow-0685565596.ogg",
+    "mp3": "/game/music/alizbar-fairy-of-melted-snow-0685565596.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "alizbar-last-fallen-leaf-6f2ea97747",
+    "name": "Alizbar_-_Last_Fallen_Leaf",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 212.293,
+    "ogg": "/game/music/alizbar-last-fallen-leaf-6f2ea97747.ogg",
+    "mp3": "/game/music/alizbar-last-fallen-leaf-6f2ea97747.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "alizbar-out-of-time-fairy-tale-017f282fb0",
+    "name": "Alizbar_-_Out_Of_Time_Fairy-tale",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 208.96,
+    "ogg": "/game/music/alizbar-out-of-time-fairy-tale-017f282fb0.ogg",
+    "mp3": "/game/music/alizbar-out-of-time-fairy-tale-017f282fb0.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "alizbar-the-island-b5e08ecf5d",
+    "name": "Alizbar_-_The_Island",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 239.253,
+    "ogg": "/game/music/alizbar-the-island-b5e08ecf5d.ogg",
+    "mp3": "/game/music/alizbar-the-island-b5e08ecf5d.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "dc-demonwing-nm-8ee214acae",
+    "name": "DC_DemonWing_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 236.41,
+    "ogg": "/game/music/dc-demonwing-nm-8ee214acae.ogg",
+    "mp3": "/game/music/dc-demonwing-nm-8ee214acae.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "dc-dragonwing-nm-7890e90a65",
+    "name": "DC_DragonWing_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 247.5,
+    "ogg": "/game/music/dc-dragonwing-nm-7890e90a65.ogg",
+    "mp3": "/game/music/dc-dragonwing-nm-7890e90a65.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "dc-mindflayerwing-nm-5e73591213",
+    "name": "DC_MindflayerWing_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 228.0,
+    "ogg": "/game/music/dc-mindflayerwing-nm-5e73591213.ogg",
+    "mp3": "/game/music/dc-mindflayerwing-nm-5e73591213.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "deathrealmambient-lp-2b96ddb007",
+    "name": "DeathRealmAmbient_lp",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 192.0,
+    "ogg": "/game/music/deathrealmambient-lp-2b96ddb007.ogg",
+    "mp3": "/game/music/deathrealmambient-lp-2b96ddb007.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "desert-1-843f5dfdcc",
+    "name": "Desert_1",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 115.077,
+    "ogg": "/game/music/desert-1-843f5dfdcc.ogg",
+    "mp3": "/game/music/desert-1-843f5dfdcc.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "desert-2-nm-4d26eee0a3",
+    "name": "Desert_2_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 195.429,
+    "ogg": "/game/music/desert-2-nm-4d26eee0a3.ogg",
+    "mp3": "/game/music/desert-2-nm-4d26eee0a3.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "elvesstatuesraid-adaptive-2a02f2ecba",
+    "name": "ElvesStatuesRaid_Adaptive",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 185.806,
+    "ogg": "/game/music/elvesstatuesraid-adaptive-2a02f2ecba.ogg",
+    "mp3": "/game/music/elvesstatuesraid-adaptive-2a02f2ecba.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "ferris4-cutscene2-c3a421de53",
+    "name": "Ferris4_Cutscene2",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 52.437,
+    "ogg": "/game/music/ferris4-cutscene2-c3a421de53.ogg",
+    "mp3": "/game/music/ferris4-cutscene2-c3a421de53.mp3",
+    "client": "16.0",
+    "maps": [
+      "Ferris"
+    ],
+    "introducedIn": "6.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/forum/index.php?page=Thread&postID=52777"
+    ]
+  },
+  {
+    "id": "ferris4-cutscene3-7977b12f67",
+    "name": "Ferris4_Cutscene3",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 49.341,
+    "ogg": "/game/music/ferris4-cutscene3-7977b12f67.ogg",
+    "mp3": "/game/music/ferris4-cutscene3-7977b12f67.mp3",
+    "client": "16.0",
+    "maps": [
+      "Ferris"
+    ],
+    "introducedIn": "6.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/forum/index.php?page=Thread&postID=52777"
+    ]
+  },
+  {
+    "id": "ferrisice-5b1d244cf4",
+    "name": "FerrisIce",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 112.67,
+    "ogg": "/game/music/ferrisice-5b1d244cf4.ogg",
+    "mp3": "/game/music/ferrisice-5b1d244cf4.mp3",
+    "client": "16.0",
+    "maps": [
+      "Ferris"
+    ],
+    "introducedIn": "6.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/forum/index.php?page=Thread&postID=52777"
+    ]
+  },
+  {
+    "id": "forestdark-56c3a68f4e",
+    "name": "ForestDark",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 129.0,
+    "ogg": "/game/music/forestdark-56c3a68f4e.ogg",
+    "mp3": "/game/music/forestdark-56c3a68f4e.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "forestlet-03166335ad",
+    "name": "Forestlet",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 143.221,
+    "ogg": "/game/music/forestlet-03166335ad.ogg",
+    "mp3": "/game/music/forestlet-03166335ad.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "frozenecho-549dc1996e",
+    "name": "FrozenEcho",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 171.0,
+    "ogg": "/game/music/frozenecho-549dc1996e.ogg",
+    "mp3": "/game/music/frozenecho-549dc1996e.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "frozenmist-f77f022a97",
+    "name": "FrozenMist",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 171.429,
+    "ogg": "/game/music/frozenmist-f77f022a97.ogg",
+    "mp3": "/game/music/frozenmist-f77f022a97.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "goblinoball-nm-9cb3849e3b",
+    "name": "Goblinoball_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 163.765,
+    "ogg": "/game/music/goblinoball-nm-9cb3849e3b.ogg",
+    "mp3": "/game/music/goblinoball-nm-9cb3849e3b.mp3",
+    "client": "16.0",
+    "maps": [
+      "Goblinball stadium"
+    ],
+    "introducedIn": null,
+    "archiveConfidence": "confirmed",
+    "archiveSources": [],
+    "archiveNote": "Activity is identifiable from the filename; first-update provenance not verified."
+  },
+  {
+    "id": "haloisle-nm-e00e442b14",
+    "name": "HaloIsle_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 135.273,
+    "ogg": "/game/music/haloisle-nm-e00e442b14.ogg",
+    "mp3": "/game/music/haloisle-nm-e00e442b14.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "icecave-fe2e51c0c9",
+    "name": "IceCave",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 161.036,
+    "ogg": "/game/music/icecave-fe2e51c0c9.ogg",
+    "mp3": "/game/music/icecave-fe2e51c0c9.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "iceisland-b0b6438155",
+    "name": "IceIsland",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 188.1,
+    "ogg": "/game/music/iceisland-b0b6438155.ogg",
+    "mp3": "/game/music/iceisland-b0b6438155.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "infiltration-adaptive-5d8a9eed82",
+    "name": "Infiltration_adaptive",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 248.09,
+    "ogg": "/game/music/infiltration-adaptive-5d8a9eed82.ogg",
+    "mp3": "/game/music/infiltration-adaptive-5d8a9eed82.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "isa-adaptive-a3fb593b3f",
+    "name": "Isa_Adaptive",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 115.2,
+    "ogg": "/game/music/isa-adaptive-a3fb593b3f.ogg",
+    "mp3": "/game/music/isa-adaptive-a3fb593b3f.mp3",
+    "client": "16.0",
+    "maps": [
+      "Isa"
+    ],
+    "introducedIn": "14.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-140-successfully-installed"
+    ]
+  },
+  {
+    "id": "isa-diary-2e7cbf6c2a",
+    "name": "Isa_Diary",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 106.909,
+    "ogg": "/game/music/isa-diary-2e7cbf6c2a.ogg",
+    "mp3": "/game/music/isa-diary-2e7cbf6c2a.mp3",
+    "client": "16.0",
+    "maps": [
+      "Isa"
+    ],
+    "introducedIn": "14.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-140-successfully-installed"
+    ]
+  },
+  {
+    "id": "isa-main-71fca45d92",
+    "name": "Isa_Main",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 106.667,
+    "ogg": "/game/music/isa-main-71fca45d92.ogg",
+    "mp3": "/game/music/isa-main-71fca45d92.mp3",
+    "client": "16.0",
+    "maps": [
+      "Isa"
+    ],
+    "introducedIn": "14.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-140-successfully-installed"
+    ]
+  },
+  {
+    "id": "isa-videos-diary-ending-2a0bf92fa3",
+    "name": "Isa_Videos diary_Ending",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 46.909,
+    "ogg": "/game/music/isa-videos-diary-ending-2a0bf92fa3.ogg",
+    "mp3": "/game/music/isa-videos-diary-ending-2a0bf92fa3.mp3",
+    "client": "16.0",
+    "maps": [
+      "Isa"
+    ],
+    "introducedIn": "14.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-140-successfully-installed"
+    ]
+  },
+  {
+    "id": "isa-videos-diary-intro-9e700b2bf9",
+    "name": "Isa_Videos diary_Intro",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 21.818,
+    "ogg": "/game/music/isa-videos-diary-intro-9e700b2bf9.ogg",
+    "mp3": "/game/music/isa-videos-diary-intro-9e700b2bf9.mp3",
+    "client": "16.0",
+    "maps": [
+      "Isa"
+    ],
+    "introducedIn": "14.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-140-successfully-installed"
+    ]
+  },
+  {
+    "id": "isa-videos-diary-lp-a2032166e6",
+    "name": "Isa_Videos diary_lp",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 69.818,
+    "ogg": "/game/music/isa-videos-diary-lp-a2032166e6.ogg",
+    "mp3": "/game/music/isa-videos-diary-lp-a2032166e6.mp3",
+    "client": "16.0",
+    "maps": [
+      "Isa"
+    ],
+    "introducedIn": "14.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-140-successfully-installed"
+    ]
+  },
+  {
+    "id": "jungle1-e7f541c803",
+    "name": "Jungle1",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 171.551,
+    "ogg": "/game/music/jungle1-e7f541c803.ogg",
+    "mp3": "/game/music/jungle1-e7f541c803.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "nezebmine-ff2e9a67d6",
+    "name": "NezebMine",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 190.056,
+    "ogg": "/game/music/nezebmine-ff2e9a67d6.ogg",
+    "mp3": "/game/music/nezebmine-ff2e9a67d6.mp3",
+    "client": "16.0",
+    "maps": [
+      "Nezebgrad / Imperial starting regions"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "Filename is explicit about Nezeb, but the exact sub-zone using this cue was not verified."
+  },
+  {
+    "id": "novograd-ambient-4615f2850a",
+    "name": "Novograd_Ambient",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 133.333,
+    "ogg": "/game/music/novograd-ambient-4615f2850a.ogg",
+    "mp3": "/game/music/novograd-ambient-4615f2850a.mp3",
+    "client": "16.0",
+    "maps": [
+      "Novograd"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "Novograd is a launch-era League capital; exact audio asset build not independently verified."
+  },
+  {
+    "id": "novograd-nm-5dd961f29a",
+    "name": "Novograd_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 154.514,
+    "ogg": "/game/music/novograd-nm-5dd961f29a.ogg",
+    "mp3": "/game/music/novograd-nm-5dd961f29a.mp3",
+    "client": "16.0",
+    "maps": [
+      "Novograd"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "Novograd is a launch-era League capital; exact audio asset build not independently verified."
+  },
+  {
+    "id": "olympiccontest-7612be5c70",
+    "name": "OlympicContest",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 116.571,
+    "ogg": "/game/music/olympiccontest-7612be5c70.ogg",
+    "mp3": "/game/music/olympiccontest-7612be5c70.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "priden-fly-6ca709d61b",
+    "name": "Priden_Fly",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 144.376,
+    "ogg": "/game/music/priden-fly-6ca709d61b.ogg",
+    "mp3": "/game/music/priden-fly-6ca709d61b.mp3",
+    "client": "16.0",
+    "maps": [
+      "Howlem"
+    ],
+    "introducedIn": "6.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/6000-preview-priden-race"
+    ]
+  },
+  {
+    "id": "pridenvillage-54df69268e",
+    "name": "PridenVillage",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 78.315,
+    "ogg": "/game/music/pridenvillage-54df69268e.ogg",
+    "mp3": "/game/music/pridenvillage-54df69268e.mp3",
+    "client": "16.0",
+    "maps": [
+      "Howlem"
+    ],
+    "introducedIn": "6.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/6000-preview-priden-race"
+    ]
+  },
+  {
+    "id": "sewerage-251cedd6e0",
+    "name": "Sewerage",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 117.0,
+    "ogg": "/game/music/sewerage-251cedd6e0.ogg",
+    "mp3": "/game/music/sewerage-251cedd6e0.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "smeyanabattle-aaffd90069",
+    "name": "SmeyanaBattle",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 160.0,
+    "ogg": "/game/music/smeyanabattle-aaffd90069.ogg",
+    "mp3": "/game/music/smeyanabattle-aaffd90069.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "smeyanabattle-high-31fc6030fa",
+    "name": "SmeyanaBattle_high",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 160.0,
+    "ogg": "/game/music/smeyanabattle-high-31fc6030fa.ogg",
+    "mp3": "/game/music/smeyanabattle-high-31fc6030fa.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "smeyanabattle-low-83b9d542be",
+    "name": "SmeyanaBattle_low",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 160.0,
+    "ogg": "/game/music/smeyanabattle-low-83b9d542be.ogg",
+    "mp3": "/game/music/smeyanabattle-low-83b9d542be.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "suslanger-main-7b70b9716f",
+    "name": "Suslanger_Main",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 151.692,
+    "ogg": "/game/music/suslanger-main-7b70b9716f.ogg",
+    "mp3": "/game/music/suslanger-main-7b70b9716f.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ]
+  },
+  {
+    "id": "suslanger-sandstorm-adaptive-4334ae3f1a",
+    "name": "Suslanger_SandStorm_Adaptive",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 137.674,
+    "ogg": "/game/music/suslanger-sandstorm-adaptive-4334ae3f1a.ogg",
+    "mp3": "/game/music/suslanger-sandstorm-adaptive-4334ae3f1a.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ]
+  },
+  {
+    "id": "suslanger-sandstorm-phase1-5b7d1da38f",
+    "name": "Suslanger_SandStorm_Phase1",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 137.674,
+    "ogg": "/game/music/suslanger-sandstorm-phase1-5b7d1da38f.ogg",
+    "mp3": "/game/music/suslanger-sandstorm-phase1-5b7d1da38f.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ]
+  },
+  {
+    "id": "suslanger-sandstorm-phase2-b5537be3cc",
+    "name": "Suslanger_SandStorm_Phase2",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 137.674,
+    "ogg": "/game/music/suslanger-sandstorm-phase2-b5537be3cc.ogg",
+    "mp3": "/game/music/suslanger-sandstorm-phase2-b5537be3cc.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ]
+  },
+  {
+    "id": "suslanger-sandstorm-phase3-8416e42443",
+    "name": "Suslanger_SandStorm_Phase3",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 137.674,
+    "ogg": "/game/music/suslanger-sandstorm-phase3-8416e42443.ogg",
+    "mp3": "/game/music/suslanger-sandstorm-phase3-8416e42443.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ]
+  },
+  {
+    "id": "tep-2eae6d1c84",
+    "name": "Tep",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 196.307,
+    "ogg": "/game/music/tep-2eae6d1c84.ogg",
+    "mp3": "/game/music/tep-2eae6d1c84.mp3",
+    "client": "16.0",
+    "maps": [
+      "Tep's Pyramid"
+    ],
+    "introducedIn": "4.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/forum/index.php?page=Thread&s=073b4dd2b6e7816526c4a5a1346ff61cefed9d63&threadID=4414"
+    ]
+  },
+  {
+    "id": "teppyramid-high-56f4e7232c",
+    "name": "TepPyramid_high",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 192.0,
+    "ogg": "/game/music/teppyramid-high-56f4e7232c.ogg",
+    "mp3": "/game/music/teppyramid-high-56f4e7232c.mp3",
+    "client": "16.0",
+    "maps": [
+      "Tep's Pyramid"
+    ],
+    "introducedIn": "4.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/forum/index.php?page=Thread&s=073b4dd2b6e7816526c4a5a1346ff61cefed9d63&threadID=4414"
+    ]
+  },
+  {
+    "id": "teppyramid-low-5a30fc64e3",
+    "name": "TepPyramid_low",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 192.0,
+    "ogg": "/game/music/teppyramid-low-5a30fc64e3.ogg",
+    "mp3": "/game/music/teppyramid-low-5a30fc64e3.mp3",
+    "client": "16.0",
+    "maps": [
+      "Tep's Pyramid"
+    ],
+    "introducedIn": "4.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/forum/index.php?page=Thread&s=073b4dd2b6e7816526c4a5a1346ff61cefed9d63&threadID=4414"
+    ]
+  },
+  {
+    "id": "teppyramidfinal-f359169ef7",
+    "name": "TepPyramidFinal",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 169.096,
+    "ogg": "/game/music/teppyramidfinal-f359169ef7.ogg",
+    "mp3": "/game/music/teppyramidfinal-f359169ef7.mp3",
+    "client": "16.0",
+    "maps": [
+      "Tep's Pyramid"
+    ],
+    "introducedIn": "4.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/forum/index.php?page=Thread&s=073b4dd2b6e7816526c4a5a1346ff61cefed9d63&threadID=4414"
+    ]
+  },
+  {
+    "id": "tropicalatoll-nm-25f4dc5c82",
+    "name": "TropicalAtoll_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 212.727,
+    "ogg": "/game/music/tropicalatoll-nm-25f4dc5c82.ogg",
+    "mp3": "/game/music/tropicalatoll-nm-25f4dc5c82.mp3",
+    "client": "16.0",
+    "maps": [
+      "Tropical Atoll"
+    ],
+    "introducedIn": null,
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/events/tropical-atoll-awaits-you-0"
+    ],
+    "archiveNote": "The location is verified; the exact update in which this specific audio file first appeared was not found."
+  },
+  {
+    "id": "turkeyai61-adaptive-05009edf2f",
+    "name": "TurkeyAI61_adaptive",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 232.0,
+    "ogg": "/game/music/turkeyai61-adaptive-05009edf2f.ogg",
+    "mp3": "/game/music/turkeyai61-adaptive-05009edf2f.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": "6.1",
+    "archiveConfidence": "inferred",
+    "archiveSources": [],
+    "archiveNote": "Internal filename appears version-coded; exact astral island/map not verified."
+  },
+  {
+    "id": "umoir-common-bdc8dcdc45",
+    "name": "umoir_common",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 163.2,
+    "ogg": "/game/music/umoir-common-bdc8dcdc45.ogg",
+    "mp3": "/game/music/umoir-common-bdc8dcdc45.mp3",
+    "client": "16.0",
+    "maps": [
+      "Umoir"
+    ],
+    "introducedIn": "5.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://www.elitepvpers.com/forum/allods/5321638-reallods-allods-online-5-0-first-private-server.html"
+    ]
+  },
+  {
+    "id": "umoir-i-adaptive-6d2edc8e8a",
+    "name": "Umoir_I_adaptive",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 182.19,
+    "ogg": "/game/music/umoir-i-adaptive-6d2edc8e8a.ogg",
+    "mp3": "/game/music/umoir-i-adaptive-6d2edc8e8a.mp3",
+    "client": "16.0",
+    "maps": [
+      "Umoir"
+    ],
+    "introducedIn": "5.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://www.elitepvpers.com/forum/allods/5321638-reallods-allods-online-5-0-first-private-server.html"
+    ]
+  },
+  {
+    "id": "umoirawry-i-adaptive-cdb22120dd",
+    "name": "UmoirAwry_I_adaptive",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 190.27,
+    "ogg": "/game/music/umoirawry-i-adaptive-cdb22120dd.ogg",
+    "mp3": "/game/music/umoirawry-i-adaptive-cdb22120dd.mp3",
+    "client": "16.0",
+    "maps": [
+      "Umoir"
+    ],
+    "introducedIn": "5.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://www.elitepvpers.com/forum/allods/5321638-reallods-allods-online-5-0-first-private-server.html"
+    ]
+  },
+  {
+    "id": "umoirawry-ii-57716e2a8c",
+    "name": "UmoirAwry_II",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 193.5,
+    "ogg": "/game/music/umoirawry-ii-57716e2a8c.ogg",
+    "mp3": "/game/music/umoirawry-ii-57716e2a8c.mp3",
+    "client": "16.0",
+    "maps": [
+      "Umoir"
+    ],
+    "introducedIn": "5.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://www.elitepvpers.com/forum/allods/5321638-reallods-allods-online-5-0-first-private-server.html"
+    ]
+  },
+  {
+    "id": "umoirfly-6f23176d80",
+    "name": "UmoirFly",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 150.229,
+    "ogg": "/game/music/umoirfly-6f23176d80.ogg",
+    "mp3": "/game/music/umoirfly-6f23176d80.mp3",
+    "client": "16.0",
+    "maps": [
+      "Umoir"
+    ],
+    "introducedIn": "5.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://www.elitepvpers.com/forum/allods/5321638-reallods-allods-online-5-0-first-private-server.html"
+    ]
+  },
+  {
+    "id": "umoirmounddungeonadaptive-67b27b4890",
+    "name": "UmoirMoundDungeonAdaptive",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 226.517,
+    "ogg": "/game/music/umoirmounddungeonadaptive-67b27b4890.ogg",
+    "mp3": "/game/music/umoirmounddungeonadaptive-67b27b4890.mp3",
+    "client": "16.0",
+    "maps": [
+      "Umoir"
+    ],
+    "introducedIn": "5.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://www.elitepvpers.com/forum/allods/5321638-reallods-allods-online-5-0-first-private-server.html"
+    ]
+  },
+  {
+    "id": "winter-1b17869e03",
+    "name": "Winter",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 126.575,
+    "ogg": "/game/music/winter-1b17869e03.ogg",
+    "mp3": "/game/music/winter-1b17869e03.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "zc12-assistdeath-2b466b237e",
+    "name": "ZC12_AssistDeath",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 76.64,
+    "ogg": "/game/music/zc12-assistdeath-2b466b237e.ogg",
+    "mp3": "/game/music/zc12-assistdeath-2b466b237e.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger / 12.0 storyline scenarios"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ],
+    "archiveNote": "ZC12 naming and the WWII/time-travel style cue names match the 12.0 Suslanger storyline; exact individual scenario mapping is not web-documented."
+  },
+  {
+    "id": "zc12-beregovoy-c35493a37a",
+    "name": "ZC12_Beregovoy",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 29.107,
+    "ogg": "/game/music/zc12-beregovoy-c35493a37a.ogg",
+    "mp3": "/game/music/zc12-beregovoy-c35493a37a.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger / 12.0 storyline scenarios"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ],
+    "archiveNote": "ZC12 naming and the WWII/time-travel style cue names match the 12.0 Suslanger storyline; exact individual scenario mapping is not web-documented."
+  },
+  {
+    "id": "zc12-bridgefight-f4d2c622b4",
+    "name": "ZC12_BridgeFight",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 50.433,
+    "ogg": "/game/music/zc12-bridgefight-f4d2c622b4.ogg",
+    "mp3": "/game/music/zc12-bridgefight-f4d2c622b4.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger / 12.0 storyline scenarios"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ],
+    "archiveNote": "ZC12 naming and the WWII/time-travel style cue names match the 12.0 Suslanger storyline; exact individual scenario mapping is not web-documented."
+  },
+  {
+    "id": "zc12-guerilla-64b1254978",
+    "name": "ZC12_Guerilla",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 40.0,
+    "ogg": "/game/music/zc12-guerilla-64b1254978.ogg",
+    "mp3": "/game/music/zc12-guerilla-64b1254978.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger / 12.0 storyline scenarios"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ],
+    "archiveNote": "ZC12 naming and the WWII/time-travel style cue names match the 12.0 Suslanger storyline; exact individual scenario mapping is not web-documented."
+  },
+  {
+    "id": "zc12-kursk1-17bf7f1902",
+    "name": "ZC12_Kursk1",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 74.966,
+    "ogg": "/game/music/zc12-kursk1-17bf7f1902.ogg",
+    "mp3": "/game/music/zc12-kursk1-17bf7f1902.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger / 12.0 storyline scenarios"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ],
+    "archiveNote": "ZC12 naming and the WWII/time-travel style cue names match the 12.0 Suslanger storyline; exact individual scenario mapping is not web-documented."
+  },
+  {
+    "id": "zc12-kursk2-7272940cfa",
+    "name": "ZC12_Kursk2",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 31.529,
+    "ogg": "/game/music/zc12-kursk2-7272940cfa.ogg",
+    "mp3": "/game/music/zc12-kursk2-7272940cfa.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger / 12.0 storyline scenarios"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ],
+    "archiveNote": "ZC12 naming and the WWII/time-travel style cue names match the 12.0 Suslanger storyline; exact individual scenario mapping is not web-documented."
+  },
+  {
+    "id": "zc12-main-adaptive-501ebbb582",
+    "name": "ZC12_Main_Adaptive",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 149.641,
+    "ogg": "/game/music/zc12-main-adaptive-501ebbb582.ogg",
+    "mp3": "/game/music/zc12-main-adaptive-501ebbb582.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger / 12.0 storyline scenarios"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ],
+    "archiveNote": "ZC12 naming and the WWII/time-travel style cue names match the 12.0 Suslanger storyline; exact individual scenario mapping is not web-documented."
+  },
+  {
+    "id": "zc12-reichstag-ae903604e3",
+    "name": "ZC12_ReichStag",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 33.2,
+    "ogg": "/game/music/zc12-reichstag-ae903604e3.ogg",
+    "mp3": "/game/music/zc12-reichstag-ae903604e3.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger / 12.0 storyline scenarios"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ],
+    "archiveNote": "ZC12 naming and the WWII/time-travel style cue names match the 12.0 Suslanger storyline; exact individual scenario mapping is not web-documented."
+  },
+  {
+    "id": "zc12-sandstorm-a3fe764efb",
+    "name": "ZC12_SandStorm",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 54.369,
+    "ogg": "/game/music/zc12-sandstorm-a3fe764efb.ogg",
+    "mp3": "/game/music/zc12-sandstorm-a3fe764efb.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger / 12.0 storyline scenarios"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ],
+    "archiveNote": "ZC12 naming and the WWII/time-travel style cue names match the 12.0 Suslanger storyline; exact individual scenario mapping is not web-documented."
+  },
+  {
+    "id": "zc14-main-adaptive-c6164433b4",
+    "name": "ZC14_Main_Adaptive",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 172.603,
+    "ogg": "/game/music/zc14-main-adaptive-c6164433b4.ogg",
+    "mp3": "/game/music/zc14-main-adaptive-c6164433b4.mp3",
+    "client": "16.0",
+    "maps": [
+      "Isa"
+    ],
+    "introducedIn": "14.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-140-successfully-installed"
+    ],
+    "archiveNote": "Version-coded filename; Isa is the main new location of 14.0."
+  },
+  {
+    "id": "zc4-main-nm-1bf08f8b3a",
+    "name": "ZC4_Main_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 157.719,
+    "ogg": "/game/music/zc4-main-nm-1bf08f8b3a.ogg",
+    "mp3": "/game/music/zc4-main-nm-1bf08f8b3a.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": "4.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [],
+    "archiveNote": "Version-coded filename suggests 4.0, but the exact map was not verified."
+  },
+  {
+    "id": "zc9-realworld-fd6f97c0f7",
+    "name": "ZC9_RealWorld",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 192.0,
+    "ogg": "/game/music/zc9-realworld-fd6f97c0f7.ogg",
+    "mp3": "/game/music/zc9-realworld-fd6f97c0f7.mp3",
+    "client": "16.0",
+    "maps": [
+      "Sogot / 9.0 storyline"
+    ],
+    "introducedIn": "9.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/development-demonologist"
+    ],
+    "archiveNote": "Version-coded filename; Sogot is the principal 9.0 storyline location."
+  },
+  {
+    "id": "ze2-baseguard-nm-0f31c06133",
+    "name": "ZE2_BaseGuard_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 134.576,
+    "ogg": "/game/music/ze2-baseguard-nm-0f31c06133.ogg",
+    "mp3": "/game/music/ze2-baseguard-nm-0f31c06133.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "ze2-baseinfiltration-nm-1e81afee7b",
+    "name": "ZE2_BaseInfiltration_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 125.263,
+    "ogg": "/game/music/ze2-baseinfiltration-nm-1e81afee7b.ogg",
+    "mp3": "/game/music/ze2-baseinfiltration-nm-1e81afee7b.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "ze2-baserest-nm-6e6928edc7",
+    "name": "ZE2_BaseRest_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 117.11,
+    "ogg": "/game/music/ze2-baserest-nm-6e6928edc7.ogg",
+    "mp3": "/game/music/ze2-baserest-nm-6e6928edc7.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "ze2-steppe-nm-92370c7167",
+    "name": "ZE2_Steppe_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 115.206,
+    "ogg": "/game/music/ze2-steppe-nm-92370c7167.ogg",
+    "mp3": "/game/music/ze2-steppe-nm-92370c7167.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "zl1-main-1-8151860326",
+    "name": "ZL1_Main_1",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 75.436,
+    "ogg": "/game/music/zl1-main-1-8151860326.ogg",
+    "mp3": "/game/music/zl1-main-1-8151860326.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "zl1-main-2-521fd24870",
+    "name": "ZL1_Main_2",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 131.744,
+    "ogg": "/game/music/zl1-main-2-521fd24870.ogg",
+    "mp3": "/game/music/zl1-main-2-521fd24870.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "zl3-main-nm-882669511b",
+    "name": "ZL3_Main_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 140.165,
+    "ogg": "/game/music/zl3-main-nm-882669511b.ogg",
+    "mp3": "/game/music/zl3-main-nm-882669511b.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "al1-main-1-91532ed34b",
+    "name": "AL1_Main_1",
+    "title": null,
+    "bank": "Music_StartZones",
+    "group": "Zones de départ",
+    "duration": 120.598,
+    "ogg": "/game/music/al1-main-1-91532ed34b.ogg",
+    "mp3": "/game/music/al1-main-1-91532ed34b.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "al1-main-2-a03d6c4992",
+    "name": "AL1_Main_2",
+    "title": null,
+    "bank": "Music_StartZones",
+    "group": "Zones de départ",
+    "duration": 114.016,
+    "ogg": "/game/music/al1-main-2-a03d6c4992.ogg",
+    "mp3": "/game/music/al1-main-2-a03d6c4992.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "astralbattle-fc3445b637",
+    "name": "AstralBattle",
+    "title": null,
+    "bank": "Music_StartZones",
+    "group": "Zones de départ",
+    "duration": 169.543,
+    "ogg": "/game/music/astralbattle-fc3445b637.ogg",
+    "mp3": "/game/music/astralbattle-fc3445b637.mp3",
+    "client": "16.0",
+    "maps": [
+      "Astral"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "General Astral cue; exact encounter/sector trigger varies or was not verified."
+  },
+  {
+    "id": "cave-al1-0fb1b7873a",
+    "name": "Cave_AL1",
+    "title": null,
+    "bank": "Music_StartZones",
+    "group": "Zones de départ",
+    "duration": 135.523,
+    "ogg": "/game/music/cave-al1-0fb1b7873a.ogg",
+    "mp3": "/game/music/cave-al1-0fb1b7873a.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "conquer-adaptive-75a43d9dbc",
+    "name": "Conquer_adaptive",
+    "title": null,
+    "bank": "Music_StartZones",
+    "group": "Zones de départ",
+    "duration": 321.0,
+    "ogg": "/game/music/conquer-adaptive-75a43d9dbc.ogg",
+    "mp3": "/game/music/conquer-adaptive-75a43d9dbc.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "conquer-high-1dd58dd02e",
+    "name": "Conquer_high",
+    "title": null,
+    "bank": "Music_StartZones",
+    "group": "Zones de départ",
+    "duration": 321.0,
+    "ogg": "/game/music/conquer-high-1dd58dd02e.ogg",
+    "mp3": "/game/music/conquer-high-1dd58dd02e.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "forestcursed-6ba07cf992",
+    "name": "ForestCursed",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 104.0,
+    "ogg": "/game/music/forestcursed-6ba07cf992.ogg",
+    "mp3": "/game/music/forestcursed-6ba07cf992.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "hadagan-loudspeaker-march-close-and-far-72d9855b48",
+    "name": "Hadagan_Loudspeaker_march_close_and_far",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 154.859,
+    "ogg": "/game/music/hadagan-loudspeaker-march-close-and-far-72d9855b48.ogg",
+    "mp3": "/game/music/hadagan-loudspeaker-march-close-and-far-72d9855b48.mp3",
+    "client": "16.0",
+    "maps": [
+      "Nezebgrad"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "Hadagan/Xadaganian loudspeaker music associated with the Imperial capital environment; exact trigger area not verified."
+  },
+  {
+    "id": "hadagan-loudspeaker-pop1-close-and-far-b0dcfde10b",
+    "name": "Hadagan_Loudspeaker_pop1_close_and_far",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 109.024,
+    "ogg": "/game/music/hadagan-loudspeaker-pop1-close-and-far-b0dcfde10b.ogg",
+    "mp3": "/game/music/hadagan-loudspeaker-pop1-close-and-far-b0dcfde10b.mp3",
+    "client": "16.0",
+    "maps": [
+      "Nezebgrad"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "Hadagan/Xadaganian loudspeaker music associated with the Imperial capital environment; exact trigger area not verified."
+  },
+  {
+    "id": "hadagan-loudspeaker-tango1-close-and-far-d7cc0f8e47",
+    "name": "Hadagan_Loudspeaker_tango1_close_and_far",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 126.336,
+    "ogg": "/game/music/hadagan-loudspeaker-tango1-close-and-far-d7cc0f8e47.ogg",
+    "mp3": "/game/music/hadagan-loudspeaker-tango1-close-and-far-d7cc0f8e47.mp3",
+    "client": "16.0",
+    "maps": [
+      "Nezebgrad"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "Hadagan/Xadaganian loudspeaker music associated with the Imperial capital environment; exact trigger area not verified."
+  },
+  {
+    "id": "hadagan-loudspeaker-tango2-close-and-far-b782a82339",
+    "name": "Hadagan_Loudspeaker_tango2_close_and_far",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 143.806,
+    "ogg": "/game/music/hadagan-loudspeaker-tango2-close-and-far-b782a82339.ogg",
+    "mp3": "/game/music/hadagan-loudspeaker-tango2-close-and-far-b782a82339.mp3",
+    "client": "16.0",
+    "maps": [
+      "Nezebgrad"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "Hadagan/Xadaganian loudspeaker music associated with the Imperial capital environment; exact trigger area not verified."
+  },
+  {
+    "id": "junruins-nm-06a1959062",
+    "name": "JunRuins_NM",
+    "title": null,
+    "bank": "Music_Zone",
+    "group": "Zones",
+    "duration": 180.167,
+    "ogg": "/game/music/junruins-nm-06a1959062.ogg",
+    "mp3": "/game/music/junruins-nm-06a1959062.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "elf-698d9ad03b",
+    "name": "Elf",
+    "title": null,
+    "bank": "Music_Race",
+    "group": "Races",
+    "duration": 245.708,
+    "ogg": "/game/music/elf-698d9ad03b.ogg",
+    "mp3": "/game/music/elf-698d9ad03b.mp3",
+    "client": "16.0",
+    "maps": [
+      "Elf racial/start areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "gibberlings-72b62f74b1",
+    "name": "Gibberlings",
+    "title": null,
+    "bank": "Music_Race",
+    "group": "Races",
+    "duration": 155.758,
+    "ogg": "/game/music/gibberlings-72b62f74b1.ogg",
+    "mp3": "/game/music/gibberlings-72b62f74b1.mp3",
+    "client": "16.0",
+    "maps": [
+      "Gibberlings racial/start areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "gibberlings-ambient-nm-832df76742",
+    "name": "Gibberlings_Ambient_NM",
+    "title": null,
+    "bank": "Music_Race",
+    "group": "Races",
+    "duration": 162.72,
+    "ogg": "/game/music/gibberlings-ambient-nm-832df76742.ogg",
+    "mp3": "/game/music/gibberlings-ambient-nm-832df76742.mp3",
+    "client": "16.0",
+    "maps": [
+      "Gibberlings racial/start areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "hadagan-b59c80b4ca",
+    "name": "Hadagan",
+    "title": null,
+    "bank": "Music_Race",
+    "group": "Races",
+    "duration": 166.148,
+    "ogg": "/game/music/hadagan-b59c80b4ca.ogg",
+    "mp3": "/game/music/hadagan-b59c80b4ca.mp3",
+    "client": "16.0",
+    "maps": [
+      "Hadagan racial/start areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "hadaganmilitarybase-2363cd20c8",
+    "name": "HadaganMilitaryBase",
+    "title": null,
+    "bank": "Music_Race",
+    "group": "Races",
+    "duration": 175.824,
+    "ogg": "/game/music/hadaganmilitarybase-2363cd20c8.ogg",
+    "mp3": "/game/music/hadaganmilitarybase-2363cd20c8.mp3",
+    "client": "16.0",
+    "maps": [
+      "Hadagan military areas racial/start areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "kania-c7d591b4fa",
+    "name": "Kania",
+    "title": null,
+    "bank": "Music_Race",
+    "group": "Races",
+    "duration": 199.922,
+    "ogg": "/game/music/kania-c7d591b4fa.ogg",
+    "mp3": "/game/music/kania-c7d591b4fa.mp3",
+    "client": "16.0",
+    "maps": [
+      "Kania racial/start areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "orc-3907af2e34",
+    "name": "Orc",
+    "title": null,
+    "bank": "Music_Race",
+    "group": "Races",
+    "duration": 283.421,
+    "ogg": "/game/music/orc-3907af2e34.ogg",
+    "mp3": "/game/music/orc-3907af2e34.mp3",
+    "client": "16.0",
+    "maps": [
+      "Orc racial/start areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "priden-887f7268e5",
+    "name": "Priden",
+    "title": null,
+    "bank": "Music_Race",
+    "group": "Races",
+    "duration": 300.049,
+    "ogg": "/game/music/priden-887f7268e5.ogg",
+    "mp3": "/game/music/priden-887f7268e5.mp3",
+    "client": "16.0",
+    "maps": [
+      "Howlem"
+    ],
+    "introducedIn": "6.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/6000-preview-priden-race"
+    ]
+  },
+  {
+    "id": "undead-a5bb606639",
+    "name": "Undead",
+    "title": null,
+    "bank": "Music_Race",
+    "group": "Races",
+    "duration": 220.277,
+    "ogg": "/game/music/undead-a5bb606639.ogg",
+    "mp3": "/game/music/undead-a5bb606639.mp3",
+    "client": "16.0",
+    "maps": [
+      "Undead racial/start areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "racesmusicinstruments-aed-412310e641",
+    "name": "RacesMusicInstruments_Aed",
+    "title": null,
+    "bank": "Music_RacesInstruments",
+    "group": "Instruments des races",
+    "duration": 84.48,
+    "ogg": "/game/music/racesmusicinstruments-aed-412310e641.ogg",
+    "mp3": "/game/music/racesmusicinstruments-aed-412310e641.mp3",
+    "client": "16.0",
+    "maps": [
+      "Aoidos/Aed content"
+    ],
+    "introducedIn": "8.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/forum/index.php?page=Thread&postID=88096"
+    ],
+    "archiveNote": "Aoidos/Aed race was introduced in 8.0; exact map trigger for this cue was not verified."
+  },
+  {
+    "id": "racesmusicinstruments-elf-4fa0133858",
+    "name": "RacesMusicInstruments_Elf",
+    "title": null,
+    "bank": "Music_RacesInstruments",
+    "group": "Instruments des races",
+    "duration": 55.111,
+    "ogg": "/game/music/racesmusicinstruments-elf-4fa0133858.ogg",
+    "mp3": "/game/music/racesmusicinstruments-elf-4fa0133858.mp3",
+    "client": "16.0",
+    "maps": [
+      "Elf racial areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "racesmusicinstruments-gibberlings-838231f183",
+    "name": "RacesMusicInstruments_Gibberlings",
+    "title": null,
+    "bank": "Music_RacesInstruments",
+    "group": "Instruments des races",
+    "duration": 84.48,
+    "ogg": "/game/music/racesmusicinstruments-gibberlings-838231f183.ogg",
+    "mp3": "/game/music/racesmusicinstruments-gibberlings-838231f183.mp3",
+    "client": "16.0",
+    "maps": [
+      "Gibberlings racial areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "racesmusicinstruments-hadagan-f150e547e7",
+    "name": "RacesMusicInstruments_Hadagan",
+    "title": null,
+    "bank": "Music_RacesInstruments",
+    "group": "Instruments des races",
+    "duration": 84.48,
+    "ogg": "/game/music/racesmusicinstruments-hadagan-f150e547e7.ogg",
+    "mp3": "/game/music/racesmusicinstruments-hadagan-f150e547e7.mp3",
+    "client": "16.0",
+    "maps": [
+      "Hadagan racial areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "racesmusicinstruments-kania-638b247d18",
+    "name": "RacesMusicInstruments_Kania",
+    "title": null,
+    "bank": "Music_RacesInstruments",
+    "group": "Instruments des races",
+    "duration": 84.48,
+    "ogg": "/game/music/racesmusicinstruments-kania-638b247d18.ogg",
+    "mp3": "/game/music/racesmusicinstruments-kania-638b247d18.mp3",
+    "client": "16.0",
+    "maps": [
+      "Kania racial areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "racesmusicinstruments-orc-574997c5d5",
+    "name": "RacesMusicInstruments_Orc",
+    "title": null,
+    "bank": "Music_RacesInstruments",
+    "group": "Instruments des races",
+    "duration": 84.48,
+    "ogg": "/game/music/racesmusicinstruments-orc-574997c5d5.ogg",
+    "mp3": "/game/music/racesmusicinstruments-orc-574997c5d5.mp3",
+    "client": "16.0",
+    "maps": [
+      "Orc racial areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "racesmusicinstruments-undead-b6ab1e6e51",
+    "name": "RacesMusicInstruments_Undead",
+    "title": null,
+    "bank": "Music_RacesInstruments",
+    "group": "Instruments des races",
+    "duration": 84.48,
+    "ogg": "/game/music/racesmusicinstruments-undead-b6ab1e6e51.ogg",
+    "mp3": "/game/music/racesmusicinstruments-undead-b6ab1e6e51.mp3",
+    "client": "16.0",
+    "maps": [
+      "Undead racial areas"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ]
+  },
+  {
+    "id": "astral-hangar-adaptive-b10e4d7f44",
+    "name": "Astral_hangar_adaptive",
+    "title": null,
+    "bank": "Music_Astral_hangar",
+    "group": "Astral",
+    "duration": 147.692,
+    "ogg": "/game/music/astral-hangar-adaptive-b10e4d7f44.ogg",
+    "mp3": "/game/music/astral-hangar-adaptive-b10e4d7f44.mp3",
+    "client": "16.0",
+    "maps": [
+      "Astral Academy / hangar"
+    ],
+    "introducedIn": null,
+    "archiveConfidence": "probable",
+    "archiveSources": [],
+    "archiveNote": "Map inferred from filename; exact faction hangar and first update not verified."
+  },
+  {
+    "id": "astralcalm-9da0b6ca2a",
+    "name": "AstralCalm",
+    "title": null,
+    "bank": "Music_Astral",
+    "group": "Astral",
+    "duration": 220.096,
+    "ogg": "/game/music/astralcalm-9da0b6ca2a.ogg",
+    "mp3": "/game/music/astralcalm-9da0b6ca2a.mp3",
+    "client": "16.0",
+    "maps": [
+      "Astral"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "General Astral cue; exact encounter/sector trigger varies or was not verified."
+  },
+  {
+    "id": "astralprelude-189022d684",
+    "name": "AstralPrelude",
+    "title": null,
+    "bank": "Music_Astral",
+    "group": "Astral",
+    "duration": 187.189,
+    "ogg": "/game/music/astralprelude-189022d684.ogg",
+    "mp3": "/game/music/astralprelude-189022d684.mp3",
+    "client": "16.0",
+    "maps": [
+      "Astral"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "General Astral cue; exact encounter/sector trigger varies or was not verified."
+  },
+  {
+    "id": "astralwary-3455c43422",
+    "name": "AstralWary",
+    "title": null,
+    "bank": "Music_Astral",
+    "group": "Astral",
+    "duration": 213.925,
+    "ogg": "/game/music/astralwary-3455c43422.ogg",
+    "mp3": "/game/music/astralwary-3455c43422.mp3",
+    "client": "16.0",
+    "maps": [
+      "Astral"
+    ],
+    "introducedIn": "1.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://www.allods.gipat.ru/index.php?p=aomusic"
+    ],
+    "archiveNote": "General Astral cue; exact encounter/sector trigger varies or was not verified."
+  },
+  {
+    "id": "ai68-toaddance-1ac37ad95f",
+    "name": "AI68_ToadDance",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 32.0,
+    "ogg": "/game/music/ai68-toaddance-1ac37ad95f.ogg",
+    "mp3": "/game/music/ai68-toaddance-1ac37ad95f.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "aidenusloreevent-333010775e",
+    "name": "AidenusLoreEvent",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 39.024,
+    "ogg": "/game/music/aidenusloreevent-333010775e.ogg",
+    "mp3": "/game/music/aidenusloreevent-333010775e.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "ass-battle01-07c2d1c83b",
+    "name": "ASS_Battle01",
+    "title": null,
+    "bank": "Music_ASS",
+    "group": "Donjons/Combat",
+    "duration": 158.678,
+    "ogg": "/game/music/ass-battle01-07c2d1c83b.ogg",
+    "mp3": "/game/music/ass-battle01-07c2d1c83b.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "cinemaprojectorsound-lp-1783ea7fd6",
+    "name": "cinemaProjectorSound_lp",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 22.0,
+    "ogg": "/game/music/cinemaprojectorsound-lp-1783ea7fd6.ogg",
+    "mp3": "/game/music/cinemaprojectorsound-lp-1783ea7fd6.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "illusionworldadaptive-cfa092de1e",
+    "name": "IllusionWorldAdaptive",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 338.361,
+    "ogg": "/game/music/illusionworldadaptive-cfa092de1e.ogg",
+    "mp3": "/game/music/illusionworldadaptive-cfa092de1e.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "jungleadaptive-599d46783b",
+    "name": "JungleAdaptive",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 185.539,
+    "ogg": "/game/music/jungleadaptive-599d46783b.ogg",
+    "mp3": "/game/music/jungleadaptive-599d46783b.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "nihazadaptive-4d2e4130a4",
+    "name": "NihazAdaptive",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 295.537,
+    "ogg": "/game/music/nihazadaptive-4d2e4130a4.ogg",
+    "mp3": "/game/music/nihazadaptive-4d2e4130a4.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "oneyeareventremix-loop-vinilfx-e9671888a0",
+    "name": "OneYearEventRemix_Loop_VinilFX",
+    "title": null,
+    "bank": "Music_Ingame01",
+    "group": "Donjons/Combat",
+    "duration": 100.298,
+    "ogg": "/game/music/oneyeareventremix-loop-vinilfx-e9671888a0.ogg",
+    "mp3": "/game/music/oneyeareventremix-loop-vinilfx-e9671888a0.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "racesmusicinstruments-priden-ce60feb115",
+    "name": "RacesMusicInstruments_Priden",
+    "title": null,
+    "bank": "Music_Ingame01",
+    "group": "Donjons/Combat",
+    "duration": 116.48,
+    "ogg": "/game/music/racesmusicinstruments-priden-ce60feb115.ogg",
+    "mp3": "/game/music/racesmusicinstruments-priden-ce60feb115.mp3",
+    "client": "16.0",
+    "maps": [
+      "Howlem"
+    ],
+    "introducedIn": "6.0",
+    "archiveConfidence": "inferred",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/6000-preview-priden-race"
+    ]
+  },
+  {
+    "id": "sanatorium-march-b9f6f67e10",
+    "name": "Sanatorium_March",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 58.875,
+    "ogg": "/game/music/sanatorium-march-b9f6f67e10.ogg",
+    "mp3": "/game/music/sanatorium-march-b9f6f67e10.mp3",
+    "client": "16.0",
+    "maps": [
+      "Suslanger - Sanatorium"
+    ],
+    "introducedIn": "12.0",
+    "archiveConfidence": "probable",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-120-desert-dreams-successfully-installed"
+    ],
+    "archiveNote": "Suslanger is a 12.0 location and its sanatorium is part of that setting; filename-to-trigger match is inferred."
+  },
+  {
+    "id": "siege-warfare-adaptive-f28edab705",
+    "name": "Siege_warfare_adaptive",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 304.138,
+    "ogg": "/game/music/siege-warfare-adaptive-f28edab705.ogg",
+    "mp3": "/game/music/siege-warfare-adaptive-f28edab705.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "yaskerbirthdaypatefon1-lp-234b7ed1e0",
+    "name": "YaskerBirthdayPatefon1_lp",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 19.2,
+    "ogg": "/game/music/yaskerbirthdaypatefon1-lp-234b7ed1e0.ogg",
+    "mp3": "/game/music/yaskerbirthdaypatefon1-lp-234b7ed1e0.mp3",
+    "client": "16.0",
+    "maps": [
+      "Nezebgrad / Yasker birthday event"
+    ],
+    "introducedIn": null,
+    "archiveConfidence": "probable",
+    "archiveSources": [],
+    "archiveNote": "Event cue identified from filename; first event/update not verified."
+  },
+  {
+    "id": "yaskerbirthdaypatefon2-lp-cf7aa66617",
+    "name": "YaskerBirthdayPatefon2_lp",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 19.2,
+    "ogg": "/game/music/yaskerbirthdaypatefon2-lp-cf7aa66617.ogg",
+    "mp3": "/game/music/yaskerbirthdaypatefon2-lp-cf7aa66617.mp3",
+    "client": "16.0",
+    "maps": [
+      "Nezebgrad / Yasker birthday event"
+    ],
+    "introducedIn": null,
+    "archiveConfidence": "probable",
+    "archiveSources": [],
+    "archiveNote": "Event cue identified from filename; first event/update not verified."
+  },
+  {
+    "id": "yaskerbirthdaypatefon3-lp-cf5335dbd8",
+    "name": "YaskerBirthdayPatefon3_lp",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 38.141,
+    "ogg": "/game/music/yaskerbirthdaypatefon3-lp-cf5335dbd8.ogg",
+    "mp3": "/game/music/yaskerbirthdaypatefon3-lp-cf5335dbd8.mp3",
+    "client": "16.0",
+    "maps": [
+      "Nezebgrad / Yasker birthday event"
+    ],
+    "introducedIn": null,
+    "archiveConfidence": "probable",
+    "archiveSources": [],
+    "archiveNote": "Event cue identified from filename; first event/update not verified."
+  },
+  {
+    "id": "yaskerbirthdaypatefon4-lp-d70c944484",
+    "name": "YaskerBirthdayPatefon4_lp",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 28.594,
+    "ogg": "/game/music/yaskerbirthdaypatefon4-lp-d70c944484.ogg",
+    "mp3": "/game/music/yaskerbirthdaypatefon4-lp-d70c944484.mp3",
+    "client": "16.0",
+    "maps": [
+      "Nezebgrad / Yasker birthday event"
+    ],
+    "introducedIn": null,
+    "archiveConfidence": "probable",
+    "archiveSources": [],
+    "archiveNote": "Event cue identified from filename; first event/update not verified."
+  },
+  {
+    "id": "yaskerbirthdaypatefon5-lp-7a0d4f6100",
+    "name": "YaskerBirthdayPatefon5_lp",
+    "title": null,
+    "bank": "Music_Ingame",
+    "group": "Donjons/Combat",
+    "duration": 37.294,
+    "ogg": "/game/music/yaskerbirthdaypatefon5-lp-7a0d4f6100.ogg",
+    "mp3": "/game/music/yaskerbirthdaypatefon5-lp-7a0d4f6100.mp3",
+    "client": "16.0",
+    "maps": [
+      "Nezebgrad / Yasker birthday event"
+    ],
+    "introducedIn": null,
+    "archiveConfidence": "probable",
+    "archiveSources": [],
+    "archiveNote": "Event cue identified from filename; first event/update not verified."
+  },
+  {
+    "id": "darkfores-adaptive-643a88c244",
+    "name": "DarkFores_Adaptive",
+    "title": null,
+    "bank": "Music_Zone_Eden",
+    "group": "Eden",
+    "duration": 115.2,
+    "ogg": "/game/music/darkfores-adaptive-643a88c244.ogg",
+    "mp3": "/game/music/darkfores-adaptive-643a88c244.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "lightforestadaptive-705e2ad7ee",
+    "name": "LightForestAdaptive",
+    "title": null,
+    "bank": "Music_Zone_Eden",
+    "group": "Eden",
+    "duration": 122.182,
+    "ogg": "/game/music/lightforestadaptive-705e2ad7ee.ogg",
+    "mp3": "/game/music/lightforestadaptive-705e2ad7ee.mp3",
+    "client": "16.0",
+    "maps": [],
+    "introducedIn": null,
+    "archiveConfidence": "unknown",
+    "archiveSources": []
+  },
+  {
+    "id": "jigran-town-adaptive-0ebd16f5e5",
+    "name": "Jigran_Town_Adaptive",
+    "title": null,
+    "bank": "Music_Zone_Jigran",
+    "group": "Jigran",
+    "duration": 118.957,
+    "ogg": "/game/music/jigran-town-adaptive-0ebd16f5e5.ogg",
+    "mp3": "/game/music/jigran-town-adaptive-0ebd16f5e5.mp3",
+    "client": "16.0",
+    "maps": [
+      "Jigran"
+    ],
+    "introducedIn": "15.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-150-successfully-installed"
+    ]
+  },
+  {
+    "id": "jigran-village-adaptive-62eae9869e",
+    "name": "Jigran_Village_Adaptive",
+    "title": null,
+    "bank": "Music_Zone_Jigran",
+    "group": "Jigran",
+    "duration": 118.957,
+    "ogg": "/game/music/jigran-village-adaptive-62eae9869e.ogg",
+    "mp3": "/game/music/jigran-village-adaptive-62eae9869e.mp3",
+    "client": "16.0",
+    "maps": [
+      "Jigran"
+    ],
+    "introducedIn": "15.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-150-successfully-installed"
+    ]
+  },
+  {
+    "id": "kadagan-maintheme-thepowerofmetal-7f89aaa1d1",
+    "name": "Kadagan_MainTheme_ThePowerOfMetal",
+    "title": null,
+    "bank": "Music_Zone_Kadagan",
+    "group": "Kadagan",
+    "duration": 169.846,
+    "ogg": "/game/music/kadagan-maintheme-thepowerofmetal-7f89aaa1d1.ogg",
+    "mp3": "/game/music/kadagan-maintheme-thepowerofmetal-7f89aaa1d1.mp3",
+    "client": "16.0",
+    "maps": [
+      "Xadagan"
+    ],
+    "introducedIn": "16.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-160-successfully-installed"
+    ],
+    "archiveNote": "Client/internal naming uses Kadagan; current English official localization uses Xadagan."
+  },
+  {
+    "id": "kadagan-rock-concert-tsoi-e66064f31d",
+    "name": "Kadagan_Rock_Concert_Tsoi",
+    "title": null,
+    "bank": "Music_Zone_Kadagan",
+    "group": "Kadagan",
+    "duration": 116.0,
+    "ogg": "/game/music/kadagan-rock-concert-tsoi-e66064f31d.ogg",
+    "mp3": "/game/music/kadagan-rock-concert-tsoi-e66064f31d.mp3",
+    "client": "16.0",
+    "maps": [
+      "Xadagan"
+    ],
+    "introducedIn": "16.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-160-successfully-installed"
+    ],
+    "archiveNote": "Client/internal naming uses Kadagan; current English official localization uses Xadagan."
+  },
+  {
+    "id": "kadagan-town-adaptive-d9c0a1707d",
+    "name": "Kadagan_Town_Adaptive",
+    "title": null,
+    "bank": "Music_Zone_Kadagan",
+    "group": "Kadagan",
+    "duration": 118.0,
+    "ogg": "/game/music/kadagan-town-adaptive-d9c0a1707d.ogg",
+    "mp3": "/game/music/kadagan-town-adaptive-d9c0a1707d.mp3",
+    "client": "16.0",
+    "maps": [
+      "Xadagan"
+    ],
+    "introducedIn": "16.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-160-successfully-installed"
+    ],
+    "archiveNote": "Client/internal naming uses Kadagan; current English official localization uses Xadagan."
+  },
+  {
+    "id": "kadagan-undeground-adaptive-c1350fd9c9",
+    "name": "Kadagan_Undeground_Adaptive",
+    "title": null,
+    "bank": "Music_Zone_Kadagan",
+    "group": "Kadagan",
+    "duration": 109.091,
+    "ogg": "/game/music/kadagan-undeground-adaptive-c1350fd9c9.ogg",
+    "mp3": "/game/music/kadagan-undeground-adaptive-c1350fd9c9.mp3",
+    "client": "16.0",
+    "maps": [
+      "Xadagan"
+    ],
+    "introducedIn": "16.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-160-successfully-installed"
+    ],
+    "archiveNote": "Client/internal naming uses Kadagan; current English official localization uses Xadagan."
+  },
+  {
+    "id": "kadagan-wilderness-adaptive-f35a16ae59",
+    "name": "Kadagan_Wilderness_Adaptive",
+    "title": null,
+    "bank": "Music_Zone_Kadagan",
+    "group": "Kadagan",
+    "duration": 100.8,
+    "ogg": "/game/music/kadagan-wilderness-adaptive-f35a16ae59.ogg",
+    "mp3": "/game/music/kadagan-wilderness-adaptive-f35a16ae59.mp3",
+    "client": "16.0",
+    "maps": [
+      "Xadagan"
+    ],
+    "introducedIn": "16.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/en/news/announcements/update-160-successfully-installed"
+    ],
+    "archiveNote": "Client/internal naming uses Kadagan; current English official localization uses Xadagan."
+  },
+  {
+    "id": "kvator-bogatyroutpost-adaptive-3e46c93d5c",
+    "name": "Kvator_BogatyrOutpost_Adaptive",
+    "title": null,
+    "bank": "Music_Zone_Kvator",
+    "group": "Kvator",
+    "duration": 113.684,
+    "ogg": "/game/music/kvator-bogatyroutpost-adaptive-3e46c93d5c.ogg",
+    "mp3": "/game/music/kvator-bogatyroutpost-adaptive-3e46c93d5c.mp3",
+    "client": "17.0",
+    "maps": [
+      "Kvator"
+    ],
+    "introducedIn": "17.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.ru/news.php?article=11379"
+    ]
+  },
+  {
+    "id": "kvator-crusadercastle-adaptive-caa7555b20",
+    "name": "Kvator_CrusaderCastle_Adaptive",
+    "title": null,
+    "bank": "Music_Zone_Kvator",
+    "group": "Kvator",
+    "duration": 128.0,
+    "ogg": "/game/music/kvator-crusadercastle-adaptive-caa7555b20.ogg",
+    "mp3": "/game/music/kvator-crusadercastle-adaptive-caa7555b20.mp3",
+    "client": "17.0",
+    "maps": [
+      "Kvator"
+    ],
+    "introducedIn": "17.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.ru/news.php?article=11379"
+    ]
+  },
+  {
+    "id": "kvator-crusadercastle-high-9f62c9dc12",
+    "name": "Kvator_CrusaderCastle_High",
+    "title": null,
+    "bank": "Music_Zone_Kvator",
+    "group": "Kvator",
+    "duration": 128.0,
+    "ogg": "/game/music/kvator-crusadercastle-high-9f62c9dc12.ogg",
+    "mp3": "/game/music/kvator-crusadercastle-high-9f62c9dc12.mp3",
+    "client": "17.0",
+    "maps": [
+      "Kvator"
+    ],
+    "introducedIn": "17.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.ru/news.php?article=11379"
+    ]
+  },
+  {
+    "id": "kvator-darkforest-adaptive-81898a99a5",
+    "name": "Kvator_DarkForest_Adaptive",
+    "title": null,
+    "bank": "Music_Zone_Kvator",
+    "group": "Kvator",
+    "duration": 98.4,
+    "ogg": "/game/music/kvator-darkforest-adaptive-81898a99a5.ogg",
+    "mp3": "/game/music/kvator-darkforest-adaptive-81898a99a5.mp3",
+    "client": "17.0",
+    "maps": [
+      "Kvator"
+    ],
+    "introducedIn": "17.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.ru/news.php?article=11379"
+    ]
+  },
+  {
+    "id": "kvator-maintheme-thebloodofkings-479fe7f070",
+    "name": "Kvator_MainTheme_TheBloodOfKings",
+    "title": null,
+    "bank": "Music_Zone_Kvator",
+    "group": "Kvator",
+    "duration": 186.425,
+    "ogg": "/game/music/kvator-maintheme-thebloodofkings-479fe7f070.ogg",
+    "mp3": "/game/music/kvator-maintheme-thebloodofkings-479fe7f070.mp3",
+    "client": "17.0",
+    "maps": [
+      "Kvator"
+    ],
+    "introducedIn": "17.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.ru/news.php?article=11379"
+    ]
+  },
+  {
+    "id": "kvator-witchwasteland-adaptive-8d9f2355b4",
+    "name": "Kvator_WitchWasteland_Adaptive",
+    "title": null,
+    "bank": "Music_Zone_Kvator",
+    "group": "Kvator",
+    "duration": 91.636,
+    "ogg": "/game/music/kvator-witchwasteland-adaptive-8d9f2355b4.ogg",
+    "mp3": "/game/music/kvator-witchwasteland-adaptive-8d9f2355b4.mp3",
+    "client": "17.0",
+    "maps": [
+      "Kvator"
+    ],
+    "introducedIn": "17.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.ru/news.php?article=11379"
+    ]
+  }
+]

@@ -49,10 +49,17 @@ describe('OpeningScreen — audio', () => {
     expect(setTrack).toHaveBeenCalledWith('menu');
   });
 
-  it('passe à ambient et joue ui-click au premier clic sur un item de la barre', () => {
+  it('passe à ambient et joue ui-click au premier clic sur un item de la barre hors Chroniques', () => {
     const { getByRole } = renderMenu();
     fireEvent.click(getByRole('button', { name: 'Succès' }));
     expect(setTrack).toHaveBeenCalledWith('ambient');
+    expect(playSfx).toHaveBeenCalledWith('ui-click');
+  });
+
+  it('ne passe pas à ambient lors du clic sur Chroniques pour préserver la musique du menu', () => {
+    const { getByRole } = renderMenu();
+    fireEvent.click(getByRole('button', { name: 'Chroniques' }));
+    expect(setTrack).not.toHaveBeenCalledWith('ambient');
     expect(playSfx).toHaveBeenCalledWith('ui-click');
   });
 

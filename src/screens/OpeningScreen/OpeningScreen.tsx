@@ -100,10 +100,12 @@ export function OpeningScreen() {
   // le premier geste utilisateur (politique d'autoplay gérée par le moteur audio).
   useEffect(() => { if (track === null) setTrack('menu'); }, [track, setTrack]);
 
-  const handleItemInteract = useCallback(() => {
+  const handleItemInteract = useCallback((id: string) => {
     if (firstInteractionRef.current) return;
     firstInteractionRef.current = true;
-    setTrack('ambient');
+    if (id !== 'chronicles') {
+      setTrack('ambient');
+    }
     playSfx('ui-click');
   }, [setTrack, playSfx]);
 

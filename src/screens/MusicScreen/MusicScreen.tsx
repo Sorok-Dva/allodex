@@ -16,7 +16,7 @@ import { MusicProgress } from './MusicProgress';
 
 const GROUP_KEYS: Record<string, MessageKey> = {
   Menu: 'music.group.menu', Zones: 'music.group.zones', 'Zones de départ': 'music.group.start',
-  Peuples: 'music.group.races', 'Instruments des peuples': 'music.group.instruments',
+  Races: 'music.group.races', 'Instruments des races': 'music.group.instruments',
   Astral: 'music.group.astral', 'Donjons/Combat': 'music.group.combat',
   Eden: 'music.group.eden', Jigran: 'music.group.jigran', Kadagan: 'music.group.kadagan',
   Kvator: 'music.group.kvator', Isa: 'music.group.isa',

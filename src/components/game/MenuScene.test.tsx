@@ -64,6 +64,18 @@ async function mount() {
 }
 
 describe('MenuScene', () => {
+  it('conserve la hauteur du cadrage orthographique lors du redimensionnement', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ ...META,
+      camera: { ...META.camera, orthographicHeight: 100 } }) }));
+    await mount();
+    await act(async () => { loader.load.mock.calls[0][1](fakeGltf()); });
+    const camera = renderer.render.mock.calls[0][1] as THREE.OrthographicCamera;
+    expect(camera.isOrthographicCamera).toBe(true);
+    expect(camera.top - camera.bottom).toBe(100);
+    expect(camera.right - camera.left).toBeCloseTo(100 * window.innerWidth / window.innerHeight);
+    await act(async () => { window.dispatchEvent(new Event('resize')); });
+    expect(camera.top - camera.bottom).toBe(100);
+  });
   it('monte un canvas et demande le .glb au chargeur injecté', async () => {
     const { getByTestId } = await mount();
     expect(getByTestId('menu-scene').tagName).toBe('CANVAS');

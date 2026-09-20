@@ -1,0 +1,252 @@
+{
+ "title-plate-left": {
+  "w": 38,
+  "h": 31,
+  "slice": null
+ },
+ "title-plate-mid": {
+  "w": 8,
+  "h": 31,
+  "slice": null
+ },
+ "title-plate-right": {
+  "w": 38,
+  "h": 31,
+  "slice": null
+ },
+ "band-left": {
+  "w": 112,
+  "h": 37,
+  "slice": null
+ },
+ "band-mid": {
+  "w": 8,
+  "h": 37,
+  "slice": null
+ },
+ "band-right": {
+  "w": 112,
+  "h": 37,
+  "slice": null
+ },
+ "rail-top": {
+  "w": 8,
+  "h": 11,
+  "slice": null
+ },
+ "rail-top-left": {
+  "w": 74,
+  "h": 18,
+  "slice": null
+ },
+ "rail-top-right": {
+  "w": 47,
+  "h": 18,
+  "slice": null
+ },
+ "rail-bottom": {
+  "w": 8,
+  "h": 21,
+  "slice": null
+ },
+ "rail-right": {
+  "w": 14,
+  "h": 8,
+  "slice": null
+ },
+ "corner-tl": {
+  "w": 18,
+  "h": 18,
+  "slice": null
+ },
+ "corner-tr": {
+  "w": 18,
+  "h": 18,
+  "slice": null
+ },
+ "corner-bl": {
+  "w": 18,
+  "h": 18,
+  "slice": null
+ },
+ "corner-br": {
+  "w": 18,
+  "h": 18,
+  "slice": null
+ },
+ "divider-v": {
+  "w": 21,
+  "h": 8,
+  "slice": null
+ },
+ "pill-mid": {
+  "w": 8,
+  "h": 28,
+  "slice": null
+ },
+ "medallion-plus": {
+  "w": 24,
+  "h": 21,
+  "slice": null
+ },
+ "medallion-minus": {
+  "w": 24,
+  "h": 21,
+  "slice": null
+ },
+ "search-field": {
+  "w": 232,
+  "h": 24,
+  "slice": [
+   5,
+   6,
+   5,
+   6
+  ]
+ },
+ "scroll-up": {
+  "w": 22,
+  "h": 23,
+  "slice": null
+ },
+ "scroll-down": {
+  "w": 22,
+  "h": 23,
+  "slice": null
+ },
+ "scroll-track": {
+  "w": 22,
+  "h": 8,
+  "slice": [
+   2,
+   0,
+   2,
+   0
+  ]
+ },
+ "scroll-thumb": {
+  "w": 19,
+  "h": 20,
+  "slice": null
+ },
+ "content-header": {
+  "w": 8,
+  "h": 38,
+  "slice": [
+   10,
+   0,
+   10,
+   0
+  ]
+ },
+ "dropdown-field": {
+  "w": 126,
+  "h": 24,
+  "slice": [
+   5,
+   6,
+   5,
+   6
+  ]
+ },
+ "dropdown-button": {
+  "w": 23,
+  "h": 23,
+  "slice": null
+ },
+ "dropdown-frame": {
+  "w": 153,
+  "h": 87,
+  "slice": [
+   4,
+   4,
+   4,
+   4
+  ]
+ },
+ "rank-tag": {
+  "w": 10,
+  "h": 13,
+  "slice": [
+   2,
+   2,
+   2,
+   2
+  ]
+ },
+ "series-slot": {
+  "w": 35,
+  "h": 35,
+  "slice": [
+   3,
+   3,
+   3,
+   3
+  ]
+ },
+ "checkbox-off": {
+  "w": 20,
+  "h": 20,
+  "slice": null
+ },
+ "checkbox-on": {
+  "w": 20,
+  "h": 20,
+  "slice": null
+ },
+ "close-button": {
+  "w": 30,
+  "h": 30,
+  "slice": null
+ },
+ "pill-full": {
+  "w": 242,
+  "h": 28,
+  "slice": null
+ },
+ "tooltip-frame": {
+  "w": 333,
+  "h": 113,
+  "slice": [
+   4,
+   4,
+   4,
+   4
+  ]
+ },
+ "pill-full-open": {
+  "w": 242,
+  "h": 28,
+  "slice": null
+ },
+ "scroll-up-off": {
+  "w": 22,
+  "h": 23,
+  "slice": null
+ },
+ "scroll-down-off": {
+  "w": 22,
+  "h": 23,
+  "slice": null
+ },
+ "medallion-normal": {
+  "w": 32,
+  "h": 32,
+  "slice": null
+ },
+ "medallion-pressed": {
+  "w": 32,
+  "h": 32,
+  "slice": null
+ },
+ "music-action-normal": {
+  "w": 46,
+  "h": 52,
+  "slice": null
+ },
+ "music-action-pressed": {
+  "w": 46,
+  "h": 52,
+  "slice": null
+ }
+}

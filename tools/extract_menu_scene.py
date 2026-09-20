@@ -218,6 +218,7 @@ class MaterialSpec:
     transparent: bool = False
     visible: bool = True
     alpha: float = 1.0
+    uv_scroll: tuple[float, float] = (0.0, 0.0)
 
 
 @dataclass
@@ -312,6 +313,9 @@ def parse_geometry_xdb(text: str) -> GeometryDoc:
                 mat.texture = tex.get("href")
             mat.blend = (mat_node.findtext("BlendEffect") or "BLEND_EFFECT_ALPHA").strip()
             mat.transparent = _bool(mat_node.findtext("transparent"))
+            if _bool(mat_node.findtext("scrollRGB")) or _bool(mat_node.findtext("scrollAlpha")):
+                mat.uv_scroll = (float(mat_node.findtext("uTranslateSpeed") or "0"),
+                                 float(mat_node.findtext("vTranslateSpeed") or "0"))
             mat.visible = _bool(mat_node.findtext("visible"), True)
             mat.alpha = float(mat_node.findtext("transparencyModifier") or "1")
         doc.elements.append(ElementSpec(
@@ -1032,6 +1036,31 @@ def _quat_rotate(q: tuple, v: tuple) -> tuple:
     return (vx + w * tx + (y * tz - z * ty), vy + w * ty + (z * tx - x * tz), vz + w * tz + (x * ty - y * tx))
 
 
+def attachment_bind_positions(vertices: dict[str, np.ndarray], skeleton: Skeleton) -> np.ndarray:
+    """Applique le repère natif avant d'attacher un objet à son locator.
+
+    Les drapeaux/pierres V7 ne sont pas centrés à l'origine dans le vertex buffer.
+    La hiérarchie native contient leur recentrage. Employer des inverses recalculées
+    sur l'image 0 l'annule et applique le décalage d'attache une deuxième fois.
+    Conserver ici les matrices complètes préserve aussi échelles et cisaillements.
+    """
+    world = np.tile(np.eye(4), (len(skeleton), 1, 1))
+    inverse = np.tile(np.eye(4), (len(skeleton), 1, 1))
+    inverse[:, :3, :] = skeleton.inverse.transpose(0, 2, 1)
+    for i in skeleton.topological_order():
+        local = np.eye(4)
+        local[:3, :] = skeleton.local[i].T
+        parent = skeleton.parents[i]
+        world[i] = world[parent] @ local if 0 <= parent < len(skeleton) else local
+    palette = world @ inverse
+    joints, weights = skin_attributes(vertices, len(skeleton))
+    points = np.column_stack((vertices["position"], np.ones(len(vertices["position"]))))
+    result = np.zeros_like(points)
+    for slot in range(4):
+        result += np.einsum("nij,nj->ni", palette[joints[:, slot]], points) * (weights[:, slot] / 255)[:, None]
+    return result[:, :3].astype(np.float32)
+
+
 def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
                 max_texture: int = 512) -> tuple[bytes, dict, list[str]]:
     builder = SceneBuilder(server_root, spec["dir"], source, max_texture)
@@ -1057,6 +1086,8 @@ def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
 
     def material_for(mat: MaterialSpec) -> int:
         additive = mat.blend == "BLEND_EFFECT_ADD"
+        if version == "7.0" and not mat.transparent:
+            additive = False  # le BlendEffect ne s'applique pas aux matériaux opaques
         tex = texture_for(mat.texture)
         key = (mat.name, tex, additive, mat.transparent, round(mat.alpha, 4))
         if key not in material_index:
@@ -1072,6 +1103,8 @@ def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
         stats["objects"] += 1
         verts = obj.vertices
         position = verts["position"].astype(np.float32)
+        if version == "7.0" and obj.skeleton is not None and (name.startswith("AMM_Flag_") or name.startswith("AMM_7_0_Stones_")):
+            position = attachment_bind_positions(verts, obj.skeleton)
         uv = verts.get("texcoord0", np.zeros((len(position), 2), np.float32)).astype(np.float32)
         color = verts.get("color")
         if color is None:
@@ -1103,7 +1136,9 @@ def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
             stats["triangles"] += tri.size // 3
             acc_idx = gltf.add_accessor(tri.astype(np.uint32), "SCALAR", "u32", target=34963)
             primitives.append({"attributes": attributes, "indices": acc_idx,
-                               "material": material_for(element.material), "mode": 4})
+                               "material": material_for(element.material), "mode": 4,
+                               "extras": {"element": element.name,
+                                          "uvScroll": list(element.material.uv_scroll)}})
         if not primitives:
             return None
         gltf.json["meshes"].append({"name": name, "primitives": primitives})
@@ -1338,14 +1373,15 @@ def render_glb(glb: bytes, meta: dict, width: int = 960, height: int = 540,
     right = np.cross(forward, up)
     right /= max(np.linalg.norm(right), 1e-9)
     true_up = np.cross(right, forward)
-    ty = math.tan(math.radians(cam.get("fov", 45)) / 2)
+    orthographic = cam.get("orthographicHeight", 0)
+    ty = orthographic / 2 if orthographic else math.tan(math.radians(cam.get("fov", 45)) / 2)
     tx = ty * width / height
 
     drawn = []
     for world, uv, col, idx, tex, additive, alpha in batches:
         rel = world - eye
         cz = rel @ forward
-        zs = np.where(np.abs(cz) < 1e-6, 1e-6, cz)
+        zs = np.ones_like(cz) if orthographic else np.where(np.abs(cz) < 1e-6, 1e-6, cz)
         sx = w / 2 + ((rel @ right) / zs) / tx * (w / 2)
         sy = h / 2 - ((rel @ true_up) / zs) / ty * (h / 2)
         screen = np.stack([sx, sy, cz], 1)
@@ -1446,10 +1482,30 @@ def run(manifest: dict, out_dir: Path, only: list[str] | None = None,
             report.append(f"AVERTISSEMENT : {version} — arbre serveur absent : {server_root}")
             continue
         glb, meta, notes = build_scene(version, spec, server_root, source,
-                                       int(manifest.get("max_texture", 512)))
+                                       int(spec.get("max_texture", manifest.get("max_texture", 512))))
         validate_glb(glb)
         target = out_dir / version
         target.mkdir(parents=True, exist_ok=True)
+        if version == "7.0":
+            # Textures originales des AMM_Shot01/02 : chemins explicites, sans
+            # dépendre d'un matériau partagé ou d'un nom de primitive du GLB.
+            library = TextureLibrary(source, server_root, 512)
+            effects = {}
+            for key, texture in {
+                "projectile": "Glow04White",
+                "muzzle": "ManaFire01",
+                "impact": "Rays23White",
+                "shield": "Glow04Blue",
+                "flame": "Fire07",
+                "electric": "NoiseLight",
+                "spark": "Spark06White",
+            }.items():
+                result = library.png(f"/Spells/FX/Textures/{texture}.(Texture).xdb")
+                if result is not None:
+                    filename = f"cannon-{key}.png"
+                    (target / filename).write_bytes(result[0])
+                    effects[key] = filename
+            meta["cannonTextures"] = effects
         (target / "scene.glb").write_bytes(glb)
         (target / "scene.json").write_text(json.dumps(meta, indent=2, ensure_ascii=False) + "\n",
                                            encoding="utf-8")

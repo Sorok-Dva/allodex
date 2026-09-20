@@ -99,7 +99,7 @@ function MediaLayer({ entry }: { entry: ArchiveEntry }) {
 function LaunchTitle({ entry }: { entry: ArchiveEntry }) {
   if (entry.logo) {
     return (
-      <div className={s.title}>
+      <div className={`${s.title} ${entry.version === '7.0' ? s.titleV7 : ''}`}>
         <img
           key={entry.version}
           className={s.logo}
@@ -294,7 +294,7 @@ export function ChroniclesScreen() {
           <MediaLayer entry={layer.entry} />
         </div>
       ))}
-      <div className={`${s.vignette} ${s.hud}`} />
+      <div className={`${s.vignette} ${entry.version === '7.0' ? s.vignetteV7 : ''} ${s.hud}`} />
 
       {entry && <LaunchTitle entry={entry} />}
 

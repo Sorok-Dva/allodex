@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { SceneMeta } from '@/lib/assets';
+import { createV7Effects, type CannonTextures } from './menuSceneV7';
 import s from './MenuScene.module.css';
 
 /**
@@ -145,8 +146,10 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
     let frame = 0;
     let firstFrame = true;
     let renderer: THREE.WebGLRenderer | null = null;
-    let camera: THREE.PerspectiveCamera | null = null;
+    let camera: THREE.PerspectiveCamera | THREE.OrthographicCamera | null = null;
     let mixer: THREE.AnimationMixer | null = null;
+    let v7Effects: ReturnType<typeof createV7Effects> | null = null;
+    let elapsed = 0;
     let observer: ResizeObserver | null = null;
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
 
@@ -170,7 +173,12 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
     const resize = () => {
       if (!renderer || !camera) return;
       const { width, height } = size();
-      camera.aspect = width / height;
+      if (camera instanceof THREE.PerspectiveCamera) camera.aspect = width / height;
+      else {
+        const halfHeight = (camera.top - camera.bottom) / 2;
+        camera.left = -halfHeight * width / height;
+        camera.right = halfHeight * width / height;
+      }
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
       draw();
@@ -178,7 +186,10 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
 
     const tick = () => {
       frame = requestAnimationFrame(tick);
-      mixer?.update(delta());
+      const step = delta();
+      elapsed += step;
+      mixer?.update(step);
+      v7Effects?.update(elapsed);
       draw();
     };
     const start = () => {
@@ -221,7 +232,10 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
       scene.add(root);
 
       const { position, target, fov } = meta.camera;
-      camera = new THREE.PerspectiveCamera(fov, 1, 1, 10_000);
+      const halfHeight = meta.camera.orthographicHeight ? meta.camera.orthographicHeight / 2 : 0;
+      camera = halfHeight
+        ? new THREE.OrthographicCamera(-halfHeight, halfHeight, halfHeight, -halfHeight, 1, 10_000)
+        : new THREE.PerspectiveCamera(fov, 1, 1, 10_000);
       camera.up.set(meta.up[0], meta.up[1], meta.up[2]);
       camera.position.set(position[0], position[1], position[2]);
       camera.lookAt(new THREE.Vector3(target[0], target[1], target[2]));
@@ -243,9 +257,26 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
       if (gltf.animations.length) {
         mixer = new THREE.AnimationMixer(root);
         for (const clip of gltf.animations) {
-          mixer.clipAction(clip).setLoop(THREE.LoopRepeat, Infinity).play();
+          const action = mixer.clipAction(clip);
+          const intro = meta.version === '7.0' && clip.name === 'AMM_7_0_Ships_Destroyed';
+          action.setLoop(intro ? THREE.LoopOnce : THREE.LoopRepeat, intro ? 1 : Infinity);
+          action.clampWhenFinished = intro;
+          action.play();
         }
         mixer.update(0);
+      }
+
+      if (meta.version === '7.0') {
+        const cannonTextures: CannonTextures = {};
+        for (const [key, file] of Object.entries(meta.cannonTextures ?? {})) {
+          const texture = new THREE.TextureLoader().load(new URL(file, new URL(metaUrl, window.location.href)).href);
+          texture.colorSpace = THREE.NoColorSpace;
+          texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
+          textures.add(texture);
+          cannonTextures[key as keyof typeof cannonTextures] = texture;
+        }
+        v7Effects = createV7Effects(root, cannonTextures);
+        v7Effects.update(0, reduced);
       }
 
       resize();
@@ -297,6 +328,7 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
       window.removeEventListener('resize', onResize);
       document.removeEventListener('visibilitychange', onVisibility);
       mixer?.stopAllAction();
+      v7Effects?.dispose();
       mixer = null;
       scene.traverse(object => {
         const mesh = object as THREE.Mesh;

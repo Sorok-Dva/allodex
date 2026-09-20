@@ -13,6 +13,8 @@ import pytest
 
 from tools.extract_menu_scene import (
     GltfBuilder,
+    Skeleton,
+    attachment_bind_positions,
     VertexLayout,
     build_scene,
     decode_vertex_buffer,
@@ -116,6 +118,27 @@ def test_skin_attributes_falls_back_when_all_weights_are_zero():
 
 # --- xdb ------------------------------------------------------------------------------------
 
+def test_attachment_bind_positions_keeps_native_scale_and_recenters():
+    local = np.array([[[2, 0, 0], [0, 1, 0], [0, 0, 1], [-10, 0, 0]]], dtype=float)
+    inverse = np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 0, 0]]], dtype=float)
+    skeleton = Skeleton(["root"], [-1], local, inverse, [0])
+    vertices = {"position": np.array([[6, 2, 3]], dtype=float),
+                "indices": np.array([[0, 255, 255, 255]], np.uint8),
+                "weights": np.array([[255, 0, 0, 0]], np.uint8)}
+    assert attachment_bind_positions(vertices, skeleton).tolist() == [[2, 2, 3]]
+
+
+def test_v7_opaque_material_does_not_inherit_additive_blending(tmp_path):
+    from tools.extract_menu_scene import BinSource
+    spec, paths = _write_scene_fixture(tmp_path, with_skeleton=False)
+    path = paths["server_root"] / "World/MainMenu/Animated_Background_Test/Demo.(Geometry).xdb"
+    path.write_text(path.read_text().replace('<transparent>true</transparent>', '<transparent>false</transparent>'))
+    glb, _, _ = build_scene("7.0", spec, paths["server_root"], BinSource([paths["bin_dir"]], []))
+    doc = validate_glb(glb)
+    material = doc["materials"][doc["meshes"][0]["primitives"][0]["material"]]
+    assert material["alphaMode"] == "OPAQUE"
+    assert material.get("extras", {}).get("blend") != "add"
+
 GEOMETRY_XDB = """<?xml version="1.0" encoding="UTF-8" ?>
 <Geometry>
     <SkeletalAnimation href="/World/MainMenu/X/Demo.(SkeletalAnimation).xdb#xpointer(/a)"/>
@@ -179,6 +202,14 @@ GEOMETRY_XDB = """<?xml version="1.0" encoding="UTF-8" ?>
     </modelElements>
 </Geometry>
 """
+
+
+def test_parse_geometry_xdb_keeps_native_uv_scroll():
+    text = GEOMETRY_XDB.replace('<transparencyModifier>0.5</transparencyModifier>',
+        '<transparencyModifier>0.5</transparencyModifier><scrollRGB>true</scrollRGB>'
+        '<uTranslateSpeed>-0.05</uTranslateSpeed><vTranslateSpeed>0.02</vTranslateSpeed>')
+    material = parse_geometry_xdb(text).elements[0].material
+    assert material.uv_scroll == (-0.05, 0.02)
 
 
 def test_parse_geometry_xdb_reads_elements_and_materials():
@@ -493,6 +524,8 @@ def test_build_scene_writes_a_valid_glb_with_skin_and_animation(tmp_path):
     assert meta["animations"] == ["Demo"]
     assert doc["skins"] and doc["animations"]
     primitive = doc["meshes"][0]["primitives"][0]
+    assert primitive["extras"]["element"]  # ciblage des effets, indépendant du matériau partagé
+    assert primitive["extras"]["uvScroll"] == [0, 0]
     assert {"POSITION", "TEXCOORD_0", "COLOR_0", "JOINTS_0", "WEIGHTS_0"} <= set(primitive["attributes"])
     material = doc["materials"][primitive["material"]]
     assert material["alphaMode"] == "BLEND"
@@ -552,7 +585,8 @@ def test_run_skips_unpublished_versions_and_removes_a_previous_drop(tmp_path, mo
     (out / "4.0").mkdir(parents=True)
     (out / "4.0" / "scene.glb").write_bytes(b"old")
     (out / "4.0" / "scene.json").write_text("{}")
-    manifest = {"server_root": str(server), "versions": {"4.0": {"dir": "AB", "publish": False}}}
+    manifest = {"server_root": str(server), "max_texture": 512,
+                "versions": {"4.0": {"dir": "AB", "publish": False, "max_texture": 2048}}}
     called = []
     monkeypatch.setattr(ems, "build_scene", lambda *a, **k: called.append(a) or (b"glb", {"stats": {"triangles": 0, "textures": 0, "animations": 0}}, []))
     monkeypatch.setattr(ems, "validate_glb", lambda glb: None)
@@ -566,3 +600,4 @@ def test_run_skips_unpublished_versions_and_removes_a_previous_drop(tmp_path, mo
     # `--only` force l'export malgré `publish: false`.
     results = ems.run(manifest, out, only=["4.0"], report=report)
     assert "4.0" in results and (out / "4.0" / "scene.glb").read_bytes() == b"glb"
+    assert called[-1][-1] == 2048  # la qualité propre à une version prime sur le défaut global

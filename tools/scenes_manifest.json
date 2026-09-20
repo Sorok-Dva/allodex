@@ -92,6 +92,8 @@
       }
     },
     "7.0": {
+      "max_texture": 2048,
+      "_camera_note": "Projection orthographique calée visuellement sur refs/captures-ui/menu-7.0*.png, pour garder les plans peints sans déformation perspective. Ce n'est pas une caméra extraite du client.",
       "dir": "Animated_Background_7_0",
       "roots": [
         "AMM_7_0",
@@ -107,15 +109,16 @@
       "camera": {
         "position": [
           0,
-          95,
-          13
+          450,
+          0
         ],
         "target": [
           0,
           -160,
           0
         ],
-        "fov": 35
+        "fov": 13,
+        "orthographicHeight": 100
       }
     },
     "8.0": {

@@ -1,0 +1,418 @@
+[
+  {
+    "version": "1.0",
+    "label": "Allods Online (1.0)",
+    "media": "image",
+    "background": "background.png",
+    "logo": "logo.png",
+    "theme": {
+      "name": "MainTitle",
+      "subsong": 1,
+      "duration": 168.046,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "MenuAmbient",
+        "Credits1_TEST",
+        "Credits2_TEST"
+      ]
+    },
+    "note": "écran recomposé : le menu des clients 1.x empile le ciel, les vaisseaux et les héros des deux factions"
+  },
+  {
+    "version": "2.0",
+    "name": "Conquerors of Time",
+    "label": "Allods Online - Conquerors of Time (2.0)",
+    "media": "image",
+    "background": "background.png",
+    "logo": "logo.png",
+    "theme": {
+      "name": "MainTitle",
+      "subsong": 2,
+      "duration": 168.008,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM",
+        "MenuAmbient"
+      ]
+    }
+  },
+  {
+    "version": "3.0",
+    "name": "Game of Gods",
+    "label": "Allods Online - Game of Gods (3.0)",
+    "media": "image",
+    "background": "background.png",
+    "logo": "logo.png",
+    "theme": {
+      "name": "MainMenu_adaptive",
+      "subsong": 2,
+      "duration": 239.189,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM",
+        "MainTitle"
+      ]
+    }
+  },
+  {
+    "version": "4.0",
+    "name": "Lords of Destiny",
+    "label": "Allods Online - Lords of Destiny (4.0)",
+    "media": "image",
+    "background": "background.png",
+    "logo": "logo.png",
+    "theme": {
+      "name": "MainMenu_LordsOfDestiny_lpp",
+      "subsong": 2,
+      "duration": 214.599,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM",
+        "MainTitle"
+      ]
+    }
+  },
+  {
+    "version": "5.0",
+    "name": "Heart of the World",
+    "label": "Allods Online - Heart of the World (5.0)",
+    "media": "image",
+    "background": "background.png",
+    "logo": "logo.png",
+    "theme": {
+      "name": "MainMenu_HeartOfTheWorld",
+      "subsong": 2,
+      "duration": 173.627,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM"
+      ]
+    }
+  },
+  {
+    "version": "6.0",
+    "name": "Broken Chains",
+    "label": "Allods Online - Broken Chains (6.0)",
+    "media": "image",
+    "background": "background.png",
+    "scene": {
+      "glb": "scene.glb",
+      "meta": "scene.json"
+    },
+    "logo": "logo.png",
+    "theme": {
+      "name": "MainMenu_BrokenChains",
+      "subsong": 2,
+      "duration": 198.452,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM"
+      ]
+    }
+  },
+  {
+    "version": "7.0",
+    "name": "New Order",
+    "label": "Allods Online - New Order (7.0)",
+    "media": "image",
+    "background": "background.png",
+    "scene": {
+      "glb": "scene.glb",
+      "meta": "scene.json"
+    },
+    "logo": "logo.png",
+    "theme": {
+      "name": "MainMenu_NewOrder",
+      "subsong": 2,
+      "duration": 188.5,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM"
+      ]
+    }
+  },
+  {
+    "version": "8.0",
+    "name": "Immortality",
+    "label": "Allods Online - Immortality (8.0)",
+    "media": "image",
+    "background": "background.png",
+    "scene": {
+      "glb": "scene.glb",
+      "meta": "scene.json"
+    },
+    "logo": "logo.png",
+    "theme": {
+      "name": "MainMenu_Immortality",
+      "subsong": 2,
+      "duration": 182.687,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM",
+        "MainTitle",
+        "MenuAmbient"
+      ]
+    }
+  },
+  {
+    "version": "9.0",
+    "name": "Awakening",
+    "label": "Allods Online - Awakening (9.0)",
+    "media": "video",
+    "duration": 15.0,
+    "logo": "logo.png",
+    "video": {
+      "webm": "menu.webm",
+      "mp4": "menu.mp4"
+    },
+    "intro": {
+      "webm": "intro.webm",
+      "mp4": "intro.mp4"
+    },
+    "theme": {
+      "name": "MainMenu_Awakening",
+      "subsong": 2,
+      "duration": 188.69,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM",
+        "MainTitle",
+        "MenuAmbient"
+      ]
+    }
+  },
+  {
+    "version": "10.0",
+    "name": "Destination Horizon",
+    "label": "Allods Online - Destination Horizon (10.0)",
+    "media": "video",
+    "duration": 10.0,
+    "logo": "logo.png",
+    "video": {
+      "webm": "menu.webm",
+      "mp4": "menu.mp4"
+    },
+    "intro": {
+      "webm": "intro.webm",
+      "mp4": "intro.mp4"
+    },
+    "theme": {
+      "name": "MainMenu_TheEdgeOfTheWorld",
+      "subsong": 2,
+      "duration": 163.525,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM",
+        "MainTitle",
+        "MenuAmbient"
+      ]
+    },
+    "note": "vidéo conservée dans le client 16.0 ; logo et thème du client Warp 10.0-warp"
+  },
+  {
+    "version": "11.0",
+    "name": "Soul of Darkness",
+    "label": "Allods Online - Soul of Darkness (11.0)",
+    "media": "video",
+    "duration": 10.033,
+    "logo": "logo.png",
+    "video": {
+      "webm": "menu.webm",
+      "mp4": "menu.mp4"
+    },
+    "intro": {
+      "webm": "intro.webm",
+      "mp4": "intro.mp4"
+    },
+    "theme": {
+      "name": "main_theme_soul_of_darkness",
+      "subsong": 4,
+      "duration": 174.432,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM",
+        "MainTitle",
+        "MenuAmbient"
+      ]
+    },
+    "note": "vidéo conservée dans le client 16.0 ; logo et thème du client Steam 11.0-steam"
+  },
+  {
+    "version": "12.0",
+    "name": "Desert Dreams",
+    "label": "Allods Online - Desert Dreams (12.0)",
+    "media": "video",
+    "duration": 30.0,
+    "video": {
+      "webm": "menu.webm",
+      "mp4": "menu.mp4"
+    },
+    "intro": {
+      "webm": "intro.webm",
+      "mp4": "intro.mp4"
+    },
+    "theme": {
+      "name": "MainMenu_DesertDreams",
+      "subsong": 2,
+      "duration": 153.6,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM",
+        "MainMenu_ThePowerOfMetal",
+        "MainTitle",
+        "MenuAmbient"
+      ]
+    },
+    "note": "vidéo conservée dans le client 16.0"
+  },
+  {
+    "version": "13.0",
+    "name": "Gates of Worlds",
+    "label": "Allods Online - Gates of Worlds (13.0)",
+    "media": "video",
+    "duration": 10.0,
+    "logo": "logo.png",
+    "video": {
+      "webm": "menu.webm",
+      "mp4": "menu.mp4"
+    },
+    "intro": {
+      "webm": "intro.webm",
+      "mp4": "intro.mp4"
+    },
+    "theme": {
+      "name": "MainMenu_GatesOfWorlds",
+      "duration": 221.649,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "source": "refs/themes/theme-13.0.mp3"
+    },
+    "note": "vidéo conservée dans le client 16.0"
+  },
+  {
+    "version": "14.0",
+    "name": "Call of Legends",
+    "label": "Allods Online - Call of Legends (14.0)",
+    "media": "video",
+    "duration": 6.0,
+    "logo": "logo.png",
+    "video": {
+      "webm": "menu.webm",
+      "mp4": "menu.mp4"
+    },
+    "intro": {
+      "webm": "intro.webm",
+      "mp4": "intro.mp4"
+    },
+    "theme": {
+      "name": "MainMenu_CallOfLegends",
+      "duration": 187.455,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "source": "refs/themes/theme-14.0.mp3"
+    },
+    "note": "vidéo conservée dans le client 16.0"
+  },
+  {
+    "version": "15.0",
+    "name": "Capital of Shadows",
+    "label": "Allods Online - Capital of Shadows (15.0)",
+    "media": "video",
+    "duration": 9.977,
+    "logo": "logo.png",
+    "video": {
+      "webm": "menu.webm",
+      "mp4": "menu.mp4"
+    },
+    "intro": {
+      "webm": "intro.webm",
+      "mp4": "intro.mp4"
+    },
+    "theme": {
+      "name": "MainMenu_CapitalOfShadows",
+      "subsong": 2,
+      "duration": 161.495,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM",
+        "MainMenu_DesertDreams",
+        "MainTitle",
+        "MenuAmbient"
+      ]
+    },
+    "note": "vidéo conservée dans le client 16.0"
+  },
+  {
+    "version": "16.0",
+    "name": "Power of Metal",
+    "label": "Allods Online - Power of Metal (16.0)",
+    "media": "video",
+    "duration": 20.625,
+    "logo": "logo.png",
+    "video": {
+      "webm": "menu.webm",
+      "mp4": "menu.mp4"
+    },
+    "intro": {
+      "webm": "intro.webm",
+      "mp4": "intro.mp4"
+    },
+    "theme": {
+      "name": "MainMenu_ThePowerOfMetal",
+      "subsong": 3,
+      "duration": 169.846,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM",
+        "MainMenu_DesertDreams",
+        "MainTitle",
+        "MenuAmbient"
+      ]
+    }
+  },
+  {
+    "version": "17.0",
+    "name": "Blood of Kings",
+    "label": "Allods Online - Blood of Kings (17.0)",
+    "media": "video",
+    "duration": 24.091,
+    "logo": "logo.png",
+    "video": {
+      "webm": "menu.webm",
+      "mp4": "menu.mp4"
+    },
+    "intro": {
+      "webm": "intro.webm",
+      "mp4": "intro.mp4"
+    },
+    "theme": {
+      "name": "MainMenu_TheBloodOfKings",
+      "subsong": 4,
+      "duration": 186.425,
+      "ogg": "theme.ogg",
+      "mp3": "theme.mp3",
+      "alternatives": [
+        "Credits_loop_NM",
+        "MainMenu_DesertDreams",
+        "MainMenu_HeartOfTheWorld",
+        "MainMenu_adaptive",
+        "MainTitle",
+        "MenuAmbient"
+      ]
+    }
+  }
+]

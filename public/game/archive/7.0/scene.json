@@ -1,0 +1,49 @@
+{
+  "version": "7.0",
+  "up": [
+    0,
+    0,
+    1
+  ],
+  "camera": {
+    "position": [
+      0,
+      450,
+      0
+    ],
+    "target": [
+      0,
+      -160,
+      0
+    ],
+    "fov": 13,
+    "orthographicHeight": 100
+  },
+  "background": "#3a2f56",
+  "animations": [
+    "AMM_7_0_Stones_01",
+    "AMM_7_0_Stones_02",
+    "AMM_7_0_FrontShips",
+    "AMM_Flag_01",
+    "AMM_Flag_02",
+    "AMM_Flag_03",
+    "AMM_Flag_04",
+    "AMM_7_0_Ships_Attack",
+    "AMM_7_0_Ships_Destroyed"
+  ],
+  "stats": {
+    "triangles": 5202,
+    "textures": 39,
+    "animations": 9,
+    "objects": 10
+  },
+  "cannonTextures": {
+    "projectile": "cannon-projectile.png",
+    "muzzle": "cannon-muzzle.png",
+    "impact": "cannon-impact.png",
+    "shield": "cannon-shield.png",
+    "flame": "cannon-flame.png",
+    "electric": "cannon-electric.png",
+    "spark": "cannon-spark.png"
+  }
+}

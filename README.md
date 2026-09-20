@@ -274,6 +274,35 @@ repos redonne exactement la géométrie statique.
 
 ## Itération 2 (2026-09)
 
+### Recalage V7 sur les captures du menu
+
+La caméra V7 utilise un cadrage orthographique de 100 unités de hauteur, calibré sur les
+captures : il ne s'agit pas d'une caméra extraite du client. Le lecteur corrige les UV verticales V7, atténue les nappes de
+brume sans brouillard artificiel et replace le logo au centre. L'export conserve le nom de chaque élément dans les
+`extras` de sa primitive (lus sur `mesh.geometry.userData` dans Three.js) : **réexporter avec `python3 tools/extract_menu_scene.py --only 7.0`**
+est nécessaire pour cibler les faisceaux `GunRay` et les halos des réacteurs.
+
+`menuSceneV7.ts` masque ces faisceaux, module les halos et limite le groupe de destructions
+à l'introduction (masqué après 27 s, sans boucle). Les canons utilisent les positions des
+locators du jeu (hauteur recalée sur les sabords) et sept textures extraites explicitement
+(`cannon-*.png`, indexées dans `scene.json`) : Glow04White, ManaFire01, Rays23White,
+Glow04Blue, Fire07, NoiseLight et Spark06White. Les salves de trois projectiles alternent
+entre les coques, avec flash de bouche, cœur incandescent, flammes et traînée. À l'impact,
+un flash bref précède une membrane électrique texturée qui défile puis s'efface. Les sprites
+restent masqués tant que leur texture n'est pas disponible, pour ne jamais afficher de carré blanc.
+Ce sont des **enveloppes visuelles reconstruites**, pas un décodage fidèle de `ParticleAnimation`.
+Les sommets des drapeaux et rochers sont recentrés avec les matrices natives complètes
+avant attachement aux locators. Les rochers opaques ne sont plus additifs et passent devant
+les nappes de brume, derrière les coques ; les deux plans ont un petit recalage visuel.
+La vignette V7 est allégée, les tirs portent une traînée dorée et les impacts sont étirés
+verticalement. Le timing exact des destructions, certains plans secondaires et les
+rotations/échelles squelettiques restent approximatifs. Le mode mouvements réduits montre
+le décor sans tirs ni destructions.
+
+La V7 surcharge `max_texture` à 2048 : le paysage `AMM_Background_03` conserve ses
+2048 × 512 pixels natifs (au lieu de 512 × 128), et les coques leurs 1024 × 1024 pixels.
+Les autres versions gardent leur limite existante. L'export V7 pèse environ 10,2 Mio.
+
 Reprise des deux écrans pour qu'ils soient visuellement identiques au jeu, à partir de captures live du client (spec détaillée : `docs/superpowers/specs/2026-09-19-iteration-2-fidelite-design.md`).
 
 - **Accueil** (`/`) : le panneau de connexion et le champ de recherche du POC v1 n'existent plus. L'accueil affiche la **barre de boutons du jeu**, en bas à droite, comme en jeu : **Succès** (actif, ouvre `/achievements`) et **Personnage** (« bientôt » : au survol, infobulle « Mon compte — bientôt » ; clic sans effet).
