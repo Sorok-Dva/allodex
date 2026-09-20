@@ -61,9 +61,9 @@ describe('MusicScreen', () => {
     const input = page.getByRole('searchbox');
     fireEvent.change(input, { target: { value: 'zone c' } });
     expect(page.getByText('Zone C')).toBeTruthy();
-    expect(page.queryByText('Premier thème')).toBeNull();
+    expect(page.queryByRole('button', { name: /Premier thème/ })).toBeNull();
     fireEvent.change(input, { target: { value: 'PREMIER THEME' } });
-    expect(page.getByText('Premier thème')).toBeTruthy();
+    expect(page.getByRole('button', { name: /Premier thème/ })).toBeTruthy();
     fireEvent.change(input, { target: { value: 'introuvable' } });
     expect(page.getByRole('status').textContent).toBe('Aucune musique trouvée');
     fireEvent.click(page.getByRole('button', { name: 'Zones' }));
@@ -97,22 +97,20 @@ describe('MusicScreen', () => {
   });
   it('affiche les catégories, les pistes et leur durée', () => {
     const page = render(<MusicScreen />);
-    expect(page.getByText('Premier thème')).toBeTruthy();
+    expect(page.getAllByText('Premier thème').length).toBeGreaterThanOrEqual(1);
     expect(page.getByText('MainMenu_A_NM')).toBeTruthy();
     expect(page.getAllByTestId('theme-duration')[0].textContent).toBe('2:03');
     fireEvent.click(page.getByRole('button', { name: 'Zones' }));
     expect(page.getByText('Zone C')).toBeTruthy();
-    expect(page.queryByText('Premier thème')).toBeNull();
+    expect(page.queryByRole('button', { name: /Premier thème/ })).toBeNull();
   });
-  it('lit la bonne source, met en pause et reprend via le même identifiant', () => {
+  it('lance automatiquement la première piste, met en pause et reprend via le même identifiant', () => {
     const page = render(<MusicScreen />);
-    expect(audio.pauseMusic).toHaveBeenCalledOnce();
-    fireEvent.click(page.getByRole('button', { name: 'Lire Premier thème' }));
     expect(audio.playExternal).toHaveBeenCalledWith('music:a', { ogg: fixture[0].ogg, mp3: fixture[0].mp3 }, { loop: false, crossfadeMs: 600 });
     audio.external = 'music:a'; audio.playing = true;
     page.rerender(<MusicScreen />);
     fireEvent.click(page.getByRole('button', { name: 'Mettre Premier thème en pause' }));
-    expect(audio.pauseMusic).toHaveBeenCalledTimes(2);
+    expect(audio.pauseMusic).toHaveBeenCalledOnce();
     audio.playing = false; page.rerender(<MusicScreen />);
     fireEvent.click(page.getByRole('button', { name: 'Lire Premier thème' }));
     expect(audio.playExternal).toHaveBeenCalledTimes(2);
