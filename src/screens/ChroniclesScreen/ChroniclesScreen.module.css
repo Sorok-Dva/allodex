@@ -112,6 +112,9 @@
 
 .speaker { position: absolute; right: 66px; top: 19px; }
 
+/* Bouton « Plein écran » (32 px), à gauche du bouton « ? » */
+.fullscreen { position: absolute; right: 150px; top: 19px; }
+
 /* Bouton « ? » des fenêtres du jeu (32 px), à gauche du haut-parleur : texture de base
    (Normal/Pressed) et halo Highlight qui apparaît au survol, comme la barre d'actions. */
 .help { position: absolute; right: 108px; top: 19px; width: 32px; height: 32px; padding: 0; border: 0; background: none; cursor: inherit; }
@@ -125,3 +128,14 @@
 
 /* Frise : centrée en bas de l'écran, sous l'emblème. */
 .timeline { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); }
+
+/* Éléments de l'ATH (interface) pouvant être masqués en mode plein écran */
+.hud {
+  transition: opacity 300ms ease-out, visibility 300ms ease-out;
+}
+
+.hudHidden .hud {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}

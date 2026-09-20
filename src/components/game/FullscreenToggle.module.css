@@ -1,0 +1,17 @@
+.toggle {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffe9a8;
+  cursor: inherit;
+}
+.base, .glow { position: absolute; inset: 0; background: center / contain no-repeat; pointer-events: none; }
+.glow { opacity: 0; mix-blend-mode: screen; transition: opacity 100ms ease-out; }
+.toggle:hover .glow, .toggle:focus-visible .glow { opacity: 1; }
+.glyph { position: relative; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.8)); }

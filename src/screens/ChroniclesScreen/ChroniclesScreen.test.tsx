@@ -151,10 +151,9 @@ describe('ChroniclesScreen — logo et emblème', () => {
 });
 
 describe('ChroniclesScreen — audio et fermeture', () => {
-  it("joue « medals-open » et met l'ambiance du site en pause au montage", () => {
+  it("joue « medals-open » au montage", () => {
     setup();
     expect(playSfx).toHaveBeenCalledWith('medals-open');
-    expect(pauseMusic).toHaveBeenCalled();
   });
 
   it('joue le thème de la version active via le moteur audio', () => {
@@ -178,7 +177,7 @@ describe('ChroniclesScreen — audio et fermeture', () => {
     engine.external = 'archive:8.0';
     const { getByLabelText, rerender } = setup();
     fireEvent.click(getByLabelText('Mettre le thème en pause'));
-    expect(pauseMusic).toHaveBeenCalledTimes(2); // montage + bouton
+    expect(pauseMusic).toHaveBeenCalledTimes(1);
 
     engine.playing = false;
     rerender(<ChroniclesScreen />);
@@ -275,5 +274,52 @@ describe('ChroniclesScreen — panneau « À propos de cette version »', () => 
     expect(navigateSpy).not.toHaveBeenCalled();
     fireEvent.click(getByLabelText('À propos de cette version'));
     expect(navigateSpy).toHaveBeenCalledWith('/chronicles?v=11.0', { replace: true });
+  });
+});
+
+describe('ChroniclesScreen — mode plein écran (masquer l’ATH)', () => {
+  it('le bouton plein écran bascule le mode et masque l’ATH', () => {
+    const { getByLabelText, container } = setup('?v=8.0');
+    const screen = container.firstChild as HTMLElement;
+    expect(screen.className).not.toContain('hudHidden');
+
+    const btn = getByLabelText('Plein écran (masquer l’ATH)');
+    fireEvent.click(btn);
+    expect(playSfx).toHaveBeenCalledWith('ui-click');
+    expect(screen.className).toContain('hudHidden');
+
+    const exitBtn = getByLabelText('Quitter le plein écran');
+    fireEvent.click(exitBtn);
+    expect(screen.className).not.toContain('hudHidden');
+  });
+
+  it('la touche « f » ou « F » active et désactive le mode plein écran', () => {
+    const { container } = setup('?v=8.0');
+    const screen = container.firstChild as HTMLElement;
+    fireEvent.keyDown(window, { key: 'f' });
+    expect(screen.className).toContain('hudHidden');
+
+    fireEvent.keyDown(window, { key: 'F' });
+    expect(screen.className).not.toContain('hudHidden');
+  });
+
+  it('la touche Échap quitte le mode plein écran', () => {
+    const { container } = setup('?v=8.0');
+    const screen = container.firstChild as HTMLElement;
+    fireEvent.keyDown(window, { key: 'f' });
+    expect(screen.className).toContain('hudHidden');
+
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.className).not.toContain('hudHidden');
+  });
+
+  it('un clic sur l’écran en mode plein écran quitte le mode plein écran', () => {
+    const { container } = setup('?v=8.0');
+    const screen = container.firstChild as HTMLElement;
+    fireEvent.keyDown(window, { key: 'f' });
+    expect(screen.className).toContain('hudHidden');
+
+    fireEvent.click(screen);
+    expect(screen.className).not.toContain('hudHidden');
   });
 });

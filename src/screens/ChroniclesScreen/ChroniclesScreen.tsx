@@ -7,6 +7,7 @@ import { hasWebGL } from '@/lib/webgl';
 import { nineSlice } from '@/lib/nineSlice';
 import { GameStrip } from '@/components/game/GameStrip';
 import { SpeakerToggle } from '@/components/game/SpeakerToggle';
+import { FullscreenToggle } from '@/components/game/FullscreenToggle';
 import { VersionTimeline } from './VersionTimeline';
 import { ThemePlayer } from './ThemePlayer';
 import { VersionInfoPanel, type VersionInfo } from './VersionInfoPanel';
@@ -153,19 +154,18 @@ export function ChroniclesScreen() {
     return () => window.clearTimeout(timer);
   }, [entry]);
 
-  // Son d'ouverture du panneau du jeu et mise en pause de la musique du site, qui
-  // reprend là où elle en était quand on quitte la page.
+  // Son d'ouverture du panneau du jeu et reprise de la musique du site en partant.
   useEffect(() => {
     playSfx('medals-open');
-    pauseMusic();
     return () => { resumeAmbient({ crossfadeMs: CROSSFADE_MS }); };
-  }, [playSfx, pauseMusic, resumeAmbient]);
+  }, [playSfx, resumeAmbient]);
 
   // `wanted` est l'intention (« le thème doit suivre les changements de version »), à ne
   // pas confondre avec la lecture réelle rapportée par le moteur (`playing`) : la
   // politique d'autoplay peut refuser le démarrage sur une arrivée directe.
   const [wanted, setWanted] = useState(true);
   const [infoOpen, setInfoOpen] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
   const theme = entry?.theme;
   const themeId = entry && theme ? `archive:${entry.version}` : null;
   const themeSrc = useMemo(
@@ -174,9 +174,13 @@ export function ChroniclesScreen() {
   );
 
   useEffect(() => {
-    if (!themeId || !themeSrc || !wanted) return;
-    playExternal(themeId, themeSrc, { loop: false, crossfadeMs: CROSSFADE_MS });
-  }, [themeId, themeSrc, wanted, playExternal]);
+    if (!wanted) return;
+    if (themeId && themeSrc) {
+      playExternal(themeId, themeSrc, { loop: false, crossfadeMs: CROSSFADE_MS });
+    } else if (!themeId) {
+      pauseMusic();
+    }
+  }, [themeId, themeSrc, wanted, playExternal, pauseMusic]);
 
   // Défilement automatique : à la fin du thème (lecture non bouclée), la version
   // suivante prend le relais, et la dernière ramène à la première. Une version sans
@@ -204,8 +208,56 @@ export function ChroniclesScreen() {
     if (themeId && themeSrc) playExternal(themeId, themeSrc, { loop: false, crossfadeMs: CROSSFADE_MS });
   }, [themePlaying, pauseMusic, playExternal, themeId, themeSrc]);
 
+  const toggleFullscreen = useCallback(() => {
+    playSfx('ui-click');
+    setFullscreen(fs => {
+      const next = !fs;
+      if (next) {
+        setInfoOpen(false);
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+      return next;
+    });
+  }, [playSfx]);
+
+  useEffect(() => {
+    const handleFsChange = () => {
+      if (!document.fullscreenElement) {
+        setFullscreen(false);
+      }
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, []);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+        return;
+      }
+      if (e.key === 'Escape') {
+        if (fullscreen) {
+          e.preventDefault();
+          setFullscreen(false);
+          if (document.fullscreenElement && document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+          }
+          return;
+        }
+        if (infoOpen) {
+          e.preventDefault();
+          setInfoOpen(false);
+          return;
+        }
+      }
       if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
       const next = entries[index + (e.key === 'ArrowRight' ? 1 : -1)];
       if (!next) return;
@@ -214,7 +266,7 @@ export function ChroniclesScreen() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [entries, index, select]);
+  }, [entries, fullscreen, index, infoOpen, select, toggleFullscreen]);
 
   const handleClose = () => {
     playSfx('medals-close');
@@ -228,40 +280,40 @@ export function ChroniclesScreen() {
     playSfx('ui-click');
     setInfoOpen(open => !open);
   }, [playSfx]);
-  useEffect(() => {
-    if (!infoOpen) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setInfoOpen(false); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [infoOpen]);
+
+  const handleScreenClick = () => {
+    if (fullscreen) {
+      toggleFullscreen();
+    }
+  };
 
   return (
-    <div className={s.screen}>
+    <div className={`${s.screen} ${fullscreen ? s.hudHidden : ''}`} onClick={handleScreenClick}>
       {layers.map((layer, i) => (
         <div key={layer.key} className={`${s.layer} ${i > 0 ? s.fadeIn : ''}`}>
           <MediaLayer entry={layer.entry} />
         </div>
       ))}
-      <div className={s.vignette} />
+      <div className={`${s.vignette} ${s.hud}`} />
 
       {entry && <LaunchTitle entry={entry} />}
 
       {entry ? (
-        <div className={s.cartouche}>
+        <div className={`${s.cartouche} ${s.hud}`}>
           <div className={s.plate}>
             <GameStrip base="title-plate" cap={38} />
             <span className={s.plateTitle}>{entry.label}</span>
           </div>
         </div>
       ) : (
-        <div className={s.card} style={nineSlice('tooltip-frame', [4, 4, 4, 4])}>
+        <div className={`${s.card} ${s.hud}`} style={nineSlice('tooltip-frame', [4, 4, 4, 4])}>
           <div className={s.cardTitle}>{t('chronicles.archiveMissing')}</div>
           <div className={s.cardHint}>{t('chronicles.archiveMissingHint')} <code>python3 tools/extract_archive.py</code></div>
         </div>
       )}
 
       {entry && !hasMedia(entry) && (
-        <div className={s.card} style={nineSlice('tooltip-frame', [4, 4, 4, 4])}>
+        <div className={`${s.card} ${s.hud}`} style={nineSlice('tooltip-frame', [4, 4, 4, 4])}>
           <div className={s.cardTitle}>{t('chronicles.mediaMissing')}</div>
           <div className={s.cardHint}>{t('chronicles.mediaMissingHint')}</div>
         </div>
@@ -269,16 +321,17 @@ export function ChroniclesScreen() {
 
       <button
         type="button"
-        className={s.close}
+        className={`${s.close} ${s.hud}`}
         style={{ backgroundImage: `url(${sprite('close-button')})` }}
         onClick={handleClose}
         aria-label={t('common.close')}
       />
-      <SpeakerToggle className={s.speaker} />
+      <SpeakerToggle className={`${s.speaker} ${s.hud}`} />
+      <FullscreenToggle className={`${s.fullscreen} ${s.hud}`} fullscreen={fullscreen} onToggle={toggleFullscreen} />
       {entry && (
         <button
           type="button"
-          className={s.help}
+          className={`${s.help} ${s.hud}`}
           onClick={toggleInfo}
           onPointerDown={() => setHelpPressed(true)}
           onPointerUp={() => setHelpPressed(false)}
@@ -293,10 +346,10 @@ export function ChroniclesScreen() {
       )}
       {entry && infoOpen && <VersionInfoPanel id="version-info" entry={entry} info={infoFor(entry.version)} />}
 
-      {entry && <ThemePlayer entry={entry} playing={themePlaying} onToggle={toggleTheme} className={s.player} />}
+      {entry && <ThemePlayer entry={entry} playing={themePlaying} onToggle={toggleTheme} className={`${s.player} ${s.hud}`} />}
 
       {entry && (
-        <VersionTimeline entries={entries} active={entry.version} onSelect={select} className={s.timeline} />
+        <VersionTimeline entries={entries} active={entry.version} onSelect={select} className={`${s.timeline} ${s.hud}`} />
       )}
     </div>
   );
