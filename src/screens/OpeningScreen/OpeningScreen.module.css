@@ -22,8 +22,8 @@
   display: block;
   width: auto;
   height: auto;
-  max-width: 60vw;
-  max-height: 34vh;
+  max-width: 55vw;
+  max-height: 31vh;
   animation: titleIn 600ms ease-out both, logoGlow 2600ms ease-in-out 600ms infinite;
 }
 
