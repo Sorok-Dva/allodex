@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { tex, video, cursor, sprite, audioSrc, audioMeta, archiveEntries, archiveFile, latestArchiveEntry } from './assets';
+import { tex, video, cursor, sprite, audioSrc, audioMeta, archiveEntries, archiveFile, latestArchiveEntry, gameLogo } from './assets';
 import { loadManifest, musicTracks } from './assets';
 
 describe('assets', () => {
@@ -7,6 +7,7 @@ describe('assets', () => {
     expect(tex('Interface/Ingame/Medals/Textures/MedalFrame')).toBe('/game/textures/Interface/Ingame/Medals/Textures/MedalFrame.png');
     expect(video('intro')).toEqual({ webm: '/game/video/intro.webm', mp4: '/game/video/intro.mp4' });
     expect(cursor('Default')).toBe('/game/cursors/Default.cur');
+    expect(gameLogo()).toBe('/logo.png');
   });
 
   it("construit l'URL d'un sprite découpé", () => {

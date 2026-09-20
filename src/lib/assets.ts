@@ -112,6 +112,7 @@ export const texSize = (path: string): Size | undefined => manifest?.[path];
 export const cursor = (name: string) => `${BASE}/cursors/${name}.cur`;
 export const sprite = (name: string) => `${BASE}/sprites/${name}.png`;
 export const spriteSize = (name: string): SpriteInfo | undefined => sprites?.[name];
+export const gameLogo = () => '/logo.png';
 /** Versions archivées, dans l'ordre de l'index (croissant) ; tableau vide si absent. */
 export const archiveEntries = (): ArchiveEntry[] => archive ?? [];
 /** Dernière version archivée du jeu (ou undefined si l'archive n'est pas chargée). */

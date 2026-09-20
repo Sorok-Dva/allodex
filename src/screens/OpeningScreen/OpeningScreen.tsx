@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { archiveFile, latestArchiveEntry, T, tex, video, type ArchiveEntry } from '@/lib/assets';
+import { archiveFile, gameLogo, latestArchiveEntry, T, tex, video, type ArchiveEntry } from '@/lib/assets';
 import { hasWebGL } from '@/lib/webgl';
 import { Link, navigate } from '@/lib/router';
 import { LanguageSwitcher } from '@/components/game/LanguageSwitcher';
@@ -109,6 +109,15 @@ export function OpeningScreen() {
     <div className={s.screen}>
       <MainMedia latest={latest} />
       <div className={s.vignette} />
+
+      <div className={s.title}>
+        <img
+          className={s.logo}
+          src={gameLogo()}
+          alt="Allodex"
+          data-testid="game-logo"
+        />
+      </div>
 
       <GameActionBar items={items} className={s.actionBar} onItemInteract={handleItemInteract} />
 

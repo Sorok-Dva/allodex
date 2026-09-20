@@ -91,4 +91,11 @@ describe('OpeningScreen — audio', () => {
     expect(queryByRole('button', { name: "Rejouer l'intro" })).toBeNull();
     vi.restoreAllMocks();
   });
+
+  it("affiche le logo Allodex sur l'écran d'accueil", () => {
+    const { getByTestId } = renderMenu();
+    const logo = getByTestId('game-logo');
+    expect(logo.getAttribute('src')).toBe('/logo.png');
+    expect(logo.getAttribute('alt')).toBe('Allodex');
+  });
 });
