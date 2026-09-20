@@ -247,7 +247,10 @@ coordonnées de la caméra sont donc dans ce repère miroir (celui du `.glb`). L
 scènes sont noyées dans leurs sphères de brume, que l'export reproduit fidèlement mais sans le
 brouillard du moteur. Attention : la planche de contrôle ne remplace pas une capture du site, son
 rasteriseur jetant les triangles qui frôlent la caméra ; la 4.0 montre ainsi dans le navigateur un
-grand voile de brume que la planche laisse de côté.
+grand voile de brume que la planche laisse de côté. C'est pourquoi les 4.0 et 5.0 portent
+`publish: false` dans `tools/scenes_manifest.json` : leur scène n'est pas déposée (la page garde
+l'illustration de repli) tant que le rendu n'est pas présentable ; `--only 4.0` force l'export pour
+la retravailler.
 
 **Animations.** Le blob `(SkeletalAnimation).bin` a été rétro-conçu (format décrit en tête de
 `tools/extract_menu_scene.py`) : pointeurs auto-relatifs, une piste par articulation, translation en

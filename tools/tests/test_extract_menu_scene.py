@@ -541,3 +541,28 @@ def test_build_scene_reports_a_missing_geometry(tmp_path):
     validate_glb(glb)
     assert any("Absent" in note for note in notes)
     assert meta["stats"]["objects"] == 0
+
+
+def test_run_skips_unpublished_versions_and_removes_a_previous_drop(tmp_path, monkeypatch):
+    from tools import extract_menu_scene as ems
+
+    server = tmp_path / "server"
+    (server / "World" / "MainMenu" / "AB").mkdir(parents=True)
+    out = tmp_path / "out"
+    (out / "4.0").mkdir(parents=True)
+    (out / "4.0" / "scene.glb").write_bytes(b"old")
+    (out / "4.0" / "scene.json").write_text("{}")
+    manifest = {"server_root": str(server), "versions": {"4.0": {"dir": "AB", "publish": False}}}
+    called = []
+    monkeypatch.setattr(ems, "build_scene", lambda *a, **k: called.append(a) or (b"glb", {"stats": {"triangles": 0, "textures": 0, "animations": 0}}, []))
+    monkeypatch.setattr(ems, "validate_glb", lambda glb: None)
+
+    report: list[str] = []
+    results = ems.run(manifest, out, report=report)
+    assert results == {} and called == []
+    assert not (out / "4.0" / "scene.glb").exists() and not (out / "4.0" / "scene.json").exists()
+    assert any("non publiée" in line for line in report)
+
+    # `--only` force l'export malgré `publish: false`.
+    results = ems.run(manifest, out, only=["4.0"], report=report)
+    assert "4.0" in results and (out / "4.0" / "scene.glb").read_bytes() == b"glb"

@@ -1429,6 +1429,15 @@ def run(manifest: dict, out_dir: Path, only: list[str] | None = None,
     for version, spec in manifest["versions"].items():
         if only and version not in only:
             continue
+        if spec.get("publish") is False:
+            # Scène jugée non présentable (brume sans le brouillard du moteur…) : on ne
+            # dépose rien, et on retire un dépôt antérieur pour que l'index retombe sur
+            # l'illustration de repli. `--only <version>` force quand même l'export.
+            if not only:
+                for name in ("scene.glb", "scene.json"):
+                    (out_dir / version / name).unlink(missing_ok=True)
+                report.append(f"NOTE : {version} — scène non publiée (publish: false), illustration de repli conservée")
+                continue
         source = BinSource(
             [Path(d) for d in manifest.get("bin_dirs", [])] + [Path(d) for d in spec.get("bin_dirs", [])],
             list(manifest.get("pak_globs", [])) + list(spec.get("pak_globs", [])),

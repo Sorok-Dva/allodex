@@ -1,5 +1,5 @@
 {
-  "_note": "Scènes de menu animées (4.0 → 8.0). `server_root` = arbre serveur décompressé (xdb) ; les .bin viennent des paks des clients. La caméra n'existe pas dans les données du jeu (elle est codée dans le client) : les valeurs ci-dessous sont celles du cadrage retenu, à recaler à la main si besoin (voir README, « Scènes de menu »).",
+  "_note": "Scènes de menu animées (4.0 → 8.0). `server_root` = arbre serveur décompressé (xdb) ; les .bin viennent des paks des clients. La caméra n'existe pas dans les données du jeu (elle est codée dans le client) : les valeurs ci-dessous sont celles du cadrage retenu, à recaler à la main si besoin (voir README, « Scènes de menu »). `publish: false` sur une version = scène exportable mais pas assez fidèle pour la page : ses fichiers ne sont pas déposés (retirés s'ils existent) et l'illustration de repli reste affichée ; `--only <version>` force l'export pour la retravailler.",
   "server_root": "/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data",
   "bin_dirs": [],
   "pak_globs": [
@@ -35,7 +35,9 @@
           -9.3
         ],
         "fov": 45
-      }
+      },
+      "publish": false,
+      "_publish_note": "les sphères de brume rendent un grand voile et des arêtes de polygones sans le brouillard du moteur ; l'île et les nuages sont corrects dessous"
     },
     "5.0": {
       "dir": "Animated_Background_5_0",
@@ -60,7 +62,9 @@
           -9.09
         ],
         "fov": 45
-      }
+      },
+      "publish": false,
+      "_publish_note": "dôme de brume trop présent, scène voilée ; à reprendre (tri/écrêtage des sphères)"
     },
     "6.0": {
       "dir": "Animated_Background_6_0",
