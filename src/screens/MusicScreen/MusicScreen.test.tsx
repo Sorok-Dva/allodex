@@ -11,7 +11,7 @@ const fixture: MusicTrack[] = [
   { id: 'c', name: 'Zone_C', title: null, bank: 'Music_Zone', group: 'Zones', duration: 180, ogg: '/game/music/c.ogg', mp3: '/game/music/c.mp3', client: '16.0' },
 ];
 let tracks = fixture;
-const audio = { playSfx: vi.fn(), playExternal: vi.fn(), pauseMusic: vi.fn(), seekMusic: vi.fn(), resumeAmbient: vi.fn(), playing: false, external: null as string | null, ended: null as string | null, muted: false, toggleMuted: vi.fn() };
+const audio = { volume: 1, setVolume: vi.fn(), playSfx: vi.fn(), playExternal: vi.fn(), pauseMusic: vi.fn(), seekMusic: vi.fn(), resumeAmbient: vi.fn(), playing: false, external: null as string | null, ended: null as string | null, muted: false, toggleMuted: vi.fn() };
 vi.mock('@/lib/assets', async original => ({ ...await original<typeof import('@/lib/assets')>(), musicTracks: () => tracks }));
 vi.mock('@/lib/audio/useGameAudio', () => ({ useGameAudio: () => audio }));
 vi.mock('@/lib/router', () => ({ navigate: vi.fn() }));
@@ -21,6 +21,41 @@ beforeEach(() => { vi.clearAllMocks(); tracks = fixture; audio.playing = false; 
 afterEach(cleanup);
 
 describe('MusicScreen', () => {
+  it('déplie Zones et enchaîne uniquement les morceaux de la sous-catégorie jouée', () => {
+    tracks = [fixture[0], { ...fixture[2], id: 'k1', name: 'ZL1_Main_1' },
+      { ...fixture[2], id: 'k2', name: 'ZL1_Main_2' }, { ...fixture[2], id: 'e1', name: 'ZE2_Steppe_NM' },
+      { ...fixture[2], id: 'eden', group: 'Eden' }];
+    const page = render(<MusicScreen />);
+    expect(page.queryByRole('button', { name: /Kania/ })).toBeNull();
+    fireEvent.click(page.getByRole('button', { name: 'Zones' }));
+    expect(page.getByRole('button', { name: 'Zones' }).getAttribute('aria-expanded')).toBe('true');
+    expect(page.getByRole('button', { name: /Eden · 1/ })).toBeTruthy();
+    fireEvent.click(page.getByRole('button', { name: /Kania · 2/ }));
+    expect(page.queryByRole('button', { name: /Lire ZE2/ })).toBeNull();
+    fireEvent.click(page.getByRole('button', { name: 'Lire ZL1 Main 1' }));
+    fireEvent.click(page.getByRole('button', { name: /Empire · 1/ }));
+    audio.ended = 'music:k1'; page.rerender(<MusicScreen />);
+    expect(audio.playExternal).toHaveBeenLastCalledWith('music:k2', expect.anything(), expect.anything());
+    fireEvent.click(page.getByRole('button', { name: 'Zones' }));
+    expect(page.queryByRole('button', { name: /Kania · 2/ })).toBeNull();
+  });
+  it('ouvre le volume au clic dans le lecteur et le referme avec Échap', () => {
+    const page = render(<MusicScreen />);
+    expect(page.queryByRole('slider', { name: 'Volume' })).toBeNull();
+    const button = page.getByRole('button', { name: 'Régler le volume' });
+    fireEvent.click(button);
+    const volume = page.getByRole('slider', { name: 'Volume' });
+    fireEvent.change(volume, { target: { value: '25' } });
+    expect(audio.setVolume).toHaveBeenCalledWith(.25);
+    expect(button.closest('section')).toBeTruthy();
+    expect((page.getByRole('slider', { name: 'Position de lecture' }) as HTMLInputElement).disabled).toBe(true);
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(page.queryByRole('slider', { name: 'Volume' })).toBeNull();
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+    fireEvent.click(button);
+    fireEvent.pointerDown(page.getByRole('searchbox'));
+    expect(page.queryByRole('slider', { name: 'Volume' })).toBeNull();
+  });
   it('recherche dans toutes les catégories, sans distinction de casse ou accents', () => {
     const page = render(<MusicScreen />);
     const input = page.getByRole('searchbox');
@@ -47,9 +82,12 @@ describe('MusicScreen', () => {
   it('affiche Xadagan dans les deux langues', () => {
     tracks = [{ ...fixture[2], group: 'Kadagan' }];
     const page = render(<I18nProvider initial="en"><MusicScreen /></I18nProvider>);
-    expect(page.getByRole('button', { name: 'Xadagan' })).toBeTruthy();
+    fireEvent.click(page.getByRole('button', { name: 'Zones' }));
+    expect(page.getByRole('button', { name: /Xadagan/ })).toBeTruthy();
     page.unmount();
-    expect(render(<MusicScreen />).getByRole('button', { name: 'Xadagan' })).toBeTruthy();
+    const french = render(<MusicScreen />);
+    fireEvent.click(french.getByRole('button', { name: 'Zones' }));
+    expect(french.getByRole('button', { name: /Xadagan/ })).toBeTruthy();
   });
   it('nettoie les noms sans inventer de titre', () => {
     expect(cleanMusicName('AC5_Main_NM')).toBe('AC5 Main');

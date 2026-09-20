@@ -7,6 +7,9 @@
 export const MESSAGES = {
   fr: {
     'music.title': 'Musiques',
+    'music.chooseTrack': 'Choisissez une musique',
+    'audio.volume': 'Volume',
+    'audio.adjustVolume': 'Régler le volume',
     'music.search': 'Rechercher une musique',
     'music.searchPlaceholder': 'Recherche de musiques...',
     'music.results': 'Résultats — {count} pistes',
@@ -55,6 +58,9 @@ export const MESSAGES = {
   },
   en: {
     'music.title': 'Music',
+    'music.chooseTrack': 'Choose a track',
+    'audio.volume': 'Volume',
+    'audio.adjustVolume': 'Adjust volume',
     'music.search': 'Search music',
     'music.searchPlaceholder': 'Search music...',
     'music.results': 'Results — {count} tracks',

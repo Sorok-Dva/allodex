@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
-import { AudioProvider, MUTE_KEY } from './AudioProvider';
+import { AudioProvider, MUTE_KEY, VOLUME_KEY } from './AudioProvider';
 import { useGameAudio } from './useGameAudio';
 import type { GameAudio } from './AudioProvider';
 
@@ -57,6 +57,41 @@ function useFakeAnimationClock() {
 }
 
 describe('AudioProvider / useGameAudio', () => {
+  it('applique et mémorise le volume sans modifier la position ni la pause', () => {
+    const { getByTestId } = setup();
+    act(() => { window.dispatchEvent(new Event('pointerdown')); });
+    const el = getByTestId('music-a') as HTMLAudioElement;
+    el.currentTime = 42;
+    act(() => { api!.pauseMusic(); api!.setVolume(.4); });
+    expect(el.volume).toBeCloseTo(.12);
+    expect(el.currentTime).toBe(42);
+    expect(api!.paused).toBe(true);
+    expect(window.localStorage.getItem(VOLUME_KEY)).toBe('0.4');
+    act(() => { api!.toggleMuted(); api!.toggleMuted(); });
+    expect(api!.volume).toBe(.4);
+    expect(el.volume).toBeCloseTo(.12);
+    act(() => { api!.setVolume(2); });
+    expect(api!.volume).toBe(1);
+    act(() => { api!.setVolume(-1); });
+    expect(api!.volume).toBe(0);
+    act(() => { api!.setVolume(Number.NaN); });
+    expect(api!.volume).toBe(0);
+  });
+  it('restaure un volume sauvegardé et le conserve pendant les fondus', () => {
+    useFakeAnimationClock();
+    window.localStorage.setItem(VOLUME_KEY, '0.5');
+    const { getByTestId } = setup();
+    act(() => { window.dispatchEvent(new Event('pointerdown')); });
+    act(() => { api!.playExternal('a', { ogg: '/a.ogg', mp3: '/a.mp3' }, { crossfadeMs: 600 }); });
+    act(() => { vi.advanceTimersByTime(300); api!.setVolume(.2); });
+    act(() => { vi.advanceTimersByTime(400); });
+    expect((getByTestId('music-b') as HTMLAudioElement).volume).toBeCloseTo(.06);
+    act(() => { api!.playSfx('ui-click'); });
+    const sfx = document.querySelector('audio:not([data-testid])') as HTMLAudioElement;
+    expect(sfx.volume).toBeCloseTo(.1);
+    act(() => { api!.setVolume(.4); });
+    expect(sfx.volume).toBeCloseTo(.2);
+  });
   it('seek borne la position et conserve la pause sans relancer le morceau', () => {
     const { getByTestId } = setup();
     act(() => { api!.playExternal('music:a', { ogg: '/a.ogg', mp3: '/a.mp3' }); });

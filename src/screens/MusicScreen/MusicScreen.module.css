@@ -18,12 +18,19 @@
 .navScrollbar { left: 277px; top: 48px; bottom: 8px; }
 .scrollbar { right: 3px; top: 15px; bottom: 8px; }
 .empty { margin: 45px 20px; text-align: center; color: #ffeb73; }
-.speaker { position: absolute; right: 66px; top: 19px; }
+.foldable { position: relative; }
 .withPlayer .viewport { bottom: 85px; }
 .withPlayer .scrollbar { bottom: 79px; }
-.transport { position: absolute; bottom: 10px; left: 22px; right: 30px; height: 64px; padding-top: 9px; border-top: 1px solid #849361; }
-.transportTitle { color: #ffe77b; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.timeline { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+.transport { position: absolute; bottom: 10px; left: 22px; right: 30px; height: 64px; padding-top: 9px; border-top: 1px solid #849361; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 19px 32px; column-gap: 12px; }
+.playback { display: contents; }
+.volumeControl { grid-column: 2; grid-row: 1 / 3; display: flex; align-items: flex-end; gap: 6px; }
+.volumeSlider { width: 104px; flex: none; }
+.volumeSlider label { display: flex; justify-content: space-between; color: #c2cfb2; font-size: 12px; height: 19px; line-height: 19px; }
+.volumeSlider .seek { height: 32px; padding: 10px 0; }
+.volumeSlider .seek input { top: 4px; }
+.volumeControl > button { flex: none; }
+.transportTitle { grid-column: 1; grid-row: 1; color: #ffe77b; font-size: 14px; line-height: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.timeline { grid-column: 1; grid-row: 2; display: flex; align-items: center; gap: 10px; }
 .timeline > span { min-width: 35px; }
 .seek { flex: 1; position: relative; padding: 6px 0; }
 .seek input { appearance: none; -webkit-appearance: none; position: absolute; inset: 0; margin: 0; padding: 0; border: 0; outline: none; background: transparent; width: 100%; height: 24px; cursor: pointer; }

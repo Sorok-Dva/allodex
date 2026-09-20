@@ -12,7 +12,13 @@ const GLOW = 'Interface/Ingame/Contextructor/CornerQuestion/CornerQuestionHighli
  * Habillé comme les boutons ronds du jeu : médaillon vierge (`medallion-normal`,
  * dérivé du bouton « ? » des fenêtres), enfoncé au clic, halo au survol, glyphe or.
  */
-export function SpeakerToggle({ className }: { className?: string }) {
+export function SpeakerToggle({ className, onClick, expanded, controls, label }: {
+  className?: string;
+  onClick?: () => void;
+  expanded?: boolean;
+  controls?: string;
+  label?: string;
+}) {
   const { muted, toggleMuted } = useGameAudio();
   const { t } = useI18n();
   const [pressed, setPressed] = useState(false);
@@ -20,12 +26,14 @@ export function SpeakerToggle({ className }: { className?: string }) {
     <button
       type="button"
       className={`${s.toggle} ${className ?? ''}`}
-      onClick={toggleMuted}
+      onClick={onClick ?? toggleMuted}
       onPointerDown={() => setPressed(true)}
       onPointerUp={() => setPressed(false)}
       onPointerLeave={() => setPressed(false)}
-      aria-pressed={muted}
-      aria-label={muted ? t('audio.unmute') : t('audio.mute')}
+      aria-pressed={onClick ? undefined : muted}
+      aria-expanded={expanded}
+      aria-controls={controls}
+      aria-label={label ?? (muted ? t('audio.unmute') : t('audio.mute'))}
     >
       <span className={s.base} style={{ backgroundImage: `url(${sprite(pressed ? 'medallion-pressed' : 'medallion-normal')})` }} />
       <span className={s.glow} style={{ backgroundImage: `url(${tex(GLOW)})` }} />

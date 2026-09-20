@@ -6,7 +6,7 @@ import type { MessageKey } from '@/lib/i18n/messages';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { nineSlice } from '@/lib/nineSlice';
 import { GameScrollbar } from '@/components/game/GameScrollbar';
-import { SpeakerToggle } from '@/components/game/SpeakerToggle';
+import { musicGroup, musicZone, musicSubcategories, musicQueueKey } from '@/data/music.logic';
 import { MedalsWindow } from '@/screens/MedalsScreen/MedalsWindow';
 import { Duration } from '@/screens/ChroniclesScreen/ThemePlayer';
 import player from '@/screens/ChroniclesScreen/ThemePlayer.module.css';
@@ -38,8 +38,11 @@ function placement() {
 
 export function MusicScreen() {
   const tracks = useMemo(() => musicTracks(), []);
-  const groups = useMemo(() => [...new Set(tracks.map(track => track.group))], [tracks]);
+  const groups = useMemo(() => [...new Set(tracks.map(musicGroup))], [tracks]);
+  const zones = useMemo(() => musicSubcategories(tracks), [tracks]);
   const [group, setGroup] = useState(groups[0] ?? '');
+  const [zonesOpen, setZonesOpen] = useState(false);
+  const [zoneId, setZoneId] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [current, setCurrent] = useState<MusicTrack | null>(null);
   const [pos, setPos] = useState(placement);
@@ -52,9 +55,9 @@ export function MusicScreen() {
   const title = (track: MusicTrack) => pick(track.title ?? undefined, lang) ?? cleanMusicName(track.name);
   const search = normalizeSearch(query.trim());
   const visible = tracks.filter(track => search
-    ? normalizeSearch(`${title(track)} ${track.name}`).includes(search)
-    : track.group === group);
-  const heading = search ? t('music.results', { count: visible.length }) : groupLabel(group);
+    ? normalizeSearch(`${title(track)} ${track.name} ${pick(musicZone(track)?.title, lang) ?? ''}`).includes(search)
+    : musicGroup(track) === group && (!zoneId || musicZone(track)?.id === zoneId));
+  const heading = search ? t('music.results', { count: visible.length }) : pick(zones.find(zone => zone.id === zoneId)?.title, lang) ?? groupLabel(group);
   const bg = video('mainmenu');
 
   useEffect(() => {
@@ -84,7 +87,7 @@ export function MusicScreen() {
     if (!ended) { consumedEnd.current = null; return; }
     if (!current || ended !== `music:${current.id}` || consumedEnd.current === ended) return;
     consumedEnd.current = ended;
-    const queue = tracks.filter(track => track.group === current.group);
+    const queue = tracks.filter(track => musicQueueKey(track) === musicQueueKey(current));
     const next = queue[(queue.findIndex(track => track.id === current.id) + 1) % queue.length];
     if (next && next.id !== current.id) play(next);
   }, [ended, current, tracks, play]);
@@ -107,16 +110,33 @@ export function MusicScreen() {
                 onChange={event => { setQuery(event.target.value); if (listRef.current) listRef.current.scrollTop = 0; }} />
             </div>
             <div className={s.navViewport} ref={navRef}>
-              {groups.map(value => <button key={value} type="button" className={s.group}
+              {groups.map(value => <div key={value}>
+                <button type="button" className={`${s.group} ${value === 'Zones' ? s.foldable : ''}`}
                 aria-pressed={!search && value === group}
+                aria-expanded={value === 'Zones' ? zonesOpen : undefined}
+                aria-controls={value === 'Zones' ? 'music-zones' : undefined}
                 style={{ backgroundImage: `url(${sprite(!search && value === group ? 'pill-full-open' : 'pill-full')})` }}
-                onClick={() => { setQuery(''); setGroup(value); if (listRef.current) listRef.current.scrollTop = 0; }}>
+                onClick={() => { setQuery(''); setGroup(value); setZoneId(null); if (value === 'Zones') setZonesOpen(open => !open); if (listRef.current) listRef.current.scrollTop = 0; }}>
                 {groupLabel(value)}
-              </button>)}
+                {value === 'Zones' && <span className={navStyles.medallion} aria-hidden="true" style={{ backgroundImage: `url(${sprite(zonesOpen ? 'medallion-minus' : 'medallion-plus')})` }} />}
+              </button>
+              {value === 'Zones' && zonesOpen && <div id="music-zones" className={navStyles.subWrap} style={{ height: zones.length * 23 + 27 }}>
+                <span className={navStyles.parchment} aria-hidden="true" style={{ backgroundImage: `url(${tex(`${T.medals}/CategoryContent`)})` }} />
+                <ul className={navStyles.subList}>
+                  {zones.map((zone, index) => <li key={zone.id}>
+                    <button type="button" className={`${navStyles.subRow} ${!search && zoneId === zone.id ? navStyles.subActive : ''}`}
+                      style={{ top: 12 + index * 23 }} aria-pressed={!search && zoneId === zone.id}
+                      onClick={() => { setQuery(''); setGroup('Zones'); setZoneId(zone.id); if (listRef.current) listRef.current.scrollTop = 0; }}>
+                      {pick(zone.title, lang)} · {zone.tracks.length}
+                    </button>
+                  </li>)}
+                </ul>
+              </div>}
+              </div>)}
             </div>
             <GameScrollbar targetRef={navRef} className={s.navScrollbar} />
           </nav>}
-          content={<section className={`${s.column} ${current ? s.withPlayer : ''}`} aria-label={heading || t('music.title')}>
+          content={<section className={`${s.column} ${s.withPlayer}`} aria-label={heading || t('music.title')}>
             {!tracks.length ? <p className={s.empty}>{t('music.missing')}</p> : <>
               <h1 className={s.heading}>{heading}</h1>
               <div className={s.viewport} ref={listRef}>
@@ -142,12 +162,11 @@ export function MusicScreen() {
                 </ul>
               </div>
               <GameScrollbar targetRef={listRef} className={s.scrollbar} />
-              {current && <MusicProgress title={title(current)} />}
             </>}
+            <MusicProgress title={current ? title(current) : null} />
           </section>}
         />
       </div>
-      <SpeakerToggle className={s.speaker} />
     </main>
   );
 }

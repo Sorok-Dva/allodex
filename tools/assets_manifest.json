@@ -1,5 +1,8 @@
 {
-  "_note": "Textures du client pour les écrans du site ; PlayedTrumpet fournit l'icône de la page Musiques, superposée à un bouton vierge dérivé par cut_sprites.py.",
+  "_note": "Textures du client et icône officielle du lecteur musical fournie par l'utilisateur. remote_textures est mis en cache localement sous public/game/textures, sans dépendance au site distant pendant la navigation.",
+  "remote_textures": {
+    "Official/media_player": "https://allods.ru/images/articles/media_player.png"
+  },
   "packs": {
     "interface": "data/Packs/Interface.Mini.pak",
     "video": "data/Packs/Video.pak"

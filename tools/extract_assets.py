@@ -26,7 +26,9 @@ import subprocess
 import sys
 import tempfile
 import zipfile
+from io import BytesIO
 from pathlib import Path
+from urllib.request import urlopen
 
 import numpy as np
 from PIL import Image
@@ -145,6 +147,32 @@ def transcode_videos(pak: zipfile.ZipFile, manifest: dict, out: Path, force: boo
             print(f"video    {name}.webm / {name}.mp4")
 
 
+def extract_remote_textures(manifest: dict, out: Path, force: bool = False) -> dict:
+    index = {}
+    for name, url in manifest.get("remote_textures", {}).items():
+        if not is_safe_entry(name):
+            raise ValueError(f"Chemin de texture distant invalide : {name}")
+        target = out / "textures" / f"{name}.png"
+        try:
+            if force or not target.is_file():
+                with urlopen(url, timeout=30) as response:
+                    data = response.read()
+                with Image.open(BytesIO(data)) as img:
+                    if img.format != "PNG":
+                        raise ValueError("l'image distante doit être un PNG")
+                    img.verify()
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with tempfile.TemporaryDirectory(dir=target.parent) as tmp:
+                    downloaded = Path(tmp) / "image.png"
+                    downloaded.write_bytes(data)
+                    downloaded.replace(target)
+            with Image.open(target) as img:
+                index[name] = {"w": img.width, "h": img.height}
+        except (OSError, ValueError) as exc:
+            print(f"AVERTISSEMENT : texture distante {name} : {exc}", file=sys.stderr)
+    return index
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--client", default=DEFAULT_CLIENT)
@@ -169,6 +197,7 @@ def main(argv: list[str] | None = None) -> int:
         with zipfile.ZipFile(client / manifest["packs"]["video"]) as pak:
             transcode_videos(pak, manifest, out, args.force)
 
+    textures.update(extract_remote_textures(manifest, out, args.force))
     (out / "manifest.json").write_text(json.dumps({"textures": textures}, indent=1, ensure_ascii=False), encoding="utf-8")
     print(f"OK : {len(textures)} textures → {out}")
     if args.music:

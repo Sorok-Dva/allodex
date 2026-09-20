@@ -7,6 +7,7 @@ export type ActionItem = {
   id: string;
   base: string;
   spriteBase?: string;
+  image?: string;
   icon?: string;
   label: string;
   hint?: string;
@@ -63,7 +64,7 @@ export function GameActionBar({ items, className, onItemInteract }: Props) {
             <span
               className={s.base}
               data-testid={`action-base-${item.id}`}
-              style={{ backgroundImage: `url(${item.spriteBase ? sprite(`${item.spriteBase}-${isPressed ? 'pressed' : 'normal'}`) : tex(`${item.base}${isPressed ? 'Pressed' : 'Normal'}`)})` }}
+              style={{ backgroundImage: `url(${item.image ? tex(item.image) : item.spriteBase ? sprite(`${item.spriteBase}-${isPressed ? 'pressed' : 'normal'}`) : tex(`${item.base}${isPressed ? 'Pressed' : 'Normal'}`)})`, transform: item.image && isPressed ? 'translateY(1px)' : undefined }}
             />
             {item.icon && <img className={s.icon} src={tex(item.icon)} alt="" />}
             <span

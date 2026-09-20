@@ -34,8 +34,8 @@ export function OpeningScreen() {
   const { t } = useI18n();
   const items: ActionItem[] = [
     ...ACTION_ITEMS.slice(0, 2),
-    { id: 'music', base: `${T.pinMenu}/ButtonMedals`, spriteBase: 'music-action',
-      icon: 'Interface/Icons/Special/Emotions/PlayedTrumpet', label: t('music.title'), onClick: () => navigate('/musiques') },
+    { id: 'music', base: `${T.pinMenu}/ButtonMedals`, image: 'Official/media_player',
+      label: t('music.title'), onClick: () => navigate('/musiques') },
     ...ACTION_ITEMS.slice(2),
   ];
   const { phase, skipIntro, replayIntro } = useIntroState();

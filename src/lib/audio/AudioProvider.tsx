@@ -7,6 +7,7 @@ export type TrackSource = { ogg: string; mp3: string };
 
 export type GameAudioState = {
   muted: boolean;
+  volume: number;
   /** Piste du site (`menu`/`ambient`) mémorisée, même pendant une source externe. */
   track: TrackName | null;
   /** Identifiant de la source externe en cours, `null` si le site joue sa propre piste. */
@@ -31,6 +32,7 @@ export type GameAudioState = {
 
 export type GameAudio = GameAudioState & {
   toggleMuted: () => void;
+  setVolume: (volume: number) => void;
   setTrack: (name: TrackName, opts?: { crossfadeMs?: number }) => void;
   /**
    * Joue une source arbitraire sur le moteur musical, avec le même fondu croisé que
@@ -47,6 +49,19 @@ export type GameAudio = GameAudioState & {
 };
 
 export const MUTE_KEY = 'allodex:audio-muted';
+export const VOLUME_KEY = 'allodex:audio-volume';
+const gains = new WeakMap<HTMLAudioElement, number>();
+function applyVolume(el: HTMLAudioElement, gain: number, volume: number) {
+  gains.set(el, gain);
+  el.volume = Math.max(0, Math.min(1, gain * volume));
+}
+function readVolume(storage: Storage) {
+  try {
+    const value = storage.getItem(VOLUME_KEY);
+    if (value !== null && value.trim() && Number.isFinite(Number(value))) return Math.max(0, Math.min(1, Number(value)));
+  } catch { /* stockage indisponible */ }
+  return 1;
+}
 /** Volume de base des deux pistes musicales (cible du fondu croisé), 0..1. */
 const MUSIC_VOLUME = 0.3;
 /** Volume par défaut d'un son d'interface joué par `playSfx`, 0..1. */
@@ -88,6 +103,9 @@ function assignTrack(el: HTMLAudioElement, name: TrackName) {
 
 export function AudioProvider({ children, storage = window.localStorage }: { children: ReactNode; storage?: Storage }) {
   const [muted, setMutedState] = useState<boolean>(() => readMuted(storage));
+  const [volume, setVolumeState] = useState(() => readVolume(storage));
+  const volumeRef = useRef(volume);
+  const sfxRef = useRef(new Set<HTMLAudioElement>());
   const [track, setTrackState] = useState<TrackName | null>(null);
   const [external, setExternalState] = useState<string | null>(null);
   const [ended, setEnded] = useState<string | null>(null);
@@ -110,6 +128,17 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   const fadeFrameRef = useRef<number | null>(null);
 
   mutedRef.current = muted;
+
+  const setVolume = useCallback((value: number) => {
+    if (!Number.isFinite(value)) return;
+    const next = Math.max(0, Math.min(1, value));
+    volumeRef.current = next;
+    setVolumeState(next);
+    try { storage.setItem(VOLUME_KEY, String(next)); } catch { /* stockage indisponible */ }
+    [musicRefA.current, musicRefB.current, ...sfxRef.current].forEach(el => {
+      if (el) applyVolume(el, gains.get(el) ?? MUSIC_VOLUME, next);
+    });
+  }, [storage]);
 
   const setPaused = useCallback((value: boolean) => {
     pausedRef.current = value;
@@ -178,22 +207,22 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     toEl.muted = mutedRef.current;
     if (opts.restart !== false) toEl.currentTime = 0;
     if (!fromEl || crossfadeMs <= 0) {
-      toEl.volume = MUSIC_VOLUME;
+      applyVolume(toEl, MUSIC_VOLUME, volumeRef.current);
       toEl.play().catch(() => {});
       fromEl?.pause();
       return;
     }
-    toEl.volume = 0;
+    applyVolume(toEl, 0, volumeRef.current);
     toEl.play().catch(() => {});
-    const fromStart = fromEl.paused ? MUSIC_VOLUME : fromEl.volume;
+    const fromStart = fromEl.paused ? MUSIC_VOLUME : (gains.get(fromEl) ?? MUSIC_VOLUME);
     const start = performance.now();
     const tick = (now: number) => {
       // `now` est l'horodatage du **début de la frame** : il peut précéder le
       // `performance.now()` lu juste avant, d'où un `t` négatif et un volume hors
       // domaine refusé par le navigateur si on ne borne pas des deux côtés.
       const t = Math.min(1, Math.max(0, (now - start) / crossfadeMs));
-      toEl.volume = MUSIC_VOLUME * t;
-      fromEl.volume = fromStart * (1 - t);
+      applyVolume(toEl, MUSIC_VOLUME * t, volumeRef.current);
+      applyVolume(fromEl, fromStart * (1 - t), volumeRef.current);
       if (t < 1) {
         fadeFrameRef.current = requestAnimationFrame(tick);
       } else {
@@ -211,7 +240,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     if (el?.ended) { el.currentTime = 0; setEnded(null); }
     if (!el || !gestureRef.current || mutedRef.current) return;
     el.muted = mutedRef.current;
-    el.volume = MUSIC_VOLUME;
+    applyVolume(el, MUSIC_VOLUME, volumeRef.current);
     el.play().catch(() => {});
   }, [setPaused]);
 
@@ -238,7 +267,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
       // Pas encore de geste utilisateur (ou son coupé) : on prépare la piste sans la
       // jouer, la politique d'autoplay du navigateur interdirait de toute façon `play()`.
       toEl.muted = mutedRef.current;
-      toEl.volume = fromEl ? 0 : MUSIC_VOLUME;
+      applyVolume(toEl, fromEl ? 0 : MUSIC_VOLUME, volumeRef.current);
     }
   }, [crossfade, resumeActive, setPaused]);
 
@@ -265,7 +294,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
       crossfade(toEl, fromEl, fromEl ? crossfadeMs : 0);
     } else {
       toEl.muted = mutedRef.current;
-      toEl.volume = fromEl ? 0 : MUSIC_VOLUME;
+      applyVolume(toEl, fromEl ? 0 : MUSIC_VOLUME, volumeRef.current);
     }
   }, [crossfade, resumeActive, setPaused]);
 
@@ -313,7 +342,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
         const el = activeRef.current;
         if (el) {
           el.muted = mutedRef.current;
-          el.volume = MUSIC_VOLUME;
+          applyVolume(el, MUSIC_VOLUME, volumeRef.current);
           el.play().catch(() => {});
         }
         return;
@@ -327,7 +356,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
         const el = activeRef.current;
         if (el) {
           el.muted = mutedRef.current;
-          el.volume = MUSIC_VOLUME;
+          applyVolume(el, MUSIC_VOLUME, volumeRef.current);
           el.play().catch(() => {});
         }
       }
@@ -346,7 +375,7 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
       mutedRef.current = next;
       writeMuted(storage, next);
       // `.muted`, jamais `.pause()` : la position de lecture continue derrière le mute.
-      [musicRefA.current, musicRefB.current].forEach(el => { if (el) el.muted = next; });
+      [musicRefA.current, musicRefB.current, ...sfxRef.current].forEach(el => { if (el) el.muted = next; });
       return next;
     });
   }, [storage]);
@@ -366,18 +395,19 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
     el.appendChild(ogg);
     el.appendChild(mp3);
     el.loop = meta.loop;
-    el.volume = volume;
+    applyVolume(el, volume, volumeRef.current);
     el.style.display = 'none';
     document.body.appendChild(el);
-    const cleanup = () => el.remove();
+    sfxRef.current.add(el);
+    const cleanup = () => { sfxRef.current.delete(el); el.remove(); };
     el.addEventListener('ended', cleanup, { once: true });
     window.setTimeout(cleanup, Math.max(500, meta.duration * 1000 + 300));
     el.play().catch(() => {});
   }, []);
 
   const api = useMemo<GameAudio>(
-    () => ({ muted, track, external, ended, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, seekMusic, resumeAmbient, playSfx }),
-    [muted, track, external, ended, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, seekMusic, resumeAmbient, playSfx],
+    () => ({ muted, volume, setVolume, track, external, ended, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, seekMusic, resumeAmbient, playSfx }),
+    [muted, volume, setVolume, track, external, ended, paused, playing, ready, toggleMuted, setTrack, playExternal, pauseMusic, seekMusic, resumeAmbient, playSfx],
   );
 
   return (

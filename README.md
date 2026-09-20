@@ -27,19 +27,30 @@ Les assets extraits sous `public/game/` appartiennent à My.Games et ne sont pas
 - `/` : intro (première visite), puis menu vidéo avec, en bas à droite, la barre de boutons du jeu (voir « Itération 2 » ci-dessous — le panneau de connexion et le champ de recherche du POC v1 ont été retirés).
 - `/succes` : panneau Succès fidèle au jeu, données mockées (`src/data/medals.mock.json`). La progression et les paliers restent fictifs.
 - `/chroniques` : archive des écrans de lancement, version par version, avec leur thème musical (voir « Chroniques » ci-dessous).
-- `/musiques` : catalogue musical FR/RU, accessible par le bouton trompette, avec lecture par catégorie.
+- `/musiques` : catalogue musical FR/RU, accessible par le bouton gramophone, avec lecture par catégorie.
 - Non fait : comptes, addon d'export, import de progression, icônes réelles de tous les succès.
 
 ## Musiques
 
 `/musiques` rassemble les musiques des clients FR 16.0 et RU 17.0, regroupées par
-banque (menus, zones, peuples, instruments, Astral et donjons). Le bouton trompette
+banque (menus, zones, peuples, instruments, Astral et donjons). Le bouton gramophone
 de l'accueil ouvre la fenêtre du jeu : lecture/pause, durée, enchaînement des pistes
 du groupe et interrupteur sonore. L'interface est disponible en français et anglais.
 Le champ de recherche parcourt les titres et noms internes de toutes les catégories,
 sans distinction de casse ou d'accents. La barre du morceau en cours affiche le temps
 écoulé et permet de déplacer la lecture par clic, glissement ou touches du clavier,
 y compris en pause. La catégorie interne Kadagan est affichée « Xadagan » en FR/EN.
+« Zones » se déplie en sous-catégories, avec le parchemin et les boutons +/− des
+Succès. Eden, Jigran, Xadagan et Kvator y sont intégrés. Les correspondances vivent
+dans `src/data/music-zones.json` : ZL1 → Kania, ZE2 → Empire, Umoir → Umoira ; les
+noms non identifiés restent dans « Autres zones ». La recherche inclut les noms de
+zone et l'enchaînement reste dans la sous-catégorie du morceau joué.
+Airin est affiché « Irene » en français et « Iren » en anglais.
+Le bouton son et le volume (0–100 %) sont intégrés à droite du lecteur, disponibles
+avant la lecture. Le bouton affiche le curseur, aligné avec la barre de lecture ;
+un second clic, un clic ailleurs ou Échap le masque. Le niveau est mémorisé (`allodex:audio-volume`), appliqué à la
+musique et aux sons d'interface, et conservé pendant les fondus et les changements
+de page ; couper le son conserve le niveau choisi.
 
 `npm run extract` extrait aussi ce catalogue. Pour ne refaire que les musiques :
 
@@ -57,10 +68,11 @@ exports précédents sont conservés ; `--only` conserve les autres banques.
 
 Sorties non versionnées : `public/game/music/*.{ogg,mp3}` et `public/game/music.json`.
 Sans index, la page affiche « Musiques non extraites ».
-Après extraction des textures, `python3 tools/cut_sprites.py` régénère aussi le fond
-vierge du bouton trompette à partir du bouton Succès, avec les captures déjà requises
-par le chrome du site. Le cadre conserve ses dimensions natives sur ordinateur et
-est réduit sur les petits écrans.
+L'icône du gramophone vient de `https://allods.ru/images/articles/media_player.png`,
+déclarée dans `tools/assets_manifest.json` (`remote_textures`) et téléchargée à
+l'extraction dans `public/game/textures/Official/media_player.png`. Elle est ensuite
+servie localement ; `--force` la retélécharge. Le cadre conserve ses dimensions
+natives sur ordinateur et est réduit sur les petits écrans.
 
 ## Audio du site
 

@@ -156,3 +156,22 @@ def test_extract_textures_applies_color_offset_after_trim(monkeypatch, tmp_path)
     assert index["Interface/Ingame/Medals/Textures/X"] == {"w": 3, "h": 2}  # rognage conservé
     with Image.open(tmp_path / "textures" / "Interface/Ingame/Medals/Textures/X.png") as im:
         assert im.convert("RGBA").getpixel((0, 0)) == (255, 12, 18, 255)
+def test_remote_texture_is_cached_without_changing_original_bytes(tmp_path, monkeypatch):
+    from io import BytesIO
+    from PIL import Image
+    from tools import extract_assets as assets
+    buffer = BytesIO()
+    Image.new("RGBA", (64, 64), (50, 60, 70, 120)).save(buffer, format="PNG")
+    data = buffer.getvalue()
+    calls = []
+    def fetch(url, timeout):
+        calls.append(url)
+        return BytesIO(data)
+    monkeypatch.setattr(assets, "urlopen", fetch)
+    manifest = {"remote_textures": {"Official/media_player": "https://allods.ru/images/articles/media_player.png"}}
+    assert assets.extract_remote_textures(manifest, tmp_path) == {"Official/media_player": {"w": 64, "h": 64}}
+    assert (tmp_path / "textures/Official/media_player.png").read_bytes() == data
+    assets.extract_remote_textures(manifest, tmp_path)
+    assert len(calls) == 1
+    assets.extract_remote_textures(manifest, tmp_path, force=True)
+    assert len(calls) == 2
