@@ -12,30 +12,33 @@ import s from './OpeningScreen.module.css';
 
 const MenuScene = lazy(() => import('@/components/game/MenuScene').then(m => ({ default: m.MenuScene })));
 
-function Video({ name, loop, onEnded, onError, className }: { name: 'intro' | 'mainmenu'; loop?: boolean; onEnded?: () => void; onError?: () => void; className?: string }) {
+function Video({ name, loop, onEnded, onError, className, testId }: { name: 'intro' | 'mainmenu'; loop?: boolean; onEnded?: () => void; onError?: () => void; className?: string; testId?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
-    v.play().catch(() => onError?.());   // autoplay refusé → on passe au menu
+    v.play().catch(() => onError?.());   // autoplay refusé → laissé au parent (rien pour l'intro : le logo s'anime sur fond noir)
   }, [name, onError]);
   const src = video(name);
   return (
-    <video ref={ref} className={className} muted playsInline loop={loop} onEnded={onEnded} onError={onError} poster={tex(`${T.main2}/Background_14_0_Temp`)}>
+    <video ref={ref} className={className} muted playsInline loop={loop} onEnded={onEnded} onError={onError} poster={tex(`${T.main2}/Background_14_0_Temp`)} data-testid={testId}>
       <source src={src.webm} type="video/webm" />
       <source src={src.mp4} type="video/mp4" />
     </video>
   );
 }
 
-function MainMedia({ latest }: { latest?: ArchiveEntry }) {
+// `fade` : fondu depuis le noir quand le menu s'affiche directement ; inutile (et
+// visible comme un creux sombre) quand la couche intro se fond déjà par-dessus.
+function MainMedia({ latest, fade }: { latest?: ArchiveEntry; fade: boolean }) {
   const [sceneReady, setSceneReady] = useState(false);
   const scene = latest?.media === 'image' && latest.scene && hasWebGL() ? latest.scene : null;
+  const fadeClass = fade ? s.fadeIn : '';
 
   if (latest?.media === 'image' && latest.background) {
     const still = (
       <img
-        className={`${s.video} ${s.fadeIn} ${scene && sceneReady ? s.mediaBehind : ''}`}
+        className={`${s.video} ${fadeClass} ${scene && sceneReady ? s.mediaBehind : ''}`}
         src={archiveFile(latest.version, latest.background)}
         alt=""
         aria-hidden="true"
@@ -56,7 +59,21 @@ function MainMedia({ latest }: { latest?: ArchiveEntry }) {
     );
   }
 
-  return <Video key="mainmenu" name="mainmenu" loop className={`${s.video} ${s.fadeIn}`} />;
+  return <Video key="mainmenu" name="mainmenu" loop className={`${s.video} ${fadeClass}`} />;
+}
+
+/* Animation d'ouverture du logo : matérialisation au centre de l'écran, halo, rayons
+   et reflet balayant le logo ; au fondu, le logo glisse vers sa place du menu. */
+function IntroLogoEffects({ src }: { src: string }) {
+  const mask = { WebkitMaskImage: `url(${src})`, maskImage: `url(${src})` };
+  return (
+    <>
+      <div className={s.logoHalo} aria-hidden="true" />
+      <div className={s.logoRays} aria-hidden="true" />
+      <div className={s.logoShine} style={mask} aria-hidden="true" />
+      <div className={s.logoFlash} style={mask} aria-hidden="true" />
+    </>
+  );
 }
 
 export function OpeningScreen() {
@@ -71,9 +88,13 @@ export function OpeningScreen() {
   ];
   const latest = latestArchiveEntry();
   const hasIntro = latest ? Boolean(latest.intro) : true;
-  const { phase, skipIntro, replayIntro } = useIntroState(undefined, !hasIntro);
+  const { phase, skipIntro, replayIntro } = useIntroState(!hasIntro);
   const { track, setTrack, playSfx } = useGameAudio();
   const firstInteractionRef = useRef(false);
+  const introRanRef = useRef(false);
+  if (phase === 'intro') introRanRef.current = true;
+  const inIntro = phase === 'intro';
+  const introLayerVisible = hasIntro && phase !== 'menu';
 
   // Demandé dès le montage, intro comprise : la piste `menu` ne joue vraiment qu'après
   // le premier geste utilisateur (politique d'autoplay gérée par le moteur audio).
@@ -96,43 +117,57 @@ export function OpeningScreen() {
     return () => window.removeEventListener('keydown', onKey);
   }, [phase, skipIntro]);
 
-  if (phase === 'intro' && hasIntro) {
-    return (
-      <div className={s.screen} onClick={skipIntro}>
-        <Video key="intro" name="intro" className={s.video} onEnded={skipIntro} onError={skipIntro} />
-        <span className={s.skipHint}>{t('home.skip')}</span>
-      </div>
-    );
-  }
-
+  /* Un seul arbre pour les trois phases : la vidéo d'intro et le logo gardent leur
+     identité DOM pendant le fondu (pas de redémarrage, pas de saut), le menu se monte
+     dessous dès la phase `fading` et la couche intro s'efface par-dessus. */
   return (
-    <div className={s.screen}>
-      <MainMedia latest={latest} />
-      <div className={s.vignette} />
+    <div className={s.screen} onClick={inIntro ? skipIntro : undefined} data-phase={phase}>
+      {!inIntro && <MainMedia latest={latest} fade={!introRanRef.current} />}
+      {!inIntro && <div className={s.vignette} />}
+
+      {introLayerVisible && (
+        <Video
+          key="intro"
+          name="intro"
+          className={`${s.video} ${s.introLayer} ${phase === 'fading' ? s.introLayerOut : ''}`}
+          testId="intro-video"
+        />
+      )}
 
       <div className={s.title}>
-        <img
-          className={s.logo}
-          src={gameLogo()}
-          alt="Allodex"
-          data-testid="game-logo"
-        />
-      </div>
-
-      <GameActionBar items={items} className={s.actionBar} onItemInteract={handleItemInteract} />
-
-      {/* Le jeu rejoue sa cinématique depuis le menu ; ici un simple lien texte,
-          posé au-dessus du bandeau légal pour ne pas empiéter dessus. */}
-      {hasIntro && <button type="button" className={s.replay} onClick={replayIntro}>{t('home.replay')}</button>}
-
-      <div className={s.bottomLine} style={{ backgroundImage: `url(${tex(`${T.main2}/BottomLine`)})` }}>
-        <LanguageSwitcher className={s.language} />
-        <div className={s.credits}>
-          <span>{t('home.disclaimer')}</span>
-          <span>{t('home.copyright', { year: new Date().getFullYear() })} <a href="https://p-42.fr/allodex-developer" target="_blank" rel="noopener noreferrer">Sorok-Dva</a> · <Link to="/terms">{t('legal.shortTitle')}</Link></span>
+        <div className={`${s.logoStage} ${inIntro ? s.logoStageIntro : ''}`}>
+          <div className={`${s.logoReveal} ${introLayerVisible ? s.logoRevealIntro : ''}`}>
+            {introLayerVisible && <IntroLogoEffects src={gameLogo()} />}
+            <img
+              className={s.logo}
+              src={gameLogo()}
+              alt="Allodex"
+              data-testid="game-logo"
+            />
+          </div>
         </div>
-        <SpeakerToggle className={s.speaker} />
       </div>
+
+      {inIntro ? (
+        <span className={s.skipHint}>{t('home.skip')}</span>
+      ) : (
+        <>
+          <GameActionBar items={items} className={s.actionBar} onItemInteract={handleItemInteract} />
+
+          {/* Le jeu rejoue sa cinématique depuis le menu ; ici un simple lien texte,
+              posé au-dessus du bandeau légal pour ne pas empiéter dessus. */}
+          {hasIntro && <button type="button" className={s.replay} onClick={replayIntro}>{t('home.replay')}</button>}
+
+          <div className={s.bottomLine} style={{ backgroundImage: `url(${tex(`${T.main2}/BottomLine`)})` }}>
+            <LanguageSwitcher className={s.language} />
+            <div className={s.credits}>
+              <span>{t('home.disclaimer')}</span>
+              <span>{t('home.copyright', { year: new Date().getFullYear() })} <a href="https://p-42.fr/allodex-developer" target="_blank" rel="noopener noreferrer">Sorok-Dva</a> · <Link to="/terms">{t('legal.shortTitle')}</Link></span>
+            </div>
+            <SpeakerToggle className={s.speaker} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

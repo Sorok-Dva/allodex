@@ -3,7 +3,14 @@
 .mediaBehind { opacity: 0; transition: opacity 400ms ease-out; }
 .fadeIn { animation: fade 900ms ease-out both; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-.skipHint { position: absolute; right: 24px; bottom: 20px; color: #ccc; font-size: 14px; opacity: 0.7; }
+.skipHint { position: absolute; right: 24px; bottom: 20px; color: #ccc; font-size: 14px; opacity: 0.7; z-index: 3; animation: fade 900ms ease-out 1200ms both; }
+
+/* Couche vidéo de l'intro : au-dessus du menu (z 2) mais sous le logo (z 3) ; pendant
+   la phase `fading` elle s'efface en fondu enchainé sur le menu déjà monté dessous.
+   Durée à garder alignée sur `FADE_MS` (useIntroState). */
+.introLayer { z-index: 2; pointer-events: none; }
+.introLayerOut { animation: fadeOut 1100ms ease-in-out both; }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 60%, transparent 55%, rgba(0,0,0,0.55)); pointer-events: none; }
 
 /* Titre / Logo de l'écran principal : centré à 8vh du haut, calé comme sur les Chroniques */
@@ -16,6 +23,89 @@
   justify-content: center;
   padding: 0 24px;
   pointer-events: none;
+  z-index: 3;
+}
+
+/* Scène du logo : pendant l'intro, centré à l'écran et légèrement agrandi ; à la fin
+   de l'intro la classe tombe et le logo glisse (transition) vers sa place du menu.
+   `translateY(42vh - 50%)` amène son centre à mi-hauteur (la scène part de 8vh). */
+.logoStage {
+  position: relative;
+  transition: transform 1100ms cubic-bezier(0.55, 0, 0.15, 1);
+  will-change: transform;
+}
+.logoStageIntro {
+  transform: translateY(calc(42vh - 50%)) scale(1.15);
+  transition: none;
+}
+
+/* Matérialisation : surgit du noir en surchauffe (flou + surexposition) puis se pose. */
+.logoReveal { position: relative; }
+.logoRevealIntro { animation: logoReveal 1800ms cubic-bezier(0.2, 0.7, 0.2, 1) 400ms both; }
+@keyframes logoReveal {
+  0%   { opacity: 0; transform: scale(1.6); filter: blur(16px) brightness(2.4) saturate(0.3); }
+  45%  { opacity: 1; transform: scale(1.05); filter: blur(3px) brightness(1.6) saturate(0.85); }
+  70%  { transform: scale(0.98); filter: blur(0) brightness(1.15) saturate(1.1); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0) brightness(1) saturate(1); }
+}
+
+/* Halo doré/bleu qui éclate derrière le logo au moment où il se fixe. */
+.logoHalo,
+.logoRays {
+  position: absolute; left: 50%; top: 50%; width: 160%; aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none; opacity: 0; z-index: -1;
+}
+.logoHalo {
+  background: radial-gradient(circle, rgba(255, 236, 170, 0.85) 0%, rgba(120, 170, 255, 0.45) 22%, rgba(60, 90, 200, 0.15) 40%, transparent 62%);
+  animation: haloBurst 1600ms ease-out 1100ms both;
+}
+@keyframes haloBurst {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+  35%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+}
+
+/* Rayons tournants (dégradé conique masqué en disque), brève apparition. */
+.logoRays {
+  background: repeating-conic-gradient(from 0deg, rgba(255, 240, 200, 0.28) 0deg 6deg, transparent 6deg 24deg);
+  -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 65%);
+  mask-image: radial-gradient(circle, #000 20%, transparent 65%);
+  animation: raysSpin 2600ms ease-in-out 1300ms both;
+}
+@keyframes raysSpin {
+  0%   { opacity: 0; transform: translate(-50%, -50%) rotate(0deg) scale(0.7); }
+  30%  { opacity: 0.9; }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(60deg) scale(1.2); }
+}
+
+/* Reflet et éclair blanc, tous deux découpés par le masque du logo (même PNG). */
+.logoShine,
+.logoFlash {
+  position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  -webkit-mask-size: contain; mask-size: contain;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+}
+.logoShine {
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 250, 225, 0.55) 47%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 250, 225, 0.55) 53%, transparent 62%);
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+  animation: shineSweep 1400ms ease-in-out 2300ms both;
+}
+@keyframes shineSweep {
+  from { background-position: 130% 0; }
+  to   { background-position: -130% 0; }
+}
+.logoFlash {
+  background: #fff;
+  mix-blend-mode: screen;
+  animation: flash 900ms ease-out 1150ms both;
+}
+@keyframes flash {
+  0%   { opacity: 0; }
+  20%  { opacity: 0.9; }
+  100% { opacity: 0; }
 }
 
 .logo {
@@ -35,6 +125,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .logo { animation: titleIn 600ms ease-out both; }
+  .logoStage { transition: none; }
+  .logoRevealIntro { animation: fade 600ms ease-out 400ms both; }
+  .logoHalo, .logoRays, .logoShine, .logoFlash { animation: none; opacity: 0; }
 }
 
 .actionBar { position: absolute; right: 24px; bottom: 72px; }
