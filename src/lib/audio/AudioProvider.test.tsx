@@ -333,9 +333,11 @@ describe('AudioProvider / useGameAudio', () => {
   it('poursuit la lecture sans interruption ni seek quand on passe du menu au thème identique de la dernière version', () => {
     const { getByTestId } = setup();
     const menuEl = getByTestId('music-a') as HTMLAudioElement;
+    act(() => { api!.setTrack('menu'); });
     act(() => { window.dispatchEvent(new Event('pointerdown')); });
     menuEl.currentTime = 25;
     const loadSpy = vi.spyOn(menuEl, 'load');
+    loadSpy.mockClear();
 
     act(() => {
       api!.playExternal('archive:16.0', { ogg: '/game/archive/16.0/theme.ogg', mp3: '/game/archive/16.0/theme.mp3' }, { loop: false });
