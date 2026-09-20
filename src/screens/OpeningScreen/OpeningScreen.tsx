@@ -73,7 +73,6 @@ export function OpeningScreen() {
     <div className={s.screen}>
       <Video key="mainmenu" name="mainmenu" loop className={`${s.video} ${s.fadeIn}`} />
       <div className={s.vignette} />
-      <div className={s.language}><LanguageSwitcher /></div>
 
       <GameActionBar items={items} className={s.actionBar} onItemInteract={handleItemInteract} />
 
@@ -82,6 +81,7 @@ export function OpeningScreen() {
       <button type="button" className={s.replay} onClick={replayIntro}>{t('home.replay')}</button>
 
       <div className={s.bottomLine} style={{ backgroundImage: `url(${tex(`${T.main2}/BottomLine`)})` }}>
+        <LanguageSwitcher className={s.language} />
         <div className={s.credits}>
           <span>{t('home.disclaimer')}</span>
           <span>{t('home.copyright', { year: new Date().getFullYear() })} <a href="https://p-42.fr/allodex-developer" target="_blank" rel="noopener noreferrer">Sorok-Dva</a> · <Link to="/cgu">{t('legal.shortTitle')}</Link></span>
