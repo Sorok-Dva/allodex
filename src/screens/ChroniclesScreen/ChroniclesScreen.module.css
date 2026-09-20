@@ -3,6 +3,9 @@
 /* Deux couches empilées au plus : l'ancienne reste le temps du fondu (600 ms). */
 .layer { position: absolute; inset: 0; }
 .media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Fond fixe conservé sous la scène 3D (il porte le texte alternatif) : il s'efface une
+   fois la première image rendue, ce qui évite un flash noir au changement de version. */
+.mediaBehind { opacity: 0; transition: opacity 400ms ease-out; }
 /* Version sans média : le fond de secours du menu, assombri (spec § 4). */
 .mediaMissing { background: center / cover no-repeat; filter: brightness(0.35) saturate(0.6); }
 .fadeIn { animation: fade 600ms ease-out both; }

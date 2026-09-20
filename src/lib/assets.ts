@@ -25,6 +25,24 @@ export type ArchiveTheme = {
   mp3: string;
   alternatives?: string[];
 };
+/** Fichiers de la scène de menu en 3D d'une version (`tools/extract_menu_scene.py`). */
+export type ArchiveScene = { glb: string; meta: string };
+/**
+ * Contenu de `scene.json` : ce que le glTF ne porte pas. La caméra n'existe nulle part
+ * dans les données du jeu — elle vient de `tools/scenes_manifest.json` — et le `fov` est
+ * **vertical**, en degrés. Les coordonnées sont celles du `.glb` (axe `up` donné ici,
+ * `[0, 0, 1]` pour toutes les scènes connues).
+ */
+export type SceneMeta = {
+  version?: string;
+  camera: { position: [number, number, number]; target: [number, number, number]; fov: number };
+  up: [number, number, number];
+  /** Couleur du ciel hors géométrie, en hexadécimal CSS. */
+  background: string;
+  /** Noms des animations du `.glb` (toutes jouées en boucle). */
+  animations: string[];
+  stats?: { triangles: number; textures: number; animations: number; objects: number };
+};
 /**
  * Une version archivée du jeu (`public/game/archive.json`, écrit par
  * `tools/extract_archive.py`). `media: null` = client absent au moment de
@@ -40,6 +58,11 @@ export type ArchiveEntry = {
   background?: string;
   /** Mention affichée quand le fond est une illustration de repli et non la vraie scène. */
   background_note?: string;
+  /**
+   * Scène de menu en 3D (4.0 → 8.0) : rendue par `MenuScene` quand WebGL est là,
+   * `background` restant l'illustration de repli.
+   */
+  scene?: ArchiveScene;
   /** Nom du PNG du logo de l'add-on ; absent = aucun client archivé ne le conserve. */
   logo?: string;
   /** Durée de la vidéo de menu, en secondes. */

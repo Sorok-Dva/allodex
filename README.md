@@ -220,15 +220,34 @@ moteur de rendu du site.
 fichiers sont là ; `background` reste l'illustration de repli (navigateur sans WebGL, mouvement
 désactivé).
 
+**Le lecteur.** `src/components/game/MenuScene.tsx` (three.js, chargé à la demande : `three` ne
+pèse sur aucun autre écran) rejoue le `.glb` en plein écran sous l'interface des Chroniques. Il lit
+d'abord `scene.json`, monte la caméra telle quelle — champ de vision **vertical** constant, seul le
+rapport d'image suit la fenêtre, l'équivalent d'un `object-fit: cover` — et joue toutes les
+animations en boucle. Deux partis pris reproduisent le moteur du jeu, lui aussi vérifiés sur les
+planches de contrôle : aucune gestion d'espace colorimétrique (`ColorManagement` désactivé,
+textures en `NoColorSpace`), et un rendu **à la peintre** — tout en mélange alpha, sans tampon de
+profondeur, les primitives classées une fois pour toutes par profondeur moyenne (`sortByDepth`, la
+caméra ne bouge jamais). Sans cela les quelques primitives exportées en `alphaMode: OPAQUE` — des
+halos, en réalité — masqueraient les calques de nuages qui doivent passer par-dessus.
+
+**Replis.** Sans WebGL (`src/lib/webgl.ts`, sonde mise en cache) la page garde le `background.png`
+de la version. Avec la scène, ce même fond reste affiché **sous** le canvas jusqu'à la première
+image rendue, puis s'efface en fondu : pas d'écran noir au changement de version. `prefers-reduced-motion`
+n'affiche qu'une image, à t = 0, mixeur à l'arrêt ; un onglet caché suspend la boucle.
+
 **Recaler une caméra.** La caméra du menu n'existe nulle part dans les données du jeu (elle est
 codée dans le client) : `tools/scenes_manifest.json` en porte une **par version**
 (`camera.position`, `camera.target`, `camera.fov`, en unités du jeu, axe Z vers le haut). Pour la
 corriger, modifier ces valeurs puis relancer l'outil avec `--only <version> --check-dir …` et
 comparer la planche à une capture du menu réel (`refs/captures-ui/menu-<version>-*.png`). Le repère
 du jeu est en main gauche : l'export enveloppe la scène dans un nœud `scale: [-1, 1, 1]`, les
-coordonnées de la caméra sont donc dans ce repère miroir (celui du `.glb`). Les cadrages des 4.0 et
-5.0 restent approximatifs — ces scènes sont noyées dans leurs sphères de brume, que l'export
-reproduit fidèlement mais sans le brouillard du moteur.
+coordonnées de la caméra sont donc dans ce repère miroir (celui du `.glb`). La 7.0 a été calée sur
+`refs/captures-ui/menu-7.0-frame1.png`. Les cadrages des 4.0 et 5.0 restent approximatifs — ces
+scènes sont noyées dans leurs sphères de brume, que l'export reproduit fidèlement mais sans le
+brouillard du moteur. Attention : la planche de contrôle ne remplace pas une capture du site, son
+rasteriseur jetant les triangles qui frôlent la caméra ; la 4.0 montre ainsi dans le navigateur un
+grand voile de brume que la planche laisse de côté.
 
 **Animations.** Le blob `(SkeletalAnimation).bin` a été rétro-conçu (format décrit en tête de
 `tools/extract_menu_scene.py`) : pointeurs auto-relatifs, une piste par articulation, translation en

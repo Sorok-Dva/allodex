@@ -1,0 +1,10 @@
+/* La scène occupe toute la couche de fond, sous la vignette et l'interface. Le canvas
+   est dimensionné en pixels par le composant (ResizeObserver) ; le CSS ne fait que le
+   plaquer sur la couche. */
+.canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}

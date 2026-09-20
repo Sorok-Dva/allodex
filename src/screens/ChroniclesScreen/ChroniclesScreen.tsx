@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { T, archiveEntries, archiveFile, sprite, tex, type ArchiveEntry } from '@/lib/assets';
 import { navigate, useRoute } from '@/lib/router';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { useI18n } from '@/lib/i18n';
+import { hasWebGL } from '@/lib/webgl';
 import { nineSlice } from '@/lib/nineSlice';
 import { GameStrip } from '@/components/game/GameStrip';
 import { SpeakerToggle } from '@/components/game/SpeakerToggle';
@@ -31,13 +32,23 @@ const NO_THEME_DWELL_MS = 20_000;
 const hasMedia = (entry: ArchiveEntry) =>
   (entry.media === 'video' && !!entry.video) || (entry.media === 'image' && !!entry.background);
 
+// La scène 3D tire `three` derrière elle : chargement à la demande, pour que les autres
+// écrans du site n'en paient pas le poids.
+const MenuScene = lazy(() => import('@/components/game/MenuScene'));
+
 /**
  * Écran de lancement d'une version, en plein écran : la vidéo du menu en boucle quand
- * le client en avait une, sinon le fond statique. Version dont le média n'a pas été
- * extrait (client absent) : fond `Background_14_0_Temp` assombri.
+ * le client en avait une, la scène 3D animée du menu (4.0 → 8.0) quand elle a été
+ * exportée et que le navigateur sait la rendre, sinon le fond statique. Version dont le
+ * média n'a pas été extrait (client absent) : fond `Background_14_0_Temp` assombri.
  */
 function MediaLayer({ entry }: { entry: ArchiveEntry }) {
   const { t } = useI18n();
+  // Le fond fixe reste visible sous la scène tant que celle-ci n'a pas rendu sa première
+  // image : sans lui, le changement de version passerait par un écran noir.
+  const [sceneReady, setSceneReady] = useState(false);
+  const scene = entry.media === 'image' && entry.scene && hasWebGL() ? entry.scene : null;
+
   if (entry.media === 'video' && entry.video) {
     return (
       <video className={s.media} autoPlay loop muted playsInline>
@@ -47,7 +58,26 @@ function MediaLayer({ entry }: { entry: ArchiveEntry }) {
     );
   }
   if (entry.media === 'image' && entry.background) {
-    return <img className={s.media} src={archiveFile(entry.version, entry.background)} alt={t('chronicles.launchScreen', { label: entry.label })} />;
+    const still = (
+      <img
+        className={`${s.media} ${scene && sceneReady ? s.mediaBehind : ''}`}
+        src={archiveFile(entry.version, entry.background)}
+        alt={t('chronicles.launchScreen', { label: entry.label })}
+      />
+    );
+    if (!scene) return still;
+    return (
+      <>
+        {still}
+        <Suspense fallback={null}>
+          <MenuScene
+            glbUrl={archiveFile(entry.version, scene.glb)}
+            metaUrl={archiveFile(entry.version, scene.meta)}
+            onReady={() => setSceneReady(true)}
+          />
+        </Suspense>
+      </>
+    );
   }
   return (
     <div
