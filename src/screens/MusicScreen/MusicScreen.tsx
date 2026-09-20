@@ -60,6 +60,11 @@ export function MusicScreen() {
   const heading = search ? t('music.results', { count: visible.length }) : pick(zones.find(zone => zone.id === zoneId)?.title, lang) ?? groupLabel(group);
   const bg = video('mainmenu');
 
+  const play = useCallback((track: MusicTrack) => {
+    setCurrent(track);
+    playExternal(`music:${track.id}`, { ogg: track.ogg, mp3: track.mp3 }, { loop: false, crossfadeMs: 600 });
+  }, [playExternal]);
+
   useEffect(() => {
     const previousTitle = document.title;
     document.title = `Allodex — ${t('music.title')}`;
@@ -81,11 +86,6 @@ export function MusicScreen() {
     window.addEventListener('resize', resize);
     return () => window.removeEventListener('resize', resize);
   }, []);
-
-  const play = useCallback((track: MusicTrack) => {
-    setCurrent(track);
-    playExternal(`music:${track.id}`, { ogg: track.ogg, mp3: track.mp3 }, { loop: false, crossfadeMs: 600 });
-  }, [playExternal]);
 
   useEffect(() => {
     if (!ended) { consumedEnd.current = null; return; }
