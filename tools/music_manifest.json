@@ -1,5 +1,9 @@
 {
   "_note": "Toutes les banques musicales ; première occurrence du nom interne conservée, FR avant RU. Les groupes et leur ordre sont déclarés ici. Sorties générées non versionnées sous public/game/music/.",
+  "ignore": [
+    "NoSOUND",
+    "NoSOUNDStartInstances"
+  ],
   "clients": [
     {"id": "16.0", "root": "/mnt/h/MyGames/Allods Online FR (FR)", "pak": "data/Packs/SFX_Music.Mini.pak"},
     {"id": "17.0", "root": "/mnt/h/MyGames/AllodsRU", "pak": "data/Packs/SFX_Music.Mini.pak"}

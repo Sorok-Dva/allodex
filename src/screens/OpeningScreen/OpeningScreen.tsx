@@ -1,18 +1,13 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { T, tex, video } from '@/lib/assets';
-import { navigate } from '@/lib/router';
+import { Link, navigate } from '@/lib/router';
+import { LanguageSwitcher } from '@/components/game/LanguageSwitcher';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { useI18n } from '@/lib/i18n';
 import { GameActionBar, type ActionItem } from '@/components/game/GameActionBar';
 import { SpeakerToggle } from '@/components/game/SpeakerToggle';
 import { useIntroState } from './useIntroState';
 import s from './OpeningScreen.module.css';
-
-const ACTION_ITEMS: ActionItem[] = [
-  { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: 'Succès', onClick: () => navigate('/succes') },
-  { id: 'chronicles', base: `${T.pinMenu}/ButtonQuestlog`, label: 'Chroniques', hint: "Les écrans de lancement du jeu, version par version", onClick: () => navigate('/chroniques') },
-  { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: 'Personnage', hint: 'Mon compte — bientôt' },
-];
 
 function Video({ name, loop, onEnded, onError, className }: { name: 'intro' | 'mainmenu'; loop?: boolean; onEnded?: () => void; onError?: () => void; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -32,11 +27,13 @@ function Video({ name, loop, onEnded, onError, className }: { name: 'intro' | 'm
 
 export function OpeningScreen() {
   const { t } = useI18n();
+  useEffect(() => { document.title = 'Allodex'; }, []);
   const items: ActionItem[] = [
-    ...ACTION_ITEMS.slice(0, 2),
+    { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: t('home.medals'), onClick: () => navigate('/succes') },
+    { id: 'chronicles', base: `${T.pinMenu}/ButtonQuestlog`, label: t('home.chronicles'), hint: t('home.chroniclesHint'), onClick: () => navigate('/chroniques') },
     { id: 'music', base: `${T.pinMenu}/ButtonMedals`, image: 'Official/media_player',
       label: t('music.title'), onClick: () => navigate('/musiques') },
-    ...ACTION_ITEMS.slice(2),
+    { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: t('home.character'), hint: t('home.characterHint') },
   ];
   const { phase, skipIntro, replayIntro } = useIntroState();
   const { track, setTrack, playSfx } = useGameAudio();
@@ -67,7 +64,7 @@ export function OpeningScreen() {
     return (
       <div className={s.screen} onClick={skipIntro}>
         <Video key="intro" name="intro" className={s.video} onEnded={skipIntro} onError={skipIntro} />
-        <span className={s.skipHint}>Cliquez pour passer</span>
+        <span className={s.skipHint}>{t('home.skip')}</span>
       </div>
     );
   }
@@ -76,15 +73,19 @@ export function OpeningScreen() {
     <div className={s.screen}>
       <Video key="mainmenu" name="mainmenu" loop className={`${s.video} ${s.fadeIn}`} />
       <div className={s.vignette} />
+      <div className={s.language}><LanguageSwitcher /></div>
 
       <GameActionBar items={items} className={s.actionBar} onItemInteract={handleItemInteract} />
 
       {/* Le jeu rejoue sa cinématique depuis le menu ; ici un simple lien texte,
           posé au-dessus du bandeau légal pour ne pas empiéter dessus. */}
-      <button type="button" className={s.replay} onClick={replayIntro}>Rejouer l'intro</button>
+      <button type="button" className={s.replay} onClick={replayIntro}>{t('home.replay')}</button>
 
       <div className={s.bottomLine} style={{ backgroundImage: `url(${tex(`${T.main2}/BottomLine`)})` }}>
-        <span>Site fan non officiel. Allods Online, ses images et vidéos sont la propriété de My.Games.</span>
+        <div className={s.credits}>
+          <span>{t('home.disclaimer')}</span>
+          <span>{t('home.copyright', { year: new Date().getFullYear() })} <a href="https://p-42.fr/allodex-developer" target="_blank" rel="noopener noreferrer">Sorok-Dva</a> · <Link to="/cgu">{t('legal.shortTitle')}</Link></span>
+        </div>
         <SpeakerToggle className={s.speaker} />
       </div>
     </div>

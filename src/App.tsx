@@ -7,6 +7,7 @@ import { OpeningScreen } from '@/screens/OpeningScreen/OpeningScreen';
 import { MedalsScreen } from '@/screens/MedalsScreen/MedalsScreen';
 import { ChroniclesScreen } from '@/screens/ChroniclesScreen/ChroniclesScreen';
 import { MusicScreen } from '@/screens/MusicScreen/MusicScreen';
+import { LegalScreen } from '@/screens/LegalScreen/LegalScreen';
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -22,7 +23,7 @@ export default function App() {
           Assets du jeu absents : lancez <code>npm run extract</code>
         </div>
       )}
-      {path === '/succes' ? <MedalsScreen /> : path === '/chroniques' ? <ChroniclesScreen /> : path === '/musiques' ? <MusicScreen /> : <OpeningScreen />}
+      {path === '/cgu' ? <LegalScreen /> : path === '/succes' ? <MedalsScreen /> : path === '/chroniques' ? <ChroniclesScreen /> : path === '/musiques' ? <MusicScreen /> : <OpeningScreen />}
     </AudioProvider>
     </I18nProvider>
   );

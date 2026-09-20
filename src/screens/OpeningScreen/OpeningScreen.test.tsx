@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
 import { OpeningScreen } from './OpeningScreen';
+import { I18nProvider, LANG_KEY } from '@/lib/i18n';
 
 const setTrack = vi.fn();
 const playSfx = vi.fn();
@@ -24,6 +25,23 @@ function renderMenu() {
 }
 
 describe('OpeningScreen — audio', () => {
+  it('traduit le menu, conserve les paramètres URL et mémorise le choix de langue', () => {
+    window.history.replaceState(null, '', '/?skipIntro&lang=fr#menu');
+    const page = render(<I18nProvider><OpeningScreen /></I18nProvider>);
+    fireEvent.click(page.getByRole('button', { name: 'English' }));
+    expect(page.getByRole('button', { name: 'Achievements' })).toBeTruthy();
+    expect(page.getByRole('button', { name: 'Chronicles' })).toBeTruthy();
+    expect(page.getByRole('button', { name: 'Replay intro' })).toBeTruthy();
+    expect(page.getByRole('link', { name: 'Terms of use' }).getAttribute('href')).toBe('/cgu');
+    expect(page.getByRole('link', { name: 'Sorok-Dva' }).getAttribute('href')).toBe('https://p-42.fr/allodex-developer');
+    expect(window.localStorage.getItem(LANG_KEY)).toBe('en');
+    expect(document.documentElement.lang).toBe('en');
+    expect(window.location.search).toBe('?skipIntro=&lang=en');
+    expect(window.location.hash).toBe('#menu');
+    fireEvent.click(page.getByRole('button', { name: 'Français' }));
+    expect(page.getByRole('button', { name: 'Succès' })).toBeTruthy();
+    expect(window.localStorage.getItem(LANG_KEY)).toBe('fr');
+  });
   it('demande la piste menu au montage (menu ou intro)', () => {
     renderMenu();
     expect(setTrack).toHaveBeenCalledWith('menu');

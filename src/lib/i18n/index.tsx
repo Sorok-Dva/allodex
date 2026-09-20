@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { LANGS, MESSAGES, type Lang, type MessageKey } from './messages';
 
 export const LANG_KEY = 'allodex:lang';
@@ -51,8 +51,12 @@ export function I18nProvider({ children, storage = window.localStorage, initial 
   const [lang, setLangState] = useState<Lang>(() => initial ?? detectLang(storage, window.location.search, navigator.language));
   const setLang = useCallback((next: Lang) => {
     setLangState(next);
+    const url = new URL(window.location.href);
+    url.searchParams.set('lang', next);
+    window.history.replaceState(window.history.state, '', url);
     try { storage?.setItem(LANG_KEY, next); } catch { /* stockage indisponible */ }
   }, [storage]);
+  useEffect(() => { document.documentElement.lang = lang; }, [lang]);
   const t = useCallback((key: MessageKey, vars?: Record<string, string | number>) => format(MESSAGES[lang][key] ?? MESSAGES.fr[key], vars), [lang]);
   const value = useMemo(() => ({ lang, setLang, t }), [lang, setLang, t]);
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;

@@ -23,3 +23,12 @@
 }
 
 .speaker { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); }
+.language { position: absolute; top: 20px; right: 24px; }
+.credits { display: flex; flex-direction: column; gap: 4px; text-align: center; padding: 0 60px; }
+.credits a { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) {
+  .bottomLine { height: 112px; font-size: 12px; }
+  .credits { padding: 0 56px 0 16px; line-height: 17px; }
+  .actionBar { bottom: 157px; right: 16px; }
+  .replay { bottom: 125px; left: 16px; }
+}

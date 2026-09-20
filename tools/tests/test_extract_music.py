@@ -92,3 +92,22 @@ def test_russian_only_tracks_are_appended_without_replacing_french(tmp_path, mon
     index, warnings = music.run(manifest, {}, tmp_path / "game/music")
     assert not warnings
     assert [(entry["name"], entry["client"]) for entry in index] == [("Main_NM", "16.0"), ("New_Theme", "17.0")]
+
+
+def test_ignored_tracks_are_skipped_and_purged_from_index(tmp_path, monkeypatch):
+    manifest, _ = setup_clients(tmp_path, monkeypatch)
+    manifest["ignore"] = ["Main_NM", "IgnoredTrack"]
+    monkeypatch.setattr(music, "list_subsongs", lambda *args: [
+        dict(index=1, name="Main_NM.wav", duration=12),
+        dict(index=2, name="ValidTrack.wav", duration=15)
+    ])
+    out = tmp_path / "game/music"
+    out.mkdir(parents=True)
+    (out.parent / "music.json").write_text(json.dumps([
+        {"id": "ignored", "name": "Main_NM", "title": None, "bank": "Music_Menu", "group": "Menu", "duration": 12, "ogg": "", "mp3": "", "client": "16.0"}
+    ]))
+    index, warnings = music.run(manifest, {}, out)
+    assert not warnings
+    assert [e["name"] for e in index] == ["ValidTrack"]
+    saved = json.loads((out.parent / "music.json").read_text())
+    assert [e["name"] for e in saved] == ["ValidTrack"]

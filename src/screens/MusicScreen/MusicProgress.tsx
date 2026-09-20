@@ -44,7 +44,8 @@ export function MusicProgress({ title }: { title: string | null }) {
     </div>
     <div className={s.volumeControl} ref={volumeRef}>
       <SpeakerToggle onClick={() => setVolumeOpen(open => !open)} expanded={volumeOpen} controls="music-volume-controls" label={t('audio.adjustVolume')} />
-      {volumeOpen && <div className={s.volumeSlider} id="music-volume-controls">
+      <div className={`${s.volumeReveal} ${volumeOpen ? s.volumeOpen : ''}`} inert={!volumeOpen} aria-hidden={!volumeOpen} id="music-volume-controls">
+      <div className={s.volumeSlider}>
         <label htmlFor="music-volume">{t('audio.volume')} <span>{Math.round((muted ? 0 : volume) * 100)} %</span></label>
         <div className={s.seek}>
           <ProgressBar value={muted ? 0 : volume} max={1} label="" />
@@ -52,7 +53,8 @@ export function MusicProgress({ title }: { title: string | null }) {
             aria-label={t('audio.volume')} aria-valuetext={`${Math.round((muted ? 0 : volume) * 100)} %`}
             onChange={event => { const next = Number(event.target.value) / 100; setVolume(next); if (muted && next > 0) toggleMuted(); }} />
         </div>
-      </div>}
+      </div>
+      </div>
     </div>
   </div>;
 }

@@ -34,9 +34,10 @@ def run(manifest: dict, titles: dict, out: Path, vgmstream: Path = DEFAULT_VGMST
         *, force: bool = False, only: str | None = None, wasm: Path = DEFAULT_VGMSTREAM_WASM) -> tuple[list[dict], list[str]]:
     out.mkdir(parents=True, exist_ok=True)
     index_path = out.parent / "music.json"
+    ignore = set(manifest.get("ignore", []))
     previous = json.loads(index_path.read_text()) if index_path.exists() else []
-    entries = {e["name"]: e for e in previous}
-    seen: set[str] = set()
+    entries = {e["name"]: e for e in previous if e["name"] not in ignore}
+    seen: set[str] = set(ignore)
     report: list[str] = []
     banks = manifest["banks"]
     if only and only not in banks:
