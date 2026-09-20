@@ -15,6 +15,7 @@ vi.mock('@/lib/assets', () => ({
         ? { duration: 0.02, loop: false }
         : undefined,
   audioSrc: (name: string) => ({ ogg: `/game/audio/${name}.ogg`, mp3: `/game/audio/${name}.mp3` }),
+  latestArchiveEntry: () => ({ version: '16.0', label: '16.0', theme: { ogg: 'theme.ogg', mp3: 'theme.mp3' } }),
 }));
 
 let api: GameAudio | null = null;
@@ -327,5 +328,28 @@ describe('AudioProvider / useGameAudio', () => {
 
     act(() => { vi.advanceTimersByTime(3000); }); // laisserait le fondu se terminer si non annulé
     expect(ambientEl.volume).toBe(midVolume);
+  });
+
+  it('poursuit la lecture sans interruption ni seek quand on passe du menu au thème identique de la dernière version', () => {
+    const { getByTestId } = setup();
+    const menuEl = getByTestId('music-a') as HTMLAudioElement;
+    act(() => { window.dispatchEvent(new Event('pointerdown')); });
+    menuEl.currentTime = 25;
+    const loadSpy = vi.spyOn(menuEl, 'load');
+
+    act(() => {
+      api!.playExternal('archive:16.0', { ogg: '/game/archive/16.0/theme.ogg', mp3: '/game/archive/16.0/theme.mp3' }, { loop: false });
+    });
+
+    expect(api!.external).toBe('archive:16.0');
+    expect(menuEl.currentTime).toBe(25);
+    expect(loadSpy).not.toHaveBeenCalled();
+    expect(menuEl.loop).toBe(false);
+
+    // Retour vers menu
+    act(() => { api!.resumeAmbient(); });
+    expect(api!.external).toBeNull();
+    expect(menuEl.currentTime).toBe(25);
+    expect(menuEl.loop).toBe(true);
   });
 });

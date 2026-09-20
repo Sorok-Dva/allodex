@@ -1,5 +1,5 @@
 import { createContext, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { audioMeta, audioSrc } from '@/lib/assets';
+import { audioMeta, audioSrc, latestArchiveEntry } from '@/lib/assets';
 
 export type TrackName = 'menu' | 'ambient';
 /** Source musicale hors `audio.json` (thème d'une version archivée, par exemple). */
@@ -245,6 +245,18 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   }, [setPaused]);
 
   const setTrack = useCallback((name: TrackName, opts: { crossfadeMs?: number } = {}) => {
+    const latest = latestArchiveEntry();
+    if (name === 'menu' && latest?.version && externalRef.current === `archive:${latest.version}`) {
+      externalRef.current = null;
+      setExternalState(null);
+      trackRef.current = 'menu';
+      setTrackState('menu');
+      setPaused(false);
+      if (activeRef.current) {
+        activeRef.current.loop = audioMeta('menu')?.loop ?? true;
+      }
+      return;
+    }
     const sameTrack = trackRef.current === name && externalRef.current === null;
     if (sameTrack && !pausedRef.current) return;
     if (sameTrack) { resumeActive(); return; }
@@ -278,6 +290,22 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
   const playExternal = useCallback((id: string, src: TrackSource, opts: { loop?: boolean; crossfadeMs?: number } = {}) => {
     if (externalRef.current === id) { resumeActive(); return; }
     if (externalRef.current === null) ambientPositionRef.current = activeRef.current?.currentTime ?? 0;
+    const latest = latestArchiveEntry();
+    const isSameAsMenu =
+      externalRef.current === null &&
+      trackRef.current === 'menu' &&
+      latest?.version &&
+      id === `archive:${latest.version}`;
+    if (isSameAsMenu) {
+      externalRef.current = id;
+      setExternalState(id);
+      setEnded(null);
+      setPaused(false);
+      if (activeRef.current && opts.loop !== undefined) {
+        activeRef.current.loop = opts.loop;
+      }
+      return;
+    }
     const crossfadeMs = opts.crossfadeMs ?? DEFAULT_CROSSFADE_MS;
     const hadMusic = trackRef.current !== null || externalRef.current !== null;
     const fromEl = hadMusic ? activeRef.current : null;
@@ -307,6 +335,17 @@ export function AudioProvider({ children, storage = window.localStorage }: { chi
 
   const resumeAmbient = useCallback((opts: { crossfadeMs?: number } = {}) => {
     if (trackRef.current === null) return;      // rien à reprendre (entrée directe sur la page)
+    const latest = latestArchiveEntry();
+    if (latest?.version && externalRef.current === `archive:${latest.version}` && trackRef.current === 'menu') {
+      externalRef.current = null;
+      setExternalState(null);
+      setEnded(null);
+      setPaused(false);
+      if (activeRef.current) {
+        activeRef.current.loop = audioMeta('menu')?.loop ?? true;
+      }
+      return;
+    }
     const fromEl = externalRef.current !== null ? activeRef.current : null;
     const toEl = fromEl ? (fromEl === musicRefA.current ? musicRefB.current : musicRefA.current) : activeRef.current;
     if (!toEl) return;
