@@ -122,6 +122,7 @@
       }
     },
     "8.0": {
+      "_camera_note": "Perspective : les calques de fond (ciel, nuages, arbres d'amorce, brume) sont des arcs concentriques centrés sur (0, -370…-420) ; la caméra est à leur centre et regarde +Y. Champ vertical et hauteur calés sur refs/captures-ui/menu-8.0-frame1.png (statue de 98 unités sur 78 % de la hauteur à 254 unités de profondeur). Ce n'est pas une caméra extraite du client. Le repère est direct : tools/scenes/v8_0.py annule le nœud miroir générique.",
       "dir": "Animated_Background_8_0",
       "roots": [
         "AMM_8_0"
@@ -134,16 +135,16 @@
       "background": "#5a7ea8",
       "camera": {
         "position": [
-          1.79,
-          -398.88,
-          15.67
+          1.8,
+          -399,
+          -5
         ],
         "target": [
-          1.79,
-          -129.36,
-          15.67
+          1.8,
+          -129,
+          -5
         ],
-        "fov": 45
+        "fov": 27
       }
     }
   }

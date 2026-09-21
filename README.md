@@ -272,6 +272,34 @@ alors exportés figés (l'outil les compte dans ses avertissements). Les matrice
 jeu ne sont pas reprises : elles sont recalculées depuis l'image 0, ce qui garantit que la pose de
 repos redonne exactement la géométrie statique.
 
+### Scène 8.0 « Immortality »
+
+Un seul maillage skinné (`AMM_8_0`, 65 éléments nommés, 29 textures, aucun objet d'effet
+attaché) ; tout ce qui bouge vient des données : courbes squelettiques (arbres, herbe,
+feuillage d'amorce), défilement UV natif des vapeurs de la cascade et de la statue, des braises,
+du faisceau et des nuages, matériaux additifs des feux, du halo de la statue et du faisceau.
+Calée sur `refs/captures-ui/menu-8.0-frame1.png`. Trois particularités, toutes tirées des
+fichiers :
+
+- **repère direct** : la capture montre la statue à gauche et la cité à droite alors que la
+  géométrie a la statue en X négatif, et les calques de fond (ciel, nuages, arbres d'amorce,
+  brume) sont des arcs concentriques centrés sur Y ≈ -400 — la caméra regarde donc +Y, sens
+  dans lequel le nœud miroir générique retourne la scène. `tools/scenes/v8_0.py` reflète une
+  première fois géométrie, squelette et courbes pour que les deux reflets s'annulent ;
+- **caméra perspective** (`fov` 27°, à (1.8, -399, -5)) placée au centre des arcs ; en 8.0 les
+  plans sont courbes, l'orthographique de la 7.0 ne convient pas. Hauteur et champ calés sur la
+  statue (98 unités sur 78 % de la hauteur de la capture) ;
+- **ordre de peinture natif** : le xdb déclare `sortMode = OFFSETS`, le client peint les
+  éléments dans l'ordre du fichier (ciel → cité → faisceau → premiers plans → statue → colonnes
+  → arbres d'amorce → brume → feux). `src/components/scene/MenuScene/v8/v8SceneLayers.ts`
+  reprend cet ordre à la place du tri par profondeur moyenne, qui mettait les nuages de fond
+  devant la statue. Comme en 7.0, les UV du client ont v = 0 en bas de l'image : le crochet
+  retourne les textures.
+
+Reste approximatif : le sens horizontal des défilements (non vérifiable sans capture animée),
+les rotations squelettiques décodées (amplitude de l'ordre de 0,15°, arbres quasi immobiles), et
+la piste de l'articulation `glow_add` (7 canaux, format non décodé, exportée figée).
+
 ## Itération 2 (2026-09)
 
 ### Recalage V7 sur les captures du menu
