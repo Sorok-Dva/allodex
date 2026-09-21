@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { T, sprite, tex } from '@/lib/assets';
-import { GameStrip } from '@/components/game/GameStrip';
+import { GameStrip } from '@/components/ui/GameStrip';
 import s from './MedalsWindow.module.css';
 
 type Props = {

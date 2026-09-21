@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as THREE from 'three';
-import { prepareV7Layers } from './v7SceneLayers';
+import { ENGINE_SCROLL_FACTOR, prepareV7Layers } from './v7SceneLayers';
 
 function mesh(parent: THREE.Object3D, element: string, order: number, map = new THREE.Texture()) {
   const result = new THREE.Mesh(new THREE.PlaneGeometry(), new THREE.MeshBasicMaterial({ map }));
@@ -48,5 +48,28 @@ describe('V7 scene layers', () => {
     layers.update(4, true); expect(moving.offset.toArray()).toEqual([0, 1]);
     const dispose = vi.spyOn(moving, 'dispose');
     layers.dispose(); expect(dispose).toHaveBeenCalledOnce(); expect(mist.material.map).toBe(original);
+  });
+  it('fait couler le jet des réacteurs au rythme du brouillard, une seule fois par matériau', () => {
+    const root = new THREE.Group();
+    const front = new THREE.Group(); front.name = 'AMM_7_0_FrontShips'; root.add(front);
+    const direct = mesh(front, 'Engine_Direct01', -600);
+    direct.geometry.userData.uvScroll = [0, 1];
+    const glow = mesh(front, 'Engine_Glow01', -650);
+    glow.geometry.userData.uvScroll = [0, 0];
+    // Copie rigide masquée + copie visible partagent le matériau natif.
+    const hidden = mesh(front, 'Engine_Direct01', -600, direct.material.map!);
+    hidden.material = direct.material; hidden.geometry.userData.uvScroll = [0, 1]; hidden.visible = false;
+    const original = direct.material.map!;
+    const layers = prepareV7Layers(root);
+    const moving = direct.material.map!;
+    expect(moving).not.toBe(original);
+    layers.update(1, false);
+    expect(moving.offset.y).toBeCloseTo(-ENGINE_SCROLL_FACTOR);
+    expect(ENGINE_SCROLL_FACTOR).toBeLessThan(.2);
+    layers.update(2, false);
+    expect(moving.offset.y).toBeCloseTo(-2 * ENGINE_SCROLL_FACTOR);
+    expect(glow.material.map!.offset.toArray()).toEqual([0, 0]);
+    layers.dispose();
+    expect(direct.material.map).toBe(original); // restauration sans double clone
   });
 });

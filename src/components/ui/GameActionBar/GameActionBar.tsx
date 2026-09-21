@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { sprite, tex } from '@/lib/assets';
-import { GameTooltip } from './GameTooltip';
+import { GameTooltip } from '@/components/ui/GameTooltip';
 import s from './GameActionBar.module.css';
 
 export type ActionItem = {

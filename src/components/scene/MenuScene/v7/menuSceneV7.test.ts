@@ -106,6 +106,25 @@ describe('V7 native menu effects', () => {
     expect(rock.renderOrder).toBeGreaterThan(100); expect(rock.renderOrder).toBeLessThan(hull.renderOrder);
     expect(stones.position.x).toBe(6); effects.dispose();
   });
+  it('garde les réacteurs à opacité et taille constantes, seul le jet direct coule lentement', () => {
+    const { root, front } = fixture();
+    const make = (element: string, uvScroll: number[]) => {
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(), new THREE.MeshBasicMaterial({ map: new THREE.Texture(), opacity: .8 }));
+      mesh.geometry.userData.element = element; mesh.geometry.userData.uvScroll = uvScroll; front.add(mesh); return mesh;
+    };
+    const glow = make('Engine_Glow01', [0, 0]); const direct = make('Engine_Direct01', [0, 1]);
+    const effects = createV7Effects(root);
+    const offsets = new Set<number>();
+    for (const time of [0, .3, .7, 1.1, 2.4]) {
+      effects.update(time);
+      expect(glow.material.opacity).toBeCloseTo(.8); expect(direct.material.opacity).toBeCloseTo(.8);
+      expect(glow.scale.toArray()).toEqual([1, 1, 1]); expect(direct.scale.toArray()).toEqual([1, 1, 1]);
+      offsets.add(direct.material.map!.offset.y);
+    }
+    expect(offsets.size).toBe(5); expect(Math.max(...[...offsets].map(Math.abs))).toBeLessThan(.5);
+    expect(glow.material.map!.offset.y).toBe(0);
+    effects.dispose();
+  });
   it('préserve la brume, masque les anciens faisceaux et ne boucle pas les destructions', () => {
     const { root, destroyed } = fixture();
     const ray = new THREE.Mesh(new THREE.PlaneGeometry(), new THREE.MeshBasicMaterial());

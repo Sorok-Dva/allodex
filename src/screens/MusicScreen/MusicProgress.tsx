@@ -2,10 +2,10 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { AudioProgressContext } from '@/lib/audio/AudioProvider';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { useI18n } from '@/lib/i18n';
-import { ProgressBar } from '@/components/game/ProgressBar';
+import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Duration, formatDuration } from '@/screens/ChroniclesScreen/ThemePlayer';
 import s from './MusicScreen.module.css';
-import { SpeakerToggle } from '@/components/game/SpeakerToggle';
+import { SpeakerToggle } from '@/components/controls/SpeakerToggle';
 
 export function MusicProgress({ title }: { title: string | null }) {
   const progress = useContext(AudioProgressContext);

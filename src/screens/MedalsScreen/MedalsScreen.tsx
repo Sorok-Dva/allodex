@@ -4,7 +4,7 @@ import { parseDataset } from '@/data/medals.logic';
 import { T, tex, video } from '@/lib/assets';
 import { navigate, useRoute } from '@/lib/router';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
-import { SpeakerToggle } from '@/components/game/SpeakerToggle';
+import { SpeakerToggle } from '@/components/controls/SpeakerToggle';
 import { MedalsWindow } from './MedalsWindow';
 import { MedalsNavigation } from './MedalsNavigation';
 import { MedalsList } from './MedalsList';

@@ -2,15 +2,15 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { archiveFile, gameLogo, latestArchiveEntry, T, tex, video, type ArchiveEntry } from '@/lib/assets';
 import { hasWebGL } from '@/lib/webgl';
 import { Link, navigate } from '@/lib/router';
-import { LanguageSwitcher } from '@/components/game/LanguageSwitcher';
+import { LanguageSwitcher } from '@/components/controls/LanguageSwitcher';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { useI18n } from '@/lib/i18n';
-import { GameActionBar, type ActionItem } from '@/components/game/GameActionBar';
-import { SpeakerToggle } from '@/components/game/SpeakerToggle';
+import { GameActionBar, type ActionItem } from '@/components/ui/GameActionBar';
+import { SpeakerToggle } from '@/components/controls/SpeakerToggle';
 import { useIntroState } from './useIntroState';
 import s from './OpeningScreen.module.css';
 
-const MenuScene = lazy(() => import('@/components/game/MenuScene').then(m => ({ default: m.MenuScene })));
+const MenuScene = lazy(() => import('@/components/scene/MenuScene').then(m => ({ default: m.MenuScene })));
 
 function Video({ name, loop, onEnded, onError, className, testId }: { name: 'intro' | 'mainmenu'; loop?: boolean; onEnded?: () => void; onError?: () => void; className?: string; testId?: string }) {
   const ref = useRef<HTMLVideoElement>(null);

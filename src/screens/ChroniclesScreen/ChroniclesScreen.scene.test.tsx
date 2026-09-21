@@ -21,7 +21,7 @@ vi.mock('@/lib/webgl', () => ({ hasWebGL: () => webgl.available, resetWebGLProbe
 
 // La vraie scène tirerait `three` et un contexte WebGL : ici on n'observe que son montage.
 const sceneProps = vi.fn();
-vi.mock('@/components/game/MenuScene', () => ({
+vi.mock('@/components/scene/MenuScene', () => ({
   default: (props: { glbUrl: string; metaUrl: string; onReady?: () => void }) => {
     sceneProps(props);
     return <canvas data-testid="menu-scene" />;

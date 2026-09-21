@@ -3,7 +3,7 @@ import { T, sprite, tex } from '@/lib/assets';
 import { nineSlice } from '@/lib/nineSlice';
 import { subCategoryCounts } from '@/data/medals.logic';
 import type { MedalsDataset } from '@/data/medals.types';
-import { GameScrollbar } from '@/components/game/GameScrollbar';
+import { GameScrollbar } from '@/components/ui/GameScrollbar';
 import type { MedalsState } from './useMedalsState';
 import s from './MedalsNavigation.module.css';
 

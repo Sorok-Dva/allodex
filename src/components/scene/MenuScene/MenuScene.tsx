@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { SceneMeta } from '@/lib/assets';
-import { createV7Effects, type CannonTextures } from './menuSceneV7';
+import { createV7Effects, type CannonTextures } from './v7/menuSceneV7';
 import s from './MenuScene.module.css';
 
 /**
@@ -279,6 +279,10 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
         v7Effects = createV7Effects(root, cannonTextures);
         v7Effects.update(0, reduced);
       }
+
+      // Sonde de mise au point (dev uniquement) : inspecter la scène depuis la console
+      // ou un navigateur piloté, sans rien exposer en production.
+      if (import.meta.env.DEV) (window as Window & { __menuScene?: unknown }).__menuScene = { root, mixer, effects: v7Effects };
 
       resize();
       if (reduced) return;

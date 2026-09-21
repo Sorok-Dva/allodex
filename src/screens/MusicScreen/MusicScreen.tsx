@@ -5,7 +5,7 @@ import { pick, useI18n } from '@/lib/i18n';
 import type { MessageKey } from '@/lib/i18n/messages';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { nineSlice } from '@/lib/nineSlice';
-import { GameScrollbar } from '@/components/game/GameScrollbar';
+import { GameScrollbar } from '@/components/ui/GameScrollbar';
 import { musicArchiveConfidence, musicArchiveNote, musicGroup, musicIntroducedIn, musicMaps, musicZone, musicSubcategories, musicQueueKey } from '@/data/music.logic';
 import { MedalsWindow } from '@/screens/MedalsScreen/MedalsWindow';
 import { Duration } from '@/screens/ChroniclesScreen/ThemePlayer';

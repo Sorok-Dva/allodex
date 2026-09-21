@@ -2,6 +2,12 @@ import * as THREE from 'three';
 
 /** Le décor est peint en calques : la profondeur moyenne de ses polygones ne
  * représente pas le plan narratif du navire ou du halo qui leur appartient. */
+/** Le jet d'énergie d'Engine_Direct est une nappe de fumée qui boucle. Le client
+ * l'exporte à un tour de texture par seconde : ses taches traversent le réacteur
+ * en saccades. Ramenée au rythme du brouillard (0,01 à 0,05 tuile/s), la même
+ * texture donne une poussée continue qui sort du réacteur sans varier de forme. */
+export const ENGINE_SCROLL_FACTOR = .15;
+
 export function prepareV7Layers(root: THREE.Object3D) {
   const front = root.getObjectByName('AMM_7_0_FrontShips');
   const distant = root.getObjectByName('AMM_7_0_Ships_Attack');
@@ -13,6 +19,7 @@ export function prepareV7Layers(root: THREE.Object3D) {
   const groups = new Map<number, THREE.Mesh[]>();
   const scrolling: { texture: THREE.Texture; original: THREE.Texture; material: THREE.MeshBasicMaterial;
     offset: THREE.Vector2; speed: THREE.Vector2 }[] = [];
+  const animated = new Set<THREE.Material>(); // un matériau partagé ne défile qu'une fois
   function belongsTo(object: THREE.Object3D, parent: THREE.Object3D | undefined) {
     if (!parent) return false;
     for (let current: THREE.Object3D | null = object; current; current = current.parent) {
@@ -36,7 +43,8 @@ export function prepareV7Layers(root: THREE.Object3D) {
 
     const speed = mesh.geometry.userData.uvScroll as number[] | undefined;
     const material = mesh.material as THREE.MeshBasicMaterial;
-    if (!material.map || !speed || (!speed[0] && !speed[1])) return;
+    if (!material.map || !speed || (!speed[0] && !speed[1]) || animated.has(material)) return;
+    animated.add(material);
     // Les calques partagent souvent une image, mais pas leur vitesse de défilement.
     // Une texture indépendante évite d'entraîner le paysage ou de cumuler les offsets.
     const original = material.map;
@@ -44,8 +52,9 @@ export function prepareV7Layers(root: THREE.Object3D) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.needsUpdate = true;
     material.map = texture;
+    const factor = engine ? ENGINE_SCROLL_FACTOR : 1;
     scrolling.push({ texture, original, material, offset: texture.offset.clone(),
-      speed: new THREE.Vector2(speed[0], speed[1]) });
+      speed: new THREE.Vector2(speed[0] * factor, speed[1] * factor) });
   });
   for (const [band, meshes] of groups) {
     meshes.sort((a, b) => a.renderOrder - b.renderOrder);

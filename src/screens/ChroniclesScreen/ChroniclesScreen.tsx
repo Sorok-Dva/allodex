@@ -5,9 +5,9 @@ import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { useI18n } from '@/lib/i18n';
 import { hasWebGL } from '@/lib/webgl';
 import { nineSlice } from '@/lib/nineSlice';
-import { GameStrip } from '@/components/game/GameStrip';
-import { SpeakerToggle } from '@/components/game/SpeakerToggle';
-import { FullscreenToggle } from '@/components/game/FullscreenToggle';
+import { GameStrip } from '@/components/ui/GameStrip';
+import { SpeakerToggle } from '@/components/controls/SpeakerToggle';
+import { FullscreenToggle } from '@/components/controls/FullscreenToggle';
 import { VersionTimeline } from './VersionTimeline';
 import { ThemePlayer } from './ThemePlayer';
 import { VersionInfoPanel, type VersionInfo } from './VersionInfoPanel';
@@ -35,7 +35,7 @@ const hasMedia = (entry: ArchiveEntry) =>
 
 // La scène 3D tire `three` derrière elle : chargement à la demande, pour que les autres
 // écrans du site n'en paient pas le poids.
-const MenuScene = lazy(() => import('@/components/game/MenuScene'));
+const MenuScene = lazy(() => import('@/components/scene/MenuScene'));
 
 /**
  * Écran de lancement d'une version, en plein écran : la vidéo du menu en boucle quand

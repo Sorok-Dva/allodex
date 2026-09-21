@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { LanguageSwitcher } from '@/components/game/LanguageSwitcher';
+import { LanguageSwitcher } from '@/components/controls/LanguageSwitcher';
 import { useI18n } from '@/lib/i18n';
 import { Link } from '@/lib/router';
 import { T, tex } from '@/lib/assets';
