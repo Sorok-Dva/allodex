@@ -1208,8 +1208,11 @@ def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
     if hooks.extra_roots is not None:
         roots.extend(hooks.extra_roots(emit_object))
     # Le moteur du jeu est en main gauche (Direct3D) ; glTF est en main droite. On enveloppe la
-    # scène dans un nœud miroir pour que le rendu ne soit pas inversé gauche/droite.
-    mirror = gltf.add_node({"name": "scene", "scale": [-1.0, 1.0, 1.0], "children": roots})
+    # scène dans un nœud miroir pour que le rendu ne soit pas inversé gauche/droite. Une version
+    # dont le décor est modelé dans l'autre chiralité (la 6.0, vérifiée sur une capture du menu)
+    # porte `"mirror": false` dans le manifeste : le nœud reste, à l'échelle unité.
+    flip = -1.0 if spec.get("mirror", True) else 1.0
+    mirror = gltf.add_node({"name": "scene", "scale": [flip, 1.0, 1.0], "children": roots})
     gltf.json["scenes"][0]["nodes"].append(mirror)
 
     stats["animations"] = len(gltf.json.get("animations", []))

@@ -7,16 +7,16 @@
   ],
   "camera": {
     "position": [
-      -20,
-      0,
-      25
+      40,
+      -7,
+      30
     ],
     "target": [
-      85,
-      0,
-      5
+      -38,
+      9,
+      -1
     ],
-    "fov": 45
+    "fov": 56
   },
   "background": "#4a6a8c",
   "animations": [
