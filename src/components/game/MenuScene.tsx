@@ -257,10 +257,11 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
       if (gltf.animations.length) {
         mixer = new THREE.AnimationMixer(root);
         for (const clip of gltf.animations) {
+          // Cette piste ne décode pas encore la chute des coques : la séquence
+          // cohérente coque + feu + réacteurs est pilotée par v7Intro.
+          if (meta.version === '7.0' && ['AMM_7_0_Ships_Destroyed', 'AMM_Shot01'].includes(clip.name)) continue;
           const action = mixer.clipAction(clip);
-          const intro = meta.version === '7.0' && clip.name === 'AMM_7_0_Ships_Destroyed';
-          action.setLoop(intro ? THREE.LoopOnce : THREE.LoopRepeat, intro ? 1 : Infinity);
-          action.clampWhenFinished = intro;
+          action.setLoop(THREE.LoopRepeat, Infinity);
           action.play();
         }
         mixer.update(0);

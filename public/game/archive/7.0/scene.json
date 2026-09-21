@@ -32,10 +32,10 @@
     "AMM_7_0_Ships_Destroyed"
   ],
   "stats": {
-    "triangles": 5202,
-    "textures": 39,
+    "triangles": 6394,
+    "textures": 46,
     "animations": 9,
-    "objects": 10
+    "objects": 11
   },
   "cannonTextures": {
     "projectile": "cannon-projectile.png",
@@ -44,6 +44,7 @@
     "shield": "cannon-shield.png",
     "flame": "cannon-flame.png",
     "electric": "cannon-electric.png",
-    "spark": "cannon-spark.png"
+    "spark": "cannon-spark.png",
+    "smoke": "cannon-smoke.png"
   }
 }

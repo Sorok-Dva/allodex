@@ -282,15 +282,29 @@ brume sans brouillard artificiel et replace le logo au centre. L'export conserve
 `extras` de sa primitive (lus sur `mesh.geometry.userData` dans Three.js) : **réexporter avec `python3 tools/extract_menu_scene.py --only 7.0`**
 est nécessaire pour cibler les faisceaux `GunRay` et les halos des réacteurs.
 
-`menuSceneV7.ts` masque ces faisceaux, module les halos et limite le groupe de destructions
-à l'introduction (masqué après 27 s, sans boucle). Les canons utilisent les positions des
-locators du jeu (hauteur recalée sur les sabords) et sept textures extraites explicitement
-(`cannon-*.png`, indexées dans `scene.json`) : Glow04White, ManaFire01, Rays23White,
-Glow04Blue, Fire07, NoiseLight et Spark06White. Les salves de trois projectiles alternent
-entre les coques, avec flash de bouche, cœur incandescent, flammes et traînée. À l'impact,
-un flash bref précède une membrane électrique texturée qui défile puis s'efface. Les sprites
-restent masqués tant que leur texture n'est pas disponible, pour ne jamais afficher de carré blanc.
-Ce sont des **enveloppes visuelles reconstruites**, pas un décodage fidèle de `ParticleAnimation`.
+`menuSceneV7.ts` masque ces faisceaux et module les halos. `v7Intro.ts` regroupe chaque coque
+avec ses réacteurs : tir entrant, incendie, chute puis disparition, successivement pour
+les trois navires (ordre 03, 01, 02 ; impacts vers 6,8, 11 et 19,3 s après apparition
+du menu, sans boucle). Le calage provient de la rafale du jeu du 21/09/2026 ;
+les incendies peuvent se chevaucher. Coques et effets de chute restent sous la
+bande des navires permanents. Le masque de distorsion Noise11White n'est pas
+affiché comme une texture de feu ; flammes orange et fumée sombre le remplacent.
+La piste native de destruction partiellement décodée n'est plus jouée en parallèle.
+Les canons utilisent les locators du jeu, attachés aux sabords mobiles. L'export ajoute
+`AMM_Shot01` comme bibliothèque masquée dans `scene.glb`. `v7NativeShots.ts` instancie
+ses maillages **natifs** : `Proj_*`, les trois couches `Tail_*`, `FireMuzzle`,
+`ShockWave*`, `Shield01`, `ShieldRays01`, `Flash01` et `ShieldFlash01`.
+UV, couleurs de sommets et mélanges alpha/additif sont conservés ; aucun shader ne
+redessine les projectiles ou les anneaux du bouclier. Three.js anime leurs placements,
+échelles, opacités et défilements UV. Deux canons par bateau, trajet de six secondes ;
+impact de 1,4 s : choc concentré seul pendant 0,28 s (`ShieldRays`, `ShockWave`,
+flash), puis deux couches de `Shield01` espacées de 0,12 s. Les couches bleues
+s'étendent, se rétractent légèrement (18 %) puis s'effacent ; les rayons du
+choc initial ne restent pas superposés aux anneaux. Fumée de bouche renforcée sur 2 s.
+Ces durées et poses restent un calage visuel, pas un décodage de `ParticleAnimation`.
+Sans la bibliothèque native réexportée ou sans ses textures, les tirs restent masqués
+(aucun remplacement procédural ni carré blanc). Les textures `cannon-*.png` servent
+encore à la fumée et à l'introduction des navires secondaires.
 Les sommets des drapeaux et rochers sont recentrés avec les matrices natives complètes
 avant attachement aux locators. Les rochers opaques ne sont plus additifs et passent devant
 les nappes de brume, derrière les coques ; les deux plans ont un petit recalage visuel.
@@ -302,6 +316,14 @@ le décor sans tirs ni destructions.
 La V7 surcharge `max_texture` à 2048 : le paysage `AMM_Background_03` conserve ses
 2048 × 512 pixels natifs (au lieu de 512 × 128), et les coques leurs 1024 × 1024 pixels.
 Les autres versions gardent leur limite existante. L'export V7 pèse environ 10,2 Mio.
+
+Les vitesses `uTranslateSpeed`/`vTranslateSpeed` des matériaux sont exportées en
+`uvScroll` et appliquées sur des textures indépendantes : brumes, nuages et réacteurs
+défilent sans entraîner les textures partagées du paysage. Les petits navires sont
+réduits à 82 % et composés derrière le premier plan. Les flammes/halos visibles passent
+devant leur coque, leurs halos arrière restent derrière. L'export applique les matrices
+natives aux seuls sommets des réacteurs : notamment `Engine_Glow01`, créé au niveau du
+navire droit, est ainsi replacé sur les tuyères gauches sans déplacer les coques.
 
 Reprise des deux écrans pour qu'ils soient visuellement identiques au jeu, à partir de captures live du client (spec détaillée : `docs/superpowers/specs/2026-09-19-iteration-2-fidelite-design.md`).
 

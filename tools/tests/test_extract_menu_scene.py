@@ -126,6 +126,9 @@ def test_attachment_bind_positions_keeps_native_scale_and_recenters():
                 "indices": np.array([[0, 255, 255, 255]], np.uint8),
                 "weights": np.array([[255, 0, 0, 0]], np.uint8)}
     assert attachment_bind_positions(vertices, skeleton).tolist() == [[2, 2, 3]]
+    vertices = {key: np.repeat(value, 2, axis=0) for key, value in vertices.items()}
+    assert attachment_bind_positions(vertices, skeleton, np.array([0])).tolist() == [[2, 2, 3], [6, 2, 3]]
+    assert vertices["position"].tolist() == [[6, 2, 3], [6, 2, 3]]  # tampon original conservé
 
 
 def test_v7_opaque_material_does_not_inherit_additive_blending(tmp_path):

@@ -34,7 +34,7 @@ export type ArchiveScene = { glb: string; meta: string };
  * `[0, 0, 1]` pour toutes les scènes connues).
  */
 export type SceneMeta = {
-  cannonTextures?: Partial<Record<'projectile' | 'muzzle' | 'impact' | 'shield' | 'flame' | 'electric' | 'spark', string>>;
+  cannonTextures?: Partial<Record<'projectile' | 'muzzle' | 'impact' | 'shield' | 'flame' | 'electric' | 'spark' | 'smoke', string>>;
   version?: string;
   camera: { position: [number, number, number]; target: [number, number, number]; fov: number; orthographicHeight?: number };
   up: [number, number, number];

@@ -1036,7 +1036,8 @@ def _quat_rotate(q: tuple, v: tuple) -> tuple:
     return (vx + w * tx + (y * tz - z * ty), vy + w * ty + (z * tx - x * tz), vz + w * tz + (x * ty - y * tx))
 
 
-def attachment_bind_positions(vertices: dict[str, np.ndarray], skeleton: Skeleton) -> np.ndarray:
+def attachment_bind_positions(vertices: dict[str, np.ndarray], skeleton: Skeleton,
+                              selected: np.ndarray | None = None) -> np.ndarray:
     """Applique le repère natif avant d'attacher un objet à son locator.
 
     Les drapeaux/pierres V7 ne sont pas centrés à l'origine dans le vertex buffer.
@@ -1058,7 +1059,14 @@ def attachment_bind_positions(vertices: dict[str, np.ndarray], skeleton: Skeleto
     result = np.zeros_like(points)
     for slot in range(4):
         result += np.einsum("nij,nj->ni", palette[joints[:, slot]], points) * (weights[:, slot] / 255)[:, None]
-    return result[:, :3].astype(np.float32)
+    bound = result[:, :3].astype(np.float32)
+    if selected is not None:
+        # Certains effets restent dans leur pose de création alors que la coque est
+        # déjà posée : ne pas appliquer à celle-ci la correction réservée aux effets.
+        position = vertices["position"].astype(np.float32).copy()
+        position[selected] = bound[selected]
+        return position
+    return bound
 
 
 def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
@@ -1105,6 +1113,25 @@ def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
         position = verts["position"].astype(np.float32)
         if version == "7.0" and obj.skeleton is not None and (name.startswith("AMM_Flag_") or name.startswith("AMM_7_0_Stones_")):
             position = attachment_bind_positions(verts, obj.skeleton)
+        elif version == "7.0" and obj.skeleton is not None and name == "AMM_7_0_FrontShips":
+            engine_indices = [obj.indices[e.ib0:e.ib1] for e in obj.doc.elements
+                              if e.name.startswith("Engine_")]
+            if engine_indices:
+                position = attachment_bind_positions(verts, obj.skeleton,
+                    np.unique(np.concatenate(engine_indices)))
+        elif version == "7.0" and obj.skeleton is not None and name == "AMM_7_0_Ships_Destroyed":
+            # Engine03 est stocké dans le repère du troisième navire. Replacer
+            # son attache relativement à la coque 02, sans appliquer la pose
+            # finale (chute) aux coques elles-mêmes.
+            hull = next((e for e in obj.doc.elements if e.name == "SmalShip_destr_02"), None)
+            engines = [obj.indices[e.ib0:e.ib1] for e in obj.doc.elements
+                       if e.name.startswith("Engine_") and e.name.endswith("03")]
+            if hull is not None and engines:
+                bound = attachment_bind_positions(verts, obj.skeleton)
+                hull_indices = np.unique(obj.indices[hull.ib0:hull.ib1])
+                selected = np.unique(np.concatenate(engines))
+                offset = position[hull_indices].mean(axis=0) - bound[hull_indices].mean(axis=0)
+                position[selected] = bound[selected] + offset
         uv = verts.get("texcoord0", np.zeros((len(position), 2), np.float32)).astype(np.float32)
         color = verts.get("color")
         if color is None:
@@ -1195,6 +1222,12 @@ def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
                             float(root_spec.get("scale", 1.0)))
         if index is not None:
             roots.append(index)
+    if version == "7.0":
+        # Bibliothèque native des tirs : maillages, UV, couleurs de sommets et
+        # matériaux complets, masqués par le lecteur puis instanciés par salve.
+        shot = emit_object("AMM_Shot01", (0, 0, 0), (0, 0, 0, 1), 1)
+        if shot is not None:
+            roots.append(shot)
     # Le moteur du jeu est en main gauche (Direct3D) ; glTF est en main droite. On enveloppe la
     # scène dans un nœud miroir pour que le rendu ne soit pas inversé gauche/droite.
     mirror = gltf.add_node({"name": "scene", "scale": [-1.0, 1.0, 1.0], "children": roots})
@@ -1499,6 +1532,7 @@ def run(manifest: dict, out_dir: Path, only: list[str] | None = None,
                 "flame": "Fire07",
                 "electric": "NoiseLight",
                 "spark": "Spark06White",
+                "smoke": "Smoke02White",
             }.items():
                 result = library.png(f"/Spells/FX/Textures/{texture}.(Texture).xdb")
                 if result is not None:

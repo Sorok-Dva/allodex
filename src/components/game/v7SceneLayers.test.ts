@@ -16,12 +16,14 @@ describe('V7 scene layers', () => {
     const distant = new THREE.Group(); distant.name = 'AMM_7_0_Ships_Attack'; root.add(distant);
     const hull = mesh(front, 'Ship_L', -450);
     const engine = mesh(front, 'Engine_Glow01', -650);
+    const rearGlow = mesh(front, 'Engine_Back01', -300);
     const small = mesh(distant, 'Ship_R', -100);
     const smallEngine = mesh(distant, 'Engine_Glow01', -800);
     const layers = prepareV7Layers(root);
     expect(small.renderOrder).toBeLessThan(smallEngine.renderOrder);
     expect(smallEngine.renderOrder).toBeLessThan(hull.renderOrder);
     expect(hull.renderOrder).toBeLessThan(engine.renderOrder);
+    expect(rearGlow.renderOrder).toBeLessThan(hull.renderOrder);
     expect(distant.scale.toArray()).toEqual([.82, .82, .82]);
     expect(front.scale.toArray()).toEqual([1, 1, 1]);
     layers.dispose();

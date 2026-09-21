@@ -369,10 +369,11 @@
     "duration": 254.613,
     "ogg": "/game/music/alizbar-estuary-1aef14ae0c.ogg",
     "mp3": "/game/music/alizbar-estuary-1aef14ae0c.mp3",
-    "client": "16.0",
-    "maps": [],
-    "introducedIn": null,
-    "archiveConfidence": "unknown",
+    "maps": [
+      "Umoir"
+    ],
+    "introducedIn": "5.0",
+    "archiveConfidence": "confirmed",
     "archiveSources": []
   },
   {
@@ -385,9 +386,11 @@
     "ogg": "/game/music/alizbar-fairy-of-melted-snow-0685565596.ogg",
     "mp3": "/game/music/alizbar-fairy-of-melted-snow-0685565596.mp3",
     "client": "16.0",
-    "maps": [],
-    "introducedIn": null,
-    "archiveConfidence": "unknown",
+    "maps": [
+      "Umoir"
+    ],
+    "introducedIn": "5.0",
+    "archiveConfidence": "confirmed",
     "archiveSources": []
   },
   {
@@ -400,9 +403,11 @@
     "ogg": "/game/music/alizbar-last-fallen-leaf-6f2ea97747.ogg",
     "mp3": "/game/music/alizbar-last-fallen-leaf-6f2ea97747.mp3",
     "client": "16.0",
-    "maps": [],
-    "introducedIn": null,
-    "archiveConfidence": "unknown",
+    "maps": [
+      "Umoir"
+    ],
+    "introducedIn": "5.0",
+    "archiveConfidence": "confirmed",
     "archiveSources": []
   },
   {
@@ -415,9 +420,11 @@
     "ogg": "/game/music/alizbar-out-of-time-fairy-tale-017f282fb0.ogg",
     "mp3": "/game/music/alizbar-out-of-time-fairy-tale-017f282fb0.mp3",
     "client": "16.0",
-    "maps": [],
-    "introducedIn": null,
-    "archiveConfidence": "unknown",
+    "maps": [
+      "Umoir"
+    ],
+    "introducedIn": "5.0",
+    "archiveConfidence": "confirmed",
     "archiveSources": []
   },
   {
@@ -430,9 +437,11 @@
     "ogg": "/game/music/alizbar-the-island-b5e08ecf5d.ogg",
     "mp3": "/game/music/alizbar-the-island-b5e08ecf5d.mp3",
     "client": "16.0",
-    "maps": [],
-    "introducedIn": null,
-    "archiveConfidence": "unknown",
+    "maps": [
+      "Umoir"
+    ],
+    "introducedIn": "5.0",
+    "archiveConfidence": "confirmed",
     "archiveSources": []
   },
   {
@@ -934,10 +943,15 @@
     "ogg": "/game/music/olympiccontest-7612be5c70.ogg",
     "mp3": "/game/music/olympiccontest-7612be5c70.mp3",
     "client": "16.0",
-    "maps": [],
-    "introducedIn": null,
-    "archiveConfidence": "unknown",
-    "archiveSources": []
+    "maps": [
+      "Aoidos/Aed content"
+    ],
+    "introducedIn": "8.0",
+    "archiveConfidence": "confirmed",
+    "archiveSources": [
+      "https://allods.my.games/forum/index.php?page=Thread&postID=88096"
+    ],
+    "archiveNote": "Aoidos/Aed race was introduced in 8.0 as the olympic games;"
   },
   {
     "id": "priden-fly-6ca709d61b",
@@ -1748,8 +1762,8 @@
     "id": "astralbattle-fc3445b637",
     "name": "AstralBattle",
     "title": null,
-    "bank": "Music_StartZones",
-    "group": "Zones de départ",
+    "bank": "Music_Astral",
+    "group": "Astral",
     "duration": 169.543,
     "ogg": "/game/music/astralbattle-fc3445b637.ogg",
     "mp3": "/game/music/astralbattle-fc3445b637.mp3",
@@ -2104,11 +2118,11 @@
       "Aoidos/Aed content"
     ],
     "introducedIn": "8.0",
-    "archiveConfidence": "probable",
+    "archiveConfidence": "confirmed",
     "archiveSources": [
       "https://allods.my.games/forum/index.php?page=Thread&postID=88096"
     ],
-    "archiveNote": "Aoidos/Aed race was introduced in 8.0; exact map trigger for this cue was not verified."
+    "archiveNote": "Aoidos/Aed race was introduced in 8.0;"
   },
   {
     "id": "racesmusicinstruments-elf-4fa0133858",
@@ -2426,8 +2440,8 @@
     "id": "racesmusicinstruments-priden-ce60feb115",
     "name": "RacesMusicInstruments_Priden",
     "title": null,
-    "bank": "Music_Ingame01",
-    "group": "Donjons/Combat",
+    "bank": "Music_RacesInstruments",
+    "group": "Instruments des races",
     "duration": 116.48,
     "ogg": "/game/music/racesmusicinstruments-priden-ce60feb115.ogg",
     "mp3": "/game/music/racesmusicinstruments-priden-ce60feb115.mp3",
@@ -2436,7 +2450,7 @@
       "Howlem"
     ],
     "introducedIn": "6.0",
-    "archiveConfidence": "inferred",
+    "archiveConfidence": "comfirmed",
     "archiveSources": [
       "https://allods.my.games/en/news/announcements/6000-preview-priden-race"
     ]
