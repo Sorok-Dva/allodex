@@ -77,18 +77,21 @@
         1
       ],
       "background": "#4a6a8c",
+      "mirror": false,
+      "_mirror_note": "Décor modelé dans l'autre chiralité que la 7.0 : avec le nœud miroir habituel, station et train passent à droite et le laboratoire à gauche, à l'inverse de refs/captures-ui/menu-6.0-frame1.png. Sans miroir, les coordonnées du .glb sont celles du jeu.",
+      "_camera_note": "Ajustée par moindres carrés sur refs/captures-ui/menu-6.0-frame1.png (dôme du laboratoire, coin de la station, pylône 02, buissons), en corrigeant l'étirement horizontal de cette capture (image 4:3 passée en 16:9). Coordonnées du jeu : profondeur sur X, le fond du ciel vers -X, la caméra du côté +X. Ce n'est pas une caméra extraite du client ; la position de la cabine du train (plus haute dans la capture que dans les données) n'a pas été utilisée.",
       "camera": {
         "position": [
-          -20,
-          0,
-          25
+          40,
+          -7,
+          30
         ],
         "target": [
-          85,
-          0,
-          5
+          -38,
+          9,
+          -1
         ],
-        "fov": 45
+        "fov": 56
       }
     },
     "7.0": {

@@ -367,6 +367,27 @@ devant leur coque, leurs halos arrière restent derrière. L'export applique les
 natives aux seuls sommets des réacteurs : notamment `Engine_Glow01`, créé au niveau du
 navire droit, est ainsi replacé sur les tuyères gauches sans déplacer les coques.
 
+### Scène 6.0 « Broken Chains »
+
+Un seul maillage skinné (46 éléments) et son animation `idle` de 100 s : drapeau du
+laboratoire, arbres et balancement du train sont natifs et joués par le mixeur ; aucun
+matériau ne défile, le VisObjectTemplate n'attache aucun effet, `Manatrain_6_0_01_FX` est une
+texture que rien ne référence. `tools/scenes/v6_0.py` cuit dans les sommets du train et du
+drapeau la palette native de l'image 0 (`W₀ · inverse stockée`) — sans elle, les inverses
+recalculées par l'export les laissent à l'origine — et applique la règle 7.0 « additif
+seulement si transparent » (le train est peint opaque). Le bloc 6.0 du manifeste porte
+`"mirror": false` : le décor est modelé dans l'autre chiralité que la 7.0 (vérifié sur
+`refs/captures-ui/menu-6.0-frame1.png` : station et train à gauche, laboratoire à droite).
+Côté lecteur (`src/components/scene/MenuScene/v6/`) : `v6SceneLayers` peint dans l'ordre des
+`modelElements` du xdb (le tri par profondeur mettrait le versant `Mountains_04` devant la
+coupole), `v6Sky` rend le dôme `Sky_Back` dont l'alpha de sommet est nul partout (matériau
+opaque : le jeu l'ignore, three.js non), `v6Landscape` fige le décor que l'export Maya a
+skinné sur l'os 0 — une articulation du drapeau. La caméra est ajustée par moindres carrés
+sur la capture, en corrigeant son étirement horizontal (image 4:3 passée en 16:9) ; la
+cabine du train y est plus haute que dans les données et la prairie du bas y est continue
+là où le rendu montre des terrasses : cadrage approximatif, à reprendre avec une capture
+native du client.
+
 Reprise des deux écrans pour qu'ils soient visuellement identiques au jeu, à partir de captures live du client (spec détaillée : `docs/superpowers/specs/2026-09-19-iteration-2-fidelite-design.md`).
 
 - **Accueil** (`/`) : le panneau de connexion et le champ de recherche du POC v1 n'existent plus. L'accueil affiche la **barre de boutons du jeu**, en bas à droite, comme en jeu : **Succès** (actif, ouvre `/achievements`) et **Personnage** (« bientôt » : au survol, infobulle « Mon compte — bientôt » ; clic sans effet).
