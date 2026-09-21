@@ -285,8 +285,12 @@ dont une table de descripteurs (20 octets par nœud) dit lesquelles sont animée
 échelle animées valent `base + u16 × pas`, un angle animé `i16 / 32767` **tour**. Cette lecture a été
 établie sur la 5.0 (pose de repos du navire de raid retrouvée à 2·10⁻⁴, roue de la tour et faisceaux
 du phare tournant autour du bon axe) ; les décodages antérieurs, qui prenaient les angles pour des
-composantes de quaternion, sous-estimaient les rotations d'environ un tiers — les scènes déjà
-déposées ne sont pas réexportées d'office. Les matrices inverses de bind du
+composantes de quaternion, sous-estimaient les rotations d'environ un tiers. **Les scènes 4.0,
+6.0, 7.0 et 8.0 déposées viennent encore de l'ancien décodage** : vérifié le 22/09/2026 sur des
+captures avant/après, la 6.0 et la 7.0 ne changent pas visiblement, mais la 4.0 dérive et la 8.0
+bascule entière — leurs sommets « statiques » (`skinIndex` −1 dans le xdb) sont rattachés par défaut
+à l'articulation 0, qui devient animée avec le nouveau décodage. Avant de les réexporter, rattacher
+ces sommets à `VisualSceneNode` dans l'export. Les matrices inverses de bind du
 jeu ne sont pas reprises : elles sont recalculées depuis l'image 0, ce qui garantit que la pose de
 repos redonne exactement la géométrie statique.
 
