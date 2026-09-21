@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { SceneMeta } from '@/lib/assets';
-import { createV7Effects, type CannonTextures } from './v7/menuSceneV7';
+import { hooksFor, type SceneEffects, type SceneHooks } from './effects';
 import s from './MenuScene.module.css';
 
 /**
@@ -148,7 +148,7 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
     let renderer: THREE.WebGLRenderer | null = null;
     let camera: THREE.PerspectiveCamera | THREE.OrthographicCamera | null = null;
     let mixer: THREE.AnimationMixer | null = null;
-    let v7Effects: ReturnType<typeof createV7Effects> | null = null;
+    let effects: SceneEffects | null = null;
     let elapsed = 0;
     let observer: ResizeObserver | null = null;
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
@@ -189,7 +189,7 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
       const step = delta();
       elapsed += step;
       mixer?.update(step);
-      v7Effects?.update(elapsed);
+      effects?.update(elapsed);
       draw();
     };
     const start = () => {
@@ -205,7 +205,7 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
     const onVisibility = () => (document.hidden ? stop() : start());
     const onResize = () => resize();
 
-    const build = (gltf: LoadedScene, meta: SceneMeta) => {
+    const build = (gltf: LoadedScene, meta: SceneMeta, hooks: SceneHooks) => {
       const root = gltf.scene;
       // Les décors sont vus en incidence rasante (sphères de brume, calques de nuages) :
       // sans filtrage anisotrope ils se réduisent à un aplat.
@@ -221,10 +221,7 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
         for (const material of converted) {
           if (!material.map) continue;
           material.map.anisotropy = anisotropy;
-          if (meta.version === '7.0') {
-            material.map.repeat.y = -1;
-            material.map.offset.y = 1;
-          }
+          hooks.prepareTexture?.(material.map);
           textures.add(material.map);
         }
         mesh.material = Array.isArray(mesh.material) ? converted : converted[0];
@@ -257,9 +254,7 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
       if (gltf.animations.length) {
         mixer = new THREE.AnimationMixer(root);
         for (const clip of gltf.animations) {
-          // Cette piste ne décode pas encore la chute des coques : la séquence
-          // cohérente coque + feu + réacteurs est pilotée par v7Intro.
-          if (meta.version === '7.0' && ['AMM_7_0_Ships_Destroyed', 'AMM_Shot01'].includes(clip.name)) continue;
+          if (hooks.skipClip?.(clip.name)) continue;
           const action = mixer.clipAction(clip);
           action.setLoop(THREE.LoopRepeat, Infinity);
           action.play();
@@ -267,22 +262,20 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
         mixer.update(0);
       }
 
-      if (meta.version === '7.0') {
-        const cannonTextures: CannonTextures = {};
-        for (const [key, file] of Object.entries(meta.cannonTextures ?? {})) {
+      if (hooks.createEffects) {
+        const loadTexture = (file: string) => {
           const texture = new THREE.TextureLoader().load(new URL(file, new URL(metaUrl, window.location.href)).href);
           texture.colorSpace = THREE.NoColorSpace;
-          texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
           textures.add(texture);
-          cannonTextures[key as keyof typeof cannonTextures] = texture;
-        }
-        v7Effects = createV7Effects(root, cannonTextures);
-        v7Effects.update(0, reduced);
+          return texture;
+        };
+        effects = hooks.createEffects(root, meta, loadTexture);
+        effects?.update(0, reduced);
       }
 
       // Sonde de mise au point (dev uniquement) : inspecter la scène depuis la console
       // ou un navigateur piloté, sans rien exposer en production.
-      if (import.meta.env.DEV) (window as Window & { __menuScene?: unknown }).__menuScene = { root, mixer, effects: v7Effects };
+      if (import.meta.env.DEV) (window as Window & { __menuScene?: unknown }).__menuScene = { root, mixer, effects };
 
       resize();
       if (reduced) return;
@@ -316,10 +309,11 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
         observer.observe(canvas.parentElement ?? canvas);
       }
 
+      const hooks = hooksFor(meta.version);
       const loader = createLoader ? createLoader() : new GLTFLoader();
       loader.load(
         glbUrl,
-        gltf => { if (alive) build(gltf, meta); },
+        gltf => { if (alive) build(gltf, meta, hooks); },
         undefined,
         error => { if (import.meta.env.DEV) console.warn(`[MenuScene] ${glbUrl} illisible`, error); },
       );
@@ -333,7 +327,7 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
       window.removeEventListener('resize', onResize);
       document.removeEventListener('visibilitychange', onVisibility);
       mixer?.stopAllAction();
-      v7Effects?.dispose();
+      effects?.dispose();
       mixer = null;
       scene.traverse(object => {
         const mesh = object as THREE.Mesh;

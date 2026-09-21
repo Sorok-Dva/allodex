@@ -52,6 +52,7 @@ if __package__ in (None, ""):  # exécution directe : `python3 tools/extract_men
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from tools.uitexture import build_dds  # noqa: E402
+from tools.scenes import hooks_for  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_MANIFEST = HERE / "scenes_manifest.json"
@@ -1072,6 +1073,7 @@ def attachment_bind_positions(vertices: dict[str, np.ndarray], skeleton: Skeleto
 def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
                 max_texture: int = 512) -> tuple[bytes, dict, list[str]]:
     builder = SceneBuilder(server_root, spec["dir"], source, max_texture)
+    hooks = hooks_for(version)
     gltf = GltfBuilder()
     texture_index: dict[str, int | None] = {}
     material_index: dict[tuple, int] = {}
@@ -1094,8 +1096,8 @@ def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
 
     def material_for(mat: MaterialSpec) -> int:
         additive = mat.blend == "BLEND_EFFECT_ADD"
-        if version == "7.0" and not mat.transparent:
-            additive = False  # le BlendEffect ne s'applique pas aux matériaux opaques
+        if hooks.material is not None:
+            additive = hooks.material(mat, additive)
         tex = texture_for(mat.texture)
         key = (mat.name, tex, additive, mat.transparent, round(mat.alpha, 4))
         if key not in material_index:
@@ -1111,27 +1113,8 @@ def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
         stats["objects"] += 1
         verts = obj.vertices
         position = verts["position"].astype(np.float32)
-        if version == "7.0" and obj.skeleton is not None and (name.startswith("AMM_Flag_") or name.startswith("AMM_7_0_Stones_")):
-            position = attachment_bind_positions(verts, obj.skeleton)
-        elif version == "7.0" and obj.skeleton is not None and name == "AMM_7_0_FrontShips":
-            engine_indices = [obj.indices[e.ib0:e.ib1] for e in obj.doc.elements
-                              if e.name.startswith("Engine_")]
-            if engine_indices:
-                position = attachment_bind_positions(verts, obj.skeleton,
-                    np.unique(np.concatenate(engine_indices)))
-        elif version == "7.0" and obj.skeleton is not None and name == "AMM_7_0_Ships_Destroyed":
-            # Engine03 est stocké dans le repère du troisième navire. Replacer
-            # son attache relativement à la coque 02, sans appliquer la pose
-            # finale (chute) aux coques elles-mêmes.
-            hull = next((e for e in obj.doc.elements if e.name == "SmalShip_destr_02"), None)
-            engines = [obj.indices[e.ib0:e.ib1] for e in obj.doc.elements
-                       if e.name.startswith("Engine_") and e.name.endswith("03")]
-            if hull is not None and engines:
-                bound = attachment_bind_positions(verts, obj.skeleton)
-                hull_indices = np.unique(obj.indices[hull.ib0:hull.ib1])
-                selected = np.unique(np.concatenate(engines))
-                offset = position[hull_indices].mean(axis=0) - bound[hull_indices].mean(axis=0)
-                position[selected] = bound[selected] + offset
+        if hooks.positions is not None:
+            position = hooks.positions(name, obj, position)
         uv = verts.get("texcoord0", np.zeros((len(position), 2), np.float32)).astype(np.float32)
         color = verts.get("color")
         if color is None:
@@ -1222,12 +1205,8 @@ def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
                             float(root_spec.get("scale", 1.0)))
         if index is not None:
             roots.append(index)
-    if version == "7.0":
-        # Bibliothèque native des tirs : maillages, UV, couleurs de sommets et
-        # matériaux complets, masqués par le lecteur puis instanciés par salve.
-        shot = emit_object("AMM_Shot01", (0, 0, 0), (0, 0, 0, 1), 1)
-        if shot is not None:
-            roots.append(shot)
+    if hooks.extra_roots is not None:
+        roots.extend(hooks.extra_roots(emit_object))
     # Le moteur du jeu est en main gauche (Direct3D) ; glTF est en main droite. On enveloppe la
     # scène dans un nœud miroir pour que le rendu ne soit pas inversé gauche/droite.
     mirror = gltf.add_node({"name": "scene", "scale": [-1.0, 1.0, 1.0], "children": roots})
@@ -1519,27 +1498,9 @@ def run(manifest: dict, out_dir: Path, only: list[str] | None = None,
         validate_glb(glb)
         target = out_dir / version
         target.mkdir(parents=True, exist_ok=True)
-        if version == "7.0":
-            # Textures originales des AMM_Shot01/02 : chemins explicites, sans
-            # dépendre d'un matériau partagé ou d'un nom de primitive du GLB.
-            library = TextureLibrary(source, server_root, 512)
-            effects = {}
-            for key, texture in {
-                "projectile": "Glow04White",
-                "muzzle": "ManaFire01",
-                "impact": "Rays23White",
-                "shield": "Glow04Blue",
-                "flame": "Fire07",
-                "electric": "NoiseLight",
-                "spark": "Spark06White",
-                "smoke": "Smoke02White",
-            }.items():
-                result = library.png(f"/Spells/FX/Textures/{texture}.(Texture).xdb")
-                if result is not None:
-                    filename = f"cannon-{key}.png"
-                    (target / filename).write_bytes(result[0])
-                    effects[key] = filename
-            meta["cannonTextures"] = effects
+        hooks = hooks_for(version)
+        if hooks.after_export is not None:
+            hooks.after_export(target, meta, source, server_root)
         (target / "scene.glb").write_bytes(glb)
         (target / "scene.json").write_text(json.dumps(meta, indent=2, ensure_ascii=False) + "\n",
                                            encoding="utf-8")
