@@ -1,0 +1,32 @@
+{
+  "version": "4.0",
+  "up": [
+    0,
+    0,
+    1
+  ],
+  "camera": {
+    "position": [
+      115,
+      0,
+      4
+    ],
+    "target": [
+      -45,
+      0,
+      1
+    ],
+    "fov": 45
+  },
+  "background": "#aaa6dd",
+  "animations": [
+    "Animated_Background"
+  ],
+  "stats": {
+    "triangles": 1563,
+    "textures": 18,
+    "animations": 1,
+    "objects": 1
+  },
+  "sortMode": "OFFSETS"
+}

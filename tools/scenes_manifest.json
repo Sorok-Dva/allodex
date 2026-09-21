@@ -22,22 +22,22 @@
         0,
         1
       ],
-      "background": "#2b3c55",
+      "background": "#aaa6dd",
+      "_background_note": "Couleur de fond visible à travers l'ouverture du dôme de ciel Back2 (un secteur de 64° manque face à la caméra) : lavande du dôme autour de l'ouverture, pour qu'elle ne dessine pas de triangle sombre dans le ciel. La couleur d'effacement du client n'est pas connue.",
+      "_camera_note": "Caméra placée à l'intérieur du dôme de ciel (Back2/Back3, rayon ~130 autour de l'île), du côté d'où les calques sont vus de face, et cadrée sur public/game/archive/4.0/background.png (château en haut à droite, îles en bas). Ce n'est pas une caméra extraite du client.",
       "camera": {
         "position": [
-          178.41,
-          -0.1,
-          -9.3
+          115,
+          0,
+          4
         ],
         "target": [
-          29.51,
-          -0.1,
-          -9.3
+          -45,
+          0,
+          1
         ],
         "fov": 45
-      },
-      "publish": false,
-      "_publish_note": "les sphères de brume rendent un grand voile et des arêtes de polygones sans le brouillard du moteur ; l'île et les nuages sont corrects dessous"
+      }
     },
     "5.0": {
       "dir": "Animated_Background_5_0",
