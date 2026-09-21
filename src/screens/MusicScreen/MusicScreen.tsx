@@ -6,7 +6,7 @@ import type { MessageKey } from '@/lib/i18n/messages';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { nineSlice } from '@/lib/nineSlice';
 import { GameScrollbar } from '@/components/game/GameScrollbar';
-import { musicGroup, musicZone, musicSubcategories, musicQueueKey } from '@/data/music.logic';
+import { musicArchiveConfidence, musicArchiveNote, musicGroup, musicIntroducedIn, musicMaps, musicZone, musicSubcategories, musicQueueKey } from '@/data/music.logic';
 import { MedalsWindow } from '@/screens/MedalsScreen/MedalsWindow';
 import { Duration } from '@/screens/ChroniclesScreen/ThemePlayer';
 import player from '@/screens/ChroniclesScreen/ThemePlayer.module.css';
@@ -26,6 +26,11 @@ export function cleanMusicName(name: string): string {
   return name.replace(/\.(wav|mp3|ogg|fsb)$/i, '').replace(/(?:_NM|_?adaptive)+$/i, '').replace(/_/g, ' ').replace(/\bKadagan\b/gi, 'Xadagan').trim();
 }
 const normalizeSearch = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/_/g, ' ');
+
+const CONFIDENCE_LABELS = {
+  fr: { confirmed: 'confirmée', probable: 'probable', inferred: 'déduite', unknown: 'inconnue' },
+  en: { confirmed: 'confirmed', probable: 'probable', inferred: 'inferred', unknown: 'unknown' },
+} as const;
 
 function placement() {
   const scale = Math.min(1, (window.innerWidth - 12) / 890, (window.innerHeight - 76) / 592);
@@ -53,9 +58,29 @@ export function MusicScreen() {
   const { playSfx, pauseMusic, resumeAmbient, playExternal, playing, external, ended } = useGameAudio();
   const groupLabel = (value: string) => GROUP_KEYS[value] ? t(GROUP_KEYS[value]) : value;
   const title = (track: MusicTrack) => pick(track.title ?? undefined, lang) ?? cleanMusicName(track.name);
+  const metadataLine = (track: MusicTrack) => {
+    const parts = [track.name];
+    const maps = musicMaps(track);
+    const introducedIn = musicIntroducedIn(track);
+    if (maps.length) parts.push(maps.join(', '));
+    if (introducedIn) parts.push(`v${introducedIn}`);
+    return parts.join(' · ');
+  };
+  const metadataTooltip = (track: MusicTrack) => {
+    const maps = musicMaps(track);
+    const introducedIn = musicIntroducedIn(track);
+    const confidence = musicArchiveConfidence(track);
+    const note = musicArchiveNote(track);
+    const lines = [track.name];
+    if (maps.length) lines.push(`${lang === 'fr' ? 'Zone' : 'Map'}: ${maps.join(', ')}`);
+    if (introducedIn) lines.push(`${lang === 'fr' ? 'Mise à jour' : 'Update'}: ${introducedIn}`);
+    if (maps.length || introducedIn) lines.push(`${lang === 'fr' ? 'Confiance' : 'Confidence'}: ${CONFIDENCE_LABELS[lang][confidence]}`);
+    if (note) lines.push(note);
+    return lines.join('\n');
+  };
   const search = normalizeSearch(query.trim());
   const visible = tracks.filter(track => search
-    ? normalizeSearch(`${title(track)} ${track.name} ${pick(musicZone(track)?.title, lang) ?? ''}`).includes(search)
+    ? normalizeSearch(`${title(track)} ${track.name} ${musicMaps(track).join(' ')} ${musicIntroducedIn(track) ?? ''} ${pick(musicZone(track)?.title, lang) ?? ''}`).includes(search)
     : musicGroup(track) === group && (!zoneId || musicZone(track)?.id === zoneId));
   const heading = search ? t('music.results', { count: visible.length }) : pick(zones.find(zone => zone.id === zoneId)?.title, lang) ?? groupLabel(group);
   const bg = video('mainmenu');
@@ -159,7 +184,10 @@ export function MusicScreen() {
                           <path d={isPlaying ? 'M4 2.5h3v11H4zM9 2.5h3v11H9z' : 'M4.5 2.5 13 8l-8.5 5.5z'} fill="currentColor" />
                         </svg>
                       </button>
-                      <div className={s.trackText}><div className={s.title} title={title(track)}>{title(track)}</div><div className={s.internal} title={track.name}>{track.name}</div></div>
+                      <div className={s.trackText}>
+                        <div className={s.title} title={title(track)}>{title(track)}</div>
+                        <div className={s.internal} title={metadataTooltip(track)}>{metadataLine(track)}</div>
+                      </div>
                       <Duration seconds={track.duration} />
                     </li>;
                   })}
