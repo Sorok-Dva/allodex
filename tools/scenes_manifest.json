@@ -40,6 +40,7 @@
       }
     },
     "5.0": {
+      "_camera_note": "Cadrage perspective calé sur refs/captures-ui/menu-5.0-frame1.png (tour-phare à droite, grand arbre à gauche, trouée lumineuse en haut à gauche) ; le navire de raid passe devant la tour vers 30-45 s puis, plus grand, derrière elle vers 65-85 s. Ce n'est pas une caméra extraite du client : profondeur sur X, la caméra regarde vers -X dans le repère miroir du .glb.",
       "dir": "Animated_Background_5_0",
       "roots": [
         "Animated_Background_5_0"
@@ -49,22 +50,21 @@
         0,
         1
       ],
-      "background": "#1b2440",
+      "background": "#3d4da9",
+      "_background_note": "Couleur de la brume du client relevée sur la capture de référence ; le lecteur 5.0 l'emploie aussi pour son brouillard.",
       "camera": {
         "position": [
-          205.27,
-          1.31,
-          -9.09
+          135,
+          -14,
+          8
         ],
         "target": [
-          41.14,
-          1.31,
-          -9.09
+          55,
+          -14,
+          8
         ],
-        "fov": 45
-      },
-      "publish": false,
-      "_publish_note": "dôme de brume trop présent, scène voilée ; à reprendre (tri/écrêtage des sphères)"
+        "fov": 60
+      }
     },
     "6.0": {
       "dir": "Animated_Background_6_0",

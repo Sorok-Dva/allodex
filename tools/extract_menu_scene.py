@@ -22,12 +22,15 @@ Formats décodés (voir aussi `.superpowers/amm-spike/README-textured.md`) :
   u32 parent), noms `(ptr, len)`, ordre d'évaluation (u16), transformations locales de bind
   (48 o = 12 f32).
 * `(SkeletalAnimation).bin` : même principe de pointeurs auto-relatifs. Entête
-  `u16 fps, u16 nb_images, ptr fin, (count, ptr) × 3`. Chaque nœud = nom (aligné sur 4 octets),
-  puis la translation (par axe : 1 f32 si fixe, sinon 2 f32 `base`/`échelle`), puis la rotation
-  (1 f32 par composante fixe, rien pour les composantes animées), puis, par image, un entier
-  16 bits par composante animée — `u16` pour la translation (`base + v × échelle`), `i16 / 32767`
-  pour la rotation (quaternion renormalisé ensuite). Le nombre de composantes animées se déduit
-  de la taille : `nb_flottants = 7 + nTA - nRA` et `nb_canaux = nTA + nRA`.
+  `u16 fps, u16 nb_images, ptr descripteurs, (count, ptr) × 3`. Les descripteurs font 20 octets
+  par nœud : `u16 drapeaux, u16 nb_canaux, ptr courbes, u32 nb_valeurs, ptr flottants,
+  u32 nb_flottants`. Une piste a sept composantes — Tx Ty Tz, S (échelle uniforme), puis trois
+  angles d'Euler autour de Z, Y, X (R = Rz · Ry · Rx) — et le bit k du drapeau est levé quand
+  la composante k est **fixe**. Chaque nœud = nom (aligné sur 4 octets), puis les flottants
+  (translation/échelle : 1 f32 si fixe, sinon 2 f32 `base`/`échelle` ; angle : 1 f32 si fixe,
+  rien sinon), puis, par image, un entier 16 bits par composante animée — `u16` pour la
+  translation et l'échelle (`base + v × échelle`), `i16 / 32767` **tours** pour un angle. Sans
+  table de descripteurs (blobs synthétiques), le découpage se déduit de la taille du corps.
 """
 from __future__ import annotations
 
@@ -392,6 +395,7 @@ class JointTrack:
     translation: np.ndarray   # (frames, 3)
     rotation: np.ndarray      # (frames, 4) en (x, y, z, w), normalisé
     animated: bool
+    scale: np.ndarray = field(default_factory=lambda: np.ones(1))  # (frames,) échelle uniforme
 
 
 @dataclass
@@ -402,90 +406,67 @@ class SkeletalAnimation:
     undecoded: list[str] = field(default_factory=list)
 
 
-def _combinations(items: list[int], k: int) -> list[tuple[int, ...]]:
-    if k == 0:
-        return [()]
-    if k > len(items):
-        return []
-    out: list[tuple[int, ...]] = []
-    for i, value in enumerate(items):
-        for rest in _combinations(items[i + 1:], k - 1):
-            out.append((value,) + rest)
-    return out
+# Une piste décrit sept composantes, dans cet ordre : Tx Ty Tz, S (échelle uniforme), puis
+# trois angles d'Euler — les *emplacements* 0, 1, 2 tournent respectivement autour de Z, Y
+# et X, et la rotation vaut R = Rz(a0) · Ry(a1) · Rx(a2). Le bit k du drapeau d'une piste
+# est levé quand la composante k est fixe. Vérifié sur la 5.0 : la pose de repos du navire
+# de raid redonne exactement (2·10⁻⁴) sa matrice de bind, la roue de la tour tourne autour
+# de la normale de son disque (X) et le faisceau du phare balaie autour de la verticale (Z).
+TRACK_COMPONENTS = 7
+_FIXED_ALL = 0x7F
 
 
-def _choose_translation(floats: list[float], n_animated: int, bind: np.ndarray | None,
-                        max_span: float = 0.0) -> tuple[list[int], list[tuple[float, float]]] | None:
-    """Répartit les flottants sur les 3 axes : 1 par axe fixe, 2 (base, échelle) par axe animé.
+def _track_layout(flags: int) -> tuple[list[bool], int, int]:
+    """(composantes animées, nb de flottants, nb de canaux) pour un drapeau de piste."""
+    animated = [not (flags >> k) & 1 for k in range(TRACK_COMPONENTS)]
+    # 1 flottant par composante fixe ; 2 (base, échelle) par translation/échelle animée ;
+    # rien pour un angle animé (les entiers 16 bits sont en tours).
+    n_floats = sum(1 if not a else 2 for a in animated[:4]) + sum(0 if a else 1 for a in animated[4:])
+    return animated, n_floats, sum(animated)
 
-    `max_span` (amplitude plausible, tirée de la boîte de la géométrie) écarte les découpages
-    où un flottant de coordonnée serait pris pour une échelle : l'amplitude obtenue
-    (`échelle × 65535`) serait alors absurde.
-    """
-    best = None
-    for animated in _combinations([0, 1, 2], n_animated):
-        slots: list[tuple[float, float] | float] = []
-        cursor = 0
-        ok = True
-        for axis in range(3):
-            if axis in animated:
-                base, scale = floats[cursor], floats[cursor + 1]
-                cursor += 2
-                if not (0.0 < scale < 1.0) or (max_span > 0 and scale * 65535.0 > max_span):
-                    ok = False
-                    break
-                slots.append((base, scale))
-            else:
-                slots.append(floats[cursor])
-                cursor += 1
-        if not ok:
-            continue
-        cost = 0.0
-        for axis in range(3):
-            slot = slots[axis]
-            target = float(bind[axis]) if bind is not None else None
-            if isinstance(slot, tuple):
-                base, scale = slot
-                span = scale * 65535.0
-                cost += 0.05 * span
-                if target is not None and not (base - 1e-3 <= target <= base + span + 1e-3):
-                    cost += min(abs(target - base), abs(target - base - span))
-            elif target is not None:
-                cost += abs(slot - target)
-        if best is None or cost < best[0]:
-            best = (cost, list(animated), slots)
-    if best is None:
+
+def _read_track_flags(blob: bytes, count: int, frames: int) -> list[int] | None:
+    """Table de descripteurs (offset 4 de l'entête) : 20 octets par nœud —
+    `u16 drapeaux, u16 nb_canaux, ptr courbes, u32 nb_valeurs, ptr flottants, u32 nb_flottants`.
+    Renvoie `None` si la table est absente ou incohérente (blobs synthétiques des tests)."""
+    if count <= 0:
         return None
-    return best[1], best[2]
-
-
-def _choose_rotation(floats: list[float], n_animated: int,
-                     bind: np.ndarray | None) -> tuple[list[int], list[float]] | None:
-    """Les composantes animées ne portent aucun flottant : les flottants restants sont les fixes."""
-    best = None
-    for animated in _combinations([0, 1, 2, 3], n_animated):
-        statics = [c for c in range(4) if c not in animated]
-        values = [0.0, 0.0, 0.0, 0.0]
-        for slot, comp in enumerate(statics):
-            values[comp] = floats[slot]
-        if any(abs(v) > 1.0001 for v in values):
-            continue
-        # À égalité, on anime plutôt (x, y, z) en gardant `w` fixe : c'est le cas courant
-        # (rotations modérées autour d'une pose de repos).
-        cost = -1e-3 * sum(animated)
-        if bind is not None:
-            for comp in statics:
-                cost += abs(values[comp] - float(bind[comp]))
-        if best is None or cost < best[0]:
-            best = (cost, list(animated), values)
-    if best is None:
+    try:
+        base = self_pointer(blob, 4)
+    except struct.error:
         return None
-    return best[1], best[2]
+    if base <= 0 or base + 20 * count > len(blob):
+        return None
+    flags: list[int] = []
+    for i in range(count):
+        off = base + 20 * i
+        flag, channels, _ptr_curves, n_values, _ptr_floats, n_floats = struct.unpack_from("<HHIIII", blob, off)
+        if flag > _FIXED_ALL:
+            return None
+        _animated, expect_floats, expect_channels = _track_layout(flag)
+        if channels != expect_channels or n_floats != expect_floats or n_values != frames * channels:
+            return None
+        flags.append(flag)
+    return flags
+
+
+def _euler_zyx_quaternion(az: np.ndarray, ay: np.ndarray, ax: np.ndarray) -> np.ndarray:
+    """Angles (rad) de R = Rz(az) · Ry(ay) · Rx(ax) → quaternions (x, y, z, w), continus."""
+    cz, sz = np.cos(az / 2), np.sin(az / 2)
+    cy, sy = np.cos(ay / 2), np.sin(ay / 2)
+    cx, sx = np.cos(ax / 2), np.sin(ax / 2)
+    w = cx * cy * cz + sx * sy * sz
+    x = sx * cy * cz - cx * sy * sz
+    y = cx * sy * cz + sx * cy * sz
+    z = cx * cy * sz - sx * sy * cz
+    return np.stack([x, y, z, w], axis=1)
 
 
 def _quat_from_rows(rows: np.ndarray) -> np.ndarray:
-    """Matrice 3×3 (lignes = vecteurs de base) → quaternion (w, x, y, z)."""
-    m = np.asarray(rows[:3]).T
+    """Matrice 3×3 (lignes = vecteurs de base, éventuellement mis à l'échelle) → quaternion (w, x, y, z)."""
+    m = np.asarray(rows[:3], float)
+    norms = np.linalg.norm(m, axis=1, keepdims=True)
+    m = (m / np.where(norms > 1e-12, norms, 1.0)).T
     trace = m[0, 0] + m[1, 1] + m[2, 2]
     if trace > 0:
         s = math.sqrt(trace + 1.0) * 2
@@ -502,6 +483,10 @@ def _quat_from_rows(rows: np.ndarray) -> np.ndarray:
     return np.array(q)
 
 
+def _bind_scale(rows: np.ndarray) -> float:
+    return float(np.linalg.norm(np.asarray(rows[:3], float), axis=1).mean()) or 1.0
+
+
 def parse_skeletal_animation(blob: bytes, skeleton: Skeleton | None = None,
                              max_span: float = 0.0) -> SkeletalAnimation:
     fps, frames = struct.unpack_from("<HH", blob, 0)
@@ -514,68 +499,105 @@ def parse_skeletal_animation(blob: bytes, skeleton: Skeleton | None = None,
         value, length = struct.unpack_from("<II", blob, off)
         records.append((off + value, length))
     bounds = sorted({addr for addr, _ in records} | {p_order})
-    bind_by_name: dict[str, tuple[np.ndarray, np.ndarray]] = {}
+    bind_by_name: dict[str, tuple[np.ndarray, float]] = {}
     if skeleton is not None:
         for i, name in enumerate(skeleton.names):
-            bind_by_name[name] = (skeleton.local[i][3], _quat_from_rows(skeleton.local[i]))
+            bind_by_name[name] = (skeleton.local[i][3], _bind_scale(skeleton.local[i]))
+    flags = _read_track_flags(blob, count, frames)
 
     tracks: list[JointTrack] = []
     undecoded: list[str] = []
-    for addr, length in sorted(records):
+    for i, (addr, length) in enumerate(records):
         name = blob[addr:addr + max(0, length - 1)].decode("ascii", "replace")
         end = bounds[bounds.index(addr) + 1]
         start = addr + (length + 3) // 4 * 4
         body = end - start
-        bind_t, bind_q = bind_by_name.get(name, (None, None))
-        track = _decode_track(blob, name, start, body, frames, bind_t, bind_q, max_span)
+        bind_t, bind_s = bind_by_name.get(name, (None, 1.0))
+        track = _decode_track(blob, name, start, body, frames, bind_t, bind_s, max_span,
+                              flags[i] if flags is not None else None)
         if track is None:
             undecoded.append(name)
-            track = JointTrack(
-                name=name,
-                translation=np.zeros((1, 3)) if bind_t is None else np.array([bind_t]),
-                rotation=np.array([[0.0, 0.0, 0.0, 1.0]]) if bind_q is None
-                else np.array([[bind_q[1], bind_q[2], bind_q[3], bind_q[0]]]),
-                animated=False,
-            )
+            rest_t = np.zeros((1, 3)) if bind_t is None else np.array([bind_t])
+            rest_q = np.array([[0.0, 0.0, 0.0, 1.0]])
+            if skeleton is not None and name in skeleton.names:
+                wxyz = _quat_from_rows(skeleton.local[skeleton.names.index(name)])
+                rest_q = np.array([[wxyz[1], wxyz[2], wxyz[3], wxyz[0]]])
+            track = JointTrack(name=name, translation=rest_t, rotation=rest_q, animated=False,
+                               scale=np.array([bind_s]))
         tracks.append(track)
     return SkeletalAnimation(fps=fps or 30, frames=frames, tracks=tracks, undecoded=undecoded)
 
 
-def _decode_track(blob: bytes, name: str, start: int, body: int, frames: int,
-                  bind_t: np.ndarray | None, bind_q: np.ndarray | None,
-                  max_span: float = 0.0) -> JointTrack | None:
-    if body < 28 or frames <= 0:
-        return None
-    # Le découpage se déduit de la taille : `nb_flottants = 7 + nTA - nRA` (3 pour la
-    # translation, +1 par axe animé, et une valeur par composante fixe du quaternion) et
-    # `nb_canaux = nTA + nRA`. Sur les vraies animations (≥ 161 images) une seule solution
-    # existe ; on retient sinon celle qui anime le plus de composantes.
-    solution = None
-    for channels in range(0, 8):
+def _infer_track_flags(blob: bytes, start: int, body: int, frames: int,
+                       bind_t: np.ndarray | None, bind_s: float, max_span: float) -> int | None:
+    """Sans table de descripteurs : le drapeau se déduit de la taille du corps, les
+    découpages restants étant départagés par leur vraisemblance (une coordonnée prise
+    pour une échelle donnerait une amplitude absurde, une échelle fixe doit rester
+    positive et proche de celle du bind…)."""
+    best: tuple[float, int] | None = None
+    for flags in range(_FIXED_ALL + 1):
+        animated, n_floats, channels = _track_layout(flags)
         rest = body - frames * channels * 2
-        if rest < 12:
-            break
-        if rest % 4 not in (0, 2) or rest > 42:
+        if rest < 4 * n_floats or rest > 4 * n_floats + 2:
             continue
-        n_floats = rest // 4
-        n_ta, n_ra = n_floats - 7 + channels, 7 - n_floats + channels
-        if n_ta < 0 or n_ra < 0 or n_ta % 2 or n_ra % 2:
+        floats = struct.unpack_from(f"<{n_floats}f", blob, start)
+        cost, cursor, ok = 0.0, 0, True
+        for k in range(3):
+            if animated[k]:
+                base, step = floats[cursor], floats[cursor + 1]
+                cursor += 2
+                span = step * 65535.0
+                if step < 0 or step >= 1.0 or (max_span > 0 and span > max_span):
+                    ok = False
+                    break
+                cost += 0.05 * span
+                if bind_t is not None and not (base - 1e-3 <= float(bind_t[k]) <= base + span + 1e-3):
+                    cost += min(abs(float(bind_t[k]) - base), abs(float(bind_t[k]) - base - span))
+            else:
+                if bind_t is not None:
+                    cost += abs(floats[cursor] - float(bind_t[k]))
+                cursor += 1
+        if not ok:
             continue
-        n_ta, n_ra = n_ta // 2, n_ra // 2
-        if n_ta > 3 or n_ra > 4 or n_ta + n_ra != channels:
+        if animated[3]:
+            base, step = floats[cursor], floats[cursor + 1]
+            cursor += 2
+            if step < 0 or step * 65535.0 > 100.0:
+                continue
+            cost += 0.5
+        else:
+            value = floats[cursor]
+            cursor += 1
+            if not (1e-4 < value < 1000.0):
+                continue
+            cost += abs(value - bind_s)
+        for k in range(3):
+            if not animated[4 + k]:
+                if abs(floats[cursor]) > 2 * math.pi + 1e-3:
+                    ok = False
+                    break
+                cursor += 1
+        if not ok:
             continue
-        solution = (channels, n_floats, n_ta, n_ra)
-    if solution is None:
-        return None
-    channels, n_floats, n_ta, n_ra = solution
-    floats = list(struct.unpack_from(f"<{n_floats}f", blob, start))
-    translation = _choose_translation(floats[:3 + n_ta], n_ta, bind_t, max_span)
-    rotation = _choose_rotation(floats[3 + n_ta:], n_ra, bind_q)
-    if translation is None or rotation is None:
-        return None
-    t_animated, t_slots = translation
-    r_animated, r_values = rotation
+        cost -= 1e-3 * sum(animated)  # à égalité, animer plutôt que figer
+        if best is None or cost < best[0]:
+            best = (cost, flags)
+    return None if best is None else best[1]
 
+
+def _decode_track(blob: bytes, name: str, start: int, body: int, frames: int,
+                  bind_t: np.ndarray | None, bind_s: float = 1.0, max_span: float = 0.0,
+                  flags: int | None = None) -> JointTrack | None:
+    if body < 16 or frames <= 0:
+        return None
+    if flags is None:
+        flags = _infer_track_flags(blob, start, body, frames, bind_t, bind_s, max_span)
+        if flags is None:
+            return None
+    animated, n_floats, channels = _track_layout(flags)
+    if 4 * n_floats + 2 * frames * channels > body:
+        return None
+    floats = list(struct.unpack_from(f"<{n_floats}f", blob, start))
     curve_start = start + n_floats * 4
     n = frames if channels else 1
     if channels:
@@ -586,28 +608,34 @@ def _decode_track(blob: bytes, name: str, start: int, body: int, frames: int,
     else:
         raw = np.zeros((1, 0), np.uint16)
 
-    out_t = np.zeros((n, 3))
-    cursor = 0
-    for axis in range(3):
-        slot = t_slots[axis]
-        if isinstance(slot, tuple):
-            base, scale = slot
-            out_t[:, axis] = base + raw[:, cursor].astype(np.float64) * scale
-            cursor += 1
+    cursor_f = cursor_c = 0
+
+    def linear(is_animated: bool) -> np.ndarray:
+        """Translation ou échelle : `base + u16 × échelle` si animée, sinon le flottant fixe."""
+        nonlocal cursor_f, cursor_c
+        if is_animated:
+            base, step = floats[cursor_f], floats[cursor_f + 1]
+            cursor_f += 2
+            values = base + raw[:, cursor_c].astype(np.float64) * step
+            cursor_c += 1
+            return values
+        value = floats[cursor_f]
+        cursor_f += 1
+        return np.full(n, value)
+
+    out_t = np.stack([linear(animated[k]) for k in range(3)], axis=1)
+    scale = linear(animated[3])
+    angles = []
+    for k in range(3):
+        if animated[4 + k]:
+            # i16 en tours : ±32767 ↔ ±1 tour, ce qui rend continues les rotations complètes.
+            angles.append(raw[:, cursor_c].astype(np.int16).astype(np.float64) / 32767.0 * (2 * math.pi))
+            cursor_c += 1
         else:
-            out_t[:, axis] = slot
-    out_q = np.zeros((n, 4))  # (w, x, y, z)
-    for comp in range(4):
-        if comp in r_animated:
-            signed = raw[:, cursor].astype(np.int16).astype(np.float64)
-            out_q[:, comp] = signed / 32767.0
-            cursor += 1
-        else:
-            out_q[:, comp] = r_values[comp]
-    norm = np.linalg.norm(out_q, axis=1, keepdims=True)
-    out_q = np.where(norm > 1e-6, out_q / np.maximum(norm, 1e-9), np.array([1.0, 0.0, 0.0, 0.0]))
-    xyzw = out_q[:, [1, 2, 3, 0]]
-    return JointTrack(name=name, translation=out_t, rotation=xyzw, animated=bool(channels))
+            angles.append(np.full(n, floats[cursor_f]))  # angle fixe, en radians (toujours 0 dans les données vues)
+            cursor_f += 1
+    xyzw = _euler_zyx_quaternion(angles[0], angles[1], angles[2])
+    return JointTrack(name=name, translation=out_t, rotation=xyzw, animated=bool(channels), scale=scale)
 
 
 # --- pose de repos et peau ---------------------------------------------------------------------
@@ -622,9 +650,17 @@ def quat_matrix(q: np.ndarray) -> np.ndarray:
     ])
 
 
+def _rest_scale(value: float) -> float:
+    """Échelle de repos bornée : un objet qui naît à l'échelle 0 (le navire de raid 5.0)
+    garde une pose de repos inversible, sans quoi les matrices inverses de bind explosent."""
+    if abs(value) >= 1e-3:
+        return float(value)
+    return 1e-3 if value >= 0 else -1e-3
+
+
 def rest_local(skeleton: Skeleton, animation: SkeletalAnimation | None,
-               index: int) -> tuple[np.ndarray, np.ndarray]:
-    """Transformation locale de repos d'une articulation : (translation, quaternion xyzw).
+               index: int) -> tuple[np.ndarray, np.ndarray, float]:
+    """Transformation locale de repos d'une articulation : (translation, quaternion xyzw, échelle).
 
     L'image 0 de l'animation fait foi quand elle existe ; sinon la pose de bind du squelette.
     Les matrices inverses de bind du jeu ne sont pas reprises telles quelles : on les recalcule
@@ -634,18 +670,20 @@ def rest_local(skeleton: Skeleton, animation: SkeletalAnimation | None,
     tracks = {t.name: t for t in animation.tracks} if animation else {}
     track = tracks.get(skeleton.names[index])
     if track is not None:
-        return np.asarray(track.translation[0], float), np.asarray(track.rotation[0], float)
+        return (np.asarray(track.translation[0], float), np.asarray(track.rotation[0], float),
+                _rest_scale(float(track.scale[0])))
     wxyz = _quat_from_rows(skeleton.local[index])
-    return np.asarray(skeleton.local[index][3], float), np.array([wxyz[1], wxyz[2], wxyz[3], wxyz[0]])
+    return (np.asarray(skeleton.local[index][3], float),
+            np.array([wxyz[1], wxyz[2], wxyz[3], wxyz[0]]), _rest_scale(_bind_scale(skeleton.local[index])))
 
 
 def rest_world_matrices(skeleton: Skeleton, animation: SkeletalAnimation | None) -> np.ndarray:
     """Matrices monde 4×4 de la pose de repos, parents avant enfants."""
     world = np.tile(np.eye(4), (len(skeleton), 1, 1))
     for i in skeleton.topological_order():
-        t, q = rest_local(skeleton, animation, i)
+        t, q, s = rest_local(skeleton, animation, i)
         m = np.eye(4)
-        m[:3, :3] = quat_matrix(q)
+        m[:3, :3] = quat_matrix(q) * s
         m[:3, 3] = t
         p = skeleton.parents[i]
         world[i] = world[p] @ m if 0 <= p < len(skeleton) else m
@@ -1233,10 +1271,12 @@ def _emit_skeleton(gltf: GltfBuilder, skeleton: Skeleton, animation: SkeletalAni
     """Crée un nœud par articulation (hiérarchie + pose de repos) et l'animation associée."""
     nodes: list[int] = []
     for i, name in enumerate(skeleton.names):
-        t, q = rest_local(skeleton, animation, i)
+        t, q, s = rest_local(skeleton, animation, i)
         node = {"name": f"{object_name}/{name}",
                 "translation": [float(v) for v in t],
                 "rotation": [float(v) for v in q]}
+        if abs(s - 1.0) > 1e-9:
+            node["scale"] = [s, s, s]
         nodes.append(gltf.add_node(node))
     for i in range(len(skeleton)):
         parent = skeleton.parents[i]
@@ -1260,6 +1300,11 @@ def _emit_skeleton(gltf: GltfBuilder, skeleton: Skeleton, animation: SkeletalAni
         acc_r = gltf.add_accessor(track.rotation.astype(np.float32), "VEC4", "f32")
         samplers.append({"input": acc_time, "output": acc_r, "interpolation": "LINEAR"})
         channels.append({"sampler": len(samplers) - 1, "target": {"node": node, "path": "rotation"}})
+        if len(track.scale) == animation.frames and np.ptp(track.scale) > 1e-9:
+            scale3 = np.repeat(track.scale.astype(np.float32)[:, None], 3, axis=1)
+            acc_s = gltf.add_accessor(scale3, "VEC3", "f32")
+            samplers.append({"input": acc_time, "output": acc_s, "interpolation": "LINEAR"})
+            channels.append({"sampler": len(samplers) - 1, "target": {"node": node, "path": "scale"}})
     gltf.json["animations"].append({"name": object_name, "samplers": samplers, "channels": channels})
     animation_names.append(object_name)
     return nodes
@@ -1279,10 +1324,11 @@ def animated_bounds(obj: LoadedObject, frame: int) -> tuple[np.ndarray, np.ndarr
         if track is not None:
             t = track.translation[min(frame, len(track.translation) - 1)]
             q = track.rotation[min(frame, len(track.rotation) - 1)]
+            s = float(track.scale[min(frame, len(track.scale) - 1)])
         else:
-            t, q = rest_local(skeleton, animation, i)
+            t, q, s = rest_local(skeleton, animation, i)
         m = np.eye(4)
-        m[:3, :3] = quat_matrix(q)
+        m[:3, :3] = quat_matrix(q) * s
         m[:3, 3] = t
         p = skeleton.parents[i]
         world[i] = world[p] @ m if 0 <= p < len(skeleton) else m

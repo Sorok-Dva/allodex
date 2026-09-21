@@ -255,14 +255,14 @@ corriger, modifier ces valeurs puis relancer l'outil avec `--only <version> --ch
 comparer la planche à une capture du menu réel (`refs/captures-ui/menu-<version>-*.png`). Le repère
 du jeu est en main gauche : l'export enveloppe la scène dans un nœud `scale: [-1, 1, 1]`, les
 coordonnées de la caméra sont donc dans ce repère miroir (celui du `.glb`). La 7.0 a été calée sur
-`refs/captures-ui/menu-7.0-frame1.png`. Le cadrage de la 5.0 reste approximatif — la scène est
-noyée dans ses sphères de brume, que l'export reproduit fidèlement mais sans le brouillard du
-moteur. Attention : la planche de contrôle ne remplace pas une capture du site, son rasteriseur
-jetant les triangles qui frôlent la caméra et ignorant les crochets du lecteur (ordre de peinture,
-orientation des textures) ; pour la 4.0 elle n'est pas représentative. C'est pourquoi la 5.0 porte
-`publish: false` dans `tools/scenes_manifest.json` : sa scène n'est pas déposée (la page garde
-l'illustration de repli) tant que le rendu n'est pas présentable ; `--only 5.0` force l'export pour
-la retravailler.
+`refs/captures-ui/menu-7.0-frame1.png`. Les 4.0 et 5.0 sont publiées depuis leur reprise (voir
+« Scène 4.0 » et « Scène 5.0 » plus bas) : leurs cadrages, calés sur l'illustration officielle pour
+la 4.0 et sur une capture du menu pour la 5.0, restent approximatifs. Attention : la planche de
+contrôle ne remplace pas une capture du site, son rasteriseur jetant les triangles qui frôlent la
+caméra et ignorant les crochets du lecteur (ordre de peinture, orientation des textures, brouillard) ;
+pour les 4.0 et 5.0 elle n'est pas représentative. `publish: false` dans `tools/scenes_manifest.json`
+reste disponible pour retirer une scène qui ne serait plus présentable ; `--only <version>` force
+alors l'export pour la retravailler.
 
 **4.0 « Lords of Destiny ».** Un seul objet (`Animated_Background`), sans composant attaché ; le
 « voile » qui masquait l'île n'était pas la brume mais le **dôme de ciel** (`Back2`, sphère opaque
@@ -279,10 +279,14 @@ Les oiseaux et les cristaux flottants viennent de l'animation squelettique du gl
 Pas de défilement UV natif dans cette version (`scrollRGB` sans vitesse).
 
 **Animations.** Le blob `(SkeletalAnimation).bin` a été rétro-conçu (format décrit en tête de
-`tools/extract_menu_scene.py`) : pointeurs auto-relatifs, une piste par articulation, translation en
-`base + u16 × échelle` et quaternion en `i16 / 32767` sur les seules composantes animées. Le nombre
-de composantes animées se déduit de la taille du bloc ; quelques nœuds rares restent ambigus et sont
-alors exportés figés (l'outil les compte dans ses avertissements). Les matrices inverses de bind du
+`tools/extract_menu_scene.py`) : pointeurs auto-relatifs, une piste par articulation à sept
+composantes — translation, **échelle uniforme** et trois **angles d'Euler** (R = Rz · Ry · Rx) —
+dont une table de descripteurs (20 octets par nœud) dit lesquelles sont animées. Translation et
+échelle animées valent `base + u16 × pas`, un angle animé `i16 / 32767` **tour**. Cette lecture a été
+établie sur la 5.0 (pose de repos du navire de raid retrouvée à 2·10⁻⁴, roue de la tour et faisceaux
+du phare tournant autour du bon axe) ; les décodages antérieurs, qui prenaient les angles pour des
+composantes de quaternion, sous-estimaient les rotations d'environ un tiers — les scènes déjà
+déposées ne sont pas réexportées d'office. Les matrices inverses de bind du
 jeu ne sont pas reprises : elles sont recalculées depuis l'image 0, ce qui garantit que la pose de
 repos redonne exactement la géométrie statique.
 
@@ -366,6 +370,31 @@ réduits à 82 % et composés derrière le premier plan. Les flammes/halos visib
 devant leur coque, leurs halos arrière restent derrière. L'export applique les matrices
 natives aux seuls sommets des réacteurs : notamment `Engine_Glow01`, créé au niveau du
 navire droit, est ainsi replacé sur les tuyères gauches sans déplacer les coques.
+
+### Scène 5.0 « Heart of the World »
+
+La scène est un seul objet skinné (tour-phare, roue et bielles, éclairs, arbres, nappes de brume et
+coupole de nuages `Back6`) auquel le navire de raid est attaché par un locator ; ses deux animations
+natives (100 s et 133 s) sont rejouées telles quelles par le mixeur générique. Trois particularités
+vivent dans `tools/scenes/v5_0.py` et `src/components/scene/MenuScene/v5/` :
+
+- **Repère natif cuit dans les sommets.** Toute la tour et le navire ont des matrices inverses de
+  bind identité : leurs sommets sont dans le repère de l'articulation. Le crochet `positions`
+  applique `monde_repos · inverse_native` avant l'export, sans quoi roue, phares et halos s'empilent
+  à l'origine et le navire reste figé sur son locator. Le navire naît à l'échelle 0 : sa pose de
+  repos est bornée à 10⁻³ pour rester inversible.
+- **Le « dôme de brume »** n'était pas un problème de sphères : `Back6` est un bol de nuages ouvert
+  vers la caméra (culling correct), et le voile venait d'une caméra trop lointaine posée hors du décor
+  et de l'absence du brouillard du moteur (`useFog: true` sur tous les matériaux). Le lecteur pose un
+  brouillard linéaire (30 → 450 unités) de la couleur du fond, hors matériaux additifs ; couleur et
+  distances sont calées sur `refs/captures-ui/menu-5.0-frame1.png`, ce sont des réglages.
+- **Écarts assumés.** Les seize pièces de la coque et les rochers `Allods*` ont un alpha de sommet nul :
+  le lecteur coupe leur couleur de sommet et les rend opaques avec le tampon de profondeur. Le navire
+  est reclassé à chaque image d'après la profondeur de son articulation racine (il passe devant la
+  tour vers 30-45 s, derrière vers 65-85 s). Les effets attachés `/Spells/FX/World/AnimBack_Raid_Ship_*`
+  et `EngineTL01.Malfunction` (particules) ne sont pas exportés. Le grand passage au premier plan de
+  `refs/captures-ui/menu-5.0-frame2-raid-ship.png` n'est pas reproduit à cette taille : avec la caméra
+  retenue le navire reste à 15-35 % de la largeur (voir le rapport de reprise).
 
 ### Scène 6.0 « Broken Chains »
 

@@ -359,7 +359,8 @@ def test_parse_skeletal_animation_static_node():
 
 
 def test_parse_skeletal_animation_rotation_curve():
-    """3 composantes animées : `w` reste fixe, `x`/`y`/`z` viennent des entiers 16 bits."""
+    """3 angles animés : l'échelle reste fixe (1.0), le premier emplacement tourne autour de Z
+    (entiers 16 bits en tours), les deux autres restent à zéro."""
     frames = 8
     curves = [[0, 1000, 2000, 3276, 4500, 6553, 8000, 9830], [0] * frames, [0] * frames]
     blob = build_animation_blob(frames, [{
@@ -372,8 +373,11 @@ def test_parse_skeletal_animation_rotation_curve():
     assert track.animated is True
     assert track.rotation.shape == (frames, 4)
     assert track.rotation[0].tolist() == pytest.approx([0.0, 0.0, 0.0, 1.0])
-    # x croît, la norme reste unitaire
-    assert track.rotation[7][0] > track.rotation[1][0] > 0
+    # z croît (1000/32767 tour ≈ 11°, 9830/32767 ≈ 108°), x et y restent nuls, la norme unitaire
+    assert track.rotation[7][2] > track.rotation[1][2] > 0
+    assert track.rotation[7][:2].tolist() == pytest.approx([0.0, 0.0])
+    assert track.rotation[1][2] == pytest.approx(np.sin(np.pi * 1000 / 32767), abs=1e-6)
+    assert track.scale.tolist() == [1.0] * frames
     assert float(np.linalg.norm(track.rotation[7])) == pytest.approx(1.0, abs=1e-5)
     assert track.translation.shape == (frames, 3)
 
