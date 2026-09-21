@@ -1,5 +1,6 @@
 import type * as THREE from 'three';
 import type { SceneMeta } from '@/lib/assets';
+import { hooks as v4 } from './v4/hooks';
 import { hooks as v7 } from './v7/hooks';
 
 /** Effets rejoués par-dessus le `.glb` (tirs, jets, brume…), mis à jour à chaque image. */
@@ -27,6 +28,7 @@ export type SceneHooks = {
 
 /** Une version sans module n'a aucun crochet. Ajouter ici chaque version scénarisée. */
 const HOOKS: Record<string, SceneHooks> = {
+  '4.0': v4,
   '7.0': v7,
 };
 

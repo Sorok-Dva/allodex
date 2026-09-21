@@ -255,14 +255,28 @@ corriger, modifier ces valeurs puis relancer l'outil avec `--only <version> --ch
 comparer la planche à une capture du menu réel (`refs/captures-ui/menu-<version>-*.png`). Le repère
 du jeu est en main gauche : l'export enveloppe la scène dans un nœud `scale: [-1, 1, 1]`, les
 coordonnées de la caméra sont donc dans ce repère miroir (celui du `.glb`). La 7.0 a été calée sur
-`refs/captures-ui/menu-7.0-frame1.png`. Les cadrages des 4.0 et 5.0 restent approximatifs — ces
-scènes sont noyées dans leurs sphères de brume, que l'export reproduit fidèlement mais sans le
-brouillard du moteur. Attention : la planche de contrôle ne remplace pas une capture du site, son
-rasteriseur jetant les triangles qui frôlent la caméra ; la 4.0 montre ainsi dans le navigateur un
-grand voile de brume que la planche laisse de côté. C'est pourquoi les 4.0 et 5.0 portent
-`publish: false` dans `tools/scenes_manifest.json` : leur scène n'est pas déposée (la page garde
-l'illustration de repli) tant que le rendu n'est pas présentable ; `--only 4.0` force l'export pour
+`refs/captures-ui/menu-7.0-frame1.png`. Le cadrage de la 5.0 reste approximatif — la scène est
+noyée dans ses sphères de brume, que l'export reproduit fidèlement mais sans le brouillard du
+moteur. Attention : la planche de contrôle ne remplace pas une capture du site, son rasteriseur
+jetant les triangles qui frôlent la caméra et ignorant les crochets du lecteur (ordre de peinture,
+orientation des textures) ; pour la 4.0 elle n'est pas représentative. C'est pourquoi la 5.0 porte
+`publish: false` dans `tools/scenes_manifest.json` : sa scène n'est pas déposée (la page garde
+l'illustration de repli) tant que le rendu n'est pas présentable ; `--only 5.0` force l'export pour
 la retravailler.
+
+**4.0 « Lords of Destiny ».** Un seul objet (`Animated_Background`), sans composant attaché ; le
+« voile » qui masquait l'île n'était pas la brume mais le **dôme de ciel** (`Back2`, sphère opaque
+à dégradé de couleurs de sommets, et `Back3`, sphère de nuages) : le tri par profondeur moyenne du
+lecteur le passait par-dessus l'île, et la caméra d'origine était placée hors du dôme. Le xdb
+déclare `sortMode OFFSETS` — le moteur peint les éléments **dans l'ordre du fichier**, sans tri
+(dôme, nuages du fond, île, soleil, château, brume, oiseaux, nuages de premier plan). Le crochet
+`tools/scenes/v4_0.py` relève ce mode dans `scene.json` (`sortMode`) et
+`src/components/scene/MenuScene/v4/` l'applique en `renderOrder` à la place de `sortByDepth`, puis
+redresse les textures (origine en bas, comme en 7.0). La caméra du manifeste est à l'intérieur du
+dôme, du côté d'où les calques sont vus de face, cadrée sur `background.png` ; le dôme a une
+ouverture de 64° face à la caméra, d'où la couleur de fond lavande (`background`) qui la comble.
+Les oiseaux et les cristaux flottants viennent de l'animation squelettique du glTF (84 s en boucle).
+Pas de défilement UV natif dans cette version (`scrollRGB` sans vitesse).
 
 **Animations.** Le blob `(SkeletalAnimation).bin` a été rétro-conçu (format décrit en tête de
 `tools/extract_menu_scene.py`) : pointeurs auto-relatifs, une piste par articulation, translation en
