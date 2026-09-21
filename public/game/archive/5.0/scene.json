@@ -1,0 +1,32 @@
+{
+  "version": "5.0",
+  "up": [
+    0,
+    0,
+    1
+  ],
+  "camera": {
+    "position": [
+      135,
+      -14,
+      8
+    ],
+    "target": [
+      55,
+      -14,
+      8
+    ],
+    "fov": 60
+  },
+  "background": "#3d4da9",
+  "animations": [
+    "Animated_Background_5_0",
+    "Raid_Ship"
+  ],
+  "stats": {
+    "triangles": 23945,
+    "textures": 48,
+    "animations": 2,
+    "objects": 2
+  }
+}

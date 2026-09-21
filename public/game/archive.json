@@ -82,6 +82,10 @@
     "label": "Allods Online - Heart of the World (5.0)",
     "media": "image",
     "background": "background.png",
+    "scene": {
+      "glb": "scene.glb",
+      "meta": "scene.json"
+    },
     "logo": "logo.png",
     "theme": {
       "name": "MainMenu_HeartOfTheWorld",
