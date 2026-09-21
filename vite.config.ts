@@ -6,5 +6,9 @@ export default defineConfig({
   plugins: [react()],
   resolve: { alias: { '@': path.resolve(import.meta.dirname, 'src') } },
   server: { port: 5173 },
-  test: { environment: 'jsdom', globals: true, setupFiles: [], passWithNoTests: true },
+  test: {
+    environment: 'jsdom', globals: true, setupFiles: [], passWithNoTests: true,
+    // Les worktrees des sous-agents vivent sous .claude/ : ne pas rejouer leurs tests ici.
+    exclude: ['**/node_modules/**', '**/dist/**', '.claude/**'],
+  },
 });
