@@ -5,7 +5,7 @@ Sources (voir `tools/lore_manifest.json`) :
 
 * **dernier client officiel** (`AllodsRU`, 17.0) — `Texts_x64.pak` contient `pack.rus.loc` et
   `pack.eng_eu.loc` : deux tables **alignées index par index** (même empreinte de build). L'anglais
-  est celui de l'édition européenne (il se retrouve à l'identique dans les packs officiels EU 16.0) ;
+  est celui de l'édition européenne (il se retrouve à l'identique dans ses packs officiels 16.0) ;
   une entrée restée en cyrillique n'a pas de traduction officielle.
 * **`Bin/pack.bin`** (dans `BaseLocall_x64.pak`) — base de ressources compilée. Elle ne contient pas
   les chemins, mais chaque ressource y pointe ses textes par leur index dans les `.loc` : on sait ainsi
@@ -16,8 +16,9 @@ Sources (voir `tools/lore_manifest.json`) :
   `resourceId` des xdb est la clé de la table S3 de `pack.bin` : c'est le pont exact serveur ↔ client.
   Pour les ressources plus récentes, le type est **déduit** de la disposition binaire (classifieur
   bayésien naïf appris sur les ressources connues ; précision mesurée avec `--evaluate`).
-* **packs EU officiels** (en + fr, alignés) — pont anglais → français : le français n'est retenu que
-  si l'anglais du client 17.0 est identique à celui du pack EU.
+* **client FR officiel** (16.0, français seul, `--fr-client` / `ALLODS_FR_CLIENT_DIR`) — son propre
+  `pack.bin` relie ses textes à ses ressources ; une ressource commune aux deux clients (même
+  `resourceId`) et un même décalage de champ donnent la traduction (voir `bridge_fr`).
 * **corpus communautaire** (`refs/lorebook`, git-ignoré) — jamais recopié : chaque texte russe est
   découpé en phrases normalisées, apparié aux textes du client, puis classé (`in-game (official EN
   available)`, `in-game (RU/FR only)`, `official out-of-game (announcement/FAQ)`, `community`).
@@ -32,7 +33,10 @@ Formats décodés :
   hachage (65521 seaux) `clé 9 o (u32 1, u32 rid, u8 0) → u64 décalage dans le corps`, S1 chemins
   (519 ressources racines), S2 noms des 1498 structures, S3 `resourceId → décalage`, S4 l'inverse,
   S5 le corps. Un seau = `(u32 pointeur, u32 nombre)` vers des éléments de 16 o. Une référence de
-  texte dans une ressource = `u32 index` aligné sur 4 suivi d'un `u32 0`.
+  texte dans une ressource = `u32 index` aligné sur 4 suivi d'un `u32 0`. Les pointeurs du corps
+  (références entre ressources, tableaux) sont nuls dans le fichier : une **table de relocation**
+  suit la dernière ressource, `u64 N` puis N × `(u64 emplacement | étiquette, u64 cible)` (voir
+  `parse_relocs`) ; elle sert à résoudre les secrets du monde (tableaux imbriqués de `WorldSecrets`).
 
 Sorties dans `public/game/lore/` : `index.json` (sources, méthode, couverture, poids), un fichier
 par catégorie (`quests`, `dialogues`, `library`, `scenes`, `events`, `places`, `characters`,
@@ -44,7 +48,6 @@ l'anglais), les tables `loc → texte` russe (`ru/<catégorie>.json`) et frança
 from __future__ import annotations
 
 import argparse
-import bisect
 import collections
 import html
 import json
@@ -568,13 +571,121 @@ def link(ru: list[str], raw: bytes, index: PackIndex, server: ServerTree | None,
                   revised=revised, evaluation=evaluation)
 
 
+# --- relocations -----------------------------------------------------------------------------------
+
+@dataclass
+class Relocs:
+    """Table de relocation de `pack.bin` (pointeurs du corps, nuls dans le fichier, posés au
+    chargement), réduite aux étiquettes 0 (référence de ressource ou pointeur interne) et 3 (pointeur
+    de tableau), triée par emplacement."""
+    base: np.ndarray
+    tag: np.ndarray
+    target: np.ndarray
+
+    def within(self, lo: int, hi: int) -> dict[int, tuple[int, int]]:
+        """Décalage relatif à `lo` → (étiquette, cible) des pointeurs posés dans [lo, hi[."""
+        a, b = np.searchsorted(self.base, [lo, hi])
+        return {int(self.base[k]) - lo: (int(self.tag[k]), int(self.target[k])) for k in range(a, b)}
+
+
+def parse_relocs(raw: bytes, index: PackIndex, search: int = 1 << 20, probe: int = 64) -> Relocs | None:
+    """La table suit la dernière ressource : `u64 N`, puis N × `(u64 emplacement | étiquette, u64 cible)`,
+    emplacement et cible en octets dans le corps ; les 3 bits bas de l'emplacement sont l'étiquette
+    (0 référence, 3 tableau, 4 et 5 petits entiers : type de structure, énumérations…). Repérée comme
+    le premier `N` plausible dont les premières et dernières paires tombent dans le corps."""
+    if index.offsets is None or not len(index.offsets):
+        return None
+    body_len = len(raw) - index.body
+    start = index.body + int(index.offsets[-1])
+    start += -start % 8
+    for p in range(start, min(len(raw) - 8, start + search), 8):
+        n = struct.unpack_from("<Q", raw, p)[0]
+        if n < len(index.rid_offset) or p + 8 + 16 * n > len(raw):
+            continue
+        pairs = np.frombuffer(raw, dtype="<u8", offset=p + 8, count=2 * n).reshape(-1, 2)
+        if (pairs[:probe, 0] < body_len).all() and (pairs[-probe:, 0] < body_len).all():
+            break
+    else:
+        return None
+    tag = (pairs[:, 0] & np.uint64(7)).astype(np.int8)
+    keep = (tag == 0) | (tag == 3)
+    base = (pairs[keep, 0] & ~np.uint64(7)).astype(np.int64)
+    order = np.argsort(base, kind="stable")
+    return Relocs(base[order], tag[keep][order], pairs[keep, 1].astype(np.int64)[order])
+
+
+# --- Тайны мира (secrets du monde) ------------------------------------------------------------------
+
+# Ressource `WorldSecrets` (Mechanics/GameRoot/WorldSecrets.xdb, resourceId stable) : un tableau
+# `secrets` d'éléments de 56 o (@8 tableau `components`, @48 la ressource du secret), chaque étape de
+# 120 o (@8 `finalQuest`, @48 tableau `path`, @76 texte « pas encore disponible », @80 `startQuest`,
+# @148 texte de l'étape — hors des 120 o : c'est la disposition constatée, vérifiée sur l'arbre
+# serveur). La taille d'un tableau (octets) est 44 o après son pointeur. Les pointeurs, nuls dans le
+# fichier, viennent de la table de relocation. Le secret lui-même est une ressource de quête : nom
+# @460, description @260, question @116, état @188, titre une fois résolu @636.
+WORLD_SECRETS_ID = 86760448
+SECRET_FIELDS = {460: "name", 260: "description", 116: "question", 188: "status", 636: "solved_title"}
+ARRAY_BYTES = 44
+SECRETS_ARRAY, ITEM_SIZE, ITEM_COMPONENTS, ITEM_SECRET = 40, 56, 8, 48
+COMP_SIZE, COMP_FINAL, COMP_PATH, COMP_NOT_READY, COMP_START, COMP_TEXT = 120, 8, 48, 76, 80, 148
+
+
+def find_secrets(raw: bytes, index: PackIndex, relocs: Relocs | None, ws_rid: int | None,
+                 owner: dict[int, tuple[int, int, int]], n_texts: int) -> list[dict]:
+    """Secrets du monde dans l'ordre du jeu : `{rid, fields, components}` ; une étape =
+    `{text, not_ready, start, final, path}` (index de textes, rids de quêtes)."""
+    if relocs is None or ws_rid is None or ws_rid not in index.rid_offset:
+        return []
+    offset_rid = {int(o): int(r) for o, r in zip(index.offsets, index.rids)}
+
+    def u32(o: int) -> int:
+        return struct.unpack_from("<I", raw, index.body + o)[0] if 0 <= o and index.body + o + 4 <= len(raw) else 0
+
+    def text(o: int) -> int | None:
+        t = u32(o)
+        return t if 0 < t < n_texts else None
+
+    def array(ptrs: dict, rel: int, at: int) -> tuple[int | None, int]:
+        tag, target = ptrs.get(rel, (None, None))
+        return (target, u32(at + rel + ARRAY_BYTES)) if tag == 3 else (None, 0)
+
+    def ref(ptrs: dict, rel: int) -> int | None:
+        tag, target = ptrs.get(rel, (None, None))
+        return offset_rid.get(target) if tag == 0 else None
+
+    owned: dict[int, dict[int, int]] = collections.defaultdict(dict)
+    for t, (rid, _, rel) in owner.items():
+        owned[rid][rel] = t
+    ws = index.rid_offset[ws_rid]
+    items, size = array(relocs.within(ws, ws + SECRETS_ARRAY + 8), SECRETS_ARRAY, ws)
+    out = []
+    for s in range(size // ITEM_SIZE if items is not None else 0):
+        it = items + s * ITEM_SIZE
+        ip = relocs.within(it, it + ITEM_SIZE)
+        rid = ref(ip, ITEM_SECRET)
+        if rid is None:
+            continue
+        comps = []
+        c0, csize = array(ip, ITEM_COMPONENTS, it)
+        for k in range(csize // COMP_SIZE if c0 is not None else 0):
+            c = c0 + k * COMP_SIZE
+            cp = relocs.within(c, c + COMP_SIZE)
+            p0, psize = array(cp, COMP_PATH, c)
+            pp = relocs.within(p0, p0 + psize) if p0 is not None else {}
+            comps.append({"text": text(c + COMP_TEXT), "not_ready": text(c + COMP_NOT_READY),
+                          "start": ref(cp, COMP_START), "final": ref(cp, COMP_FINAL),
+                          "path": [r for r in (ref(pp, rel) for rel in range(0, psize, 8)) if r is not None]})
+        fields = {name: owned[rid][rel] for rel, name in SECRET_FIELDS.items() if rel in owned[rid]}
+        out.append({"rid": rid, "fields": fields, "components": comps})
+    return out
+
+
 # --- catégories --------------------------------------------------------------------------------
 
 LORE_TYPES = {
     "QuestResource": ("quests", ("name", "goal", "startText", "checkText", "finishText", "kickText")),
     "Cue": ("dialogues", ("name", "text")),
     "MailTemplate": ("mail", ("from", "subject", "body")),
-    "WorldSecrets": ("secrets", None),
     "ZoneResource": ("places", ("name", "description")),
     "MapResource": ("places", ("name", "description")),
     "InterfaceMap": ("places", ("name", "description")),
@@ -736,6 +847,16 @@ def classify_community(rel: str, coverage: float, en_share: float, provenance: d
     return CLASSES[3], None
 
 
+def credit_source(rel: str, cls: str, credit: dict) -> str | None:
+    """Provenance d'un fichier du corpus fourni par l'auteur crédité : premier motif de
+    `credit.sources` trouvé dans le chemin, sinon `default_source` pour un texte communautaire."""
+    low = rel.lower()
+    for src in credit.get("sources", []):
+        if any(p.lower() in low for p in src.get("patterns", [])):
+            return src.get("source")
+    return credit.get("default_source") if cls == CLASSES[3] else None
+
+
 # --- glossaire / atlas ------------------------------------------------------------------------
 
 def norm_name(s: str) -> str:
@@ -776,7 +897,7 @@ class Extractor:
         self.log = log
         self.report: list[str] = []
         self.fr: dict[int, str] = {}
-        self.fr_verified = 0
+        self.fr_stats: dict = {}
 
     # sources -------------------------------------------------------------------------------
     def load_client(self) -> None:
@@ -808,41 +929,63 @@ class Extractor:
         self.log(f"arbre serveur : {len(tree.texts)} textes, {len(tree.resources)} ressources ({time.time() - t:.0f} s)")
         return tree
 
+    def load_secrets(self) -> list[dict]:
+        """Secrets du monde, résolus par la table de relocation de `pack.bin`."""
+        relocs = parse_relocs(self.pack_raw, self.pack)
+        if relocs is None:
+            self.report.append("table de relocation introuvable : secrets du monde non résolus")
+            return []
+        L = self.linked
+        ws = next((rid for rid, (typ, src) in L.rid_type.items() if typ == "WorldSecrets" and src == "server"), None)
+        if ws is None and WORLD_SECRETS_ID in self.pack.key_offset:
+            ws = {o: r for r, o in self.pack.rid_offset.items()}.get(self.pack.key_offset[WORLD_SECRETS_ID])
+        secrets = find_secrets(self.pack_raw, self.pack, relocs, ws, L.owner, len(self.ru))
+        self.log(f"  secrets du monde : {len(secrets)} secrets, {sum(len(s['components']) for s in secrets)} étapes "
+                 f"({len(relocs.base)} pointeurs relogés)")
+        if ws is not None and not secrets:
+            self.report.append("ressource WorldSecrets trouvée mais aucun secret résolu")
+        return secrets
+
     def load_fr(self) -> dict[int, str]:
-        """Pont officiel en → fr par les packs EU alignés ; vérification dans le client FR."""
-        eu = self.m.get("eu_packs") or {}
+        """Français officiel du client FR (16.0) : même lien ressource ↔ texte que pour le client 17.0,
+        par `(resourceId, décalage)`, confirmé par le décalage d'index local, puis complété entre deux
+        ancres de même décalage (voir `bridge_fr`)."""
+        fc = self.m.get("fr_client") or {}
+        root = Path(fc.get("root", ""))
         try:
-            _, eu_en = parse_loc(load_pak_member(Path(eu["en"]), eu.get("member", "Bin/pack.loc")))
-            _, eu_fr = parse_loc(load_pak_member(Path(eu["fr"]), eu.get("member", "Bin/pack.loc")))
+            fp, fr = parse_loc(load_pak_member(root / fc["texts_pak"], fc.get("member", "Bin/pack.loc")))
+            raw = zlib.decompress(load_pak_member(root / fc["base_pak"], fc.get("pack", "Bin/pack.bin")))
         except (KeyError, FileNotFoundError, OSError) as exc:
-            self.report.append(f"packs EU absents, pas de français : {exc}")
+            self.report.append(f"client FR absent, pas de français : {exc}")
             return {}
-        fr_set = None
-        fc = self.m.get("fr_client")
-        if fc:
-            try:
-                _, frc = parse_loc(load_pak_member(Path(fc["root"]) / fc["texts_pak"], fc.get("member", "Bin/pack.loc")))
-                fr_set = {norm_key(s) for s in frc}
-                self.fr_client_count = len(frc)
-            except (FileNotFoundError, OSError) as exc:
-                self.report.append(f"client FR absent : {exc}")
-        self.eu_count = len(eu_en)
-        self.en_in_eu = 0
-        match = bridge(self.en, eu_en)
-        fr: dict[int, str] = {}
-        for i, j in match.items():
-            self.en_in_eu += 1
-            f = eu_fr[j]
+        pack = parse_pack(raw)
+        if pack.fingerprint != fp:
+            self.report.append("client FR : empreinte pack.bin ≠ pack.loc, français ignoré")
+            return {}
+        refs = scan_refs(raw, pack, len(fr))
+        sizes = {int(r): int(z) for r, z in zip(pack.rids, pack.sizes)}
+        fr_owner = pick_owners(refs, support(refs), sizes)
+        fr_key = {r: pack.offset_key[o] for r, o in pack.rid_offset.items() if o in pack.offset_key}
+        del raw
+        version = root / "Profiles" / "game.version"
+        m = re.search(rb"\d+\.\d+\.\d+\.\d+(\.\d+)?", version.read_bytes()[:200]) if version.exists() else None
+        self.fr_version = m.group().decode() if m else "?"
+        match = bridge_fr(self.linked.owner, self.linked.rid_key, fr_owner, fr_key, self.ru, fr)
+        out: dict[int, str] = {}
+        methods = collections.Counter()
+        for t, (j, method) in match.items():
+            f = fr[j]
             if not f.strip() or CYRILLIC.search(f):
                 continue
-            # un texte identique en/fr n'est gardé que s'il est court (nom propre) : sinon non traduit
-            if f == eu_en[j] and (len(f) > 40 or "\n" in f):
+            # texte resté en anglais dans le client FR (hors noms propres courts) : pas une traduction
+            if f == self.en[t] and (len(f) > 40 or "\n" in f):
                 continue
-            fr[i] = to_plain(HREF.sub(lambda m: render(href_index(m.group(1)), eu_fr, 1), f))
-            if fr_set is not None and norm_key(f) in fr_set:
-                self.fr_verified += 1
-        self.log(f"français (pont EU) : {len(fr)} textes, dont {self.fr_verified} présents dans le client FR")
-        return fr
+            out[t] = to_plain(HREF.sub(lambda mm: render(href_index(mm.group(1)), fr, 1), f))
+            methods[method] += 1
+        self.fr_stats = {"client": str(root), "version": self.fr_version, "fingerprint": f"{fp:08x}",
+                         "client_texts": len(fr), "texts": len(out), "by_method": dict(methods)}
+        self.log(f"français (client FR {self.fr_version}) : {len(out)} textes {dict(methods)}")
+        return out
 
     # entrées -------------------------------------------------------------------------------
     def field_name(self, typ: str, rel: int) -> str:
@@ -867,13 +1010,21 @@ class Extractor:
         for t, (rid, _, rel) in L.owner.items():
             by_rid[rid].append((rel, t))
         cats: dict[str, list[dict]] = collections.defaultdict(list)
+        secrets = getattr(self, "secrets", [])
+        secret_rids = {s["rid"] for s in secrets}
+        # les textes d'un secret (et de ses étapes, rangées dans la région d'autres ressources) lui
+        # appartiennent : aucune autre entrée ne les reprend
+        claimed = {t for s in secrets for t in s["fields"].values()}
+        claimed |= {c[k] for s in secrets for c in s["components"] for k in ("text", "not_ready") if c[k] is not None}
         for rid, items in by_rid.items():
             typ, source = L.rid_type.get(rid, (None, None))
-            if typ not in LORE_TYPES:
+            if typ not in LORE_TYPES or rid in secret_rids:
                 continue
             cat, wanted = LORE_TYPES[typ]
             fields: dict[str, int] = {}
             for rel, t in sorted(items):
+                if t in claimed:
+                    continue
                 name = self.field_name(typ, rel)
                 if wanted is not None and name not in wanted:
                     continue
@@ -917,8 +1068,34 @@ class Extractor:
             entry.update(extra)
             entry["fields"] = {k: self.text_record(t) for k, t in fields.items()}
             cats[cat].append(entry)
+        for order, sec in enumerate(secrets):
+            rid = sec["rid"]
+            fields = {k: t for k, t in sec["fields"].items() if self.ru[t].strip()}
+            comps = []
+            for c in sec["components"]:
+                comp = {k: self.text_record(c[k]) for k in ("text", "not_ready") if c[k] is not None and self.ru[c[k]].strip()}
+                comp["quests"] = {"start": f"r{c['start']}" if c["start"] is not None else None,
+                                  "final": f"r{c['final']}" if c["final"] is not None else None,
+                                  "path": [f"r{q}" for q in c["path"]]}
+                comps.append(comp)
+            texts = list(fields.values()) + [c[k] for c in sec["components"] for k in ("text", "not_ready") if c[k] is not None]
+            if not texts:
+                continue
+            entry = {"id": f"r{rid}", "type": "WorldSecret", "type_source": "relocation", "order": order}
+            if rid in L.rid_key:
+                entry["resource_id"] = L.rid_key[rid]
+            if rid in L.rid_path:
+                entry["path"] = L.rid_path[rid]
+            entry["era"] = "legacy" if all(t in L.legacy_text for t in texts) else \
+                ("legacy-revised" if rid in L.rid_path else "recent")
+            entry["fields"] = {k: self.text_record(t) for k, t in fields.items()}
+            entry["components"] = comps
+            cats["secrets"].append(entry)
         for cat in cats:
-            cats[cat].sort(key=lambda e: min(f["loc"] for f in e["fields"].values()))
+            if cat == "secrets":
+                cats[cat].sort(key=lambda e: e["order"])
+            else:
+                cats[cat].sort(key=lambda e: min(f["loc"] for f in entry_texts(e)))
         self.series_summary(cats.get("library", []))
         return cats
 
@@ -1024,7 +1201,7 @@ class Extractor:
         owner_entry = {}
         for cat, entries in cats.items():
             for e in entries:
-                for f in e["fields"].values():
+                for f in entry_texts(e):
                     owner_entry[f["loc"]] = (cat, e["id"])
         prov = self.m.get("provenance", {})
         out = []
@@ -1070,6 +1247,10 @@ class Extractor:
             item["class"] = cls
             if note:
                 item["note"] = note
+            source = credit_source(rel, cls, self.m.get("credit") or {})
+            if source:
+                item["credit"] = self.m["credit"].get("short") or self.m["credit"].get("line")
+                item["source"] = source
             out.append(item)
         return out, " ".join(normalized)
 
@@ -1143,7 +1324,7 @@ class Extractor:
             for e in entries:
                 c["entries"] += 1
                 c[f"entries_{e['era']}"] += 1
-                for f in e["fields"].values():
+                for f in entry_texts(e):
                     w = words(f["ru"])
                     c["texts"] += 1
                     c["ru_chars"] += len(f["ru"])
@@ -1169,6 +1350,9 @@ class Extractor:
         self.load_client()
         server = self.load_server()
         self.linked = link(self.ru, self.pack_raw, self.pack, server, evaluate=evaluate, log=self.log)
+        self.secrets = self.load_secrets()
+        self.pack_raw = None
+        del server
         self.fr = self.load_fr()
         cats = self.build_entries()
         community, corpus_text = self.match_corpus(cats)
@@ -1184,7 +1368,11 @@ class Extractor:
                 files[f"fr/{cat}"] = self.write(f"fr/{cat}.json", fr_map)
         files["series"] = self.write("series.json", self.series)
         files["glossary"] = self.write("glossary.json", glossary)
-        files["community"] = self.write("community.json", community)
+        credit = {k: v for k, v in (self.m.get("credit") or {}).items() if k not in ("sources", "default_source")}
+        files["community"] = self.write("community.json", {"credit": credit, "files": community})
+        if atlas:
+            atlas = {"credit": credit, "credit_source": credit_source(atlas.get("source", ""), CLASSES[3], self.m.get("credit") or {}),
+                     **atlas}
         files["atlas"] = self.write("atlas.json", atlas)
         n = len(self.ru)
         nonempty = [t for t in range(n) if self.ru[t].strip()]
@@ -1199,7 +1387,11 @@ class Extractor:
                 "texts": "official client AllodsRU 17.0: Texts_x64.pak (pack.rus.loc + pack.eng_eu.loc, index-aligned)",
                 "resources": "official client: BaseLocall_x64.pak Bin/pack.bin (which resource owns which text)",
                 "paths_types": "server data tree (xdb + txt, content up to ~ZC14); newer resources typed from their binary layout",
-                "fr": "official EU text packs 16.0 (en/fr aligned) used as an en→fr bridge, checked against the FR client 16.0",
+                "fr": "official FR client 16.0 (Texts_x64.pak + BaseLocfra_x64.pak Bin/pack.bin): same resource id and "
+                      "field offset, kept only when its index offset is the local majority; gaps filled between two "
+                      "anchors of equal offset",
+                "secrets": "WorldSecrets resource of pack.bin, arrays and references resolved through its relocation "
+                           "table; components[].quests = ids of the quests (r<rid>, see quests.json)",
             },
             "provenance": {"in-game": "shipped in the official client; en_status tells whether an official English exists",
                            "official": "official out-of-game text (announcements, dev posts, story FAQ)",
@@ -1212,8 +1404,11 @@ class Extractor:
                      "recent": "resource added after the server tree (Eden, Jigran, Kadagan, Kvator, Isa, Suslanger, Airin…)"},
             "flags": {"ru_revised": "Russian rewritten after the server tree: the official English may translate the old version"},
             "classifier": self.linked.evaluation,
-            "fr": {"texts": len(self.fr), "verified_in_fr_client": self.fr_verified,
-                   "client_en_texts_found_in_eu_pack": getattr(self, "en_in_eu", 0)},
+            "glossary": {"authoritative": True,
+                         "rule": "use the official English names of glossary.json everywhere (e.g. Смеяна → Catherina, "
+                                 "Найан → Zayan, Иркалла → Hirkalla, Кадаган → Xadagan)"},
+            "ru_revised_policy": "keep the official English, flagged; retranslation planned later",
+            "fr": self.fr_stats,
             "stats": self.stats(cats),
             "community": dict(collections.Counter(x["class"] for x in community)),
             "atlas": {k: atlas.get(k) for k in ("total", "stats")} if atlas else {},
@@ -1231,50 +1426,92 @@ class Extractor:
         return {"file": name, "bytes": path.stat().st_size, "gzip": len(zlib.compress(text.encode("utf-8"), 9))}
 
 
-def bridge(client_en: list[str], eu_en: list[str]) -> dict[int, int]:
-    """Index client → index du pack EU, par égalité du texte anglais ; en cas d'homonymes, l'index
-    EU le plus proche de celui qu'annonce l'ancre unique précédente (les deux tables suivent l'ordre
-    des chemins)."""
-    by_en: dict[str, list[int]] = collections.defaultdict(list)
-    for j, s in enumerate(eu_en):
-        if s.strip():
-            by_en[norm_key(s)].append(j)
-    match: dict[int, int] = {}
-    amb: dict[int, list[int]] = {}
-    for i, s in enumerate(client_en):
-        if not s.strip() or CYRILLIC.search(s):
+def bridge_fr(ru_owner: dict[int, tuple[int, int, int]], ru_key: dict[int, int],
+              fr_owner: dict[int, tuple[int, int, int]], fr_key: dict[int, int],
+              ru: list[str], fr: list[str], window: int = 8, majority: float = 0.5,
+              max_gap: int = 100) -> dict[int, tuple[int, str]]:
+    """Index 17.0 → index du client FR.
+
+    Les deux `.loc` suivent l'ordre des chemins : l'écart d'index `t − j` est constant par plages
+    (il ne change qu'aux textes ajoutés ou retirés entre les deux builds).
+
+    1. `resource` : même ressource (`resourceId` de S3) et même décalage du champ dans les deux
+       `pack.bin`. Retenu seulement si, parmi les `window` appariements précédents **ou** suivants,
+       son écart est le plus fréquent, strictement, et couvre au moins `majority` d'entre eux. Un
+       appariement `t == j` est écarté : c'est un entier identique dans les deux builds, pas une
+       référence de texte (l'écart réel vaut déjà 2 dès le début de la table).
+    2. `offset` : entre deux ancres consécutives de même écart (au plus `max_gap` index), les textes
+       restants prennent cet écart, si le texte FR n'est pas déjà pris et a autant de `<t href>` et de
+       variables `<r name>` que le russe."""
+    by_key = {}
+    for j, (rid, _, rel) in fr_owner.items():
+        k = fr_key.get(rid)
+        if k is not None:
+            by_key.setdefault((k, rel), j)
+    raw_match = {}
+    for t, (rid, _, rel) in ru_owner.items():
+        k = ru_key.get(rid)
+        j = by_key.get((k, rel)) if k is not None else None
+        if j is not None and j != t:
+            raw_match[t] = j
+    ts = sorted(raw_match)
+    d = [t - raw_match[t] for t in ts]
+    out: dict[int, tuple[int, str]] = {}
+    for i, t in enumerate(ts):
+        for seg in (d[max(0, i - window):i], d[i + 1:i + 1 + window]):
+            top = collections.Counter(seg).most_common(2)
+            if top and top[0][0] == d[i] and top[0][1] >= max(2, majority * len(seg)) \
+                    and (len(top) < 2 or top[0][1] > top[1][1]):
+                out[t] = (raw_match[t], "resource")
+                break
+    anchors = sorted(out)
+    used = {j for j, _ in out.values()}
+    for a, b in zip(anchors, anchors[1:]):
+        da, db = a - out[a][0], b - out[b][0]
+        if da != db or b - a > max_gap:
             continue
-        js = by_en.get(norm_key(s))
-        if not js:
-            continue
-        if len(js) == 1:
-            match[i] = js[0]
-        else:
-            amb[i] = js
-    anchors = sorted(match.items())
-    keys = [a for a, _ in anchors]
-    for i, js in amb.items():
-        k = bisect.bisect_left(keys, i) - 1
-        expect = anchors[k][1] + (i - anchors[k][0]) if k >= 0 else i
-        match[i] = min(js, key=lambda j: abs(j - expect))
-    return match
+        for t in range(a + 1, b):
+            j = t - da
+            if t in out or j in used or not 0 <= j < len(fr) or not ru[t].strip():
+                continue
+            if len(HREF_ANY.findall(fr[j])) != len(HREF_ANY.findall(ru[t])) or \
+                    len(RVAR.findall(fr[j])) != len(RVAR.findall(ru[t])):
+                continue
+            out[t] = (j, "offset")
+            used.add(j)
+    return out
 
 
 def split_languages(entries: list[dict]) -> tuple[list[dict], dict[str, str], dict[str, str]]:
     """Fichier principal (anglais + métadonnées) et tables `loc → texte` russe et française."""
     main, ru, fr = [], {}, {}
+
+    def strip(f: dict) -> dict:
+        f2 = {x: v for x, v in f.items() if x not in ("ru", "fr")}
+        if "fr" in f:
+            f2["fr"] = True
+            fr[str(f["loc"])] = f["fr"]
+        ru[str(f["loc"])] = f["ru"]
+        return f2
+
     for e in entries:
         e2 = dict(e)
-        e2["fields"] = {}
-        for k, f in e["fields"].items():
-            f2 = {x: v for x, v in f.items() if x not in ("ru", "fr")}
-            if "fr" in f:
-                f2["fr"] = True
-                fr[str(f["loc"])] = f["fr"]
-            ru[str(f["loc"])] = f["ru"]
-            e2["fields"][k] = f2
+        e2["fields"] = {k: strip(f) for k, f in e["fields"].items()}
+        if "components" in e:
+            e2["components"] = [{k: strip(f) if is_text_record(f) else f for k, f in c.items()} for c in e["components"]]
         main.append(e2)
     return main, ru, fr
+
+
+def is_text_record(v) -> bool:
+    return isinstance(v, dict) and "loc" in v
+
+
+def entry_texts(e: dict):
+    """Tous les enregistrements de texte d'une entrée (champs, puis étapes d'un secret)."""
+    yield from e["fields"].values()
+    for c in e.get("components", ()):
+        yield from (v for v in c.values() if is_text_record(v))
 
 
 def docx_words(path: Path) -> int | None:
@@ -1288,13 +1525,42 @@ def docx_words(path: Path) -> int | None:
     return words(" ".join(re.findall(r"<w:t[^>]*>([^<]*)</w:t>", xml)))
 
 
+# option en ligne de commande > variable d'environnement > manifeste
+SOURCE_OVERRIDES = (
+    ("client", ("client", "root"), ("ALLODS_RU_CLIENT_DIR",)),
+    ("fr_client", ("fr_client", "root"), ("ALLODS_FR_CLIENT_DIR", "ALLODS_CLIENT_DIR")),
+    ("server_root", ("server_root",), ("ALLODS_SERVER_ROOT",)),
+    ("corpus", ("corpus",), ("ALLODS_LORE_CORPUS",)),
+)
+
+
+def apply_overrides(manifest: dict, options: dict, env: dict) -> dict:
+    """Copie du manifeste où les chemins de sources viennent des options, sinon de l'environnement."""
+    m = json.loads(json.dumps(manifest))
+    for opt, keys, names in SOURCE_OVERRIDES:
+        value = options.get(opt) or next((env[n] for n in names if env.get(n)), None)
+        if not value:
+            continue
+        target = m
+        for k in keys[:-1]:
+            target = target.setdefault(k, {})
+        target[keys[-1]] = str(value)
+    return m
+
+
 def main(argv: list[str] | None = None) -> int:
+    import os
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
+    ap.add_argument("--client", help="dernier client officiel (défaut : manifeste, ou $ALLODS_RU_CLIENT_DIR)")
+    ap.add_argument("--fr-client", dest="fr_client",
+                    help="client FR (défaut : manifeste, ou $ALLODS_FR_CLIENT_DIR / $ALLODS_CLIENT_DIR)")
+    ap.add_argument("--server-root", dest="server_root", help="arbre serveur (ou $ALLODS_SERVER_ROOT)")
+    ap.add_argument("--corpus", help="corpus communautaire (ou $ALLODS_LORE_CORPUS)")
     ap.add_argument("--evaluate", action="store_true", help="mesure la précision du classifieur de types (80/20)")
     args = ap.parse_args(argv)
-    manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    manifest = apply_overrides(json.loads(args.manifest.read_text(encoding="utf-8")), vars(args), dict(os.environ))
     ex = Extractor(manifest, args.out)
     index = ex.run(evaluate=args.evaluate)
     for cat, st in index["stats"].items():

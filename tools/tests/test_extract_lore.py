@@ -47,6 +47,32 @@ def build_pack(resources: dict[int, int], keys: dict[int, int], body: bytes, fin
     return bytes(out) + body
 
 
+def with_relocs(pack: bytes, pairs: list[tuple[int, int, int]]) -> bytes:
+    """Ajoute la table de relocation : `u64 N` puis N × `(u64 emplacement | étiquette, u64 cible)`."""
+    out = bytearray(pack) + bytes(-len(pack) % 8)
+    out += struct.pack("<Q", len(pairs))
+    for loc, tag, target in pairs:
+        out += struct.pack("<QQ", loc | tag, target)
+    return bytes(out)
+
+
+def secrets_body(quest_offset: int, ws: int, texts: dict[str, int]) -> tuple[bytes, list, int]:
+    """WorldSecrets (1 secret, 1 étape) à `ws`, suivi de la ressource du secret → (octets, relocations,
+    décalage du secret). Disposition : voir `extract_lore.find_secrets`."""
+    items, comps = ws + 72, ws + 128
+    path, secret = comps + 120, ws + 288
+    b = bytearray(288)
+    struct.pack_into("<I", b, 84, 56)                               # tableau secrets : 1 élément
+    struct.pack_into("<I", b, 72 + 52, 120)                         # tableau components : 1 étape
+    struct.pack_into("<II", b, 128 + 76, texts["not_ready"], 0)
+    struct.pack_into("<I", b, 128 + 92, 8)                          # path : 1 quête
+    struct.pack_into("<II", b, 128 + 148, texts["text"], 0)
+    sec = resource(700, {460: texts["name"], 260: texts["description"]})
+    relocs = [(ws + 40, 3, items), (items + 8, 3, comps), (items + 48, 0, secret), (comps + 48, 3, path),
+              (comps + 80, 0, quest_offset), (comps + 8, 0, quest_offset), (path, 0, quest_offset)]
+    return bytes(b) + sec, relocs, secret
+
+
 def resource(size: int, refs: dict[int, int]) -> bytes:
     """Ressource de `size` octets portant les index de textes `refs` ({décalage: index})."""
     b = bytearray(size)
@@ -189,16 +215,55 @@ def test_classify_community_rules():
     assert lore.classify_community("post.txt", 0.0, 0.0, prov, "Тени над Шлегерлогтом10.04.2026 …")[0].startswith("official")
 
 
+def test_credit_source_first_pattern_then_default_for_community():
+    credit = {"sources": [{"patterns": ["АТЛАС"], "source": "atlas"}], "default_source": "author"}
+    assert lore.credit_source("x/АТЛАС АЛЛОДЫ.xlsx", lore.CLASSES[4], credit) == "atlas"
+    assert lore.credit_source("рассказ.txt", lore.CLASSES[3], credit) == "author"
+    assert lore.credit_source("анонс.txt", lore.CLASSES[2], credit) is None
+    assert lore.credit_source("рассказ.txt", lore.CLASSES[3], {}) is None
+
+
 def test_atlas_and_glossary_name_helpers():
     assert lore.atlas_base_name("Айрин (Умойр)") == ("Айрин", "Умойр")
     assert lore.atlas_base_name("Аммра") == ("Аммра", None)
     assert lore.norm_name("«Остров Мёртвых»") == "остров мертвых"
 
 
-def test_bridge_prefers_the_eu_index_following_the_previous_anchor():
-    client = ["Alpha", "Beta", "Same", "Delta", "Привет"]
-    eu = ["Same", "Alpha", "Beta", "Same", "Delta"]
-    assert lore.bridge(client, eu) == {0: 1, 1: 2, 2: 3, 3: 4}
+def test_bridge_fr_keeps_the_local_majority_offset_and_fills_gaps():
+    # 17.0 : textes 1000..1011 ; client FR : même ordre, décalé de 5 (textes ajoutés en 17.0)
+    ru = [""] * 1000 + [f"Текст {i}" for i in range(12)]
+    fr = [""] * 995 + [f"Texte {i}" for i in range(12)]
+    ru_owner, fr_owner, ru_key, fr_key = {}, {}, {}, {}
+    for i in range(12):
+        ru_owner[1000 + i] = (100 + i, 1, 8)
+        ru_key[100 + i] = 9000 + i
+    for i in (0, 1, 2, 3, 5, 7, 8, 9, 10, 11):          # 4 et 6 : ressource absente du client FR
+        fr_owner[995 + i] = (200 + i, 1, 8)
+        fr_key[200 + i] = 9000 + i
+    fr_owner[995 + 5], fr_owner[995 + 9] = (200 + 9, 1, 8), (200 + 5, 1, 8)   # 5 et 9 permutés (révision)
+    fr_owner[1003] = (200 + 3, 1, 8)                    # t == j : entier identique, pas une référence
+    ru_owner[1003] = (100 + 3, 1, 8)
+    match = lore.bridge_fr(ru_owner, ru_key, fr_owner, fr_key, ru, fr)
+    assert match[1000] == (995, "resource") and match[1011] == (1006, "resource")
+    assert match[1004] == (999, "offset") and match[1006] == (1001, "offset")      # comblés entre ancres
+    assert match[1005] == (1000, "offset") and match[1009] == (1004, "offset")     # permutation écartée
+    assert all(j == t - 5 for t, (j, _) in match.items())
+
+
+def test_apply_overrides_prefers_option_then_environment():
+    m = {"client": {"root": "/a"}, "fr_client": {"root": "/fr"}, "server_root": "/s"}
+    out = lore.apply_overrides(m, {"fr_client": "/opt/fr"}, {"ALLODS_RU_CLIENT_DIR": "/env/ru", "ALLODS_FR_CLIENT_DIR": "/env/fr"})
+    assert out["client"]["root"] == "/env/ru" and out["fr_client"]["root"] == "/opt/fr" and out["server_root"] == "/s"
+    assert lore.apply_overrides(m, {}, {"ALLODS_CLIENT_DIR": "/c"})["fr_client"]["root"] == "/c"
+    assert m["fr_client"]["root"] == "/fr"                                          # manifeste intact
+
+
+def test_split_languages_keeps_secret_quest_links():
+    entries = [{"id": "r8", "fields": {}, "components": [{"text": {"loc": 7, "ru": "Шаг", "en": "Step"},
+                                                          "quests": {"start": "r5", "final": None, "path": ["r5"]}}]}]
+    main, ru, fr = lore.split_languages(entries)
+    assert main[0]["components"][0] == {"text": {"loc": 7, "en": "Step"}, "quests": {"start": "r5", "final": None, "path": ["r5"]}}
+    assert ru == {"7": "Шаг"} and [f["loc"] for f in lore.entry_texts(entries[0])] == [7]
 
 
 def test_split_languages_moves_ru_and_fr_out_of_the_main_file():
@@ -228,6 +293,10 @@ def make_sources(tmp_path) -> dict:
     ru[312], en[312] = start_ru, "Listen carefully, hero: demons came out of the Astral again."
     ru[320], en[320] = "Смеяна", "Catherina"
     ru[321], en[321] = "Княжна Кании", "Princess of Kania"
+    ru[330], en[330] = "Тайна раскрыта: камень джунов ведёт к древним порталам.", "The June stone leads to ancient portals."
+    ru[331], en[331] = "Этот этап Тайны Мира начинается у Селены.", "This stage starts with Selene."
+    ru[332], en[332] = "Древняя магия джунов", "Ancient June Magic"
+    ru[333], en[333] = "Странный камень отыскала Аманда.", "Amanda found a strange stone."
     client = tmp_path / "client"
     (client / "data/Packs").mkdir(parents=True)
     (client / "Profiles").mkdir()
@@ -236,9 +305,24 @@ def make_sources(tmp_path) -> dict:
         z.writestr("Bin/pack.rus.loc", lore.build_loc(ru))
         z.writestr("Bin/pack.eng_eu.loc", lore.build_loc(en))
     body = resource(64, {8: 310, 16: 311, 24: 312}) + resource(64, {8: 320, 16: 321})
-    pack = build_pack({5: 0, 6: 64}, {123456: 0, 654321: 64}, body)
+    sec, relocs, sec_off = secrets_body(0, len(body), {"text": 330, "not_ready": 331, "name": 332, "description": 333})
+    pack = build_pack({5: 0, 6: 64, 7: len(body), 8: sec_off}, {123456: 0, 654321: 64, lore.WORLD_SECRETS_ID: len(body)},
+                      body + sec)
     with zipfile.ZipFile(client / "data/Packs/BaseLocall_x64.pak", "w") as z:
-        z.writestr("Bin/pack.bin", zlib.compress(pack))
+        z.writestr("Bin/pack.bin", zlib.compress(with_relocs(pack, relocs)))
+    # client FR 16.0 : mêmes ressources (resourceId), textes décalés de 5 index, français seul
+    fr = [f"Remplissage {i}" for i in range(395)]
+    fr[305], fr[306] = "Menace des loups", "Tuer quatre loups."
+    fr[307] = "Écoutez bien, héros : les démons sont de nouveau sortis de l'Astral."
+    fr[315], fr[316] = "Catherina", "Princesse de Kania"
+    fr_client = tmp_path / "fr_client"
+    (fr_client / "data/Packs").mkdir(parents=True)
+    with zipfile.ZipFile(fr_client / "data/Packs/Texts_x64.pak", "w") as z:
+        z.writestr("Bin/pack.loc", lore.build_loc(fr))
+    fr_pack = build_pack({15: 0, 16: 64}, {123456: 0, 654321: 64},
+                         resource(64, {8: 305, 16: 306, 24: 307}) + resource(64, {8: 315, 16: 316}))
+    with zipfile.ZipFile(fr_client / "data/Packs/BaseLocfra_x64.pak", "w") as z:
+        z.writestr("Bin/pack.bin", zlib.compress(fr_pack))
     server = tmp_path / "server"
     q = server / "World/Quests/Q1"
     q.mkdir(parents=True)
@@ -263,8 +347,12 @@ def make_sources(tmp_path) -> dict:
     manifest = {"client": {"root": str(client), "texts_pak": "data/Packs/Texts_x64.pak",
                            "base_pak": "data/Packs/BaseLocall_x64.pak", "ru": "Bin/pack.rus.loc",
                            "en": "Bin/pack.eng_eu.loc", "pack": "Bin/pack.bin"},
+                "fr_client": {"root": str(fr_client), "texts_pak": "data/Packs/Texts_x64.pak", "member": "Bin/pack.loc",
+                              "base_pak": "data/Packs/BaseLocfra_x64.pak", "pack": "Bin/pack.bin"},
                 "server_root": str(server), "corpus": str(corpus),
-                "provenance": {"official": {"patterns": ["анонс"]}}}
+                "provenance": {"official": {"patterns": ["анонс"]}},
+                "credit": {"short": "M. T.", "line": "Atlas: M. T.", "default_source": "supplied by the author",
+                           "sources": [{"patterns": ["сказ"], "source": "story"}]}}
     return manifest
 
 
@@ -279,17 +367,38 @@ def test_end_to_end_quest_from_synthetic_client_server_and_corpus(tmp_path):
     assert qe["type"] == "QuestResource" and qe["type_source"] == "server" and qe["era"] == "legacy"
     assert qe["path"] == "World/Quests/Q1/Q1.xdb" and qe["resource_id"] == 123456
     assert set(qe["fields"]) == {"name", "goal", "startText"}
-    assert qe["fields"]["name"] == {"loc": 310, "en_status": "official", "en": "Wolf Threat"}
+    assert qe["fields"]["name"] == {"loc": 310, "en_status": "official", "en": "Wolf Threat", "fr": True}
     assert json.loads((out / "ru/quests.json").read_text(encoding="utf-8"))["312"] == start_ru
+    assert json.loads((out / "fr/quests.json").read_text(encoding="utf-8"))["310"] == "Menace des loups"
+    # 5 textes par ressource commune, 7 comblés entre les ancres 312 et 320 (même écart)
+    assert index["fr"]["by_method"] == {"resource": 5, "offset": 7}
+    secrets = json.loads((out / "secrets.json").read_text(encoding="utf-8"))
+    assert [e["id"] for e in secrets] == ["r8"] and secrets[0]["type_source"] == "relocation"
+    assert secrets[0]["fields"]["name"]["en"] == "Ancient June Magic"
+    step = secrets[0]["components"][0]
+    assert step["text"]["loc"] == 330 and step["not_ready"]["loc"] == 331
+    assert step["quests"] == {"start": "r5", "final": "r5", "path": ["r5"]}
+    assert json.loads((out / "ru/secrets.json").read_text(encoding="utf-8"))["330"].startswith("Тайна раскрыта")
     chars = json.loads((out / "characters.json").read_text(encoding="utf-8"))
     assert chars[0]["fields"]["name"]["en"] == "Catherina"
     glossary = json.loads((out / "glossary.json").read_text(encoding="utf-8"))
     assert {"ru": "Смеяна", "en": "Catherina"}.items() <= glossary[0].items()
-    community = {c["path"]: c for c in json.loads((out / "community.json").read_text(encoding="utf-8"))}
-    assert community["сказ.txt"]["class"] == "in-game (official EN available)" and community["сказ.txt"]["loc"] == [312]
-    assert community["анонс.txt"]["class"].startswith("official")
+    community = json.loads((out / "community.json").read_text(encoding="utf-8"))
+    assert community["credit"] == {"short": "M. T.", "line": "Atlas: M. T."}
+    files = {c["path"]: c for c in community["files"]}
+    assert files["сказ.txt"]["class"] == "in-game (official EN available)" and files["сказ.txt"]["loc"] == [312]
+    assert files["анонс.txt"]["class"].startswith("official") and "credit" not in files["анонс.txt"]
+    assert (files["сказ.txt"]["credit"], files["сказ.txt"]["source"]) == ("M. T.", "story")
     assert index["client"]["version"] == "17.0.01.64" and index["stats"]["quests"]["en_texts"] == 3
-    assert any("packs EU absents" in n for n in index["notes"])
+    assert index["notes"] == []
+
+
+def test_without_fr_client_french_is_skipped_and_reported(tmp_path):
+    manifest = make_sources(tmp_path)
+    manifest["fr_client"]["root"] = str(tmp_path / "absent")
+    index = lore.Extractor(manifest, tmp_path / "lore", log=lambda *a: None).run()
+    assert index["fr"] == {} and any("client FR absent" in n for n in index["notes"])
+    assert not (tmp_path / "lore" / "fr").exists()
 
 
 def test_without_server_tree_types_stay_unknown_and_the_gap_is_reported(tmp_path):
@@ -299,5 +408,6 @@ def test_without_server_tree_types_stay_unknown_and_the_gap_is_reported(tmp_path
     index = lore.Extractor(manifest, out, log=lambda *a: None).run()
     assert not (out / "quests.json").exists()
     assert any("arbre serveur absent" in n for n in index["notes"])
-    community = {c["path"]: c for c in json.loads((out / "community.json").read_text(encoding="utf-8"))}
+    assert (out / "secrets.json").exists()                  # secrets résolus sans l'arbre (relocations)
+    community = {c["path"]: c for c in json.loads((out / "community.json").read_text(encoding="utf-8"))["files"]}
     assert community["сказ.txt"]["class"] == "in-game (official EN available)"   # l'appariement reste possible
