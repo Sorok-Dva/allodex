@@ -1174,6 +1174,4838 @@
    "Mechanics/RaidInstances/UmoirRaid/2_KtulhuBoss/Scene/GameViewScene",
    "CutScenes/7_0_ShipExplosion (Hadagan, Kania)",
    "World/Quests/WarpZone1/WZ1_ep1_6_crypt (EnterCryptScene, client Warp)"
+  ],
+  "summary": {
+   "scenes": 141,
+   "from_7_0_xdb": 60,
+   "only_17_0": 81,
+   "with_camera_track": 47,
+   "with_game_scene": 20,
+   "lines": 352,
+   "voiced_lines": 342,
+   "subtitled_lines": 158,
+   "lines_still_in_17_0": 319,
+   "by_faction": {
+    "common": 135,
+    "empire": 3,
+    "league": 3
+   }
+  },
+  "scenes": [
+   {
+    "id": "Items/InteractiveObjects/ArchipelagoGoblinoball/BlueClientMobs",
+    "source": "7.0 xdb",
+    "map": "2ndCircle_Goblinoball_New",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 1,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Items/InteractiveObjects/ArchipelagoGoblinoball/RedClientMobs",
+    "source": "7.0 xdb",
+    "map": "2ndCircle_Goblinoball_New",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 1,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Items/InteractiveObjects/DeathRealm/DR_Ghost",
+    "source": "7.0 xdb",
+    "map": "DeathRealm",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 4,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Items/InteractiveObjects/Hadagan_Sanatorium/AstralDevice",
+    "source": "7.0 xdb",
+    "map": "Hadagan_Sanatorium",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 1,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "empire"
+   },
+   {
+    "id": "Items/InteractiveObjects/InstEmpire1",
+    "source": "7.0 xdb",
+    "map": "Inst_EmpireStart",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 2,
+    "lines": [
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "World/Zones/IE1/IE1_ShipDestroy",
+      "anims": [],
+      "resource": "ShipDeathSound.(ClientData).xdb",
+      "in_17": false
+     }
+    ],
+    "voiced_lines": 1,
+    "subtitled_lines": 0,
+    "faction": "empire"
+   },
+   {
+    "id": "Items/InteractiveObjects/InstLeague1/Device_Floor1_GameScene",
+    "source": "7.0 xdb",
+    "map": "Inst_LeagueStart",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 5,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "league"
+   },
+   {
+    "id": "Items/InteractiveObjects/InstLeague1/Device_Floor5_GameScene",
+    "source": "7.0 xdb",
+    "map": "Inst_LeagueStart",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 1,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "league"
+   },
+   {
+    "id": "Items/InteractiveObjects/InstLeague1/Device_Floor6_GameScene",
+    "source": "7.0 xdb",
+    "map": "Inst_LeagueStart",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 3,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "league"
+   },
+   {
+    "id": "Items/InteractiveObjects/Inst_PridensStart/Inst_PS_critters",
+    "source": "7.0 xdb",
+    "map": "Inst_PridensStart",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 1,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Items/InteractiveObjects/UmoirMound/UM_Scene",
+    "source": "7.0 xdb",
+    "map": "UmoirMound",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 2,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Maps/FerrisRaid/GlobalObjects/GameViewScenes",
+    "source": "7.0 xdb",
+    "map": "FerrisRaid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 3,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Maps/HuntingGround5/GlobalObjects",
+    "source": "7.0 xdb",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 2,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Maps/Inst_EmpireStart/ScriptZones",
+    "source": "7.0 xdb",
+    "map": "Inst_EmpireStart",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 2,
+    "camera_points": 8,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "empire"
+   },
+   {
+    "id": "Maps/Inst_ZoneContested12_Start/CutScene",
+    "source": "7.0 xdb",
+    "map": "Inst_ZoneContested12_Start",
+    "quest": null,
+    "plotline": null,
+    "buffs": 11,
+    "buff_ms": 317000,
+    "camera_tracks": 1,
+    "camera_points": 0,
+    "game_scenes": 5,
+    "lines": [
+     {
+      "ru": "Держитесь!",
+      "delay_ms": 13000,
+      "voice": "Cutscenes/ZC12/Bridge/Elf01",
+      "anims": [],
+      "resource": "Bridge_Fight.(ClientData).xdb",
+      "in_17": true,
+      "en": "Hold on tight!"
+     },
+     {
+      "ru": "Чё за…?!",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/ZC12/Bridge/Orc01",
+      "anims": [],
+      "resource": "Bridge_Fight_1.(ClientData).xdb",
+      "in_17": true,
+      "en": "What the...!"
+     },
+     {
+      "ru": "Исчез?!",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/ZC12/Bridge/Elf02",
+      "anims": [],
+      "resource": "Bridge_Fight_2.(ClientData).xdb",
+      "in_17": true,
+      "en": "Disappeared?!"
+     },
+     {
+      "ru": "Сбежал!",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/ZC12/Bridge/Archer01",
+      "anims": [],
+      "resource": "Bridge_Fight_3.(ClientData).xdb",
+      "in_17": true,
+      "en": "Escaped!"
+     },
+     {
+      "ru": "Что-то тут не так. Почему они отступают?",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/ZC12/Bridge/Girl01",
+      "anims": [],
+      "resource": "Bridge_Fight_4.(ClientData).xdb",
+      "in_17": true,
+      "en": "Something's wrong. Why are they retreating?"
+     },
+     {
+      "ru": "БЕЖИМ!",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/ZC12/Bridge/Archer02",
+      "anims": [],
+      "resource": "Bridge_Fight_5.(ClientData).xdb",
+      "in_17": true,
+      "en": "RUN!"
+     },
+     {
+      "ru": "Ну, вот и всё...",
+      "delay_ms": 4000,
+      "voice": "Cutscenes/ZC12/Assist/Engineer01",
+      "anims": [],
+      "resource": "Ship_explosion_L.(ClientData).xdb",
+      "in_17": true,
+      "en": "This is it..."
+     },
+     {
+      "ru": "Не стоит отчаиваться! Мы ещё можем…",
+      "delay_ms": 4000,
+      "voice": "Cutscenes/ZC12/Assist/Prophetess01",
+      "anims": [],
+      "resource": "Ship_explosion_L_1.(ClientData).xdb",
+      "in_17": true,
+      "en": "Don't give up! We still can..."
+     },
+     {
+      "ru": "Вот, возьмите! Этот камень доставит вас в безопасное место. Бегите же!",
+      "delay_ms": 4000,
+      "voice": "Cutscenes/ZC12/Assist/Engineer02",
+      "anims": [],
+      "resource": "Ship_explosion_L_2.(ClientData).xdb",
+      "in_17": true,
+      "en": "Here, take it! This stone will take you to a safe place. Run, now!"
+     },
+     {
+      "ru": "Ну, подходите, твари! Умираю, но не сдаюсь!",
+      "delay_ms": 4000,
+      "voice": "Cutscenes/ZC12/Assist/Engineer03",
+      "anims": [],
+      "resource": "Ship_explosion_L_3.(ClientData).xdb",
+      "in_17": true,
+      "en": "Come and get some! I'm dying, but I'm not surrendering!"
+     }
+    ],
+    "voiced_lines": 10,
+    "subtitled_lines": 10,
+    "faction": "common"
+   },
+   {
+    "id": "Maps/Inst_ZoneContested12_Start/GlobalObjects/GameViewScenes/GameScenes",
+    "source": "7.0 xdb",
+    "map": "Inst_ZoneContested12_Start",
+    "quest": null,
+    "plotline": null,
+    "buffs": 9,
+    "buff_ms": 108000,
+    "camera_tracks": 8,
+    "camera_points": 15,
+    "game_scenes": 5,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Maps/RiftDungeon1/Scenarios",
+    "source": "7.0 xdb",
+    "map": "RiftDungeon1",
+    "quest": null,
+    "plotline": null,
+    "buffs": 2,
+    "buff_ms": 17000,
+    "camera_tracks": 2,
+    "camera_points": 14,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Maps/RiftDungeon2/Scenarios",
+    "source": "7.0 xdb",
+    "map": "RiftDungeon2",
+    "quest": null,
+    "plotline": null,
+    "buffs": 3,
+    "buff_ms": 22000,
+    "camera_tracks": 3,
+    "camera_points": 16,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Maps/RiftDungeon3/Scenarios",
+    "source": "7.0 xdb",
+    "map": "RiftDungeon3",
+    "quest": null,
+    "plotline": null,
+    "buffs": 1,
+    "buff_ms": 6000,
+    "camera_tracks": 1,
+    "camera_points": 6,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Maps/RiftDungeon5/Scenarios",
+    "source": "7.0 xdb",
+    "map": "RiftDungeon5",
+    "quest": null,
+    "plotline": null,
+    "buffs": 2,
+    "buff_ms": 14000,
+    "camera_tracks": 2,
+    "camera_points": 8,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Maps/ZC12/GlobalObjects/GameViewScenes",
+    "source": "7.0 xdb",
+    "map": "Inst_ZoneContested12_Start",
+    "quest": null,
+    "plotline": null,
+    "buffs": 3,
+    "buff_ms": 94000,
+    "camera_tracks": 1,
+    "camera_points": 0,
+    "game_scenes": 8,
+    "lines": [
+     {
+      "ru": "Огонь!",
+      "delay_ms": 0,
+      "voice": "Cutscenes/ZC12/Fire",
+      "anims": [],
+      "resource": "Cut_Scene_Guerrila.(ClientData).xdb",
+      "in_17": true,
+      "en": "FIRE!!!"
+     }
+    ],
+    "voiced_lines": 1,
+    "subtitled_lines": 1,
+    "faction": "common"
+   },
+   {
+    "id": "Maps/ZC12_Map02/GlobalObjects",
+    "source": "7.0 xdb",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "buffs": 4,
+    "buff_ms": 30000,
+    "camera_tracks": 3,
+    "camera_points": 9,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Maps/ZC12_RiftInstance7/CutScene_Buff",
+    "source": "7.0 xdb",
+    "map": "ZC12_RiftInstance7",
+    "quest": null,
+    "plotline": null,
+    "buffs": 10,
+    "buff_ms": 68500,
+    "camera_tracks": 9,
+    "camera_points": 27,
+    "game_scenes": 1,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/ArchBaseRaid/Other",
+    "source": "7.0 xdb",
+    "map": "ArchBase_Raid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 3,
+    "buff_ms": 55000,
+    "camera_tracks": 2,
+    "camera_points": 3,
+    "game_scenes": 1,
+    "lines": [
+     {
+      "ru": "Криг",
+      "delay_ms": 2000,
+      "voice": null,
+      "anims": [],
+      "resource": "R7_1thBoss_Introduction.(ClientData).xdb",
+      "in_17": true,
+      "en": "Kreeg"
+     },
+     {
+      "ru": "Зенит",
+      "delay_ms": 2000,
+      "voice": null,
+      "anims": [],
+      "resource": "R7_2ndBoss_Introduction.(ClientData).xdb",
+      "in_17": true,
+      "en": "Vertex"
+     },
+     {
+      "ru": "Савант",
+      "delay_ms": 2000,
+      "voice": null,
+      "anims": [],
+      "resource": "R7_3rdBoss_Introduction.(ClientData).xdb",
+      "in_17": true,
+      "en": "Savant"
+     },
+     {
+      "ru": "Вершитель",
+      "delay_ms": 0,
+      "voice": null,
+      "anims": [],
+      "resource": "R7_Veronica_Animation.(ClientData).xdb",
+      "in_17": true,
+      "en": "Master"
+     },
+     {
+      "ru": "«Затмение» уже несётся сюда на всех парах, так что без поддержки вы точно не останетесь. Не стойте же! Ничего выдающегося в этом пейзаже нет!",
+      "delay_ms": 13000,
+      "voice": null,
+      "anims": [],
+      "resource": "Veronica_Enter_Base.(ClientData).xdb",
+      "in_17": true,
+      "en": "Eclipse is heading this way at full speed to support you. So don't just stand at marvel at the landscape!"
+     }
+    ],
+    "voiced_lines": 0,
+    "subtitled_lines": 5,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/ArchBaseRaid/SiegeBoss",
+    "source": "7.0 xdb",
+    "map": "ArchBase_Raid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 15,
+    "buff_ms": 139000,
+    "camera_tracks": 10,
+    "camera_points": 30,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/ArchBaseRaid/TrashPacks/AerialCombat",
+    "source": "7.0 xdb",
+    "map": "ArchBase_Raid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 1,
+    "buff_ms": 3000,
+    "camera_tracks": 2,
+    "camera_points": 6,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/FerrisRaid/12_Saw/Saw_Phase",
+    "source": "7.0 xdb",
+    "map": "FerrisRaid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 2,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/FerrisRaid/CutScene",
+    "source": "7.0 xdb",
+    "map": "FerrisRaid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 69,
+    "buff_ms": 1320000,
+    "camera_tracks": 57,
+    "camera_points": 191,
+    "game_scenes": 0,
+    "lines": [
+     {
+      "ru": "Держитесь!",
+      "delay_ms": 13000,
+      "voice": "Cutscenes/Ferris4/CS_FR_GeneralRysina01",
+      "anims": [],
+      "resource": "General_Text.(ClientData).xdb",
+      "in_17": true,
+      "en": "Hold on tight!"
+     },
+     {
+      "ru": "Думаешь? Какой в этом смысл?",
+      "delay_ms": 13000,
+      "voice": "Cutscenes/Ferris4/CS_FR_GeneralMarianna01",
+      "anims": [],
+      "resource": "General_text_2.(ClientData).xdb",
+      "in_17": true,
+      "en": "You think so? But what for?"
+     },
+     {
+      "ru": "Слишком уж сложный мир у этих «слуг Порядка».",
+      "delay_ms": 13000,
+      "voice": "Cutscenes/Ferris4/CS_FR_GeneralRysina02",
+      "anims": [],
+      "resource": "General_text_3.(ClientData).xdb",
+      "in_17": true,
+      "en": "These \"servants of Order\" live in a world way too complicated."
+     },
+     {
+      "ru": "А я предпочитаю простые и надёжные решения!",
+      "delay_ms": 5000,
+      "voice": null,
+      "anims": [],
+      "resource": "General_text_4.(ClientData).xdb",
+      "in_17": true,
+      "en": "And I prefer simple and safe solutions!"
+     },
+     {
+      "ru": "Чем проще, тем надёжней, да? Не спорю. Приступим?",
+      "delay_ms": 6000,
+      "voice": "Cutscenes/Ferris4/CS_FR_GeneralMarianna02",
+      "anims": [],
+      "resource": "General_text_5.(ClientData).xdb",
+      "in_17": true,
+      "en": "The simpler it is, the safer, right? So let's get going!"
+     }
+    ],
+    "voiced_lines": 4,
+    "subtitled_lines": 5,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/UmoirRaid/2_KtulhuBoss/Scene",
+    "source": "7.0 xdb",
+    "map": "UmoirRaid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 6,
+    "game_scenes": 1,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/UmoirRaid/3_LandingBoss/Scene",
+    "source": "7.0 xdb",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 17,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/UmoirRaid/6_5_ExoShiftBoss",
+    "source": "7.0 xdb",
+    "map": "UmoirRaid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 2,
+    "camera_points": 12,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/UmoirRaid/6_ExoBoss/Cutscene",
+    "source": "7.0 xdb",
+    "map": "UmoirRaid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 2,
+    "camera_points": 16,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/UmoirRaid/7_5_Ritual",
+    "source": "7.0 xdb",
+    "map": "UmoirRaid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 3,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/UmoirRaid/7_SealBreakerBoss",
+    "source": "7.0 xdb",
+    "map": "UmoirRaid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 3,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/UmoirRaid/8_Smeyana/Seal",
+    "source": "7.0 xdb",
+    "map": "UmoirRaid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 8,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/UmoirRaid/8_Smeyana/Smeyana_Boss",
+    "source": "7.0 xdb",
+    "map": "UmoirRaid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 14,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/UmoirRaid/8_Smeyana/StarTrek",
+    "source": "7.0 xdb",
+    "map": "UmoirRaid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 6,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/RaidInstances/UmoirRaid/8_Smeyana/Voice",
+    "source": "7.0 xdb",
+    "map": "UmoirRaid",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 9,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/Spells/AstarlIslands/AI68/AI68_Boss",
+    "source": "7.0 xdb",
+    "map": "AstralIsle68",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 4,
+    "camera_points": 8,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/Spells/AstarlIslands/AI71/Common",
+    "source": "7.0 xdb",
+    "map": "AstralIsle71",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 1,
+    "lines": [
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "/World/Zones/AI65/AI65_bell",
+      "anims": [],
+      "resource": "BellRing.(ClientData).xdb",
+      "in_17": false
+     }
+    ],
+    "voiced_lines": 1,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Mechanics/Spells/AstarlIslands/UI08",
+    "source": "7.0 xdb",
+    "map": "UmoirIsland08",
+    "quest": null,
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 0,
+    "camera_points": 0,
+    "game_scenes": 1,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/Ferris4/Ferris_4_6_1",
+    "source": "7.0 xdb",
+    "map": "Ferris4",
+    "quest": "Совершенный диалог",
+    "plotline": "Gods_secret_02",
+    "buffs": 1,
+    "buff_ms": 13000,
+    "camera_tracks": 1,
+    "camera_points": 4,
+    "game_scenes": 0,
+    "lines": [
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris4/Arch01",
+      "anims": [],
+      "resource": "Ferris_4_6_1_Replika_01.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris4/Arch02",
+      "anims": [],
+      "resource": "Ferris_4_6_1_Replika_02.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris4/Arch03",
+      "anims": [],
+      "resource": "Ferris_4_6_1_Replika_03.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris4/Arch04",
+      "anims": [],
+      "resource": "Ferris_4_6_1_Replika_04.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris4/Vayatel01",
+      "anims": [],
+      "resource": "Ferris_4_6_1_Replika_05.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris4/Arch05",
+      "anims": [],
+      "resource": "Ferris_4_6_1_Replika_06.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris4/Arch06",
+      "anims": [],
+      "resource": "Ferris_4_6_1_Replika_07.(ClientData).xdb",
+      "in_17": false
+     }
+    ],
+    "voiced_lines": 7,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/Ferris4/Ferris_4_secret1",
+    "source": "7.0 xdb",
+    "map": "Ferris4",
+    "quest": "Ретроспектива",
+    "plotline": "Gods_secret_02",
+    "buffs": 11,
+    "buff_ms": 82500,
+    "camera_tracks": 7,
+    "camera_points": 28,
+    "game_scenes": 0,
+    "lines": [
+     {
+      "ru": "Именно. Поэтому просчётов не будет.",
+      "delay_ms": 3000,
+      "voice": "Ferris4/Vasily02",
+      "anims": [
+       "emoteSayYes",
+       "emoteSayNo"
+      ],
+      "resource": "Promozglin2.(ClientData).xdb",
+      "in_17": true,
+      "en": "Exactly. That's why there will be no miscalculations."
+     },
+     {
+      "ru": "...были закрыты, и это решение обжалованию не подлежит, коллега.",
+      "delay_ms": 4000,
+      "voice": "Ferris4/Vasily03",
+      "anims": [
+       "emoteProvoke",
+       "emoteSayNo"
+      ],
+      "resource": "Promozglin3.(ClientData).xdb",
+      "in_17": true,
+      "en": "...has been closed, and this decision is not a matter for discussion, colleague."
+     },
+     {
+      "ru": "Мы не будем испытывать влияние Объекта на людях... Или орках. Пока что - только на животных. И кстати...",
+      "delay_ms": 8000,
+      "voice": "Ferris4/Vasily04",
+      "anims": [
+       "emoteSay",
+       "emoteSay"
+      ],
+      "resource": "Promozglin4.(ClientData).xdb",
+      "in_17": true,
+      "en": "We will not test the Object on humans... or orcs. Only animals for now. And, by the way..."
+     },
+     {
+      "ru": "Персонал «Бестиария» совершил прорыв в работе над Особью. Я отправляюсь туда завтра. Хотите составить компанию?",
+      "delay_ms": 9000,
+      "voice": "Ferris4/Vasily05",
+      "anims": [
+       "emoteSpeech",
+       "emoteSpeech"
+      ],
+      "resource": "Promozglin5.(ClientData).xdb",
+      "in_17": true,
+      "en": "The staff at the Bestiary have achieved some amazing results in the study of the Specimen. I will head there tomorrow. Do you want to join me?"
+     },
+     {
+      "ru": "...Шахта, саркофаг и портал - часть единой системы. Саркофаг послужит фокусирующим элементом для энергии Объекта.",
+      "delay_ms": 8500,
+      "voice": "Ferris4/Vasily01",
+      "anims": [
+       "emoteSpeech",
+       "emoteGreeting"
+      ],
+      "resource": "Promozglin_01.(ClientData).xdb",
+      "in_17": true,
+      "en": "...The bunker, the sarcophagus and the portal are parts of one system. The sarcophagus will serve as a focusing element for the Object's energy..."
+     },
+     {
+      "ru": "Хм... Позвольте возразить. Один малейший просчёт в конструкции - и весь аллод обратится в пшик.",
+      "delay_ms": 10500,
+      "voice": "Ferris4/zem01",
+      "anims": [
+       "emoteBoring",
+       "emoteSay"
+      ],
+      "resource": "Saw1.(ClientData).xdb",
+      "in_17": true,
+      "en": "Hm... Let me make an objection. Just one small miscalculation will lead to the allod's full destruction."
+     },
+     {
+      "ru": "Это бесполезная трата времени. Вы игнорируете реальные результаты. Мои исследования...",
+      "delay_ms": 8500,
+      "voice": "Ferris4/zem02",
+      "anims": [
+       "emoteSayNo",
+       "emoteSpeech"
+      ],
+      "resource": "Saw2.(ClientData).xdb",
+      "in_17": true,
+      "en": "It's a waste of time. You are ignoring the real results. My research..."
+     },
+     {
+      "ru": "Конечно...",
+      "delay_ms": 2000,
+      "voice": "Ferris4/zem03",
+      "anims": [
+       "emoteShrug",
+       "emoteCurtsey"
+      ],
+      "resource": "Saw3.(ClientData).xdb",
+      "in_17": true,
+      "en": "Of course..."
+     },
+     {
+      "ru": "...А размер шахты идеален для разгона мана-частиц. Гениально!",
+      "delay_ms": 5500,
+      "voice": "Ferris4/Scientist01",
+      "anims": [
+       "emoteSpeech"
+      ],
+      "resource": "Scientist_01.(ClientData).xdb",
+      "in_17": true,
+      "en": "...and the size of the Bunker is just perfect for mana-particle acceleration. Genius!"
+     }
+    ],
+    "voiced_lines": 9,
+    "subtitled_lines": 9,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/Ferris4/Ferris_4_secret2",
+    "source": "7.0 xdb",
+    "map": "Ferris4",
+    "quest": "Происшествие №42",
+    "plotline": "Gods_secret_02",
+    "buffs": 3,
+    "buff_ms": 26800,
+    "camera_tracks": 4,
+    "camera_points": 16,
+    "game_scenes": 0,
+    "lines": [
+     {
+      "ru": "Закрыть ворота! Ничто не должно прорваться наружу! Жгите всех этих тварей!",
+      "delay_ms": 10000,
+      "voice": "Ferris4/Fireman02",
+      "anims": [],
+      "resource": "CLose_gates.(ClientData).xdb",
+      "in_17": true,
+      "en": "Lock the gates! Nothing must break outside! Burn all the monsters!"
+     },
+     {
+      "ru": "ОГОНЬ!!!",
+      "delay_ms": 5000,
+      "voice": null,
+      "anims": [],
+      "resource": "Fire.(ClientData).xdb",
+      "in_17": true,
+      "en": "FIRE!!!"
+     },
+     {
+      "ru": "Они идут! Приготовиться!",
+      "delay_ms": 3000,
+      "voice": "Ferris4/Fireman01",
+      "anims": [],
+      "resource": "Ready.(ClientData).xdb",
+      "in_17": true,
+      "en": "They are coming! Ready!"
+     }
+    ],
+    "voiced_lines": 2,
+    "subtitled_lines": 3,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/Ferris4/Ferris_4_start",
+    "source": "7.0 xdb",
+    "map": "Ferris_indoor",
+    "quest": "Ключ к разгадке",
+    "plotline": "Gods_secret_02",
+    "buffs": 5,
+    "buff_ms": 44000,
+    "camera_tracks": 4,
+    "camera_points": 16,
+    "game_scenes": 0,
+    "lines": [
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris4/gerbert01",
+      "anims": [
+       "emoteSpeech"
+      ],
+      "resource": "Ferris4_start_replika.(ClientData).xdb",
+      "in_17": false
+     }
+    ],
+    "voiced_lines": 1,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/Ferris_indoor/Ferris_3_4_2",
+    "source": "7.0 xdb",
+    "map": "Ferris_indoor",
+    "quest": "Свет в конце тоннеля",
+    "plotline": "Gods_secret_02",
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 10,
+    "game_scenes": 0,
+    "lines": [
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/CapsuleCutScene/Professor",
+      "anims": [
+       "emoteSayNo",
+       "emoteSpeech"
+      ],
+      "resource": "Ferris_3_4_2_history_NPC_01.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/CapsuleCutScene/Zem",
+      "anims": [
+       "emoteShout",
+       "emoteLaugh",
+       "emoteSay"
+      ],
+      "resource": "Ferris_3_4_2_history_NPC_02.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/CapsuleCutScene/Laborant",
+      "anims": [
+       "emoteTalkExcited"
+      ],
+      "resource": "Ferris_3_4_2_history_NPC_03.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "Я вот думаю... Почему бы нам просто не взорвать этот портал к демонам?",
+      "delay_ms": 7000,
+      "voice": "FerrisRaid602/FR_PreRaidRysina01",
+      "anims": [],
+      "resource": "Ferris_Portal_Sub1.(ClientData).xdb",
+      "in_17": true,
+      "en": "So I'm thinking... Why don't we just blow this portal up?"
+     },
+     {
+      "ru": "Защитим Сарнаут! Свет да сохранит нас!",
+      "delay_ms": 17000,
+      "voice": "FerrisRaid602/FR_PreRaidMarianna02",
+      "anims": [],
+      "resource": "Ferris_Portal_Sub10.(ClientData).xdb",
+      "in_17": true,
+      "en": "We will protect Sarnaut! May the Light guard us!"
+     },
+     {
+      "ru": "Сражайтесь, сколько сможете. Это не имеет смысла.",
+      "delay_ms": 17000,
+      "voice": "FerrisRaid602/FR_PreRaidVayatel05",
+      "anims": [],
+      "resource": "Ferris_Portal_Sub11.(ClientData).xdb",
+      "in_17": true,
+      "en": "Fight as long as you can. This doesn't matter."
+     },
+     {
+      "ru": "Зачем нам непременно туда лезть?",
+      "delay_ms": 7000,
+      "voice": "FerrisRaid602/FR_PreRaidRysina02",
+      "anims": [],
+      "resource": "Ferris_Portal_Sub2.(ClientData).xdb",
+      "in_17": true,
+      "en": "Why do we have to go there at all?"
+     },
+     {
+      "ru": "Если бы всё было так просто... Архитекторы рано или поздно найдут другую лазейку.",
+      "delay_ms": 7000,
+      "voice": "FerrisRaid602/FR_PreRaidMarianna01",
+      "anims": [],
+      "resource": "Ferris_Portal_Sub3.(ClientData).xdb",
+      "in_17": true,
+      "en": "If everything was so simple... One day, the Architects will find a way back."
+     },
+     {
+      "ru": "Архитекторы не ищут лазеек. Они сами прокладывают Путь.",
+      "delay_ms": 7000,
+      "voice": "FerrisRaid602/FR_PreRaidVayatel01",
+      "anims": [],
+      "resource": "Ferris_Portal_Sub4.(ClientData).xdb",
+      "in_17": true,
+      "en": "The Architects don't look for a way. They lay the Passage themselves."
+     },
+     {
+      "ru": "Да-да, мы уже вдоволь наслушались, какие вы всемогущие. Вот только своими глазами этого пока не видели.",
+      "delay_ms": 7000,
+      "voice": "FerrisRaid602/FR_PreRaidRysina03",
+      "anims": [],
+      "resource": "Ferris_Portal_Sub5.(ClientData).xdb",
+      "in_17": true,
+      "en": "Yes, yes, we've heard enough of your almightiness. But we still haven't seen it with our own eyes."
+     },
+     {
+      "ru": "И вообще, где гарантия, что этот портал - не билет в один конец?",
+      "delay_ms": 17000,
+      "voice": "FerrisRaid602/FR_PreRaidRysina04",
+      "anims": [],
+      "resource": "Ferris_Portal_Sub6.(ClientData).xdb",
+      "in_17": true,
+      "en": "And how do we know that this portal is not a one way ticket?"
+     },
+     {
+      "ru": "Ваши метафоры пока недоступны для моего понимания.",
+      "delay_ms": 17000,
+      "voice": "FerrisRaid602/FR_PreRaidVayatel02",
+      "anims": [],
+      "resource": "Ferris_Portal_Sub7.(ClientData).xdb",
+      "in_17": true,
+      "en": "Your metaphors are yet beyond my understanding."
+     },
+     {
+      "ru": "У вас нет никаких гарантий. Но это ваш единственный шанс на победу.",
+      "delay_ms": 17000,
+      "voice": "FerrisRaid602/FR_PreRaidVayatel03",
+      "anims": [],
+      "resource": "Ferris_Portal_Sub8.(ClientData).xdb",
+      "in_17": true,
+      "en": "You can't guarantee anything. But this is your only chance to win."
+     },
+     {
+      "ru": "Времени не осталось. Вы должны отправляться прямо сейчас.",
+      "delay_ms": 17000,
+      "voice": "FerrisRaid602/FR_PreRaidVayatel04",
+      "anims": [],
+      "resource": "Ferris_Portal_Sub9.(ClientData).xdb",
+      "in_17": true,
+      "en": "There's no time left. You have to go now."
+     },
+     {
+      "ru": "Гармонии больше нет... Порядок нарушен... Локус... Не нужен больше...",
+      "delay_ms": 11000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierArch03",
+      "anims": [],
+      "resource": "LastDie_Sub1.(ClientData).xdb",
+      "in_17": true,
+      "en": "The harmony is gone... The Order is broken... Locus... Is no longer needed..."
+     },
+     {
+      "ru": "Великий Тенсес...",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierMarianna04",
+      "anims": [],
+      "resource": "LastDie_Sub10.(ClientData).xdb",
+      "in_17": true,
+      "en": "Great Tensess..."
+     },
+     {
+      "ru": "Смешно. Уничтожив меня, вы закроете себе дорогу домой.",
+      "delay_ms": 6000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierVayatel11",
+      "anims": [],
+      "resource": "LastDie_Sub11.(ClientData).xdb",
+      "in_17": true,
+      "en": "This is funny. If you destroy me, you will destroy your way back home."
+     },
+     {
+      "ru": "Я выполнил наш договор. Вы прервали Путь, но вам не одолеть архитектора.",
+      "delay_ms": 7000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierVayatel12",
+      "anims": [],
+      "resource": "LastDie_Sub12.(ClientData).xdb",
+      "in_17": true,
+      "en": "I have fulfilled our agreement. You interrupted the Passage, but you cannot defeat the Architect."
+     },
+     {
+      "ru": "Уходите. Возвращайтесь. И запомните, создания Хаоса - Порядок не изменить!",
+      "delay_ms": 7000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierVayate13",
+      "anims": [],
+      "resource": "LastDie_Sub15.(ClientData).xdb",
+      "in_17": true,
+      "en": "Go away. Go back. Remember, children of chaos: the Order is impregnable!"
+     },
+     {
+      "ru": "Невероятно...",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierRysina08",
+      "anims": [],
+      "resource": "LastDie_Sub16.(ClientData).xdb",
+      "in_17": true,
+      "en": "Unbelievable..."
+     },
+     {
+      "ru": "Тварь! Ты обманул нас! Завёл в ловушку!",
+      "delay_ms": 11000,
+      "voice": null,
+      "anims": [],
+      "resource": "LastDie_Sub17.(ClientData).xdb",
+      "in_17": true,
+      "en": "You wretch! You lied to us! You lured us into a trap!"
+     },
+     {
+      "ru": "Мы уничтожим тебя! Уничтожим всех вас, одного за другим!",
+      "delay_ms": 11000,
+      "voice": null,
+      "anims": [],
+      "resource": "LastDie_Sub18.(ClientData).xdb",
+      "in_17": true,
+      "en": "We will destroy you! Destroy all of you, one after another!"
+     },
+     {
+      "ru": "Стать совершенными, говоришь?",
+      "delay_ms": 11000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierRysina04",
+      "anims": [],
+      "resource": "LastDie_Sub2.(ClientData).xdb",
+      "in_17": true,
+      "en": "To become perfect, you say?"
+     },
+     {
+      "ru": "Ой... Я растоптала совершенство!",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierRysina05",
+      "anims": [],
+      "resource": "LastDie_Sub3.(ClientData).xdb",
+      "in_17": true,
+      "en": "Oh... I stepped on a perfectness!"
+     },
+     {
+      "ru": "Эй, что происходит?",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierRysina06",
+      "anims": [],
+      "resource": "LastDie_Sub4.(ClientData).xdb",
+      "in_17": true,
+      "en": "Hey, what's going on?"
+     },
+     {
+      "ru": "Локус разрушает сам себя! Бежим!",
+      "delay_ms": 4000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierMarianna02",
+      "anims": [],
+      "resource": "LastDie_Sub5.(ClientData).xdb",
+      "in_17": true,
+      "en": "Locus is destroying itself! Run!"
+     },
+     {
+      "ru": "Ходу, ходу!",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierRysina07",
+      "anims": [],
+      "resource": "LastDie_Sub6.(ClientData).xdb",
+      "in_17": true,
+      "en": "Go, go!"
+     },
+     {
+      "ru": "Ох... Храни нас Свет. Теперь, когда всё закончилось...",
+      "delay_ms": 4000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierMarianna03",
+      "anims": [],
+      "resource": "LastDie_Sub7.(ClientData).xdb",
+      "in_17": true,
+      "en": "Oh... may the Light save us. Now, when everything's over..."
+     },
+     {
+      "ru": "Ничего не закончилось.",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierVayatel08",
+      "anims": [],
+      "resource": "LastDie_Sub8.(ClientData).xdb",
+      "in_17": true,
+      "en": "Nothing is over."
+     },
+     {
+      "ru": "Оглянитесь!",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierVayatel09",
+      "anims": [],
+      "resource": "LastDie_Sub9.(ClientData).xdb",
+      "in_17": true,
+      "en": "Look around!"
+     },
+     {
+      "ru": "Помилуй нас Свет...",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierMarianna01",
+      "anims": [],
+      "resource": "LastStart_Sub1.(ClientData).xdb",
+      "in_17": true,
+      "en": "Oh Light, have mercy..."
+     },
+     {
+      "ru": "Мы... Я... Целое зовёт меня. Не рассчитывайте на мою помощь.",
+      "delay_ms": 6000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierVayatel07",
+      "anims": [],
+      "resource": "LastStart_Sub10.(ClientData).xdb",
+      "in_17": true,
+      "en": "We... I... The whole is calling for me. Don't count on my help."
+     },
+     {
+      "ru": "Да уж как-нибудь обойдёмся...",
+      "delay_ms": 3000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierRysina03",
+      "anims": [],
+      "resource": "LastStart_Sub11.(ClientData).xdb",
+      "in_17": true,
+      "en": "We'll get along somehow..."
+     },
+     {
+      "ru": "Порождения хаоса... Зачем вы пришли в мой мир? Аз есмь архитектор! Аз есмь Порядок!",
+      "delay_ms": 4000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierArch01",
+      "anims": [],
+      "resource": "LastStart_Sub12.(ClientData).xdb",
+      "in_17": true,
+      "en": "Children of chaos... Why did you come to my world? I am the Architect! I am the Order!"
+     },
+     {
+      "ru": "Вам предстоит возвыситься. Стать совершенными. Целостными... Как и нашей отколовшейся частице!",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierArch02",
+      "anims": [],
+      "resource": "LastStart_Sub13.(ClientData).xdb",
+      "in_17": true,
+      "en": "You are going to ascend. Become perfect. Become whole... as well as our loose shard!"
+     },
+     {
+      "ru": "Боюсь, Свет нам тут не поможет... Что это такое?",
+      "delay_ms": 4000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierRysina01",
+      "anims": [],
+      "resource": "LastStart_Sub2.(ClientData).xdb",
+      "in_17": true,
+      "en": "I'm afraid, the Light won't help us here... What is this?"
+     },
+     {
+      "ru": "Это - Локус.",
+      "delay_ms": 2000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierVayatel01",
+      "anims": [],
+      "resource": "LastStart_Sub3.(ClientData).xdb",
+      "in_17": true,
+      "en": "This is Locus."
+     },
+     {
+      "ru": "Здесь материя обретает форму и становится частью единого целого.",
+      "delay_ms": 5000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierVayatel02",
+      "anims": [],
+      "resource": "LastStart_Sub4.(ClientData).xdb",
+      "in_17": true,
+      "en": "Here matter acquires shape and becomes a part of the whole."
+     },
+     {
+      "ru": "Совершенство есть порядок. Порядок есть целостность.",
+      "delay_ms": 4000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierVayatel03",
+      "anims": [],
+      "resource": "LastStart_Sub5.(ClientData).xdb",
+      "in_17": true,
+      "en": "Perfectness is order. Order is wholeness."
+     },
+     {
+      "ru": "Нарушив целостность Локуса, вы нарушите гармонию Порядка...",
+      "delay_ms": 4000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierVayatel04",
+      "anims": [],
+      "resource": "LastStart_Sub6.(ClientData).xdb",
+      "in_17": true,
+      "en": "If you disrupt Locus' wholeness, you will disrupt the harmony of the world..."
+     },
+     {
+      "ru": "Не время для философии! Мы должны остановить его!",
+      "delay_ms": 4000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierRysina02",
+      "anims": [],
+      "resource": "LastStart_Sub7.(ClientData).xdb",
+      "in_17": true,
+      "en": "No time for philosophy! We have to stop him!"
+     },
+     {
+      "ru": "Вы? Это не имеет смысла. Вам не нарушить столь совершенной структуры.",
+      "delay_ms": 6000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierVayatel05",
+      "anims": [],
+      "resource": "LastStart_Sub8.(ClientData).xdb",
+      "in_17": true,
+      "en": "You? This is pointless. You cannot break such a perfect structure."
+     },
+     {
+      "ru": "Если только... Уничтожьте материю! Разрушьте Низших! И тогда бытие Локуса потеряет смысл.",
+      "delay_ms": 4000,
+      "voice": "Cutscenes/Ferris4/CS_FR_CarrierVayatel06",
+      "anims": [],
+      "resource": "LastStart_Sub9.(ClientData).xdb",
+      "in_17": true,
+      "en": "Unless... You destroy matter! Destroy the Inferiors! Then the existence of Locus will lose its meaning."
+     },
+     {
+      "ru": "Думаю, скоро здесь появится целая армия архитекторов.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalMarianna01",
+      "anims": [],
+      "resource": "Portal_Sub1.(ClientData).xdb",
+      "in_17": true,
+      "en": "I think very soon a whole army of Architects will be here."
+     },
+     {
+      "ru": "И да поможет нам Свет.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalMarianna04",
+      "anims": [],
+      "resource": "Portal_Sub10.(ClientData).xdb",
+      "in_17": true,
+      "en": "May the Light be with us!"
+     },
+     {
+      "ru": "Мы должны запечатать портал. Нельзя позволить им прорваться в наш мир!",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalMarianna02",
+      "anims": [],
+      "resource": "Portal_Sub2.(ClientData).xdb",
+      "in_17": true,
+      "en": "We have to seal the portal. We cannot let them break into our world!"
+     },
+     {
+      "ru": "Вторжение. Хаос. Отвратительно.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalArch01",
+      "anims": [],
+      "resource": "Portal_Sub3.(ClientData).xdb",
+      "in_17": true,
+      "en": "Invasion. Chaos. Disgusting."
+     },
+     {
+      "ru": "Что ещё за... Убейте эту тварь, пока не поздно!",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalRysina02",
+      "anims": [],
+      "resource": "Portal_Sub4.(ClientData).xdb",
+      "in_17": true,
+      "en": "What the... Kill this monster before it's too late!"
+     },
+     {
+      "ru": "Портал не закроется, пока оно живо!",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalMarianna05",
+      "anims": [],
+      "resource": "Portal_Sub5.(ClientData).xdb",
+      "in_17": true,
+      "en": "The portal will not close while it's still alive!"
+     },
+     {
+      "ru": "Вы нарушили цельность Фрактала. Осквернили Путь.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalArch02",
+      "anims": [],
+      "resource": "Portal_Sub6.(ClientData).xdb",
+      "in_17": true,
+      "en": "You have disrupted the wholeness of the Fractal. You have desecrated the Passage."
+     },
+     {
+      "ru": "Лишние эмоции, лишняя суета, лишняя жизнь... Хаосу нет пути в наш мир.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalArch03",
+      "anims": [],
+      "resource": "Portal_Sub7.(ClientData).xdb",
+      "in_17": true,
+      "en": "Needless emotions, needless haste, needless life... The chaos cannot enter our world."
+     },
+     {
+      "ru": "Отлично, у нас есть время. Не будем медлить.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalRysina01",
+      "anims": [],
+      "resource": "Portal_Sub8.(ClientData).xdb",
+      "in_17": true,
+      "en": "Great, we have some time. Let's not waste it."
+     },
+     {
+      "ru": "Заклятье требует долгой подготовки, и нам потребуется защита. Будьте готовы ко всему.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalMarianna03",
+      "anims": [],
+      "resource": "Portal_Sub9.(ClientData).xdb",
+      "in_17": true,
+      "en": "The spell requires long preparation, and we will need protection. Be prepared to anything."
+     },
+     {
+      "ru": "Наслаждайтесь своим преимуществом. Оно продлится недолго.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalArch02",
+      "anims": [],
+      "resource": "Portal_end_Sub1.(ClientData).xdb",
+      "in_17": true,
+      "en": "Enjoy your advantage. It will not last."
+     },
+     {
+      "ru": "Вы все будете преобразованы. Скоро...",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalArch03",
+      "anims": [],
+      "resource": "Portal_end_Sub2.(ClientData).xdb",
+      "in_17": true,
+      "en": "You all will be transmuted. Soon..."
+     },
+     {
+      "ru": "Что ж... Вот и всё. Обратного пути нет.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalMarianna06",
+      "anims": [],
+      "resource": "Portal_end_Sub3.(ClientData).xdb",
+      "in_17": true,
+      "en": "Well, that's it... There is no way back."
+     },
+     {
+      "ru": "Отличная работа. Архитекторы определённо смертны. Это радует.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalRysina03",
+      "anims": [],
+      "resource": "Portal_end_Sub4.(ClientData).xdb",
+      "in_17": true,
+      "en": "Great job. Now we know that the Architects are definitely mortal."
+     },
+     {
+      "ru": "Какое странное место... Ты чувствуешь?",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalRysina04",
+      "anims": [],
+      "resource": "Portal_end_Sub5.(ClientData).xdb",
+      "in_17": true,
+      "en": "What a weird place... Can you feel it?"
+     },
+     {
+      "ru": "Какая-то энергия... Или пульсация... Не пойму, но у нас нет выбора. Вперёд!",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_PortalMarianna07",
+      "anims": [],
+      "resource": "Portal_end_Sub6.(ClientData).xdb",
+      "in_17": true,
+      "en": "Some kind of energy... or pulsation... I don't get it, but we have no choice. Let's go!"
+     },
+     {
+      "ru": "Очень хорошо... Продолжайте ваше вторжение.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmArch01",
+      "anims": [],
+      "resource": "Swarm_Sub_1.(ClientData).xdb",
+      "in_17": true,
+      "en": "Very well... Continue your invasion."
+     },
+     {
+      "ru": "Идём. Лучше нам здесь не задерживаться.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmMarianna01",
+      "anims": [],
+      "resource": "Swarm_Sub_1.1.(ClientData).xdb",
+      "in_17": true,
+      "en": "Come on. We shouldn't stay here."
+     },
+     {
+      "ru": "Мы рады продемонстрировать вам силу порядка. Смотрите. Анализируйте. Готовьтесь.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmArch02",
+      "anims": [],
+      "resource": "Swarm_Sub_2.(ClientData).xdb",
+      "in_17": true,
+      "en": "We are happy to demonstrate you the power of order. See. Analyze. Prepare."
+     },
+     {
+      "ru": "Постойте-ка. Я чувствую... Мы здесь не одни.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmRysina01",
+      "anims": [],
+      "resource": "Swarm_Sub_2.1.(ClientData).xdb",
+      "in_17": true,
+      "en": "Wait. I can feel it... We are not alone."
+     },
+     {
+      "ru": "Похоже, стоит готовиться к худшему...",
+      "delay_ms": 10000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmMarianna05",
+      "anims": [],
+      "resource": "Swarm_Sub_3.(ClientData).xdb",
+      "in_17": true,
+      "en": "We should prepare for the worst..."
+     },
+     {
+      "ru": "Быстро, ко мне! Я закрою нас ментальным щитом... Но долго мне не продержаться!",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmRysina02",
+      "anims": [],
+      "resource": "Swarm_Sub_3.1.(ClientData).xdb",
+      "in_17": true,
+      "en": "Hurry, come over here! I will protect you with a mental shield... But it won't last long!"
+     },
+     {
+      "ru": "Да, стоит... Им! Гляньте - они уже убегают. Мудрое решение!",
+      "delay_ms": 10000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmRysina05",
+      "anims": [],
+      "resource": "Swarm_Sub_4.(ClientData).xdb",
+      "in_17": true,
+      "en": "Ahem... Look at them - they are already running. A wise decision!"
+     },
+     {
+      "ru": "Адаптация. Любопытно. Ваши методы достойны изучения.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmArch01",
+      "anims": [],
+      "resource": "Swarm_Sub_4.1.(ClientData).xdb",
+      "in_17": true,
+      "en": "Adaptation. This is curious. Your ways deserve a research."
+     },
+     {
+      "ru": "Во имя Света, сколько же их здесь... Целый рой!",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmMarianna02",
+      "anims": [],
+      "resource": "Swarm_Sub_4.2.(ClientData).xdb",
+      "in_17": true,
+      "en": "Holy Light, how many of them... That's a real hive!"
+     },
+     {
+      "ru": "Я попробую открыть портал... Но лишь Тенсес ведает, что ждёт нас на той стороне!",
+      "delay_ms": 10000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmMarianna06",
+      "anims": [],
+      "resource": "Swarm_Sub_5.(ClientData).xdb",
+      "in_17": true,
+      "en": "I will try to open the portal... But only Tensess knows what is waiting for us on the other side!"
+     },
+     {
+      "ru": "Не нужно сопротивляться. Быстрое преобразование - в ваших интересах.",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmArch01",
+      "anims": [],
+      "resource": "Swarm_Sub_5.1.(ClientData).xdb",
+      "in_17": true,
+      "en": "Do not resist. The quicker the transmutation goes, the better it is for you."
+     },
+     {
+      "ru": "Пускай. Чем быстрее мы атакуем, тем чаще враг ошибается!",
+      "delay_ms": 10000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmRysina06",
+      "anims": [],
+      "resource": "Swarm_Sub_6.(ClientData).xdb",
+      "in_17": true,
+      "en": "Let it be so. The faster we attack, the more often the enemy fails!"
+     },
+     {
+      "ru": "Я ощущаю ещё чьё-то присутствие... Чью-то злую волю...",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmRysina03",
+      "anims": [],
+      "resource": "Swarm_Sub_6.1.(ClientData).xdb",
+      "in_17": true,
+      "en": "I can sense someone else's presence... Some evil will..."
+     },
+     {
+      "ru": "Вот только у нас права на ошибку нет...",
+      "delay_ms": 10000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmMarianna07",
+      "anims": [],
+      "resource": "Swarm_Sub_7.(ClientData).xdb",
+      "in_17": true,
+      "en": "But we don't have the right to make mistakes..."
+     },
+     {
+      "ru": "Сердце Роя?",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmRysina04",
+      "anims": [],
+      "resource": "Swarm_Sub_7.1.(ClientData).xdb",
+      "in_17": true,
+      "en": "Heart of the Hive?"
+     },
+     {
+      "ru": "Если так, то мы должны добраться до него... И уничтожить!",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmMarianna03",
+      "anims": [],
+      "resource": "Swarm_Sub_8.1.(ClientData).xdb",
+      "in_17": true,
+      "en": "If it is so, we need to reach it... and destroy it!"
+     },
+     {
+      "ru": "Вперёд! Во славу Света!",
+      "delay_ms": 17000,
+      "voice": "Cutscenes/Ferris4/CS_FR_SwarmMarianna04",
+      "anims": [],
+      "resource": "Swarm_Sub_9.1.(ClientData).xdb",
+      "in_17": true,
+      "en": "Attack! For the Light!"
+     },
+     {
+      "ru": "Если бы всё было так просто... Архитекторы рано или поздно найдут другую лазейку.",
+      "delay_ms": 17000,
+      "voice": null,
+      "anims": [],
+      "resource": "Test.(ClientData).xdb",
+      "in_17": true,
+      "en": "If everything was so simple... One day, the Architects will find a way back."
+     }
+    ],
+    "voiced_lines": 74,
+    "subtitled_lines": 74,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/Ferris_indoor/Ferris_3_5_2",
+    "source": "7.0 xdb",
+    "map": "Ferris_indoor",
+    "quest": "Спасатели спешат на помощь",
+    "plotline": "Gods_secret_02",
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 2,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/Ferris_indoor/Ferris_3_6_1",
+    "source": "7.0 xdb",
+    "map": "Ferris_indoor",
+    "quest": "В погоню",
+    "plotline": "Gods_secret_02",
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 6,
+    "game_scenes": 0,
+    "lines": [
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/Zem02",
+      "anims": [],
+      "resource": "SawPhrase1_sound.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/Zem03",
+      "anims": [],
+      "resource": "SawPhrase2_sound.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/Zem04",
+      "anims": [],
+      "resource": "SawPhrase3_sound.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/Zem05",
+      "anims": [],
+      "resource": "SawPhrase4_sound.(ClientData).xdb",
+      "in_17": false
+     }
+    ],
+    "voiced_lines": 4,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/Ferris_indoor/Ferris_3_6_2",
+    "source": "7.0 xdb",
+    "map": "Ferris_indoor",
+    "quest": "Цветик-семицветик",
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 2,
+    "game_scenes": 0,
+    "lines": [
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/Zem01",
+      "anims": [
+       "emoteGreeting",
+       "emoteSpeech",
+       "emoteShout",
+       "emoteLaugh"
+      ],
+      "resource": "Saw_LetsPlay.(ClientData).xdb",
+      "in_17": false
+     }
+    ],
+    "voiced_lines": 1,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/Ferris_indoor/Ferris_3_6_4",
+    "source": "7.0 xdb",
+    "map": "Ferris_indoor",
+    "quest": "Орёл или решка",
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 8,
+    "game_scenes": 0,
+    "lines": [
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/gerbert01",
+      "anims": [
+       "emoteSalute",
+       "emoteMuscle"
+      ],
+      "resource": "Gerbert_speech2.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/gerbert02",
+      "anims": [
+       "emoteRasp",
+       "emoteSay"
+      ],
+      "resource": "Gerbert_speech3.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/Zem06",
+      "anims": [],
+      "resource": "Saw_speech1.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/Zem07",
+      "anims": [],
+      "resource": "Saw_speech2.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/Zem08",
+      "anims": [],
+      "resource": "Saw_speech3.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/zimina01",
+      "anims": [
+       "emoteCry"
+      ],
+      "resource": "Zimina_speech2.(ClientData).xdb",
+      "in_17": false
+     }
+    ],
+    "voiced_lines": 6,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/Ferris_indoor/Ferris_3_6_5",
+    "source": "7.0 xdb",
+    "map": "Ferris_indoor",
+    "quest": "Достаточно игр!",
+    "plotline": "Gods_secret_02",
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 8,
+    "game_scenes": 0,
+    "lines": [
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/Zem09",
+      "anims": [
+       "emoteCongratulate",
+       "emoteSpeech"
+      ],
+      "resource": "Saw_speech1.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/Zem10",
+      "anims": [
+       "emoteBoring",
+       "emoteShrug"
+      ],
+      "resource": "Saw_speech2.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/Zem11",
+      "anims": [
+       "emoteSpeech",
+       "emotePoint"
+      ],
+      "resource": "Saw_speech3.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/Zem12",
+      "anims": [
+       "emoteSpeech",
+       "emoteKiss"
+      ],
+      "resource": "Saw_speech4.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/gerbert03",
+      "anims": [
+       "emoteFacepalm",
+       "emoteProvoke",
+       "emoteTalkExcited"
+      ],
+      "resource": "Saw_speech_gerbert_1.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/clone02",
+      "anims": [
+       "emoteSpeech",
+       "emoteFlirt"
+      ],
+      "resource": "Saw_speech_gerbert_clone1.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/zimina02",
+      "anims": [
+       "emoteRasp"
+      ],
+      "resource": "Saw_speech_zimina1.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/zimina03",
+      "anims": [
+       "emoteCallout"
+      ],
+      "resource": "Saw_speech_zimina2.(ClientData).xdb",
+      "in_17": false
+     },
+     {
+      "ru": "",
+      "delay_ms": 0,
+      "voice": "Ferris/SawBoss/clone01",
+      "anims": [
+       "emoteLaugh"
+      ],
+      "resource": "Saw_speech_zimina_clone1.(ClientData).xdb",
+      "in_17": false
+     }
+    ],
+    "voiced_lines": 9,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/PridensStart/Pride_1_11",
+    "source": "7.0 xdb",
+    "map": "PridensStart",
+    "quest": "Спектакль",
+    "plotline": "",
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 4,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/PridensStart/Pride_1_9",
+    "source": "7.0 xdb",
+    "map": "PridensStart",
+    "quest": "Ах, синема, синема!",
+    "plotline": "",
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 4,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/ZC12/WW_1_10",
+    "source": "7.0 xdb",
+    "map": "ZC12_RiftInstance2",
+    "quest": "Переписывая историю",
+    "plotline": null,
+    "buffs": 2,
+    "buff_ms": 18000,
+    "camera_tracks": 2,
+    "camera_points": 12,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/ZC12/WW_4_3",
+    "source": "7.0 xdb",
+    "map": "ZC12_RiftInstance3",
+    "quest": "Некуда отступать",
+    "plotline": "Gods_secret_03",
+    "buffs": 2,
+    "buff_ms": 19000,
+    "camera_tracks": 3,
+    "camera_points": 16,
+    "game_scenes": 1,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/ZC12/WW_9_10",
+    "source": "7.0 xdb",
+    "map": "ZC12_Map02",
+    "quest": "Тьма под горами",
+    "plotline": "Gods_secret_03",
+    "buffs": 1,
+    "buff_ms": 0,
+    "camera_tracks": 3,
+    "camera_points": 12,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/ZC12_Map02/WW_11_0",
+    "source": "7.0 xdb",
+    "map": "ZC12_RiftInstance8",
+    "quest": "В лесу прифронтовом",
+    "plotline": "Gods_secret_03",
+    "buffs": 1,
+    "buff_ms": 10000,
+    "camera_tracks": 1,
+    "camera_points": 8,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/ZC12_Map02/WW_14_10",
+    "source": "7.0 xdb",
+    "map": "ZC12_RiftInstance7",
+    "quest": "Знамя Победы",
+    "plotline": null,
+    "buffs": 4,
+    "buff_ms": 25000,
+    "camera_tracks": 1,
+    "camera_points": 6,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/ZC12_Map02/WW_15_5",
+    "source": "7.0 xdb",
+    "map": "ZC12_Map02",
+    "quest": "Вера и надежда",
+    "plotline": "Gods_secret_03",
+    "buffs": 1,
+    "buff_ms": 15000,
+    "camera_tracks": 3,
+    "camera_points": 12,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/ZC12_Map02/WW_8_9_1",
+    "source": "7.0 xdb",
+    "map": "ZC12_RiftInstance6",
+    "quest": "Жемчужная гавань",
+    "plotline": "Gods_secret_03",
+    "buffs": 1,
+    "buff_ms": 8000,
+    "camera_tracks": 1,
+    "camera_points": 6,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "World/Quests/ZC12_Map02/WW_add_14_7",
+    "source": "7.0 xdb",
+    "map": "ZC12_Map02",
+    "quest": "Тайное становится явным",
+    "plotline": null,
+    "buffs": 0,
+    "buff_ms": 0,
+    "camera_tracks": 1,
+    "camera_points": 4,
+    "game_scenes": 0,
+    "lines": [],
+    "voiced_lines": 0,
+    "subtitled_lines": 0,
+    "faction": "common"
+   },
+   {
+    "id": "Cutscenes/CS72/arch",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "CS72",
+    "lines": [
+     {
+      "voice": "Cutscenes/CS72/arch01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/CS72/nayan",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "CS72",
+    "lines": [
+     {
+      "voice": "Cutscenes/CS72/nayan01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/CS72/nayan02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/CS72/nayan03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 3,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/CS72/nayanFail",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "CS72",
+    "lines": [
+     {
+      "voice": "Cutscenes/CS72/nayanFail",
+      "ru": "Врата открываются! Сейчас здесь будет настоящее пекло! Но мы...",
+      "en": "The Gates are opening! It's about to get hot in here! But we...",
+      "delay_ms": 4000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/CS72/sarn",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "CS72",
+    "lines": [
+     {
+      "voice": "Cutscenes/CS72/sarn01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/CS72/sarnFail",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "CS72",
+    "lines": [
+     {
+      "voice": "Cutscenes/CS72/sarnFail",
+      "ru": "Смертные... Вы и вправду думали, что мне не разгадать ваш план? Я уничтожу любого...",
+      "en": "Mortals... You really thought I wouldn't figure out your plan? I will destroy every...",
+      "delay_ms": 10000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/CS72/smeyana",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "CS72",
+    "lines": [
+     {
+      "voice": "Cutscenes/CS72/smeyana01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/CS72/smeyana02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/CS72/smeyana03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 3,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/CS72/veronica",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "CS72",
+    "lines": [
+     {
+      "voice": "Cutscenes/CS72/veronica01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/CS72/veronica02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/CS72/veronica03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 3,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/CS72/veronicaFail",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "CS72",
+    "lines": [
+     {
+      "voice": "Cutscenes/CS72/veronicaFail",
+      "ru": "Любого смертного, но не равного себе! Несчастный безумец... Уходим! Скорее, в портал!",
+      "en": "Every mortal who is no match for him! Wretched madman... Let's get out of here, now! To the Portal!",
+      "delay_ms": 5000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Edem/AliceAnswerHighRomance",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/AliceAnswerHighRomance",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/AliceAnswerLowRomanceNoTrust",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/AliceAnswerLowRomanceNoTrust",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/AliceCinematicBye",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/AliceCinematicBye",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/AliceCinematicNoTrust",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/AliceCinematicNoTrust",
+      "ru": "Что ж… Больше мы с тобой не увидимся. Прощай.",
+      "en": "We won't meet again. Farewell.",
+      "delay_ms": 6000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Edem/Allmother",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Allmother_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_05",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_06",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_07",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_08",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_09",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_10",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_11",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_12",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_13",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_14",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_15",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_16",
+      "ru": "Всематерь: ДОВОЛЬНО!",
+      "en": "All-Mother: ENOUGH.",
+      "delay_ms": 2000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_17",
+      "ru": "Всематерь: Я достаточно услышала.",
+      "en": "All-Mother: I have heard enough.",
+      "delay_ms": 2500,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_18",
+      "ru": "Всематерь: В бессмертии нет Жизни. Вы застыли без движения, без развития. Великий Круг в вашем мире остановился.",
+      "en": "All-Mother: There is no life in immortality. You are frozen without movement or development. The Great Circle has stopped in your world.",
+      "delay_ms": 8000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_19",
+      "ru": "Всематерь: Нихаз извратил творения Сарна, и теперь необходимо очистить ваши души от бессмертия, губящего их.",
+      "en": "All-Mother: Nihaz corrupted Sarn's creations. Your souls must be cleansed from the immortality that is destroying them.",
+      "delay_ms": 8000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_20",
+      "ru": "Всематерь: Первым будет это дитя, а за ним и все остальные.",
+      "en": "All-Mother: This child will go first. The rest will follow.",
+      "delay_ms": 4000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_21",
+      "ru": "Всематерь: Что ж дитя, твоя вера в них вдохновляет меня.",
+      "en": "All-Mother: Your trust in them inspires me, child.",
+      "delay_ms": 6000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Allmother_22",
+      "ru": "Всематерь: Я дам вам один шанс, дети Сарна.",
+      "en": "All-Mother: I will give you a chance, Children of Sarn.",
+      "delay_ms": 4500,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 22,
+    "subtitled_lines": 7
+   },
+   {
+    "id": "Cutscenes/Edem/BlackHandWarning",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/BlackHandWarning01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/BlackHandWarning02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/BlackHandWarning03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 3,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/Cherep",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Cherep_01",
+      "ru": "Эллекен: Этого момента я ждал несколько сотен лет. Наконец-то, я покидаю Сарнаут…",
+      "en": "Elleken: I've been waiting for it for several centuries! I'm finally leaving Sarnaut!",
+      "delay_ms": 6500,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Cherep_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Cherep_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Cherep_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 4,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Edem/Children_07",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Children_07_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Children_07_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Children_07_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Children_07_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Children_07_05",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Children_07_06",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Children_07_07",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 7,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/Elleken_EnterGate",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Elleken_EnterGate",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/ErfarCurses",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/ErfarCurses",
+      "ru": "Жаль, всё-таки, что ты мне так и не пове…",
+      "en": "It's a shame that you didn't beli...",
+      "delay_ms": 4000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Edem/Euryale_EnterGate",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Euryale_EnterGate",
+      "ru": "Погром Младший: Ну что ж, пора испытать этот костюм в действии!",
+      "en": "Nogrom Junior: Let's test it in action!",
+      "delay_ms": 3500,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Edem/Euryale_Trial_Ask1",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Euryale_Trial_Ask1_Say4",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Euryale_Trial_Ask1_Say5",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 2,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/Felix",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Felix_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/Irkalla",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Irkalla_01",
+      "ru": "Слушай, я узнала о тебе от своего нового друга.",
+      "en": "I heard about you from my new friend.",
+      "delay_ms": 2800,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Irkalla_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Irkalla_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Irkalla_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Irkalla_05",
+      "ru": "Какой размах замыслов, какие вереницы планов…",
+      "en": "The height of his ambition and the hugeness of his plans!",
+      "delay_ms": 4000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Irkalla_06",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Irkalla_07",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Irkalla_08",
+      "ru": "Ну, кто тут ещё? Ты думаешь помешать мне?",
+      "en": "Well, who is this? Are you going to try and stop me?",
+      "delay_ms": 3500,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Irkalla_09",
+      "ru": "Прочь с глаз моих, пока я не рассердилась окончательно и не отправила твою душонку в небытие!",
+      "en": "Begone before I get angry and send your soul to purgatory!",
+      "delay_ms": 7000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 9,
+    "subtitled_lines": 4
+   },
+   {
+    "id": "Cutscenes/Edem/Mrak_EnterGate",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Mrak_EnterGate",
+      "ru": "Мрак: Этих остр-роухих нельзя оставлять одних, зур. Следующим я пойду.",
+      "en": "Murk: Zurrr, you can't leave the pointy-eared without surveillance. I'm going to go next.",
+      "delay_ms": 7500,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Edem/Oligarh",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Oligarh_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/PogromJr_EnterGate",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/PogromJr_EnterGate",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/Rhubarb",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Rhubarb_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Rhubarb_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Rhubarb_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 3,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/Smeyana_Felix_AboutEden",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Smeyana_Felix_AboutEden",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/Sturegga_EnterGate",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Sturegga_EnterGate",
+      "ru": "Ну что, товарищи звездоходцы, готовьтесь, сейчас вылетит… Впрочем, надеюсь, что ничего не вылетит…",
+      "en": "Get ready, say chee... Wait a second. I hope there won't be a blast.",
+      "delay_ms": 6500,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Edem/Veronika_StartingGate",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Veronika_StartingGate_01",
+      "ru": "Береника: ДА! Работает, железяка! Ну всё, по одному — и в портал, бегом!",
+      "en": "Eladia: Yes! It's working! Chop-chop now, into the portal! Go!",
+      "delay_ms": 5000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Veronika_StartingGate_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Veronika_StartingGate_03",
+      "ru": "Стурегга: Разойдитесь, смертные — первой пойду я!",
+      "en": "Sturegga: Step aside, mortals! I'm going in first.",
+      "delay_ms": 5500,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Veronika_StartingGate_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Veronika_StartingGate_05",
+      "ru": "Береника: Отлично, теперь поднимаем мощность…",
+      "en": "Eladia: Going well! Raising power now!",
+      "delay_ms": 3000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 5,
+    "subtitled_lines": 3
+   },
+   {
+    "id": "Cutscenes/Edem/Waterlilly",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Waterlilly_01",
+      "ru": "Кувшинка: О Всематерь! Прошу тебя!",
+      "en": "Waterlily: Oh All-Mother! I beg of you!",
+      "delay_ms": 3000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Waterlilly_02",
+      "ru": "Кувшинка: Позволь мне сказать последнее слово в защиту!",
+      "en": "Waterlily: Allow me to say the last word in their defense!",
+      "delay_ms": 4000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Waterlilly_03",
+      "ru": "Кувшинка: Да, эти существа извращены Тьмой, они не знают о божественных законах и не ведают, что творят…",
+      "en": "Waterlily: That's right, these creatures are corrupted by Darkness. They have never heard about the divine laws. They don't know what they're doing.",
+      "delay_ms": 6000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Waterlilly_04",
+      "ru": "Кувшинка: Так дай же им возможность узнать твою мудрость, познать истинную цель творения. Пусть они учатся у тебя.",
+      "en": "Waterlily: Let them know your wisdom! Let them learn the true purpose of creation! Let them learn from you.",
+      "delay_ms": 8500,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Waterlilly_05",
+      "ru": "Кувшинка: Я верю, что они добровольно откажутся от даров Нихаза…",
+      "en": "Waterlily: I believe that they can choose to reject Nihaz's gifts.",
+      "delay_ms": 5100,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Waterlilly_06",
+      "ru": "Кувшинка: Прошу, дай им шанс!",
+      "en": "Waterlily: Please, give them a chance!",
+      "delay_ms": 3000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 6,
+    "subtitled_lines": 6
+   },
+   {
+    "id": "Cutscenes/Edem/Willow",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Willow_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Edem/Wiseman",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Edem",
+    "lines": [
+     {
+      "voice": "Cutscenes/Edem/Wiseman_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Wiseman_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Edem/Wiseman_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 3,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/AO13_2_Allmother",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/AO13_2_Allmother",
+      "ru": "Довольно! Жизнь сильнее, чем бездушные машины! Дети мои, я услышала ваш зов!",
+      "en": "Enough! Life is stronger than soulless machines! My children, I have heard your call!",
+      "delay_ms": 11000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Eden2/CompleteTrial_AllmotherSay",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/CompleteTrial_AllmotherSay",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/Complete_AllMotherSay",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/Complete_AllMotherSay",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/Dust_AllMotherSay",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/Dust_AllMotherSay",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/Eden_03_Smeyana",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/Eden_03_Smeyana",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/Eden_Final_Felix",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/Eden_Final_Felix",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/Final_05_Cherep",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/Final_05_Cherep",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/Final_09_Zone",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/Final_09_Zone_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Final_09_Zone_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Final_09_Zone_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Final_09_Zone_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 4,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/GoByRoots_AllMother",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/GoByRoots_AllMotherSay_1",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/Herbivore_AllMotherSay",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/Herbivore_AllMotherSay",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/OldTribe07_IrkallaFightPhase",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/OldTribe07_IrkallaFightPhase3",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/OldTribe07_IrkallaFightSecondPhase",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/OldTribe07_IrkallaFightSecondPhase",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/OldTribe07_IrkallaFightStart",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/OldTribe07_IrkallaFightStart",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/OldTribe08_IrkallaCue",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/OldTribe08_IrkallaCue01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/OldTribe08_IrkallaCue02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/OldTribe08_IrkallaCue03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 3,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/PlantAgain_AllMotherSay",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/PlantAgain_AllMotherSay",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/Plant_AllMotherSay",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/Plant_AllMotherSay",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/Predator_AllMotherSay",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/Predator_AllMotherSay",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/Prologue04_Cutscene",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/Prologue04_Cutscene_1",
+      "ru": "Горт: Ну и чего мы тут ждем?",
+      "en": "Gort: So what are we waiting for?",
+      "delay_ms": 5000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Prologue04_Cutscene_10",
+      "ru": "Нихаз: Как… Интересно.",
+      "en": "Nihaz: How... curious.",
+      "delay_ms": 4000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Prologue04_Cutscene_2",
+      "ru": "Рениеста: Я чувствую, как информация проходит сквозь меня, но не могу ничего осознать… Что происходит, Вероника?!",
+      "en": "Reniesta: I feel the information pass through me, but I cannot understand anything... What's going on, Klavdia?!",
+      "delay_ms": 7000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Prologue04_Cutscene_3",
+      "ru": "Вероника: Все так, как должно быть. Эта форма знаний не создана для восприятия слабыми умами. Зато я все прекрасно понимаю.",
+      "en": "Klavdia: Everything is as it should be. This form of knowledge is not designed to be perceived by weak minds. But I understand everything perfectly.",
+      "delay_ms": 7000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Prologue04_Cutscene_4",
+      "ru": "Вероника: Это то, что мы искали. Мир, расположение которого Нихаз стремился скрыть. Мир, который он хочет поработить. Мир…",
+      "en": "Klavdia: This is what we were looking for. The world that Nihaz was trying to hide. The world he wants to conquer. The world...",
+      "delay_ms": 8000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Prologue04_Cutscene_5",
+      "ru": "Нихаз: …Твоей матери. Стоило ли ждать от тебя такой сентиментальности?.. В этой Цитадели полно других тайн…",
+      "en": "Nihaz: ...of your mother. I shouldn't have expected you to be sentimental... There are other secrets in this Citadel...",
+      "delay_ms": 7000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Prologue04_Cutscene_6",
+      "ru": "Вероника: Я знаю, что я ищу. И в последнюю очередь нуждаюсь в твоих советах.",
+      "en": "Klavdia: I know what I'm looking for. I don't need your advice.",
+      "delay_ms": 7000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Prologue04_Cutscene_7",
+      "ru": "Нихаз: Не сомневаюсь. Вам очень повезло, что я занят этим вторжением.",
+      "en": "Nihaz: I don't doubt it. You are very fortunate that I'm busy with this invasion.",
+      "delay_ms": 7000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Prologue04_Cutscene_8",
+      "ru": "Нихаз: Погоди-ка… Это не ты.",
+      "en": "Nihaz: Wait a second... That's not you.",
+      "delay_ms": 3000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Prologue04_Cutscene_9",
+      "ru": "Нихаз: Она впустила тебя в свои воспоминания?..",
+      "en": "Nihaz: She let you into her memories...?",
+      "delay_ms": 5000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 10,
+    "subtitled_lines": 10
+   },
+   {
+    "id": "Cutscenes/Eden2/Prologue06_2_NihazCinematic_Sub",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/Prologue06_2_NihazCinematic_Sub1",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Prologue06_2_NihazCinematic_Sub2",
+      "ru": "Уже уходите?..",
+      "en": "Leaving so soon...?",
+      "delay_ms": 3000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Prologue06_2_NihazCinematic_Sub3",
+      "ru": "Разве вам не понравилась эта небольшая репетиция?",
+      "en": "Didn't you enjoy this little rehearsal?",
+      "delay_ms": 5000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Eden2/Prologue06_2_NihazCinematic_Sub4",
+      "ru": "Вы должны досмотреть её до конца…",
+      "en": "You must watch it till the end...",
+      "delay_ms": 5000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 4,
+    "subtitled_lines": 3
+   },
+   {
+    "id": "Cutscenes/Eden2/StartTrial_AllmotherSay",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/StartTrial_AllmotherSay",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Eden2/TalkToChildren_Scene",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Eden2",
+    "lines": [
+     {
+      "voice": "Cutscenes/Eden2/TalkToChildren_Scene_Say10",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Arrival_1_Hauk",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_1_Hauk_Replika",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_1_Hauk_Replika_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 2,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Arrival_1_IceShard",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_1_IceShard_Dead",
+      "ru": "Наконец-то свобода! Благодарю…",
+      "en": "Freedom at last! Thank you...",
+      "delay_ms": 4000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Arrival_1_Trand",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_1_Trand_Replika",
+      "ru": "Тураах:",
+      "en": "Tooraah: Praise be to you, wanderer. May your paths be as light as the paths of the wind.",
+      "delay_ms": 10100,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Arrival_1_Unn",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_1_Unn_Replika",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Arrival_2_Urun",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_2_Urun_Replika",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_2_Urun_Replika_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_2_Urun_Replika_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_2_Urun_Replika_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_2_Urun_Replika_05",
+      "ru": "Сарнаут… Вот какой стала тюрьма Сарна. Да, во всем я вижу руку Творца.",
+      "en": "Sarnaut... That's what Sarnaut's prison looks like. Yes, I see the Creator's hand in everything.",
+      "delay_ms": 8000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_2_Urun_Replika_F",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_2_Urun_Replika_F_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_2_Urun_Replika_F_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_2_Urun_Replika_F_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_2_Urun_Replika_F_05",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 10,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Arrival_4_Gerda",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_4_Gerda",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Arrival_5_Gerda",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_5_Gerda_text_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_5_Gerda_text_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_5_Gerda_text_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_5_Gerda_text_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_5_Gerda_text_05",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_5_Gerda_text_bridge",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 6,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Arrival_5_Unn",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_5_Unn_text",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Arrival_Mrak",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_Mrak",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Arrival_Trand",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_Trand",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Arrival_Unn",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Arrival_Unn",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Cemetery",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Cemetery_3",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Cemetery_2a",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Cemetery_2a",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Cemetery_2b",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Cemetery_2b",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Forest_2a_Huginn",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Forest_2a_Huginn_Say",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Forest_4b_Drink",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Forest_4b_Drink",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Forest_4b_Drink_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Forest_4b_Drink_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Forest_4b_Drink_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 4,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Forest_5_cut",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Forest_5_cut_replika",
+      "ru": "Харысхан: Бойтесь меня гибберлинги, ведь я ваш кошмар, пришедший из тьмы веков! Запомните этот день!",
+      "en": "Kharyskhan: Fear me, Gibberlings, for I am your nightmare who came from the darkness of ages! Remember this day!",
+      "delay_ms": 9000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Forest_5_cut_replika_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Forest_5_cut_replika_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 3,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Town_1_Replica",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_1_Replica",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_1_Replica_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_1_Replica_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_1_Replica_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_1_Replica_05",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 5,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Town_3_Que",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_3_Que_01_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_3_Que_02_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_3_Que_03_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_3_Que_04_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_3_Que_05_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_3_Que_06_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_3_Que_07_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_3_Que_07_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 8,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Town_6b_Replica",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_6b_Replica_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_6b_Replica_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_6b_Replica_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_6b_Replica_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_6b_Replica_05",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 5,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Town_BullyClan_Skalgard",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_BullyClan_Skalgard_1",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_BullyClan_Skalgard_2",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_BullyClan_Skalgard_3",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 3,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Town_ElderBullyClan",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_ElderBullyClan",
+      "ru": "Всё, конец веселью! Довольно, я сказал! Разойтись. Или кому-то иначе объяснить?",
+      "en": "The fun is over! I said, that's enough! Disperse. Or should I explain it some other way?",
+      "delay_ms": 3000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 1
+   },
+   {
+    "id": "Cutscenes/Isa/Isa_Town_Unn_Data",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "Isa",
+    "lines": [
+     {
+      "voice": "Cutscenes/Isa/Isa_Town_Unn_Data",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/LoreCollectibles/Flower",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "LoreCollectibles",
+    "lines": [
+     {
+      "voice": "Cutscenes/LoreCollectibles/Flower_01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/LoreCollectibles/Flower_02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/LoreCollectibles/Flower_03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/LoreCollectibles/Flower_04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/LoreCollectibles/Flower_05",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/LoreCollectibles/Flower_06",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/LoreCollectibles/Flower_07",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/LoreCollectibles/Flower_08",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/LoreCollectibles/Flower_09",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/LoreCollectibles/Flower_10",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 10,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/ZC13/Demon",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "ZC13",
+    "lines": [
+     {
+      "voice": "Cutscenes/ZC13/Demon01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/ZC13/Demon02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 2,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/ZC13/Ellona",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "ZC13",
+    "lines": [
+     {
+      "voice": "Cutscenes/ZC13/Ellona01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   },
+   {
+    "id": "Cutscenes/ZC13/Kiros",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "ZC13",
+    "lines": [
+     {
+      "voice": "Cutscenes/ZC13/Kiros01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/ZC13/Kiros02",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/ZC13/Kiros03",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/ZC13/Kiros04",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/ZC13/Kiros05",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/ZC13/Kiros06",
+      "ru": "Я предупреждал вас... Предупреждал вас всех! И тем не менее вы здесь.",
+      "en": "I warned you... And yet, you are here!",
+      "delay_ms": 8000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/ZC13/Kiros07",
+      "ru": "Впрочем, чего я ожидал? В конце концов, вы всего лишь трусы, цепляющиеся за так называемое \"бессмертие\". Что ж...",
+      "en": "But what could I expect? You are just cowards, hanging on to your so-called immortality. Well...",
+      "delay_ms": 10000,
+      "in_17": true
+     },
+     {
+      "voice": "Cutscenes/ZC13/Kiros08",
+      "ru": "Отрадно, что вам есть, за что сражаться! Жаль только, смерть ваша будет напрасной!",
+      "en": "I'm glad you have something to fight for! It's a shame you will die in vain though.",
+      "delay_ms": 12000,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 8,
+    "subtitled_lines": 3
+   },
+   {
+    "id": "Cutscenes/ZC13/LightMaster",
+    "source": "17.0 pack.bin",
+    "map": null,
+    "quest": null,
+    "plotline": null,
+    "arc": "ZC13",
+    "lines": [
+     {
+      "voice": "Cutscenes/ZC13/LightMaster01",
+      "ru": "",
+      "en": "",
+      "delay_ms": 0,
+      "in_17": true
+     }
+    ],
+    "faction": "common",
+    "voiced_lines": 1,
+    "subtitled_lines": 0
+   }
   ]
  }
 }
