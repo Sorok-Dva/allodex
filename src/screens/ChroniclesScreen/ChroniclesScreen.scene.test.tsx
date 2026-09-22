@@ -2,10 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, act, screen } from '@testing-library/react';
 import type { ArchiveEntry } from '@/lib/assets';
 import { ChroniclesScreen } from './ChroniclesScreen';
+import { navigate } from '@/lib/router';
 
 const ENTRIES: ArchiveEntry[] = [
   {
     version: '7.0', name: 'New Order', label: 'Allods Online - New Order (7.0)',
+    media: 'image', background: 'background.png',
+    scene: { glb: 'scene.glb', meta: 'scene.json' },
+  },
+  {
+    version: '8.0', name: 'Immortality', label: 'Allods Online - Immortality (8.0)',
     media: 'image', background: 'background.png',
     scene: { glb: 'scene.glb', meta: 'scene.json' },
   },
@@ -24,7 +30,7 @@ const sceneProps = vi.fn();
 vi.mock('@/components/scene/MenuScene', () => ({
   default: (props: { glbUrl: string; metaUrl: string; onReady?: () => void }) => {
     sceneProps(props);
-    return <canvas data-testid="menu-scene" />;
+    return <canvas data-testid="menu-scene" data-glb={props.glbUrl} />;
   },
 }));
 
@@ -54,14 +60,33 @@ describe('ChroniclesScreen — scène de menu', () => {
     }));
   });
 
-  it('garde le fond fixe sous la scène, puis l’efface à la première image', async () => {
+  it('n’affiche pas l’illustration sous la scène : elle ne la représente pas', async () => {
     render(<ChroniclesScreen />);
     await screen.findByTestId('menu-scene');
-    const still = document.querySelector('img[src="/game/archive/7.0/background.png"]') as HTMLImageElement;
-    expect(still).toBeTruthy();
-    const before = still.className;
-    await act(async () => { sceneProps.mock.calls[0][0].onReady(); });
-    expect(still.className).not.toBe(before);
+    expect(document.querySelector('img[src="/game/archive/7.0/background.png"]')).toBeNull();
+  });
+
+  it('au changement de version, garde l’ancienne scène jusqu’à la première image de la nouvelle', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      render(<ChroniclesScreen />);
+      await screen.findByTestId('menu-scene');
+      await act(async () => { navigate('/chronicles?v=8.0', { replace: true }); });
+      // Deux couches : l'ancienne (7.0) reste montée, la nouvelle (8.0) charge sa scène.
+      let scenes = await screen.findAllByTestId('menu-scene');
+      expect(scenes.map(c => c.dataset.glb)).toEqual(['/game/archive/7.0/scene.glb', '/game/archive/8.0/scene.glb']);
+      await act(async () => { vi.advanceTimersByTime(5000); });
+      expect(screen.getAllByTestId('menu-scene')).toHaveLength(2); // toujours pas prête : pas de noir
+      // Première image de la 8.0 : fondu de 600 ms, puis l'ancienne couche disparaît.
+      const ready = sceneProps.mock.calls.find(([p]) => p.glbUrl.includes('8.0'))![0].onReady;
+      await act(async () => { ready(); });
+      expect(screen.getAllByTestId('menu-scene')).toHaveLength(2);
+      await act(async () => { vi.advanceTimersByTime(700); });
+      scenes = screen.getAllByTestId('menu-scene');
+      expect(scenes.map(c => c.dataset.glb)).toEqual(['/game/archive/8.0/scene.glb']);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('sans WebGL : le fond fixe seul, aucune scène montée', async () => {
