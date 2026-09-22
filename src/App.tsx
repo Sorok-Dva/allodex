@@ -8,6 +8,7 @@ import { MedalsScreen } from '@/screens/MedalsScreen/MedalsScreen';
 import { ChroniclesScreen } from '@/screens/ChroniclesScreen/ChroniclesScreen';
 import { MusicScreen } from '@/screens/MusicScreen/MusicScreen';
 import { LegalScreen } from '@/screens/LegalScreen/LegalScreen';
+import { FatalitiesScreen } from '@/screens/FatalitiesScreen/FatalitiesScreen';
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -27,6 +28,7 @@ export default function App() {
        path === '/achievements' || path === '/medals' || path === '/succes' ? <MedalsScreen /> :
        path === '/chronicles' || path === '/chroniques' ? <ChroniclesScreen /> :
        path === '/music' || path === '/musiques' ? <MusicScreen /> :
+       path === '/fatalities' || path === '/fatalites' ? <FatalitiesScreen /> :
        <OpeningScreen />}
     </AudioProvider>
     </I18nProvider>

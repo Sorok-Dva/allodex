@@ -80,10 +80,11 @@ export function OpeningScreen() {
   const { t } = useI18n();
   useEffect(() => { document.title = 'Allodex'; }, []);
   const items: ActionItem[] = [
-    { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: t('home.medals'), onClick: () => navigate('/achievements') },
     { id: 'chronicles', base: `${T.pinMenu}/ButtonQuestlog`, label: t('home.chronicles'), hint: t('home.chroniclesHint'), onClick: () => navigate('/chronicles') },
     { id: 'music', base: `${T.pinMenu}/ButtonMedals`, image: 'Official/media_player',
       label: t('music.title'), onClick: () => navigate('/music') },
+    { id: 'fatalities', base: `${T.pinMenu}/ButtonSpellbook`, label: t('home.fatalities'), hint: t('home.fatalitiesHint'), onClick: () => navigate('/fatalities') },
+    { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: t('home.medals'), onClick: () => navigate('/achievements') },
     { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: t('home.character'), hint: t('home.characterHint') },
   ];
   const latest = latestArchiveEntry();
@@ -160,10 +161,6 @@ export function OpeningScreen() {
           type="button"
           className={s.skipButton}
           onClick={handleSkip}
-          style={{
-            backgroundImage: `url(${tex(`${T.actions}/RightButton`)})`,
-            ['--btn-pressed' as string]: `url(${tex(`${T.actions}/RightRedButton`)})`,
-          }}
           data-testid="skip-button"
           aria-label={t('home.skip')}
           title={t('home.skip')}

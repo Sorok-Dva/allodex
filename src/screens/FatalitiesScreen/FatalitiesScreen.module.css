@@ -1,0 +1,105 @@
+.screen { position: fixed; inset: 0; background: #111420; overflow: hidden; font-family: var(--font-serif); }
+
+.loading {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  color: #b0d9be; font-size: 15px; pointer-events: none;
+}
+
+/* Cartouche : plaque de titre du jeu, comme les Chroniques. */
+.cartouche { position: absolute; left: 28px; top: 24px; }
+.plate { position: relative; display: inline-block; height: 31px; min-width: 220px; padding: 0 48px; }
+.plateTitle {
+  position: relative; display: flex; align-items: flex-start; justify-content: center;
+  height: 31px; padding-top: 4px; line-height: 19px; white-space: nowrap;
+  font-size: 15px; color: #ffeb73; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
+}
+
+/* Carte centrale (index manquant, WebGL absent) : cadre d'infobulle du jeu. */
+.card {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 440px; max-width: calc(100vw - 32px); padding: 14px 18px 18px; text-align: center;
+  border-style: solid; border-color: transparent; background: rgba(0, 0, 0, 0.67);
+}
+.cardTitle { color: #ffdc00; font-size: 18px; line-height: 22px; }
+.cardHint { margin-top: 6px; color: #b0d9be; font-size: 13px; line-height: 17px; }
+
+/* Panneau de choix (gauche) : race, sexe, puis les deux listes de fatalités. */
+.panel {
+  position: absolute; left: 24px; top: 72px; bottom: 96px; width: 268px;
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 12px 12px 10px; border-style: solid; border-color: transparent;
+  background: rgba(0, 0, 0, 0.67); color: #e6f3e6;
+}
+.field { display: flex; align-items: center; justify-content: space-between; height: 24px; }
+.fieldLabel { color: #b0d9be; font-size: 13px; }
+.dropdown { position: relative !important; width: 150px; }
+.lists { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #4c5a3f transparent; padding-right: 2px; }
+.group { margin: 8px 0 6px; color: #ffdc00; font-size: 13px; }
+.group:first-child { margin-top: 2px; }
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+
+.pill { position: relative; display: block; width: 100%; height: 28px; padding: 0; border: 0; background: none; cursor: inherit; }
+.pillSkin { position: absolute; inset: 0; display: block; pointer-events: none; border-color: transparent; transition: filter 80ms linear; }
+.pill:hover .pillSkin, .pill:focus-visible .pillSkin { filter: brightness(1.12); }
+.pillLabel {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  padding: 0 24px 0 20px; font-size: 13px; line-height: 1; color: #e6f3e6; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
+}
+.pillActive .pillLabel { color: #ffeb73; }
+.approx { margin-left: 6px; color: #b0d9be; font-size: 12px; }
+
+.details { border-top: 1px solid rgba(176, 217, 190, 0.25); padding-top: 8px; color: #b0d9be; font-size: 12px; line-height: 15px; }
+.warn { color: #e8c877; margin-top: 3px; }
+
+/* Barre de lecture (bas, centrée) : cadre d'infobulle, boutons pilule, jauge du jeu. */
+.transport {
+  position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px;
+  width: min(880px, calc(100vw - 48px)); padding: 9px 14px 11px;
+  border-style: solid; border-color: transparent; background: rgba(0, 0, 0, 0.67); color: #e6f3e6;
+}
+.button {
+  position: relative; flex: none; width: 54px; height: 28px; padding: 0; border: 0; background: none;
+  display: flex; align-items: center; justify-content: center; cursor: inherit; color: var(--gold);
+}
+.buttonSkin { position: absolute; inset: 0; display: block; border-color: transparent; pointer-events: none; }
+.button:hover .buttonSkin { filter: brightness(1.15); }
+.button:active .buttonSkin { filter: brightness(0.9); }
+.glyph { position: relative; display: block; width: 14px; height: 14px; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7)); }
+
+.seek { flex: 1; position: relative; padding: 6px 0; }
+.seek input { appearance: none; -webkit-appearance: none; position: absolute; inset: 0; margin: 0; padding: 0; border: 0; outline: none; background: transparent; width: 100%; height: 24px; cursor: pointer; }
+.seek input::-webkit-slider-runnable-track { height: 12px; background: transparent; border: 0; }
+.seek input::-moz-range-track { height: 12px; background: transparent; border: 0; }
+.seek input::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 24px; height: 24px; margin-top: -6px; border: 0; background: url('/game/sprites/medallion-normal.png') center / contain no-repeat; }
+.seek input::-moz-range-thumb { width: 24px; height: 24px; border: 0; border-radius: 0; background: url('/game/sprites/medallion-normal.png') center / contain no-repeat; }
+.seek input:active::-webkit-slider-thumb { background-image: url('/game/sprites/medallion-pressed.png'); }
+.seek input:active::-moz-range-thumb { background-image: url('/game/sprites/medallion-pressed.png'); }
+.seek:has(input:focus-visible) { outline: 1px solid #ffe77b; outline-offset: 2px; }
+.seek:has(input:disabled) { opacity: .5; }
+
+.check { position: relative; display: flex; align-items: center; gap: 6px; flex: none; font-size: 13px; color: #e6f3e6; cursor: inherit; }
+.check input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: inherit; }
+.checkbox { display: block; width: 18px; height: 18px; background: center / contain no-repeat; }
+.checkOff { opacity: .5; }
+.speed { display: flex; align-items: center; gap: 8px; flex: none; }
+.speed .dropdown { width: 62px; }
+
+.hint { position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%); color: rgba(176, 217, 190, 0.7); font-size: 12px; pointer-events: none; white-space: nowrap; }
+
+.close { position: absolute; right: 24px; top: 20px; width: 30px; height: 30px; background-repeat: no-repeat; background-position: 0 0; cursor: inherit; }
+.close:hover { filter: brightness(1.18); }
+.close:active { filter: brightness(0.88); }
+.speaker { position: absolute; right: 66px; top: 19px; }
+.fullscreen { position: absolute; right: 108px; top: 19px; }
+
+.hud { transition: opacity 300ms ease-out, visibility 300ms ease-out; }
+.hudHidden .hud { opacity: 0; visibility: hidden; pointer-events: none; }
+
+@media (max-width: 900px) {
+  .panel { top: 64px; bottom: auto; max-height: 46vh; width: min(268px, calc(100vw - 32px)); left: 16px; }
+  .hint { display: none; }
+  .transport { flex-wrap: wrap; bottom: 12px; }
+  .seek { min-width: 160px; }
+}

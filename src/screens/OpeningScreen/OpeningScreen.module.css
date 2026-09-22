@@ -4,16 +4,17 @@
 .fadeIn { animation: fade 900ms ease-out both; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
-/* Bouton Skip officiel Allods (textures Interface/Icons/Actions/RightButton) */
+/* Bouton Skip officiel Allods (textures Interface/Wrap/MainMenu/LoginAccount). */
 .skipButton {
   position: absolute;
   right: 28px;
   bottom: 24px;
-  width: 54px;
-  height: 54px;
+  width: 96px;
+  height: 96px;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
+  background-image: url('/game/textures/Interface/Wrap/MainMenu/LoginAccount/ButtonExitNormal.png');
   border: none;
   background-color: transparent;
   padding: 0;
@@ -22,15 +23,17 @@
   user-select: none;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
   transition: transform 120ms ease-out, filter 120ms ease-out;
+  transform: scaleX(-1);
   animation: fade 900ms ease-out 600ms both;
 }
 .skipButton:hover {
+  background-image: url('/game/textures/Interface/Wrap/MainMenu/LoginAccount/ButtonExitHighlighted.png');
   filter: drop-shadow(0 0 12px rgba(255, 215, 100, 0.75)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8)) brightness(1.15);
-  transform: scale(1.08);
+  transform: scaleX(-1) scale(1.08);
 }
 .skipButton:active {
-  background-image: var(--btn-pressed) !important;
-  transform: scale(0.96) translate(1px, 1px);
+  background-image: url('/game/textures/Interface/Wrap/MainMenu/LoginAccount/ButtonExitDisabled.png');
+  transform: scaleX(-1) scale(0.96) translate(1px, 1px);
   filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.8));
 }
 
