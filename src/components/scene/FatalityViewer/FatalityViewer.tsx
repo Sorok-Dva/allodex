@@ -91,7 +91,9 @@ type Scrolling = { texture: THREE.Texture; speed: [number, number] };
 type Instance = {
   root: THREE.Object3D;
   mixer: THREE.AnimationMixer;
-  clips: { action: THREE.AnimationAction; duration: number; loop: boolean }[];
+  clips: { action: THREE.AnimationAction; duration: number; loop: boolean; offset: number }[];
+  /** Composants retardés (`DelayComponent`) ou arrêtés : fenêtre d'apparition, temps de l'objet. */
+  gated: { node: THREE.Object3D; start: number; stop: number | null }[];
   start: number;
   lifeTime: number;
   fadeIn: number;
@@ -99,8 +101,19 @@ type Instance = {
   tinted: Tinted[];
   scrolling: Scrolling[];
   billboards: { node: THREE.Object3D; mode: string; base: THREE.Quaternion }[];
-  particles: ParticleSystemView[];
+  particles: { view: ParticleSystemView; offset: number }[];
 };
+
+type Gate = [number, number | null];
+/** Début cumulé d'un nœud de gabarit : somme des retards de ses ancêtres (lui compris). */
+function windowOffset(node: THREE.Object3D, root: THREE.Object3D): number {
+  let offset = 0;
+  for (let n: THREE.Object3D | null = node; n && n !== root.parent; n = n.parent) {
+    const w = (n.userData as { window?: Gate }).window;
+    if (w) offset += w[0];
+  }
+  return offset;
+}
 
 /**
  * Matériau d'affichage d'une primitive exportée par `tools/extract_fatalities.py`.
@@ -299,10 +312,14 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       fadeIn: number, fadeOut: number): Instance => {
       const root = cloneSkinned(proto);
       const mixer = new THREE.AnimationMixer(root);
-      const inst: Instance = { root, mixer, clips: [], start, lifeTime, fadeIn, fadeOut, tinted: [], scrolling: [], billboards: [], particles: [] };
+      const inst: Instance = { root, mixer, clips: [], start, lifeTime, fadeIn, fadeOut, tinted: [], scrolling: [], billboards: [], particles: [], gated: [] };
       const withParticles: [THREE.Object3D, ParticleSystemMeta][] = [];
       root.traverse(node => {
-        const vot = (node.userData as { vot?: string }).vot;
+        const { vot, window } = node.userData as { vot?: string; window?: Gate };
+        if (window) {
+          const parentOffset = node.parent ? windowOffset(node.parent, root) : 0;
+          inst.gated.push({ node, start: parentOffset + window[0], stop: window[1] === null ? null : parentOffset + window[1] });
+        }
         if (!vot) return;
         const info = objects[vot];
         const clip = clips.find(c => c.name === vot);
@@ -310,7 +327,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
           const action = mixer.clipAction(clip, root);
           action.play();
           action.paused = true;
-          inst.clips.push({ action, duration: info?.duration || clip.duration, loop: !!info?.loop });
+          inst.clips.push({ action, duration: info?.duration || clip.duration, loop: !!info?.loop, offset: windowOffset(node, root) });
         }
         if (info?.orientation && info.orientation !== 'COMMON') inst.billboards.push({ node, mode: info.orientation, base: node.quaternion.clone() });
         const system = info?.particles as ParticleSystemMeta | undefined;
@@ -323,7 +340,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
           if (!file) continue;
           const view = new ParticleSystemView(file, system, atlasTexture, particleAtlas);
           node.add(view.group);
-          inst.particles.push(view);
+          inst.particles.push({ view, offset: windowOffset(node, root) });
           disposables.push(view);
         }
       }
@@ -367,12 +384,13 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
         const fade = st.showFx ? spawnOpacity(local, inst.lifeTime, inst.fadeIn, inst.fadeOut) : 0;
         inst.root.visible = fade > 0.001;
         if (!inst.root.visible) continue;
-        for (const clip of inst.clips) clip.action.time = objectClipTime(local, clip.duration, clip.loop);
+        for (const gate of inst.gated) gate.node.visible = local >= gate.start && (gate.stop === null || local < gate.stop);
+        for (const clip of inst.clips) clip.action.time = objectClipTime(Math.max(0, local - clip.offset), clip.duration, clip.loop);
         inst.mixer.update(0);
         for (const { material, base } of inst.tinted) material.opacity = base * fade;
         for (const { texture, speed: [su, sv] } of inst.scrolling) texture.offset.set((local * su) % 1, -((local * sv) % 1));
         for (const { node, mode, base } of inst.billboards) faceCamera(node, mode, base, camera);
-        for (const view of inst.particles) view.update(local, fade);
+        for (const { view, offset } of inst.particles) view.update(Math.max(0, local - offset), fade);
       }
     };
 

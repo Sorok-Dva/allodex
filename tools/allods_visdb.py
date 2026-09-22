@@ -99,6 +99,10 @@ VOT_COMPONENTS = 0x138
 STATE_STRIDE = 144
 STATE_ANIMATION = 0x80
 
+COMPONENT_ID = 0x28            # VisualObjectComponentID
+DELAY_CHILD = 0x48             # DelayComponent : composant retardé, puis timeMin, timeMax
+DELAY_TIME_MIN = 0x50
+STOP_IDS = 0x48                # StopVisObjectComponents : vecteur de chaînes (24 o chacune)
 COMP_LOCATOR = 0x48
 COMP_OFFSET = 0x60
 COMP_ROTATION = 0x70
@@ -262,6 +266,10 @@ class Component:
     rotation: tuple[float, float, float, float]
     scale: float
     visobject: int | None
+    ident: str = ""
+    start: float = 0.0                 # `DelayComponent` : apparition retardée (s)
+    stop: float | None = None          # `StopVisObjectComponents` retardé : disparition (s)
+    random_delay: bool = False         # timeMin ≠ timeMax : délai tiré au hasard par le client
 
 
 @dataclass
@@ -297,14 +305,36 @@ def read_visobject(db: PackDB, cat: PakCatalog, off: int) -> VisObject:
     if animation is None and geometry is not None:
         animation = db.ptr(geometry + GEO_SKELETAL_ANIMATION)
     components = []
+    stops: list[tuple[float, list[str]]] = []
+
+    def visit(comp: int, delay: float, ident: str, random_delay: bool) -> None:
+        kind = db.vtype(comp)
+        ident = db.string(comp + COMPONENT_ID) or ident
+        if kind == "DelayComponent":
+            tmin, tmax = db.floats(comp + DELAY_TIME_MIN, 2)
+            child = db.ptr(comp + DELAY_CHILD)
+            if child is not None:
+                visit(child, delay + float(tmin), ident, random_delay or abs(tmax - tmin) > 1e-6)
+        elif kind == "StopVisObjectComponents":
+            v = db.vec(comp + STOP_IDS)
+            ids = [db.string(v[0] + 24 * k) or "" for k in range(v[1] // 24)] if v else []
+            stops.append((delay, ids))
+        elif kind == "AttachedVisObjectComponent":
+            components.append(Component(locator=db.string(comp + COMP_LOCATOR) or "",
+                                        offset=_vec3(db, comp + COMP_OFFSET),
+                                        rotation=tuple(float(v) for v in db.floats(comp + COMP_ROTATION, 4)),
+                                        scale=db.f32(comp + COMP_SCALE),
+                                        visobject=db.ptr(comp + COMP_VISOBJECT),
+                                        ident=ident, start=round(delay, 4), random_delay=random_delay))
+
     for comp in db.pointers(off + VOT_COMPONENTS):
-        if db.vtype(comp) != "AttachedVisObjectComponent":
-            continue
-        components.append(Component(locator=db.string(comp + COMP_LOCATOR) or "",
-                                    offset=_vec3(db, comp + COMP_OFFSET),
-                                    rotation=tuple(float(v) for v in db.floats(comp + COMP_ROTATION, 4)),
-                                    scale=db.f32(comp + COMP_SCALE),
-                                    visobject=db.ptr(comp + COMP_VISOBJECT)))
+        visit(comp, 0.0, "", False)
+    # Un arrêt ne vaut que pour un composant déjà apparu (`MuseL` du Barde : arrêté à 7,85 s,
+    # apparu à 7,87 s, il reste).
+    for when, ids in stops:
+        for c in components:
+            if c.ident and c.ident in ids and when > c.start and (c.stop is None or when < c.stop):
+                c.stop = round(when, 4)
     return VisObject(off, vot_name(db, cat, off), geometry, db.ptr(off + VOT_PARTICLE), animation,
                      db.f32(off + VOT_SCALE), db.i32(off + VOT_FADE_IN), db.i32(off + VOT_FADE_OUT),
                      db.string(off + VOT_SOUND_NAME), components)

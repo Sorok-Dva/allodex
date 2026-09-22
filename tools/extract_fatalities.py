@@ -786,7 +786,16 @@ class FxBuild:
                 node["rotation"] = [float(v) for v in r]
             if abs(s - 1) > 1e-9:
                 node["scale"] = [float(s)] * 3
-            attached.append({"vot": self.name_of(comp.visobject), "locator": comp.locator})
+            if comp.start > 0 or comp.stop is not None:
+                node.setdefault("extras", {})["window"] = [comp.start, comp.stop]
+            item = {"vot": self.name_of(comp.visobject), "locator": comp.locator}
+            if comp.start > 0:
+                item["start"] = comp.start
+            if comp.stop is not None:
+                item["stop"] = comp.stop
+            if comp.random_delay:
+                self.exporter.notes.append(f"{name} : délai aléatoire de {item['vot']} pris à sa borne basse")
+            attached.append(item)
         if attached:
             info["components"] = attached
         self.meta[name] = info

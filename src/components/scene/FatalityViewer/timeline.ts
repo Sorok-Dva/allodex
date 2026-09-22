@@ -55,7 +55,8 @@ export type FatalityObject = {
   sound?: string;
   sfx?: string;
   particles?: import('./particles').ParticleSystemMeta;
-  components?: { vot: string; locator: string }[];
+  /** Composants accrochés ; `start`/`stop` : fenêtre des `DelayComponent`/`StopVisObjectComponents`. */
+  components?: { vot: string; locator: string; start?: number; stop?: number }[];
 };
 
 /**
@@ -155,7 +156,7 @@ export function timelineSounds(timeline: FatalityTimeline, objects: Record<strin
     const object = objects[name];
     if (!object || depth > 8) return;
     if (object.sfx) out.push({ t, sfx: object.sfx });
-    for (const component of object.components ?? []) visit(component.vot, t, depth + 1);
+    for (const component of object.components ?? []) visit(component.vot, t + (component.start ?? 0), depth + 1);
   };
   for (const spawn of timeline.spawns) visit(spawn.vot, spawn.t, 0);
   for (const item of timeline.attached) visit(item.vot, item.t, 0);
