@@ -97,7 +97,10 @@ def restore_static_binds(obj) -> list[str]:
             and np.allclose(track.rotation[0], IDENTITY_QUAT, atol=1e-6)
             and np.isclose(float(track.scale[0]), float(np.prod(scales) ** (1 / 3)), atol=1e-5)
         )
-        (dropped if redundant else kept).append(track.name if redundant else track)
+        if redundant:
+            dropped.append(track.name)
+        else:
+            kept.append(track)
     animation.tracks = kept
     return dropped
 
