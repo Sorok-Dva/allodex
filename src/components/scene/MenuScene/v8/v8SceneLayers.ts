@@ -19,23 +19,47 @@ export function prepareV8Layers(root: THREE.Object3D) {
   meshes.forEach((mesh, index) => { mesh.renderOrder = index; });
 
   // Défilement UV natif (`uTranslateSpeed`/`vTranslateSpeed`, en tuiles par seconde) :
-  // vapeurs de la cascade et de la statue, flammes des braseros, faisceau, nuages. Un
-  // matériau partagé par plusieurs éléments ne défile qu'une fois ; la texture est
-  // clonée pour ne pas entraîner les éléments qui partagent l'image sans défiler.
+  // vapeurs de la cascade et de la statue, flammes des braseros, faisceau, nuages. La
+  // vitesse est une propriété de l'**élément** du xdb, mais l'exportateur ne distingue
+  // les matériaux glTF que par texture et mode de fusion : `Noise03White03` additif est
+  // ainsi partagé par `Statue_glow` (0,1 ; 0,1), `fire_spots` (0 ; 0,3) et `group3_Fire1`
+  // (0,02 ; 0), `BackCloud` par les nuages (0,01 ; 0) et la vapeur de la cascade (0 ; 0,2).
+  // Ne faire défiler qu'une fois le matériau partagé figeait braises et cascade : on
+  // clone le matériau (et sa texture) par vitesse distincte, et les éléments de même
+  // vitesse continuent de partager le même clone.
   const scrolling: { texture: THREE.Texture; original: THREE.Texture; material: THREE.MeshBasicMaterial;
     offset: THREE.Vector2; speed: THREE.Vector2 }[] = [];
-  const animated = new Set<THREE.Material>();
+  const variantsOf = new Map<THREE.MeshBasicMaterial, { speed: THREE.Vector2; material: THREE.MeshBasicMaterial }[]>();
+  const originals = new Map<THREE.MeshBasicMaterial, THREE.Texture>();
+  const reassigned: { mesh: THREE.Mesh; source: THREE.MeshBasicMaterial }[] = [];
+  const clones: THREE.MeshBasicMaterial[] = [];
   for (const mesh of meshes) {
     const speed = mesh.geometry.userData.uvScroll as number[] | undefined;
-    const material = mesh.material;
-    if (!material.map || !speed || (!speed[0] && !speed[1]) || animated.has(material)) continue;
-    animated.add(material);
-    const original = material.map;
+    const source = mesh.material;
+    if (!source.map || !speed || (!speed[0] && !speed[1])) continue;
+    const velocity = new THREE.Vector2(speed[0], speed[1]);
+    const variants = variantsOf.get(source) ?? [];
+    const existing = variants.find(v => v.speed.equals(velocity));
+    if (existing) {
+      if (existing.material !== source) { mesh.material = existing.material; reassigned.push({ mesh, source }); }
+      continue;
+    }
+    const original = originals.get(source) ?? source.map; // avant toute retouche, `map` est l'image d'origine
+    originals.set(source, original);
+    let material = source;
+    if (variants.length) {
+      material = source.clone(); // deuxième vitesse sur le même matériau : copie indépendante
+      clones.push(material);
+      mesh.material = material;
+      reassigned.push({ mesh, source });
+    }
     const texture = original.clone();
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.needsUpdate = true;
     material.map = texture;
-    scrolling.push({ texture, original, material, offset: texture.offset.clone(), speed: new THREE.Vector2(speed[0], speed[1]) });
+    variants.push({ speed: velocity, material });
+    variantsOf.set(source, variants);
+    scrolling.push({ texture, original, material, offset: texture.offset.clone(), speed: velocity });
   }
   return {
     count: meshes.length,
@@ -56,6 +80,8 @@ export function prepareV8Layers(root: THREE.Object3D) {
         material.map = original;
         texture.dispose();
       }
+      for (const { mesh, source } of reassigned) mesh.material = source;
+      for (const clone of clones) clone.dispose();
     },
   };
 }

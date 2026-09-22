@@ -126,6 +126,7 @@
     },
     "8.0": {
       "_camera_note": "Perspective : les calques de fond (ciel, nuages, arbres d'amorce, brume) sont des arcs concentriques centrés sur (0, -370…-420) ; la caméra est à leur centre et regarde +Y. Champ vertical et hauteur calés sur refs/captures-ui/menu-8.0-frame1.png (statue de 98 unités sur 78 % de la hauteur à 254 unités de profondeur). Ce n'est pas une caméra extraite du client. Le repère est direct : tools/scenes/v8_0.py annule le nœud miroir générique.",
+      "_halo_note": "L'articulation glow_add (halo du dôme) est rattachée à VisualSceneNode par tools/scenes/v8_0.py : le binaire lui donne group2 pour parent, mais les matrices inverses de bind du jeu sont l'identité et sa piste compense rotation et échelle dans le repère du modèle. Le ZoneLights du menu V8 (bloom seuil 0,12 / puissance 3,5 / contribution 0,75, brouillard 100-600 ARGB 0x78461E00) n'est pas rejoué : formule inconnue, essai saturant (voir README).",
       "dir": "Animated_Background_8_0",
       "roots": [
         "AMM_8_0"

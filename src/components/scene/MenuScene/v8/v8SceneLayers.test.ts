@@ -71,6 +71,37 @@ describe('V8 scene layers', () => {
     layers.update(10, false);
     expect(first.material.map!.offset.x).toBeCloseTo(.1);
     expect(second.material.map).toBe(first.material.map);
+    expect(second.material).toBe(first.material);
     layers.dispose();
+  });
+  it('sépare un matériau partagé par des éléments de vitesses différentes (braises, cascade)', () => {
+    // `Noise03White03` additif est un seul matériau glTF pour Statue_glow (0,1 ; 0,1),
+    // Stone_hotspot (0,1 ; 0,1), fire_spots (0 ; 0,3) et group3_Fire1 (0,02 ; 0).
+    const root = new THREE.Group();
+    const original = new THREE.Texture();
+    const glow = mesh(root, 'Statue_glow', 0, original, [.1, .1]);
+    const shared = glow.material;
+    const hotspot = mesh(root, 'Stone_hotspot', 1, original, [.1, .1]); hotspot.material = shared;
+    const embers = mesh(root, 'fire_spots', 2, original, [0, .3]); embers.material = shared;
+    const flame = mesh(root, 'group3_Fire1', 3, original, [.02, 0]); flame.material = shared;
+    const layers = prepareV8Layers(root);
+    expect(hotspot.material).toBe(shared);
+    expect(embers.material).not.toBe(shared);
+    expect(flame.material).not.toBe(shared);
+    expect(embers.material).not.toBe(flame.material);
+    expect(embers.material.blending).toBe(shared.blending);
+    layers.update(1, false);
+    expect(shared.map!.offset.toArray()).toEqual([expect.closeTo(.1), expect.closeTo(.1)]);
+    expect(embers.material.map!.offset.toArray()).toEqual([0, expect.closeTo(.3)]);
+    expect(flame.material.map!.offset.toArray()).toEqual([expect.closeTo(.02), 0]);
+    // Les trois textures défilantes sont des clones indépendants de l'image d'origine.
+    expect(new Set([shared.map, embers.material.map, flame.material.map]).size).toBe(3);
+    expect(embers.material.map).not.toBe(original);
+    const disposeClone = vi.spyOn(embers.material, 'dispose');
+    layers.dispose();
+    expect(shared.map).toBe(original);
+    expect(embers.material).toBe(shared);
+    expect(flame.material).toBe(shared);
+    expect(disposeClone).toHaveBeenCalledOnce();
   });
 });

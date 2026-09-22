@@ -318,9 +318,41 @@ fichiers :
   devant la statue. Comme en 7.0, les UV du client ont v = 0 en bas de l'image : le crochet
   retourne les textures.
 
-Reste approximatif : le sens horizontal des défilements (non vérifiable sans capture animée),
-les rotations squelettiques décodées (amplitude de l'ordre de 0,15°, arbres quasi immobiles), et
-la piste de l'articulation `glow_add` (7 canaux, format non décodé, exportée figée).
+- **halo du dôme** (`glow_add`, seul élément `skinIndex 0` du faisceau, additif, texture
+  `Glow04White`) : sa piste décodée grossit le quad de 1 à 2,33 et le fait tourner autour de
+  l'axe de visée, avec une translation qui compense exactement ce pivot **dans le repère du
+  modèle** (T + s·R·P = P à 0,02 unité sur les 201 images). Or le binaire donne pour parent à
+  `glow_add` le groupe `group2` (translation (39,7 ; -20,4 ; 10,7), échelle 0,81) alors que les
+  matrices inverses de bind du jeu sont l'identité pour les deux : le client ne compose pas ce
+  groupe Maya sans sommet. Composé dessous, le halo orbitait à 100 unités du dôme et sortait du
+  cadre — c'est pourquoi il manquait. `tools/scenes/v8_0.py` rattache `glow_add` à
+  `VisualSceneNode` ; le centre du quad reste alors fixe à (41,6 ; -130 ; 44,9) ;
+- **une vitesse de défilement par élément** : le xdb donne la vitesse à l'élément, l'export ne
+  distingue les matériaux que par texture et fusion. `Noise03White03` additif est partagé par
+  `Statue_glow` (0,1 ; 0,1), `fire_spots` (0 ; 0,3) et `group3_Fire1` (0,02 ; 0), `BackCloud` par
+  les nuages (0,01 ; 0) et la vapeur de la cascade (0 ; 0,2). `v8SceneLayers.ts` clone le
+  matériau par vitesse distincte ; braises et cascade défilent désormais à leur vitesse.
+
+Ce que les données disent des flammes : `group3_Fire2/3` (`Lightning10_2White`),
+`group3_FireGlow` (`Glow05Yellow`) et `group3_Fire4` (`NoiseFire`) sont `skinIndex -1`, sans
+défilement UV, et leurs `(Texture).xdb` ne portent ni atlas ni cadence (`atlasPart`, `wrap`,
+mips) ; aucune articulation `group3` n'existe dans le squelette. Le client n'anime donc des
+braseros que `group3_Fire1` (u 0,02), `fire_spots` (v 0,3), `Statue_glow` et `Stone_hotspot`
+(0,1 ; 0,1). Le dump XML du client V8 (`Tools/ClientUnpacker/ExtractedOld`) a un
+`AMM_8_0.(Geometry).xdb` identique à la copie serveur 7.0 hors la ligne `<binaryFile>` ; les
+`.bin` n'existent que dans le pak du client FR 8.0.
+
+Non rejoué, faute de formule : le `ZoneLights` du menu V8
+(`Maps/MainMenu/ZoneLights/Mainmenu.(ZoneLights).xdb`) déclare un **bloom** (seuil 0,12,
+puissance 3,5, contribution 0,75) et un brouillard (FogStart 100, FogEnd 600, FogColor ARGB
+`0x78461E00`). Le halo doit sa brillance dans le client à ce bloom (couleur de sommet 0,5 ×
+alpha 0,63 : additionné seul, il reste un voile). Un essai d'`UnrealBloomPass` calé sur ces trois
+valeurs saturait toute la scène (les cinq niveaux de flou somment à 3 ; le ciel à 0,85 de
+luminance passe le seuil) : mesuré sur dix régions contre la capture du client, l'écart RMS
+passait de 24 à 33-40 quelle que soit la normalisation. La couleur du brouillard (brun sombre en
+ARGB) ne correspond pas non plus au voile pâle de la capture. Reste approximatif : le sens
+horizontal des défilements, les rotations squelettiques (≈ 0,15°, arbres quasi immobiles), et
+un ciel plus sombre que dans le client (luminance 107 contre 143 en haut à gauche).
 
 ## Itération 2 (2026-09)
 
