@@ -9,14 +9,14 @@
     "position": [
       27,
       -1,
-      -13
+      -2
     ],
     "target": [
       -52,
       -1,
-      -1
+      1.82
     ],
-    "fov": 53
+    "fov": 48.5
   },
   "background": "#776caa",
   "animations": [

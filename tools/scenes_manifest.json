@@ -40,7 +40,7 @@
       }
     },
     "5.0": {
-      "_camera_note": "Dérivée des données, pas extraite du client. Les calques peints (skinIndex -1, sommets en espace monde) sont des arcs concaves tournés vers +X ; la coupole de nuages Back6 est un bol un peu plus profond qu'une demi-sphère (fond à X=-91, bord à X=+16, rayon ~120) dont la sphère ajustée a pour centre (27, -1, -13) : la caméra y est posée et regarde -X le long de l'axe du bol (les tranches du bol sont centrées sur Y≈0). La tour (axe X≈-52, Y≈24, Z de -28 à +32) est alors à droite, le grand arbre (Y de -57 à -19) à gauche, comme sur refs/captures-ui/menu-5.0-frame1.png. Champ vertical : la tour (60 unités à 79 unités de distance) occupe 77 % de la hauteur de la capture → 2·atan(39/79) ≈ 53°. Réglage : la cible est relevée de 12 unités (9°) pour que le centre de la tour tombe, comme sur la capture, un peu au-dessus du milieu de l'image. Le navire de raid croise le plan de la caméra vers 80 s, à 13-30 unités, et remplit l'image (menu-5.0-frame2-raid-ship.png).",
+      "_camera_note": "Dérivée des données pour l'axe, calée sur les captures pour le cadrage ; pas extraite du client. Axe : les calques peints (skinIndex -1, sommets en espace monde) sont des arcs concaves tournés vers +X ; la coupole Back6 est un bol (fond à X=-91, bord à X=+16) dont la sphère ajustée a pour centre X=27 — la caméra y est posée, à Y=-1 (les tranches du bol sont centrées sur Y≈0) et regarde -X, la tour (axe X≈-52, Y≈24, Z de -28 à +32) à droite et le grand arbre (Y de -57 à -19) à gauche, comme sur refs/captures-ui/menu-5.0-frame1.png. Cadrage (réglage) : trois repères de la tour mesurés sur cette capture — la boussole du sommet de la flèche (NDC y +0,8080 ; Z monde +31,2), la vergue horizontale (+0,2557 ; +10,9) et le rouage bleu de la base (-0,2951 ; -8,6) — fixent la pente et le champ, mais pas la hauteur : tous trois sont à 79 unités, et monter la caméra de 7 unités ne les déplace que de 0,03 NDC. C'est le navire de raid, dix fois plus proche (15-25 unités au plus près), qui fixe la hauteur : sur refs/captures-ui/menu-5.0-frame2-raid-ship.png on voit son pont d'au-dessus. Balayage Z ∈ [-4,9 ; +9], cible et champ résolus à chaque hauteur sur les trois repères : Z = -2 redonne la capture vers 71,6 s (rangée de voiles, pont, dômes orange et tour à 1-3 % de la hauteur d'image), les repères à 0,0025 NDC ; cible (-52, -1, 1,82), champ 48,5°. Le jeu précédent (Z = -4,9) passait sous la coque : navire trop haut de ~40 % de l'image, pont invisible, et la caméra traversait la calotte d'énergie à l'avant (group_SphereFront01/03) qui remplissait l'image — la « bulle ». Cette calotte est native (visible en voile rose au bord droit de la capture) ; elle ne couvre plus l'image qu'environ une seconde, vers 74-75 s, quand la proue frôle la caméra.",
       "mirror": false,
       "_mirror_note": "Repère direct : avec la caméra sur l'axe du bol regardant -X, la droite de l'image est +Y, où sont la tour (Y≈24) et les rochers ; le nœud miroir générique les mettrait à gauche, à l'inverse de la capture.",
       "dir": "Animated_Background_5_0",
@@ -58,14 +58,14 @@
         "position": [
           27,
           -1,
-          -13
+          -2
         ],
         "target": [
           -52,
           -1,
-          -1
+          1.82
         ],
-        "fov": 53
+        "fov": 48.5
       }
     },
     "6.0": {

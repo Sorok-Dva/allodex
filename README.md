@@ -518,14 +518,27 @@ d'elle vit dans `tools/scenes/v5_0.py` et `src/components/scene/MenuScene/v5/` :
   applique `monde_repos · inverse_native` avant l'export, sans quoi roue, phares et halos s'empilent
   à l'origine et le navire reste figé sur son locator. Le navire naît à l'échelle 0 (sa pose de bind
   est sa pose finale, échelle 0,632, retrouvée à 2·10⁻⁴) : la pose de repos est bornée à 10⁻³.
-- **Caméra dérivée du bol.** Les calques peints sont des arcs concaves tournés vers +X ; `Back6` est
-  un bol un peu plus profond qu'une demi-sphère (fond à X = −91, bord à X = +16, rayon ~120) dont la
-  sphère ajustée a pour centre (27, −1, −13) : la caméra y est posée et regarde −X le long de l'axe du
-  bol. Champ vertical 53° = 2·atan(39/79) (la tour, 60 unités à 79 unités, couvre 77 % de la hauteur
-  de la capture). Repère direct (`"mirror": false`) : la droite de l'image est +Y, où sont la tour et
-  les rochers. Réglage : la cible est relevée de 12 unités (9°) pour placer la tour comme sur la
-  capture. La couleur de fond est celle du bol (médiane des couleurs de sommet ×2, modulée par sa
-  texture) ; plus de brouillard ajouté (ses paramètres 5.0 ne sont nulle part).
+- **Caméra dérivée du bol, calée sur les captures.** Les calques peints sont des arcs concaves tournés
+  vers +X ; `Back6` est un bol un peu plus profond qu'une demi-sphère (fond à X = −91, bord à X = +16)
+  dont la sphère ajustée a pour centre X = 27 : la caméra y est posée, à Y = −1, et regarde −X le long
+  de l'axe du bol. Repère direct (`"mirror": false`) : la droite de l'image est +Y, où sont la tour et
+  les rochers. Le cadrage est un réglage sur les captures : trois repères de la tour (boussole, vergue,
+  rouage) fixent la pente et le champ, mais pas la hauteur, car ils sont tous à 79 unités (monter la
+  caméra de 7 unités ne les déplace que de 0,03 NDC). C'est le navire de raid, qui passe à 15-25 unités,
+  qui la fixe : `refs/captures-ui/menu-5.0-frame2-raid-ship.png` montre son pont vu d'au-dessus. Balayage
+  de Z = −4,9 à +9, cible et champ résolus à chaque hauteur : **Z = −2** redonne la capture vers 71,6 s
+  (voiles, pont, dômes et tour à 1-3 % de la hauteur d'image près), cible (−52, −1, 1,82), champ 48,5°.
+  L'ancien cadrage (Z = −4,9) passait sous la coque. La calotte d'énergie à l'avant
+  (`group_SphereFront01/03`, additive) remplissait alors l'image, et c'était la « bulle ». Elle est
+  native (voile rose au bord droit de la capture) et ne couvre plus l'image qu'une seconde, vers
+  74-75 s, quand la proue frôle la caméra. La couleur de fond est celle du bol (médiane des couleurs
+  de sommet ×2, modulée par sa texture) ; plus de brouillard ajouté (ses paramètres 5.0 ne sont nulle part).
+- **Traînée `ship_tail`.** Sa piste brute passe déjà par sa rotation de bind (l'identité) de l'image
+  1725 à la fin, exactement quand son échelle vaut 1 ; à l'image 0, où elle est invisible (échelle
+  nulle), elle porte un demi-tour autour de Z. `restore_fixed_rotations` choisissait sa branche d'Euler
+  sur l'image 0 et posait 180° sur Y et X : la traînée, retournée, se refermait autour du navire. Garde
+  (`reaches_bind`) : une piste qui atteint déjà son bind garde ses canaux fixes à 0. C'est la seule
+  articulation de la 5.0 dans ce cas (les autres plafonnent à 0,997 de produit scalaire).
 - **Ordre de peinture et matériaux du xdb.** Les deux Geometry déclarent `sortMode OFFSETS` : le
   lecteur peint dans l'ordre du fichier (relevé dans `scene.json`, comme en 4.0). Le xdb distingue
   les matériaux `transparent` (mélange alpha/additif, alpha de sommet actif) des autres — fûts et

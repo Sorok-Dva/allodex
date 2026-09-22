@@ -68,8 +68,8 @@ describe('V5 défilement UV natif', () => {
 });
 
 describe('V5 navire de raid', () => {
-  // Caméra du manifeste : au centre du bol, regardant -X ; la tour est à 79 unités.
-  const camera = { position: [27, -1, -13], target: [-52, -1, -1] };
+  // Caméra du manifeste : sur l'axe du bol, regardant -X ; la tour est à 79 unités.
+  const camera = { position: [27, -1, -2], target: [-52, -1, 1.82] };
   function scene() {
     const root = new THREE.Group();
     const group = new THREE.Group(); root.add(group);

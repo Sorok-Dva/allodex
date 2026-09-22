@@ -67,6 +67,18 @@ def _decoded_angles(matrix: np.ndarray) -> np.ndarray:
     return second if (np.abs(second) < 1e-6).sum() > (np.abs(first) < 1e-6).sum() else first
 
 
+def reaches_bind(rotation: np.ndarray, a: float, b: float, c: float, atol: float = 1e-5) -> bool:
+    """Une image de la piste porte-t-elle exactement la rotation de bind `(a, b, c)` ?
+
+    Deux quaternions unitaires décrivent la même rotation quand la valeur absolue de leur
+    produit scalaire vaut 1. Le seuil est large (10⁻⁵) : sur la 5.0, l'articulation qui
+    atteint son bind y arrive à 1,000000 et la plus proche des autres reste à 0,997.
+    """
+    from tools.extract_menu_scene import _euler_zyx_quaternion
+    bind = _euler_zyx_quaternion(np.array([a]), np.array([b]), np.array([c]))[0]
+    return bool(np.abs(np.asarray(rotation) @ bind).max() > 1 - atol)
+
+
 def restore_fixed_rotations(obj) -> list[str]:
     """Remet dans chaque piste les angles d'Euler fixes lus dans la pose de bind du squelette.
 
@@ -76,6 +88,16 @@ def restore_fixed_rotations(obj) -> list[str]:
     animés à l'image 0 sont les plus proches des courbes (les bielles tournent de 98° autour
     de Y avec un Z fixe à 180°, décomposition que le premier jet cacherait sous
     `(0°, 82°, −180°)`). Renvoie les noms des articulations retouchées ; idempotent.
+
+    Rien à restaurer quand la piste brute **passe déjà par la rotation de bind** : les canaux
+    fixes laissés à 0 sont alors les bons, la pose de bind n'étant pas toujours celle de
+    l'image 0. C'est le cas de `ship_tail`, la traînée du navire de raid : son bind est
+    l'identité et sa piste la tient de l'image 1725 à la fin, exactement la période où son
+    échelle vaut 1 ; à l'image 0, où son échelle est nulle donc l'élément invisible, la piste
+    porte un demi-tour autour de Z qui faisait choisir la seconde branche et posait 180° sur Y
+    et X — la traînée, retournée, se refermait en bulle autour du navire. Dans toute la 5.0,
+    `ship_tail` est la seule articulation où ce cas se présente : les autres articulations
+    substituées n'atteignent jamais leur bind avec leur piste brute (au mieux 0,997).
     """
     from tools.extract_menu_scene import _bind_scale, _euler_zyx_quaternion, quat_matrix
     skeleton, animation = obj.skeleton, obj.animation
@@ -95,6 +117,8 @@ def restore_fixed_rotations(obj) -> list[str]:
         rows = skeleton.local[index][:3]
         bind = (rows / _bind_scale(rows)).T
         a, b, c = euler_zyx(bind)
+        if reaches_bind(track.rotation, a, b, c):
+            continue  # la piste brute atteint déjà le bind : les zéros sont les bons
         branches = np.array([[a, b, c], [a + math.pi, math.pi - b, c + math.pi]])
         moving = ~fixed
         if moving.any():

@@ -262,6 +262,56 @@ def test_restore_fixed_rotations_uses_bind_for_fully_fixed_and_picks_the_matchin
     assert restore_fixed_rotations(obj) == []   # idempotent
 
 
+def test_restore_fixed_rotations_leaves_a_track_that_already_reaches_the_bind():
+    """`ship_tail` : bind identité, Z animé à 180° tant que l'échelle est nulle puis 0 ensuite.
+
+    La pose de bind n'est pas celle de l'image 0 : la piste brute l'atteint plus tard, donc les
+    canaux fixes laissés à 0 sont les bons. Sans ce garde, la branche choisie sur l'image 0
+    posait 180° sur Y et X et retournait la traînée d'un demi-tour autour de Z — la bulle
+    autour du navire de raid.
+    """
+    from tools.extract_menu_scene import _euler_zyx_quaternion, quat_matrix
+    from tools.scenes.v5_0 import restore_fixed_rotations
+    skeleton = _rotation_skeleton(["ship_tail"], [0xFFFF], [_rows_of(0.0, 0.0, 0.0)], [(0, 0, 0)])
+    az = np.array([math.pi, math.pi, 0.0, 0.0])
+    zeros = np.zeros(4)
+    track = JointTrack("ship_tail", np.zeros((4, 3)), _euler_zyx_quaternion(az, zeros, zeros),
+                       True, np.array([0.0, 0.0, 1.0, 1.0]))
+    before = track.rotation.copy()
+    obj = SimpleNamespace(skeleton=skeleton, animation=SkeletalAnimation(fps=30, frames=4, tracks=[track]))
+    assert restore_fixed_rotations(obj) == []
+    assert np.allclose(track.rotation, before)
+    # les images où l'élément est visible gardent bien l'identité
+    assert np.allclose(quat_matrix(track.rotation[2]), np.eye(3), atol=1e-6)
+
+
+def test_restore_fixed_rotations_still_fires_when_the_track_never_reaches_the_bind():
+    """Une bielle : Y animé autour de la valeur du bind, Z fixe à 180° jamais écrit.
+
+    Sa piste brute (Z = X = 0) ne porte à aucune image la rotation de bind : le garde ne
+    s'applique pas et la substitution a bien lieu.
+    """
+    from tools.extract_menu_scene import _euler_zyx_quaternion, quat_matrix
+    from tools.scenes.v5_0 import reaches_bind, restore_fixed_rotations
+    y98 = math.radians(98.4)
+    skeleton = _rotation_skeleton(["piston"], [0xFFFF], [_rows_of(math.pi, y98, 0.0)], [(0, 0, 0)])
+    ay = np.array([y98, 0.5, 1.0])
+    track = JointTrack("piston", np.zeros((3, 3)), _euler_zyx_quaternion(np.zeros(3), ay, np.zeros(3)),
+                       True, np.ones(3))
+    assert not reaches_bind(track.rotation, math.pi, y98, 0.0)
+    obj = SimpleNamespace(skeleton=skeleton, animation=SkeletalAnimation(fps=30, frames=3, tracks=[track]))
+    assert restore_fixed_rotations(obj) == ["piston"]
+    assert np.allclose(quat_matrix(track.rotation[0]), skeleton.local[0][:3].T, atol=1e-6)
+
+
+def test_reaches_bind_compares_rotations_not_quaternion_signs():
+    from tools.extract_menu_scene import _euler_zyx_quaternion
+    from tools.scenes.v5_0 import reaches_bind
+    q = _euler_zyx_quaternion(np.array([0.4, 1.2]), np.array([-0.2, 0.0]), np.array([3.0, 0.5]))
+    assert reaches_bind(-q, 0.4, -0.2, 3.0)          # -q et q décrivent la même rotation
+    assert not reaches_bind(q, 0.9, 0.4, 0.1)
+
+
 def test_restore_fixed_rotations_keeps_a_fixed_axis_at_ninety_degrees():
     """`joint9` : Y fixe à 90° (blocage de cardan), Z et X animés ; le décodeur lit Y = 0."""
     from tools.extract_menu_scene import quat_matrix
