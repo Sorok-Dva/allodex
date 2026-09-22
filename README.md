@@ -436,22 +436,54 @@ vivent dans `tools/scenes/v5_0.py` et `src/components/scene/MenuScene/v5/` :
 
 Un seul maillage skinné (46 éléments) et son animation `idle` de 100 s : drapeau du
 laboratoire, arbres et balancement du train sont natifs et joués par le mixeur ; aucun
-matériau ne défile, le VisObjectTemplate n'attache aucun effet, `Manatrain_6_0_01_FX` est une
-texture que rien ne référence. `tools/scenes/v6_0.py` cuit dans les sommets du train et du
-drapeau la palette native de l'image 0 (`W₀ · inverse stockée`) — sans elle, les inverses
-recalculées par l'export les laissent à l'origine — et applique la règle 7.0 « additif
-seulement si transparent » (le train est peint opaque). Le bloc 6.0 du manifeste porte
-`"mirror": false` : le décor est modelé dans l'autre chiralité que la 7.0 (vérifié sur
-`refs/captures-ui/menu-6.0-frame1.png` : station et train à gauche, laboratoire à droite).
-Côté lecteur (`src/components/scene/MenuScene/v6/`) : `v6SceneLayers` peint dans l'ordre des
-`modelElements` du xdb (le tri par profondeur mettrait le versant `Mountains_04` devant la
-coupole), `v6Sky` rend le dôme `Sky_Back` dont l'alpha de sommet est nul partout (matériau
-opaque : le jeu l'ignore, three.js non), `v6Landscape` fige le décor que l'export Maya a
-skinné sur l'os 0 — une articulation du drapeau. La caméra est ajustée par moindres carrés
-sur la capture, en corrigeant son étirement horizontal (image 4:3 passée en 16:9) ; la
-cabine du train y est plus haute que dans les données et la prairie du bas y est continue
-là où le rendu montre des terrasses : cadrage approximatif, à reprendre avec une capture
-native du client.
+matériau ne défile, le VisObjectTemplate n'attache aucun effet, `Manatrain_6_0_01_FX`, `Bird`
+et `BackClouds_02` sont des textures que rien ne référence (reliquats d'une version
+antérieure de la scène). Les binaires sont identiques octet pour octet dans les clients 6.0
+(`/home/llyam/allods-clients/6.0`), 7.0 et 8.0. Quatre constats, tous tirés des fichiers :
+
+- **caméra au centre du dôme de ciel.** `Sky_Back` est une demi-coque d'ellipsoïde
+  (ajustement sur ses 158 sommets : centre (−2,8, 4,3, −2,8), demi-axes (83, 192, 83), erreur
+  2 %) ; comme en 8.0 les calques de fond entourent le point de vue, et le manifeste y place
+  la caméra, regard vers −X (laboratoire à Y > 0 à droite, station et pylône à Y < 0 à
+  gauche). Tangage (−7°) et champ sont ajustés sur `refs/captures-ui/menu-6.0-frame1.png`
+  (image 4:3 étirée en 16:9, abscisses corrigées) : champ vertical 92° en 4:3, soit 108°
+  horizontal ; le lecteur gardant le champ vertical constant, le manifeste pose 76° pour
+  retrouver ce champ horizontal en 16:9 — le drapeau du mât, visible en haut à droite du 4:3,
+  sort alors du cadre. La première caméra (40, −7, 30, champ 56°), ajustée à l'aveugle sur des
+  repères, était trop haute et trop loin : elle rendait la station vue de haut et séparait
+  les nappes de prairie ;
+- **`v = 0` en bas des textures**, comme en 7.0 et 8.0 (corrélation z/v positive sur 37 des
+  41 calques peints ; la coupole est en `v = 1`, la base des maisons en `v = 0`) :
+  `src/components/scene/MenuScene/v6/hooks.ts` retourne les textures. C'était la cause
+  principale du rendu illisible de la première passe (coupole pendue sous le laboratoire,
+  prairies montrant leur ciel découpé vers le bas) ;
+- **les canaux de rotation fixes de l'animation valent la rotation de bind, pas 0.** Une
+  piste dont les trois angles sont fixes stocke trois flottants nuls — dans les cinq
+  versions — alors que la matrice locale de bind porte une rotation franche (85° autour de Z
+  pour `group2`, le mât du drapeau ; (56°, −10°, −22°) pour `group1`, le porte-train), et la
+  décomposition ZYX du bind donne des valeurs rondes exactement sur les canaux fixes des
+  pistes mixtes. `tools/scenes/v6_0.py` (`restore_bind_rotations`) remet cette rotation dans
+  les pistes avant l'export ; sans elle le drapeau, modelé le long de X, était vu de chant et
+  le train pendait de travers. Le décodeur générique n'est pas modifié : la même règle vaut
+  probablement pour les 5.0 et 7.0 (tours à −10°, coques à ±90°), à vérifier sur leurs
+  captures avant de l'y appliquer ;
+- le train et le drapeau sont **modelés à l'origine** (inverses stockées = identité) et posés
+  par la palette de bind (rotation et échelle : `group1` à 0,81, `group2` à 0,37, désormais
+  lue par le décodeur) : `v6_0.py` la cuit dans les sommets des trois éléments skinnés
+  (`skinIndex` 0 : `Flag1`, `Train`, `Trees`), et applique la règle 7.0 « additif seulement
+  si transparent » (le train est peint opaque). Le décor peint (`skinIndex` −1) est rattaché
+  par l'export générique à une articulation immobile : l'ancien `v6Landscape` du lecteur, qui
+  le figeait, a été retiré.
+
+Le bloc 6.0 du manifeste porte `"mirror": false` (décor modelé dans l'autre chiralité que la
+7.0). Côté lecteur, `v6SceneLayers` peint dans l'ordre des `modelElements` du xdb
+(`sortMode OFFSETS`) et `v6Sky` rend le dôme `Sky_Back` dont l'alpha de sommet est nul
+partout. Écart assumé : la capture montre la cabine du train en haut à gauche, sur la portion
+haute du câble, deux fois plus grande que ne le permet sa position dans les données
+(`group1` statique en (−36, −22, 9), confirmé par l'`aabb` de l'animation dans le xdb : Y de
+−27 à 63) ; elle vient sans doute d'une autre révision de la scène (les textures `Bird`,
+`BackClouds_02` inutilisées en témoignent). Le rendu suit les données : le train pend juste
+au-dessus du pylône 02, à gauche.
 
 Reprise des deux écrans pour qu'ils soient visuellement identiques au jeu, à partir de captures live du client (spec détaillée : `docs/superpowers/specs/2026-09-19-iteration-2-fidelite-design.md`).
 
