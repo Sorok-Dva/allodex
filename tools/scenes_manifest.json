@@ -81,7 +81,7 @@
       "background": "#4a6a8c",
       "mirror": false,
       "_mirror_note": "Décor modelé dans l'autre chiralité que la 7.0 : avec le nœud miroir habituel, station et train passent à droite et le laboratoire à gauche, à l'inverse de refs/captures-ui/menu-6.0-frame1.png. Sans miroir, les coordonnées du .glb sont celles du jeu.",
-      "_camera_note": "Position = centre de l'ellipsoïde de ciel Sky_Back, ajusté par moindres carrés sur ses 158 sommets (centre (-2.8, 4.3, -2.8), demi-axes (83, 192, 83), erreur 2 %) : les calques de fond sont des coques concentriques autour du point de vue, comme en 8.0. Regard vers -X (profondeur), les éléments à Y > 0 à droite (laboratoire), Y < 0 à gauche (station, pylône, train). Tangage (-7°) et champ ajustés sur refs/captures-ui/menu-6.0-frame1.png (image 4:3 étirée en 16:9, abscisses corrigées) avec le pied et la poulie du pylône 02, la coupole et le drapeau du mât du laboratoire, l'escalier de la station : champ vertical 92° en 4:3, soit 108° horizontal ; le lecteur gardant le champ vertical constant, on pose ici 76° pour retrouver ce même champ horizontal en 16:9. Le train de la capture (haut à gauche, sur la portion haute du câble) n'a pas servi : les données (identiques dans les clients 6.0, 7.0 et 8.0, aabb de l'animation comprise) le posent près du pylône 02.",
+      "_camera_note": "Position = centre de l'ellipsoïde de ciel Sky_Back, ajusté par moindres carrés sur ses 158 sommets (centre (-2.8, 4.3, -2.8), demi-axes (83, 192, 83), erreur 2 %) : les calques de fond sont des coques concentriques autour du point de vue, comme en 8.0. Regard vers -X (profondeur), les éléments à Y > 0 à droite (laboratoire), Y < 0 à gauche (station, pylône, train). Champ ajusté sur refs/captures-ui/menu-6.0-frame1.png (image 4:3 étirée en 16:9, abscisses corrigées) avec le pied et la poulie du pylône 02, la coupole du laboratoire et l'escalier de la station : champ vertical 92° en 4:3, soit 108° horizontal ; le lecteur gardant le champ vertical constant, on pose ici 76° pour retrouver ce même champ horizontal en 16:9. Le train de la capture (haut à gauche, sur la portion haute du câble) n'a pas servi : les données (identiques dans les clients 6.0, 7.0 et 8.0, aabb de l'animation comprise) le posent près du pylône 02, où il reste — il ne parcourt pas le câble. CHOIX UTILISATEUR (22/09/2026) : le tangage passe de -7° (valeur ajustée sur la capture) à -1°, cible relevée en conséquence de z=-7.5 à z=-3.449, pour garder dans le cadre 16:9 le petit drapeau du mât du laboratoire (sommet à (-38.1, 48.8, 22.3), hors champ par le haut à -7°) ; l'horizon est en contrepartie plus bas que sur la capture.",
       "camera": {
         "position": [
           -2.8,
@@ -91,7 +91,7 @@
         "target": [
           -40,
           4.3,
-          -7.5
+          -3.449
         ],
         "fov": 76
       }
