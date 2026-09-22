@@ -547,7 +547,7 @@ Le bloc 6.0 du manifeste porte `"mirror": false` (décor modelé dans l'autre ch
 et **`v6Clouds` fait dériver les nappes** : le xdb arme `scrollRGB` sur ses 46 matériaux sans
 donner une seule vitesse, exactement comme en 4.0, donc les vitesses sont **empruntées à la
 7.0** (`AMM_7_0.(Geometry).xdb`) comme l'utilisateur l'a validé pour la 4.0 — anneaux et
-nuages sombres 0,01 ou 0,02 tuile/s (`Back_Cloud_*`), brume de vallée `MidClouds_01` −0,05 à
+nuages sombres 0,01 ou 0,02 tuile/s (`Back_Cloud_*`), brume de vallée `MidClouds_01` −0,02 à
 contresens (`Back_Myst`), rayons `Noise01White` 0,04 (`Ground_lights`). Deux contraintes de la
 6.0 : l'export ne distingue les matériaux que par (nom, texture, fusion, transparence), donc
 les six nappes `BackClouds_01`, les quatre `Ferris01_Clouds_Up` et les deux `MidClouds_01`

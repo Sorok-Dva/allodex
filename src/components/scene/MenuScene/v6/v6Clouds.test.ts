@@ -24,7 +24,7 @@ describe('nuages et brume 6.0', () => {
   it('emprunte à la 7.0 les vitesses des nappes, et rien pour le décor peint', () => {
     expect(cloudSpeed('Clouds_Ring_01')![0]).toBeCloseTo(0.01);   // Back_Cloud_01
     expect(cloudSpeed('Clouds_Ring_05')![0]).toBeCloseTo(0.02);   // Back_Cloud_06
-    expect(cloudSpeed('Clouds_Mid')![0]).toBeCloseTo(-0.05);      // Back_Myst, à contresens
+    expect(cloudSpeed('Clouds_Mid')![0]).toBeCloseTo(-0.02);      // à contresens, ralentie sur demande
     // Les rayons Noise01White ont un u constant : c'est v qui porte les stries.
     expect(cloudSpeed('Sun_Rays_01')).toEqual([0, 0.04]);         // Ground_lights
     expect(cloudSpeed('Sun_Rays_Add')).toEqual([0, 0.04]);
@@ -54,7 +54,7 @@ describe('nuages et brume 6.0', () => {
     expect(rock.material.map).toBe(shared);
     effects.update(10);
     expect(clouds.material.map!.offset.x).toBeCloseTo(0.1);
-    expect(mist.material.map!.offset.x).toBeCloseTo(-0.5);
+    expect(mist.material.map!.offset.x).toBeCloseTo(-0.2);
     expect(rays.material.map!.offset.y).toBeCloseTo(-0.4);
     effects.update(10, true);   // mouvement réduit : image figée à t = 0
     expect(clouds.material.map!.offset.x).toBe(0);

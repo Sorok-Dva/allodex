@@ -52,9 +52,11 @@ export const BORROWED_SPEEDS: Record<string, readonly [number, number]> = {
   Clouds_Front_Rays1: [0.01, 0],
   Mountain_Clouds_01: [0.01, 0],
   Mountain_Clouds_02: [0.01, 0],
-  // Brume de la vallée (MidClouds_01), la nappe qui croise les autres → Back_Myst.
-  Clouds_Mid: [-0.05, 0],
-  Clouds_Mid1: [-0.05, 0],
+  // Brume de la vallée (MidClouds_01), la nappe qui croise les autres → Back_Myst, mais
+  // à la vitesse des nuages de la table 7.0 : à −0,05 elle traversait trop vite (choix
+  // de l'utilisateur, 22/09/2026).
+  Clouds_Mid: [-0.02, 0],
+  Clouds_Mid1: [-0.02, 0],
   // Rayons Noise01White, stries le long de v → Ground_lights.
   Sun_Rays_01: [0, 0.04],
   Sun_Rays_Add: [0, 0.04],
