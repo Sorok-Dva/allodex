@@ -4,7 +4,17 @@ import numpy as np
 from tools.extract_menu_scene import (ElementSpec, JointTrack, LoadedObject, GeometryDoc, MaterialSpec, Skeleton, SkeletalAnimation,
                                       animated_bounds, quat_matrix, rest_world_matrices)
 from tools.scenes import hooks_for
-from tools.scenes.v8_0 import HOOKS, bake_halo, mirror_object, positions
+from tools.scenes.v8_0 import HOOKS, bake_halo, mirror_object, positions, restore_static_binds
+
+# Liaison native de `group2` (parent du halo), lue dans le squelette du jeu : les lignes sont
+# les colonnes de M = R_z(−5,959°) · diag(0,82770 ; 0,77981 ; 0,83692) — rotation puis échelle
+# **non uniforme**, colonnes orthogonales à 7·10⁻¹⁰.
+GROUP2_ROWS = np.array([[0.82322991, -0.08592476, 0.0],
+                        [0.08095334, 0.77559966, 0.0],
+                        [0.0, 0.0, 0.83692002]])
+GROUP2_TRANSLATION = np.array([39.697224, -20.435099, 10.728845])
+# Le seul flottant d'échelle que la piste figée sait porter : la moyenne géométrique des trois.
+GROUP2_TRACK_SCALE = 0.8144219517707825
 
 
 def _object(name: str = "AMM_8_0") -> LoadedObject:
@@ -54,13 +64,18 @@ def test_mirror_object_reflects_skeleton_and_curves_consistently():
 
 
 def _halo_object() -> LoadedObject:
-    """Squelette réduit du jeu : VisualSceneNode → group2 (translaté, échelle 0,81) → glow_add,
-    dont la piste tourne et grossit autour du centre du quad **dans le repère du modèle**."""
+    """Squelette réduit du jeu : VisualSceneNode → group2 → glow_add, dont la piste tourne et
+    grossit autour du centre du quad **dans le repère du modèle**.
+
+    `group2` reprend sa liaison native (rotation de 5,959° autour de Z + échelle non uniforme)
+    et sa piste entièrement figée, qui n'en retient que la translation et la moyenne
+    géométrique des échelles — la copie appauvrie que `restore_static_binds` écarte.
+    """
     local = np.zeros((3, 4, 3))
     for i in range(3):
         local[i, :3, :] = np.eye(3)
-    local[1, :3, :] *= 0.8144
-    local[1, 3, :] = [39.697, -20.435, 10.729]
+    local[1, :3, :] = GROUP2_ROWS
+    local[1, 3, :] = GROUP2_TRANSLATION
     inverse = np.zeros((3, 4, 3))
     for i in range(3):
         inverse[i, :3, :] = np.eye(3)  # matrices inverses de bind du jeu : identité pour les trois
@@ -71,8 +86,9 @@ def _halo_object() -> LoadedObject:
     angles = np.radians([0.0, 90.0, 180.0])  # autour de Y (axe de visée)
     rotation = np.stack([[0.0, np.sin(a / 2), 0.0, np.cos(a / 2)] for a in angles])
     translation = np.stack([center - s * (quat_matrix(q) @ center) for s, q in zip(scales, rotation)])
-    still = JointTrack(name="group2", translation=np.array([local[1, 3]]), rotation=np.array([[0.0, 0.0, 0.0, 1.0]]),
-                       animated=False, scale=np.array([0.8144]))
+    still = JointTrack(name="group2", translation=np.array([GROUP2_TRANSLATION]),
+                       rotation=np.array([[0.0, 0.0, 0.0, 1.0]]),
+                       animated=False, scale=np.array([GROUP2_TRACK_SCALE]))
     halo = JointTrack(name="glow_add", translation=translation, rotation=rotation, animated=True, scale=scales)
     quad = center + np.array([[-14.5, 0.0, -14.5], [14.5, 0.0, -14.5], [14.5, 0.0, 14.5], [-14.5, 0.0, 14.5]])
     doc = GeometryDoc()
@@ -98,16 +114,60 @@ def test_bake_halo_composes_group2_and_keeps_the_glow_centred():
     # l'animation fait tourner le quad autour de l'origine de l'articulation → il dérive.
     drift = np.linalg.norm(_halo_center(obj, 2) - _halo_center(obj, 0))
     assert drift > 30
+    restore_static_binds(obj)
     obj.vertices["position"] = bake_halo(obj, obj.vertices["position"])
-    # Recalé par monde_repos(glow_add) = group2 (translation, échelle 0,81) : centre fixe.
-    expected = np.array([39.697, -20.435, 10.729]) + 0.8144 * np.array([41.602, -129.973, 44.921])
+    # Recalé par monde_repos(glow_add) = liaison complète de group2 : centre fixe.
+    expected = GROUP2_ROWS.T @ np.array([41.602, -129.973, 44.921]) + GROUP2_TRANSLATION
     for frame in range(3):
         assert np.allclose(_halo_center(obj, frame), expected, atol=0.05)
-    # Le quad grossit bien : demi-largeur 14,5 × 0,81 → × 2,33.
+    # Le quad grossit bien : demi-largeur 14,5 × 2,33, puis la liaison. Le quad tourne autour
+    # de Y, donc un écart en x le reste : le facteur est la composante x de la liaison sur x
+    # (0,82323), pas la norme de la colonne (0,82770) qui inclut le petit cisaillement en y.
+    facteur_x = (GROUP2_ROWS.T @ np.array([1.0, 0.0, 0.0]))[0]
     low, high = animated_bounds(obj, 2)
-    assert np.isclose((high - low)[0] / 2, 14.5 * 0.8144 * 2.33, atol=0.1)
+    assert np.isclose((high - low)[0] / 2, 14.5 * facteur_x * 2.33, atol=0.05)
     # Le parent natif est conservé.
     assert obj.skeleton.parents[obj.skeleton.names.index("glow_add")] == obj.skeleton.names.index("group2")
+
+
+def test_the_full_bind_matrix_puts_the_halo_on_the_beam_axis():
+    """Chiffres de la scène : le croisement des `Smal_Line_*` est en x = 63,57, l'axe du
+    faisceau (`In_Big_*`) en x = 64,26. La piste figée lue telle quelle (rotation à 0, échelle
+    uniforme 0,814422) pose le halo 9,9 unités trop à droite ; la liaison complète le ramène
+    à 0,15 unité du croisement."""
+    point = np.array([41.60149956, -129.9730072, 44.92099953])
+    piste = GROUP2_TRACK_SCALE * point + GROUP2_TRANSLATION           # rotation lue à 0
+    liaison = GROUP2_ROWS.T @ point + GROUP2_TRANSLATION              # matrice de liaison
+    assert np.allclose(piste, [73.5776, -126.2884, 47.3134], atol=1e-3)
+    assert np.allclose(liaison, [63.4231, -124.8167, 48.3241], atol=1e-3)
+    assert abs(piste[0] - 63.570) > 9.9 and abs(liaison[0] - 63.570) < 0.16
+    # La piste figée n'est qu'une copie appauvrie : son échelle est la moyenne géométrique des
+    # trois échelles de la liaison, écrite à 10⁻⁸ près.
+    axes = np.linalg.norm(GROUP2_ROWS, axis=1)
+    assert np.isclose(float(np.prod(axes) ** (1 / 3)), GROUP2_TRACK_SCALE, atol=1e-8)
+    assert axes.max() / axes.min() > 1.07  # échelle bel et bien non uniforme
+
+
+def test_restore_static_binds_drops_only_the_redundant_tracks():
+    obj = _halo_object()
+    assert restore_static_binds(obj) == ["group2"]
+    assert [t.name for t in obj.animation.tracks] == ["glow_add"]  # la piste animée reste
+    assert restore_static_binds(obj) == []  # idempotent
+    # Une piste figée qui ne recopie *pas* la liaison est conservée telle quelle.
+    other = _halo_object()
+    other.animation.tracks[0].translation = np.array([[1.0, 2.0, 3.0]])
+    assert restore_static_binds(other) == []
+    assert [t.name for t in other.animation.tracks] == ["group2", "glow_add"]
+
+
+def test_restore_static_binds_restores_the_bind_rotation_of_the_rest_pose():
+    obj = _halo_object()
+    before = rest_world_matrices(obj.skeleton, obj.animation)[1]
+    restore_static_binds(obj)
+    after = rest_world_matrices(obj.skeleton, obj.animation)[1]
+    assert np.allclose(before[:3, :3], GROUP2_TRACK_SCALE * np.eye(3))  # rotation perdue
+    assert np.allclose(after[:3, :3], GROUP2_ROWS.T, atol=1e-6)         # liaison retrouvée
+    assert np.allclose(after[:3, 3], GROUP2_TRANSLATION)
 
 
 def test_bake_halo_leaves_objects_without_halo_untouched():
@@ -120,7 +180,11 @@ def test_positions_bakes_the_halo_for_the_root_only():
     obj = _halo_object()
     raw = obj.vertices["position"].copy()
     baked = positions("AMM_8_0", obj, raw.copy())
-    assert np.linalg.norm(baked.mean(axis=0) - raw.mean(axis=0) * np.array([-1, 1, 1])) > 30  # reflété puis recalé
+    # Reflété *puis* recalé : le reflet et la liaison commutent (S·M·S · S·v + S·t = S·(M·v + t)),
+    # le centre cuit est donc le reflet de la composition native.
+    mirror = np.array([-1.0, 1.0, 1.0])
+    expected = mirror * (GROUP2_ROWS.T @ raw.mean(axis=0).astype(np.float64) + GROUP2_TRANSLATION)
+    assert np.allclose(baked.mean(axis=0), expected, atol=1e-3)
     other = _halo_object()
     kept = positions("AMM_Autre", other, other.vertices["position"].copy())
     assert kept.tolist() == other.vertices["position"].tolist()
