@@ -406,6 +406,152 @@ ARGB) ne correspond pas non plus au voile pâle de la capture. Reste approximati
 horizontal des défilements, les rotations squelettiques (≈ 0,15°, arbres quasi immobiles), et
 un ciel plus sombre que dans le client (luminance 107 contre 143 en haut à gauche).
 
+## Lorebook (préparation)
+
+Étape de préparation d'une future page **Lorebook**, dont la langue cible est l'**anglais**. Pas
+encore de page : `tools/extract_lore.py` rassemble les textes de lore **officiels** du client, leur
+anglais officiel quand il existe, un glossaire russe → anglais et un index du corpus communautaire.
+
+    python3 tools/extract_lore.py              # ≈ 75 s, écrit public/game/lore/
+    python3 tools/extract_lore.py --evaluate   # + précision du classifieur de types (80/20)
+
+### Sources
+
+Toutes décrites dans `tools/lore_manifest.json` ; une source optionnelle absente est signalée.
+
+- **Dernier client officiel** (`/mnt/h/MyGames/AllodsRU`, 17.0.01.64) — référence. `Texts_x64.pak`
+  contient `pack.rus.loc` et `pack.eng_eu.loc` : deux tables de 277 187 textes **alignées index par
+  index** (même empreinte `5e102aa3`). L'anglais est celui de l'**édition européenne** : 250 654 des
+  250 869 textes anglais du client se retrouvent à l'identique dans les packs officiels EU 16.0 (CDN
+  my.games). Une entrée restée en cyrillique n'a pas de traduction officielle. Le client propose
+  d'ailleurs cet anglais au joueur (`Profiles/localizations.cfg` : `eng_eu:English`).
+- **`Bin/pack.bin`** (`BaseLocall_x64.pak`, 703 Mo décompressé) — la base de ressources compilée.
+  Elle ne contient pas les chemins, mais chaque ressource y référence ses textes par leur index dans
+  les `.loc` : on sait quelle ressource porte quel texte, à quel décalage, ce qui regroupe les textes
+  (une quête = nom, objectif, textes de début, de vérification et de fin). Format décodé dans la
+  docstring de l'outil (tables de hachage à pointeurs auto-relatifs ; la table S3 associe le
+  `resourceId` des xdb à la ressource).
+- **Arbre serveur** (`/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data`, dépôt git lu par
+  `git cat-file`, contenus jusqu'à ZC14/Ferris/Umoir malgré l'étiquette 7.0) — chemins de
+  ressources, types (balise racine du xdb) et champs (`name`, `startText`…) des contenus qui y
+  figurent : 121 488 ressources reliées au client par leur `resourceId`. Pour les ressources plus
+  récentes (Eden, Jigran, Kadagan, Kvator, Isa, Suslanger, Airin…), le type est **déduit** de la
+  disposition binaire par un classifieur bayésien naïf (décalages des textes + silhouette des
+  premiers mots) : **94,9 %** de bonnes réponses sur 12 612 ressources connues tenues à l'écart ;
+  quêtes 100 %, dialogues et objets 99,9 %, PNJ 98,9 %, zones 98 % (messages `TextMessage` : 77 %).
+- **Packs EU officiels 16.0** (en + fr, alignés) — pont anglais → français : le français n'est
+  retenu que si l'anglais du client 17.0 est identique à celui du pack EU (249 393 textes, dont
+  249 356 présents tels quels dans le client FR 16.0 `/mnt/h/MyGames/Allods Online FR (FR)`, qui
+  ne contient **que** le français).
+- **Corpus communautaire** (`refs/lorebook`, git-ignoré, don d'un membre de la communauté) —
+  jamais recopié : il est apparié au client et **référencé par chemin**. Les ~2 000 images (art de
+  fans, fonds d'écran, artbook) sont écartées ; les dumps bruts de textes client (`Texts.pak`,
+  `текстовик 15.0/pack.txt`) ne servent pas de source.
+
+Langues rencontrées dans les autres clients (pour mémoire) : RU 17 (sauvegarde) = pak identique au
+client de référence (ru + eng_eu) ; FR 8.0 / 9.0 / 15.0 / 16.0 = français seul ; 2.0.04 = anglais
+(époque gPotato) et 4.0 « Nova » = anglais, français, russe, arabe, portugais, dans l'**ancien
+format** de `.loc`, qui porte encore les chemins des textes ; 3.0 arabe = arabe ; « AllodsLegend »
+(4.0) = russe en `.txt` par chemin ; 11.0 « Warp » = russe ; 11.0-steam = anglais, mais sans pak de
+textes téléchargé ; « Revelation 7.0 » (client de serveur privé) = anglais + russe, ancien format ;
+Cloud Pirates (autre jeu) = en, fr, de, pl, tr.
+L'anglais officiel ne se limite donc pas aux vieilles versions : l'édition européenne a suivi le
+jeu jusqu'à la 16.0.
+
+### Méthode
+
+1. Lecture des deux `.loc` (alignés) et de `pack.bin` ; balayage des références de textes (u32 aligné
+   suivi d'un u32 nul). Le propriétaire d'un texte est la ressource dont les autres textes sont ses
+   voisins d'index (les `.loc` sont triés par chemin de ressource) : 273 897 textes rattachés.
+2. Rattachement à l'arbre serveur (contenu identique au caractère près, `href` exceptés) puis
+   apprentissage `(type, décalage) → champ`. Un texte dont la ressource existe dans l'arbre serveur
+   mais dont le russe a changé porte `ru_revised` : **l'anglais officiel peut alors traduire
+   l'ancienne version** (3 216 textes, surtout les quêtes réécrites des zones de départ de
+   l'Empire et de la Ligue).
+3. Sélection des types à portée narrative → catégories : `quests` (QuestResource), `dialogues`
+   (Cue : option du joueur + réponse du PNJ), `library` (objets lisibles : pages de livres, lettres,
+   journaux — `kind: document` — et descriptions d'ambiance — `kind: flavor`), `scenes`
+   (répliques scriptées, résumés d'intrigue, messages au monde), `events`, `places`, `characters`
+   (PNJ nommés : titre ou nom propre), `factions` (factions, races, classes), `mail`, `secrets`.
+   `series.json` regroupe les documents en plusieurs pages (« Путеводитель Данаса », « Летопись
+   Валиров », « Архив Скракана »…).
+4. Rendu : `<t href>` résolus dans la bonne langue, balises du jeu retirées, variables en `{nom}`.
+
+### Sorties (`public/game/lore/`)
+
+| Fichier | Contenu |
+|---|---|
+| `index.json` | sources, empreinte, couverture par catégorie et par ère, poids des fichiers |
+| `<catégorie>.json` | entrées par ressource : `id` (`r<rid>` de pack.bin), `resource_id`, `type`, `type_source` (`server`/`inferred`), `path` (xdb) si connu, `era`, et par champ `loc` (index dans les `.loc` 17.0.01.64), `en`, `en_status`, `ru_revised`, `fr` (présence) |
+| `ru/<catégorie>.json`, `fr/<catégorie>.json` | tables `loc → texte` |
+| `glossary.json` | 3 706 noms propres et termes russe → anglais officiel, variantes, fréquence dans le corpus |
+| `community.json` | chaque fichier du corpus : classe, couverture, textes du client retrouvés |
+| `atlas.json` | les allods de l'atlas communautaire ↔ client (ligne, nom, anglais officiel) |
+
+Poids : **50,8 Mo** (13,4 Mo gzip), dont 18,8 Mo pour les fichiers anglais + métadonnées ;
+`quests` (8,6 Mo en, 11,5 Mo ru) et `dialogues` (6,2 Mo en, 7,1 Mo ru) pèsent le plus. La page
+devra charger par catégorie, jamais tout d'un bloc.
+
+### Couverture (client 17.0.01.64)
+
+Client entier : 272 146 textes non vides, **250 869 avec un anglais officiel (92,2 %)**. Sélection
+lore : 31 689 entrées, 71 080 textes, 1,70 M mots russes.
+
+| Catégorie | Entrées | Textes | Anglais officiel | Mots EN disponibles | Mots RU à traduire |
+|---|---:|---:|---:|---:|---:|
+| quests | 7 001 | 32 483 | 89,4 % | 995 421 | 100 780 |
+| dialogues | 13 674 | 22 836 | 89,3 % | 577 889 | 88 351 |
+| scenes | 3 567 | 4 001 | 87,0 % | 64 433 | 7 687 |
+| library | 663 | 1 319 | 58,6 % | 26 938 | 16 410 |
+| mail | 698 | 1 667 | 90,2 % | 25 675 | 2 849 |
+| characters | 4 338 | 6 804 | 91,8 % | 13 985 | 1 137 |
+| events | 45 | 115 | 98,3 % | 4 508 | 27 |
+| places | 1 298 | 1 308 | 96,2 % | 3 053 | 100 |
+| factions | 404 | 544 | 97,4 % | 1 750 | 23 |
+| **total** | **31 689** | **71 080** | **89,1 %** | **1 713 739** | **217 364** |
+
+Par ère : **98,7 %** des textes anciens (présents dans l'arbre serveur) ont un anglais officiel,
+**79,9 %** des récents. Ce qui manque est surtout la 17.0 (Kvator : « Сказ о Валирах », « Сказ о
+Соловье-разбойнице »), Kadagan, les « Новости 1025/1026 года », le Jubilé 2025 et une partie des
+objets d'ambiance récents ; 163 793 mots russes supplémentaires ont un anglais **peut-être périmé**
+(`ru_revised`) à relire.
+
+### Provenance
+
+Chaque entrée est étiquetée :
+
+- **in-game** — texte livré dans le client officiel ; `en_status` dit s'il existe un anglais
+  officiel (`official`), s'il manque un fragment (`partial`) ou rien (`missing`).
+- **official** — texte officiel hors jeu (annonces de mise à jour, articles datés du site, interviews
+  de l'équipe, FAQ scénario Discord : réponses présentées comme officielles, **à vérifier**).
+- **community** — travail de fans, jamais recopié, référencé par chemin.
+
+Corpus (`community.json`, 128 fichiers dont 115 `.txt`) : 56 `in-game (official EN available)`,
+8 `in-game (RU/FR only)`, 25 `official out-of-game`, 29 `community`, 10 `excluded` (dumps bruts,
+autres jeux : Allods Adventure, Cloud Pirates, Аллоды 1998). La règle : un texte dont au moins la
+moitié des phrases se retrouve dans le client est « en jeu » (et « EN disponible » si 80 % de ces
+phrases ont un anglais officiel) ; sinon, classement du manifeste (`provenance`), puis titre daté
+(format des articles du site officiel) ; sinon « community ». Les récits d'origine inconnue
+(« Путь Изгнанника », « Найан. Груз тысячелетий », « Воспоминания Смеяны »…) portent la note
+`verify`. Surprise utile : les lettres des jubilés 2023 et 2024 sont des textes **du jeu** (avec
+anglais officiel), celle de 2025 aussi (sans anglais).
+
+Atlas (`АТЛАС АЛЛОДЫ табл.xlsx`) : **318 allods** (la feuille s'étend sur 1 008 lignes, mais
+318 seulement sont remplies). 65 correspondent à une zone du client, 112 à un nom exact d'un autre
+texte, 49 ne sont que **mentionnés** dans des textes, 92 introuvables ; **173 ont un nom anglais
+officiel**. Hors catégories d'autres jeux (Allods Adventure, Cloud Pirates), 216 des 274 allods
+sont rattachés au client (79 %).
+
+### Droits
+
+Les textes du client appartiennent à l'éditeur (Astrum / My.Games) — comme les autres assets de
+`public/game/`. L'**atlas « Атлас Аллоды »** (DarkyAndSparky, 2020, VK `bladeinbutter`) et
+l'**« Энциклопедия Сарнаута. Номарх Авилар »** sont des travaux de fans : aucun texte, aucune carte,
+aucune donnée propre (climat, taille, détenteur, catégorie) n'est repris ; seuls les noms d'allods et
+les numéros de ligne servent à l'appariement. Toute reprise sur la page demandera **l'accord des
+auteurs et un crédit**. Même règle pour les récits de fans et les chronologies. Les images du corpus
+ne sont pas utilisables (droits inconnus).
+
 ## Déploiement (production)
 
 Le site public (`allodex.eu`, `allodex.online`, `allodex.allods-developers.eu`) est servi
