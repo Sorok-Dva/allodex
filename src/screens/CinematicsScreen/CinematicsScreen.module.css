@@ -4,7 +4,7 @@
 /* Plaque de titre du jeu (mêmes sprites que la fenêtre Succès). */
 .plate { position: absolute; top: 5vh; left: 50%; transform: translateX(-50%); height: 46px; min-width: 320px; padding: 0 60px; display: flex; align-items: center; justify-content: center; }
 .title { position: relative; margin: 0; font-size: 22px; font-weight: normal; color: #ffeb73; text-shadow: 0 1px 2px #000; white-space: nowrap; }
-.lead { position: absolute; top: calc(5vh + 58px); left: 0; right: 0; margin: 0; text-align: center; font-size: 18px; color: #e9dcbf; text-shadow: 0 1px 3px #000; }
+.lead { position: absolute; top: calc(5vh + 58px); left: 0; right: 0; margin: 0; padding: 0 16px; text-align: center; font-size: 18px; color: #e9dcbf; text-shadow: 0 1px 3px #000; }
 
 /* Bannières de l'écran de choix de faction du client (320 × 528, parchemin y 172 → 506). */
 .banners { position: absolute; top: 50%; left: 50%; display: flex; gap: clamp(24px, 6vw, 96px); transform: translate(-50%, -46%) scale(var(--banner-scale, 1)); }

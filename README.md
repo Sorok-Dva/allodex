@@ -28,6 +28,7 @@ Les assets extraits sous `public/game/` appartiennent à My.Games et ne sont pas
 - `/achievements` : panneau Succès fidèle au jeu, données mockées (`src/data/medals.mock.json`). La progression et les paliers restent fictifs.
 - `/chronicles` : archive des écrans de lancement, version par version, avec leur thème musical (voir « Chroniques » ci-dessous).
 - `/music` : catalogue musical FR/RU, accessible par le bouton gramophone, avec lecture par catégorie.
+- `/cinematics` : toutes les cinématiques du jeu en film complet par faction, avec sous-titres officiels FR/EN/RU (voir « Cinématiques » ci-dessous).
 - Non fait : comptes, addon d'export, import de progression, icônes réelles de tous les succès.
 
 ## Musiques
@@ -73,6 +74,97 @@ déclarée dans `tools/assets_manifest.json` (`remote_textures`) et télécharg�
 l'extraction dans `public/game/textures/Official/media_player.png`. Elle est ensuite
 servie localement ; `--force` la retélécharge. Le cadre conserve ses dimensions
 natives sur ordinateur et est réduit sur les petits écrans.
+
+## Cinématiques
+
+`/cinematics` (alias `/cinematiques`, bouton « clap » de l'accueil) joue toutes les
+cinématiques précalculées du jeu en **film complet par faction** : on choisit la Ligue ou
+l'Empire sur les bannières de l'écran de choix de faction du client
+(`Interface/Ingame/ChoiceFaction`), puis les cinématiques de la faction et les communes
+s'enchaînent dans l'ordre chronologique, avec un carton de titre à chaque chapitre, la
+liste des chapitres (vignettes, navigation), une barre de progression sur la durée du
+film (repères de chapitres) et les sous-titres officiels en `<track>` WebVTT (FR, EN, RU
+ou aucun). Deux lecteurs se relaient : pendant qu'un chapitre joue, l'autre, caché et
+muet, précharge le suivant, d'où un passage sans attente. `?faction=league|empire` ouvre
+directement un film. Clavier : espace (lecture/pause), Maj+←/→ (chapitre), Échap (retour).
+
+    python3 tools/extract_cinematics.py                 # extraction (idempotente)
+    python3 tools/extract_cinematics.py --only zc13-forum --force
+    python3 tools/extract_cinematics.py --measure-sync --skip-video   # re-mesure du minutage (GPU conseillé)
+
+### Sources
+
+- **Dernier client (17.0.01.64, `/mnt/h/MyGames/AllodsRU`), source par défaut** :
+  `data/Packs/Video.pak` (46 entrées), `Texts_x64.pak` (`pack.rus.loc`, `pack.eng_eu.loc`),
+  `BaseLocall_x64.pak` (`Bin/pack.bin`, base de données compilée du client).
+- **Client FR 16.0.01.78.2 (`/mnt/h/MyGames/Allods Online FR (FR)`)** : sous-titres
+  français officiels (`Texts_x64.pak` → `Bin/pack.loc`, `BaseLocfra_x64.pak` → `Bin/pack.bin`).
+- **Client « Warp » 11.0.00.37 (`~/allods-clients/11.0`)** : les quatre vidéos de l'histoire
+  10.0 (Vychegrad), **retirées du jeu** (absentes des clients 15.0, 16.0 et 17.0).
+- Comparaison seulement : clients 7.0 (ADC, Divinity), 8.0, 9.0, 15.0, 16.0 : mêmes vidéos,
+  octet pour octet (CRC identiques), que le 17.0 pour tout ce qu'ils ont en commun. Les clients 1.x → 6.x
+  n'ont aucune vidéo (pas de `Video.pak`) ; l'arbre serveur 7.0 (xdb) a servi à repérer les
+  cinématiques moteur et le mécanisme des sous-titres.
+
+### Méthode
+
+- **Inventaire** : le `pack.bin` du client contient un registre vidéo (groupe → événement →
+  fichier : `Invasion/plague → Video/7_0Events/Invasion/Beregovoy_HD.ogv`, …). Il liste
+  toutes les vidéos du `Video.pak` ; le manifeste (`tools/cinematics_manifest.json`) en
+  reprend chaque entrée non-menu, avec l'événement, la faction, la clé d'ordre et la
+  justification de sa place (`chronology`). Les titres sont éditoriaux : le jeu ne nomme
+  pas ses vidéos.
+- **Vidéo** : Theora 1280×720 (Nihaz : 1920×1080) + Vorbis stéréo, transcodés en WebM
+  (VP9 CRF 40 + Opus 96 k) et MP4 (H.264 CRF 29 + AAC 128 k), 720p au plus, et une affiche.
+- **Audio** : la piste est **incrustée** dans l'`.ogv` et identique dans tous les clients
+  (FR compris) : voix **russes** quand il y a des dialogues (23 vidéos), musique et effets
+  seulement pour les 11 autres. Les paks `SFX_Voice_*` du 17.0 ne contiennent que des
+  répliques de Kvator et des scènes moteur de ZC12, rien pour les vidéos.
+- **Sous-titres** : ils ne sont pas dans la vidéo. Le client les affiche par l'add-on
+  `Subtitles` (événement `EVENT_SHOW_SUBTITLES`) depuis des ressources `UISubtitleShow`
+  (`subtitles[] = {delayMs, text}` ; `delayMs` = durée d'affichage). Compilées dans
+  `pack.bin`, elles y laissent un bloc reconnaissable (voir `scan_subtitles`) : index du
+  texte dans les `pack.*.loc` + durée. Le manifeste désigne chaque réplique par le début de
+  son texte russe ; RU et EN viennent du 17.0 (même index), FR du client FR 16.0 (décalage
+  d'index constant dans une ressource, contrôlé par l'égalité des durées : 100 % des lignes
+  retrouvées). Une ligne anglaise restée en russe dans le client est omise de la piste EN.
+- **Minutage** : l'ordre et la durée viennent des données ; **l'instant de départ, non** —
+  il est fixé par le script de la scène, que je n'ai pas décodé dans le `pack.bin`. Les
+  départs sont donc **mesurés** sur la voix (faster-whisper large-v3, deux passes, amorcé
+  par le texte officiel, seul l'horodatage des mots est gardé) et rangés dans
+  `tools/cinematics_sync.json`, contrôlé contre une transcription indépendante (la
+  première réplique du prologue de la Ligue, mal retrouvée, y a été remise à `null`) ; une
+  réplique introuvable (`null`) est placée à la suite de la précédente, ou juste avant la
+  première réplique mesurée quand elle ouvre la vidéo. Les présentations de boss
+  (une seule ligne couvrant toute la vidéo) partent de 0 sans mesure (`timing: client`).
+- **Chronologie** : film = prologue de la faction (groupe `FactionsIntro`, 16.0), puis les
+  arcs dans l'ordre des versions (Invasion 7.0 → raid 7.2 → Kyros 8.0 → Talos 8.1 → Nihaz
+  8.2 → donjons 9.0 → Vychegrad 10.0 → Éveil 11.0 → Suslanger 12.0 → Toute-Mère 13.0) ;
+  dans un arc, l'ordre du registre, sauf ZC13 où les dialogues placent le Forum avant la
+  tombe d'Aellona (voir `chronology` de chaque entrée).
+
+Sorties : `public/game/cinematics/<id>/{video.webm, video.mp4, poster.jpg, fr.vtt, en.vtt,
+ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le reste de
+`public/game/` (≈ 380 Mo : 193 Mo de MP4, 186 Mo de WebM, moins d'1 Mo d'affiches et de pistes ; environ 25 min 30 s de film par faction).
+
+### Ce qui manque
+
+- **Cinématiques moteur** (GameViewScene + script, jouées en temps réel) : pas de fichier
+  vidéo, il faudrait filmer le jeu. Liste dans `engine_cutscenes` du manifeste (ZC12 : mort
+  de l'ingénieur Kania/Hadagan ; départ Empire : combats de navires ; raids Ferris, Umoir…).
+  Huit d'entre elles ont été refaites en sept vidéos HD (7_0Events), extraites ici.
+- **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et
+  « Pas prévu au plan » (11.0). « Le héros de Sarnaut » a 12 répliques officielles mais
+  leur texte diffère parfois de ce qui est dit (« Он сделал нас богатыми » écrit, « Он
+  нашёл богатство в пустыне » prononcé) : 4 ne sont pas retrouvées dans la voix et sont
+  placées à la suite de la précédente.
+- Anomalie des données conservée : dans le Forum, la réplique « Regardez-vous ! Vous
+  tremblez ! » a `delayMs` = 85 000 (sans doute 8 500) ; sa fin est coupée au départ de la
+  réplique suivante.
+- **Minutage exact** : les instants du jeu restent à trouver dans les scripts compilés ;
+  le minutage mesuré peut décaler une réplique d'une ou deux secondes.
+- Vidéos de menu (Intro/MainMenu 9.0 → 17.0) exclues : déjà dans les Chroniques ; clip de
+  test `Raid7_2Events/TestClip.ogv` (1 s, client 8.0 seulement) exclu.
 
 ## Audio du site
 
