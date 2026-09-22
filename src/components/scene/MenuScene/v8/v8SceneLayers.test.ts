@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as THREE from 'three';
-import { prepareV8Layers } from './v8SceneLayers';
+import { BORROWED_FIRE_SPEEDS, prepareV8Layers, scrollSpeedOf } from './v8SceneLayers';
 
 function mesh(parent: THREE.Object3D, element: string, order: number, map = new THREE.Texture(), uvScroll?: number[]) {
   const result = new THREE.Mesh(new THREE.PlaneGeometry(), new THREE.MeshBasicMaterial({ map }));
@@ -51,7 +51,7 @@ describe('V8 scene layers', () => {
     expect(moving.wrapT).toBe(THREE.RepeatWrapping);
     layers.update(2, false);
     expect(moving.offset.toArray()).toEqual([0, expect.closeTo(1.4)]); // texture retournée : la vapeur monte
-    expect(beam.material.map!.offset.x).toBeCloseTo(.4);
+    expect(beam.material.map!.offset.x).toBeCloseTo(-.4); // le contenu avance vers +u
     expect(landmark.material.map!.offset.toArray()).toEqual([0, 1]);
     expect(still.material.map).toBe(original);
     layers.update(2, false); expect(moving.offset.y).toBeCloseTo(1.4); // pas de dérive cumulative
@@ -69,7 +69,7 @@ describe('V8 scene layers', () => {
     second.material = first.material;
     const layers = prepareV8Layers(root);
     layers.update(10, false);
-    expect(first.material.map!.offset.x).toBeCloseTo(.1);
+    expect(first.material.map!.offset.x).toBeCloseTo(-.1);
     expect(second.material.map).toBe(first.material.map);
     expect(second.material).toBe(first.material);
     layers.dispose();
@@ -91,9 +91,10 @@ describe('V8 scene layers', () => {
     expect(embers.material).not.toBe(flame.material);
     expect(embers.material.blending).toBe(shared.blending);
     layers.update(1, false);
-    expect(shared.map!.offset.toArray()).toEqual([expect.closeTo(.1), expect.closeTo(.1)]);
-    expect(embers.material.map!.offset.toArray()).toEqual([0, expect.closeTo(.3)]);
-    expect(flame.material.map!.offset.toArray()).toEqual([expect.closeTo(.02), 0]);
+    // Texture non retournée (repeat 1 ; 1) : décalage = −vitesse × t sur les deux axes.
+    expect(shared.map!.offset.toArray()).toEqual([expect.closeTo(-.1), expect.closeTo(-.1)]);
+    expect(embers.material.map!.offset.toArray()).toEqual([0, expect.closeTo(-.3)]);
+    expect(flame.material.map!.offset.toArray()).toEqual([expect.closeTo(-.02), 0]);
     // Les trois textures défilantes sont des clones indépendants de l'image d'origine.
     expect(new Set([shared.map, embers.material.map, flame.material.map]).size).toBe(3);
     expect(embers.material.map).not.toBe(original);
@@ -103,5 +104,51 @@ describe('V8 scene layers', () => {
     expect(embers.material).toBe(shared);
     expect(flame.material).toBe(shared);
     expect(disposeClone).toHaveBeenCalledOnce();
+  });
+  it('fait avancer le contenu dans le sens de la vitesse, sur u comme sur v', () => {
+    // Un motif fixe de la texture, à la coordonnée c, s'affiche là où repeat × uv + offset = c.
+    const root = new THREE.Group();
+    const flipped = new THREE.Texture(); flipped.repeat.y = -1; flipped.offset.y = 1; // comme prepareTexture
+    const water = mesh(root, 'waterfall_water', 0, flipped, [.5, 0]);
+    const steam = mesh(root, 'watrefall_steam', 1, flipped, [0, .2]);
+    const layers = prepareV8Layers(root);
+    const shown = (map: THREE.Texture, c: number, axis: 'x' | 'y') => (c - map.offset[axis]) / map.repeat[axis];
+    layers.update(0, false);
+    const water0 = shown(water.material.map!, .5, 'x'), steam0 = shown(steam.material.map!, .5, 'y');
+    layers.update(.5, false);
+    // +u de la cascade pointe vers le bas : elle tombe ; +v de la vapeur pointe vers le haut : elle monte.
+    expect(shown(water.material.map!, .5, 'x') - water0).toBeCloseTo(.25);
+    expect(shown(steam.material.map!, .5, 'y') - steam0).toBeCloseTo(.1);
+    layers.dispose();
+  });
+  it('emprunte un défilement aux grandes langues de feu, et à elles seules', () => {
+    expect(BORROWED_FIRE_SPEEDS).toEqual({ group3_Fire2: [-.3, 0], group3_Fire3: [-.24, 0], group3_Fire4: [-.18, 0] });
+    expect(scrollSpeedOf('group3_Fire2', [0, 0])).toEqual([-.3, 0]);
+    expect(scrollSpeedOf('group3_Fire1', [.02, 0])).toEqual([.02, 0]); // vitesse native conservée
+    expect(scrollSpeedOf('group3_FireGlow', [0, 0])).toEqual([0, 0]);
+    expect(scrollSpeedOf('glow_add', [0, 0])).toEqual([0, 0]);
+
+    // Dans le glb, Fire2 et Fire3 partagent `Lightning10_2White` additif, sans vitesse native.
+    const root = new THREE.Group();
+    const lightning = new THREE.Texture(); lightning.repeat.y = -1; lightning.offset.y = 1;
+    const fire2 = mesh(root, 'group3_Fire2', 0, lightning, [0, 0]);
+    const fire3 = mesh(root, 'group3_Fire3', 1, lightning, [0, 0]); fire3.material = fire2.material;
+    const fire4 = mesh(root, 'group3_Fire4', 2, new THREE.Texture(), [0, 0]);
+    const glowMap = new THREE.Texture();
+    const glow = mesh(root, 'group3_FireGlow', 3, glowMap, [0, 0]);
+    const halo = mesh(root, 'glow_add', 4, glowMap, [0, 0]);
+    const layers = prepareV8Layers(root);
+    expect(fire2.material).not.toBe(fire3.material); // deux vitesses : deux matériaux
+    layers.update(1, false);
+    // +u pointe vers le bas sur ces couches : un décalage u positif fait monter le feu.
+    expect(fire2.material.map!.offset.toArray()).toEqual([expect.closeTo(.3), 1]);
+    expect(fire3.material.map!.offset.toArray()).toEqual([expect.closeTo(.24), 1]);
+    expect(fire4.material.map!.offset.toArray()).toEqual([expect.closeTo(.18), 0]);
+    expect(glow.material.map).toBe(glowMap);
+    expect(halo.material.map).toBe(glowMap);
+    expect(glowMap.offset.toArray()).toEqual([0, 0]);
+    layers.dispose();
+    expect(fire2.material.map).toBe(lightning);
+    expect(fire3.material).toBe(fire2.material);
   });
 });
