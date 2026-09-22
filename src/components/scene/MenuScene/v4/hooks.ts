@@ -1,5 +1,6 @@
 import type { SceneHooks } from '../effects';
 import { prepareV4Layers } from './v4SceneLayers';
+import { createV4Fog } from './v4Fog';
 
 /** 4.0 « Lords of Destiny » : l'île au château, ses oiseaux et son dôme de ciel. */
 export const hooks: SceneHooks = {
@@ -13,8 +14,8 @@ export const hooks: SceneHooks = {
     // `sortMode` relevé dans le Geometry xdb par tools/scenes/v4_0.py : `OFFSETS` = le
     // moteur peint les éléments dans l'ordre du fichier, sans tri par profondeur.
     if ((meta as { sortMode?: string }).sortMode === 'OFFSETS') prepareV4Layers(root);
-    // Rien à rejouer image par image : les oiseaux et les cristaux viennent de
-    // l'animation squelettique du glTF, jouée par le mixeur générique.
-    return null;
+    // Oiseaux et cristaux viennent de l'animation squelettique du glTF (mixeur générique) ;
+    // seule la dérive des nappes de brume est rejouée ici (vitesses empruntées à la 7.0).
+    return createV4Fog(root);
   },
 };

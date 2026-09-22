@@ -25,7 +25,7 @@ describe('V4 hooks', () => {
   });
   it("applique l'ordre du fichier quand le xdb déclare sortMode OFFSETS", () => {
     const { root, dome, land } = scene();
-    expect(hooks.createEffects!(root, meta({ sortMode: 'OFFSETS' }), () => new THREE.Texture())).toBeNull();
+    expect(hooks.createEffects!(root, meta({ sortMode: 'OFFSETS' }), () => new THREE.Texture())).not.toBeNull(); // la brume dérive
     expect(dome.renderOrder).toBe(0);
     expect(land.renderOrder).toBe(1);
   });
