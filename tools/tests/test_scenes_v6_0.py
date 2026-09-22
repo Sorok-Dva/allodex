@@ -15,7 +15,8 @@ from tools.extract_menu_scene import (ElementSpec, JointTrack, MaterialSpec, Ske
                                       build_scene, parse_skeletal_animation, quat_matrix,
                                       validate_glb, _read_track_flags)
 from tools.scenes import hooks_for
-from tools.scenes.v6_0 import HOOKS, material, native_bind_positions, positions, restore_bind_rotations
+from tools.scenes.v6_0 import (HOOKS, TRAIN_SWING_FACTOR, amplify_train_swing, material,
+                               native_bind_positions, positions, restore_bind_rotations)
 from tools.tests.test_extract_menu_scene import _write_scene_fixture
 
 IDENTITY = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
@@ -280,3 +281,40 @@ def test_descriptor_table_beats_the_inference_on_the_manatrain_track():
     # Table absente ou incohérente (blobs synthétiques du reste des tests) : `None`.
     assert _read_track_flags(blob, len(nodes), frames + 1) is None
     assert _read_track_flags(blob, 0, frames) is None
+
+
+def _swing(angles_deg: np.ndarray) -> JointTrack:
+    """Piste du manarail : un seul angle animé, autour de Y comme dans le blob."""
+    half = np.radians(angles_deg) / 2.0
+    rotation = np.column_stack((np.zeros_like(half), np.sin(half), np.zeros_like(half), np.cos(half)))
+    return JointTrack(name="Train", translation=np.zeros((len(half), 3)), rotation=rotation,
+                      animated=True, scale=np.ones(len(half)))
+
+
+def _angles(track: JointTrack) -> np.ndarray:
+    """Angle signé autour de Y, en degrés."""
+    q = np.asarray(track.rotation, float)
+    return np.degrees(2.0 * np.arctan2(q[:, 1], q[:, 3]))
+
+
+def test_amplify_train_swing_multiplie_l_amplitude_sans_deplacer_la_cabine():
+    natives = np.array([-1.81, 0.0, 2.0, 0.5, -1.0])
+    track = _swing(natives)
+    obj = _object(None, SkeletalAnimation(fps=30, frames=len(natives), tracks=[track]))
+    assert amplify_train_swing(obj) is True
+    amplified = _angles(track)
+    # L'amplitude est multipliée autour de la position **moyenne** de la piste, qui ne
+    # bouge pas : la cabine garde sa place, seul son débattement change.
+    assert np.isclose(amplified.max() - amplified.min(),
+                      (natives.max() - natives.min()) * TRAIN_SWING_FACTOR, atol=0.05)
+    assert np.isclose(amplified.mean(), natives.mean(), atol=0.05)
+    # L'ordre des images est conservé : la plus haute reste la plus haute.
+    assert int(np.argmax(amplified)) == int(np.argmax(natives))
+
+
+def test_amplify_train_swing_sans_piste_ni_facteur():
+    obj = _object(None, SkeletalAnimation(fps=30, frames=2, tracks=[_track("Tree01", 2)]))
+    assert amplify_train_swing(obj) is False           # pas de piste Train
+    obj = _object(None, SkeletalAnimation(fps=30, frames=2, tracks=[_swing(np.array([0.0, 2.0]))]))
+    assert amplify_train_swing(obj, factor=1.0) is False   # facteur neutre : rien à faire
+    assert amplify_train_swing(_object(None, None)) is False

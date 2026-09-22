@@ -119,6 +119,61 @@ def restore_bind_rotations(obj) -> list[str]:
     return fixed
 
 
+# Articulation du manarail et facteur d'amplification de son balancement.
+TRAIN_JOINT = "Train"
+TRAIN_SWING_FACTOR = 3.0
+
+
+def amplify_train_swing(obj, factor: float = TRAIN_SWING_FACTOR) -> bool:
+    """**Écart assumé, non natif** : multiplie l'amplitude du balancement du manarail.
+
+    La piste native de `Train` n'anime qu'un angle, de 3,8° crête à crête sur 16,7 s ;
+    la cabine, à 7 unités de son articulation, ne parcourt que 0,47 unité dans une scène
+    large de 92 — invisible à l'écran. Le décodage n'est pas en cause : les bornes
+    recalculées sur les 3001 images retombent sur celles que le xdb déclare (quatre faces
+    sur six à 3·10⁻⁴). Le client devait donc ajouter ce mouvement hors données, comme il
+    code sa caméra. À la demande de l'utilisateur (22/09/2026), l'angle est amplifié
+    autour de sa position moyenne — la cabine garde sa place, seule l'amplitude change.
+
+    Renvoie `True` si la piste a été modifiée.
+    """
+    animation = obj.animation
+    if animation is None or factor == 1.0:
+        return False
+    track = next((t for t in animation.tracks if t.name == TRAIN_JOINT), None)
+    if track is None:
+        return False
+    rotation = np.asarray(track.rotation, float)
+    if len(rotation) < 2:
+        return False
+    # Position moyenne : quaternions ramenés dans le même hémisphère puis moyennés.
+    aligned = rotation * np.where((rotation @ rotation[0]) < 0, -1.0, 1.0)[:, None]
+    reference = aligned.mean(axis=0)
+    reference /= np.linalg.norm(reference)
+    inverse = reference * [-1.0, -1.0, -1.0, 1.0]
+    relative = _quat_mul(inverse, aligned)
+    # Écart à la moyenne en axe-angle : l'angle est multiplié, l'axe conservé.
+    angle = 2.0 * np.arccos(np.clip(relative[:, 3], -1.0, 1.0))
+    sine = np.linalg.norm(relative[:, :3], axis=1)
+    axis = np.divide(relative[:, :3], sine[:, None], out=np.zeros_like(relative[:, :3]), where=sine[:, None] > 1e-9)
+    half = angle * factor / 2.0
+    scaled = np.column_stack((axis * np.sin(half)[:, None], np.cos(half)))
+    track.rotation = _quat_mul(reference, scaled)
+    return True
+
+
+def _quat_mul(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """Produit de quaternions (x, y, z, w), diffusé sur des tableaux d'images."""
+    ax, ay, az, aw = np.atleast_2d(a).T
+    bx, by, bz, bw = np.atleast_2d(b).T
+    return np.column_stack((
+        aw * bx + ax * bw + ay * bz - az * by,
+        aw * by - ax * bz + ay * bw + az * bx,
+        aw * bz + ax * by - ay * bx + az * bw,
+        aw * bw - ax * bx - ay * by - az * bz,
+    ))
+
+
 def native_bind_positions(obj, position: np.ndarray) -> np.ndarray:
     """Palette de bind native appliquée aux éléments skinnés (`skinIndex` ≥ 0 : train,
     drapeau, arbres) ; le décor peint (`skinIndex` −1) garde `position`."""
@@ -137,6 +192,7 @@ def positions(name: str, obj, position: np.ndarray) -> np.ndarray:
     if name != ROOT or obj.skeleton is None:
         return position
     restore_bind_rotations(obj)
+    amplify_train_swing(obj)
     return native_bind_positions(obj, position)
 
 

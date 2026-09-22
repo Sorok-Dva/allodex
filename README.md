@@ -522,6 +522,14 @@ antérieure de la scène). Les binaires sont identiques octet pour octet dans le
   entre le train (Y ≈ −22) et les arbres (Y de 25 à 62), pas un trajet. Surtout,
   `aabbLastFrame` ne s'écarte de `aabb` que de 0,13 unité — là où, en 5.0, les deux boîtes
   diffèrent de 4,3 unités parce que le navire de raid, lui, se déplace vraiment ;
+- **le balancement du train est amplifié ×3 — seul écart non natif de la scène.** À son
+  amplitude native (3,8° crête à crête, 16,7 s de période), la cabine, à 7 unités de son
+  articulation, ne parcourt que 0,47 unité dans une scène large de 92 : le mouvement est
+  invisible à l'écran. Le décodage n'est pas en cause (voir l'`aabb` ci-dessus) ; le client
+  devait donc ajouter ce mouvement hors données, comme il code sa caméra.
+  `tools/scenes/v6_0.py::amplify_train_swing` multiplie l'angle **autour de la position
+  moyenne de la piste** — la cabine garde sa place, seul son débattement change (11,4° crête
+  à crête). Facteur dans `TRAIN_SWING_FACTOR`, choix de l'utilisateur du 22/09/2026 ;
 - **les arbres translatent de quelques dixièmes d'unité, sans tourner.** `Bush_joint9`,
   `Tree01_joint3/4` et `Tree02_joint6/7` n'animent que Ty (et Tz pour trois d'entre eux), avec
   des u16 qui couvrent toute la plage 0…65535 : l'amplitude lue est celle qui est stockée,
