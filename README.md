@@ -411,26 +411,49 @@ navire droit, est ainsi replacé sur les tuyères gauches sans déplacer les coq
 
 La scène est un seul objet skinné (tour-phare, roue et bielles, éclairs, arbres, nappes de brume et
 coupole de nuages `Back6`) auquel le navire de raid est attaché par un locator ; ses deux animations
-natives (100 s et 133 s) sont rejouées telles quelles par le mixeur générique. Trois particularités
-vivent dans `tools/scenes/v5_0.py` et `src/components/scene/MenuScene/v5/` :
+natives (100 s et 133 s) sont rejouées telles quelles par le mixeur générique. Ce qui n'est vrai que
+d'elle vit dans `tools/scenes/v5_0.py` et `src/components/scene/MenuScene/v5/` :
 
+- **Angles fixes de la pose de bind.** Dans le blob d'animation, un angle d'Euler *fixe* n'est pas
+  écrit (son flottant vaut 0) alors que la matrice locale de bind du squelette porte la rotation :
+  `root` (rochers) et `root1` (grand arbre) tournent de ~180°, `Tower`/`group5` de 10,4° autour de Z,
+  les bielles ont un Z fixe à 180°, la branche `joint9` un Y fixe à 90°. Les angles *animés* sont
+  absolus et valent ceux du bind à l'image 0. `restore_fixed_rotations` remplace chaque angle fixe
+  par celui du bind, dans la branche d'Euler qui s'accorde aux angles animés : la pose de bind
+  stockée est retrouvée exactement pour 23 des 35 articulations à inverse réelle (les autres à moins
+  de 0,3), et toutes les pièces de la tour s'alignent sur un même axe (X ≈ −52, Y ≈ 24). Le premier
+  jet laissait ces rotations à l'identité : arbre 33 unités trop bas, rochers derrière la tour,
+  pièces de la tour étalées sur 14 unités, et surtout **le bol de nuages retourné** (ses sommets
+  `skinIndex -1` sont liés par le tampon à `joint17`, un rocher sous `root`) — d'où la caméra hors du
+  décor et le voile. Ces sommets peints restent maintenant en espace monde, comme dans le client.
 - **Repère natif cuit dans les sommets.** Toute la tour et le navire ont des matrices inverses de
   bind identité : leurs sommets sont dans le repère de l'articulation. Le crochet `positions`
   applique `monde_repos · inverse_native` avant l'export, sans quoi roue, phares et halos s'empilent
-  à l'origine et le navire reste figé sur son locator. Le navire naît à l'échelle 0 : sa pose de
-  repos est bornée à 10⁻³ pour rester inversible.
-- **Le « dôme de brume »** n'était pas un problème de sphères : `Back6` est un bol de nuages ouvert
-  vers la caméra (culling correct), et le voile venait d'une caméra trop lointaine posée hors du décor
-  et de l'absence du brouillard du moteur (`useFog: true` sur tous les matériaux). Le lecteur pose un
-  brouillard linéaire (30 → 450 unités) de la couleur du fond, hors matériaux additifs ; couleur et
-  distances sont calées sur `refs/captures-ui/menu-5.0-frame1.png`, ce sont des réglages.
-- **Écarts assumés.** Les seize pièces de la coque et les rochers `Allods*` ont un alpha de sommet nul :
-  le lecteur coupe leur couleur de sommet et les rend opaques avec le tampon de profondeur. Le navire
-  est reclassé à chaque image d'après la profondeur de son articulation racine (il passe devant la
-  tour vers 30-45 s, derrière vers 65-85 s). Les effets attachés `/Spells/FX/World/AnimBack_Raid_Ship_*`
-  et `EngineTL01.Malfunction` (particules) ne sont pas exportés. Le grand passage au premier plan de
-  `refs/captures-ui/menu-5.0-frame2-raid-ship.png` n'est pas reproduit à cette taille : avec la caméra
-  retenue le navire reste à 15-35 % de la largeur (voir le rapport de reprise).
+  à l'origine et le navire reste figé sur son locator. Le navire naît à l'échelle 0 (sa pose de bind
+  est sa pose finale, échelle 0,632, retrouvée à 2·10⁻⁴) : la pose de repos est bornée à 10⁻³.
+- **Caméra dérivée du bol.** Les calques peints sont des arcs concaves tournés vers +X ; `Back6` est
+  un bol un peu plus profond qu'une demi-sphère (fond à X = −91, bord à X = +16, rayon ~120) dont la
+  sphère ajustée a pour centre (27, −1, −13) : la caméra y est posée et regarde −X le long de l'axe du
+  bol. Champ vertical 53° = 2·atan(39/79) (la tour, 60 unités à 79 unités, couvre 77 % de la hauteur
+  de la capture). Repère direct (`"mirror": false`) : la droite de l'image est +Y, où sont la tour et
+  les rochers. Réglage : la cible est relevée de 12 unités (9°) pour placer la tour comme sur la
+  capture. La couleur de fond est celle du bol (médiane des couleurs de sommet ×2, modulée par sa
+  texture) ; plus de brouillard ajouté (ses paramètres 5.0 ne sont nulle part).
+- **Ordre de peinture et matériaux du xdb.** Les deux Geometry déclarent `sortMode OFFSETS` : le
+  lecteur peint dans l'ordre du fichier (relevé dans `scene.json`, comme en 4.0). Le xdb distingue
+  les matériaux `transparent` (mélange alpha/additif, alpha de sommet actif) des autres — fûts et
+  flèche de la tour, sabres, bielles, écorces, coque du navire, bol `Back6` — que le client peint sans
+  mélange : `scene.json` porte ces drapeaux par primitive (`materials`) et le lecteur leur applique
+  un test d'alpha (seuil 0,5, réglage), le tampon de profondeur et la couleur de sommet RGB seule ;
+  les matériaux mélangés testent la profondeur sans l'écrire. Les textures ont leur origine en bas
+  (pointe de la flèche à V = 0,99 ; corrélation Z/V = +1), retournées comme en 4.0/7.0.
+- **Écarts et manques.** Le navire est reclassé à chaque image : juste avant la tour quand il est
+  derrière (X ≈ −73 à −87, 25-55 s), après tout le décor quand il revient au premier plan (65-85 s,
+  il croise le plan de la caméra vers 80 s et remplit l'image comme sur
+  `refs/captures-ui/menu-5.0-frame2-raid-ship.png`). Les rochers `Allods`/`Allods3` (matériau
+  mélangé, alpha de sommet nul partout) sont invisibles, fidèlement aux données. Les effets attachés
+  `/Spells/FX/World/AnimBack_Raid_Ship_*` et `EngineTL01.Malfunction` (particules) ne sont pas
+  exportés.
 
 ### Scène 6.0 « Broken Chains »
 

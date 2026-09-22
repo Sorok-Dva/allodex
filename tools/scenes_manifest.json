@@ -40,7 +40,9 @@
       }
     },
     "5.0": {
-      "_camera_note": "Cadrage perspective calé sur refs/captures-ui/menu-5.0-frame1.png (tour-phare à droite, grand arbre à gauche, trouée lumineuse en haut à gauche) ; le navire de raid passe devant la tour vers 30-45 s puis, plus grand, derrière elle vers 65-85 s. Ce n'est pas une caméra extraite du client : profondeur sur X, la caméra regarde vers -X dans le repère miroir du .glb.",
+      "_camera_note": "Dérivée des données, pas extraite du client. Les calques peints (skinIndex -1, sommets en espace monde) sont des arcs concaves tournés vers +X ; la coupole de nuages Back6 est un bol un peu plus profond qu'une demi-sphère (fond à X=-91, bord à X=+16, rayon ~120) dont la sphère ajustée a pour centre (27, -1, -13) : la caméra y est posée et regarde -X le long de l'axe du bol (les tranches du bol sont centrées sur Y≈0). La tour (axe X≈-52, Y≈24, Z de -28 à +32) est alors à droite, le grand arbre (Y de -57 à -19) à gauche, comme sur refs/captures-ui/menu-5.0-frame1.png. Champ vertical : la tour (60 unités à 79 unités de distance) occupe 77 % de la hauteur de la capture → 2·atan(39/79) ≈ 53°. Réglage : la cible est relevée de 12 unités (9°) pour que le centre de la tour tombe, comme sur la capture, un peu au-dessus du milieu de l'image. Le navire de raid croise le plan de la caméra vers 80 s, à 13-30 unités, et remplit l'image (menu-5.0-frame2-raid-ship.png).",
+      "mirror": false,
+      "_mirror_note": "Repère direct : avec la caméra sur l'axe du bol regardant -X, la droite de l'image est +Y, où sont la tour (Y≈24) et les rochers ; le nœud miroir générique les mettrait à gauche, à l'inverse de la capture.",
       "dir": "Animated_Background_5_0",
       "roots": [
         "Animated_Background_5_0"
@@ -50,20 +52,20 @@
         0,
         1
       ],
-      "background": "#3d4da9",
-      "_background_note": "Couleur de la brume du client relevée sur la capture de référence ; le lecteur 5.0 l'emploie aussi pour son brouillard.",
+      "background": "#776caa",
+      "_background_note": "Couleur du bol de nuages Back6 : médiane de ses couleurs de sommet (×2, modulate2x) modulée par la couleur moyenne de sa texture BackClouds. Le bol couvre tout le champ depuis son centre, ce fond n'apparaît qu'en cas de trou.",
       "camera": {
         "position": [
-          135,
-          -14,
-          8
+          27,
+          -1,
+          -13
         ],
         "target": [
-          55,
-          -14,
-          8
+          -52,
+          -1,
+          -1
         ],
-        "fov": 60
+        "fov": 53
       }
     },
     "6.0": {

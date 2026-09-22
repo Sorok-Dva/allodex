@@ -42,7 +42,7 @@ def _skeleton(names, parents, translations, inverse_translations=None):
 def test_hooks_are_registered_for_5_0():
     hooks = hooks_for("5.0")
     assert hooks.material is material and hooks.positions is positions
-    assert hooks.extra_roots is None and hooks.after_export is None
+    assert hooks.extra_roots is None and hooks.after_export is not None
 
 
 def test_material_additive_only_when_transparent():
@@ -198,3 +198,137 @@ def test_emit_skeleton_writes_a_scale_channel_when_the_scale_moves():
     paths = [c["target"]["path"] for c in gltf.json["animations"][0]["channels"]]
     assert paths == ["translation", "rotation", "scale"]
     assert names == ["Obj"]
+
+
+# --- angles fixes de la pose de bind ---------------------------------------------------------
+
+def _rotation_skeleton(names, parents, rows_list, translations):
+    n = len(names)
+    local = np.zeros((n, 4, 3))
+    inverse = np.zeros((n, 4, 3))
+    for i in range(n):
+        local[i, :3] = rows_list[i]
+        local[i, 3] = translations[i]
+        inverse[i, :3] = IDENTITY
+    return Skeleton(names=list(names), parents=list(parents), local=local, inverse=inverse, order=list(range(n)))
+
+
+def _euler_track(name, az, ay, ax, frames=3):
+    from tools.extract_menu_scene import _euler_zyx_quaternion
+    q = _euler_zyx_quaternion(np.full(frames, az), np.full(frames, ay), np.full(frames, ax))
+    return JointTrack(name, np.zeros((frames, 3)), q, True, np.ones(frames))
+
+
+def _rows_of(az, ay, ax):
+    """Matrice locale 3×4 du squelette (lignes = base) pour R = Rz·Ry·Rx."""
+    from tools.extract_menu_scene import _euler_zyx_quaternion, quat_matrix
+    R = quat_matrix(_euler_zyx_quaternion(np.array([az]), np.array([ay]), np.array([ax]))[0])
+    return R.T  # colonnes de R = lignes stockées
+
+
+def test_euler_zyx_round_trip_including_gimbal_lock():
+    from tools.extract_menu_scene import _euler_zyx_quaternion, quat_matrix
+    from tools.scenes.v5_0 import euler_zyx
+    for angles in [(0.3, -1.1, 2.5), (math.pi, math.radians(98.4), 0.0), (0.7, math.pi / 2, -0.4)]:
+        R = quat_matrix(_euler_zyx_quaternion(*[np.array([a]) for a in angles])[0])
+        back = quat_matrix(_euler_zyx_quaternion(*[np.array([a]) for a in euler_zyx(R)])[0])
+        assert np.allclose(R, back, atol=1e-6)
+
+
+def test_restore_fixed_rotations_uses_bind_for_fully_fixed_and_picks_the_matching_branch():
+    from tools.extract_menu_scene import quat_matrix
+    from tools.scenes.v5_0 import restore_fixed_rotations
+    z180, y98 = math.pi, math.radians(98.4)
+    skeleton = _rotation_skeleton(
+        ["root", "piston", "leaf", "free"], [0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF],
+        [_rows_of(0.4, -0.2, 3.0),      # rotation fixe non écrite dans l'animation
+         _rows_of(z180, y98, 0.0),      # Y animé, Z fixe à 180° : la branche (0°, 81.6°, 180°) est la mauvaise
+         _rows_of(0.0, 0.0, 0.0),       # bind identité : rien à faire
+         _rows_of(1.0, 0.5, 0.2)],      # tout animé : intouché
+        [(0, 0, 0)] * 4)
+    animation = SkeletalAnimation(fps=30, frames=3, tracks=[
+        _euler_track("root", 0.0, 0.0, 0.0),
+        _euler_track("piston", 0.0, y98, 0.0),
+        _euler_track("leaf", 0.0, 0.0, 0.0),
+        _euler_track("free", 0.9, 0.4, 0.1),
+    ])
+    obj = SimpleNamespace(skeleton=skeleton, animation=animation)
+    assert restore_fixed_rotations(obj) == ["root", "piston"]
+    assert np.allclose(quat_matrix(animation.tracks[0].rotation[0]), skeleton.local[0][:3].T, atol=1e-6)
+    assert np.allclose(quat_matrix(animation.tracks[1].rotation[2]), skeleton.local[1][:3].T, atol=1e-6)
+    assert np.allclose(quat_matrix(animation.tracks[2].rotation[0]), np.eye(3), atol=1e-6)
+    free = quat_matrix(animation.tracks[3].rotation[0])
+    assert not np.allclose(free, skeleton.local[3][:3].T, atol=1e-3)
+    assert restore_fixed_rotations(obj) == []   # idempotent
+
+
+def test_restore_fixed_rotations_keeps_a_fixed_axis_at_ninety_degrees():
+    """`joint9` : Y fixe à 90° (blocage de cardan), Z et X animés ; le décodeur lit Y = 0."""
+    from tools.extract_menu_scene import quat_matrix
+    from tools.scenes.v5_0 import restore_fixed_rotations
+    z, x = math.radians(45.0), math.radians(64.2)
+    skeleton = _rotation_skeleton(["joint9"], [0xFFFF], [_rows_of(z, math.pi / 2, x)], [(0, 0, 0)])
+    animation = SkeletalAnimation(fps=30, frames=2, tracks=[_euler_track("joint9", z, 0.0, x, frames=2)])
+    obj = SimpleNamespace(skeleton=skeleton, animation=animation)
+    assert restore_fixed_rotations(obj) == ["joint9"]
+    assert np.allclose(quat_matrix(animation.tracks[0].rotation[1]), skeleton.local[0][:3].T, atol=1e-6)
+
+
+def test_positions_leave_painted_elements_in_world_space():
+    """`skinIndex -1` : le tampon lie ces sommets à l'articulation 0, le client ne les skinne pas."""
+    skeleton = _skeleton(["Rock", "Static"], [0xFFFF, 0xFFFF], [(10.0, 0.0, 5.0), (0.0, 0.0, 0.0)])
+    vertices = {
+        "position": np.array([[1.0, 0.0, 0.0], [0.0, 2.0, 0.0], [3.0, 3.0, 3.0]], np.float32),
+        "indices": np.array([[0, 255, 255, 255]] * 3, np.uint8),
+        "weights": np.array([[255, 0, 0, 0]] * 3, np.uint8),
+    }
+    painted = SimpleNamespace(name="Back6", ib0=3, ib1=6, skin_index=-1)
+    skinned = SimpleNamespace(name="Rock", ib0=0, ib1=3, skin_index=0)
+    doc = SimpleNamespace(elements=[skinned, painted])
+    obj = SimpleNamespace(skeleton=skeleton, vertices=vertices, animation=None, doc=doc,
+                          indices=np.array([0, 0, 0, 1, 2, 2], np.uint32))
+    out = positions("Any", obj, vertices["position"])
+    assert out[0].tolist() == pytest.approx([11.0, 0.0, 5.0])   # skinné : repère natif cuit
+    assert out[1].tolist() == pytest.approx([0.0, 2.0, 0.0])    # peint : intact
+    assert out[2].tolist() == pytest.approx([3.0, 3.0, 3.0])
+
+
+# --- méta : ordre de peinture et drapeaux de matériau ---------------------------------------
+
+XDB = """<Geometry>
+  <sortMode>OFFSETS</sortMode>
+  <modelElements>
+    <Item><name>Back6</name><lods><Item><indexBufferBegin>0</indexBufferBegin><indexBufferEnd>6</indexBufferEnd></Item></lods>
+      <material><BlendEffect>BLEND_EFFECT_ALPHA</BlendEffect><transparent>false</transparent><visible>true</visible></material></Item>
+    <Item><name>Hidden</name><lods><Item><indexBufferBegin>6</indexBufferBegin><indexBufferEnd>9</indexBufferEnd></Item></lods>
+      <material><BlendEffect>BLEND_EFFECT_ALPHA</BlendEffect><transparent>true</transparent><visible>false</visible></material></Item>
+    <Item><name>Empty</name><lods><Item><indexBufferBegin>9</indexBufferBegin><indexBufferEnd>9</indexBufferEnd></Item></lods>
+      <material><BlendEffect>BLEND_EFFECT_ALPHA</BlendEffect><transparent>true</transparent></material></Item>
+    <Item><name>Glow_L</name><lods><Item><indexBufferBegin>9</indexBufferBegin><indexBufferEnd>12</indexBufferEnd></Item></lods>
+      <material><BlendEffect>BLEND_EFFECT_ADD</BlendEffect><transparent>true</transparent></material></Item>
+  </modelElements>
+</Geometry>"""
+
+
+def test_read_materials_follows_the_exporter_primitive_order():
+    from tools.scenes.v5_0 import read_materials
+    assert read_materials(XDB) == [
+        {"element": "Back6", "blend": "alpha", "transparent": False},
+        {"element": "Glow_L", "blend": "add", "transparent": True},
+    ]
+
+
+def test_after_export_records_sort_mode_and_materials(tmp_path):
+    from tools.scenes.v5_0 import after_export
+    directory = tmp_path / "World" / "MainMenu" / "Animated_Background_5_0"
+    directory.mkdir(parents=True)
+    (directory / "Animated_Background_5_0.(Geometry).xdb").write_text(XDB, encoding="utf-8")
+    (directory / "Raid_Ship.(Geometry).xdb").write_text(XDB.replace("Back6", "Ship"), encoding="utf-8")
+    meta = {"version": "5.0"}
+    after_export(tmp_path / "out", meta, None, tmp_path)
+    assert meta["sortMode"] == "OFFSETS"
+    assert [m["element"] for m in meta["materials"]["Animated_Background_5_0"]] == ["Back6", "Glow_L"]
+    assert meta["materials"]["Raid_Ship"][0] == {"element": "Ship", "blend": "alpha", "transparent": False}
+    untouched = {"version": "5.0"}
+    after_export(tmp_path / "out", untouched, None, tmp_path / "nulle-part")
+    assert untouched == {"version": "5.0"}
