@@ -1203,6 +1203,30 @@
   "Official/media_player": {
    "w": 64,
    "h": 64
+  },
+  "Interface/Ingame/ContextAuction/AuctionFrame": {
+   "w": 456,
+   "h": 788
+  },
+  "Interface/Ingame/Contextructor/CornerCross/CornerCrossHighlight": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/Contextructor/CornerCross/CornerCrossNormal": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/Contextructor/CornerCross/CornerCrossPressed": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/Contextructor/CornerCross/GoldenCorner": {
+   "w": 52,
+   "h": 40
+  },
+  "Interface/Ingame/Contextructor/WindowHeader/TiledHeader": {
+   "w": 224,
+   "h": 45
   }
  }
 }

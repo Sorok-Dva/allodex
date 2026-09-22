@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { sprite } from '@/lib/assets';
+import { sprite, tex } from '@/lib/assets';
 import { pick, useI18n } from '@/lib/i18n';
 import { nineSlice } from '@/lib/nineSlice';
 import { ProgressBar } from '@/components/ui/ProgressBar';
@@ -180,12 +180,13 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
     if (fullscreen === 'none') enterFullscreen(); else exitFullscreen();
   }, [fullscreen, enterFullscreen, exitFullscreen]);
 
-  // En plein écran, commandes et curseur disparaissent après IDLE_MS sans mouvement.
+  // Après IDLE_MS sans mouvement, la croix de fermeture s'efface ; en plein écran, les
+  // commandes, les chapitres et le curseur aussi. Un geste les fait revenir.
   const wake = useCallback(() => {
     setIdle(false);
     window.clearTimeout(idleTimer.current);
-    if (fullscreen !== 'none') idleTimer.current = window.setTimeout(() => setIdle(true), IDLE_MS);
-  }, [fullscreen]);
+    idleTimer.current = window.setTimeout(() => setIdle(true), IDLE_MS);
+  }, []);
   useEffect(() => {
     wake();
     return () => window.clearTimeout(idleTimer.current);
@@ -232,7 +233,7 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
       else if (event.key === 'ArrowLeft' && event.shiftKey) { goTo(Math.max(0, current - 1)); }
       else if (event.key === 'f' || event.key === 'F') { event.preventDefault(); toggleFullscreen(); }
       else if (event.key === 'Escape') { if (fullscreen !== 'none') exitFullscreen(); else onBack(); }
-      if (fullscreen !== 'none') wake();
+      wake();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -244,10 +245,9 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
 
   return (
     <div className={s.player} data-faction={faction} ref={playerRef} data-testid="film-player"
-      data-fullscreen={fullscreen} data-idle={fullscreen !== 'none' && idle ? 'true' : 'false'}
+      data-fullscreen={fullscreen} data-idle={fullscreen !== 'none' && idle ? 'true' : 'false'} data-active={idle ? 'false' : 'true'}
       data-panel={panelOpen ? 'open' : 'closed'}
-      onPointerMove={fullscreen !== 'none' ? wake : undefined} onPointerDown={fullscreen !== 'none' ? wake : undefined}
-      onTouchStart={fullscreen !== 'none' ? wake : undefined}>
+      onPointerMove={wake} onPointerDown={wake} onTouchStart={wake}>
       <div className={s.stage} onDoubleClick={toggleFullscreen}>
         {([0, 1] as const).map(k => {
           const index = slots[k];
@@ -303,6 +303,16 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
             </div>
           </div>
         )}
+      </div>
+
+      {/* Croix de fermeture des fenêtres du jeu (coin doré + croix), en haut à droite. */}
+      <div className={s.closeCorner} data-testid="film-close">
+        <span className={s.closeGold} aria-hidden="true" style={{ backgroundImage: `url(${tex('Interface/Ingame/Contextructor/CornerCross/GoldenCorner')})` }} />
+        <button type="button" className={s.closeCross} onClick={onClose} aria-label={t('common.close')} title={t('common.close')}
+          tabIndex={idle ? -1 : 0}
+          style={{ backgroundImage: `url(${tex('Interface/Ingame/Contextructor/CornerCross/CornerCrossNormal')})` }}>
+          <span className={s.closeGlow} aria-hidden="true" style={{ backgroundImage: `url(${tex('Interface/Ingame/Contextructor/CornerCross/CornerCrossHighlight')})` }} />
+        </button>
       </div>
 
       <aside className={`${s.panel} ${panelOpen ? s.panelOpen : ''}`} aria-label={t('cinematics.chapters')} inert={!panelOpen}>
@@ -393,15 +403,13 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
           <button type="button" className={s.pill} style={nineSlice('pill-full-open', [0, 24, 0, 24], { fill: true })}
             onClick={skipBonus}>{t('cinematics.skipBonus')}</button>
         )}
-        <FullscreenToggle className={s.fullscreenToggle} fullscreen={fullscreen !== 'none'} onToggle={toggleFullscreen}
-          labels={{ enter: t('cinematics.fullscreen'), exit: t('cinematics.exitFullscreen') }} />
         <button type="button" className={s.pill} style={nineSlice(panelOpen ? 'pill-full-open' : 'pill-full', [0, 24, 0, 24], { fill: true })}
           aria-pressed={panelOpen} onClick={() => setPanelOpen(open => !open)}>{t('cinematics.chapters')}</button>
         <button type="button" className={s.pill} style={nineSlice('pill-full', [0, 24, 0, 24], { fill: true })} onClick={onBack}>
           {t('cinematics.back')}
         </button>
-        <button type="button" className={s.close} onClick={onClose} aria-label={t('common.close')} title={t('common.close')}
-          style={{ backgroundImage: `url(${sprite('close-button')})` }} />
+        <FullscreenToggle className={s.fullscreenToggle} fullscreen={fullscreen !== 'none'} onToggle={toggleFullscreen}
+          labels={{ enter: t('cinematics.fullscreen'), exit: t('cinematics.exitFullscreen') }} />
       </div>
 
       {cinematic && trackFor(cinematic, subLang) === null && cinematic.audio.language && subLang && (

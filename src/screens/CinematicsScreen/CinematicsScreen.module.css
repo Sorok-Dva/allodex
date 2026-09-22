@@ -1,18 +1,19 @@
 .screen { position: fixed; inset: 0; background: #000; overflow: hidden; color: #ffe77b; }
 .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .4; }
 
-/* Plaque de titre du jeu (mêmes sprites que la fenêtre Succès). */
-.plate { position: absolute; top: 5vh; left: 50%; transform: translateX(-50%); height: 46px; min-width: 320px; padding: 0 60px; display: flex; align-items: center; justify-content: center; }
-.title { position: relative; margin: 0; font-size: 22px; font-weight: normal; color: #ffeb73; text-shadow: 0 1px 2px #000; white-space: nowrap; }
-.lead { position: absolute; top: calc(5vh + 58px); left: 0; right: 0; margin: 0; padding: 0 16px; text-align: center; font-size: 18px; color: #e9dcbf; text-shadow: 0 1px 3px #000; }
+/* Fenêtre de l'hôtel des ventes, centrée (la plaque dépasse de 14 px au-dessus du cadre). */
+.holder { position: absolute; left: 50%; top: calc(50% + 7px); transform-origin: center; }
 
-/* Bannières de l'écran de choix de faction du client (320 × 528, parchemin y 172 → 506). */
-.banners { position: absolute; top: 50%; left: 50%; display: flex; gap: clamp(24px, 6vw, 96px); transform: translate(-50%, -46%) scale(var(--banner-scale, 1)); }
-@media (max-height: 820px) { .banners { --banner-scale: .82; } }
-@media (max-height: 660px) { .banners { --banner-scale: .66; } }
-@media (max-width: 760px) { .banners { --banner-scale: .55; gap: 12px; } }
-.banner { position: relative; width: 320px; height: 528px; background: center / 100% 100% no-repeat; filter: drop-shadow(0 8px 18px #000c); transition: transform 160ms ease-out, filter 160ms ease-out; }
-.banner:hover:not(:disabled), .banner:focus-visible { transform: translateY(-6px); filter: drop-shadow(0 10px 24px #000e) brightness(1.08); outline: none; }
+.lead { margin: 0; font-size: 17px; line-height: 24px; color: #e9dcbf; text-shadow: 0 1px 3px #000; }
+.footnote { margin: 0; font-size: 12px; line-height: 17px; color: #c2cfb2; text-shadow: 0 1px 2px #000; }
+.empty { margin: 120px 0 0; text-align: center; font-size: 18px; color: #ffeb73; }
+
+/* Bannières de l'écran de choix de faction du client (320 × 528, parchemin y 172 → 506),
+   réduites à la hauteur du corps de la fenêtre (476 px → 90 %). */
+.banners { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; gap: 72px; --banner-scale: .9; }
+.bannerSlot { position: relative; width: calc(320px * var(--banner-scale)); height: calc(528px * var(--banner-scale)); flex: none; }
+.banner { position: absolute; left: 0; top: 0; width: 320px; height: 528px; transform: scale(var(--banner-scale)); transform-origin: top left; background: center / 100% 100% no-repeat; filter: drop-shadow(0 6px 12px #000c); transition: filter 160ms ease-out, translate 160ms ease-out; }
+.banner:hover:not(:disabled), .banner:focus-visible { translate: 0 -5px; filter: drop-shadow(0 8px 18px #000e) brightness(1.08); outline: none; }
 .banner:disabled { opacity: .5; }
 .bannerName { position: absolute; top: 132px; left: 0; right: 0; text-align: center; font-size: 19px; line-height: 24px; color: #fff3c4; text-shadow: 0 1px 2px #000, 0 0 6px #0008; letter-spacing: .04em; }
 .parchment { position: absolute; left: 30px; right: 30px; top: 186px; bottom: 34px; display: flex; flex-direction: column; align-items: stretch; color: #3a2a12; text-align: left; }
@@ -24,7 +25,7 @@
 .watch { margin-top: 10px; align-self: center; font-size: 16px; color: #7a1f12; }
 .banner[data-faction="league"] .watch { color: #0f4c5c; }
 
-.empty { position: absolute; top: 45%; left: 0; right: 0; text-align: center; font-size: 18px; color: #ffeb73; }
-.footnote { position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); width: min(820px, calc(100% - 32px)); margin: 0; text-align: center; font-size: 12px; line-height: 16px; color: #c2cfb2; text-shadow: 0 1px 2px #000; }
-.home { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); font-size: 14px; color: #e8c877; text-decoration: underline; text-underline-offset: 3px; }
-.home:hover, .home:focus-visible { color: #fff3c4; outline: none; }
+/* Petit écran : fenêtre étroite (453 px), bannières pleine taille empilées, le corps défile. */
+.narrow .banners { flex-direction: column; justify-content: flex-start; gap: 16px; overflow: hidden auto; padding: 8px 0; --banner-scale: 1; scrollbar-width: thin; scrollbar-color: #849361 transparent; }
+.narrow .lead { font-size: 15px; line-height: 20px; }
+.narrow .footnote { font-size: 11px; line-height: 15px; }

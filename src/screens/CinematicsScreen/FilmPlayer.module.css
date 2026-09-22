@@ -116,3 +116,14 @@
   .player:not([data-fullscreen="none"]):not([data-idle="true"]) .stage { bottom: var(--controls-height-narrow, 118px); }
   .player:not([data-fullscreen="none"]):not([data-idle="true"])[data-panel="open"] .stage { right: 0; }
 }
+
+/* Croix de fermeture (coin doré 52 × 52 + croix 32 × 32 du jeu), en haut à droite du lecteur,
+   visible seulement pendant l'activité de la souris ou après un toucher. */
+.closeCorner { position: absolute; right: 1px; top: 0; width: 52px; height: 52px; z-index: 6; transition: opacity 300ms ease-out; }
+.player[data-active="false"] .closeCorner { opacity: 0; pointer-events: none; }
+.closeGold { position: absolute; left: 0; top: 0; width: 52px; height: 40px; background: no-repeat 0 0; pointer-events: none; }
+.closeCross { position: absolute; right: 1px; top: 1px; width: 32px; height: 32px; background: no-repeat center / 32px 32px; }
+.closeGlow { position: absolute; inset: 0; background: no-repeat center / 32px 32px; mix-blend-mode: screen; opacity: 0; transition: opacity 100ms ease-out; pointer-events: none; }
+.closeCross:hover .closeGlow, .closeCross:focus-visible .closeGlow { opacity: 1; }
+.closeCross:focus-visible { outline: 1px solid #ffe77b; outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) { .closeCorner { transition: none; } }

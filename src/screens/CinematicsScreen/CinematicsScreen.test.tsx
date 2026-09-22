@@ -181,4 +181,24 @@ describe('CinematicsScreen — film', () => {
     const final = await page.findByRole('dialog', { name: 'Fin' });
     expect(within(final).queryByRole('button', { name: /Voir le bonus/ })).toBeNull();
   });
+
+  it('efface la croix de fermeture au repos, même hors plein écran, et la fait revenir au moindre geste', async () => {
+    search = 'faction=league';
+    const page = renderScreen();
+    const player = await page.findByTestId('film-player');
+    vi.useFakeTimers();
+    try {
+      fireEvent.pointerMove(player);
+      expect(player.dataset.active).toBe('true');
+      act(() => { vi.advanceTimersByTime(2600); });
+      expect(player.dataset.active).toBe('false');
+      expect(player.dataset.fullscreen).toBe('none');
+      fireEvent.pointerMove(player);
+      expect(player.dataset.active).toBe('true');
+      fireEvent.click(within(page.getByTestId('film-close')).getByRole('button', { name: 'Fermer' }));
+      expect(navigate).toHaveBeenCalledWith('/');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });

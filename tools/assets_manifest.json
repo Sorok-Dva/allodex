@@ -28,7 +28,13 @@
     "Interface/Icons/Special/VeteranRewards/VeteranRankMaster.(UITexture).bin",
     "Interface/Icons/Misc/Event/GoldMedal.(UITexture).bin",
     "Interface/Icons/Special/Currency/DiamondMedal.(UITexture).bin",
-    "Interface/Icons/Special/Notifications/RepostVideo.(UITexture).bin"
+    "Interface/Icons/Special/Notifications/RepostVideo.(UITexture).bin",
+    "Interface/Ingame/ContextAuction/AuctionFrame.(UITexture).bin",
+    "Interface/Ingame/Contextructor/WindowHeader/TiledHeader.(UITexture).bin",
+    "Interface/Ingame/Contextructor/CornerCross/GoldenCorner.(UITexture).bin",
+    "Interface/Ingame/Contextructor/CornerCross/CornerCrossNormal.(UITexture).bin",
+    "Interface/Ingame/Contextructor/CornerCross/CornerCrossPressed.(UITexture).bin",
+    "Interface/Ingame/Contextructor/CornerCross/CornerCrossHighlight.(UITexture).bin"
   ],
   "dims_overrides": {},
   "no_trim": [],
