@@ -8,8 +8,10 @@ export const MESSAGES = {
   fr: {
     'common.language': "Langue",
     'home.medals': "Succès",
+    'home.medalsHint': "Tous les succès du jeu",
     'home.chronicles': "Chroniques",
     'home.chroniclesHint': "Les écrans de lancement du jeu, version par version",
+    'home.musicHint': "Les musiques du jeu",
     'home.character': "Personnage",
     'home.characterHint': "Mon compte — bientôt",
     'home.skip': "Passer",
@@ -116,8 +118,10 @@ export const MESSAGES = {
   en: {
     'common.language': "Language",
     'home.medals': "Achievements",
+    'home.medalsHint': "All achievements in the game",
     'home.chronicles': "Chronicles",
     'home.chroniclesHint': "The game’s launch screens, version by version",
+    'home.musicHint': "The game’s music",
     'home.character': "Character",
     'home.characterHint': "My account — coming soon",
     'home.skip': "Skip",

@@ -216,4 +216,5 @@ export const T = {
   pinMenu: 'Interface/Ingame/ContextPinMenu3/textures',
   standardBtn: 'Interface/Common/Buttons/Standard',
   actions: 'Interface/Icons/Actions',
+  spells: 'Interface/Icons/Spells',
 } as const;
