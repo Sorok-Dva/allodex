@@ -83,6 +83,7 @@ export function OpeningScreen() {
     { id: 'chronicles', base: `${T.pinMenu}/ButtonQuestlog`, label: t('home.chronicles'), hint: t('home.chroniclesHint'), onClick: () => navigate('/chronicles') },
     { id: 'music', base: `${T.pinMenu}/ButtonMedals`, image: 'Official/media_player', label: t('music.title'), hint: t('home.musicHint'), onClick: () => navigate('/music') },
     { id: 'fatalities', base: T.spells, image: `${T.spells}/FatalityLotus`, label: t('home.fatalities'), hint: t('home.fatalitiesHint'), disabled: import.meta.env.PROD, onClick: () => navigate('/fatalities') },
+    { id: 'talents', base: `${T.pinMenu}/ButtonTalents`, label: t('home.talents'), hint: t('home.talentsHint'), onClick: () => navigate('/talents') },
     { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: t('home.medals'), hint: t('home.medalsHint'), onClick: () => navigate('/achievements') },
     { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: t('home.character'), hint: t('home.characterHint'), disabled: true },
   ];
