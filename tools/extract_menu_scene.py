@@ -233,6 +233,9 @@ class ElementSpec:
     vb0: int
     vb1: int
     material: MaterialSpec
+    # `skinIndex` du xdb : -1 = élément peint, non skinné (ses sommets pointent pourtant
+    # sur l'articulation 0 dans le tampon) ; 0 = suit le squelette.
+    skin_index: int = 0
 
 
 @dataclass
@@ -329,6 +332,7 @@ def parse_geometry_xdb(text: str) -> GeometryDoc:
             vb0=int(float(lod.findtext("vertexBufferBegin") or "0")),
             vb1=int(float(lod.findtext("vertexBufferEnd") or "0")),
             material=mat,
+            skin_index=int(float(item.findtext("skinIndex") or "0")),
         ))
     return doc
 
@@ -690,11 +694,16 @@ def rest_world_matrices(skeleton: Skeleton, animation: SkeletalAnimation | None)
     return world
 
 
-def skin_attributes(vertices: dict[str, np.ndarray], joint_count: int) -> tuple[np.ndarray, np.ndarray]:
+def skin_attributes(vertices: dict[str, np.ndarray], joint_count: int,
+                    static_joint: int | None = None) -> tuple[np.ndarray, np.ndarray]:
     """`JOINTS_0`/`WEIGHTS_0` glTF depuis les attributs bruts.
 
     Les indices stockés sont des **décalages dans la palette de matrices** (3 vecteurs par
     articulation) : l'indice réel vaut `valeur / 3`. `255` marque un emplacement inutilisé.
+    Un sommet dont les quatre emplacements sont inutilisés (`skinIndex -1` dans le xdb : le
+    décor peint, non animé) suit `static_joint` — une articulation immobile ajoutée au skin —
+    plutôt que l'articulation 0, qui est une vraie articulation animée (un drapeau, un halo)
+    et emporterait tout le décor avec elle.
     """
     raw = vertices["indices"].astype(np.int32)
     unused = raw >= 255
@@ -703,6 +712,8 @@ def skin_attributes(vertices: dict[str, np.ndarray], joint_count: int) -> tuple[
     weights = vertices["weights"].astype(np.float64)
     weights[unused] = 0.0
     total = weights.sum(axis=1)
+    if static_joint is not None:
+        joints[total == 0, 0] = static_joint
     weights[total == 0, 0] = 1.0
     total = weights.sum(axis=1)
     weights = weights / total[:, None]
@@ -1170,7 +1181,17 @@ def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
         skin_index = None
         skeleton = obj.skeleton
         if skeleton is not None and "indices" in verts and "weights" in verts:
-            joints, weights = skin_attributes(verts, len(skeleton))
+            joints, weights = skin_attributes(verts, len(skeleton), static_joint=len(skeleton))
+            # Les éléments `skinIndex -1` du xdb sont le décor peint : le tampon les lie
+            # pourtant à l'articulation 0 (drapeau, halo…), qui les emporterait. On les
+            # rattache à l'articulation immobile ajoutée au skin.
+            painted = [obj.indices[e.ib0:e.ib1] for e in obj.doc.elements if e.skin_index < 0]
+            if painted:
+                selected = np.unique(np.concatenate(painted))
+                joints[selected] = 0
+                joints[selected, 0] = len(skeleton)
+                weights[selected] = 0
+                weights[selected, 0] = 255
             attributes["JOINTS_0"] = gltf.add_accessor(joints, "VEC4", "u8", target=34962)
             attributes["WEIGHTS_0"] = gltf.add_accessor(weights, "VEC4", "u8", normalized=True, target=34962)
 
@@ -1198,16 +1219,20 @@ def build_scene(version: str, spec: dict, server_root: Path, source: BinSource,
         if skeleton is not None and "JOINTS_0" in attributes:
             joint_nodes = _emit_skeleton(gltf, skeleton, obj.animation, name, animation_names)
             world = rest_world_matrices(skeleton, obj.animation)
-            inverse = np.zeros((len(skeleton), 16), np.float32)
+            inverse = np.zeros((len(skeleton) + 1, 16), np.float32)
             for i in range(len(skeleton)):
                 inverse[i] = np.linalg.inv(world[i]).T.reshape(-1)  # glTF : colonnes d'abord
+            # Articulation immobile des sommets non skinnés (voir skin_attributes) : identité.
+            inverse[len(skeleton)] = np.eye(4, dtype=np.float32).reshape(-1)
+            static_node = gltf.add_node({"name": f"{name}/Static"})
             acc_ibm = gltf.add_accessor(inverse, "MAT4", "f32")
             gltf.json["skins"].append({
                 "name": f"{name}_skin",
                 "inverseBindMatrices": acc_ibm,
-                "joints": joint_nodes,
+                "joints": joint_nodes + [static_node],
                 "skeleton": joint_nodes[skeleton.topological_order()[0]],
             })
+            children.append(static_node)
             skin_index = len(gltf.json["skins"]) - 1
             mesh_node["skin"] = skin_index
             roots = [joint_nodes[i] for i in range(len(skeleton))
