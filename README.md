@@ -388,11 +388,36 @@ Trois vérifications referment la question (2026-09) :
   `SmallShip_fire_01/02`, `Engine_Glow01/02` et les `FireMuzzle` sont tous à (0 ; 0), comme les
   quatre couches de la 8.0.
 
-Reste donc, au rendu, un brasero dont seul le cœur remue : `fire_spots` (v 0,3) balaie une
-fenêtre UV de 0,24 tuile, soit un motif traversé en 0,8 s — bien visible ; `group3_Fire1`
-(u 0,02) s'étale sur 3,22 tuiles, soit **161 s de traversée** — mathématiquement animé,
-visuellement figé ; les 425 sommets des grandes langues (`group3_Fire2/3/4`, `group3_FireGlow`)
-sont fixes. Aucun paramètre ne manque : c'est ce que le client affiche.
+Mesuré au navigateur (sept. 2026, temps piloté, captures toutes les 0,4 s) : tous les
+défilements natifs tournent — offsets relevés par primitive, textures indépendantes en
+`RepeatWrapping`, horloge du lecteur. Mais le brasero **paraissait figé** : 0,3 % des pixels
+du grand brasero changeaient d'une capture à l'autre. `fire_spots` n'est pas le cœur du feu
+mais le fin liseré du bord des vasques (quelques pixels de haut, UV larges de 0,01 tuile en u) :
+son défilement v 0,3 tourne bien, sans rien montrer ; `group3_Fire1` (u 0,02) s'étale sur
+3,22 tuiles, soit **161 s de traversée** ; les grandes langues (`group3_Fire2/3/4`,
+`group3_FireGlow`) n'ont aucune vitesse. Aucun paramètre ne manque : c'est ce que le client
+affiche.
+
+**Loi du défilement, une seule pour u et v** : le contenu avance dans le sens de la vitesse
+dans l'espace UV de la géométrie (échantillonnage `uv − vitesse × t`, décalage three.js
+`−repeat × vitesse × t`). Tous les calques dont le mouvement se lit la confirment : vapeurs de
+la cascade (v 0,2) et de la statue (v 0,04 / 0,05), liseré `fire_spots` (v 0,3) et brume de
+rivière `river_steam_01` (u 0,02) ont leur axe positif tourné vers le haut et montent ; la
+cascade `waterfall_water` (u 0,5) a +u tourné vers le bas et **tombe**. Jusqu'ici le lecteur
+appliquait u avec le signe opposé à v : la cascade **remontait** (vérifié par une mire
+substituée à sa texture). Seul `group3_Fire1` (u 0,02, +u vers le bas) descend désormais, à
+une vitesse invisible. `tools/tests/test_scenes_v8_0.py` relit ces orientations dans le glb.
+
+**Emprunt non natif, demandé par l'utilisateur** : les trois grandes langues de feu défilent
+(`BORROWED_FIRE_SPEEDS`, `v8/v8SceneLayers.ts`), à la grandeur du voisin natif `fire_spots`
+(0,3 tuile/s), désynchronisées : `group3_Fire2` 0,30, `group3_Fire3` 0,24, `group3_Fire4` 0,18.
+**Sur u, pas sur v** : ces couches tuilent leurs UV le long de u (1,40 → 3,73 ; −1,76 → −1,28 ;
+0,10 → 0,86) et c'est u qui suit la hauteur de la flamme (+u vers le bas sur 88 à 100 % de leur
+surface, v surtout horizontal : un défilement v ferait glisser le feu de côté) — l'axe même que
+l'auteur a animé sur `group3_Fire1`. Vitesse **négative** pour que le feu monte (vérifié par
+mire). `group3_FireGlow` et `glow_add` (vignettes posées une fois, UV dans [0 ; 1]) restent
+figés, `group3_Fire1` garde sa vitesse native. Au rendu, 8 à 10 % des pixels du grand brasero
+changent désormais toutes les 0,4 s (0,3 % avant). À retirer si une vitesse native apparaît.
 
 Non rejoué, faute de formule : le `ZoneLights` du menu V8
 (`Maps/MainMenu/ZoneLights/Mainmenu.(ZoneLights).xdb`) déclare un **bloom** (seuil 0,12,

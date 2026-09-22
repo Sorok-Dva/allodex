@@ -1,4 +1,9 @@
 """Crochets 8.0 : annulation du miroir générique sur la géométrie, le squelette et l'animation."""
+import json
+import re
+import struct
+from pathlib import Path
+
 import numpy as np
 
 from tools.extract_menu_scene import (ElementSpec, JointTrack, LoadedObject, GeometryDoc, MaterialSpec, Skeleton, SkeletalAnimation,
@@ -197,3 +202,97 @@ def test_mirror_object_is_applied_once():
     positions("AMM_8_0", obj, first)  # un second passage ne re-reflète pas
     assert obj.vertices["position"].tolist() == first.tolist()
     assert obj.animation.tracks[0].translation[0].tolist() == [-10.0, 2.0, 3.0]
+
+
+# --- Sens du défilement UV, relu dans le glb déposé ------------------------------------------
+# `src/components/scene/MenuScene/v8/v8SceneLayers.ts` applique une seule loi aux deux axes :
+# le contenu avance dans le sens de la vitesse dans l'espace UV. Les signes (natifs comme
+# empruntés) ne valent que tant que les UV du glb pointent comme ci-dessous : un réexport qui
+# les retournerait doit faire échouer ces tests.
+_ROOT = Path(__file__).resolve().parents[2]
+_GLB = _ROOT / "public/game/archive/8.0/scene.glb"
+_LAYERS_TS = _ROOT / "src/components/scene/MenuScene/v8/v8SceneLayers.ts"
+
+
+def _glb_primitives():
+    data = _GLB.read_bytes()
+    json_length = struct.unpack_from("<I", data, 12)[0]
+    gltf = json.loads(data[20:20 + json_length])
+    binary = data[20 + json_length + 8:]
+    kinds = {5126: "<f4", 5125: "<u4", 5123: "<u2"}
+    widths = {"SCALAR": 1, "VEC2": 2, "VEC3": 3}
+
+    def read(index):
+        accessor = gltf["accessors"][index]
+        view = gltf["bufferViews"][accessor["bufferView"]]
+        width = widths[accessor["type"]]
+        offset = view.get("byteOffset", 0) + accessor.get("byteOffset", 0)
+        values = np.frombuffer(binary, kinds[accessor["componentType"]], accessor["count"] * width, offset)
+        return values.reshape(-1, width).astype(np.float64)
+
+    for mesh in gltf["meshes"]:
+        for primitive in mesh["primitives"]:
+            yield primitive["extras"], lambda p=primitive: (read(p["attributes"]["POSITION"]),
+                                                             read(p["attributes"]["TEXCOORD_0"]),
+                                                             read(p["indices"]).astype(int).reshape(-1, 3))
+
+
+def _axis_shares(element):
+    """Part de surface où +u (resp. +v) monte / descend de plus de 30° à l'écran (z vers le haut)."""
+    for extras, load in _glb_primitives():
+        if extras["element"] != element:
+            continue
+        position, uv, triangles = load()
+        shares = dict(u_up=0.0, u_down=0.0, v_up=0.0, v_down=0.0)
+        total = 0.0
+        for a, b, c in triangles:
+            e1, e2 = position[b] - position[a], position[c] - position[a]
+            d1, d2 = uv[b] - uv[a], uv[c] - uv[a]
+            det = d1[0] * d2[1] - d1[1] * d2[0]
+            if abs(det) < 1e-12:
+                continue
+            area = np.linalg.norm(np.cross(e1, e2)) / 2
+            for axis, grad in (("u", (e1 * d2[1] - e2 * d1[1]) / det), ("v", (e2 * d1[0] - e1 * d2[0]) / det)):
+                up = grad[2] / (np.linalg.norm(grad) or 1.0)
+                if up > 0.5:
+                    shares[f"{axis}_up"] += area
+                elif up < -0.5:
+                    shares[f"{axis}_down"] += area
+            total += area
+        return {key: value / total for key, value in shares.items()}, extras["uvScroll"]
+    raise AssertionError(f"élément absent du glb : {element}")
+
+
+def _borrowed_fire_speeds():
+    text = _LAYERS_TS.read_text()
+    block = text[text.index("BORROWED_FIRE_SPEEDS"):]
+    block = block[block.index("{") + 1:block.index("};")]
+    return {name: (float(u), float(v)) for name, u, v in
+            re.findall(r"(\w+):\s*\[\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\]", block)}
+
+
+def test_scroll_witnesses_agree_with_a_single_law():
+    # Cascade u 0,5 : +u vers le bas, elle doit tomber.
+    shares, speed = _axis_shares("waterfall_water")
+    assert speed == [0.5, 0.0] and shares["u_down"] > 0.99
+    # Vapeur de la cascade v 0,2 et brume de rivière u 0,02 : axe positif vers le haut, elles montent.
+    shares, speed = _axis_shares("watrefall_steam")
+    assert speed[1] > 0 and shares["v_up"] > 0.9
+    shares, speed = _axis_shares("river_steam_01")
+    assert speed[0] > 0 and shares["u_up"] > 0.99
+    shares, speed = _axis_shares("fire_spots")
+    assert speed == [0.0, 0.3] and shares["v_down"] == 0.0
+
+
+def test_borrowed_fire_speeds_run_along_u_and_rise():
+    borrowed = _borrowed_fire_speeds()
+    assert borrowed == {"group3_Fire2": (-0.30, 0.0), "group3_Fire3": (-0.24, 0.0), "group3_Fire4": (-0.18, 0.0)}
+    for element, (u_speed, v_speed) in borrowed.items():
+        shares, native = _axis_shares(element)
+        assert native == [0.0, 0.0]  # emprunt : aucune vitesse native à écraser
+        # La hauteur de la flamme suit u, +u vers le bas : une vitesse u négative fait monter le feu.
+        assert shares["u_down"] > 0.85 and shares["u_up"] == 0.0
+        assert u_speed < 0 and v_speed == 0.0
+    for still in ("group3_FireGlow", "glow_add"):
+        assert still not in borrowed
+        assert _axis_shares(still)[1] == [0.0, 0.0]
