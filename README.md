@@ -408,13 +408,14 @@ un ciel plus sombre que dans le client (luminance 107 contre 143 en haut à gauc
 
 ## Talents
 
-`/talents` affiche les talents de chaque classe jouable, version par version, dans la fenêtre des
-talents du client 17.0 reconstruite depuis ses ressources. Le choix vit dans l'URL
-(`/talents?v=9.0&c=warrior&p=field&f=1` : version, classe, page `book`/`field`, grille).
+`/talents` affiche les talents de chaque classe jouable, version par version, dans la fenêtre
+« Talents » du client 17.0 reconstruite depuis ses ressources (livre et trois grilles côte à
+côte), et sert de calculateur de build partageable par lien
+(`/talents?v=17.0&c=druid&b=1.3330…` : version, classe, build).
 
     python3 tools/extract_talents.py            # toutes les versions → public/game/talents/
     python3 tools/extract_talents.py --only 17.0
-    python3 tools/extract_talents.py --ui       # fenêtre ContextTalents du client 17.0
+    python3 tools/extract_talents.py --ui       # fenêtre TalentBuilder + constantes de ses scripts (17.0)
 
 Sources par version : `tools/talents_manifest.json` (chemins absents signalés, jamais devinés).
 
@@ -477,23 +478,109 @@ Sans données : 5.0 et 6.0 (clients partiels : interface et musiques seulement),
 Warp » (`~/allods-clients/11.0`, autre jeu) sont lisibles mais non retenus. Le `.loc` anglais du
 17.0 contient des textes restés en russe : une entrée « en » identique à « ru » est retirée.
 
-### Fenêtre 17.0
+### Fenêtre 17.0 (addon `TalentBuilder`)
 
-`public/game/talents/ui/context_talents.json` est l'arbre de widgets de l'addon
-`ContextTalents` du client 17.0 (nom, type, `WidgetPlacement` X/Y — alignement, position,
-position haute, taille —, priorité de tracé, calques et textures), décodé du `pack.bin` 64 bits
-après confrontation aux `.xdb` 7.0 de même nom (mêmes valeurs). Le site le rend widget par
-widget (`TalentWindow`) : `BasePanel<ligne><colonne>` porte le livre, `FieldButton<ligne><colonne>`
-la grille, `ChooseField0N` les signets des grilles, `Tab01`/`Tab02` les pages. Écarts assumés :
-les boutons d'action du jeu (valider, réinitialiser, changer de classe) sont masqués ; l'état
-appris/disponible des cases n'est pas simulé ; l'état normal des boutons du « Contextructor »
-(croix, onglets) est la texture sœur de leur calque de survol ; les couleurs des balises
-`tip_*` des descriptions sont approchées ; les grilles plus petites que 9 × 9 sont centrées ;
-l'habillage mana/rage est au choix (le script du jeu le choisit selon la classe).
+La fenêtre du jeu actuel n'est pas `ContextTalents` (508 × 749, une grille à la fois, onglets
+Livre/Talents — l'ancienne fenêtre, encore présente dans le client) mais l'addon
+**`TalentBuilder`** : panneau `TalentsBuilder` de **1810 × 701** (posé en 10 × 119 dans le
+formulaire plein écran), livre à gauche (`TalentsPanel` 388 × 536,5), trois panneaux de grille
+(`MilestonePanel01…03`, 446 × 536,5, damier `Chess` 411 × 416), cadre `Frame`, compteurs
+`BaseTalentsHeader`/`FieldTalentsHeader`, commandes `Controls` (changer de classe, apprendre,
+réinitialiser, activer le build) et sélecteur de build `ActiveBuildSelector` (I / II).
+`public/game/talents/ui/talent_builder.json` contient :
 
-Poids : ≈ 9,6 Mo de JSON, 1 150 icônes PNG dédupliquées par contenu (6,4 Mo), 33 textures
-d'interface (≈ 1,9 Mo). 31 talents du 17.0 n'ont pas d'icône : leur `UISingleTexture` ne mène à
-aucune `UITexture` résoluble.
+- l'arbre de widgets (nom, type, `WidgetPlacement`, priorité, calques) ; les variantes de bouton
+  avec tous leurs calques (`+0x08` survol, `+0x70` désactivé, `+0xA0`, `+0xD0` normal,
+  `+0x100` enfoncé, `+0x130`), relevés sur les boutons du « Contextructor » dont les textures
+  portent le nom de l'état ; les calques `WidgetLayerTiledTexture` avec leur découpe en neuf
+  (`+0x38` haut, gauche, largeur et hauteur du milieu, droite, bas ; `+0x50`/`+0x54` milieu
+  étiré ou répété — vérifié : `MainPanelBackground` 1496 × 600 = 28 + 1440 + 28 × 65 + 445 + 90),
+  rendus en `border-image` ;
+- les gabarits `UIRelatedWidgets` que les scripts clonent (case du livre `BaseTalent`, case de
+  grille `FieldTalent`, états `FieldTalentLearned`/`FieldTalentReadyToLearn`, liens
+  `BaseFieldLinkLeft/Right`, surbrillances) et les textures nommées `UIRelatedTextures` ;
+- `layout` : les constantes des scripts, lues dans leur bytecode (voir ci-dessous).
+
+Le `.xdb` ne place ni les cases ni les panneaux de grille : les scripts de l'addon le font. Ils
+sont livrés compilés (`LuaCompiledIngame_x64.pak`, LuaJIT 2.1 dépouillé, octet de version 0xA1
+mais jeu d'instructions standard) ; `tools/luajit.py` en lit les constantes et les instructions,
+et l'extracteur y prend :
+
+| Script | Constantes | Usage |
+|---|---|---|
+| `ClassBaseField` | `SCALE` 0,9244, `LEFT_BORDER` 42,29, `UP_BORDER` 15,71, `INTERVAL_X` 30,21, `INTERVAL_Y` −3,62 ; liens 14 × (Δy + 11), à +24, côté −9 / +56 | case du livre (59 × SCALE) en `LEFT_BORDER + (col−1)·(taille + INTERVAL_X)` ; 2ᵉ lien d'une colonne à droite |
+| `ClassRubyField` | `SCALE` 1,1561, `LEFT_BORDER` 36,25, `UP_BORDER` 79,75, intervalles 0 | cases de grille (36 × SCALE) dans leur panneau |
+| `ClassBuilder` | `fieldsInterval` 15, `mainOffsetY` 117 | panneaux de grille en 19 + 388 + 15 = 422, 883, 1344 ; compteur = libres / (libres + dépensés + appris − 3) |
+| `ClassBuild` | 10 × 4, 3 grilles de 9 × 9, coût des rangs `{1, 2, 3}` | règles du calculateur |
+| `ClassFieldTalent`, `ClassBaseTalent` | tailles 36/40 et 59/42, couleurs de surbrillance (même talent : `(0,07 ; 0,48 ; 0,48)`) | états des cases |
+| `ClassControls` | `ChangeClass` déplacé en `posX` de `SavedBuilds` (masqué) | pied de fenêtre |
+| `ScriptPlayerClasses` | icône et couleur de chaque classe | sous le titre |
+
+Le site rend la fenêtre à l'échelle 1:1 quand l'écran le permet (réduite sinon, jamais sous
+0,5 sur téléphone : la page défile). États des cases, comme le script : sort du livre en
+couleur dès le rang 1, rang en jaune (vert au maximum) ; case de grille apprise en couleur sur
+`FieldTalent`, case accessible encadrée de `FieldReady`, autres en gris ; survol : cases du même
+talent teintées de `TalentBuiderHighlighted` (couleur `TALENT_HIGHLIGHT_FULL`). Les versions
+anciennes sont dessinées dans ce même cadre (grilles 7 × 7 ou 9 × 7 centrées sur le damier,
+note en pied de fenêtre).
+
+Écarts assumés avec le jeu : les étoiles de recommandation (`RecommendedStar(Silver)`,
+priorité fournie par le serveur) ne sont pas affichées ; les boutons du pied servent le site
+(`SavedBuilds` → version, `ChangeClass` → classe, `LearnSelected` → copier le lien,
+`ResetSelected` → réinitialiser ; « activer le build » masqué) ; le build II est inerte ; les
+textes français des compteurs viennent de la capture du client FR (le client 17.0 n'a que
+l'anglais et le russe) ; le nom français d'une classe est repris de la dernière version qui en a
+un. Les icônes de classe Paladin et Guérisseur n'existent pas dans le client 17.0.
+
+Poids : ≈ 9,6 Mo de JSON de talents, 1 150 icônes PNG dédupliquées (6,4 Mo), fenêtre ≈ 1,5 Mo
+(29 Ko de JSON, 52 textures).
+
+### Calculateur
+
+Clic : +1 rang (case de grille : +1 case) ; clic droit, ou appui long au toucher : −1 ; Maj :
+tous les rangs permis (grille : toutes les cases accessibles du même talent). Les compteurs
+« Points de compétence » et « Événements de développement » suivent en direct, au format du jeu
+(points libres / total).
+
+Règles (`src/data/talents.build.ts`), reprises de `ClassBuild`/`ClassState` :
+
+- **Livre** : le rang *r* coûte *r* points (1, 2, 3 : 6 pour un sort complet) ; une couche n'est
+  accessible que si les couches précédentes totalisent son palier (données `layers[i].points` :
+  0, 4, 11, 18… 60 en 7.0-17.0 ; 0, 4, 12… en 1.1-4.0), rangs de départ compris ; un sort qui a
+  un parent (`parentTalent`) ne dépasse pas le rang de ce parent. Retirer un rang recalcule comme
+  le jeu : rangs devenus hors palier ramenés, enfants ramenés au rang du parent.
+- **Grilles** : une case coûte 1 point et doit toucher (4-voisinage) une case apprise reliée à la
+  case de départ (déclarée par la ressource, sinon le centre). Une case de départ qui porte un
+  talent est apprise d'office ; vide (quelques grilles 8.0/9.0/11.0), elle sert d'ancre. Retirer
+  une case retire celles qui ne sont plus reliées au départ.
+- **Totaux** : absents des données du client (accordés par le serveur au fil des niveaux).
+  17.0 : **82** points de compétence et **77** événements de développement, relevés dans la
+  fenêtre du jeu d'un personnage au niveau maximal. Le script affiche `libres + dépensés +
+  appris − 3` : les trois sorts de la première couche au rang 1 et les trois cases de départ sont
+  offerts, ce que confirme la capture (rangs appris = 85 = 82 + 3). Autres versions : pas de
+  total connu, les compteurs affichent les points dépensés sans plafond (note en pied de fenêtre)
+  et la première couche n'est pas apprise d'office. Coût d'une case de grille (1) et des rangs
+  (1, 2, 3) appliqués à toutes les versions.
+- Les déblocages (`requiredUnlocks`, quêtes) sont ignorés, comme en « mode calcul » du jeu.
+
+**Lien** : `?v=<version>&c=<classe>&b=<code>`, avec `b = 1.<livre>.<grille 1>.<grille 2>.<grille 3>` :
+
+- `1` : version du format de codage ;
+- livre : un chiffre par emplacement (rang), couche après couche, 4 par couche, zéros de fin
+  retirés (`3330` = trois sorts au rang 3 sur la première couche) ;
+- grille : cases apprises en base64url (A–Z, a–z, 0–9, `-`, `_`), 6 cases par caractère, bit de
+  poids faible d'abord, ligne après ligne sur la largeur de la grille, `A` de fin retirés ; la case
+  de départ offerte n'est pas codée ;
+- segments vides de fin retirés ; l'état de départ n'a pas de `b`. Un build complet de 17.0 (82 + 77
+  points) tient en moins de 90 caractères.
+
+Un lien est refusé (note en pied de fenêtre, build remis à l'état de départ) si la version ou la
+classe est inconnue — pas de repli sur une autre version, les grilles changent —, si le format
+n'est pas `1`, si le code est mal formé, trop long, désigne un emplacement vide ou un rang trop
+haut, si le build viole une règle (palier, parent, case détachée, rang de départ manquant) ou
+dépasse les totaux. Tests : `src/data/talents.build.test.ts` (règles, aller-retour, refus, build
+complet sur les données réelles 17.0), `src/screens/TalentsScreen/TalentBuilder.test.tsx`
+(placements des scripts, compteurs, gestes), `tools/tests/test_luajit.py`.
 
 ## Déploiement (production)
 
