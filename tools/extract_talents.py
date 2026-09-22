@@ -38,6 +38,7 @@ import numpy as np
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from tools import luajit  # noqa: E402
 from tools.packbin import KIND_CLASS, KIND_DATA, KIND_PTR, KIND_TYPE, LocTable, PackBin, inflate  # noqa: E402
 from tools.uitexture import decode_uitexture  # noqa: E402
 
@@ -492,17 +493,7 @@ class Extractor:
         return None
 
     def texture_icon(self, single: int) -> str | None:
-        h = self.head(single)
-        tex = next((t for _, t in self.ptrs(*h) if self.type_at(t) == "UITexture"), None)
-        if tex is None and self.pb.ids:
-            # 17.x : la texture peut être désignée par identifiant (genre 2) ; retenue seulement
-            # si l'objet désigné est bien une UITexture.
-            for o in range(h[0], h[1], self.ps):
-                rel = self.pb.reloc(o, KIND_CLASS)
-                cand = self.pb.ids.get(rel.target) if rel else None
-                if cand is not None and self.type_at(cand) == "UITexture":
-                    tex = cand
-                    break
+        tex = self.single_to_texture(single)
         if tex is None:
             return None
         if self.pb.fmt == "v1":
@@ -516,6 +507,21 @@ class Extractor:
             return None
         pak, entry, _ = loc
         return self.icons.add(f"{os.path.basename(pak)}#{entry}", lambda: read_pak_entry(pak, entry))
+
+    def single_to_texture(self, single: int) -> int | None:
+        """`UISingleTexture` → `UITexture` (pointeur direct, ou identifiant d'objet en 17.x)."""
+        h = self.head(single)
+        tex = next((t for _, t in self.ptrs(*h) if self.type_at(t) == "UITexture"), None)
+        if tex is None and self.pb.ids:
+            # 17.x : la texture peut être désignée par identifiant (genre 2) ; retenue seulement
+            # si l'objet désigné est bien une UITexture.
+            for o in range(h[0], h[1], self.ps):
+                rel = self.pb.reloc(o, KIND_CLASS)
+                cand = self.pb.ids.get(rel.target) if rel else None
+                if cand is not None and self.type_at(cand) == "UITexture":
+                    tex = cand
+                    break
+        return tex
 
     def texture_location(self, tex: int) -> tuple[str, int, dict] | None:
         """`UITexture` 64 bits → (pak, indice d'entrée, dimensions).
@@ -805,9 +811,23 @@ W_X = 0x78             # WidgetPlacement X : Align u32, HighPos f32 (+4), Pos f3
 W_Y = 0x98             # WidgetPlacement Y
 W_PRIORITY = 0xE8
 B_TEXTTAG = 0x120      # WidgetButton.TextTag
-B_VARIANTS = 0x1C0     # WidgetButton.Variants[] (pas 0x188, LayerHighlight en +8)
+B_VARIANTS = 0x1C0     # WidgetButton.Variants[] (pas 0x188)
 B_VARIANT_STRIDE = 0x188
+# Calques d'une variante de bouton, relevés sur les boutons du « Contextructor » dont les
+# textures portent le nom de l'état (…Highlight, …Disabled, …Normal, …Pressed).
+B_VARIANT_LAYERS = {"highlight": 0x08, "disabled": 0x70, "highlighted": 0xA0, "normal": 0xD0,
+                    "pressed": 0x100, "pressedHighlighted": 0x130}
 L_COLOR = 0x28         # WidgetLayer.Color (ARGB)
+# WidgetLayerTiledTexture : découpe en neuf de la texture, en pixels de la zone utile
+# (haut, gauche, largeur du milieu, hauteur du milieu, droite, bas), puis deux drapeaux
+# d'étirement du milieu (0 = répété). Vérifié : MainPanelBackground 1496 × 600 =
+# 28 + 1440 + 28 × 65 + 445 + 90 ; TiledHeader 224 × 64 = 96 + 32 + 96 × 0 + 64 + 0.
+L_TILE = 0x38
+
+LUA_PAK = "LuaCompiledIngame_x64.pak"
+BUILDER_SCRIPTS = "Interface/Ingame/TalentBuilder/Scripts/"
+CLASS_SCRIPT = "Interface/Ingame/ContextRelatedTextures/PlayerClasses/ScriptPlayerClasses.luac"
+CLASS_ICONS = "Interface/Ingame/ContextRelatedTextures/PlayerClasses/"
 
 
 class UiExtractor:
@@ -819,6 +839,7 @@ class UiExtractor:
         self.out = out
         self.log = log
         self.textures: dict[str, dict] = {}
+        self._dims: dict[tuple[str, int], dict] | None = None
 
     def addon(self, name: str) -> int | None:
         for a in self.pb.objects_of("UIAddon"):
@@ -828,7 +849,7 @@ class UiExtractor:
                     return a
         return None
 
-    def placement(self, a: int, base: int) -> dict:
+    def placement(self, a: int) -> dict:
         p = {}
         for axis, off in (("x", W_X), ("y", W_Y)):
             o = a + off
@@ -841,30 +862,16 @@ class UiExtractor:
             p[axis] = d
         return p
 
-    def texture(self, single: int | None) -> str | None:
-        if single is None or self.ex.type_at(single) != "UISingleTexture":
-            return None
-        tex = next((t for _, t in self.ex.ptrs(*self.ex.head(single)) if self.ex.type_at(t) == "UITexture"), None)
-        if tex is None:
-            return None
-        loc = self.ex.texture_location(tex)
-        if loc is None:
-            return None
-        pak, entry, dims = loc
-        path = pak_entry_name(pak, entry) or f"{os.path.basename(pak)}#{entry}"
-        key = re.sub(r"\.\(UITexture\)\.bin$", "", path.split("/")[-1])
-        if key in self.textures:
-            return key
-        data = read_pak_entry(pak, entry)
+    def save_texture(self, key: str, path: str, data: bytes | None, dims: dict) -> None:
         info = {"path": path, **dims}
         if data:
             try:
-                hint = (dims["w"], dims["h"]) if dims["w"] and dims["h"] else None
+                hint = (dims["w"], dims["h"]) if dims.get("w") and dims.get("h") else None
                 try:
                     img, _ = decode_uitexture(data, hint)
                 except ValueError:
                     img, _ = decode_uitexture(data)
-                if dims["realW"] and dims["realH"]:
+                if dims.get("realW") and dims.get("realH"):
                     img = img.crop((0, 0, min(dims["realW"], img.width), min(dims["realH"], img.height)))
                 self.out.mkdir(parents=True, exist_ok=True)
                 img.save(self.out / f"{key}.png", optimize=True)
@@ -873,6 +880,30 @@ class UiExtractor:
             except Exception as exc:  # pragma: no cover
                 self.log(f"  texture illisible {path}: {exc}")
         self.textures[key] = info
+
+    def texture(self, single: int | None) -> str | None:
+        if single is None or self.ex.type_at(single) != "UISingleTexture":
+            return None
+        tex = self.ex.single_to_texture(single)
+        if tex is None:
+            return None
+        loc = self.ex.texture_location(tex)
+        if loc is None:
+            return None
+        pak, entry, dims = loc
+        path = pak_entry_name(pak, entry) or f"{os.path.basename(pak)}#{entry}"
+        key = self.key_for(path)
+        if key not in self.textures:
+            self.save_texture(key, path, read_pak_entry(pak, entry), dims)
+        return key
+
+    def key_for(self, path: str) -> str:
+        """Nom court d'une texture ; préfixé du dossier quand deux fichiers portent le même nom
+        (`CornerCross/GoldenCorner` et `CornerQuestion/GoldenCorner`, en miroir)."""
+        parts = re.sub(r"\.\(UITexture\)\.bin$", "", path).split("/")
+        key = parts[-1]
+        if key in self.textures and self.textures[key]["path"] != path and len(parts) > 1:
+            key = f"{parts[-2]}_{key}"
         return key
 
     def layer(self, a: int | None) -> dict | None:
@@ -885,11 +916,16 @@ class UiExtractor:
             if tex:
                 out["texture"] = tex
                 break
+        if ty == "WidgetLayerTiledTexture":
+            top, left, mid_x, mid_y, right, bottom = (self.pb.u32(a + L_TILE + 4 * k) for k in range(6))
+            out["slice"] = [top, right, bottom, left]
+            out["middle"] = [mid_x, mid_y]
+            out["stretch"] = [self.pb.u32(a + L_TILE + 0x18), self.pb.u32(a + L_TILE + 0x1C)]
         return out
 
     def widget(self, a: int, depth: int = 0) -> dict:
         ty = self.ex.type_at(a)
-        w: dict = {"type": ty, "name": self.ex.cstring(a + W_NAME), "place": self.placement(a, a),
+        w: dict = {"type": ty, "name": self.ex.cstring(a + W_NAME), "place": self.placement(a),
                    "priority": self.pb.i32(a + W_PRIORITY)}
         back = self.layer(self.pb.ptr(a + W_BACK))
         if back:
@@ -905,12 +941,16 @@ class UiExtractor:
             d = self.pb.data_ptr(a + B_VARIANTS)
             n = self.pb.word(a + B_VARIANTS + 8)
             if d is not None and n:
-                hl = []
+                variants = []
                 for k in range(n // B_VARIANT_STRIDE):
-                    layer = self.layer(self.pb.ptr(d + k * B_VARIANT_STRIDE + 8))
-                    hl.append(layer)
-                if any(hl):
-                    w["highlight"] = hl
+                    v = {}
+                    for name, off in B_VARIANT_LAYERS.items():
+                        lay = self.layer(self.pb.ptr(d + k * B_VARIANT_STRIDE + off))
+                        if lay:
+                            v[name] = lay
+                    variants.append(v)
+                if any(variants):
+                    w["variants"] = variants
         kids = []
         d = self.pb.data_ptr(a + W_CHILDREN)
         n = self.pb.word(a + W_CHILDREN + 8)
@@ -923,10 +963,22 @@ class UiExtractor:
             w["children"] = kids
         return w
 
+    def texture_dims(self) -> dict[tuple[str, int], dict]:
+        """(pak, entrée) → dimensions, pour toutes les `UITexture` du pack.bin."""
+        if self._dims is None:
+            self._dims = {}
+            for t in self.pb.objects_of("UITexture"):
+                loc = self.ex.texture_location(t)
+                if loc:
+                    self._dims.setdefault((os.path.basename(loc[0]), loc[1]), loc[2])
+        return self._dims
+
     def related(self, folder: str) -> list[str]:
-        """Textures du dossier `RelatedTextures` de l'addon, commutées par script (mana/rage…)."""
+        """Textures du dossier de l'addon que seuls les scripts désignent (boutons I/II…),
+        décodées avec les dimensions de leur `UITexture`."""
         keys = []
         packs = os.path.expanduser(self.ex.spec["packs_dir"])
+        dims = self.texture_dims()
         for pak_name in self.pb.pak_names:
             if not pak_name.startswith("Interface"):
                 continue
@@ -935,15 +987,13 @@ class UiExtractor:
                 continue
             for i, info in enumerate(z.infolist()):
                 if info.filename.startswith(folder) and info.filename.endswith("(UITexture).bin"):
-                    key = re.sub(r"\.\(UITexture\)\.bin$", "", info.filename.split("/")[-1])
+                    key = self.key_for(info.filename)
                     if key not in self.textures:
-                        img, _ = decode_uitexture(z.read(info))
-                        from tools.uitexture import trim_transparent_padding
-                        img = trim_transparent_padding(img)
-                        self.out.mkdir(parents=True, exist_ok=True)
-                        img.save(self.out / f"{key}.png", optimize=True)
-                        self.textures[key] = {"path": info.filename, "file": f"{key}.png",
-                                              "width": img.width, "height": img.height, "trimmed": True}
+                        d = dims.get((pak_name, i))
+                        if d is None:
+                            self.log(f"  sans UITexture : {info.filename}")
+                            continue
+                        self.save_texture(key, info.filename, z.read(info), d)
                     keys.append(key)
         return keys
 
@@ -953,17 +1003,130 @@ class UiExtractor:
             raise LookupError(f"addon {addon} introuvable")
         form = next((t for _, t in self.ex.ptrs(*self.ex.head(a)) if self.ex.type_at(t) == "WidgetForm"), None)
         root = self.widget(form)
+        templates, named = self.named_resources(a)
         related = self.related(related_folder)
-        return {"addon": addon, "version": self.ex.spec["id"], "root": root, "related": related,
-                "textures": self.textures}
+        return {"addon": addon, "version": self.ex.spec["id"], "root": root, "templates": templates,
+                "namedTextures": named, "related": related, "textures": self.textures}
+
+    def named_resources(self, addon: int) -> tuple[dict, dict]:
+        """`UIRelatedWidgets` (gabarits clonés par les scripts : cases, liens…) et
+        `UIRelatedTextures` (textures commutées par les scripts) de l'addon, par nom.
+
+        Chaque entrée est `(ASCIIString nom, …, pointeur)` : le nom précède le pointeur de 0x18.
+        """
+        templates: dict = {}
+        named: dict = {}
+        seen: set[int] = set()
+
+        def walk(obj: int) -> None:
+            if obj in seen:
+                return
+            seen.add(obj)
+            ty = self.ex.type_at(obj)
+            for o in range(obj, self.ex.obj_end(obj), 8):
+                t = self.pb.ptr(o)
+                if t is None:
+                    continue
+                tt = self.ex.type_at(t) or ""
+                name = self.ex.cstring(o - 0x18)
+                if ty == "UIRelatedWidgets" and name and tt.startswith("Widget"):
+                    templates[name] = self.widget(t)
+                elif ty == "UIRelatedTextures" and name and tt == "UISingleTexture":
+                    key = self.texture(t)
+                    if key:
+                        named[name] = key
+                elif tt in ("UIRelatedWidgets", "UIRelatedTextures"):
+                    walk(t)
+        for o in range(addon, self.ex.obj_end(addon), 8):
+            d = self.pb.data_ptr(o)
+            n = self.pb.word(o + 8)
+            if d is None or not 0 < n < 1 << 16:
+                continue
+            for k in range(0, n, 8):
+                t = self.pb.ptr(d + k)
+                if t is not None and self.ex.type_at(t) in ("UIRelatedWidgets", "UIRelatedTextures"):
+                    walk(t)
+        return templates, named
+
+
+def _color(t: luajit.LuaTable) -> list[float]:
+    return [round(float(t.hash.get(k, 1)), 4) for k in ("r", "g", "b", "a")]
+
+
+def builder_layout(packs_dir: str) -> dict:
+    """Constantes de mise en page et de règles des scripts de l'addon `TalentBuilder`.
+
+    Les scripts placent eux-mêmes livre, grilles et liens (le `.xdb` ne donne que les gabarits) ;
+    on lit leurs tables de constantes dans le bytecode plutôt que de les recopier à la main :
+
+    * `ClassBaseField` : case du livre en `LEFT_BORDER + (col-1)·(taille + INTERVAL_X)`,
+      `UP_BORDER + (ligne-1)·(taille + INTERVAL_Y)`, taille = 59 × `SCALE` ; lien parent → enfant
+      de largeur `arrow[0]`·SCALE, hauteur Δy + `arrow[1]`·SCALE, décalé de `arrow[2]`·SCALE vers le
+      bas et de `side` (gauche/droite) — deuxième lien d'une même colonne à droite ;
+    * `ClassRubyField` : même formule pour les grilles (cases de 36 × `SCALE`) ;
+    * `ClassBuilder` : panneaux des grilles après le livre, espacés de `fieldsInterval` ;
+    * `ClassBuild` : dimensions (10 × 4, 3 grilles de 9 × 9) et coût des rangs du livre ;
+    * `ClassFieldTalent`/`ClassBaseTalent` : tailles et couleurs de surbrillance ;
+    * `ScriptPlayerClasses` : icône et couleur de chaque classe.
+    """
+    z = zipfile.ZipFile(os.path.join(os.path.expanduser(packs_dir), LUA_PAK))
+
+    def protos(name: str) -> list[luajit.Prototype]:
+        return luajit.parse(z.read(BUILDER_SCRIPTS + name + ".luac"))
+
+    base = protos("ClassBaseField")
+    base_field = luajit.named_table(base, "SCALE", "LEFT_BORDER", "UP_BORDER", "INTERVAL_X", "INTERVAL_Y")
+    arrow = next(p for p in base if {"isRight", "rowTo", "SetPlacementPlain"} <= set(p.strings()))
+    side = next(t for t in arrow.tables() if True in t.hash and False in t.hash)
+    ruby = luajit.named_table(protos("ClassRubyField"), "SCALE", "LEFT_BORDER", "UP_BORDER", "INTERVAL_X", "INTERVAL_Y")
+    builder = luajit.named_table(protos("ClassBuilder"), "fieldsInterval", "mainOffsetY")
+
+    build = protos("ClassBuild")
+    top = build[-1]
+    counts: dict[str, int] = {}
+    last = None
+    for ins in top.code:
+        if ins.op == "KSTR":
+            last = top.gc(ins.d)
+        elif ins.op == "KSHORT" and isinstance(last, str) and last.endswith("_COUNT"):
+            counts[last] = ins.d
+            last = None
+    cost = next(t for t in top.tables() if len(t.array) == 4 and t.array[0] is None).array[1:]
+
+    field_talent = protos("ClassFieldTalent")
+    base_talent = protos("ClassBaseTalent")
+    field_hl = {k: _color(v) for k, v in luajit.assigned_tables(field_talent[-1]).items()}
+    class_protos = luajit.parse(z.read(CLASS_SCRIPT))
+    classes = {k: _color(v) for k, v in luajit.assigned_tables(class_protos[-1]).items()}
+    icons = next(dict(t.hash) for p in class_protos for t in p.tables()
+                 if "WARRIOR" in t.hash and isinstance(t.hash["WARRIOR"], str))
+    return {
+        "baseField": {**base_field, "arrow": list(arrow.kn[:3]), "side": {"left": side.hash[False], "right": side.hash[True]}},
+        "field": ruby,
+        "builder": builder,
+        "counts": counts,
+        "rankCost": cost,
+        "fieldTalentSize": luajit.named_table(field_talent, "main", "done"),
+        "baseTalentSize": luajit.named_table(base_talent, "main", "icon"),
+        "fieldHighlight": field_hl,
+        "classColors": classes,
+        "classIcons": icons,
+    }
 
 
 def extract_ui(spec: dict, out: Path, log=print) -> dict:
     ex = Extractor(spec, IconSink(out / "icons", dry=True), log)
-    ui = UiExtractor(ex, out / "ui", log)
-    data = ui.run("ContextTalents", "Interface/Ingame/ContextTalents/")
-    (out / "ui").mkdir(parents=True, exist_ok=True)
-    (out / "ui" / "context_talents.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")))
+    ui_dir = out / "ui"
+    if ui_dir.exists():
+        for f in ui_dir.iterdir():
+            f.unlink()
+    ui = UiExtractor(ex, ui_dir, log)
+    data = ui.run("TalentBuilder", "Interface/Ingame/TalentBuilder/")
+    data["layout"] = builder_layout(spec["packs_dir"])
+    # Icônes de classe (`GetUnitClassIcon` → `PlayerClasses/<Nom>`), teintées par le script.
+    data["related"] += ui.related(CLASS_ICONS)
+    ui_dir.mkdir(parents=True, exist_ok=True)
+    (ui_dir / "talent_builder.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")))
     log(f"interface {spec['id']} : {len(data['textures'])} textures")
     return data
 
@@ -1056,7 +1219,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
     ap.add_argument("--only", nargs="*")
-    ap.add_argument("--ui", action="store_true", help="n'extraire que l'interface ContextTalents 17.0")
+    ap.add_argument("--ui", action="store_true", help="n'extraire que la fenêtre TalentBuilder du client 17.0")
     args = ap.parse_args(argv)
     manifest = json.loads(args.manifest.read_text())
     if args.ui:
