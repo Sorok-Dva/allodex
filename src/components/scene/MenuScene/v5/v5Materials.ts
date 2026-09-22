@@ -10,6 +10,31 @@ export type V5Material = { element: string; blend: 'alpha' | 'add'; transparent:
 export const ALPHA_TEST = 0.5;
 
 /**
+ * `true` quand l'alpha de sommet d'une primitive est **nul sur tous ses sommets**.
+ *
+ * Un tel alpha ne peut pas être le masque de transparence que le client applique : il
+ * effacerait l'élément entier. Les rochers `Allods` et `Allods3` sont dans ce cas alors
+ * qu'ils partagent le matériau `Allods_01_psd_SG` avec `Allods2`, dont l'alpha va bien
+ * de 0 à 255 — et qu'ils sont visibles dans le client (`refs/captures-ui/menu-5.0-frame1.png`,
+ * les blocs sombres au-dessus de la tour). Leur canal alpha ne porte donc pas
+ * d'information, comme une couleur de sommet entièrement nulle vaut « pas de teinte »
+ * pour l'exportateur : on l'ignore et c'est l'alpha de la texture qui découpe le rocher.
+ */
+export function hasNoVertexAlpha(geometry: THREE.BufferGeometry): boolean {
+  const color = geometry.getAttribute('color');
+  if (!color || color.itemSize < 4) return false;
+  // Les primitives d'un objet partagent un seul tampon de sommets (l'export ne leur donne
+  // que des index différents) : seuls les sommets que cette primitive référence comptent.
+  const index = geometry.index;
+  const count = index ? index.count : color.count;
+  if (!count) return false;
+  for (let i = 0; i < count; i += 1) {
+    if (color.getW(index ? index.getX(i) : i) !== 0) return false;
+  }
+  return true;
+}
+
+/**
  * Matériaux **non mélangés** du client. Le lecteur générique rend tout en mélange alpha,
  * sans tampon de profondeur ; or le xdb distingue les matériaux `transparent` (nuages,
  * feuillages, halos : mélange alpha ou additif, alpha de sommet actif) des autres — fûts
@@ -25,6 +50,7 @@ export const ALPHA_TEST = 0.5;
  */
 export function applyV5Materials(root: THREE.Object3D, materials: Record<string, V5Material[]> | undefined) {
   const touched: THREE.MeshBasicMaterial[] = [];
+  const cloned: { mesh: THREE.Mesh; original: THREE.MeshBasicMaterial; clone: THREE.MeshBasicMaterial }[] = [];
   for (const [object, flags] of Object.entries(materials ?? {})) {
     const group = root.getObjectByName(`${object}_mesh`);
     if (!group) continue;
@@ -40,6 +66,18 @@ export function applyV5Materials(root: THREE.Object3D, materials: Record<string,
         material.depthTest = true;
         material.needsUpdate = true;
         touched.push(material);
+        // …mais un alpha de sommet nul partout ne veut pas dire « invisible » (voir
+        // hasNoVertexAlpha) : seul le RGB module alors la texture. Le matériau est
+        // partagé avec les primitives voisines (même `materialName` dans le xdb, donc
+        // un seul matériau glTF) : on le clone pour ne toucher que celle-ci — `Allods2`
+        // garde son masque alpha, `Allods` et `Allods3` deviennent visibles.
+        if (hasNoVertexAlpha(mesh.geometry)) {
+          const clone = material.clone();
+          clone.onBeforeCompile = shader => { shader.fragmentShader = ignoreVertexAlpha(shader.fragmentShader); };
+          clone.customProgramCacheKey = () => 'v5-rgb-only';
+          mesh.material = clone;
+          cloned.push({ mesh, original: material, clone });
+        }
         return;
       }
       material.transparent = false;
@@ -55,7 +93,10 @@ export function applyV5Materials(root: THREE.Object3D, materials: Record<string,
   }
   return {
     count: touched.length,
+    /** Primitives dont le matériau a été cloné pour ignorer un alpha de sommet nul. */
+    rgbOnly: cloned.length,
     dispose() {
+      for (const { mesh, original, clone } of cloned) { mesh.material = original; clone.dispose(); }
       for (const material of touched) {
         material.transparent = true; material.alphaTest = 0;
         material.depthTest = false; material.depthWrite = false;

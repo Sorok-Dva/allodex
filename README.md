@@ -452,8 +452,13 @@ d'elle vit dans `tools/scenes/v5_0.py` et `src/components/scene/MenuScene/v5/` :
 - **Écarts et manques.** Le navire est reclassé à chaque image : juste avant la tour quand il est
   derrière (X ≈ −73 à −87, 25-55 s), après tout le décor quand il revient au premier plan (65-85 s,
   il croise le plan de la caméra vers 80 s et remplit l'image comme sur
-  `refs/captures-ui/menu-5.0-frame2-raid-ship.png`). Les rochers `Allods`/`Allods3` (matériau
-  mélangé, alpha de sommet nul partout) sont invisibles, fidèlement aux données. Les effets attachés
+  `refs/captures-ui/menu-5.0-frame2-raid-ship.png`). Les rochers `Allods`/`Allods3` portent un
+  alpha de sommet **nul sur tous leurs sommets** : appliqué, il les effacerait, alors qu'ils
+  partagent le matériau `Allods_01_psd_SG` avec `Allods2`, dont l'alpha va bien de 0 à 255, et
+  qu'ils sont visibles dans le client. Ce canal ne porte donc pas d'information (comme une
+  couleur de sommet entièrement nulle vaut « pas de teinte » pour l'exportateur) : le lecteur
+  l'ignore pour ces primitives — matériau cloné, car un seul matériau glTF sert les trois — et
+  c'est l'alpha de la texture qui découpe le rocher. Les effets attachés
   `/Spells/FX/World/AnimBack_Raid_Ship_*` et `EngineTL01.Malfunction` (particules) ne sont pas
   exportés.
 
