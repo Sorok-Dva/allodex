@@ -30,6 +30,7 @@
 .panelTitle { flex: none; margin: 0; padding: 14px 18px 8px; font-size: 18px; font-weight: normal; color: #ffeb73; white-space: nowrap; }
 .panelScroll { flex: 1; overflow: hidden auto; padding: 0 10px 16px; scrollbar-width: thin; scrollbar-color: #849361 transparent; }
 .arc { margin-top: 10px; }
+.bonusTitle { margin: 18px 6px 6px; padding-top: 10px; border-top: 1px solid #849361aa; font-size: 16px; font-weight: normal; color: #ffeb73; letter-spacing: .08em; text-transform: uppercase; }
 .arcTitle { margin: 0 6px 4px; font-size: 13px; font-weight: normal; color: #b0bf88; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
 .arcTitle span { color: #7f8a66; }
 .chapterList { list-style: none; margin: 0; padding: 0; }
@@ -79,3 +80,39 @@
 .close:hover, .close:focus-visible { filter: brightness(1.25); outline: none; }
 
 .notice { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); margin: 0; padding: 4px 12px; font-size: 13px; color: #e9dcbf; background: #000a; pointer-events: none; }
+
+/* Plein écran (API Fullscreen sur le lecteur, ou mode CSS de repli pour iOS Safari) : la
+   scène occupe tout, commandes et chapitres flottent par-dessus et s'effacent au repos. */
+.player[data-fullscreen="css"] { position: fixed; inset: 0; z-index: 1000; }
+.player:not([data-fullscreen="none"]) { display: block; }
+.player:not([data-fullscreen="none"]) .stage { position: absolute; inset: 0; transition: bottom 250ms ease-out, right 250ms ease-out; }
+/* Commandes visibles : la vidéo remonte au-dessus de la barre, pour que les sous-titres restent lisibles. */
+.player:not([data-fullscreen="none"]):not([data-idle="true"]) .stage { bottom: var(--controls-height, 64px); }
+.player:not([data-fullscreen="none"]):not([data-idle="true"])[data-panel="open"] .stage { right: 340px; }
+@media (max-width: 900px) { .player:not([data-fullscreen="none"]):not([data-idle="true"])[data-panel="open"] .stage { right: 240px; } }
+.player:not([data-fullscreen="none"]) .controls { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(#0e0f0900, #0e0f09e6 35%); border-top: 0; transition: opacity 300ms ease-out; }
+.player:not([data-fullscreen="none"]) .panel { position: absolute; top: 0; right: 0; bottom: 0; transition: width 200ms ease-out, opacity 300ms ease-out; }
+.player[data-idle="true"] .controls, .player[data-idle="true"] .panel { opacity: 0; pointer-events: none; }
+.player[data-idle="true"] { cursor: none; }
+.player[data-idle="true"] .video { cursor: none; }
+.player:not([data-fullscreen="none"]) .video::cue { font-size: clamp(26px, 2.6vw, 64px); }
+.player:not([data-fullscreen="none"]) .card { top: 6%; }
+.player:not([data-fullscreen="none"]) .cardTitle { font-size: clamp(34px, 3vw, 72px); }
+.fullscreenToggle { position: relative; flex: none; }
+@media (prefers-reduced-motion: reduce) { .player .controls, .player .panel { transition: none; } }
+
+/* Petits écrans : la liste des chapitres recouvre la vidéo au lieu de la pousser, la frise
+   passe en première ligne des commandes. */
+@media (max-width: 760px) {
+  .panel { position: absolute; top: 0; right: 0; bottom: 0; z-index: 5; }
+  .panelOpen { width: min(320px, 86vw); }
+  .controls { gap: 6px 8px; padding: 8px 10px; }
+  .timeline { order: -1; flex: 1 1 100%; min-width: 0; }
+  .subtitlesLabel { display: none; }
+  .pill { padding: 0 14px; font-size: 13px; }
+  .card { left: 4%; top: 4%; }
+  .cardTitle { font-size: 22px; }
+  .cardArc { font-size: 12px; }
+  .player:not([data-fullscreen="none"]):not([data-idle="true"]) .stage { bottom: var(--controls-height-narrow, 118px); }
+  .player:not([data-fullscreen="none"]):not([data-idle="true"])[data-panel="open"] .stage { right: 0; }
+}

@@ -17,6 +17,7 @@
 .bannerName { position: absolute; top: 132px; left: 0; right: 0; text-align: center; font-size: 19px; line-height: 24px; color: #fff3c4; text-shadow: 0 1px 2px #000, 0 0 6px #0008; letter-spacing: .04em; }
 .parchment { position: absolute; left: 30px; right: 30px; top: 186px; bottom: 34px; display: flex; flex-direction: column; align-items: stretch; color: #3a2a12; text-align: left; }
 .summary { font-size: 15px; line-height: 20px; text-align: center; color: #5a3d12; margin-bottom: 10px; }
+.bonus { margin: -6px 0 8px; font-size: 12px; line-height: 16px; text-align: center; color: #7b5a2c; }
 .arcs { flex: 1; display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
 .arcLine { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; line-height: 18px; border-bottom: 1px dotted #8a6a3a66; }
 .arcVersion { color: #7b5a2c; flex: none; }

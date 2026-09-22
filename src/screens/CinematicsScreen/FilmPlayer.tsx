@@ -3,8 +3,9 @@ import { sprite } from '@/lib/assets';
 import { pick, useI18n } from '@/lib/i18n';
 import { nineSlice } from '@/lib/nineSlice';
 import { ProgressBar } from '@/components/ui/ProgressBar';
+import { FullscreenToggle } from '@/components/controls/FullscreenToggle';
 import {
-  chapterAt, chaptersOf, cinematicFile, filmDuration, filmTime, formatDuration, groupByArc, nextIndex,
+  bonusStart, chapterAt, chaptersOf, cinematicFile, filmDuration, filmTime, formatDuration, groupByArc, nextIndex,
   subtitleLangs, trackFor, type Cinematic, type CinematicArc, type Faction, type SubtitleLang,
 } from '@/lib/cinematics';
 import s from './FilmPlayer.module.css';
@@ -26,6 +27,14 @@ function preferredFormat(): 'webm' | 'mp4' {
 }
 
 const TITLE_CARD_MS = 4200;
+/** Délai d'inactivité avant de masquer commandes et curseur en plein écran. */
+export const IDLE_MS = 2500;
+
+type FullscreenMode = 'none' | 'native' | 'css';
+type WebkitDocument = Document & { webkitFullscreenElement?: Element | null; webkitExitFullscreen?: () => Promise<void> | void };
+type WebkitElement = HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void };
+
+const fullscreenElement = () => document.fullscreenElement ?? (document as WebkitDocument).webkitFullscreenElement ?? null;
 
 /**
  * Lecture « film complet » : deux lecteurs vidéo se relaient. Pendant qu'un chapitre joue,
@@ -44,17 +53,27 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
   const [active, setActive] = useState<0 | 1>(0);
   const [time, setTime] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [ended, setEnded] = useState(false);
+  // `main` : fin du film, le bonus attend ; `all` : tout est fini.
+  const [ended, setEnded] = useState<false | 'main' | 'all'>(false);
   const [subLang, setSubLang] = useState<SubtitleLang | null>(initialLang);
-  const [panelOpen, setPanelOpen] = useState(true);
+  // Liste des chapitres ouverte d'emblée sauf sur petit écran, où elle recouvrirait la vidéo.
+  const [panelOpen, setPanelOpen] = useState(() => typeof window === 'undefined' || window.innerWidth > 760);
   const [card, setCard] = useState(0);
   const video0 = useRef<HTMLVideoElement>(null);
   const video1 = useRef<HTMLVideoElement>(null);
   const videos = useMemo(() => [video0, video1] as const, []);
   const pendingSeek = useRef<number | null>(null);
+  const playerRef = useRef<HTMLDivElement>(null);
+  // Plein écran : API Fullscreen sur le conteneur du lecteur (les sous-titres, rendus par nos
+  // <track>, restent visibles), sinon mode CSS (iOS Safari n'accepte pas l'API sur un div).
+  const [fullscreen, setFullscreen] = useState<FullscreenMode>('none');
+  const [idle, setIdle] = useState(false);
+  const idleTimer = useRef<number | undefined>(undefined);
 
   const current = slots[active] ?? 0;
   const cinematic = film[current];
+  const firstBonus = useMemo(() => bonusStart(film), [film]);
+  const inBonus = firstBonus !== null && current >= firstBonus;
 
   const play = useCallback((video: HTMLVideoElement | null) => {
     if (!video) return;
@@ -123,11 +142,68 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
     return () => window.clearTimeout(timer);
   }, [card]);
 
+  useEffect(() => {
+    const sync = () => setFullscreen(mode => {
+      if (fullscreenElement() === playerRef.current && playerRef.current) return 'native';
+      return mode === 'native' ? 'none' : mode;
+    });
+    document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('webkitfullscreenchange', sync);
+    return () => {
+      document.removeEventListener('fullscreenchange', sync);
+      document.removeEventListener('webkitfullscreenchange', sync);
+    };
+  }, []);
+
+  const enterFullscreen = useCallback(() => {
+    const el = playerRef.current as WebkitElement | null;
+    if (!el) return;
+    const request = el.requestFullscreen ?? el.webkitRequestFullscreen;
+    if (!request) { setFullscreen('css'); return; }
+    try {
+      Promise.resolve(request.call(el)).then(() => setFullscreen('native'), () => setFullscreen('css'));
+    } catch {
+      setFullscreen('css');
+    }
+  }, []);
+
+  const exitFullscreen = useCallback(() => {
+    const doc = document as WebkitDocument;
+    if (fullscreenElement()) {
+      const exit = doc.exitFullscreen ?? doc.webkitExitFullscreen;
+      try { Promise.resolve(exit?.call(doc)).catch(() => {}); } catch { /* déjà sorti */ }
+    }
+    setFullscreen('none');
+  }, []);
+
+  const toggleFullscreen = useCallback(() => {
+    if (fullscreen === 'none') enterFullscreen(); else exitFullscreen();
+  }, [fullscreen, enterFullscreen, exitFullscreen]);
+
+  // En plein écran, commandes et curseur disparaissent après IDLE_MS sans mouvement.
+  const wake = useCallback(() => {
+    setIdle(false);
+    window.clearTimeout(idleTimer.current);
+    if (fullscreen !== 'none') idleTimer.current = window.setTimeout(() => setIdle(true), IDLE_MS);
+  }, [fullscreen]);
+  useEffect(() => {
+    wake();
+    return () => window.clearTimeout(idleTimer.current);
+  }, [fullscreen, wake]);
+
   const onEnded = useCallback(() => {
     const next = nextIndex(film, current);
-    if (next === null) { setEnded(true); setPaused(true); return; }
+    if (next === null) { setEnded('all'); setPaused(true); return; }
+    // Le film s'arrête avant le bonus : l'écran de fin propose de le voir.
+    if (next === firstBonus) { setEnded('main'); setPaused(true); return; }
     goTo(next);
-  }, [film, current, goTo]);
+  }, [film, current, firstBonus, goTo]);
+
+  const skipBonus = useCallback(() => {
+    videos[active].current?.pause();
+    setEnded('all');
+    setPaused(true);
+  }, [active, videos]);
 
   const togglePlay = useCallback(() => {
     const video = videos[active].current;
@@ -154,19 +230,25 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
       if (event.key === ' ') { event.preventDefault(); togglePlay(); }
       else if (event.key === 'ArrowRight' && event.shiftKey) { const n = nextIndex(film, current); if (n !== null) goTo(n); }
       else if (event.key === 'ArrowLeft' && event.shiftKey) { goTo(Math.max(0, current - 1)); }
-      else if (event.key === 'Escape') onBack();
+      else if (event.key === 'f' || event.key === 'F') { event.preventDefault(); toggleFullscreen(); }
+      else if (event.key === 'Escape') { if (fullscreen !== 'none') exitFullscreen(); else onBack(); }
+      if (fullscreen !== 'none') wake();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [togglePlay, goTo, film, current, onBack]);
+  }, [togglePlay, goTo, film, current, onBack, fullscreen, toggleFullscreen, exitFullscreen, wake]);
 
   const position = filmTime(chapters, current, time);
   const arcTitle = (id: string) => pick(arcs[id]?.title, lang) ?? id;
   const title = (c: Cinematic) => pick(c.title, lang) ?? c.id;
 
   return (
-    <div className={s.player} data-faction={faction}>
-      <div className={s.stage}>
+    <div className={s.player} data-faction={faction} ref={playerRef} data-testid="film-player"
+      data-fullscreen={fullscreen} data-idle={fullscreen !== 'none' && idle ? 'true' : 'false'}
+      data-panel={panelOpen ? 'open' : 'closed'}
+      onPointerMove={fullscreen !== 'none' ? wake : undefined} onPointerDown={fullscreen !== 'none' ? wake : undefined}
+      onTouchStart={fullscreen !== 'none' ? wake : undefined}>
+      <div className={s.stage} onDoubleClick={toggleFullscreen}>
         {([0, 1] as const).map(k => {
           const index = slots[k];
           const c = index === null ? null : film[index];
@@ -203,7 +285,7 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
 
         {cinematic && !ended && (
           <div className={`${s.card} ${cardVisible ? s.cardIn : s.cardOut}`} aria-live="polite" data-testid="title-card">
-            <span className={s.cardArc}>{arcTitle(cinematic.arc)} · {cinematic.version}</span>
+            <span className={s.cardArc}>{inBonus ? `${t('cinematics.bonus')} · ` : ''}{arcTitle(cinematic.arc)} · {cinematic.version}</span>
             <span className={s.cardTitle}>{title(cinematic)}</span>
           </div>
         )}
@@ -212,6 +294,10 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
           <div className={s.end} role="dialog" aria-label={t('cinematics.end')}>
             <span className={s.endTitle}>{t('cinematics.end')}</span>
             <div className={s.endActions}>
+              {ended === 'main' && firstBonus !== null && (
+                <button type="button" className={s.pill} style={nineSlice('pill-full-open', [0, 24, 0, 24], { fill: true })}
+                  onClick={() => goTo(firstBonus)}>{t('cinematics.watchBonus', { count: film.length - firstBonus })}</button>
+              )}
               <button type="button" className={s.pill} style={nineSlice('pill-full', [0, 24, 0, 24], { fill: true })} onClick={() => goTo(0)}>{t('cinematics.replay')}</button>
               <button type="button" className={s.pill} style={nineSlice('pill-full', [0, 24, 0, 24], { fill: true })} onClick={onBack}>{t('cinematics.back')}</button>
             </div>
@@ -224,6 +310,7 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
         <div className={s.panelScroll}>
           {groupByArc(chapters).map(group => (
             <section key={`${group.arc}-${group.items[0].index}`} className={s.arc}>
+              {group.items[0].index === firstBonus && <h3 className={s.bonusTitle}>{t('cinematics.bonus')}</h3>}
               <h3 className={s.arcTitle}>{arcTitle(group.arc)} <span>{arcs[group.arc]?.version}</span></h3>
               <ol className={s.chapterList} start={group.items[0].index + 1}>
                 {group.items.map(({ chapter, index }) => {
@@ -302,6 +389,12 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
           </button>
         </div>
 
+        {inBonus && !ended && (
+          <button type="button" className={s.pill} style={nineSlice('pill-full-open', [0, 24, 0, 24], { fill: true })}
+            onClick={skipBonus}>{t('cinematics.skipBonus')}</button>
+        )}
+        <FullscreenToggle className={s.fullscreenToggle} fullscreen={fullscreen !== 'none'} onToggle={toggleFullscreen}
+          labels={{ enter: t('cinematics.fullscreen'), exit: t('cinematics.exitFullscreen') }} />
         <button type="button" className={s.pill} style={nineSlice(panelOpen ? 'pill-full-open' : 'pill-full', [0, 24, 0, 24], { fill: true })}
           aria-pressed={panelOpen} onClick={() => setPanelOpen(open => !open)}>{t('cinematics.chapters')}</button>
         <button type="button" className={s.pill} style={nineSlice('pill-full', [0, 24, 0, 24], { fill: true })} onClick={onBack}>

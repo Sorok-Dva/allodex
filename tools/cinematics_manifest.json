@@ -1,5 +1,5 @@
 {
- "_note": "Cinématiques précalculées du client Allods Online, pour la page /cinematics (tools/extract_cinematics.py). `sources` : clients lus (le dernier client 17.0 par défaut ; `warp` pour les vidéos retirées ; `fr` pour les sous-titres français officiels). `cinematics` : une entrée par vidéo ; `entry` = chemin dans Video.pak, `event` = groupe/événement du registre vidéo compilé du client, `faction` = league | empire | common, `order` = clé de chronologie (le film d’une faction = ses entrées + les communes, triées par `order`), `chronology` = justification de la place. `title` est éditorial : le jeu ne nomme pas ses vidéos. `subtitles.lines[].ru` = début (normalisé) du texte russe d’un sous-titre officiel, cherché parmi les éléments UISubtitleShow du pack.bin ; l’ordre des lignes est celui de la voix. `subtitles.fr_anchor` = début du texte français de la première ligne dans le client FR. Les instants d’apparition ne sont pas dans les données décodées : voir tools/cinematics_sync.json.",
+ "_note": "Cinématiques précalculées du client Allods Online, pour la page /cinematics (tools/extract_cinematics.py). `sources` : clients lus (le dernier client 17.0 par défaut ; `warp` pour les vidéos retirées ; `fr` pour les sous-titres français officiels). `cinematics` : une entrée par vidéo ; `entry` = chemin dans Video.pak, `event` = groupe/événement du registre vidéo compilé du client, `faction` = league | empire | common, `order` = clé de chronologie (le film d’une faction = ses entrées + les communes, triées par `order`), `chronology` = justification de la place. `title` est éditorial : le jeu ne nomme pas ses vidéos. `subtitles.lines[].ru` = début (normalisé) du texte russe d’un sous-titre officiel, cherché parmi les éléments UISubtitleShow du pack.bin ; l’ordre des lignes est celui de la voix. `subtitles.fr_anchor` = début du texte français de la première ligne dans le client FR. Les instants d’apparition ne sont pas dans les données décodées : voir tools/cinematics_sync.json. `bonus: true` = chapitre bonus, joué après la fin du film et que l’on peut passer.",
  "arcs": {
   "prologue": {
    "title": {
@@ -554,12 +554,12 @@
    "arc": "bosses",
    "version": "9.0",
    "faction": "common",
-   "order": 700,
+   "order": 5000,
    "title": {
     "fr": "Armand de Douceur",
     "en": "Armando de Doucer"
    },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
    "subtitles": {
     "fr_anchor": "ah armand de",
     "lines": [
@@ -570,7 +570,8 @@
    },
    "audio": {
     "language": "ru"
-   }
+   },
+   "bonus": true
   },
   {
    "id": "boss-ath-zak",
@@ -580,12 +581,12 @@
    "arc": "bosses",
    "version": "9.0",
    "faction": "common",
-   "order": 705,
+   "order": 5010,
    "title": {
     "fr": "Ath-Zak",
     "en": "Ath-Zak"
    },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
    "subtitles": {
     "fr_anchor": "le legendaire heros",
     "lines": [
@@ -596,7 +597,8 @@
    },
    "audio": {
     "language": "ru"
-   }
+   },
+   "bonus": true
   },
   {
    "id": "boss-cairage",
@@ -606,12 +608,12 @@
    "arc": "bosses",
    "version": "9.0",
    "faction": "common",
-   "order": 710,
+   "order": 5020,
    "title": {
     "fr": "Cairage",
     "en": "Cairage"
    },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
    "subtitles": {
     "fr_anchor": "vous cherchez le",
     "lines": [
@@ -622,7 +624,8 @@
    },
    "audio": {
     "language": "ru"
-   }
+   },
+   "bonus": true
   },
   {
    "id": "boss-cranium",
@@ -632,12 +635,12 @@
    "arc": "bosses",
    "version": "9.0",
    "faction": "common",
-   "order": 715,
+   "order": 5030,
    "title": {
     "fr": "Cranium III",
     "en": "Brainum the Third"
    },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
    "subtitles": {
     "fr_anchor": "les abondants tresors",
     "lines": [
@@ -648,7 +651,8 @@
    },
    "audio": {
     "language": "ru"
-   }
+   },
+   "bonus": true
   },
   {
    "id": "boss-dead-king",
@@ -658,12 +662,12 @@
    "arc": "bosses",
    "version": "9.0",
    "faction": "common",
-   "order": 720,
+   "order": 5040,
    "title": {
     "fr": "Le Roi défunt",
     "en": "The Dead King"
    },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
    "subtitles": {
     "fr_anchor": "une bataille va",
     "lines": [
@@ -674,7 +678,8 @@
    },
    "audio": {
     "language": "ru"
-   }
+   },
+   "bonus": true
   },
   {
    "id": "boss-fiery-father",
@@ -684,12 +689,12 @@
    "arc": "bosses",
    "version": "9.0",
    "faction": "common",
-   "order": 725,
+   "order": 5050,
    "title": {
     "fr": "Le Père Ardent",
     "en": "The Fiery Father"
    },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
    "subtitles": {
     "fr_anchor": "pere ardent c",
     "lines": [
@@ -700,7 +705,8 @@
    },
    "audio": {
     "language": "ru"
-   }
+   },
+   "bonus": true
   },
   {
    "id": "boss-kazul",
@@ -710,12 +716,12 @@
    "arc": "bosses",
    "version": "9.0",
    "faction": "common",
-   "order": 730,
+   "order": 5060,
    "title": {
     "fr": "Kazul le Veilleur Astral",
     "en": "Kazul the Astral Watcher"
    },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
    "subtitles": {
     "fr_anchor": "on pourrait penser",
     "lines": [
@@ -726,7 +732,8 @@
    },
    "audio": {
     "language": "ru"
-   }
+   },
+   "bonus": true
   },
   {
    "id": "boss-euriala",
@@ -736,12 +743,12 @@
    "arc": "bosses",
    "version": "9.0",
    "faction": "common",
-   "order": 735,
+   "order": 5070,
    "title": {
     "fr": "Euriala",
     "en": "Euriala"
    },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
    "subtitles": {
     "fr_anchor": "tous les dieux",
     "lines": [
@@ -752,7 +759,8 @@
    },
    "audio": {
     "language": "ru"
-   }
+   },
+   "bonus": true
   },
   {
    "id": "boss-nihil",
@@ -762,12 +770,12 @@
    "arc": "bosses",
    "version": "9.0",
    "faction": "common",
-   "order": 740,
+   "order": 5080,
    "title": {
     "fr": "Nihil",
     "en": "Nihil"
    },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
    "subtitles": {
     "fr_anchor": "l obsession ne",
     "lines": [
@@ -778,7 +786,8 @@
    },
    "audio": {
     "language": "ru"
-   }
+   },
+   "bonus": true
   },
   {
    "id": "boss-clockwork-knight",
@@ -788,12 +797,12 @@
    "arc": "bosses",
    "version": "9.0",
    "faction": "common",
-   "order": 745,
+   "order": 5090,
    "title": {
     "fr": "Le Chevalier mécanique",
     "en": "The Clockwork Knight"
    },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
    "subtitles": {
     "fr_anchor": "ah umoira le",
     "lines": [
@@ -804,7 +813,8 @@
    },
    "audio": {
     "language": "ru"
-   }
+   },
+   "bonus": true
   },
   {
    "id": "boss-thalos",
@@ -814,12 +824,12 @@
    "arc": "bosses",
    "version": "9.0",
    "faction": "common",
-   "order": 750,
+   "order": 5100,
    "title": {
     "fr": "Thalos",
     "en": "Thalos"
    },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
    "subtitles": {
     "fr_anchor": "une seule erreur",
     "lines": [
@@ -830,7 +840,8 @@
    },
    "audio": {
     "language": "ru"
-   }
+   },
+   "bonus": true
   },
   {
    "id": "boss-canaan",
@@ -840,12 +851,12 @@
    "arc": "bosses",
    "version": "9.0",
    "faction": "common",
-   "order": 755,
+   "order": 5110,
    "title": {
     "fr": "Canaan, le Père du sang",
     "en": "Canaan, the Blood Father"
    },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
    "subtitles": {
     "fr_anchor": "les corridors de",
     "lines": [
@@ -856,7 +867,8 @@
    },
    "audio": {
     "language": "ru"
-   }
+   },
+   "bonus": true
   },
   {
    "id": "warp-prologue",

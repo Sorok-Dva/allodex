@@ -369,6 +369,8 @@ def output_entry(spec: dict, manifest: dict, files: dict | None, duration: float
         "source": {"client": src["client"], "pak": src["video_pak"], "entry": spec["entry"], "event": spec["event"]},
         "chronology": spec.get("chronology", ""),
     }
+    if spec.get("bonus"):
+        entry["bonus"] = True
     if spec.get("note"):
         entry["note"] = spec["note"]
     return entry

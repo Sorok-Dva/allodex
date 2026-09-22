@@ -37,6 +37,8 @@ export type Cinematic = {
   };
   source: { client: string; pak: string; entry: string; event: string };
   chronology: string;
+  /** Chapitre bonus : joué après la fin du film, on peut le passer. */
+  bonus?: boolean;
   note?: string;
 };
 
@@ -64,11 +66,26 @@ export async function loadCinematics(fetcher: typeof fetch = fetch): Promise<Cin
 export const isFaction = (value: string | null | undefined): value is Faction =>
   value === 'league' || value === 'empire';
 
-/** Film d'une faction : ses cinématiques et les communes extraites, dans l'ordre chronologique. */
+/**
+ * Film d'une faction : ses cinématiques et les communes extraites, dans l'ordre chronologique,
+ * les chapitres bonus rejetés après la fin du film.
+ */
 export function filmFor(cinematics: readonly Cinematic[], faction: Faction): Cinematic[] {
   return cinematics
     .filter(c => (c.faction === faction || c.faction === 'common') && c.files !== null)
-    .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
+    .sort((a, b) => Number(!!a.bonus) - Number(!!b.bonus) || a.order - b.order || a.id.localeCompare(b.id));
+}
+
+/** Index du premier chapitre bonus, `null` si le film n'en a pas. */
+export function bonusStart(film: readonly Cinematic[]): number | null {
+  const i = film.findIndex(c => c.bonus);
+  return i === -1 ? null : i;
+}
+
+/** Le film proprement dit (sans le bonus) et le bonus. */
+export function splitBonus(film: readonly Cinematic[]): { main: Cinematic[]; bonus: Cinematic[] } {
+  const start = bonusStart(film) ?? film.length;
+  return { main: film.slice(0, start), bonus: film.slice(start) };
 }
 
 /** Chapitres du film, avec leurs bornes dans la durée totale. */

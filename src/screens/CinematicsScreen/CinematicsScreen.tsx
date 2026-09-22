@@ -5,7 +5,7 @@ import { pick, useI18n } from '@/lib/i18n';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { GameStrip } from '@/components/ui/GameStrip';
 import {
-  FACTIONS, defaultSubtitleLang, filmDuration, filmFor, formatDuration, isFaction, loadCinematics,
+  FACTIONS, defaultSubtitleLang, filmDuration, filmFor, formatDuration, isFaction, loadCinematics, splitBonus,
   type CinematicsIndex, type Faction,
 } from '@/lib/cinematics';
 import { FilmPlayer } from './FilmPlayer';
@@ -83,7 +83,8 @@ export function CinematicsScreen({ loader = loadCinematics }: { loader?: () => P
         <div className={s.banners}>
           {FACTIONS.map(value => {
             const film = films[value];
-            const arcs = [...new Set(film.map(c => c.arc))];
+            const { main, bonus } = splitBonus(film);
+            const arcs = [...new Set(main.map(c => c.arc))];
             return (
               <button key={value} type="button" className={s.banner} data-faction={value}
                 onClick={() => choose(value)} disabled={!film.length} data-testid={`faction-${value}`}
@@ -92,8 +93,11 @@ export function CinematicsScreen({ loader = loadCinematics }: { loader?: () => P
                 <span className={s.bannerName}>{t(value === 'league' ? 'cinematics.league' : 'cinematics.empire')}</span>
                 <span className={s.parchment}>
                   <span className={s.summary}>
-                    {t('cinematics.summary', { count: film.length, duration: formatDuration(filmDuration(film)) })}
+                    {t('cinematics.summary', { count: main.length, duration: formatDuration(filmDuration(main)) })}
                   </span>
+                  {bonus.length > 0 && (
+                    <span className={s.bonus}>{t('cinematics.bonusSummary', { count: bonus.length, duration: formatDuration(filmDuration(bonus)) })}</span>
+                  )}
                   <span className={s.arcs}>
                     {arcs.map(arc => (
                       <span key={arc} className={s.arcLine}>

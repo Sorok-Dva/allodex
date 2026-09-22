@@ -86,7 +86,20 @@ liste des chapitres (vignettes, navigation), une barre de progression sur la dur
 film (repères de chapitres) et les sous-titres officiels en `<track>` WebVTT (FR, EN, RU
 ou aucun). Deux lecteurs se relaient : pendant qu'un chapitre joue, l'autre, caché et
 muet, précharge le suivant, d'où un passage sans attente. `?faction=league|empire` ouvre
-directement un film. Clavier : espace (lecture/pause), Maj+←/→ (chapitre), Échap (retour).
+directement un film. Clavier : espace (lecture/pause), Maj+←/→ (chapitre), F (plein écran),
+Échap (quitte le plein écran, sinon retour au choix de faction).
+
+**Plein écran** : bouton, touche F ou double-clic sur l'image. C'est le conteneur du lecteur
+qui passe en plein écran (API Fullscreen), pas la balise `<video>` : nos sous-titres restent
+affichés et grossissent avec l'écran. Commandes, chapitres et curseur s'effacent après
+2,5 s sans mouvement et reviennent au moindre geste ; tant qu'ils sont visibles, l'image
+remonte au-dessus de la barre pour garder les sous-titres lisibles. Sans API Fullscreen sur
+un `div` (iOS Safari), le lecteur passe en mode CSS fixe plein cadre.
+
+**Bonus** : les douze présentations de boss (9.0) ne coupent plus le récit. Elles forment
+une section « Bonus » après la fin du film (`bonus: true` dans le manifeste) : le film
+s'arrête sur l'écran de fin, qui propose « Voir le bonus » ; pendant le bonus, « Passer le
+bonus » mène à la fin. La bannière de faction indique la durée du film sans le bonus.
 
     python3 tools/extract_cinematics.py                 # extraction (idempotente)
     python3 tools/extract_cinematics.py --only zc13-forum --force
@@ -139,7 +152,8 @@ directement un film. Clavier : espace (lecture/pause), Maj+←/→ (chapitre), �
   (une seule ligne couvrant toute la vidéo) partent de 0 sans mesure (`timing: client`).
 - **Chronologie** : film = prologue de la faction (groupe `FactionsIntro`, 16.0), puis les
   arcs dans l'ordre des versions (Invasion 7.0 → raid 7.2 → Kyros 8.0 → Talos 8.1 → Nihaz
-  8.2 → donjons 9.0 → Vychegrad 10.0 → Éveil 11.0 → Suslanger 12.0 → Toute-Mère 13.0) ;
+  8.2 → Vychegrad 10.0 → Éveil 11.0 → Suslanger 12.0 → Toute-Mère 13.0), puis le bonus
+  (donjons 9.0) ;
   dans un arc, l'ordre du registre, sauf ZC13 où les dialogues placent le Forum avant la
   tombe d'Aellona (voir `chronology` de chaque entrée).
 

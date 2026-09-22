@@ -663,630 +663,6 @@
    "chronology": "Groupe « Nihaz » du registre (8.2)."
   },
   {
-   "id": "boss-armand",
-   "title": {
-    "fr": "Armand de Douceur",
-    "en": "Armando de Doucer"
-   },
-   "faction": "common",
-   "order": 700,
-   "arc": "bosses",
-   "version": "9.0",
-   "duration": 20.063,
-   "files": {
-    "webm": "boss-armand/video.webm",
-    "mp4": "boss-armand/video.mp4",
-    "poster": "boss-armand/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "boss-armand/fr.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "boss-armand/en.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "boss-armand/ru.vtt",
-     "lines": 1
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 1,
-    "timing": "client"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/9_0Events/Bosses/Armand.ogv",
-    "event": "Bosses/Armand"
-   },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
-  },
-  {
-   "id": "boss-ath-zak",
-   "title": {
-    "fr": "Ath-Zak",
-    "en": "Ath-Zak"
-   },
-   "faction": "common",
-   "order": 705,
-   "arc": "bosses",
-   "version": "9.0",
-   "duration": 23.719,
-   "files": {
-    "webm": "boss-ath-zak/video.webm",
-    "mp4": "boss-ath-zak/video.mp4",
-    "poster": "boss-ath-zak/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "boss-ath-zak/fr.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "boss-ath-zak/en.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "boss-ath-zak/ru.vtt",
-     "lines": 1
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 1,
-    "timing": "client"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/9_0Events/Bosses/AtZako.ogv",
-    "event": "Bosses/AtZako"
-   },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
-  },
-  {
-   "id": "boss-cairage",
-   "title": {
-    "fr": "Cairage",
-    "en": "Cairage"
-   },
-   "faction": "common",
-   "order": 710,
-   "arc": "bosses",
-   "version": "9.0",
-   "duration": 30.351,
-   "files": {
-    "webm": "boss-cairage/video.webm",
-    "mp4": "boss-cairage/video.mp4",
-    "poster": "boss-cairage/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "boss-cairage/fr.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "boss-cairage/en.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "boss-cairage/ru.vtt",
-     "lines": 1
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 1,
-    "timing": "client"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/9_0Events/Bosses/BlindDemon.ogv",
-    "event": "Bosses/BlindDemon"
-   },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
-  },
-  {
-   "id": "boss-cranium",
-   "title": {
-    "fr": "Cranium III",
-    "en": "Brainum the Third"
-   },
-   "faction": "common",
-   "order": 715,
-   "arc": "bosses",
-   "version": "9.0",
-   "duration": 22.506,
-   "files": {
-    "webm": "boss-cranium/video.webm",
-    "mp4": "boss-cranium/video.mp4",
-    "poster": "boss-cranium/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "boss-cranium/fr.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "boss-cranium/en.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "boss-cranium/ru.vtt",
-     "lines": 1
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 1,
-    "timing": "client"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/9_0Events/Bosses/Cyclop.ogv",
-    "event": "Bosses/Cyclop"
-   },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
-  },
-  {
-   "id": "boss-dead-king",
-   "title": {
-    "fr": "Le Roi défunt",
-    "en": "The Dead King"
-   },
-   "faction": "common",
-   "order": 720,
-   "arc": "bosses",
-   "version": "9.0",
-   "duration": 20.33,
-   "files": {
-    "webm": "boss-dead-king/video.webm",
-    "mp4": "boss-dead-king/video.mp4",
-    "poster": "boss-dead-king/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "boss-dead-king/fr.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "boss-dead-king/en.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "boss-dead-king/ru.vtt",
-     "lines": 1
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 1,
-    "timing": "client"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/9_0Events/Bosses/Deadking.ogv",
-    "event": "Bosses/Deadking"
-   },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
-  },
-  {
-   "id": "boss-fiery-father",
-   "title": {
-    "fr": "Le Père Ardent",
-    "en": "The Fiery Father"
-   },
-   "faction": "common",
-   "order": 725,
-   "arc": "bosses",
-   "version": "9.0",
-   "duration": 23.759,
-   "files": {
-    "webm": "boss-fiery-father/video.webm",
-    "mp4": "boss-fiery-father/video.mp4",
-    "poster": "boss-fiery-father/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "boss-fiery-father/fr.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "boss-fiery-father/en.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "boss-fiery-father/ru.vtt",
-     "lines": 1
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 1,
-    "timing": "client"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/9_0Events/Bosses/DragonDC.ogv",
-    "event": "Bosses/DragonDC"
-   },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
-  },
-  {
-   "id": "boss-kazul",
-   "title": {
-    "fr": "Kazul le Veilleur Astral",
-    "en": "Kazul the Astral Watcher"
-   },
-   "faction": "common",
-   "order": 730,
-   "arc": "bosses",
-   "version": "9.0",
-   "duration": 20.951,
-   "files": {
-    "webm": "boss-kazul/video.webm",
-    "mp4": "boss-kazul/video.mp4",
-    "poster": "boss-kazul/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "boss-kazul/fr.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "boss-kazul/en.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "boss-kazul/ru.vtt",
-     "lines": 1
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 1,
-    "timing": "client"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/9_0Events/Bosses/EvilEye.ogv",
-    "event": "Bosses/EvilEye"
-   },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
-  },
-  {
-   "id": "boss-euriala",
-   "title": {
-    "fr": "Euriala",
-    "en": "Euriala"
-   },
-   "faction": "common",
-   "order": 735,
-   "arc": "bosses",
-   "version": "9.0",
-   "duration": 20.604,
-   "files": {
-    "webm": "boss-euriala/video.webm",
-    "mp4": "boss-euriala/video.mp4",
-    "poster": "boss-euriala/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "boss-euriala/fr.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "boss-euriala/en.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "boss-euriala/ru.vtt",
-     "lines": 1
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 1,
-    "timing": "client"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/9_0Events/Bosses/Medusa.ogv",
-    "event": "Bosses/Medusa"
-   },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
-  },
-  {
-   "id": "boss-nihil",
-   "title": {
-    "fr": "Nihil",
-    "en": "Nihil"
-   },
-   "faction": "common",
-   "order": 740,
-   "arc": "bosses",
-   "version": "9.0",
-   "duration": 15.471,
-   "files": {
-    "webm": "boss-nihil/video.webm",
-    "mp4": "boss-nihil/video.mp4",
-    "poster": "boss-nihil/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "boss-nihil/fr.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "boss-nihil/en.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "boss-nihil/ru.vtt",
-     "lines": 1
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 1,
-    "timing": "client"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/9_0Events/Bosses/Nihil.ogv",
-    "event": "Bosses/Nihil"
-   },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
-  },
-  {
-   "id": "boss-clockwork-knight",
-   "title": {
-    "fr": "Le Chevalier mécanique",
-    "en": "The Clockwork Knight"
-   },
-   "faction": "common",
-   "order": 745,
-   "arc": "bosses",
-   "version": "9.0",
-   "duration": 25.402,
-   "files": {
-    "webm": "boss-clockwork-knight/video.webm",
-    "mp4": "boss-clockwork-knight/video.mp4",
-    "poster": "boss-clockwork-knight/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "boss-clockwork-knight/fr.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "boss-clockwork-knight/en.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "boss-clockwork-knight/ru.vtt",
-     "lines": 1
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 1,
-    "timing": "client"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/9_0Events/Bosses/PierBoss.ogv",
-    "event": "Bosses/PierBoss"
-   },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
-  },
-  {
-   "id": "boss-thalos",
-   "title": {
-    "fr": "Thalos",
-    "en": "Thalos"
-   },
-   "faction": "common",
-   "order": 750,
-   "arc": "bosses",
-   "version": "9.0",
-   "duration": 19.5,
-   "files": {
-    "webm": "boss-thalos/video.webm",
-    "mp4": "boss-thalos/video.mp4",
-    "poster": "boss-thalos/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "boss-thalos/fr.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "boss-thalos/en.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "boss-thalos/ru.vtt",
-     "lines": 1
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 1,
-    "timing": "client"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/9_0Events/Bosses/Talos.ogv",
-    "event": "Bosses/Talos"
-   },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
-  },
-  {
-   "id": "boss-canaan",
-   "title": {
-    "fr": "Canaan, le Père du sang",
-    "en": "Canaan, the Blood Father"
-   },
-   "faction": "common",
-   "order": 755,
-   "arc": "bosses",
-   "version": "9.0",
-   "duration": 28.092,
-   "files": {
-    "webm": "boss-canaan/video.webm",
-    "mp4": "boss-canaan/video.mp4",
-    "poster": "boss-canaan/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "boss-canaan/fr.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "boss-canaan/en.vtt",
-     "lines": 1
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "boss-canaan/ru.vtt",
-     "lines": 1
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 1,
-    "timing": "client"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/9_0Events/Bosses/Vampire.ogv",
-    "event": "Bosses/Vampire"
-   },
-   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
-  },
-  {
    "id": "warp-prologue",
    "title": {
     "fr": "Prologue — Vychegrad",
@@ -1606,6 +982,642 @@
     "event": "AllMother/AllMotherFinal"
    },
    "chronology": "Groupe « AllMother » du registre (13.0), fin de l’arc d’Eden."
+  },
+  {
+   "id": "boss-armand",
+   "title": {
+    "fr": "Armand de Douceur",
+    "en": "Armando de Doucer"
+   },
+   "faction": "common",
+   "order": 5000,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 20.063,
+   "files": {
+    "webm": "boss-armand/video.webm",
+    "mp4": "boss-armand/video.mp4",
+    "poster": "boss-armand/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-armand/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-armand/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-armand/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Armand.ogv",
+    "event": "Bosses/Armand"
+   },
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "bonus": true
+  },
+  {
+   "id": "boss-ath-zak",
+   "title": {
+    "fr": "Ath-Zak",
+    "en": "Ath-Zak"
+   },
+   "faction": "common",
+   "order": 5010,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 23.719,
+   "files": {
+    "webm": "boss-ath-zak/video.webm",
+    "mp4": "boss-ath-zak/video.mp4",
+    "poster": "boss-ath-zak/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-ath-zak/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-ath-zak/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-ath-zak/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/AtZako.ogv",
+    "event": "Bosses/AtZako"
+   },
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "bonus": true
+  },
+  {
+   "id": "boss-cairage",
+   "title": {
+    "fr": "Cairage",
+    "en": "Cairage"
+   },
+   "faction": "common",
+   "order": 5020,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 30.351,
+   "files": {
+    "webm": "boss-cairage/video.webm",
+    "mp4": "boss-cairage/video.mp4",
+    "poster": "boss-cairage/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-cairage/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-cairage/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-cairage/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/BlindDemon.ogv",
+    "event": "Bosses/BlindDemon"
+   },
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "bonus": true
+  },
+  {
+   "id": "boss-cranium",
+   "title": {
+    "fr": "Cranium III",
+    "en": "Brainum the Third"
+   },
+   "faction": "common",
+   "order": 5030,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 22.506,
+   "files": {
+    "webm": "boss-cranium/video.webm",
+    "mp4": "boss-cranium/video.mp4",
+    "poster": "boss-cranium/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-cranium/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-cranium/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-cranium/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Cyclop.ogv",
+    "event": "Bosses/Cyclop"
+   },
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "bonus": true
+  },
+  {
+   "id": "boss-dead-king",
+   "title": {
+    "fr": "Le Roi défunt",
+    "en": "The Dead King"
+   },
+   "faction": "common",
+   "order": 5040,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 20.33,
+   "files": {
+    "webm": "boss-dead-king/video.webm",
+    "mp4": "boss-dead-king/video.mp4",
+    "poster": "boss-dead-king/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-dead-king/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-dead-king/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-dead-king/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Deadking.ogv",
+    "event": "Bosses/Deadking"
+   },
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "bonus": true
+  },
+  {
+   "id": "boss-fiery-father",
+   "title": {
+    "fr": "Le Père Ardent",
+    "en": "The Fiery Father"
+   },
+   "faction": "common",
+   "order": 5050,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 23.759,
+   "files": {
+    "webm": "boss-fiery-father/video.webm",
+    "mp4": "boss-fiery-father/video.mp4",
+    "poster": "boss-fiery-father/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-fiery-father/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-fiery-father/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-fiery-father/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/DragonDC.ogv",
+    "event": "Bosses/DragonDC"
+   },
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "bonus": true
+  },
+  {
+   "id": "boss-kazul",
+   "title": {
+    "fr": "Kazul le Veilleur Astral",
+    "en": "Kazul the Astral Watcher"
+   },
+   "faction": "common",
+   "order": 5060,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 20.951,
+   "files": {
+    "webm": "boss-kazul/video.webm",
+    "mp4": "boss-kazul/video.mp4",
+    "poster": "boss-kazul/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-kazul/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-kazul/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-kazul/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/EvilEye.ogv",
+    "event": "Bosses/EvilEye"
+   },
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "bonus": true
+  },
+  {
+   "id": "boss-euriala",
+   "title": {
+    "fr": "Euriala",
+    "en": "Euriala"
+   },
+   "faction": "common",
+   "order": 5070,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 20.604,
+   "files": {
+    "webm": "boss-euriala/video.webm",
+    "mp4": "boss-euriala/video.mp4",
+    "poster": "boss-euriala/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-euriala/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-euriala/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-euriala/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Medusa.ogv",
+    "event": "Bosses/Medusa"
+   },
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "bonus": true
+  },
+  {
+   "id": "boss-nihil",
+   "title": {
+    "fr": "Nihil",
+    "en": "Nihil"
+   },
+   "faction": "common",
+   "order": 5080,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 15.471,
+   "files": {
+    "webm": "boss-nihil/video.webm",
+    "mp4": "boss-nihil/video.mp4",
+    "poster": "boss-nihil/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-nihil/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-nihil/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-nihil/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Nihil.ogv",
+    "event": "Bosses/Nihil"
+   },
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "bonus": true
+  },
+  {
+   "id": "boss-clockwork-knight",
+   "title": {
+    "fr": "Le Chevalier mécanique",
+    "en": "The Clockwork Knight"
+   },
+   "faction": "common",
+   "order": 5090,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 25.402,
+   "files": {
+    "webm": "boss-clockwork-knight/video.webm",
+    "mp4": "boss-clockwork-knight/video.mp4",
+    "poster": "boss-clockwork-knight/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-clockwork-knight/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-clockwork-knight/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-clockwork-knight/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/PierBoss.ogv",
+    "event": "Bosses/PierBoss"
+   },
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "bonus": true
+  },
+  {
+   "id": "boss-thalos",
+   "title": {
+    "fr": "Thalos",
+    "en": "Thalos"
+   },
+   "faction": "common",
+   "order": 5100,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 19.5,
+   "files": {
+    "webm": "boss-thalos/video.webm",
+    "mp4": "boss-thalos/video.mp4",
+    "poster": "boss-thalos/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-thalos/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-thalos/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-thalos/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Talos.ogv",
+    "event": "Bosses/Talos"
+   },
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "bonus": true
+  },
+  {
+   "id": "boss-canaan",
+   "title": {
+    "fr": "Canaan, le Père du sang",
+    "en": "Canaan, the Blood Father"
+   },
+   "faction": "common",
+   "order": 5110,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 28.092,
+   "files": {
+    "webm": "boss-canaan/video.webm",
+    "mp4": "boss-canaan/video.mp4",
+    "poster": "boss-canaan/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-canaan/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-canaan/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-canaan/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Vampire.ogv",
+    "event": "Bosses/Vampire"
+   },
+   "chronology": "Bonus (choix de l’utilisateur) : présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre), jouées après la fin du film et que l’on peut passer. Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique).",
+   "bonus": true
   }
  ]
 }

@@ -238,6 +238,13 @@ def test_manifest_gives_each_faction_its_own_prologue_first(manifest):
         assert len(orders) == len(set(orders)), "deux cinématiques d'un même film à la même place"
 
 
+def test_manifest_puts_the_boss_presentations_in_a_bonus_after_the_film(manifest):
+    bonus = [c for c in manifest["cinematics"] if c.get("bonus")]
+    main = [c for c in manifest["cinematics"] if not c.get("bonus")]
+    assert len(bonus) == 12 and all(c["arc"] == "bosses" for c in bonus)
+    assert min(c["order"] for c in bonus) > max(c["order"] for c in main)
+
+
 def test_manifest_documents_every_placement(manifest):
     assert all(c["chronology"] for c in manifest["cinematics"])
     assert all(c["title"]["fr"] and c["title"]["en"] for c in manifest["cinematics"])

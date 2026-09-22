@@ -9,12 +9,16 @@ export function FullscreenToggle({
   className,
   fullscreen,
   onToggle,
+  labels,
 }: {
   className?: string;
   fullscreen: boolean;
   onToggle: () => void;
+  /** Libellés propres à l'écran (par défaut ceux des Chroniques). */
+  labels?: { enter: string; exit: string };
 }) {
   const { t } = useI18n();
+  const label = fullscreen ? labels?.exit ?? t('chronicles.exitFullscreen') : labels?.enter ?? t('chronicles.fullscreen');
   const [pressed, setPressed] = useState(false);
 
   return (
@@ -29,8 +33,8 @@ export function FullscreenToggle({
       onPointerUp={() => setPressed(false)}
       onPointerLeave={() => setPressed(false)}
       aria-pressed={fullscreen}
-      aria-label={fullscreen ? t('chronicles.exitFullscreen') : t('chronicles.fullscreen')}
-      title={fullscreen ? t('chronicles.exitFullscreen') : t('chronicles.fullscreen')}
+      aria-label={label}
+      title={label}
     >
       <span className={s.base} style={{ backgroundImage: `url(${sprite(pressed ? 'medallion-pressed' : 'medallion-normal')})` }} />
       <span className={s.glow} style={{ backgroundImage: `url(${tex(GLOW)})` }} />

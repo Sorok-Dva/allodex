@@ -109,4 +109,76 @@ describe('CinematicsScreen — film', () => {
     fireEvent.click(page.getByRole('button', { name: 'Aucun' }));
     expect([...v0.querySelectorAll('track')].some(t => (t as HTMLTrackElement).default)).toBe(false);
   });
+
+  it('passe le lecteur en plein écran avec F, via l’API Fullscreen sur le conteneur', async () => {
+    search = 'faction=league';
+    const request = vi.fn(function (this: HTMLElement) {
+      Object.defineProperty(document, 'fullscreenElement', { configurable: true, get: () => this });
+      document.dispatchEvent(new Event('fullscreenchange'));
+      return Promise.resolve();
+    });
+    Object.defineProperty(HTMLElement.prototype, 'requestFullscreen', { configurable: true, value: request });
+    const exit = vi.fn(() => {
+      Object.defineProperty(document, 'fullscreenElement', { configurable: true, get: () => null });
+      document.dispatchEvent(new Event('fullscreenchange'));
+      return Promise.resolve();
+    });
+    Object.defineProperty(document, 'exitFullscreen', { configurable: true, value: exit });
+    try {
+      const page = renderScreen();
+      const player = await page.findByTestId('film-player');
+      await act(async () => { fireEvent.keyDown(window, { key: 'f' }); });
+      expect(request).toHaveBeenCalledTimes(1);
+      expect(request.mock.contexts[0]).toBe(player);
+      await waitFor(() => expect(player.dataset.fullscreen).toBe('native'));
+      // Échap quitte le plein écran sans quitter le film
+      await act(async () => { fireEvent.keyDown(window, { key: 'Escape' }); });
+      expect(exit).toHaveBeenCalled();
+      expect(player.dataset.fullscreen).toBe('none');
+      expect(navigate).not.toHaveBeenCalled();
+    } finally {
+      delete (HTMLElement.prototype as { requestFullscreen?: unknown }).requestFullscreen;
+      delete (document as { exitFullscreen?: unknown }).exitFullscreen;
+      delete (document as { fullscreenElement?: unknown }).fullscreenElement;
+    }
+  });
+
+  it('se replie sur un plein écran CSS sans API (iOS) et masque les commandes au repos', async () => {
+    search = 'faction=league';
+    const page = renderScreen();
+    const player = await page.findByTestId('film-player');
+    vi.useFakeTimers();
+    try {
+      fireEvent.click(page.getByRole('button', { name: 'Plein écran (F)' }));
+      expect(player.dataset.fullscreen).toBe('css');
+      expect(player.dataset.idle).toBe('false');
+      act(() => { vi.advanceTimersByTime(2600); });
+      expect(player.dataset.idle).toBe('true');
+      fireEvent.pointerMove(player);
+      expect(player.dataset.idle).toBe('false');
+      fireEvent.doubleClick(player.querySelector('video')!.parentElement!);
+      expect(player.dataset.fullscreen).toBe('none');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('arrête le film avant le bonus, propose de le voir puis de le passer', async () => {
+    search = 'faction=league';
+    const withBonus: CinematicsIndex = { ...INDEX, arcs: { ...INDEX.arcs, bosses: { title: { fr: 'Les maîtres des donjons', en: 'Dungeon masters' }, version: '9.0' } },
+      cinematics: [...INDEX.cinematics, cine('boss-a', { order: 5000, bonus: true, arc: 'bosses' }), cine('boss-b', { order: 5010, bonus: true, arc: 'bosses' })] };
+    const page = render(<I18nProvider storage={null} initial="fr"><CinematicsScreen loader={() => Promise.resolve(withBonus)} /></I18nProvider>);
+    await page.findByTestId('film-video-0');
+    expect(page.getByRole('heading', { name: 'Bonus' })).toBeTruthy();
+    fireEvent.click(page.getByTestId('chapter-bridge'));
+    const visible = () => page.getAllByTestId(/film-video-/).find(v => v.getAttribute('aria-hidden') === 'false') as HTMLVideoElement;
+    await waitFor(() => expect(visible().dataset.chapter).toBe('bridge'));
+    act(() => { fireEvent.ended(visible()); });
+    const end = await page.findByRole('dialog', { name: 'Fin' });
+    fireEvent.click(within(end).getByRole('button', { name: 'Voir le bonus (2)' }));
+    await waitFor(() => expect(visible().dataset.chapter).toBe('boss-a'));
+    fireEvent.click(page.getByRole('button', { name: 'Passer le bonus' }));
+    const final = await page.findByRole('dialog', { name: 'Fin' });
+    expect(within(final).queryByRole('button', { name: /Voir le bonus/ })).toBeNull();
+  });
 });

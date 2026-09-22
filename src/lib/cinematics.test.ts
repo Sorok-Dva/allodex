@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
-  chapterAt, chaptersOf, defaultSubtitleLang, filmDuration, filmFor, filmTime, formatDuration, groupByArc,
+  bonusStart, chapterAt, chaptersOf, splitBonus, defaultSubtitleLang, filmDuration, filmFor, filmTime, formatDuration, groupByArc,
   isFaction, loadCinematics, nextIndex, subtitleLangs, trackFor, type Cinematic,
 } from './cinematics';
 
@@ -44,6 +44,20 @@ describe('filmFor', () => {
   it('départage deux cinématiques de même rang par leur identifiant', () => {
     const film = filmFor([cine('b', { order: 5 }), cine('a', { order: 5 })], 'league');
     expect(film.map(c => c.id)).toEqual(['a', 'b']);
+  });
+});
+
+describe('bonus', () => {
+  const withBonus = [...ALL, cine('boss-a', { order: 5000, bonus: true, arc: 'bosses' }), cine('late', { order: 1100 })];
+  it('rejette les chapitres bonus après la fin du film, quel que soit leur rang', () => {
+    const film = filmFor([cine('boss-b', { order: 50, bonus: true }), ...withBonus], 'league');
+    expect(film.slice(-2).map(c => c.id)).toEqual(['boss-b', 'boss-a']);
+    expect(bonusStart(film)).toBe(film.length - 2);
+    expect(splitBonus(film).main.at(-1)?.id).toBe('late');
+  });
+  it('n’a pas de bonus quand aucun chapitre n’en est', () => {
+    expect(bonusStart(filmFor(ALL, 'league'))).toBeNull();
+    expect(splitBonus(filmFor(ALL, 'league')).bonus).toEqual([]);
   });
 });
 
