@@ -321,12 +321,14 @@ fichiers :
 - **halo du dôme** (`glow_add`, seul élément `skinIndex 0` du faisceau, additif, texture
   `Glow04White`) : sa piste décodée grossit le quad de 1 à 2,33 et le fait tourner autour de
   l'axe de visée, avec une translation qui compense exactement ce pivot **dans le repère du
-  modèle** (T + s·R·P = P à 0,02 unité sur les 201 images). Or le binaire donne pour parent à
-  `glow_add` le groupe `group2` (translation (39,7 ; -20,4 ; 10,7), échelle 0,81) alors que les
-  matrices inverses de bind du jeu sont l'identité pour les deux : le client ne compose pas ce
-  groupe Maya sans sommet. Composé dessous, le halo orbitait à 100 unités du dôme et sortait du
-  cadre — c'est pourquoi il manquait. `tools/scenes/v8_0.py` rattache `glow_add` à
-  `VisualSceneNode` ; le centre du quad reste alors fixe à (41,6 ; -130 ; 44,9) ;
+  modèle** (T + s·R·P = P à 0,02 unité sur les 201 images). Son parent est le groupe `group2`
+  (translation (39,7 ; -20,4 ; 10,7), échelle 0,81) et sa matrice inverse de bind native est
+  l'identité : ses sommets sont exprimés dans le repère de l'articulation, comme la tour de la
+  5.0. L'export recalculant les inverses depuis la pose de repos, `tools/scenes/v8_0.py` recale
+  ces sommets par `monde_repos(glow_add)` — sans quoi l'animation faisait tourner le quad autour
+  de l'origine de l'articulation, à 137 unités de son centre : l'« orbite » qui le sortait du
+  cadre. Ainsi composé, le centre du halo tombe sur le croisement des petites lignes du faisceau
+  (vérifié en rendant les deux couches seules) ;
 - **une vitesse de défilement par élément** : le xdb donne la vitesse à l'élément, l'export ne
   distingue les matériaux que par texture et fusion. `Noise03White03` additif est partagé par
   `Statue_glow` (0,1 ; 0,1), `fire_spots` (0 ; 0,3) et `group3_Fire1` (0,02 ; 0), `BackCloud` par
