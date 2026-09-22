@@ -38,7 +38,7 @@ import numpy as np
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from tools.packbin import KIND_DATA, KIND_PTR, KIND_TYPE, LocTable, PackBin, inflate  # noqa: E402
+from tools.packbin import KIND_CLASS, KIND_DATA, KIND_PTR, KIND_TYPE, LocTable, PackBin, inflate  # noqa: E402
 from tools.uitexture import decode_uitexture  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
@@ -494,6 +494,15 @@ class Extractor:
     def texture_icon(self, single: int) -> str | None:
         h = self.head(single)
         tex = next((t for _, t in self.ptrs(*h) if self.type_at(t) == "UITexture"), None)
+        if tex is None and self.pb.ids:
+            # 17.x : la texture peut être désignée par identifiant (genre 2) ; retenue seulement
+            # si l'objet désigné est bien une UITexture.
+            for o in range(h[0], h[1], self.ps):
+                rel = self.pb.reloc(o, KIND_CLASS)
+                cand = self.pb.ids.get(rel.target) if rel else None
+                if cand is not None and self.type_at(cand) == "UITexture":
+                    tex = cand
+                    break
         if tex is None:
             return None
         if self.pb.fmt == "v1":

@@ -25,7 +25,8 @@ ont été remis à zéro et listés dans une table de relocalisation. Deux famil
 (les chemins ont disparu, sauf ~500 racines de la table 1), table 2 = noms de types. Le bloc de
 données (`u32 3, u64 taille`) est suivi du bloc 4 (`u32 4, u64 n`, `n × (u64 X, u64 T)`) avec
 `X = adresse + genre` : 0 = pointeur vers un objet, 3 = vers des données, 4 = type d'un objet
-indexé, 5 = type d'un objet imbriqué, 2 = référence de classe.
+indexé, 5 = type d'un objet imbriqué, 2 = référence par identifiant d'objet (clé de la table 0 ;
+la cible n'a pas toujours le type attendu, ces références sont traitées comme indices faibles).
 
 `pack.loc` (v1 : blocs 0 = table `chemin → id`, 1 = `(u32 long., u32 décalage)` UTF-16, 2 = chaînes ;
 v2 : `u32 empreinte, u32 0, u64 nb_mots`, `(u64 long., u64 décalage)`, puis `(u32 2, u64 taille)` et
@@ -43,7 +44,7 @@ import numpy as np
 KIND_PTR = 0      # pointeur vers un objet (indexé ou imbriqué)
 KIND_DATA = 1     # pointeur vers des données internes (chaîne, tableau)
 KIND_TYPE = 2     # l'objet commençant à cette adresse a pour type T
-KIND_CLASS = 3    # référence de classe (v2)
+KIND_CLASS = 3    # v2 (17.x) : référence par identifiant d'objet (clé de la table 0)
 
 
 def inflate(data: bytes) -> bytes:
@@ -228,7 +229,7 @@ class PackBin:
             kind[genre == 1] = KIND_DATA
             kind[(genre == 2) | (genre == 3)] = KIND_TYPE
         else:
-            # 17.x : X = adresse + genre (0 objet, 3 données, 4/5 type, 2 classe).
+            # 17.x : X = adresse + genre (0 objet, 3 données, 4/5 type, 2 référence par identifiant).
             addr = x & ~7
             kind[genre == 0] = KIND_PTR
             kind[genre == 3] = KIND_DATA
