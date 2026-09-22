@@ -7,4 +7,11 @@
   display: block;
   width: 100%;
   height: 100%;
+  /* Transparent jusqu'à la première image rendue, puis fondu (voir MenuScene.tsx). */
+  opacity: 0;
+  transition: opacity 600ms ease-out;
+}
+.visible { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .canvas { transition: none; }
 }
