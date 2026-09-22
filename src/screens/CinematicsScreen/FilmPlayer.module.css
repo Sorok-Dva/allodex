@@ -95,7 +95,6 @@
 .player[data-idle="true"] .controls, .player[data-idle="true"] .panel { opacity: 0; pointer-events: none; }
 .player[data-idle="true"] { cursor: none; }
 .player[data-idle="true"] .video { cursor: none; }
-.player:not([data-fullscreen="none"]) .video::cue { font-size: clamp(26px, 2.6vw, 64px); }
 .player:not([data-fullscreen="none"]) .card { top: 6%; }
 .player:not([data-fullscreen="none"]) .cardTitle { font-size: clamp(34px, 3vw, 72px); }
 .fullscreenToggle { position: relative; flex: none; }

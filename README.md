@@ -91,7 +91,7 @@ directement un film. Clavier : espace (lecture/pause), Maj+←/→ (chapitre), F
 
 **Plein écran** : bouton, touche F ou double-clic sur l'image. C'est le conteneur du lecteur
 qui passe en plein écran (API Fullscreen), pas la balise `<video>` : nos sous-titres restent
-affichés et grossissent avec l'écran. Commandes, chapitres et curseur s'effacent après
+affichés, à la même taille qu'en fenêtre. Commandes, chapitres et curseur s'effacent après
 2,5 s sans mouvement et reviennent au moindre geste ; tant qu'ils sont visibles, l'image
 remonte au-dessus de la barre pour garder les sous-titres lisibles. Sans API Fullscreen sur
 un `div` (iOS Safari), le lecteur passe en mode CSS fixe plein cadre.
