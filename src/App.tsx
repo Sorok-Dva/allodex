@@ -9,6 +9,7 @@ import { ChroniclesScreen } from '@/screens/ChroniclesScreen/ChroniclesScreen';
 import { MusicScreen } from '@/screens/MusicScreen/MusicScreen';
 import { LegalScreen } from '@/screens/LegalScreen/LegalScreen';
 import { FatalitiesScreen } from '@/screens/FatalitiesScreen/FatalitiesScreen';
+import { CinematicsScreen } from '@/screens/CinematicsScreen/CinematicsScreen';
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -29,6 +30,7 @@ export default function App() {
        path === '/chronicles' || path === '/chroniques' ? <ChroniclesScreen /> :
        path === '/music' || path === '/musiques' ? <MusicScreen /> :
        path === '/fatalities' || path === '/fatalites' ? <FatalitiesScreen /> :
+       path === '/cinematics' || path === '/cinematiques' ? <CinematicsScreen /> :
        <OpeningScreen />}
     </AudioProvider>
     </I18nProvider>

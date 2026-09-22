@@ -376,9 +376,29 @@
    "w": 64,
    "h": 64
   },
+  "Interface/Icons/Special/Notifications/RepostVideo": {
+   "w": 64,
+   "h": 64
+  },
   "Interface/Icons/Special/VeteranRewards/VeteranRankMaster": {
    "w": 57,
    "h": 64
+  },
+  "Interface/Ingame/ChoiceFaction/Textures/ChoiceFactionBackEmpire": {
+   "w": 320,
+   "h": 528
+  },
+  "Interface/Ingame/ChoiceFaction/Textures/ChoiceFactionBackLeague": {
+   "w": 320,
+   "h": 528
+  },
+  "Interface/Ingame/ChoiceFaction/Textures/Empire": {
+   "w": 118,
+   "h": 100
+  },
+  "Interface/Ingame/ChoiceFaction/Textures/League": {
+   "w": 136,
+   "h": 100
   },
   "Interface/Ingame/ContextActionbar2/ActionBar": {
    "w": 930,

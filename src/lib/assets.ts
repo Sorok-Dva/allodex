@@ -217,4 +217,6 @@ export const T = {
   standardBtn: 'Interface/Common/Buttons/Standard',
   actions: 'Interface/Icons/Actions',
   spells: 'Interface/Icons/Spells',
+  choiceFaction: 'Interface/Ingame/ChoiceFaction/Textures',
+  videoIcon: 'Interface/Icons/Special/Notifications/RepostVideo',
 } as const;

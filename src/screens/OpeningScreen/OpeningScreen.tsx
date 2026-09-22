@@ -82,6 +82,7 @@ export function OpeningScreen() {
   const items: ActionItem[] = [
     { id: 'chronicles', base: `${T.pinMenu}/ButtonQuestlog`, label: t('home.chronicles'), hint: t('home.chroniclesHint'), onClick: () => navigate('/chronicles') },
     { id: 'music', base: `${T.pinMenu}/ButtonMedals`, image: 'Official/media_player', label: t('music.title'), hint: t('home.musicHint'), onClick: () => navigate('/music') },
+    { id: 'cinematics', base: `${T.pinMenu}/ButtonMedals`, image: T.videoIcon, label: t('home.cinematics'), hint: t('home.cinematicsHint'), onClick: () => navigate('/cinematics') },
     { id: 'fatalities', base: T.spells, image: `${T.spells}/FatalityLotus`, label: t('home.fatalities'), hint: t('home.fatalitiesHint'), disabled: import.meta.env.PROD, onClick: () => navigate('/fatalities') },
     { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: t('home.medals'), hint: t('home.medalsHint'), onClick: () => navigate('/achievements') },
     { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: t('home.character'), hint: t('home.characterHint'), disabled: true },
