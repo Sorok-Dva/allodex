@@ -1,0 +1,1785 @@
+{
+ "versions": [
+  {
+   "id": "1.1",
+   "label": "1.1.02",
+   "client": "Arbre de développement 1.1.02 (révision SVN 168362)",
+   "languages": [
+    "ru"
+   ],
+   "format": "v1",
+   "classes": [
+    {
+     "code": "MAGE",
+     "slug": "mage",
+     "name": {
+      "ru": "Волшебник"
+     },
+     "talents": 63,
+     "layers": 6,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid7x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "NECROMANCER",
+     "slug": "necromancer",
+     "name": {
+      "ru": "Некромант"
+     },
+     "talents": 48,
+     "layers": 6,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid7x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PSIONIC",
+     "slug": "psionic",
+     "name": {
+      "ru": "Мистик"
+     },
+     "talents": 52,
+     "layers": 6,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid7x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "STALKER",
+     "slug": "stalker",
+     "name": {
+      "ru": "Разведчик"
+     },
+     "talents": 52,
+     "layers": 6,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid7x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "DRUID",
+     "slug": "druid",
+     "name": {
+      "ru": "Язычник"
+     },
+     "talents": 50,
+     "layers": 6,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid7x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PRIEST",
+     "slug": "priest",
+     "name": {
+      "ru": "Жрец"
+     },
+     "talents": 52,
+     "layers": 6,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid7x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PALADIN",
+     "slug": "paladin",
+     "name": {
+      "ru": "Храмовник"
+     },
+     "talents": 50,
+     "layers": 6,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid7x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARRIOR",
+     "slug": "warrior",
+     "name": {
+      "ru": "Воин"
+     },
+     "talents": 71,
+     "layers": 6,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid7x7"
+     ],
+     "missingNames": 0
+    }
+   ]
+  },
+  {
+   "id": "2.0",
+   "label": "2.0.04",
+   "client": "Client anglais 2.0.04",
+   "languages": [
+    "en"
+   ],
+   "format": "v1",
+   "classes": [
+    {
+     "code": "MAGE",
+     "slug": "mage",
+     "name": {
+      "en": "Mage"
+     },
+     "talents": 77,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "DRUID",
+     "slug": "druid",
+     "name": {
+      "en": "Warden"
+     },
+     "talents": 68,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "NECROMANCER",
+     "slug": "necromancer",
+     "name": {
+      "en": "Summoner"
+     },
+     "talents": 65,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PALADIN",
+     "slug": "paladin",
+     "name": {
+      "en": "Paladin"
+     },
+     "talents": 64,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PRIEST",
+     "slug": "priest",
+     "name": {
+      "en": "Healer"
+     },
+     "talents": 66,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PSIONIC",
+     "slug": "psionic",
+     "name": {
+      "en": "Psionicist"
+     },
+     "talents": 69,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "STALKER",
+     "slug": "stalker",
+     "name": {
+      "en": "Scout"
+     },
+     "talents": 67,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARRIOR",
+     "slug": "warrior",
+     "name": {
+      "en": "Warrior"
+     },
+     "talents": 84,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    }
+   ]
+  },
+  {
+   "id": "3.0",
+   "label": "3.0.2.19",
+   "client": "Client russe 3.0.2.19",
+   "languages": [
+    "ru"
+   ],
+   "format": "v1",
+   "classes": [
+    {
+     "code": "BARD",
+     "slug": "bard",
+     "name": {
+      "ru": "Бард"
+     },
+     "talents": 68,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARRIOR",
+     "slug": "warrior",
+     "name": {
+      "ru": "Воин"
+     },
+     "talents": 85,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PALADIN",
+     "slug": "paladin",
+     "name": {
+      "ru": "Храмовник"
+     },
+     "talents": 67,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "STALKER",
+     "slug": "stalker",
+     "name": {
+      "ru": "Разведчик"
+     },
+     "talents": 69,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "DRUID",
+     "slug": "druid",
+     "name": {
+      "ru": "Язычник"
+     },
+     "talents": 68,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PSIONIC",
+     "slug": "psionic",
+     "name": {
+      "ru": "Мистик"
+     },
+     "talents": 69,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PRIEST",
+     "slug": "priest",
+     "name": {
+      "ru": "Жрец"
+     },
+     "talents": 66,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "NECROMANCER",
+     "slug": "necromancer",
+     "name": {
+      "ru": "Некромант"
+     },
+     "talents": 65,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "MAGE",
+     "slug": "mage",
+     "name": {
+      "ru": "Волшебник"
+     },
+     "talents": 65,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    }
+   ]
+  },
+  {
+   "id": "4.0",
+   "label": "4.0.02",
+   "client": "pack.bin d'origine 4.0.02 (dossier ORI du repacker, même empreinte que le client « AllodsLegend ») + textes français du même dossier",
+   "languages": [
+    "fr"
+   ],
+   "format": "v1",
+   "classes": [
+    {
+     "code": "PSIONIC",
+     "slug": "psionic",
+     "name": {
+      "fr": "Psionique"
+     },
+     "talents": 68,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "STALKER",
+     "slug": "stalker",
+     "name": {
+      "fr": "Éclaireur"
+     },
+     "talents": 72,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "NECROMANCER",
+     "slug": "necromancer",
+     "name": {
+      "fr": "Invocateur"
+     },
+     "talents": 67,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "MAGE",
+     "slug": "mage",
+     "name": {
+      "fr": "Mage"
+     },
+     "talents": 67,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARRIOR",
+     "slug": "warrior",
+     "name": {
+      "fr": "Guerrier"
+     },
+     "talents": 78,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PRIEST",
+     "slug": "priest",
+     "name": {
+      "fr": "Guérisseur"
+     },
+     "talents": 68,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "BARD",
+     "slug": "bard",
+     "name": {
+      "fr": "Barde"
+     },
+     "talents": 70,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PALADIN",
+     "slug": "paladin",
+     "name": {
+      "fr": "Paladin"
+     },
+     "talents": 69,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "DRUID",
+     "slug": "druid",
+     "name": {
+      "fr": "Tribaliste"
+     },
+     "talents": 71,
+     "layers": 9,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x7"
+     ],
+     "missingNames": 0
+    }
+   ]
+  },
+  {
+   "id": "7.0",
+   "label": "7.0",
+   "client": "Client « Revelation » 7.0 (textes anglais et russes)",
+   "languages": [
+    "en",
+    "ru"
+   ],
+   "format": "v1",
+   "classes": [
+    {
+     "code": "MAGE",
+     "slug": "mage",
+     "name": {
+      "en": "Mage",
+      "ru": "Волшебник"
+     },
+     "talents": 79,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "NECROMANCER",
+     "slug": "necromancer",
+     "name": {
+      "en": "Summoner",
+      "ru": "Некромант"
+     },
+     "talents": 89,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PRIEST",
+     "slug": "priest",
+     "name": {
+      "en": "Healer",
+      "ru": "Жрец"
+     },
+     "talents": 81,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 1
+    },
+    {
+     "code": "DRUID",
+     "slug": "druid",
+     "name": {
+      "en": "Warden",
+      "ru": "Язычник"
+     },
+     "talents": 90,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "BARD",
+     "slug": "bard",
+     "name": {
+      "en": "Bard",
+      "ru": "Бард"
+     },
+     "talents": 77,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "ENGINEER",
+     "slug": "engineer",
+     "name": {
+      "en": "Engineer",
+      "ru": "Инженер"
+     },
+     "talents": 88,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PALADIN",
+     "slug": "paladin",
+     "name": {
+      "en": "Paladin",
+      "ru": "Храмовник"
+     },
+     "talents": 96,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 1
+    },
+    {
+     "code": "PSIONIC",
+     "slug": "psionic",
+     "name": {
+      "en": "Psionicist",
+      "ru": "Мистик"
+     },
+     "talents": 96,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 1
+    },
+    {
+     "code": "STALKER",
+     "slug": "stalker",
+     "name": {
+      "en": "Scout",
+      "ru": "Разведчик"
+     },
+     "talents": 93,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARRIOR",
+     "slug": "warrior",
+     "name": {
+      "en": "Warrior",
+      "ru": "Воин"
+     },
+     "talents": 91,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    }
+   ]
+  },
+  {
+   "id": "8.0",
+   "label": "8.0",
+   "client": "Client français 8.0",
+   "languages": [
+    "fr"
+   ],
+   "format": "v1",
+   "classes": [
+    {
+     "code": "MAGE",
+     "slug": "mage",
+     "name": {
+      "fr": "Mage"
+     },
+     "talents": 79,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "NECROMANCER",
+     "slug": "necromancer",
+     "name": {
+      "fr": "Invocateur"
+     },
+     "talents": 92,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PRIEST",
+     "slug": "priest",
+     "name": {
+      "fr": "Guérisseur"
+     },
+     "talents": 82,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 1
+    },
+    {
+     "code": "DRUID",
+     "slug": "druid",
+     "name": {
+      "fr": "Tribaliste"
+     },
+     "talents": 93,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "BARD",
+     "slug": "bard",
+     "name": {
+      "fr": "Barde"
+     },
+     "talents": 77,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "ENGINEER",
+     "slug": "engineer",
+     "name": {
+      "fr": "Ingénieur"
+     },
+     "talents": 88,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PALADIN",
+     "slug": "paladin",
+     "name": {
+      "fr": "Paladin"
+     },
+     "talents": 96,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 1
+    },
+    {
+     "code": "PSIONIC",
+     "slug": "psionic",
+     "name": {
+      "fr": "Psionique"
+     },
+     "talents": 96,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 1
+    },
+    {
+     "code": "STALKER",
+     "slug": "stalker",
+     "name": {
+      "fr": "Éclaireur"
+     },
+     "talents": 101,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARRIOR",
+     "slug": "warrior",
+     "name": {
+      "fr": "Guerrier"
+     },
+     "talents": 91,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    }
+   ]
+  },
+  {
+   "id": "9.0",
+   "label": "9.0.01.89",
+   "client": "Client français 9.0.01.89",
+   "languages": [
+    "fr"
+   ],
+   "format": "v1",
+   "classes": [
+    {
+     "code": "MAGE",
+     "slug": "mage",
+     "name": {
+      "fr": "Mage"
+     },
+     "talents": 80,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "NECROMANCER",
+     "slug": "necromancer",
+     "name": {
+      "fr": "Invocateur"
+     },
+     "talents": 96,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PRIEST",
+     "slug": "priest",
+     "name": {
+      "fr": "Guérisseur"
+     },
+     "talents": 83,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 1
+    },
+    {
+     "code": "DRUID",
+     "slug": "druid",
+     "name": {
+      "fr": "Tribaliste"
+     },
+     "talents": 96,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "BARD",
+     "slug": "bard",
+     "name": {
+      "fr": "Barde"
+     },
+     "talents": 81,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "ENGINEER",
+     "slug": "engineer",
+     "name": {
+      "fr": "Ingénieur"
+     },
+     "talents": 89,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PALADIN",
+     "slug": "paladin",
+     "name": {
+      "fr": "Paladin"
+     },
+     "talents": 100,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 1
+    },
+    {
+     "code": "PSIONIC",
+     "slug": "psionic",
+     "name": {
+      "fr": "Psionique"
+     },
+     "talents": 97,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 1
+    },
+    {
+     "code": "STALKER",
+     "slug": "stalker",
+     "name": {
+      "fr": "Éclaireur"
+     },
+     "talents": 105,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARLOCK",
+     "slug": "warlock",
+     "name": {
+      "fr": "Démoniste"
+     },
+     "talents": 83,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARRIOR",
+     "slug": "warrior",
+     "name": {
+      "fr": "Guerrier"
+     },
+     "talents": 93,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    }
+   ]
+  },
+  {
+   "id": "11.0",
+   "label": "11.0",
+   "client": "Client Steam anglais 11.0 (téléchargement partiel : pack.bin et Interface.Mini.pak, pas de pak de textes)",
+   "languages": [],
+   "format": "v1",
+   "classes": [
+    {
+     "code": "MAGE",
+     "slug": "mage",
+     "name": {},
+     "talents": 81,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 81
+    },
+    {
+     "code": "NECROMANCER",
+     "slug": "necromancer",
+     "name": {},
+     "talents": 97,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 97
+    },
+    {
+     "code": "PRIEST",
+     "slug": "priest",
+     "name": {},
+     "talents": 84,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 84
+    },
+    {
+     "code": "DRUID",
+     "slug": "druid",
+     "name": {},
+     "talents": 97,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 97
+    },
+    {
+     "code": "BARD",
+     "slug": "bard",
+     "name": {},
+     "talents": 82,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 82
+    },
+    {
+     "code": "ENGINEER",
+     "slug": "engineer",
+     "name": {},
+     "talents": 88,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 88
+    },
+    {
+     "code": "PALADIN",
+     "slug": "paladin",
+     "name": {},
+     "talents": 101,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 101
+    },
+    {
+     "code": "PSIONIC",
+     "slug": "psionic",
+     "name": {},
+     "talents": 97,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 97
+    },
+    {
+     "code": "STALKER",
+     "slug": "stalker",
+     "name": {},
+     "talents": 106,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 106
+    },
+    {
+     "code": "WARLOCK",
+     "slug": "warlock",
+     "name": {},
+     "talents": 84,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 84
+    },
+    {
+     "code": "WARRIOR",
+     "slug": "warrior",
+     "name": {},
+     "talents": 92,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 92
+    }
+   ]
+  },
+  {
+   "id": "15.0",
+   "label": "15.0.03.23",
+   "client": "Client français 15.0.03.23.2 (x64)",
+   "languages": [
+    "fr"
+   ],
+   "format": "v2",
+   "classes": [
+    {
+     "code": "MAGE",
+     "slug": "mage",
+     "name": {
+      "fr": "Mage"
+     },
+     "talents": 79,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "BARD",
+     "slug": "bard",
+     "name": {
+      "fr": "Barde"
+     },
+     "talents": 87,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "NECROMANCER",
+     "slug": "necromancer",
+     "name": {
+      "fr": "Invocateur"
+     },
+     "talents": 105,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PRIEST",
+     "slug": "priest",
+     "name": {
+      "fr": "Guérisseur"
+     },
+     "talents": 94,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARRIOR",
+     "slug": "warrior",
+     "name": {
+      "fr": "Guerrier"
+     },
+     "talents": 98,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "ENGINEER",
+     "slug": "engineer",
+     "name": {
+      "fr": "Ingénieur"
+     },
+     "talents": 89,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "DRUID",
+     "slug": "druid",
+     "name": {
+      "fr": "Tribaliste"
+     },
+     "talents": 109,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PALADIN",
+     "slug": "paladin",
+     "name": {
+      "fr": "Paladin"
+     },
+     "talents": 105,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PSIONIC",
+     "slug": "psionic",
+     "name": {
+      "fr": "Psionique"
+     },
+     "talents": 85,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARLOCK",
+     "slug": "warlock",
+     "name": {
+      "fr": "Démoniste"
+     },
+     "talents": 87,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "STALKER",
+     "slug": "stalker",
+     "name": {
+      "fr": "Éclaireur"
+     },
+     "talents": 110,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    }
+   ]
+  },
+  {
+   "id": "16.0",
+   "label": "16.0.01.78",
+   "client": "Client français 16.0.01.78.2 (x64)",
+   "languages": [
+    "fr"
+   ],
+   "format": "v2",
+   "classes": [
+    {
+     "code": "MAGE",
+     "slug": "mage",
+     "name": {
+      "fr": "Mage"
+     },
+     "talents": 79,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "BARD",
+     "slug": "bard",
+     "name": {
+      "fr": "Barde"
+     },
+     "talents": 87,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "NECROMANCER",
+     "slug": "necromancer",
+     "name": {
+      "fr": "Invocateur"
+     },
+     "talents": 106,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PRIEST",
+     "slug": "priest",
+     "name": {
+      "fr": "Guérisseur"
+     },
+     "talents": 94,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARRIOR",
+     "slug": "warrior",
+     "name": {
+      "fr": "Guerrier"
+     },
+     "talents": 98,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "ENGINEER",
+     "slug": "engineer",
+     "name": {
+      "fr": "Ingénieur"
+     },
+     "talents": 89,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "DRUID",
+     "slug": "druid",
+     "name": {
+      "fr": "Tribaliste"
+     },
+     "talents": 109,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PALADIN",
+     "slug": "paladin",
+     "name": {
+      "fr": "Paladin"
+     },
+     "talents": 105,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PSIONIC",
+     "slug": "psionic",
+     "name": {
+      "fr": "Psionique"
+     },
+     "talents": 85,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARLOCK",
+     "slug": "warlock",
+     "name": {
+      "fr": "Démoniste"
+     },
+     "talents": 93,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "STALKER",
+     "slug": "stalker",
+     "name": {
+      "fr": "Éclaireur"
+     },
+     "talents": 110,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    }
+   ]
+  },
+  {
+   "id": "17.0",
+   "label": "17.0",
+   "client": "Dernier client russe (x64), textes anglais et russes",
+   "languages": [
+    "en",
+    "ru"
+   ],
+   "format": "v2",
+   "classes": [
+    {
+     "code": "MAGE",
+     "slug": "mage",
+     "name": {
+      "en": "Mage",
+      "ru": "Волшебник"
+     },
+     "talents": 79,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "BARD",
+     "slug": "bard",
+     "name": {
+      "en": "Bard",
+      "ru": "Бард"
+     },
+     "talents": 86,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "NECROMANCER",
+     "slug": "necromancer",
+     "name": {
+      "en": "Summoner",
+      "ru": "Некромант"
+     },
+     "talents": 103,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PRIEST",
+     "slug": "priest",
+     "name": {
+      "en": "Healer",
+      "ru": "Жрец"
+     },
+     "talents": 94,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "DRUID",
+     "slug": "druid",
+     "name": {
+      "en": "Warden",
+      "ru": "Язычник"
+     },
+     "talents": 113,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "ENGINEER",
+     "slug": "engineer",
+     "name": {
+      "en": "Engineer",
+      "ru": "Инженер"
+     },
+     "talents": 89,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PALADIN",
+     "slug": "paladin",
+     "name": {
+      "en": "Paladin",
+      "ru": "Храмовник"
+     },
+     "talents": 105,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "PSIONIC",
+     "slug": "psionic",
+     "name": {
+      "en": "Psionicist",
+      "ru": "Мистик"
+     },
+     "talents": 90,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARRIOR",
+     "slug": "warrior",
+     "name": {
+      "en": "Warrior",
+      "ru": "Воин"
+     },
+     "talents": 97,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "WARLOCK",
+     "slug": "warlock",
+     "name": {
+      "en": "Demonologist",
+      "ru": "Демонолог"
+     },
+     "talents": 93,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    },
+    {
+     "code": "STALKER",
+     "slug": "stalker",
+     "name": {
+      "en": "Scout",
+      "ru": "Разведчик"
+     },
+     "talents": 109,
+     "layers": 10,
+     "fields": 3,
+     "systems": [
+      "book",
+      "grid9x9"
+     ],
+     "missingNames": 0
+    }
+   ]
+  }
+ ],
+ "unavailable": [
+  {
+   "id": "5.0",
+   "reason": "~/allods-clients/5.0 ne contient que Interface/SFX_Music/scènes de menu : aucun pack.bin ni pak de textes"
+  },
+  {
+   "id": "6.0",
+   "reason": "~/allods-clients/6.0 ne contient que Interface/SFX_Music/scènes de menu : aucun pack.bin ni pak de textes"
+  },
+  {
+   "id": "10.0",
+   "reason": "aucun client 10.x disponible"
+  },
+  {
+   "id": "12.0",
+   "reason": "seuls des paks de textes 12.0 existent (Tools/work/12.0), sans pack.bin"
+  },
+  {
+   "id": "13.0",
+   "reason": "aucun client 13.x disponible"
+  },
+  {
+   "id": "14.0",
+   "reason": "aucun client 14.x disponible"
+  }
+ ]
+}
