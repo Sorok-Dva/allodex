@@ -321,12 +321,14 @@ fichiers :
 - **halo du dôme** (`glow_add`, seul élément `skinIndex 0` du faisceau, additif, texture
   `Glow04White`) : sa piste décodée grossit le quad de 1 à 2,33 et le fait tourner autour de
   l'axe de visée, avec une translation qui compense exactement ce pivot **dans le repère du
-  modèle** (T + s·R·P = P à 0,02 unité sur les 201 images). Or le binaire donne pour parent à
-  `glow_add` le groupe `group2` (translation (39,7 ; -20,4 ; 10,7), échelle 0,81) alors que les
-  matrices inverses de bind du jeu sont l'identité pour les deux : le client ne compose pas ce
-  groupe Maya sans sommet. Composé dessous, le halo orbitait à 100 unités du dôme et sortait du
-  cadre — c'est pourquoi il manquait. `tools/scenes/v8_0.py` rattache `glow_add` à
-  `VisualSceneNode` ; le centre du quad reste alors fixe à (41,6 ; -130 ; 44,9) ;
+  modèle** (T + s·R·P = P à 0,02 unité sur les 201 images). Son parent est le groupe `group2`
+  (translation (39,7 ; -20,4 ; 10,7), échelle 0,81) et sa matrice inverse de bind native est
+  l'identité : ses sommets sont exprimés dans le repère de l'articulation, comme la tour de la
+  5.0. L'export recalculant les inverses depuis la pose de repos, `tools/scenes/v8_0.py` recale
+  ces sommets par `monde_repos(glow_add)` — sans quoi l'animation faisait tourner le quad autour
+  de l'origine de l'articulation, à 137 unités de son centre : l'« orbite » qui le sortait du
+  cadre. Ainsi composé, le centre du halo tombe sur le croisement des petites lignes du faisceau
+  (vérifié en rendant les deux couches seules) ;
 - **une vitesse de défilement par élément** : le xdb donne la vitesse à l'élément, l'export ne
   distingue les matériaux que par texture et fusion. `Noise03White03` additif est partagé par
   `Statue_glow` (0,1 ; 0,1), `fire_spots` (0 ; 0,3) et `group3_Fire1` (0,02 ; 0), `BackCloud` par
@@ -411,47 +413,102 @@ navire droit, est ainsi replacé sur les tuyères gauches sans déplacer les coq
 
 La scène est un seul objet skinné (tour-phare, roue et bielles, éclairs, arbres, nappes de brume et
 coupole de nuages `Back6`) auquel le navire de raid est attaché par un locator ; ses deux animations
-natives (100 s et 133 s) sont rejouées telles quelles par le mixeur générique. Trois particularités
-vivent dans `tools/scenes/v5_0.py` et `src/components/scene/MenuScene/v5/` :
+natives (100 s et 133 s) sont rejouées telles quelles par le mixeur générique. Ce qui n'est vrai que
+d'elle vit dans `tools/scenes/v5_0.py` et `src/components/scene/MenuScene/v5/` :
 
+- **Angles fixes de la pose de bind.** Dans le blob d'animation, un angle d'Euler *fixe* n'est pas
+  écrit (son flottant vaut 0) alors que la matrice locale de bind du squelette porte la rotation :
+  `root` (rochers) et `root1` (grand arbre) tournent de ~180°, `Tower`/`group5` de 10,4° autour de Z,
+  les bielles ont un Z fixe à 180°, la branche `joint9` un Y fixe à 90°. Les angles *animés* sont
+  absolus et valent ceux du bind à l'image 0. `restore_fixed_rotations` remplace chaque angle fixe
+  par celui du bind, dans la branche d'Euler qui s'accorde aux angles animés : la pose de bind
+  stockée est retrouvée exactement pour 23 des 35 articulations à inverse réelle (les autres à moins
+  de 0,3), et toutes les pièces de la tour s'alignent sur un même axe (X ≈ −52, Y ≈ 24). Le premier
+  jet laissait ces rotations à l'identité : arbre 33 unités trop bas, rochers derrière la tour,
+  pièces de la tour étalées sur 14 unités, et surtout **le bol de nuages retourné** (ses sommets
+  `skinIndex -1` sont liés par le tampon à `joint17`, un rocher sous `root`) — d'où la caméra hors du
+  décor et le voile. Ces sommets peints restent maintenant en espace monde, comme dans le client.
 - **Repère natif cuit dans les sommets.** Toute la tour et le navire ont des matrices inverses de
   bind identité : leurs sommets sont dans le repère de l'articulation. Le crochet `positions`
   applique `monde_repos · inverse_native` avant l'export, sans quoi roue, phares et halos s'empilent
-  à l'origine et le navire reste figé sur son locator. Le navire naît à l'échelle 0 : sa pose de
-  repos est bornée à 10⁻³ pour rester inversible.
-- **Le « dôme de brume »** n'était pas un problème de sphères : `Back6` est un bol de nuages ouvert
-  vers la caméra (culling correct), et le voile venait d'une caméra trop lointaine posée hors du décor
-  et de l'absence du brouillard du moteur (`useFog: true` sur tous les matériaux). Le lecteur pose un
-  brouillard linéaire (30 → 450 unités) de la couleur du fond, hors matériaux additifs ; couleur et
-  distances sont calées sur `refs/captures-ui/menu-5.0-frame1.png`, ce sont des réglages.
-- **Écarts assumés.** Les seize pièces de la coque et les rochers `Allods*` ont un alpha de sommet nul :
-  le lecteur coupe leur couleur de sommet et les rend opaques avec le tampon de profondeur. Le navire
-  est reclassé à chaque image d'après la profondeur de son articulation racine (il passe devant la
-  tour vers 30-45 s, derrière vers 65-85 s). Les effets attachés `/Spells/FX/World/AnimBack_Raid_Ship_*`
-  et `EngineTL01.Malfunction` (particules) ne sont pas exportés. Le grand passage au premier plan de
-  `refs/captures-ui/menu-5.0-frame2-raid-ship.png` n'est pas reproduit à cette taille : avec la caméra
-  retenue le navire reste à 15-35 % de la largeur (voir le rapport de reprise).
+  à l'origine et le navire reste figé sur son locator. Le navire naît à l'échelle 0 (sa pose de bind
+  est sa pose finale, échelle 0,632, retrouvée à 2·10⁻⁴) : la pose de repos est bornée à 10⁻³.
+- **Caméra dérivée du bol.** Les calques peints sont des arcs concaves tournés vers +X ; `Back6` est
+  un bol un peu plus profond qu'une demi-sphère (fond à X = −91, bord à X = +16, rayon ~120) dont la
+  sphère ajustée a pour centre (27, −1, −13) : la caméra y est posée et regarde −X le long de l'axe du
+  bol. Champ vertical 53° = 2·atan(39/79) (la tour, 60 unités à 79 unités, couvre 77 % de la hauteur
+  de la capture). Repère direct (`"mirror": false`) : la droite de l'image est +Y, où sont la tour et
+  les rochers. Réglage : la cible est relevée de 12 unités (9°) pour placer la tour comme sur la
+  capture. La couleur de fond est celle du bol (médiane des couleurs de sommet ×2, modulée par sa
+  texture) ; plus de brouillard ajouté (ses paramètres 5.0 ne sont nulle part).
+- **Ordre de peinture et matériaux du xdb.** Les deux Geometry déclarent `sortMode OFFSETS` : le
+  lecteur peint dans l'ordre du fichier (relevé dans `scene.json`, comme en 4.0). Le xdb distingue
+  les matériaux `transparent` (mélange alpha/additif, alpha de sommet actif) des autres — fûts et
+  flèche de la tour, sabres, bielles, écorces, coque du navire, bol `Back6` — que le client peint sans
+  mélange : `scene.json` porte ces drapeaux par primitive (`materials`) et le lecteur leur applique
+  un test d'alpha (seuil 0,5, réglage), le tampon de profondeur et la couleur de sommet RGB seule ;
+  les matériaux mélangés testent la profondeur sans l'écrire. Les textures ont leur origine en bas
+  (pointe de la flèche à V = 0,99 ; corrélation Z/V = +1), retournées comme en 4.0/7.0.
+- **Écarts et manques.** Le navire est reclassé à chaque image : juste avant la tour quand il est
+  derrière (X ≈ −73 à −87, 25-55 s), après tout le décor quand il revient au premier plan (65-85 s,
+  il croise le plan de la caméra vers 80 s et remplit l'image comme sur
+  `refs/captures-ui/menu-5.0-frame2-raid-ship.png`). Les rochers `Allods`/`Allods3` (matériau
+  mélangé, alpha de sommet nul partout) sont invisibles, fidèlement aux données. Les effets attachés
+  `/Spells/FX/World/AnimBack_Raid_Ship_*` et `EngineTL01.Malfunction` (particules) ne sont pas
+  exportés.
 
 ### Scène 6.0 « Broken Chains »
 
 Un seul maillage skinné (46 éléments) et son animation `idle` de 100 s : drapeau du
 laboratoire, arbres et balancement du train sont natifs et joués par le mixeur ; aucun
-matériau ne défile, le VisObjectTemplate n'attache aucun effet, `Manatrain_6_0_01_FX` est une
-texture que rien ne référence. `tools/scenes/v6_0.py` cuit dans les sommets du train et du
-drapeau la palette native de l'image 0 (`W₀ · inverse stockée`) — sans elle, les inverses
-recalculées par l'export les laissent à l'origine — et applique la règle 7.0 « additif
-seulement si transparent » (le train est peint opaque). Le bloc 6.0 du manifeste porte
-`"mirror": false` : le décor est modelé dans l'autre chiralité que la 7.0 (vérifié sur
-`refs/captures-ui/menu-6.0-frame1.png` : station et train à gauche, laboratoire à droite).
-Côté lecteur (`src/components/scene/MenuScene/v6/`) : `v6SceneLayers` peint dans l'ordre des
-`modelElements` du xdb (le tri par profondeur mettrait le versant `Mountains_04` devant la
-coupole), `v6Sky` rend le dôme `Sky_Back` dont l'alpha de sommet est nul partout (matériau
-opaque : le jeu l'ignore, three.js non), `v6Landscape` fige le décor que l'export Maya a
-skinné sur l'os 0 — une articulation du drapeau. La caméra est ajustée par moindres carrés
-sur la capture, en corrigeant son étirement horizontal (image 4:3 passée en 16:9) ; la
-cabine du train y est plus haute que dans les données et la prairie du bas y est continue
-là où le rendu montre des terrasses : cadrage approximatif, à reprendre avec une capture
-native du client.
+matériau ne défile, le VisObjectTemplate n'attache aucun effet, `Manatrain_6_0_01_FX`, `Bird`
+et `BackClouds_02` sont des textures que rien ne référence (reliquats d'une version
+antérieure de la scène). Les binaires sont identiques octet pour octet dans les clients 6.0
+(`/home/llyam/allods-clients/6.0`), 7.0 et 8.0. Quatre constats, tous tirés des fichiers :
+
+- **caméra au centre du dôme de ciel.** `Sky_Back` est une demi-coque d'ellipsoïde
+  (ajustement sur ses 158 sommets : centre (−2,8, 4,3, −2,8), demi-axes (83, 192, 83), erreur
+  2 %) ; comme en 8.0 les calques de fond entourent le point de vue, et le manifeste y place
+  la caméra, regard vers −X (laboratoire à Y > 0 à droite, station et pylône à Y < 0 à
+  gauche). Tangage (−7°) et champ sont ajustés sur `refs/captures-ui/menu-6.0-frame1.png`
+  (image 4:3 étirée en 16:9, abscisses corrigées) : champ vertical 92° en 4:3, soit 108°
+  horizontal ; le lecteur gardant le champ vertical constant, le manifeste pose 76° pour
+  retrouver ce champ horizontal en 16:9 — le drapeau du mât, visible en haut à droite du 4:3,
+  sort alors du cadre. La première caméra (40, −7, 30, champ 56°), ajustée à l'aveugle sur des
+  repères, était trop haute et trop loin : elle rendait la station vue de haut et séparait
+  les nappes de prairie ;
+- **`v = 0` en bas des textures**, comme en 7.0 et 8.0 (corrélation z/v positive sur 37 des
+  41 calques peints ; la coupole est en `v = 1`, la base des maisons en `v = 0`) :
+  `src/components/scene/MenuScene/v6/hooks.ts` retourne les textures. C'était la cause
+  principale du rendu illisible de la première passe (coupole pendue sous le laboratoire,
+  prairies montrant leur ciel découpé vers le bas) ;
+- **les canaux de rotation fixes de l'animation valent la rotation de bind, pas 0.** Une
+  piste dont les trois angles sont fixes stocke trois flottants nuls — dans les cinq
+  versions — alors que la matrice locale de bind porte une rotation franche (85° autour de Z
+  pour `group2`, le mât du drapeau ; (56°, −10°, −22°) pour `group1`, le porte-train), et la
+  décomposition ZYX du bind donne des valeurs rondes exactement sur les canaux fixes des
+  pistes mixtes. `tools/scenes/v6_0.py` (`restore_bind_rotations`) remet cette rotation dans
+  les pistes avant l'export ; sans elle le drapeau, modelé le long de X, était vu de chant et
+  le train pendait de travers. Le décodeur générique n'est pas modifié : la même règle vaut
+  probablement pour les 5.0 et 7.0 (tours à −10°, coques à ±90°), à vérifier sur leurs
+  captures avant de l'y appliquer ;
+- le train et le drapeau sont **modelés à l'origine** (inverses stockées = identité) et posés
+  par la palette de bind (rotation et échelle : `group1` à 0,81, `group2` à 0,37, désormais
+  lue par le décodeur) : `v6_0.py` la cuit dans les sommets des trois éléments skinnés
+  (`skinIndex` 0 : `Flag1`, `Train`, `Trees`), et applique la règle 7.0 « additif seulement
+  si transparent » (le train est peint opaque). Le décor peint (`skinIndex` −1) est rattaché
+  par l'export générique à une articulation immobile : l'ancien `v6Landscape` du lecteur, qui
+  le figeait, a été retiré.
+
+Le bloc 6.0 du manifeste porte `"mirror": false` (décor modelé dans l'autre chiralité que la
+7.0). Côté lecteur, `v6SceneLayers` peint dans l'ordre des `modelElements` du xdb
+(`sortMode OFFSETS`) et `v6Sky` rend le dôme `Sky_Back` dont l'alpha de sommet est nul
+partout. Écart assumé : la capture montre la cabine du train en haut à gauche, sur la portion
+haute du câble, deux fois plus grande que ne le permet sa position dans les données
+(`group1` statique en (−36, −22, 9), confirmé par l'`aabb` de l'animation dans le xdb : Y de
+−27 à 63) ; elle vient sans doute d'une autre révision de la scène (les textures `Bird`,
+`BackClouds_02` inutilisées en témoignent). Le rendu suit les données : le train pend juste
+au-dessus du pylône 02, à gauche.
 
 Reprise des deux écrans pour qu'ils soient visuellement identiques au jeu, à partir de captures live du client (spec détaillée : `docs/superpowers/specs/2026-09-19-iteration-2-fidelite-design.md`).
 

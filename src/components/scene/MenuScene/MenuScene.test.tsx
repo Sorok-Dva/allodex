@@ -86,7 +86,7 @@ describe('MenuScene', () => {
 
   it('cadre la caméra avec les valeurs de scene.json (fov vertical, axe Z vers le haut)', async () => {
     const onReady = vi.fn();
-    render(
+    const { getByTestId } = render(
       <MenuScene
         glbUrl="/g.glb"
         metaUrl="/g.json"
@@ -96,7 +96,10 @@ describe('MenuScene', () => {
       />,
     );
     await act(async () => {});
+    // Canvas transparent tant qu'aucune image n'est rendue : pas de « pop » sur l'illustration.
+    expect(getByTestId('menu-scene').dataset.visible).toBe('false');
     await act(async () => { loader.load.mock.calls[0][1](fakeGltf()); });
+    expect(getByTestId('menu-scene').dataset.visible).toBe('true');
 
     const camera = renderer.render.mock.calls[0][1] as THREE.PerspectiveCamera;
     expect(camera.isPerspectiveCamera).toBe(true);

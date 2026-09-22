@@ -40,7 +40,9 @@
       }
     },
     "5.0": {
-      "_camera_note": "Cadrage perspective calé sur refs/captures-ui/menu-5.0-frame1.png (tour-phare à droite, grand arbre à gauche, trouée lumineuse en haut à gauche) ; le navire de raid passe devant la tour vers 30-45 s puis, plus grand, derrière elle vers 65-85 s. Ce n'est pas une caméra extraite du client : profondeur sur X, la caméra regarde vers -X dans le repère miroir du .glb.",
+      "_camera_note": "Dérivée des données, pas extraite du client. Les calques peints (skinIndex -1, sommets en espace monde) sont des arcs concaves tournés vers +X ; la coupole de nuages Back6 est un bol un peu plus profond qu'une demi-sphère (fond à X=-91, bord à X=+16, rayon ~120) dont la sphère ajustée a pour centre (27, -1, -13) : la caméra y est posée et regarde -X le long de l'axe du bol (les tranches du bol sont centrées sur Y≈0). La tour (axe X≈-52, Y≈24, Z de -28 à +32) est alors à droite, le grand arbre (Y de -57 à -19) à gauche, comme sur refs/captures-ui/menu-5.0-frame1.png. Champ vertical : la tour (60 unités à 79 unités de distance) occupe 77 % de la hauteur de la capture → 2·atan(39/79) ≈ 53°. Réglage : la cible est relevée de 12 unités (9°) pour que le centre de la tour tombe, comme sur la capture, un peu au-dessus du milieu de l'image. Le navire de raid croise le plan de la caméra vers 80 s, à 13-30 unités, et remplit l'image (menu-5.0-frame2-raid-ship.png).",
+      "mirror": false,
+      "_mirror_note": "Repère direct : avec la caméra sur l'axe du bol regardant -X, la droite de l'image est +Y, où sont la tour (Y≈24) et les rochers ; le nœud miroir générique les mettrait à gauche, à l'inverse de la capture.",
       "dir": "Animated_Background_5_0",
       "roots": [
         "Animated_Background_5_0"
@@ -50,20 +52,20 @@
         0,
         1
       ],
-      "background": "#3d4da9",
-      "_background_note": "Couleur de la brume du client relevée sur la capture de référence ; le lecteur 5.0 l'emploie aussi pour son brouillard.",
+      "background": "#776caa",
+      "_background_note": "Couleur du bol de nuages Back6 : médiane de ses couleurs de sommet (×2, modulate2x) modulée par la couleur moyenne de sa texture BackClouds. Le bol couvre tout le champ depuis son centre, ce fond n'apparaît qu'en cas de trou.",
       "camera": {
         "position": [
-          135,
-          -14,
-          8
+          27,
+          -1,
+          -13
         ],
         "target": [
-          55,
-          -14,
-          8
+          -52,
+          -1,
+          -1
         ],
-        "fov": 60
+        "fov": 53
       }
     },
     "6.0": {
@@ -79,19 +81,19 @@
       "background": "#4a6a8c",
       "mirror": false,
       "_mirror_note": "Décor modelé dans l'autre chiralité que la 7.0 : avec le nœud miroir habituel, station et train passent à droite et le laboratoire à gauche, à l'inverse de refs/captures-ui/menu-6.0-frame1.png. Sans miroir, les coordonnées du .glb sont celles du jeu.",
-      "_camera_note": "Ajustée par moindres carrés sur refs/captures-ui/menu-6.0-frame1.png (dôme du laboratoire, coin de la station, pylône 02, buissons), en corrigeant l'étirement horizontal de cette capture (image 4:3 passée en 16:9). Coordonnées du jeu : profondeur sur X, le fond du ciel vers -X, la caméra du côté +X. Ce n'est pas une caméra extraite du client ; la position de la cabine du train (plus haute dans la capture que dans les données) n'a pas été utilisée.",
+      "_camera_note": "Position = centre de l'ellipsoïde de ciel Sky_Back, ajusté par moindres carrés sur ses 158 sommets (centre (-2.8, 4.3, -2.8), demi-axes (83, 192, 83), erreur 2 %) : les calques de fond sont des coques concentriques autour du point de vue, comme en 8.0. Regard vers -X (profondeur), les éléments à Y > 0 à droite (laboratoire), Y < 0 à gauche (station, pylône, train). Tangage (-7°) et champ ajustés sur refs/captures-ui/menu-6.0-frame1.png (image 4:3 étirée en 16:9, abscisses corrigées) avec le pied et la poulie du pylône 02, la coupole et le drapeau du mât du laboratoire, l'escalier de la station : champ vertical 92° en 4:3, soit 108° horizontal ; le lecteur gardant le champ vertical constant, on pose ici 76° pour retrouver ce même champ horizontal en 16:9. Le train de la capture (haut à gauche, sur la portion haute du câble) n'a pas servi : les données (identiques dans les clients 6.0, 7.0 et 8.0, aabb de l'animation comprise) le posent près du pylône 02.",
       "camera": {
         "position": [
-          40,
-          -7,
-          30
+          -2.8,
+          4.3,
+          -2.8
         ],
         "target": [
-          -38,
-          9,
-          -1
+          -40,
+          4.3,
+          -7.5
         ],
-        "fov": 56
+        "fov": 76
       }
     },
     "7.0": {
@@ -126,7 +128,7 @@
     },
     "8.0": {
       "_camera_note": "Perspective : les calques de fond (ciel, nuages, arbres d'amorce, brume) sont des arcs concentriques centrés sur (0, -370…-420) ; la caméra est à leur centre et regarde +Y. Champ vertical et hauteur calés sur refs/captures-ui/menu-8.0-frame1.png (statue de 98 unités sur 78 % de la hauteur à 254 unités de profondeur). Ce n'est pas une caméra extraite du client. Le repère est direct : tools/scenes/v8_0.py annule le nœud miroir générique.",
-      "_halo_note": "L'articulation glow_add (halo du dôme) est rattachée à VisualSceneNode par tools/scenes/v8_0.py : le binaire lui donne group2 pour parent, mais les matrices inverses de bind du jeu sont l'identité et sa piste compense rotation et échelle dans le repère du modèle. Le ZoneLights du menu V8 (bloom seuil 0,12 / puissance 3,5 / contribution 0,75, brouillard 100-600 ARGB 0x78461E00) n'est pas rejoué : formule inconnue, essai saturant (voir README).",
+      "_halo_note": "Le halo du dôme (glow_add) garde son parent natif group2 ; ses sommets, en repère d'articulation (inverse de bind identité), sont recalés par tools/scenes/v8_0.py dans le repère du modèle, ce qui le pose sur le croisement du faisceau. Le ZoneLights du menu V8 (bloom seuil 0,12 / puissance 3,5 / contribution 0,75, brouillard 100-600 ARGB 0x78461E00) n'est pas rejoué : formule inconnue, essai saturant (voir README).",
       "dir": "Animated_Background_8_0",
       "roots": [
         "AMM_8_0"

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { SceneMeta } from '@/lib/assets';
@@ -127,6 +127,10 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
   // La prop peut changer sans que la scène soit à recharger : on la lit par référence.
   const readyRef = useRef(onReady);
   readyRef.current = onReady;
+  // Le canvas reste transparent jusqu'à sa première image, puis apparaît en fondu : le
+  // chargement du `.glb` dure plusieurs secondes et la scène ne doit pas surgir d'un coup
+  // sur l'illustration de repli.
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -166,6 +170,7 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
       renderer.render(scene, camera);
       if (firstFrame) {
         firstFrame = false;
+        setVisible(true);
         readyRef.current?.();
       }
     };
@@ -343,7 +348,15 @@ export function MenuScene({ glbUrl, metaUrl, className, onReady, createLoader, c
     };
   }, [glbUrl, metaUrl, createLoader, createRenderer]);
 
-  return <canvas ref={canvasRef} className={`${s.canvas} ${className ?? ''}`} data-testid="menu-scene" aria-hidden="true" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className={`${s.canvas} ${visible ? s.visible : ''} ${className ?? ''}`}
+      data-testid="menu-scene"
+      data-visible={visible ? 'true' : 'false'}
+      aria-hidden="true"
+    />
+  );
 }
 
 export default MenuScene;

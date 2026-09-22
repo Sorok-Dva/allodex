@@ -1,10 +1,10 @@
 """Crochets 8.0 : annulation du miroir générique sur la géométrie, le squelette et l'animation."""
 import numpy as np
 
-from tools.extract_menu_scene import (JointTrack, LoadedObject, GeometryDoc, Skeleton, SkeletalAnimation,
+from tools.extract_menu_scene import (ElementSpec, JointTrack, LoadedObject, GeometryDoc, MaterialSpec, Skeleton, SkeletalAnimation,
                                       animated_bounds, quat_matrix, rest_world_matrices)
 from tools.scenes import hooks_for
-from tools.scenes.v8_0 import HOOKS, NO_PARENT, mirror_object, positions, reparent_halo
+from tools.scenes.v8_0 import HOOKS, bake_halo, mirror_object, positions
 
 
 def _object(name: str = "AMM_8_0") -> LoadedObject:
@@ -75,7 +75,10 @@ def _halo_object() -> LoadedObject:
                        animated=False, scale=np.array([0.8144]))
     halo = JointTrack(name="glow_add", translation=translation, rotation=rotation, animated=True, scale=scales)
     quad = center + np.array([[-14.5, 0.0, -14.5], [14.5, 0.0, -14.5], [14.5, 0.0, 14.5], [-14.5, 0.0, 14.5]])
-    return LoadedObject(name="AMM_8_0", doc=GeometryDoc(),
+    doc = GeometryDoc()
+    doc.elements.append(ElementSpec(name="glow_add", ib0=0, ib1=6, vb0=0, vb1=4,
+                                    material=MaterialSpec(name="Glow04White"), skin_index=0))
+    return LoadedObject(name="AMM_8_0", doc=doc,
                         vertices={"position": quad.astype(np.float32),
                                   # emplacement 0 → glow_add (indice 2, rangé ×3 dans le tampon), autres inutilisés
                                   "indices": np.array([[6, 255, 255, 255]] * 4, np.uint8),
@@ -89,36 +92,38 @@ def _halo_center(obj: LoadedObject, frame: int) -> np.ndarray:
     return (low + high) / 2
 
 
-def test_reparent_halo_keeps_the_glow_centred_on_the_dome():
+def test_bake_halo_composes_group2_and_keeps_the_glow_centred():
     obj = _halo_object()
-    # Composé sous group2 (translation + échelle 0,81), le halo dérive de plusieurs dizaines d'unités.
+    # Sommets en repère d'articulation (inverse native identité) pris pour de l'espace modèle :
+    # l'animation fait tourner le quad autour de l'origine de l'articulation → il dérive.
     drift = np.linalg.norm(_halo_center(obj, 2) - _halo_center(obj, 0))
     assert drift > 30
-    assert reparent_halo(obj) is True
-    assert obj.skeleton.parents[obj.skeleton.names.index("glow_add")] == obj.skeleton.names.index("VisualSceneNode")
+    obj.vertices["position"] = bake_halo(obj, obj.vertices["position"])
+    # Recalé par monde_repos(glow_add) = group2 (translation, échelle 0,81) : centre fixe.
+    expected = np.array([39.697, -20.435, 10.729]) + 0.8144 * np.array([41.602, -129.973, 44.921])
     for frame in range(3):
-        assert np.allclose(_halo_center(obj, frame), [41.602, -129.973, 44.921], atol=0.05)
-    # Le quad grossit bien : demi-largeur 14,5 → 33,8 à l'échelle 2,33.
+        assert np.allclose(_halo_center(obj, frame), expected, atol=0.05)
+    # Le quad grossit bien : demi-largeur 14,5 × 0,81 → × 2,33.
     low, high = animated_bounds(obj, 2)
-    assert np.isclose((high - low)[0] / 2, 14.5 * 2.33, atol=0.1)
-    assert reparent_halo(obj) is False  # déjà fait
+    assert np.isclose((high - low)[0] / 2, 14.5 * 0.8144 * 2.33, atol=0.1)
+    # Le parent natif est conservé.
+    assert obj.skeleton.parents[obj.skeleton.names.index("glow_add")] == obj.skeleton.names.index("group2")
 
 
-def test_reparent_halo_without_skeleton_root_detaches_the_joint():
+def test_bake_halo_leaves_objects_without_halo_untouched():
+    obj = _object()
+    before = obj.vertices["position"].copy()
+    assert bake_halo(obj, before).tolist() == before.tolist()
+
+
+def test_positions_bakes_the_halo_for_the_root_only():
     obj = _halo_object()
-    obj.skeleton.names[0] = "Autre"
-    assert reparent_halo(obj) is True
-    assert obj.skeleton.parents[2] == NO_PARENT
-    assert reparent_halo(_object()) is False  # pas de glow_add
-
-
-def test_positions_reparents_the_halo_for_the_root_only():
-    obj = _halo_object()
-    positions("AMM_8_0", obj, obj.vertices["position"].copy())
-    assert obj.skeleton.parents[2] == 0
+    raw = obj.vertices["position"].copy()
+    baked = positions("AMM_8_0", obj, raw.copy())
+    assert np.linalg.norm(baked.mean(axis=0) - raw.mean(axis=0) * np.array([-1, 1, 1])) > 30  # reflété puis recalé
     other = _halo_object()
-    positions("AMM_Autre", other, other.vertices["position"].copy())
-    assert other.skeleton.parents[2] == 1
+    kept = positions("AMM_Autre", other, other.vertices["position"].copy())
+    assert kept.tolist() == other.vertices["position"].tolist()
 
 
 def test_mirror_object_is_applied_once():

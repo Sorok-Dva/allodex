@@ -43,12 +43,14 @@ const MenuScene = lazy(() => import('@/components/scene/MenuScene'));
  * exportée et que le navigateur sait la rendre, sinon le fond statique. Version dont le
  * média n'a pas été extrait (client absent) : fond `Background_14_0_Temp` assombri.
  */
-function MediaLayer({ entry }: { entry: ArchiveEntry }) {
+function MediaLayer({ entry, onReady }: { entry: ArchiveEntry; onReady?: () => void }) {
   const { t } = useI18n();
-  // Le fond fixe reste visible sous la scène tant que celle-ci n'a pas rendu sa première
-  // image : sans lui, le changement de version passerait par un écran noir.
-  const [sceneReady, setSceneReady] = useState(false);
   const scene = entry.media === 'image' && entry.scene && hasWebGL() ? entry.scene : null;
+  // Un média immédiat (vidéo, image, fond de secours) est « prêt » dès son montage ; la
+  // scène 3D ne le devient qu'à sa première image rendue (onReady de MenuScene).
+  const readyRef = useRef(onReady);
+  readyRef.current = onReady;
+  useEffect(() => { if (!scene) readyRef.current?.(); }, [scene]);
 
   if (entry.media === 'video' && entry.video) {
     return (
@@ -59,25 +61,26 @@ function MediaLayer({ entry }: { entry: ArchiveEntry }) {
     );
   }
   if (entry.media === 'image' && entry.background) {
-    const still = (
-      <img
-        className={`${s.media} ${scene && sceneReady ? s.mediaBehind : ''}`}
-        src={archiveFile(entry.version, entry.background)}
-        alt={t('chronicles.launchScreen', { label: entry.label })}
-      />
-    );
-    if (!scene) return still;
-    return (
-      <>
-        {still}
+    // Avec la scène, l'illustration officielle n'est pas affichée : elle ne représente pas
+    // la scène et jurerait sous elle. La couche précédente reste visible jusqu'à la
+    // première image de la scène, qui apparaît alors en fondu (voir les couches plus bas).
+    if (scene) {
+      return (
         <Suspense fallback={null}>
           <MenuScene
             glbUrl={archiveFile(entry.version, scene.glb)}
             metaUrl={archiveFile(entry.version, scene.meta)}
-            onReady={() => setSceneReady(true)}
+            onReady={() => readyRef.current?.()}
           />
         </Suspense>
-      </>
+      );
+    }
+    return (
+      <img
+        className={s.media}
+        src={archiveFile(entry.version, entry.background)}
+        alt={t('chronicles.launchScreen', { label: entry.label })}
+      />
     );
   }
   return (
@@ -134,14 +137,21 @@ export function ChroniclesScreen() {
     navigate(`/chronicles?v=${encodeURIComponent(version)}`, { replace: true });
   }, []);
 
-  // Fondu croisé du fond : la couche sortante reste montée le temps du fondu, la
-  // nouvelle apparaît par-dessus (`fadeIn`), puis on ne garde que la dernière.
+  // Fondu croisé du fond : la nouvelle couche se monte par-dessus l'ancienne, qui reste
+  // affichée — scène 3D comprise — tant que la nouvelle n'est pas prête (première image
+  // de sa scène, ou montage d'un média immédiat), puis encore le temps du fondu, et on
+  // ne garde que la dernière. Une scène met plusieurs secondes à charger son `.glb` :
+  // sans cette attente, l'écran passerait par du noir ou une illustration sans rapport.
   // Retirer la couche démonte son `<video>` : le navigateur met alors le média en
   // pause et abandonne son décodage — jamais deux vidéos décodées au-delà du fondu,
   // et rien à arrêter à la main (les vidéos sont muettes, elles ne passent pas par le
   // moteur audio).
   const layerKey = useRef(0);
   const [layers, setLayers] = useState<{ key: number; entry: ArchiveEntry }[]>(() => (entry ? [{ key: 0, entry }] : []));
+  const [readyKeys, setReadyKeys] = useState<number[]>([]);
+  const markReady = useCallback((key: number) => {
+    setReadyKeys(prev => (prev.includes(key) ? prev : [...prev, key]));
+  }, []);
   useEffect(() => {
     if (!entry) return;
     setLayers(prev => {
@@ -150,9 +160,14 @@ export function ChroniclesScreen() {
       layerKey.current += 1;
       return [...prev.slice(-1), { key: layerKey.current, entry }];
     });
+  }, [entry]);
+  useEffect(() => {
+    if (layers.length < 2) return;
+    const top = layers[layers.length - 1];
+    if (!readyKeys.includes(top.key)) return;
     const timer = window.setTimeout(() => setLayers(prev => prev.slice(-1)), CROSSFADE_MS);
     return () => window.clearTimeout(timer);
-  }, [entry]);
+  }, [layers, readyKeys]);
 
   // Son d'ouverture du panneau du jeu et reprise de la musique du site en partant.
   useEffect(() => {
@@ -291,7 +306,7 @@ export function ChroniclesScreen() {
     <div className={`${s.screen} ${fullscreen ? s.hudHidden : ''}`} onClick={handleScreenClick}>
       {layers.map((layer, i) => (
         <div key={layer.key} className={`${s.layer} ${i > 0 ? s.fadeIn : ''}`}>
-          <MediaLayer entry={layer.entry} />
+          <MediaLayer entry={layer.entry} onReady={() => markReady(layer.key)} />
         </div>
       ))}
       <div className={`${s.vignette} ${entry.version === '7.0' ? s.vignetteV7 : ''} ${s.hud}`} />
