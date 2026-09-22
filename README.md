@@ -406,6 +406,87 @@ ARGB) ne correspond pas non plus au voile pâle de la capture. Reste approximati
 horizontal des défilements, les rotations squelettiques (≈ 0,15°, arbres quasi immobiles), et
 un ciel plus sombre que dans le client (luminance 107 contre 143 en haut à gauche).
 
+## Fatalités
+
+La page `/fatalities` (désactivée en production) rejoue les 26 fatalités du jeu — 10 de classe,
+16 de la boutique — sur les seize personnages jouables, dans un coin des Prés bénis.
+
+**Source : le dernier client** (RU 17.x, `/mnt/h/MyGames/AllodsRU`). Il ne livre plus aucun
+`.xdb` : tout ce que l'arbre serveur 7.0 décrit en XML est compilé dans `Bin/pack.bin`
+(pak `BaseLocall_x64.pak`, 75 Mo → 703 Mo décompressés). `tools/allods_packdb.py` en relit la
+structure (entête, table des 1498 types `NDb::…`, image mémoire des objets, table de
+relocations qui dit seule où pointent les champs pointeurs et les vecteurs, chemins des
+ressources racines) et reconstitue par vote la table « code de pak → pak » des références
+binaires ; `tools/allods_visdb.py` décode les ressources utiles (Geometry, Texture,
+VisObjectTemplate, ParticleAnimation, scripts `VisAction`, `SlonRoot`), chaque décalage étant
+vérifié sur les ressources communes avec l'arbre 7.0 (tests `tools/tests/test_fatalities.py`,
+dont trois sur les vraies données). Ce basculement a débloqué les fatalités de boutique : toutes
+ont désormais leurs métadonnées complètes (fini « decoded without its metadata »), et les
+associations animation ↔ effet ne sont plus devinées sur les noms de fichiers.
+
+**Chaîne de données.** `Interface/System/SlonSettings.(SlonRoot)` → vecteur `fatalities`
+(26 × `type, offenderDeathScript, casterFxScript, fadeStartTime, fadeDuration, sparkDelay`).
+Le `offenderDeathScript` est l'arbre de `VisAction` joué sur la victime ; `tools/fatality_script.py`
+l'aplatit, pour chaque personnage, en chronologie : animations de la victime (indices de
+l'énumération `Animations`, prolongée au-delà de 1402 par les propriétés d'animation du client :
+1591 `deathFatality`, 1594 `deathFatalityPhoenix`, 1609 `deathFatalityTree`…) avec leur vitesse,
+changements d'échelle (×1,3 en classe) et de transparence, objets d'effet posés
+(`CreatureIndependentFxAction` : décalage, échelle, durée de vie) ou accrochés à un locator
+(`CreatureEffectsAction`), secousses de caméra. Chaque objet est un `VisObjectTemplate` :
+géométrie skinnée et son animation (vitesse, boucle), composants accrochés, système de particules,
+son (événement FMOD dont l'onde porte le même nom dans `SFX/Spells/Fatality*.bsb`).
+
+    python3 tools/extract_fatalities.py              # tout (≈ 3 min)
+    python3 tools/extract_fatalities.py --only-fx phoenix --no-characters
+
+**Règles établies sur les données** (chacune testée) :
+
+- `VisActionList` joue en séquence ou simultanément ; un `playWhile` délai borne la liste, et
+  comme `stopWhileWhenElementsEnded` vaut vrai la liste s'arrête aussi quand ses éléments sont
+  finis (durée = le plus court des deux) ; `PredicateCreatureVisCharacterAction` choisit les
+  variantes par race (Lotus, Avatar) ;
+- une boucle sans borne (`Stun` de l'Avatar, d'Avril 2024) s'arrête au fondu final de la victime ;
+  une animation courte jouée par-dessus une boucle lui rend la main ;
+- énumérations propres au client : `orientationMode` 3 WORLD_Z, 6 Z_AXIS, 7 BILLBOARD ;
+  `Texture.type` 3 = RGBA non compressé (B G R A) ;
+- les règles des scènes de menu valent ici : piste figée = copie appauvrie du bind (écartée),
+  angles fixes repris du bind, `skinIndex −1` non skinné, sommets à inverse de bind identité dans
+  le repère de l'articulation (`bind_pose_positions`), V = 0 en bas, `BLEND_EFFECT_ADD` additif
+  seulement si `transparent` ;
+- un élément de géométrie sans texture n'est pas dessiné (formes d'émission Maya de l'Occultiste,
+  emplacements d'armure vides des personnages) ;
+- particules **précalculées** (`tools/allods_particles.py`) : par émetteur, liste de particules
+  (naissance, durée de vie) à cinq canaux clés — position, taille, rotation, couleur, image de
+  l'atlas `Client/Render/ParticleAtlas` ; les 79 fichiers utilisés sont décodés et réencodés à
+  l'identique, allégés des clés redondantes (tolérance nommée) ;
+- sons : événement ↔ onde par nom, casse et soulignés ignorés (`FatalityUniversal` →
+  `fatality_universal`).
+
+**Personnages.** Géométrie, squelette, peaux et coiffures du client RU ; géosets de la tenue par
+défaut lus dans les `.xdb` 7.0 (les `VisualItem` compilés ne sont pas encore décodés). Clips :
+`Idle01` et les 17 animations demandées par les scripts, clés redondantes retirées (1 mm,
+2·10⁻⁴ de quaternion) et rotations en entiers 16 bits (`KHR_mesh_quantization`) : 3 à 4,5 Mo par
+personnage au lieu de 8 à 26.
+
+**Décor** (`scene/scene.glb`) : sol aux textures de terrain des Prés bénis, bouleaux, pins,
+rochers et buissons de la zone à leur pose de bind, dôme de ciel `Sky01_DayBackground` du client ;
+lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi. La disposition est une
+mise en scène (manifeste, `scene.props`), aucune carte n'est lue.
+
+**Lecteur** (`src/components/scene/FatalityViewer/`) : temps piloté à la main (pause, vitesse,
+recherche), chaque image recalculée d'après la chronologie (`timeline.ts`) ; gabarits clonés à leur
+instant, fondus d'entrée/sortie des `VisObjectTemplate`, défilement UV, orientation Z_AXIS et
+BILLBOARD face caméra, particules en quads instanciés (`particles.ts`), sons calés sur la
+chronologie. Constantes propres au lecteur, nommées : `TRANSPARENCY_FADE_SECONDS` (vitesse de
+base de `CreatureSetTransparencyAction`, non publiée), cadrage de la caméra, seuil de découpe
+des feuillages.
+
+**Manques.** `casterFxScript` (effets sur le tueur, rayon, ailes) non rejoué : pas de tueur en
+scène. Teintes (`CreatureColorAction`, `ProceduralEffect`) et secousses de caméra relevées mais
+non appliquées. Particules : `WorldSpaceEmitter` et `Z_BOX` traités comme locales / face caméra.
+Textures L8 du ciel ignorées. Deux ondes empruntées à d’autres banques non exportées (gel du Mage, lance de Smeyana).
+Poids : 60 Mo de personnages (169 Mo avant), 23 Mo d’effets, 24 Mo de textures partagées, 9,5 Mo de particules, 7 Mo de sons.
+
 ## Déploiement (production)
 
 Le site public (`allodex.eu`, `allodex.online`, `allodex.allods-developers.eu`) est servi
