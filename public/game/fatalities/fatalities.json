@@ -1,0 +1,1292 @@
+{
+  "races": {
+    "kania": {
+      "fr": "Kanien",
+      "en": "Kanian",
+      "faction": "league"
+    },
+    "elf": {
+      "fr": "Elfe",
+      "en": "Elf",
+      "faction": "league"
+    },
+    "gibberling": {
+      "fr": "Gibelin",
+      "en": "Gibberling",
+      "faction": "league"
+    },
+    "aed": {
+      "fr": "Aède",
+      "en": "Aed",
+      "faction": "league"
+    },
+    "hadagan": {
+      "fr": "Xadaganien",
+      "en": "Xadaganian",
+      "faction": "empire"
+    },
+    "orc": {
+      "fr": "Orc",
+      "en": "Orc",
+      "faction": "empire"
+    },
+    "undead": {
+      "fr": "Ressuscité",
+      "en": "Arisen",
+      "faction": "empire"
+    },
+    "praiden": {
+      "fr": "Priden",
+      "en": "Priden",
+      "faction": "empire"
+    }
+  },
+  "characters": [
+    {
+      "id": "kania-male",
+      "race": "kania",
+      "sex": "male",
+      "glb": "characters/kania-male.glb",
+      "scale": 1.0,
+      "height": 1.867,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 9.7,
+        "DeathFatalityDruid": 3.067,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 7.033,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    },
+    {
+      "id": "kania-female",
+      "race": "kania",
+      "sex": "female",
+      "glb": "characters/kania-female.glb",
+      "scale": 1.0,
+      "height": 1.835,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 9.7,
+        "DeathFatalityDruid": 3.033,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.933,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 7.033,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    },
+    {
+      "id": "elf-male",
+      "race": "elf",
+      "sex": "male",
+      "glb": "characters/elf-male.glb",
+      "scale": 1.0,
+      "height": 2.381,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 9.7,
+        "DeathFatalityDruid": 3.2,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 7.033,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    },
+    {
+      "id": "elf-female",
+      "race": "elf",
+      "sex": "female",
+      "glb": "characters/elf-female.glb",
+      "scale": 1.0,
+      "height": 2.189,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 9.7,
+        "DeathFatalityDruid": 3.067,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 7.033,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    },
+    {
+      "id": "gibberling-male",
+      "race": "gibberling",
+      "sex": "male",
+      "glb": "characters/gibberling-male.glb",
+      "scale": 1.15,
+      "height": 1.284,
+      "animations": [
+        "DeathFatality",
+        "DeathFatality01",
+        "DeathFatality02",
+        "DeathFatalityBard",
+        "DeathFatalityBard01",
+        "DeathFatalityBard02",
+        "DeathFatalityDruid",
+        "DeathFatalityDruid01",
+        "DeathFatalityDruid02",
+        "DeathFatalityEngineer",
+        "DeathFatalityEngineer01",
+        "DeathFatalityEngineer02",
+        "DeathFatalityMage",
+        "DeathFatalityMage01",
+        "DeathFatalityMage02",
+        "DeathFatalityNecr",
+        "DeathFatalityNecr01",
+        "DeathFatalityNecr02",
+        "DeathFatalityPaladin",
+        "DeathFatalityPaladin01",
+        "DeathFatalityPaladin02",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPhoenix01",
+        "DeathFatalityPhoenix02",
+        "DeathFatalityPriest",
+        "DeathFatalityPriest01",
+        "DeathFatalityPriest02",
+        "DeathFatalityPsionic",
+        "DeathFatalityPsionic01",
+        "DeathFatalityPsionic02",
+        "DeathFatalityStalker",
+        "DeathFatalityStalker01",
+        "DeathFatalityStalker02",
+        "DeathFatalityTree",
+        "DeathFatalityTree01",
+        "DeathFatalityTree02",
+        "DeathFatalityWarrior",
+        "DeathFatalityWarrior01",
+        "DeathFatalityWarrior02"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatality01": 11.7,
+        "DeathFatality02": 11.7,
+        "DeathFatalityBard": 11.7,
+        "DeathFatalityBard01": 11.7,
+        "DeathFatalityBard02": 11.7,
+        "DeathFatalityDruid": 11.7,
+        "DeathFatalityDruid01": 11.7,
+        "DeathFatalityDruid02": 11.7,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityEngineer01": 9.7,
+        "DeathFatalityEngineer02": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityMage01": 8.367,
+        "DeathFatalityMage02": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityNecr01": 11.7,
+        "DeathFatalityNecr02": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPaladin01": 11.7,
+        "DeathFatalityPaladin02": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPhoenix01": 6.967,
+        "DeathFatalityPhoenix02": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPriest01": 11.7,
+        "DeathFatalityPriest02": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityPsionic01": 11.7,
+        "DeathFatalityPsionic02": 11.7,
+        "DeathFatalityStalker": 11.7,
+        "DeathFatalityStalker01": 11.7,
+        "DeathFatalityStalker02": 11.7,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityTree01": 11.7,
+        "DeathFatalityTree02": 11.7,
+        "DeathFatalityWarrior": 8.367,
+        "DeathFatalityWarrior01": 8.367,
+        "DeathFatalityWarrior02": 8.367
+      }
+    },
+    {
+      "id": "gibberling-female",
+      "race": "gibberling",
+      "sex": "female",
+      "glb": "characters/gibberling-female.glb",
+      "scale": 1.15,
+      "height": 1.314,
+      "animations": [
+        "DeathFatality",
+        "DeathFatality01",
+        "DeathFatality02",
+        "DeathFatalityBard",
+        "DeathFatalityBard01",
+        "DeathFatalityBard02",
+        "DeathFatalityDruid",
+        "DeathFatalityDruid01",
+        "DeathFatalityDruid02",
+        "DeathFatalityEngineer",
+        "DeathFatalityEngineer01",
+        "DeathFatalityEngineer02",
+        "DeathFatalityMage",
+        "DeathFatalityMage01",
+        "DeathFatalityMage02",
+        "DeathFatalityNecr",
+        "DeathFatalityNecr01",
+        "DeathFatalityNecr02",
+        "DeathFatalityPaladin",
+        "DeathFatalityPaladin01",
+        "DeathFatalityPaladin02",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPhoenix01",
+        "DeathFatalityPhoenix02",
+        "DeathFatalityPriest",
+        "DeathFatalityPriest01",
+        "DeathFatalityPriest02",
+        "DeathFatalityPsionic",
+        "DeathFatalityPsionic01",
+        "DeathFatalityPsionic02",
+        "DeathFatalityStalker",
+        "DeathFatalityStalker01",
+        "DeathFatalityStalker02",
+        "DeathFatalityTree",
+        "DeathFatalityTree01",
+        "DeathFatalityTree02",
+        "DeathFatalityWarrior",
+        "DeathFatalityWarrior01",
+        "DeathFatalityWarrior02"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatality01": 11.7,
+        "DeathFatality02": 11.7,
+        "DeathFatalityBard": 11.7,
+        "DeathFatalityBard01": 11.7,
+        "DeathFatalityBard02": 11.7,
+        "DeathFatalityDruid": 11.7,
+        "DeathFatalityDruid01": 11.7,
+        "DeathFatalityDruid02": 11.7,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityEngineer01": 9.7,
+        "DeathFatalityEngineer02": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityMage01": 8.367,
+        "DeathFatalityMage02": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityNecr01": 11.7,
+        "DeathFatalityNecr02": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPaladin01": 11.7,
+        "DeathFatalityPaladin02": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPhoenix01": 6.967,
+        "DeathFatalityPhoenix02": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPriest01": 11.7,
+        "DeathFatalityPriest02": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityPsionic01": 11.7,
+        "DeathFatalityPsionic02": 11.7,
+        "DeathFatalityStalker": 11.7,
+        "DeathFatalityStalker01": 11.7,
+        "DeathFatalityStalker02": 11.7,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityTree01": 11.7,
+        "DeathFatalityTree02": 11.7,
+        "DeathFatalityWarrior": 8.367,
+        "DeathFatalityWarrior01": 8.367,
+        "DeathFatalityWarrior02": 8.367
+      }
+    },
+    {
+      "id": "aed-male",
+      "race": "aed",
+      "sex": "male",
+      "glb": "characters/aed-male.glb",
+      "scale": 1.19999993,
+      "height": 2.559,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 9.7,
+        "DeathFatalityDruid": 3.067,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 7.033,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    },
+    {
+      "id": "aed-female",
+      "race": "aed",
+      "sex": "female",
+      "glb": "characters/aed-female.glb",
+      "scale": 1.26,
+      "height": 2.285,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 9.7,
+        "DeathFatalityDruid": 4.367,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 7.033,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    },
+    {
+      "id": "hadagan-male",
+      "race": "hadagan",
+      "sex": "male",
+      "glb": "characters/hadagan-male.glb",
+      "scale": 1.0,
+      "height": 1.857,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 9.7,
+        "DeathFatalityDruid": 3.033,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 7.033,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    },
+    {
+      "id": "hadagan-female",
+      "race": "hadagan",
+      "sex": "female",
+      "glb": "characters/hadagan-female.glb",
+      "scale": 1.0,
+      "height": 1.767,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 9.7,
+        "DeathFatalityDruid": 4.367,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 7.033,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    },
+    {
+      "id": "orc-male",
+      "race": "orc",
+      "sex": "male",
+      "glb": "characters/orc-male.glb",
+      "scale": 1.0,
+      "height": 2.525,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 11.7,
+        "DeathFatalityDruid": 11.7,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityMage": 8.2,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 10.033,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 18.367
+      }
+    },
+    {
+      "id": "orc-female",
+      "race": "orc",
+      "sex": "female",
+      "glb": "characters/orc-female.glb",
+      "scale": 1.0,
+      "height": 2.102,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 9.7,
+        "DeathFatalityDruid": 3.033,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 7.033,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    },
+    {
+      "id": "undead-male",
+      "race": "undead",
+      "sex": "male",
+      "glb": "characters/undead-male.glb",
+      "scale": 1.0,
+      "height": 2.429,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 9.7,
+        "DeathFatalityDruid": 3.067,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 7.033,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    },
+    {
+      "id": "undead-female",
+      "race": "undead",
+      "sex": "female",
+      "glb": "characters/undead-female.glb",
+      "scale": 1.0,
+      "height": 2.273,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 9.7,
+        "DeathFatalityDruid": 3.067,
+        "DeathFatalityEngineer": 9.7,
+        "DeathFatalityMage": 8.367,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 7.033,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    },
+    {
+      "id": "praiden-male",
+      "race": "praiden",
+      "sex": "male",
+      "glb": "characters/praiden-male.glb",
+      "scale": 0.95,
+      "height": 2.242,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 11.7,
+        "DeathFatalityDruid": 11.7,
+        "DeathFatalityEngineer": 11.7,
+        "DeathFatalityMage": 11.7,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 11.7,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    },
+    {
+      "id": "praiden-female",
+      "race": "praiden",
+      "sex": "female",
+      "glb": "characters/praiden-female.glb",
+      "scale": 0.729999959,
+      "height": 1.645,
+      "animations": [
+        "DeathFatality",
+        "DeathFatalityBard",
+        "DeathFatalityDruid",
+        "DeathFatalityEngineer",
+        "DeathFatalityMage",
+        "DeathFatalityNecr",
+        "DeathFatalityPaladin",
+        "DeathFatalityPhoenix",
+        "DeathFatalityPriest",
+        "DeathFatalityPsionic",
+        "DeathFatalityStalker",
+        "DeathFatalityTree",
+        "DeathFatalityWarrior"
+      ],
+      "durations": {
+        "DeathFatality": 2.533,
+        "DeathFatalityBard": 11.7,
+        "DeathFatalityDruid": 11.7,
+        "DeathFatalityEngineer": 11.7,
+        "DeathFatalityMage": 11.7,
+        "DeathFatalityNecr": 11.7,
+        "DeathFatalityPaladin": 11.7,
+        "DeathFatalityPhoenix": 6.967,
+        "DeathFatalityPriest": 11.7,
+        "DeathFatalityPsionic": 11.7,
+        "DeathFatalityStalker": 11.7,
+        "DeathFatalityTree": 11.7,
+        "DeathFatalityWarrior": 11.7
+      }
+    }
+  ],
+  "fatalities": [
+    {
+      "id": "warrior",
+      "kind": "class",
+      "label": {
+        "fr": "Guerrier",
+        "en": "Warrior"
+      },
+      "victim": "DeathFatalityWarrior",
+      "fx": "fx/warrior.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityWarrior",
+          "approx": false,
+          "animations": [
+            "FatalityWarrior"
+          ],
+          "duration": 18.366666666666667
+        }
+      ],
+      "approx": false
+    },
+    {
+      "id": "paladin",
+      "kind": "class",
+      "label": {
+        "fr": "Paladin",
+        "en": "Paladin"
+      },
+      "victim": "DeathFatalityPaladin",
+      "fx": "fx/paladin.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityPaladin",
+          "approx": false,
+          "animations": [
+            "FatalityPaladin"
+          ],
+          "duration": 11.7
+        }
+      ],
+      "approx": false
+    },
+    {
+      "id": "stalker",
+      "kind": "class",
+      "label": {
+        "fr": "Éclaireur",
+        "en": "Scout"
+      },
+      "victim": "DeathFatalityStalker",
+      "fx": "fx/stalker.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityStalkerOrc",
+          "approx": false,
+          "animations": [
+            "FatalityStalkerOrc"
+          ],
+          "duration": 18.366666666666667
+        },
+        {
+          "name": "FatalityStalker_Target",
+          "approx": false,
+          "animations": [
+            "FatalityStalker_Target"
+          ],
+          "duration": 18.366666666666667
+        }
+      ],
+      "approx": false
+    },
+    {
+      "id": "priest",
+      "kind": "class",
+      "label": {
+        "fr": "Guérisseur",
+        "en": "Healer"
+      },
+      "victim": "DeathFatalityPriest",
+      "fx": "fx/priest.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityPriest",
+          "approx": false,
+          "animations": [
+            "FatalityPriest"
+          ],
+          "duration": 11.7
+        }
+      ],
+      "approx": false
+    },
+    {
+      "id": "mage",
+      "kind": "class",
+      "label": {
+        "fr": "Mage",
+        "en": "Mage"
+      },
+      "victim": "DeathFatalityMage",
+      "fx": "fx/mage.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityMage",
+          "approx": false,
+          "animations": [
+            "FatalityMage"
+          ],
+          "duration": 11.7
+        }
+      ],
+      "approx": false
+    },
+    {
+      "id": "necromancer",
+      "kind": "class",
+      "label": {
+        "fr": "Invocateur",
+        "en": "Summoner"
+      },
+      "victim": "DeathFatalityNecr",
+      "fx": "fx/necromancer.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityNecr",
+          "approx": false,
+          "animations": [
+            "FatalityNecr"
+          ],
+          "duration": 11.7
+        }
+      ],
+      "approx": false
+    },
+    {
+      "id": "psionic",
+      "kind": "class",
+      "label": {
+        "fr": "Psioniste",
+        "en": "Psionicist"
+      },
+      "victim": "DeathFatalityPsionic",
+      "fx": "fx/psionic.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityPsionic",
+          "approx": false,
+          "animations": [
+            "FatalityPsionic"
+          ],
+          "duration": 11.7
+        }
+      ],
+      "approx": false
+    },
+    {
+      "id": "bard",
+      "kind": "class",
+      "label": {
+        "fr": "Barde",
+        "en": "Bard"
+      },
+      "victim": "DeathFatalityBard",
+      "fx": "fx/bard.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityBard",
+          "approx": false,
+          "animations": [
+            "FatalityBard"
+          ],
+          "duration": 11.7
+        }
+      ],
+      "approx": false
+    },
+    {
+      "id": "engineer",
+      "kind": "class",
+      "label": {
+        "fr": "Ingénieur",
+        "en": "Engineer"
+      },
+      "victim": "DeathFatalityEngineer",
+      "fx": "fx/engineer.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityEngeneer",
+          "approx": false,
+          "animations": [
+            "FatalityEngeneer"
+          ],
+          "duration": 9.7
+        }
+      ],
+      "approx": false
+    },
+    {
+      "id": "druid",
+      "kind": "class",
+      "label": {
+        "fr": "Gardien",
+        "en": "Warden"
+      },
+      "victim": "DeathFatalityDruid",
+      "fx": "fx/druid.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityDruid",
+          "approx": false,
+          "animations": [
+            "FatalityDruid"
+          ],
+          "duration": 11.7
+        }
+      ],
+      "approx": false
+    },
+    {
+      "id": "phoenix",
+      "kind": "shop",
+      "label": {
+        "fr": "Phénix",
+        "en": "Phoenix"
+      },
+      "victim": "DeathFatalityPhoenix",
+      "fx": "fx/phoenix.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityPhoenix",
+          "approx": true,
+          "animations": [
+            "FatalityPhoenix"
+          ],
+          "duration": 7.033333333333333
+        }
+      ],
+      "approx": true
+    },
+    {
+      "id": "tree",
+      "kind": "shop",
+      "label": {
+        "fr": "Arbre (2025)",
+        "en": "Tree (2025)"
+      },
+      "victim": "DeathFatalityTree",
+      "note": {
+        "fr": "Association animation/effet déduite des noms de fichiers.",
+        "en": "Animation/effect pairing inferred from file names."
+      },
+      "fx": "fx/tree.glb",
+      "fxObjects": [
+        {
+          "name": "Fatality2025_Wood",
+          "approx": true,
+          "animations": [
+            "Fatality2025_Wood"
+          ],
+          "duration": 16.033333333333335
+        }
+      ],
+      "approx": true
+    },
+    {
+      "id": "lotus",
+      "kind": "shop",
+      "label": {
+        "fr": "Lotus",
+        "en": "Lotus"
+      },
+      "victim": "DeathFatality",
+      "fx": "fx/lotus.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityUniversalLotus",
+          "approx": true,
+          "animations": [
+            "FatalityUniversalLotus"
+          ],
+          "duration": 5.366666666666666
+        },
+        {
+          "name": "FatalityUniversalLotusGrass",
+          "approx": true,
+          "animations": [
+            "FatalityUniversalLotusGrass"
+          ],
+          "duration": 7.7
+        }
+      ],
+      "approx": true
+    },
+    {
+      "id": "executioner",
+      "kind": "shop",
+      "label": {
+        "fr": "Exécuteur",
+        "en": "Executioner"
+      },
+      "victim": "DeathFatality",
+      "fx": "fx/executioner.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityExecutioner2021_Main",
+          "approx": true,
+          "animations": [
+            "FatalityExecutioner2021_Main"
+          ],
+          "duration": 18.366666666666667
+        }
+      ],
+      "approx": true
+    },
+    {
+      "id": "universal-2021",
+      "kind": "shop",
+      "label": {
+        "fr": "Runes (2021)",
+        "en": "Runes (2021)"
+      },
+      "victim": "DeathFatality",
+      "fx": "fx/universal-2021.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityUniversal2021_Main",
+          "approx": true,
+          "animations": [
+            "FatalityUniversal2021_Main"
+          ],
+          "duration": 13.366666666666667
+        }
+      ],
+      "approx": true
+    },
+    {
+      "id": "universal-2022",
+      "kind": "shop",
+      "label": {
+        "fr": "Chaînes (2022)",
+        "en": "Chains (2022)"
+      },
+      "victim": "DeathFatality",
+      "fx": "fx/universal-2022.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityUniversal2022",
+          "approx": true,
+          "animations": [
+            "FatalityUniversal2022"
+          ],
+          "duration": 15.033333333333333
+        }
+      ],
+      "approx": true
+    },
+    {
+      "id": "universal-2023",
+      "kind": "shop",
+      "label": {
+        "fr": "Avatar (2023)",
+        "en": "Avatar (2023)"
+      },
+      "victim": "DeathFatality",
+      "fx": "fx/universal-2023.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityUniversal2023",
+          "approx": true,
+          "animations": [
+            "FatalityUniversal2023"
+          ],
+          "duration": 10.033333333333333
+        }
+      ],
+      "approx": true
+    },
+    {
+      "id": "monkfish",
+      "kind": "shop",
+      "label": {
+        "fr": "Baudroie",
+        "en": "Monkfish"
+      },
+      "victim": "DeathFatality",
+      "fx": "fx/monkfish.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityMonkfish",
+          "approx": true,
+          "animations": [
+            "FatalityMonkfish"
+          ],
+          "duration": 11.7
+        }
+      ],
+      "approx": true
+    },
+    {
+      "id": "skull-2024",
+      "kind": "shop",
+      "label": {
+        "fr": "Crâne (2024)",
+        "en": "Skull (2024)"
+      },
+      "victim": "DeathFatality",
+      "fx": "fx/skull-2024.glb",
+      "fxObjects": [
+        {
+          "name": "Fatality2024Scull",
+          "approx": true,
+          "animations": [
+            "Fatality2024Scull"
+          ],
+          "duration": 15.7
+        },
+        {
+          "name": "Fatality2024ScullHands",
+          "approx": true,
+          "animations": [
+            "Fatality2024ScullHands"
+          ],
+          "duration": 15.7
+        }
+      ],
+      "approx": true
+    },
+    {
+      "id": "squirrel-2024",
+      "kind": "shop",
+      "label": {
+        "fr": "Écureuil (2024)",
+        "en": "Squirrel (2024)"
+      },
+      "victim": "DeathFatality",
+      "fx": "fx/squirrel-2024.glb",
+      "fxObjects": [
+        {
+          "name": "Fatality2024SquirrelBig",
+          "approx": true,
+          "animations": [
+            "Fatality2024SquirrelBig"
+          ],
+          "duration": 5.7
+        }
+      ],
+      "approx": true
+    },
+    {
+      "id": "april-2024",
+      "kind": "shop",
+      "label": {
+        "fr": "Avril 2024",
+        "en": "April 2024"
+      },
+      "victim": "DeathFatality",
+      "fx": "fx/april-2024.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityUniversal2024_Apr",
+          "approx": true,
+          "animations": [
+            "FatalityUniversal2024_Apr"
+          ],
+          "duration": 16.7
+        }
+      ],
+      "approx": true
+    },
+    {
+      "id": "snake-2026",
+      "kind": "shop",
+      "label": {
+        "fr": "Serpent (2026)",
+        "en": "Snake (2026)"
+      },
+      "victim": "DeathFatality",
+      "fx": "fx/snake-2026.glb",
+      "fxObjects": [
+        {
+          "name": "Fatality2026Snake",
+          "approx": true,
+          "animations": [
+            "Fatality2026Snake"
+          ],
+          "duration": 6.866666666666666
+        }
+      ],
+      "approx": true
+    },
+    {
+      "id": "warlock",
+      "kind": "shop",
+      "label": {
+        "fr": "Occultiste",
+        "en": "Warlock"
+      },
+      "victim": "DeathFatality",
+      "fx": "fx/warlock.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityWarlock",
+          "approx": false,
+          "animations": [
+            "FatalityWarlock"
+          ],
+          "duration": 11.7
+        }
+      ],
+      "approx": false
+    },
+    {
+      "id": "universal",
+      "kind": "shop",
+      "label": {
+        "fr": "Universelle",
+        "en": "Universal"
+      },
+      "victim": "DeathFatality",
+      "fx": "fx/universal.glb",
+      "fxObjects": [
+        {
+          "name": "FatalityUniversal",
+          "approx": false,
+          "animations": [
+            "FatalityUniversal"
+          ],
+          "duration": 5.033333333333333
+        }
+      ],
+      "approx": false
+    }
+  ]
+}

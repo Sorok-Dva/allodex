@@ -1,0 +1,13 @@
+/* Le canvas occupe toute la couche de fond ; ses pixels sont dimensionnés par le
+   composant (ResizeObserver), le CSS ne fait que le plaquer. `touch-action: none` laisse
+   OrbitControls gérer les gestes tactiles. */
+.canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+.canvas:active { cursor: grabbing; }

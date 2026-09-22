@@ -75,11 +75,47 @@ export type ArchiveEntry = {
   theme_note?: string;
 };
 
+/**
+ * Index des fatalités (`public/game/fatalities/fatalities.json`, écrit par
+ * `tools/extract_fatalities.py`). Chaque personnage est un `.glb` portant toutes ses
+ * animations `DeathFatality*` ; chaque fatalité nomme l'animation jouée par la cible
+ * (`victim`) et, si l'effet a pu être exporté, son `.glb` (`fx`).
+ */
+export type FatalityCharacter = {
+  id: string;
+  race: string;
+  sex: 'male' | 'female';
+  glb: string;
+  scale: number;
+  /** Hauteur du personnage en unités du jeu, échelle comprise (cadrage de la caméra). */
+  height: number;
+  animations: string[];
+  durations: Record<string, number>;
+};
+export type FatalityFxObject = { name: string; approx: boolean; animations: string[]; duration: number };
+export type FatalityEntry = {
+  id: string;
+  kind: 'class' | 'shop';
+  label: { fr: string; en: string };
+  victim: string;
+  fx?: string;
+  fxObjects?: FatalityFxObject[];
+  /** Effet décodé sans xdb (stride et texture devinés) : rendu approximatif. */
+  approx?: boolean;
+  note?: { fr: string; en: string };
+};
+export type FatalitiesIndex = {
+  races: Record<string, { fr: string; en: string; faction: string }>;
+  characters: FatalityCharacter[];
+  fatalities: FatalityEntry[];
+};
+
 let manifest: Record<string, Size> | null = null;
 let sprites: Record<string, SpriteInfo> | null = null;
 let audioIndex: Record<string, AudioMeta> | null = null;
 let archive: ArchiveEntry[] | null = null;
 let music: MusicTrack[] = [];
+let fatalities: FatalitiesIndex | null = null;
 
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
@@ -92,13 +128,15 @@ async function fetchJson<T>(url: string): Promise<T | null> {
 }
 
 export async function loadManifest(): Promise<void> {
-  const [texturesJson, spritesJson, audioJson, archiveJson, musicJson] = await Promise.all([
+  const [texturesJson, spritesJson, audioJson, archiveJson, musicJson, fatalitiesJson] = await Promise.all([
     fetchJson<{ textures?: Record<string, Size> }>(`${BASE}/manifest.json`),
     fetchJson<Record<string, SpriteInfo>>(`${BASE}/sprites.json`),
     fetchJson<Record<string, AudioMeta>>(`${BASE}/audio.json`),
     fetchJson<ArchiveEntry[]>(`${BASE}/archive.json`),
     fetchJson<MusicTrack[]>(`${BASE}/music.json`),
+    fetchJson<FatalitiesIndex>(`${BASE}/fatalities/fatalities.json`),
   ]);
+  fatalities = fatalitiesJson && Array.isArray(fatalitiesJson.characters) ? fatalitiesJson : null;
   manifest = texturesJson?.textures ?? {};
   sprites = spritesJson ?? {};
   audioIndex = audioJson ?? {};
@@ -162,6 +200,10 @@ export const audioMeta = (name: string): AudioMeta | undefined => {
   return audioIndex?.[name];
 };
 export const musicTracks = (): MusicTrack[] => music;
+/** Index des fatalités, ou `null` tant que `tools/extract_fatalities.py` n'a pas tourné. */
+export const fatalitiesIndex = (): FatalitiesIndex | null => fatalities;
+/** URL d'un fichier de `public/game/fatalities/` (`characters/aed-female.glb`, `fx/warrior.glb`). */
+export const fatalityFile = (file: string) => `${BASE}/fatalities/${file}`;
 /** URL d'un fichier d'une version archivée (`background.png`, `menu.webm`, `theme.ogg`…). */
 export const archiveFile = (version: string, file: string) => `${BASE}/archive/${version}/${file}`;
 /** URL d'un fichier commun à toutes les versions (emblème de chargement). */
