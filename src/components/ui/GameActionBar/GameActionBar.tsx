@@ -11,6 +11,7 @@ export type ActionItem = {
   icon?: string;
   label: string;
   hint?: string;
+  disabled?: boolean;
   onClick?: () => void;
 };
 
@@ -41,6 +42,7 @@ export function GameActionBar({ items, className, onItemInteract }: Props) {
   return (
     <div className={`${s.bar} ${className ?? ''}`}>
       {items.map(item => {
+        const isDisabled = item.disabled || !item.onClick;
         const isHover = hover?.id === item.id;
         const isPressed = pressedId === item.id;
         return (
@@ -48,12 +50,10 @@ export function GameActionBar({ items, className, onItemInteract }: Props) {
             key={item.id}
             type="button"
             ref={el => { slots.current[item.id] = el; }}
-            className={s.slot}
+            className={`${s.slot} ${isDisabled ? s.disabled : ''}`}
             aria-label={item.label}
-            // Les entrées sans action restent atteignables au clavier (leur infobulle
-            // annonce « bientôt ») mais sont signalées comme inactives.
-            aria-disabled={item.onClick ? undefined : true}
-            onClick={() => { onItemInteract?.(item.id); item.onClick?.(); }}
+            aria-disabled={isDisabled || undefined}
+            onClick={() => { if (isDisabled) return; onItemInteract?.(item.id); item.onClick?.(); }}
             onMouseEnter={() => show(item.id)}
             onMouseLeave={() => hide(item.id)}
             onFocus={() => show(item.id)}

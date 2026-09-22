@@ -16,6 +16,18 @@
   border: 0;
   background: transparent;
 }
+/* Entrée inactive : le rond interdit du navigateur. Le client n'a pas de curseur
+   « interdit » — ses 22 curseurs sont les icônes d'action grisées (DefaultDisabled est
+   le gantelet en gris), ce qui ne se distingue pas assez du curseur normal. */
+.disabled {
+  cursor: not-allowed;
+}
+.disabled .base,
+.disabled .icon,
+.disabled .highlight {
+  filter: grayscale(1) brightness(0.7);
+  opacity: 0.65;
+}
 .base,
 .highlight {
   position: absolute;
