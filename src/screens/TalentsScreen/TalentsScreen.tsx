@@ -69,7 +69,8 @@ export function TalentsScreen() {
   const bg = video('mainmenu');
 
   // Fenêtre 508 × 749 à l'échelle 1:1 quand la hauteur le permet, sinon réduite.
-  const scale = Math.min(1, Math.max(0.55, (vp.h - 48) / 749));
+  // Sur écran étroit (< 900 px, panneau au-dessus), c'est la largeur qui borne l'échelle.
+  const scale = vp.w < 900 ? Math.min(1, (vp.w - 24) / 508) : Math.min(1, Math.max(0.55, (vp.h - 48) / 749));
   const data = cls.data && cls.data.version === sel.version?.id ? cls.data : null;
 
   return (
