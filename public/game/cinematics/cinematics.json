@@ -1,0 +1,1611 @@
+{
+ "arcs": {
+  "prologue": {
+   "title": {
+    "fr": "Prologue de faction",
+    "en": "Faction prologue"
+   },
+   "version": "16.0"
+  },
+  "invasion": {
+   "title": {
+    "fr": "L'Invasion",
+    "en": "The Invasion"
+   },
+   "version": "7.0"
+  },
+  "raid72": {
+   "title": {
+    "fr": "Le raid",
+    "en": "The raid"
+   },
+   "version": "7.2"
+  },
+  "kyros": {
+   "title": {
+    "fr": "Kyros",
+    "en": "Kyros"
+   },
+   "version": "8.0"
+  },
+  "talos": {
+   "title": {
+    "fr": "Talos",
+    "en": "Talos"
+   },
+   "version": "8.1"
+  },
+  "nihaz": {
+   "title": {
+    "fr": "Nihaz",
+    "en": "Nihaz"
+   },
+   "version": "8.2"
+  },
+  "bosses": {
+   "title": {
+    "fr": "Les maîtres des donjons",
+    "en": "Dungeon masters"
+   },
+   "version": "9.0"
+  },
+  "warp": {
+   "title": {
+    "fr": "Vychegrad, au bord du monde",
+    "en": "Vyshegrad, at the edge of the world"
+   },
+   "version": "10.0"
+  },
+  "awakening": {
+   "title": {
+    "fr": "L'Éveil",
+    "en": "The Awakening"
+   },
+   "version": "11.0"
+  },
+  "suslanger": {
+   "title": {
+    "fr": "Suslanger",
+    "en": "Suslanger"
+   },
+   "version": "12.0"
+  },
+  "allmother": {
+   "title": {
+    "fr": "La Toute-Mère",
+    "en": "The All-Mother"
+   },
+   "version": "13.0"
+  }
+ },
+ "cinematics": [
+  {
+   "id": "empire-intro",
+   "title": {
+    "fr": "Prologue de l’Empire",
+    "en": "Empire prologue"
+   },
+   "faction": "empire",
+   "order": 100,
+   "arc": "prologue",
+   "version": "16.0",
+   "duration": 78.711,
+   "files": {
+    "webm": "empire-intro/video.webm",
+    "mp4": "empire-intro/video.mp4",
+    "poster": "empire-intro/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "empire-intro/fr.vtt",
+     "lines": 7
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "empire-intro/en.vtt",
+     "lines": 6
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "empire-intro/ru.vtt",
+     "lines": 7
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 7,
+    "timing": "measured"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/16_0Events/FactionsIntro/ImperiaIntro.ogv",
+    "event": "FactionsIntro/ImperiaIntro"
+   },
+   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de l’Empire ; placée en tête du film."
+  },
+  {
+   "id": "league-intro",
+   "title": {
+    "fr": "Prologue de la Ligue",
+    "en": "League prologue"
+   },
+   "faction": "league",
+   "order": 100,
+   "arc": "prologue",
+   "version": "16.0",
+   "duration": 74.474,
+   "files": {
+    "webm": "league-intro/video.webm",
+    "mp4": "league-intro/video.mp4",
+    "poster": "league-intro/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "league-intro/fr.vtt",
+     "lines": 13
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "league-intro/en.vtt",
+     "lines": 12
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "league-intro/ru.vtt",
+     "lines": 13
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 13,
+    "timing": "measured"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/16_0Events/FactionsIntro/LeagueIntro.ogv",
+    "event": "FactionsIntro/LeagueIntro"
+   },
+   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de la Ligue ; placée en tête du film."
+  },
+  {
+   "id": "invasion-plague",
+   "title": {
+    "fr": "La peste",
+    "en": "The plague"
+   },
+   "faction": "common",
+   "order": 200,
+   "arc": "invasion",
+   "version": "7.0",
+   "duration": 27.556,
+   "files": {
+    "webm": "invasion-plague/video.webm",
+    "mp4": "invasion-plague/video.mp4",
+    "poster": "invasion-plague/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": null
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/7_0Events/Invasion/Beregovoy_HD.ogv",
+    "event": "Invasion/plague"
+   },
+   "chronology": "Registre vidéo du client (groupe « Invasion ») : événements listés dans cet ordre, qui est aussi celui de l’histoire (la bannière de la victoire clôt la série). Zone disputée ZC12, jouée par les deux factions.",
+   "note": "Version HD de la cinématique moteur CutScene_Beregovoy (ZC12)."
+  },
+  {
+   "id": "invasion-bridge",
+   "title": {
+    "fr": "Le pont",
+    "en": "The bridge"
+   },
+   "faction": "common",
+   "order": 210,
+   "arc": "invasion",
+   "version": "7.0",
+   "duration": 42.484,
+   "files": {
+    "webm": "invasion-bridge/video.webm",
+    "mp4": "invasion-bridge/video.mp4",
+    "poster": "invasion-bridge/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "invasion-bridge/fr.vtt",
+     "lines": 5
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "invasion-bridge/en.vtt",
+     "lines": 5
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "invasion-bridge/ru.vtt",
+     "lines": 5
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 5,
+    "timing": "measured"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/7_0Events/Invasion/Bridge_HD.ogv",
+    "event": "Invasion/bridge_burst"
+   },
+   "chronology": "Registre vidéo du client (groupe « Invasion ») : événements listés dans cet ordre, qui est aussi celui de l’histoire (la bannière de la victoire clôt la série). Zone disputée ZC12, jouée par les deux factions.",
+   "note": "Version HD de la cinématique moteur BridgeFight (instance de départ de ZC12) ; sous-titres de ses cinq ClientData."
+  },
+  {
+   "id": "invasion-astral-ship",
+   "title": {
+    "fr": "Le navire astral",
+    "en": "The astral ship"
+   },
+   "faction": "common",
+   "order": 220,
+   "arc": "invasion",
+   "version": "7.0",
+   "duration": 69.047,
+   "files": {
+    "webm": "invasion-astral-ship/video.webm",
+    "mp4": "invasion-astral-ship/video.mp4",
+    "poster": "invasion-astral-ship/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "invasion-astral-ship/fr.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "invasion-astral-ship/en.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "invasion-astral-ship/ru.vtt",
+     "lines": 4
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 4,
+    "timing": "measured"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/7_0Events/Invasion/ExpShip_HD.ogv",
+    "event": "Invasion/astral_ship_burst"
+   },
+   "chronology": "Registre vidéo du client (groupe « Invasion ») : événements listés dans cet ordre, qui est aussi celui de l’histoire (la bannière de la victoire clôt la série). Zone disputée ZC12, jouée par les deux factions.",
+   "note": "Version HD de la cinématique moteur ShipExplosion : le client en avait deux variantes (Kania / Hadagan) mais n’a qu’une vidéo et un seul événement ; le visuel et les sous-titres sont ceux de la variante Ligue (Ship_explosion_L)."
+  },
+  {
+   "id": "invasion-kursk-1",
+   "title": {
+    "fr": "La métamorphose",
+    "en": "The transformation"
+   },
+   "faction": "common",
+   "order": 230,
+   "arc": "invasion",
+   "version": "7.0",
+   "duration": 42.551,
+   "files": {
+    "webm": "invasion-kursk-1/video.webm",
+    "mp4": "invasion-kursk-1/video.mp4",
+    "poster": "invasion-kursk-1/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": null
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/7_0Events/Invasion/Kursk_1_HD.ogv",
+    "event": "Invasion/morph_to_architect"
+   },
+   "chronology": "Registre vidéo du client (groupe « Invasion ») : événements listés dans cet ordre, qui est aussi celui de l’histoire (la bannière de la victoire clôt la série). Zone disputée ZC12, jouée par les deux factions.",
+   "note": "Version HD de la cinématique moteur Kursk_1."
+  },
+  {
+   "id": "invasion-kursk-2",
+   "title": {
+    "fr": "Le combat",
+    "en": "The fight"
+   },
+   "faction": "common",
+   "order": 240,
+   "arc": "invasion",
+   "version": "7.0",
+   "duration": 30.546,
+   "files": {
+    "webm": "invasion-kursk-2/video.webm",
+    "mp4": "invasion-kursk-2/video.mp4",
+    "poster": "invasion-kursk-2/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": null
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/7_0Events/Invasion/Kursk_2_HD.ogv",
+    "event": "Invasion/fighting"
+   },
+   "chronology": "Registre vidéo du client (groupe « Invasion ») : événements listés dans cet ordre, qui est aussi celui de l’histoire (la bannière de la victoire clôt la série). Zone disputée ZC12, jouée par les deux factions.",
+   "note": "Version HD de la cinématique moteur Kursk_2."
+  },
+  {
+   "id": "invasion-partisans",
+   "title": {
+    "fr": "Les partisans",
+    "en": "The partisans"
+   },
+   "faction": "common",
+   "order": 250,
+   "arc": "invasion",
+   "version": "7.0",
+   "duration": 37.554,
+   "files": {
+    "webm": "invasion-partisans/video.webm",
+    "mp4": "invasion-partisans/video.mp4",
+    "poster": "invasion-partisans/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": null
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/7_0Events/Invasion/Partizan_HD.ogv",
+    "event": "Invasion/ships_fighting"
+   },
+   "chronology": "Registre vidéo du client (groupe « Invasion ») : événements listés dans cet ordre, qui est aussi celui de l’histoire (la bannière de la victoire clôt la série). Zone disputée ZC12, jouée par les deux factions.",
+   "note": "Version HD de la cinématique moteur CutScene_Guerrilla."
+  },
+  {
+   "id": "invasion-victory",
+   "title": {
+    "fr": "La bannière de la victoire",
+    "en": "The victory banner"
+   },
+   "faction": "common",
+   "order": 260,
+   "arc": "invasion",
+   "version": "7.0",
+   "duration": 29.548,
+   "files": {
+    "webm": "invasion-victory/video.webm",
+    "mp4": "invasion-victory/video.mp4",
+    "poster": "invasion-victory/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": null
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/7_0Events/Invasion/Reihstag_HD.ogv",
+    "event": "Invasion/win_banner"
+   },
+   "chronology": "Registre vidéo du client (groupe « Invasion ») : événements listés dans cet ordre, qui est aussi celui de l’histoire (la bannière de la victoire clôt la série). Zone disputée ZC12, jouée par les deux factions.",
+   "note": "Version HD de la cinématique moteur CutScene_Reichstag (ZC12_RiftInstance7)."
+  },
+  {
+   "id": "raid72-boss-death",
+   "title": {
+    "fr": "La chute du maître du raid",
+    "en": "The raid master falls"
+   },
+   "faction": "common",
+   "order": 300,
+   "arc": "raid72",
+   "version": "7.2",
+   "duration": 61.167,
+   "files": {
+    "webm": "raid72-boss-death/video.webm",
+    "mp4": "raid72-boss-death/video.mp4",
+    "poster": "raid72-boss-death/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": null
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/Raid7_2Events/BossDeath.ogv",
+    "event": "Raid7_2/raid_boss_death"
+   },
+   "chronology": "Groupe « Raid7_2 » du registre : raid de la mise à jour 7.2, après l’Invasion (7.0)."
+  },
+  {
+   "id": "zc13-forum",
+   "title": {
+    "fr": "Le Forum",
+    "en": "The Forum"
+   },
+   "faction": "common",
+   "order": 400,
+   "arc": "kyros",
+   "version": "8.0",
+   "duration": 133.058,
+   "files": {
+    "webm": "zc13-forum/video.webm",
+    "mp4": "zc13-forum/video.mp4",
+    "poster": "zc13-forum/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "zc13-forum/fr.vtt",
+     "lines": 19
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "zc13-forum/en.vtt",
+     "lines": 19
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "zc13-forum/ru.vtt",
+     "lines": 19
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 19,
+    "timing": "measured"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/8_0Events/ZC13/ZC13_Forum.ogv",
+    "event": "ZC13/forum"
+   },
+   "chronology": "Groupe « ZC13 » (8.0). Le registre liste ellona_grave avant forum, mais les dialogues placent le Forum avant la tombe : Kyros y décide de « détruire cette fausse immortalité », puis, sur la tombe d’Aellona, annonce ce qu’il « va faire » (déduction narrative, l’ordre du registre n’est pas une chronologie)."
+  },
+  {
+   "id": "zc13-ellona-grave",
+   "title": {
+    "fr": "La tombe d’Aellona",
+    "en": "Aellona’s grave"
+   },
+   "faction": "common",
+   "order": 410,
+   "arc": "kyros",
+   "version": "8.0",
+   "duration": 46.543,
+   "files": {
+    "webm": "zc13-ellona-grave/video.webm",
+    "mp4": "zc13-ellona-grave/video.mp4",
+    "poster": "zc13-ellona-grave/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "zc13-ellona-grave/fr.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "zc13-ellona-grave/en.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "zc13-ellona-grave/ru.vtt",
+     "lines": 2
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 2,
+    "timing": "measured"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/8_0Events/ZC13/ZC13_EllonaGrave.ogv",
+    "event": "ZC13/ellona_grave"
+   },
+   "chronology": "Voir « Le Forum »."
+  },
+  {
+   "id": "talos-arena",
+   "title": {
+    "fr": "L’arène de Talos",
+    "en": "Talos’s arena"
+   },
+   "faction": "common",
+   "order": 500,
+   "arc": "talos",
+   "version": "8.1",
+   "duration": 47.69,
+   "files": {
+    "webm": "talos-arena/video.webm",
+    "mp4": "talos-arena/video.mp4",
+    "poster": "talos-arena/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": null
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/8_1Events/Talos/CutsceneTalos_HD.ogv",
+    "event": "Talos/talos_arena"
+   },
+   "chronology": "Groupe « Talos » du registre (8.1)."
+  },
+  {
+   "id": "nihaz-world",
+   "title": {
+    "fr": "Le monde de Nihaz",
+    "en": "Nihaz’s world"
+   },
+   "faction": "common",
+   "order": 600,
+   "arc": "nihaz",
+   "version": "8.2",
+   "duration": 38.756,
+   "files": {
+    "webm": "nihaz-world/video.webm",
+    "mp4": "nihaz-world/video.mp4",
+    "poster": "nihaz-world/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": null
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/8_2Events/Nihaz/NihazWorld.ogv",
+    "event": "Nihaz/nihaz_world"
+   },
+   "chronology": "Groupe « Nihaz » du registre (8.2)."
+  },
+  {
+   "id": "boss-armand",
+   "title": {
+    "fr": "Armand de Douceur",
+    "en": "Armando de Doucer"
+   },
+   "faction": "common",
+   "order": 700,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 20.063,
+   "files": {
+    "webm": "boss-armand/video.webm",
+    "mp4": "boss-armand/video.mp4",
+    "poster": "boss-armand/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-armand/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-armand/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-armand/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Armand.ogv",
+    "event": "Bosses/Armand"
+   },
+   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
+  },
+  {
+   "id": "boss-ath-zak",
+   "title": {
+    "fr": "Ath-Zak",
+    "en": "Ath-Zak"
+   },
+   "faction": "common",
+   "order": 705,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 23.719,
+   "files": {
+    "webm": "boss-ath-zak/video.webm",
+    "mp4": "boss-ath-zak/video.mp4",
+    "poster": "boss-ath-zak/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-ath-zak/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-ath-zak/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-ath-zak/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/AtZako.ogv",
+    "event": "Bosses/AtZako"
+   },
+   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
+  },
+  {
+   "id": "boss-cairage",
+   "title": {
+    "fr": "Cairage",
+    "en": "Cairage"
+   },
+   "faction": "common",
+   "order": 710,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 30.351,
+   "files": {
+    "webm": "boss-cairage/video.webm",
+    "mp4": "boss-cairage/video.mp4",
+    "poster": "boss-cairage/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-cairage/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-cairage/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-cairage/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/BlindDemon.ogv",
+    "event": "Bosses/BlindDemon"
+   },
+   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
+  },
+  {
+   "id": "boss-cranium",
+   "title": {
+    "fr": "Cranium III",
+    "en": "Brainum the Third"
+   },
+   "faction": "common",
+   "order": 715,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 22.506,
+   "files": {
+    "webm": "boss-cranium/video.webm",
+    "mp4": "boss-cranium/video.mp4",
+    "poster": "boss-cranium/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-cranium/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-cranium/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-cranium/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Cyclop.ogv",
+    "event": "Bosses/Cyclop"
+   },
+   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
+  },
+  {
+   "id": "boss-dead-king",
+   "title": {
+    "fr": "Le Roi défunt",
+    "en": "The Dead King"
+   },
+   "faction": "common",
+   "order": 720,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 20.33,
+   "files": {
+    "webm": "boss-dead-king/video.webm",
+    "mp4": "boss-dead-king/video.mp4",
+    "poster": "boss-dead-king/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-dead-king/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-dead-king/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-dead-king/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Deadking.ogv",
+    "event": "Bosses/Deadking"
+   },
+   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
+  },
+  {
+   "id": "boss-fiery-father",
+   "title": {
+    "fr": "Le Père Ardent",
+    "en": "The Fiery Father"
+   },
+   "faction": "common",
+   "order": 725,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 23.759,
+   "files": {
+    "webm": "boss-fiery-father/video.webm",
+    "mp4": "boss-fiery-father/video.mp4",
+    "poster": "boss-fiery-father/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-fiery-father/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-fiery-father/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-fiery-father/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/DragonDC.ogv",
+    "event": "Bosses/DragonDC"
+   },
+   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
+  },
+  {
+   "id": "boss-kazul",
+   "title": {
+    "fr": "Kazul le Veilleur Astral",
+    "en": "Kazul the Astral Watcher"
+   },
+   "faction": "common",
+   "order": 730,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 20.951,
+   "files": {
+    "webm": "boss-kazul/video.webm",
+    "mp4": "boss-kazul/video.mp4",
+    "poster": "boss-kazul/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-kazul/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-kazul/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-kazul/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/EvilEye.ogv",
+    "event": "Bosses/EvilEye"
+   },
+   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
+  },
+  {
+   "id": "boss-euriala",
+   "title": {
+    "fr": "Euriala",
+    "en": "Euriala"
+   },
+   "faction": "common",
+   "order": 735,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 20.604,
+   "files": {
+    "webm": "boss-euriala/video.webm",
+    "mp4": "boss-euriala/video.mp4",
+    "poster": "boss-euriala/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-euriala/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-euriala/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-euriala/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Medusa.ogv",
+    "event": "Bosses/Medusa"
+   },
+   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
+  },
+  {
+   "id": "boss-nihil",
+   "title": {
+    "fr": "Nihil",
+    "en": "Nihil"
+   },
+   "faction": "common",
+   "order": 740,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 15.471,
+   "files": {
+    "webm": "boss-nihil/video.webm",
+    "mp4": "boss-nihil/video.mp4",
+    "poster": "boss-nihil/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-nihil/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-nihil/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-nihil/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Nihil.ogv",
+    "event": "Bosses/Nihil"
+   },
+   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
+  },
+  {
+   "id": "boss-clockwork-knight",
+   "title": {
+    "fr": "Le Chevalier mécanique",
+    "en": "The Clockwork Knight"
+   },
+   "faction": "common",
+   "order": 745,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 25.402,
+   "files": {
+    "webm": "boss-clockwork-knight/video.webm",
+    "mp4": "boss-clockwork-knight/video.mp4",
+    "poster": "boss-clockwork-knight/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-clockwork-knight/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-clockwork-knight/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-clockwork-knight/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/PierBoss.ogv",
+    "event": "Bosses/PierBoss"
+   },
+   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
+  },
+  {
+   "id": "boss-thalos",
+   "title": {
+    "fr": "Thalos",
+    "en": "Thalos"
+   },
+   "faction": "common",
+   "order": 750,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 19.5,
+   "files": {
+    "webm": "boss-thalos/video.webm",
+    "mp4": "boss-thalos/video.mp4",
+    "poster": "boss-thalos/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-thalos/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-thalos/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-thalos/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Talos.ogv",
+    "event": "Bosses/Talos"
+   },
+   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
+  },
+  {
+   "id": "boss-canaan",
+   "title": {
+    "fr": "Canaan, le Père du sang",
+    "en": "Canaan, the Blood Father"
+   },
+   "faction": "common",
+   "order": 755,
+   "arc": "bosses",
+   "version": "9.0",
+   "duration": 28.092,
+   "files": {
+    "webm": "boss-canaan/video.webm",
+    "mp4": "boss-canaan/video.mp4",
+    "poster": "boss-canaan/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "boss-canaan/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "boss-canaan/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "boss-canaan/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "client"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/9_0Events/Bosses/Vampire.ogv",
+    "event": "Bosses/Vampire"
+   },
+   "chronology": "Présentations de boss des donjons de la 9.0 (groupe « Bosses » du registre). Aucune donnée ne les ordonne entre elles : ordre du registre (alphabétique)."
+  },
+  {
+   "id": "warp-prologue",
+   "title": {
+    "fr": "Prologue — Vychegrad",
+    "en": "Prologue — Vyshegrad"
+   },
+   "faction": "common",
+   "order": 800,
+   "arc": "warp",
+   "version": "10.0",
+   "duration": 91.903,
+   "files": {
+    "webm": "warp-prologue/video.webm",
+    "mp4": "warp-prologue/video.mp4",
+    "poster": "warp-prologue/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "10.0-warp",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/10_0Events/Story/Cutscene10_0_Ep1_0_Prologue.ogv",
+    "event": "Story/Cutscene10_0_Ep1_0_Prologue"
+   },
+   "chronology": "Vidéos retirées du jeu : absentes des clients 15.0, 16.0 et 17.0, seul le client « Warp » 11.0.00.37 les conserve (dossier 10_0Events/Story, hors registre des clients récents). Ordre des épisodes donné par leurs noms (Ep1_0, Ep1_1, Ep1_2, Ep2_1)."
+  },
+  {
+   "id": "warp-bridge",
+   "title": {
+    "fr": "Le pont de la forêt",
+    "en": "The forest bridge"
+   },
+   "faction": "common",
+   "order": 810,
+   "arc": "warp",
+   "version": "10.0",
+   "duration": 45.22,
+   "files": {
+    "webm": "warp-bridge/video.webm",
+    "mp4": "warp-bridge/video.mp4",
+    "poster": "warp-bridge/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": null
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "10.0-warp",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/10_0Events/Story/Cutscene10_0_Ep1_1_Bridge.ogv",
+    "event": "Story/Cutscene10_0_Ep1_1_Bridge"
+   },
+   "chronology": "Vidéos retirées du jeu : absentes des clients 15.0, 16.0 et 17.0, seul le client « Warp » 11.0.00.37 les conserve (dossier 10_0Events/Story, hors registre des clients récents). Ordre des épisodes donné par leurs noms (Ep1_0, Ep1_1, Ep1_2, Ep2_1)."
+  },
+  {
+   "id": "warp-crypt",
+   "title": {
+    "fr": "La crypte",
+    "en": "The crypt"
+   },
+   "faction": "common",
+   "order": 820,
+   "arc": "warp",
+   "version": "10.0",
+   "duration": 46.22,
+   "files": {
+    "webm": "warp-crypt/video.webm",
+    "mp4": "warp-crypt/video.mp4",
+    "poster": "warp-crypt/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": null
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "10.0-warp",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/10_0Events/Story/Cutscene10_0_Ep1_2_CryptScene.ogv",
+    "event": "Story/Cutscene10_0_Ep1_2_CryptScene"
+   },
+   "chronology": "Vidéos retirées du jeu : absentes des clients 15.0, 16.0 et 17.0, seul le client « Warp » 11.0.00.37 les conserve (dossier 10_0Events/Story, hors registre des clients récents). Ordre des épisodes donné par leurs noms (Ep1_0, Ep1_1, Ep1_2, Ep2_1)."
+  },
+  {
+   "id": "warp-forest-city",
+   "title": {
+    "fr": "La cité de la forêt",
+    "en": "The forest city"
+   },
+   "faction": "common",
+   "order": 830,
+   "arc": "warp",
+   "version": "10.0",
+   "duration": 47.903,
+   "files": {
+    "webm": "warp-forest-city/video.webm",
+    "mp4": "warp-forest-city/video.mp4",
+    "poster": "warp-forest-city/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": null
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "10.0-warp",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/10_0Events/Story/Cutscene10_0_Ep2_1_ForestCity.ogv",
+    "event": "Story/Cutscene10_0_Ep2_1_ForestCity"
+   },
+   "chronology": "Vidéos retirées du jeu : absentes des clients 15.0, 16.0 et 17.0, seul le client « Warp » 11.0.00.37 les conserve (dossier 10_0Events/Story, hors registre des clients récents). Ordre des épisodes donné par leurs noms (Ep1_0, Ep1_1, Ep1_2, Ep2_1)."
+  },
+  {
+   "id": "awakening-not-by-plan",
+   "title": {
+    "fr": "Pas prévu au plan",
+    "en": "Not according to plan"
+   },
+   "faction": "common",
+   "order": 900,
+   "arc": "awakening",
+   "version": "11.0",
+   "duration": 48.906,
+   "files": {
+    "webm": "awakening-not-by-plan/video.webm",
+    "mp4": "awakening-not-by-plan/video.mp4",
+    "poster": "awakening-not-by-plan/poster.jpg"
+   },
+   "tracks": [],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "none",
+    "lines": 0,
+    "timing": null
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/11_0Events/Awakening/NotByPlan.ogv",
+    "event": "Awakening/not_by_plan"
+   },
+   "chronology": "Groupe « Awakening » du registre (11.0)."
+  },
+  {
+   "id": "suslanger-new-chieftain",
+   "title": {
+    "fr": "Le nouveau chef",
+    "en": "The new chieftain"
+   },
+   "faction": "common",
+   "order": 1000,
+   "arc": "suslanger",
+   "version": "12.0",
+   "duration": 80.751,
+   "files": {
+    "webm": "suslanger-new-chieftain/video.webm",
+    "mp4": "suslanger-new-chieftain/video.mp4",
+    "poster": "suslanger-new-chieftain/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "suslanger-new-chieftain/fr.vtt",
+     "lines": 10
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "suslanger-new-chieftain/en.vtt",
+     "lines": 10
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "suslanger-new-chieftain/ru.vtt",
+     "lines": 10
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 10,
+    "timing": "measured"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/12_0Events/Suslanger/NewChieftain.ogv",
+    "event": "Suslanger/new_chieftain"
+   },
+   "chronology": "Groupe « Suslanger » (12.0) : l’arrivée de l’orc légendaire précède sa proclamation (registre et dialogues concordent)."
+  },
+  {
+   "id": "suslanger-sarnaut-hero",
+   "title": {
+    "fr": "Le héros de Sarnaut",
+    "en": "The Hero of Sarnaut"
+   },
+   "faction": "common",
+   "order": 1010,
+   "arc": "suslanger",
+   "version": "12.0",
+   "duration": 79.951,
+   "files": {
+    "webm": "suslanger-sarnaut-hero/video.webm",
+    "mp4": "suslanger-sarnaut-hero/video.mp4",
+    "poster": "suslanger-sarnaut-hero/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "suslanger-sarnaut-hero/fr.vtt",
+     "lines": 12
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "suslanger-sarnaut-hero/en.vtt",
+     "lines": 12
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "suslanger-sarnaut-hero/ru.vtt",
+     "lines": 12
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 12,
+    "timing": "measured"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/12_0Events/Suslanger/SarnautHero.ogv",
+    "event": "Suslanger/sarnaut_hero"
+   },
+   "chronology": "Voir « Le nouveau chef »."
+  },
+  {
+   "id": "allmother-final",
+   "title": {
+    "fr": "Le dernier acte",
+    "en": "The final act"
+   },
+   "faction": "common",
+   "order": 1100,
+   "arc": "allmother",
+   "version": "13.0",
+   "duration": 138.436,
+   "files": {
+    "webm": "allmother-final/video.webm",
+    "mp4": "allmother-final/video.mp4",
+    "poster": "allmother-final/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "allmother-final/fr.vtt",
+     "lines": 15
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "allmother-final/en.vtt",
+     "lines": 15
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "allmother-final/ru.vtt",
+     "lines": 15
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 15,
+    "timing": "measured"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/13_0Events/AllMotherFinal/AllMother.ogv",
+    "event": "AllMother/AllMotherFinal"
+   },
+   "chronology": "Groupe « AllMother » du registre (13.0), fin de l’arc d’Eden."
+  }
+ ]
+}
