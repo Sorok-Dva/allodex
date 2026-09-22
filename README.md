@@ -23,6 +23,12 @@ Le dossier client peut aussi être fourni via la variable d'environnement `ALLOD
 
 Les assets extraits sous `public/game/` appartiennent à My.Games et ne sont pas versionnés ; `public/fonts/allods.ttf` (police du jeu, récupérée depuis le launcher ADC), lui, est versionné.
 
+## Commits
+Messages en anglais, au format gitmoji `<gitmoji> <type>(<scope>): <message>` (ex. `✨ feat(chronicles): add fullscreen toggle that hides the HUD`), sans trailer `Co-Authored-By`. Détails dans [CONTRIBUTING.md](CONTRIBUTING.md). Activer le hook qui vérifie le format, une fois par clone :
+
+    git config core.hooksPath .githooks
+    git config commit.template .gitmessage
+
 ## État du POC (2026-09)
 - `/` : intro (première visite), puis menu vidéo avec, en bas à droite, la barre de boutons du jeu (voir « Itération 2 » ci-dessous — le panneau de connexion et le champ de recherche du POC v1 ont été retirés).
 - `/achievements` : panneau Succès fidèle au jeu, données mockées (`src/data/medals.mock.json`). La progression et les paliers restent fictifs.

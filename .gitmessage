@@ -1,0 +1,11 @@
+
+# <gitmoji> <type>(<scope>): <message>   (72 characters max, imperative, no final period)
+#
+# ✨ feat  🐛 fix  ♻️ refactor  ⚡️ perf  📝 docs  ✅ test  💄 style/ui  🎨 style
+# 🔧 chore/config  🍱 assets  🔥 remove  🚚 move  🔊 audio  🌐 i18n  🚧 wip  🔀 merge
+#
+# Example: 🐛 fix(menu-scene-8.0): recentre the dome halo
+#
+# Body (optional, after a blank line): what changed and why, in English.
+# No Co-Authored-By or other attribution trailer.
+# Full convention: CONTRIBUTING.md

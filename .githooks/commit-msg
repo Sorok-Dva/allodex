@@ -1,0 +1,43 @@
+#!/bin/sh
+# commit-msg hook: enforces the Allodex commit convention (see CONTRIBUTING.md).
+#
+#   <gitmoji> <type>(<scope>): <message>
+#
+# Enable once per clone:  git config core.hooksPath .githooks
+
+msg_file="$1"
+
+# First line that is neither empty nor a comment.
+title=$(grep -v '^#' "$msg_file" | sed '/^[[:space:]]*$/d' | head -n 1)
+
+fail() {
+  echo "commit-msg: $1" >&2
+  echo "  title: $title" >&2
+  echo "  expected: <gitmoji> <type>(<scope>): <message>   (see CONTRIBUTING.md)" >&2
+  echo "  example:  🐛 fix(menu-scene-8.0): recentre the dome halo" >&2
+  exit 1
+}
+
+# Let temporary fixup!/squash!/amend! commits through (squashed by rebase --autosquash).
+# Merges and reverts are not exempt: use -m "🔀 merge(<scope>): merge ..." and
+# "⏪ revert(<scope>): revert ...".
+case "$title" in
+  "fixup! "*|"squash! "*|"amend! "*) exit 0 ;;
+esac
+
+[ -n "$title" ] || fail "empty commit message"
+
+types='feat|fix|refactor|perf|docs|test|style|build|ci|chore|revert|merge'
+printf '%s\n' "$title" \
+  | LC_ALL=C grep -Eq "^[^ -~][^ ]* ($types)\([a-z0-9][a-z0-9.-]*\): [^ ](.*[^.])?\$" \
+  || fail "title does not follow the convention"
+
+# Length in characters (code points), not bytes: drop UTF-8 continuation bytes.
+len=$(printf '%s' "$title" | LC_ALL=C tr -d '\200-\277' | wc -c | tr -d ' ')
+[ "$len" -le 72 ] || fail "title is $len characters long (max 72)"
+
+if grep -v '^#' "$msg_file" | grep -Eiq '^(co-authored-by|generated-by|generated with)'; then
+  fail "attribution trailers (Co-Authored-By and similar) are not allowed"
+fi
+
+exit 0
