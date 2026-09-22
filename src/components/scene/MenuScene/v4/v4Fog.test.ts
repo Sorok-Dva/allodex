@@ -11,6 +11,7 @@ describe('brume 4.0', () => {
     expect(fogSpeed('fog')![0]).toBeCloseTo(.05);
     expect(fogSpeed('Clouds_012')![0]).toBeCloseTo(.01);
     expect(fogSpeed('Back3')).toBeDefined();
+    expect(fogSpeed('sun_rays_01')![0]).toBeCloseTo(.04); expect(fogSpeed('Sun_Rays_02')![0]).toBeCloseTo(.04);
     for (const e of ['Back2', 'Water', 'castle', 'Sun', 'birds2_birds1']) expect(fogSpeed(e)).toBeUndefined();
   });
   it('fait dériver chaque nappe sur sa propre copie de texture et restaure au démontage', () => {
