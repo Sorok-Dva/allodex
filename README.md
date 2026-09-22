@@ -406,6 +406,41 @@ ARGB) ne correspond pas non plus au voile pâle de la capture. Reste approximati
 horizontal des défilements, les rotations squelettiques (≈ 0,15°, arbres quasi immobiles), et
 un ciel plus sombre que dans le client (luminance 107 contre 143 en haut à gauche).
 
+## Déploiement (production)
+
+Le site public (`allodex.eu`, `allodex.online`, `allodex.allods-developers.eu`) est servi
+**en statique par nginx** depuis `/srv/node/allodex/dist` sur `<utilisateur>@<serveur>`. Jusqu'au
+22/09/2026 le vhost renvoyait vers le **serveur de développement de Vite** (pm2 `allodex`
+→ `npm run dev`, port 5173) : la production tournait donc en mode développement — avec les
+sondes de dev (`import.meta.env.DEV`) actives et les entrées désactivées en production
+(Fatalités, Personnage) encore cliquables. Le processus pm2 est désormais **arrêté**
+(`pm2 stop allodex`, état sauvegardé) ; il n'est plus nécessaire.
+
+**Redéployer** (les sources sont déjà sur le serveur) :
+
+    # 1. envoyer ce qui a changé (depuis le poste de dev)
+    git diff --name-status <ref-serveur> main            # contrôler la liste
+    rsync -az --files-from=<liste> ./ <utilisateur>@<serveur>:/srv/node/allodex/
+
+    # 2. reconstruire sur place (≈ 5 min : la copie de public/game pèse 2 Gio)
+    ssh <utilisateur>@<serveur> 'cd /srv/node/allodex && npm run build'
+
+nginx sert `dist/` avec repli à page unique (`try_files $uri $uri/ /index.html`), cache d'un
+an sur `/assets/` (noms hachés), de trente jours sur `/game/` et `/fonts/`, et `no-cache` sur
+`index.html` — sans quoi un déploiement passerait inaperçu. Le vhost est
+`/etc/nginx/sites-enabled/allodex.conf` ; les sauvegardes vivent dans `/root/nginx-backups/`
+(**jamais** dans `sites-enabled/`, qui est inclus par joker : un `.bak` y est chargé et casse
+la configuration pour cause de `listen` en double).
+
+Rien à mettre dans un `.env` : l'application est une page statique, `vite build` fige
+`import.meta.env.PROD` à la construction et le serveur n'exécute aucun code Node.
+
+**Attention au dépôt du serveur.** `/srv/node/allodex` est un clone de `origin`, mais le
+déploiement y copie des fichiers directement : son arbre de travail est donc en avance sur
+son `HEAD` tant que la branche n'est pas poussée. Un `git pull`/`git checkout` sur le serveur
+**remettrait une version plus ancienne en ligne**. Pousser `main` sur `origin` remet tout
+d'aplomb (compter ≈ 1,8 Gio de transfert : l'historique contient chaque réexport des `.glb`).
+
 ## Itération 2 (2026-09)
 
 ### Recalage V7 sur les captures du menu
