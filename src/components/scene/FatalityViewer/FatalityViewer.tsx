@@ -8,6 +8,7 @@ import {
   objectClipTime, spawnOpacity, timelineDuration, timelineSounds, victimClipTime, victimOpacityAt, victimScaleAt,
   victimStepAt, type FatalityObject, type FatalityTimeline,
 } from './timeline';
+import { CameraCollider, decorColliders } from './cameraCollision';
 import { ParticleSystemView, loadParticleFile, type ParticleAtlasMeta, type ParticleFile, type ParticleSystemMeta } from './particles';
 import s from './FatalityViewer.module.css';
 
@@ -242,6 +243,11 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     const camera = new THREE.PerspectiveCamera(FOV, 1, 0.05, 2000);
     camera.up.set(0, 0, 1);
     st.camera = camera;
+    // Collision caméra ↔ décor : `orbit` garde la position voulue par OrbitControls,
+    // `shown` celle rendue après correction (sol, obstacles).
+    const collider = new CameraCollider();
+    const orbit = new THREE.Vector3();
+    const shown = new THREE.Vector3(Number.NaN, 0, 0);
 
     // Lumières : celles de la zone quand un décor est posé, sinon un éclairage neutre.
     const ambientColor = environment?.ambient ? new THREE.Color(...environment.ambient) : new THREE.Color(0xb8c2dc);
@@ -421,12 +427,19 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
         }
         st.dirty = true;
       }
+      // La position rendue n'est qu'une correction : OrbitControls repart de la sienne (sauf si
+      // quelqu'un d'autre a déplacé la caméra entre-temps : recadrage, capture).
+      if (camera.position.equals(shown)) camera.position.copy(orbit);
       const moved = st.controls?.update() ?? false;
+      orbit.copy(camera.position);
+      const settling = st.controls ? collider.resolve(st.controls.target, orbit, delta, camera.position) : false;
+      if (!camera.position.equals(orbit) && st.controls) camera.lookAt(st.controls.target);
+      shown.copy(camera.position);
       if (skyNode?.parent) {
         const eye = skyNode.parent.worldToLocal(camera.position.clone());
         skyNode.position.set(eye.x, eye.y, 0);
       }
-      if (!st.dirty && !moved && !instances.some(i => i.billboards.length && i.root.visible)) return;
+      if (!st.dirty && !moved && !settling && !instances.some(i => i.billboards.length && i.root.visible)) return;
       applyTime(st.time);
       syncSounds(st.time, st.playing && st.speed > 0);
       st.seeked = false;
@@ -487,6 +500,8 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
           const sky = decor.scene.getObjectByName('sky');
           if (sky) skyNode = sky;
           world.add(decor.scene);
+          const { ground, obstacles } = decorColliders(decor.scene);
+          collider.setColliders(ground, obstacles);
         }
         const tinted: Tinted[] = [];
         prepare(character.scene, true, tinted, null);
