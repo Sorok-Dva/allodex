@@ -22,6 +22,7 @@ from tools.extract_menu_scene import (
     parse_skeletal_animation,
     parse_skeleton,
     read_chunks,
+    rest_local,
     rest_world_matrices,
     self_pointer,
     skin_attributes,
@@ -301,6 +302,34 @@ def test_rest_world_matrices_chains_parents():
         [(IDENTITY_ROWS, (0.0, 0.0, 5.0)), (IDENTITY_ROWS, (1.0, 0.0, 0.0))])
     world = rest_world_matrices(parse_skeleton(blob), None)
     assert world[1][:3, 3].tolist() == [1.0, 0.0, 5.0]
+
+
+def test_rest_local_keeps_a_non_uniform_bind_scale():
+    """Une liaison `R · diag(sx, sy, sz)` garde ses trois échelles.
+
+    Les lignes stockées sont les colonnes de la matrice : leurs normes sont les échelles.
+    Seul `group2` de la 8.0 en a de différentes (0,8277 / 0,7798 / 0,8369) ; partout ailleurs
+    les trois sont égales et la pose de repos est inchangée.
+    """
+    rows = (2.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 4.0)
+    blob = build_skeleton_blob(["Root"], [0xFFFF], [(rows, (1.0, 2.0, 3.0))])
+    skeleton = parse_skeleton(blob)
+    _t, _q, scale = rest_local(skeleton, None, 0)
+    assert np.allclose(scale, [2.0, 3.0, 4.0])
+    world = rest_world_matrices(skeleton, None)
+    assert np.allclose(world[0][:3, :3], np.diag([2.0, 3.0, 4.0]))
+    # Échelle isotrope : le vecteur reste constant, comme avant.
+    uniform = parse_skeleton(build_skeleton_blob(
+        ["Root"], [0xFFFF], [((5.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 5.0), (0.0, 0.0, 0.0))]))
+    assert np.allclose(rest_local(uniform, None, 0)[2], [5.0, 5.0, 5.0])
+
+
+def test_rest_local_clamps_each_axis_of_a_degenerate_scale():
+    rows = (0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0)
+    skeleton = parse_skeleton(build_skeleton_blob(["Root"], [0xFFFF], [(rows, (0.0, 0.0, 0.0))]))
+    scale = rest_local(skeleton, None, 0)[2]
+    assert scale.tolist() == [1.0, 1.0, 1.0]  # une ligne nulle retombe sur 1 (`_bind_scales`)
+    assert np.linalg.det(rest_world_matrices(skeleton, None)[0]) != 0
 
 
 def build_animation_blob(frames: int, nodes: list[dict]) -> bytes:

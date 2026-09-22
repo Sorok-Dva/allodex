@@ -487,8 +487,19 @@ def _quat_from_rows(rows: np.ndarray) -> np.ndarray:
     return np.array(q)
 
 
+def _bind_scales(rows: np.ndarray) -> np.ndarray:
+    """Échelles par axe de la matrice locale de bind : `M = R · diag(sx, sy, sz)`.
+
+    Les lignes de `skeleton.local[i][:3]` sont les *colonnes* de M (voir `_quat_from_rows`),
+    donc leurs normes sont les trois facteurs d'échelle. Presque toujours égaux ; `group2`
+    de la 8.0 fait exception (0,8277 / 0,7798 / 0,8369, colonnes orthogonales à 7·10⁻¹⁰).
+    """
+    scales = np.linalg.norm(np.asarray(rows[:3], float), axis=1)
+    return np.where(scales > 0, scales, 1.0)
+
+
 def _bind_scale(rows: np.ndarray) -> float:
-    return float(np.linalg.norm(np.asarray(rows[:3], float), axis=1).mean()) or 1.0
+    return float(_bind_scales(rows).mean()) or 1.0
 
 
 def parse_skeletal_animation(blob: bytes, skeleton: Skeleton | None = None,
@@ -654,17 +665,23 @@ def quat_matrix(q: np.ndarray) -> np.ndarray:
     ])
 
 
-def _rest_scale(value: float) -> float:
-    """Échelle de repos bornée : un objet qui naît à l'échelle 0 (le navire de raid 5.0)
-    garde une pose de repos inversible, sans quoi les matrices inverses de bind explosent."""
-    if abs(value) >= 1e-3:
-        return float(value)
-    return 1e-3 if value >= 0 else -1e-3
+def _rest_scale(value) -> np.ndarray:
+    """Échelle de repos par axe, bornée : un objet qui naît à l'échelle 0 (le navire de raid
+    5.0) garde une pose de repos inversible, sans quoi les matrices inverses de bind explosent.
+
+    Un scalaire est étendu aux trois axes ; le format d'animation ne stocke qu'une échelle
+    uniforme, seule la pose de bind du squelette peut en porter une non uniforme.
+    """
+    scale = np.broadcast_to(np.asarray(value, float), (3,)).astype(float).copy()
+    small = np.abs(scale) < 1e-3
+    scale[small] = np.where(scale[small] >= 0, 1e-3, -1e-3)
+    return scale
 
 
 def rest_local(skeleton: Skeleton, animation: SkeletalAnimation | None,
-               index: int) -> tuple[np.ndarray, np.ndarray, float]:
-    """Transformation locale de repos d'une articulation : (translation, quaternion xyzw, échelle).
+               index: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Transformation locale de repos d'une articulation : (translation, quaternion xyzw,
+    échelle par axe).
 
     L'image 0 de l'animation fait foi quand elle existe ; sinon la pose de bind du squelette.
     Les matrices inverses de bind du jeu ne sont pas reprises telles quelles : on les recalcule
@@ -678,7 +695,7 @@ def rest_local(skeleton: Skeleton, animation: SkeletalAnimation | None,
                 _rest_scale(float(track.scale[0])))
     wxyz = _quat_from_rows(skeleton.local[index])
     return (np.asarray(skeleton.local[index][3], float),
-            np.array([wxyz[1], wxyz[2], wxyz[3], wxyz[0]]), _rest_scale(_bind_scale(skeleton.local[index])))
+            np.array([wxyz[1], wxyz[2], wxyz[3], wxyz[0]]), _rest_scale(_bind_scales(skeleton.local[index])))
 
 
 def rest_world_matrices(skeleton: Skeleton, animation: SkeletalAnimation | None) -> np.ndarray:
@@ -1300,8 +1317,8 @@ def _emit_skeleton(gltf: GltfBuilder, skeleton: Skeleton, animation: SkeletalAni
         node = {"name": f"{object_name}/{name}",
                 "translation": [float(v) for v in t],
                 "rotation": [float(v) for v in q]}
-        if abs(s - 1.0) > 1e-9:
-            node["scale"] = [s, s, s]
+        if np.any(np.abs(s - 1.0) > 1e-9):
+            node["scale"] = [float(v) for v in s]
         nodes.append(gltf.add_node(node))
     for i in range(len(skeleton)):
         parent = skeleton.parents[i]

@@ -321,14 +321,37 @@ fichiers :
 - **halo du dôme** (`glow_add`, seul élément `skinIndex 0` du faisceau, additif, texture
   `Glow04White`) : sa piste décodée grossit le quad de 1 à 2,33 et le fait tourner autour de
   l'axe de visée, avec une translation qui compense exactement ce pivot **dans le repère du
-  modèle** (T + s·R·P = P à 0,02 unité sur les 201 images). Son parent est le groupe `group2`
-  (translation (39,7 ; -20,4 ; 10,7), échelle 0,81) et sa matrice inverse de bind native est
-  l'identité : ses sommets sont exprimés dans le repère de l'articulation, comme la tour de la
-  5.0. L'export recalculant les inverses depuis la pose de repos, `tools/scenes/v8_0.py` recale
-  ces sommets par `monde_repos(glow_add)` — sans quoi l'animation faisait tourner le quad autour
-  de l'origine de l'articulation, à 137 unités de son centre : l'« orbite » qui le sortait du
-  cadre. Ainsi composé, le centre du halo tombe sur le croisement des petites lignes du faisceau
-  (vérifié en rendant les deux couches seules) ;
+  modèle** — `T(f) + s(f)·R(f)·P = P` à 0,029 unité sur les 201 images, avec
+  P = (41,601 ; −129,973 ; 44,921), le centre brut du quad. Sa matrice inverse de bind native
+  est l'identité : ses sommets sont exprimés dans le repère de l'articulation, comme la tour de
+  la 5.0. L'export recalculant les inverses depuis la pose de repos, `tools/scenes/v8_0.py`
+  recale ces sommets par `monde_repos(glow_add)` — sans quoi l'animation faisait tourner le quad
+  autour de l'origine de l'articulation, à 137 unités de son centre : l'« orbite » qui le sortait
+  du cadre. Le halo se pose donc en `monde_repos(group2) · P`, sans dérive (0,02 unité entre les
+  images) : tout se joue sur la composition de `group2` ;
+- **une piste sans canal animé vaut la matrice de liaison, pas ses propres flottants**
+  (`restore_static_binds`). C'est ce qui recentrait mal le halo : la piste figée de `group2`
+  écrit sa translation, une échelle *uniforme* 0,814422 et trois angles nuls, alors que sa
+  matrice de liaison est `R_z(−5,959°) · diag(0,82770 ; 0,77981 ; 0,83692)` — colonnes
+  orthogonales à 7·10⁻¹⁰, donc bien une rotation suivie d'une échelle **non uniforme**, et
+  0,814422 n'en est que la moyenne géométrique (à 7·10⁻⁹). Le format d'animation n'a qu'un
+  flottant d'échelle et n'écrit jamais les angles fixes : vérifié sur les 284 pistes des cinq
+  versions — translation fixe = translation du bind (282/284, les deux exceptions étant des
+  locators `Slot_Special` de la 7.0), échelle fixe = moyenne géométrique des trois échelles du
+  bind (271/271, écart max 2,7·10⁻⁶), angle fixe toujours nul (284/284). Une piste figée est donc
+  une copie appauvrie : on l'écarte et `rest_local` reprend la matrice du squelette. Chiffres :
+  le centre du halo passe de (73,58 ; −126,29 ; 47,31) à (63,42 ; −124,82 ; 48,32), soit
+  0,15 unité du croisement des `Smal_Line_*` (63,57) au lieu de 9,94 — mesuré au rendu, l'écart
+  horizontal halo ↔ croisement tombe de 9,7 px à 0,7 px sur 1280 px de large, les couches
+  `Smal_Line_*` et `In_Big_*` restant identiques au pixel près. La rotation pure seule
+  (5,959° + échelle uniforme) laisserait 1,24 unité d'erreur : c'est l'échelle non uniforme qui
+  ferme l'écart. `group2` est la seule articulation des cinq versions dont la liaison soit
+  anisotrope (rapport 1,073) ; `rest_local` porte donc une échelle par axe, sans effet ailleurs
+  (glb de 4.0, 5.0, 6.0 et 7.0 identiques octet pour octet). Même règle appliquée à `Root` et
+  `Root_grass` (rotations pures autour de Y, 155,5° et 119,9°) : les pivots des arbres et de
+  l'herbe reviennent sur la géométrie qu'ils emportent — distance moyenne articulation ↔ sommets
+  emportés 188 → 65 unités, `joint9` 43,4 → 8,6 — pour un balancement natif inchangé
+  (0,15 à 0,5°, écart maximal de 4,07 unités sur les sommets) ;
 - **une vitesse de défilement par élément** : le xdb donne la vitesse à l'élément, l'export ne
   distingue les matériaux que par texture et fusion. `Noise03White03` additif est partagé par
   `Statue_glow` (0,1 ; 0,1), `fire_spots` (0 ; 0,3) et `group3_Fire1` (0,02 ; 0), `BackCloud` par
@@ -343,6 +366,33 @@ braseros que `group3_Fire1` (u 0,02), `fire_spots` (v 0,3), `Statue_glow` et `St
 (0,1 ; 0,1). Le dump XML du client V8 (`Tools/ClientUnpacker/ExtractedOld`) a un
 `AMM_8_0.(Geometry).xdb` identique à la copie serveur 7.0 hors la ligne `<binaryFile>` ; les
 `.bin` n'existent que dans le pak du client FR 8.0.
+
+Trois vérifications referment la question (2026-09) :
+
+- **absence de vitesse = zéro, pas donnée manquante.** `Types/types.xml` décrit
+  `client.Scene3D.Geometry$MaterialInstance` avec treize champs et pas un de plus :
+  `uTranslateSpeed` et `vTranslateSpeed` (défaut **vide**, donc 0), `scrollRGB` et `scrollAlpha`
+  (défaut **`true`** — l'exportateur les écrit partout, ils ne signalent rien), `BlendEffect`,
+  `diffuseTexture`, `transparencyModifier`… Aucun atlas, aucune cadence, aucune distorsion. Le
+  xdb de la 8.0 porte 45 balises de vitesse soigneusement réglées élément par élément : les
+  omettre sur `group3_Fire2/3/4` et `group3_FireGlow` est un choix d'auteur, pas un trou de
+  données — contrairement à la 4.0, dont le xdb n'en porte aucune (voir `v4/v4Fog.ts`) ;
+- **`useProceduralEffect` ne pilote pas le feu.** C'est un `java.lang.Boolean` de
+  `client.Scene3D.ExportGeometry` **de défaut `true`** (d'où sa présence sur les cinq scènes) ;
+  il autorise un `client.VisualConstructor.ProceduralEffect`, ressource de **recoloration** :
+  `color0` = « premier ton du dégradé, RVB ajouté à la couleur d'origine multipliée par
+  l'alpha », `color1` = second ton. Elle s'applique par `ProceduralEffectVisAction`
+  (`timeOn`/`timeOff`/`priority`) aux créatures — rien à voir avec une flamme ;
+- **une seule couche de feu de tout le corpus porte une vitesse** :
+  `SmalShip_destr_03_fire1` de la 7.0 (`AMM_7_0_Ships_Destroyed`), à 0,5 / 1,0. Les
+  `SmallShip_fire_01/02`, `Engine_Glow01/02` et les `FireMuzzle` sont tous à (0 ; 0), comme les
+  quatre couches de la 8.0.
+
+Reste donc, au rendu, un brasero dont seul le cœur remue : `fire_spots` (v 0,3) balaie une
+fenêtre UV de 0,24 tuile, soit un motif traversé en 0,8 s — bien visible ; `group3_Fire1`
+(u 0,02) s'étale sur 3,22 tuiles, soit **161 s de traversée** — mathématiquement animé,
+visuellement figé ; les 425 sommets des grandes langues (`group3_Fire2/3/4`, `group3_FireGlow`)
+sont fixes. Aucun paramètre ne manque : c'est ce que le client affiche.
 
 Non rejoué, faute de formule : le `ZoneLights` du menu V8
 (`Maps/MainMenu/ZoneLights/Mainmenu.(ZoneLights).xdb`) déclare un **bloom** (seuil 0,12,
