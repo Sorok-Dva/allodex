@@ -1,0 +1,165 @@
+{
+  "_note": "Sources de tools/extract_lore.py (préparation de la page Lorebook, langue cible : anglais). Chemins = montages WSL des disques de l'utilisateur ; une source optionnelle absente est signalée et ignorée. `client` = DERNIER client officiel (référence de toute extraction) : `Texts_x64.pak` (pack.rus.loc + pack.eng_eu.loc, même table d'index) et `BaseLocall_x64.pak` (Bin/pack.bin, la base de ressources compilée qui dit quelle ressource porte quel texte). `server_root` = arbre serveur décompressé (xdb + .txt, dépôt git) : chemins de ressources, types et champs des contenus qui y figurent (étiqueté 7.0, contenus jusqu'à ZC14/Ferris/Umoir). `eu_packs` = packs de textes officiels de l'édition européenne (CDN static.gc.my.games, build 16.0, index alignés en/fr) : servent uniquement de pont anglais → français. `fr_client` = client FR actuel (16.0, français seul) : vérifie que le français retenu y figure. `corpus` = matériel communautaire (git-ignoré, jamais recopié : l'index le référence par chemin). `provenance` = classement des textes que l'appariement au client ne rattache pas au jeu (couverture < 50 %) : `files` (chemin exact, `force` = même si l'appariement dit « en jeu »), puis motifs `excluded` / `official` / `community`, puis un titre daté (« Titre01.11.2025 », format des articles du site officiel) ; sinon `community`. Les notes « verify » signalent une provenance à confirmer avant tout usage.",
+  "client": {
+    "root": "/mnt/h/MyGames/AllodsRU",
+    "texts_pak": "data/Packs/Texts_x64.pak",
+    "base_pak": "data/Packs/BaseLocall_x64.pak",
+    "ru": "Bin/pack.rus.loc",
+    "en": "Bin/pack.eng_eu.loc",
+    "pack": "Bin/pack.bin"
+  },
+  "server_root": "/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data",
+  "eu_packs": {
+    "en": "/home/llyam/projects/allods-texts-packer/eu_texts/Texts_en.pak",
+    "fr": "/home/llyam/projects/allods-texts-packer/eu_texts/Texts_fr.pak",
+    "member": "Bin/pack.loc",
+    "note": "packs officiels téléchargés depuis le CDN my.games (fetch_eu_pack.py du projet allods-texts-packer), build 16.0"
+  },
+  "fr_client": {
+    "root": "/mnt/h/MyGames/Allods Online FR (FR)",
+    "texts_pak": "data/Packs/Texts_x64.pak",
+    "member": "Bin/pack.loc"
+  },
+  "corpus": "/home/llyam/projects/allodex/refs/lorebook",
+  "provenance": {
+    "excluded": {
+      "patterns": [
+        "текстовик",
+        "Texts.pak",
+        "allods adventure",
+        "Пираты штурм небес",
+        "библиотека аллодов"
+      ],
+      "note": "dump brut du client (on extrait nous-mêmes) ou texte d'un autre jeu (Allods Adventure, Cloud Pirates, Аллоды 1998)"
+    },
+    "official": {
+      "patterns": [
+        "анонс",
+        "Скоро в игре",
+        "ответы на вопросы по сюжету",
+        "Холодный ветер с севера"
+      ],
+      "note": "annonce de mise à jour ou FAQ scénario de l'équipe (réponses à vérifier)"
+    },
+    "community": {
+      "patterns": [
+        "хронология",
+        "Энциклопедия Сарнаута",
+        "АТЛАС",
+        "ATLAS",
+        "Астральные Острова(AO2.0+)",
+        "BETA(ОБТ",
+        "с форума",
+        "sec list",
+        "Созвездия",
+        "boses",
+        "таблица по событиям",
+        "репозитории",
+        "Копперлок"
+      ],
+      "note": "compilation ou travail de fans (atlas, encyclopédie, chronologie, notes)"
+    },
+    "files": {
+      "Mdrn world/Кадаган/о зэм.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "interview of the development team about update 16.0"
+      },
+      "Mdrn world/Кадаган/1234.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "developer article about Kadagan and the Risen Zem"
+      },
+      "Mdrn world/Кадаган/Тени над Песчаным Аллодом.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "update announcement"
+      },
+      "Mdrn world/Джигран/Джигран.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "update announcement (new location Jigran)"
+      },
+      "Mdrn world/Джигран/Джигран 2.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "update announcement"
+      },
+      "Mdrn world/Джигран/Текстовый документ.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "update announcement"
+      },
+      "Mdrn world/Джигран/Сардок рейд/Новый текстовый документ.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "raid announcement (Sadrok)"
+      },
+      "Mdrn world/Джигран/Сардок рейд/Новый текстовый документ (2).txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "raid announcement (Sadrok)"
+      },
+      "Mdrn world/Лига/кватох загорье (Кватор)/Слово о Загорье от Князя Финиста.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "in-character pre-release lore post of the Kvator series (verify source)"
+      },
+      "Mdrn world/Лига/кватох загорье (Кватор)/Слово о землях Кватора от Ольги, ведьмы из ковена Кватора.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "in-character pre-release lore post of the Kvator series (verify source)"
+      },
+      "Астральные Острова/Героическое приключение «Висячие сады»/2.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "developer commentary"
+      },
+      "Астральные Острова/Героическое приключение Пионерлагерь Мираж/Пионерлагерь Мираж.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "update announcement"
+      },
+      "Mdrn world/Джигран/Доклад Саранг Кидо Совету Учёных Советов народа Зэм.txt": {
+        "class": "community",
+        "note": "narrative story of unknown origin (possibly an official web story): verify"
+      },
+      "Mdrn world/Кадаган/Отчет о сообществе Восставших на Кадагане.txt": {
+        "class": "community",
+        "note": "narrative story of unknown origin (possibly an official web story): verify"
+      },
+      "Mdrn world/Кадаган/Искра в пепле иллюзий.txt": {
+        "class": "community",
+        "note": "narrative story of unknown origin (possibly an official web story): verify"
+      },
+      "Mdrn world/Лига/кватох загорье (Кватор)/Тень Пустоты над Сарнаутом.txt": {
+        "class": "community",
+        "note": "long story of unknown origin: verify"
+      },
+      "Несортированые/другие источники/Воспоминания Смеяны.txt": {
+        "class": "community",
+        "note": "narrative story of unknown origin (possibly an official web story): verify"
+      },
+      "Несортированые/другие источники/Найан. Груз тысячелетий.txt": {
+        "class": "community",
+        "note": "narrative story of unknown origin (possibly an official web story): verify"
+      },
+      "Несортированые/другие источники/Письмо из «Архива Скракана».txt": {
+        "class": "community",
+        "note": "narrative story of unknown origin (possibly an official web story): verify"
+      },
+      "Несортированые/другие источники/Путь Изгнанника.txt": {
+        "class": "community",
+        "note": "narrative story of unknown origin: verify"
+      },
+      "Несортированые/другие источники/Мауни Плясунья и суровая зима.txt": {
+        "class": "community",
+        "note": "narrative story of unknown origin (possibly an official web story): verify"
+      },
+      "Несортированые/другие источники/Сны о Великом Древе.txt": {
+        "class": "community",
+        "note": "narrative story of unknown origin (possibly an official web story): verify"
+      },
+      "Несортированые/другие источники/Край мира с форума АО.txt": {
+        "class": "community",
+        "note": "fan blog post (druidsdiary.blogspot.com) reposted on the forum"
+      },
+      "Mdrn world/Святая земля/Остров Головорезов/Новый текстовый документ.txt": {
+        "class": "community",
+        "note": "excerpt of an older client's texts ([path]: string), mostly absent from the 17.0 client"
+      },
+      "Другие острова/battle/Буян/Новый текстовый документ.txt": {
+        "class": "community",
+        "note": "excerpt of an older client's texts ([path]: string); the Buyan battleground is absent from the 17.0 client"
+      }
+    }
+  }
+}
