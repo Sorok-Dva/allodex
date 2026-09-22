@@ -1,50 +1,52 @@
 #!/usr/bin/env python3
-"""Export glTF des fatalités d'Allods Online (écran « Fatality Showcases »).
+"""Export des fatalités d'Allods Online : personnages, effets, chronologies et sons.
 
-Une fatalité, dans le jeu, c'est d'abord l'animation de mort **de la cible**
-(`Characters/<race>/Animations/<Modèle>.DeathFatality<Classe>.(SkeletalAnimation).bin`)
-et un décor d'effet posé à ses pieds (`Spells/FX/Spells/Fatality/Fatality<Classe>…`,
-géométries skinnées animées). Cet outil lit le client RU (`.bin` dans les paks) et
-l'arbre serveur 7.0 (`.xdb` : déclarations de sommets, géosets, matériaux) puis écrit,
-dans `public/game/fatalities/` (non versionné, comme le reste de `public/game/`) :
+Source : le **dernier client** (RU 17.x, `/mnt/h/MyGames/AllodsRU`). Il ne contient plus de
+`.xdb` : tout ce que l'arbre serveur 7.0 décrivait en XML est compilé dans `Bin/pack.bin`,
+relu par `tools/allods_packdb.py` et décodé par `tools/allods_visdb.py`. Chaîne de données
+d'une fatalité (voir le README, § « Fatalités ») :
 
-* `characters/<id>.glb` — le personnage de chaque race/sexe en tenue par défaut (peau,
-  visage, coiffure et ornements de la variation par défaut du jeu), avec **toutes** ses
-  animations `DeathFatality*` comme clips glTF (nom du clip = nom de l'animation) ;
-* `fx/<id>.glb` — les objets 3D de l'effet de chaque fatalité, chacun avec son squelette
-  et son animation propre ;
-* `fatalities.json` — l'index : personnages, fatalités (libellés bilingues, animation
-  de la cible, fichiers d'effets, approximations connues).
+1. `Interface/System/SlonSettings.(SlonRoot)` → vecteur `fatalities` : 26 entrées
+   `(type, offenderDeathScript, casterFxScript, fadeStartTime, fadeDuration, sparkDelay)` —
+   10 de classe, 16 de boutique (Occultiste, Universelles, Exécuteurs, Lotus, Phénix…) ;
+2. `offenderDeathScript` : arbre de `VisAction` joué sur la victime, aplati par
+   `tools/fatality_script.py` en chronologie par personnage (animations et vitesses, échelle,
+   transparence, objets posés et accrochés, secousses) ;
+3. chaque objet posé est un `VisObjectTemplate` : géométrie skinnée + animation (+ système
+   de particules), composants accrochés à ses locators, son (événement FMOD dont l'onde porte
+   le même nom dans `SFX/Spells/Fatality*.bsb`).
 
-Formats : voir l'en-tête de `tools/extract_menu_scene.py`, dont ce module réutilise le
-décodage. Deux écarts avec les scènes de menu :
+Sorties (`public/game/fatalities/`) :
 
-* la géométrie des personnages du client RU (17.x) a été réexportée depuis la 7.0 : le
-  vertex buffer a changé mais **le découpage de l'index buffer en géosets est conservé**
-  (vérifié : chaque plage d'indices pointe toujours vers une plage de sommets contiguë
-  de la même taille). On lit donc les plages d'indices du xdb 7.0 et on laisse les
-  indices désigner les sommets RU ; le nombre de sommets vient de la taille du tampon ;
-* les effets ajoutés après la 7.0 n'ont pas de xdb : stride déduit de la taille du tampon
-  (36 = position, uv, normale, couleur, poids, indices ; 32 = sans couleur), une seule
-  primitive, texture homonyme (ou forcée par le manifeste). Les dimensions d'une texture
-  sans xdb se déduisent de sa chaîne de mipmaps (la plus petite dimension vaut
-  `4 << dernier niveau`).
+* `characters/<id>.glb` — personnage (géométrie et matériaux RU, géosets de la tenue par
+  défaut) avec les clips : `idle01` et toutes les animations que les chronologies demandent ;
+* `fx/<id>.glb` — les gabarits d'objets d'une fatalité, un nœud `vot:<nom>` chacun, avec
+  leur squelette, leur clip et leurs composants accrochés ; textures communes dans `textures/` ;
+* `sfx/<nom>.ogg|.mp3` — les ondes des fatalités ;
+* `fatalities.json` — index : personnages, fatalités, chronologies par personnage, gabarits.
 
-Usage : python3 tools/extract_fatalities.py [--only aed-female] [--only-fx warrior]
-                                            [--check-dir DIR] [--client /mnt/h/…/AllodsRU]
+Le repère du jeu (main gauche, Z en haut) est conservé dans les `.glb` : le lecteur les place
+sous un nœud miroir unique.
+
+Usage : python3 tools/extract_fatalities.py [--only-fx phoenix] [--only kania-male]
+        [--client /mnt/h/MyGames/AllodsRU] [--no-characters] [--no-sounds]
 """
 from __future__ import annotations
 
 import argparse
 import io
 import json
+import math
 import os
 import re
+import shutil
 import struct
 import sys
+import tempfile
 import zlib
 from dataclasses import dataclass, field
 from pathlib import Path
+from types import SimpleNamespace
 from xml.etree import ElementTree as ET
 
 import numpy as np
@@ -53,360 +55,251 @@ from PIL import Image
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from tools.extract_menu_scene import (  # noqa: E402
-    BLOCK_BYTES,
-    FOURCC,
-    BinSource,
-    GeometryDoc,
-    GltfBuilder,
-    MaterialSpec,
-    Skeleton,
-    SkeletalAnimation,
-    TextureLibrary,
-    VertexLayout,
-    decode_vertex_buffer,
-    parse_geometry_xdb,
-    parse_skeletal_animation,
-    parse_skeleton,
-    read_chunks,
-    render_glb,
-    rest_local,
-    rest_world_matrices,
-    skin_attributes,
-    validate_glb,
+from tools.allods_packdb import PackDB, PakCatalog, open_catalog, open_pack  # noqa: E402
+from tools.allods_visdb import (  # noqa: E402
+    GeometryInfo, VisObject, animation_names, read_fatalities, read_geometry, read_texture,
+    read_visobject,
 )
-from tools.uitexture import build_dds, smoothness_score  # noqa: E402
+from tools.extract_menu_scene import (  # noqa: E402
+    BLOCK_BYTES, FOURCC, BinSource, GeometryDoc, GltfBuilder, Skeleton, SkeletalAnimation,
+    decode_vertex_buffer, parse_skeletal_animation, parse_skeleton, read_chunks, rest_local,
+    rest_world_matrices, skin_attributes, validate_glb,
+)
+from tools.fatality_script import flatten  # noqa: E402
+from tools.scenes.v5_0 import restore_fixed_rotations  # noqa: E402
+from tools.scenes.v8_0 import restore_static_binds  # noqa: E402
+from tools.uitexture import build_dds  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_MANIFEST = HERE / "fatalities_manifest.json"
 DEFAULT_OUT = HERE.parent / "public" / "game" / "fatalities"
 
-# Dispositions de sommets connues des effets sans xdb, par stride.
-KNOWN_LAYOUTS = {
-    36: VertexLayout(stride=36, position=0, texcoord0=12, normal=20, color=24, weights=28, indices=32),
-    32: VertexLayout(stride=32, position=0, texcoord0=12, normal=20, weights=24, indices=28),
-    28: VertexLayout(stride=28, position=0, texcoord0=12, normal=20, color=24),
-    24: VertexLayout(stride=24, position=0, texcoord0=12, normal=20),
-    20: VertexLayout(stride=20, position=0, texcoord0=12),
-}
+# Côté maximal des textures exportées : 512 pour les effets (quads additifs flous, jamais vus de
+# près), 1024 pour les peaux des personnages. Écart assumé pour le poids du site (les sources
+# montent à 2048).
+FX_TEXTURE_MAX = 512
+CHARACTER_TEXTURE_MAX = 1024
+
+# Animation d'attente des personnages (le client joue `idle` via ses gabarits d'animation ;
+# `Idle01` est la première variante présente pour les seize personnages).
+IDLE_ANIMATION = "Idle01"
 
 
-# --- textures sans xdb -----------------------------------------------------------------------
+# --- textures ----------------------------------------------------------------------------------
 
-def infer_texture_dims(mips: dict[int, bytes]) -> list[tuple[str, int, int]]:
-    """Candidats `(format, largeur, hauteur)` d'une texture DXT à partir de ses mipmaps.
-
-    Chaque niveau `k` a pour dimensions `(w >> k, h >> k)` et la chaîne s'arrête quand la plus
-    petite dimension atteint 4 pixels (un bloc) : `min(w, h) = 4 << max(k)`. Le nombre de blocs
-    du niveau le plus fin donne l'autre dimension, pour chacun des deux formats possibles ; le
-    format est certain si le dernier niveau ne fait qu'un bloc (8 ou 16 octets).
-    """
-    if not mips:
-        return []
-    last = max(mips)
-    smallest = len(mips[last])
-    formats = ["DXT5"] if smallest == 16 else ["DXT1"] if smallest == 8 else ["DXT5", "DXT1"]
-    out: list[tuple[str, int, int]] = []
-    finest = min(mips)
-    for fmt in formats:
-        block = BLOCK_BYTES[fmt]
-        if len(mips[finest]) % block:
-            continue
-        blocks_finest = len(mips[finest]) // block
-        blocks0 = blocks_finest * (4 ** finest)
-        short = 4 << last
-        long_side = blocks0 * 16 // short
-        if long_side * short != blocks0 * 16 or long_side < short:
-            continue
-        for w, h in ((long_side, short), (short, long_side)):
-            if (w, h) not in [(c[1], c[2]) for c in out]:
-                out.append((fmt, w, h))
-    return out
+def _slug(name: str) -> str:
+    stem = re.sub(r"\.\(Texture\)\.(hi\.)?bin$", "", name)
+    return re.sub(r"[^A-Za-z0-9_.-]+", "_", stem.replace("/", "__"))
 
 
-class RuTextureLibrary(TextureLibrary):
-    """`TextureLibrary` qui se passe du xdb quand le client seul connaît la texture."""
+class TexturePool:
+    """Textures du client décodées en PNG, une seule fois, dans `textures/` (partagées entre
+    les `.glb` par URI relative)."""
 
-    def _decode(self, key: str) -> tuple[bytes, int, int] | None:
-        # Le xdb 7.0 fait foi tant qu'il décrit encore les octets du client RU ; sinon
-        # (format changé entre-temps, p. ex. la peau du Kanien passée de DXT5 à DXT1) on
-        # se rabat sur la chaîne de mipmaps, qui suffit à retrouver dimensions et format.
-        xdb = self.server_root / key.lstrip("/")
-        if xdb.is_file():
-            result = super()._decode(key)
-            if result is not None:
-                return result
-        base = key[:-4] if key.endswith(".xdb") else key
+    def __init__(self, db: PackDB, cat: PakCatalog, bins: BinSource, out_dir: Path) -> None:
+        self.db, self.cat, self.bins = db, cat, bins
+        self.dir = out_dir / "textures"
+        self.done: dict[tuple[str, int], str | None] = {}
+        self.by_name: dict[str, int] = {}
+        for off in db.resources("Texture"):
+            name = cat.name(db.binary_ref(off))
+            if name:
+                self.by_name.setdefault(name, off)
+        self.bytes_written = 0
+
+    def uri(self, name: str | None, max_size: int, prefix: str = "../textures/") -> str | None:
+        if not name:
+            return None
+        key = (name, max_size)
+        if key not in self.done:
+            self.done[key] = self._export(name, max_size)
+        file = self.done[key]
+        return None if file is None else prefix + file
+
+    def _export(self, name: str, max_size: int) -> str | None:
+        off = self.by_name.get(name)
+        if off is None:
+            return None
+        info = read_texture(self.db, self.cat, off)
+        fmt = info.fmt
+        if fmt not in FOURCC or not info.width or not info.height:
+            return None
         mips: dict[int, bytes] = {}
-        for suffix in (".hi.bin", ".bin"):
-            data = self.source.get(base + suffix)
+        for binary in (info.binary, info.binary_hi):
+            data = self.bins.get(binary) if binary else None
             if data:
                 try:
                     mips.update(read_chunks(data))
                 except zlib.error:
                     pass
-        best: tuple[float, bytes, int, int] | None = None
-        for fmt, width, height in infer_texture_dims(mips):
-            block = BLOCK_BYTES[fmt]
-            for level in sorted(mips):
-                w, h = max(1, width >> level), max(1, height >> level)
-                if max(w, h) > self.max_size and level < max(mips):
-                    continue
-                need = max(1, (w + 3) // 4) * max(1, (h + 3) // 4) * block
-                payload = mips[level]
-                if len(payload) < need:
-                    continue
-                try:
-                    img = Image.open(io.BytesIO(build_dds(w, h, FOURCC[fmt], payload[:need])))
-                    img.load()
-                    img = img.convert("RGBA")
-                except Exception:  # pragma: no cover - dépend de Pillow/DDS
-                    break
-                score = smoothness_score(img) + (0.0 if w >= h else 1e-3)
-                if best is None or score < best[0]:
-                    buf = io.BytesIO()
-                    img.save(buf, format="PNG", optimize=True)
-                    best = (score, buf.getvalue(), w, h)
-                break
-        return None if best is None else (best[1], best[2], best[3])
-
-
-# --- déclarations de sommets sans xdb ----------------------------------------------------------
-
-def guess_layout(vb_size: int, index_max: int) -> VertexLayout | None:
-    """Stride d'un vertex buffer sans xdb : le plus grand stride connu qui tombe juste et couvre
-    tous les indices référencés (`index_max + 1` sommets au moins)."""
-    for stride in sorted(KNOWN_LAYOUTS, reverse=True):
-        if vb_size % stride == 0 and vb_size // stride > index_max:
-            return KNOWN_LAYOUTS[stride]
-    return None
-
-
-# --- personnages ------------------------------------------------------------------------------
-
-@dataclass
-class Geoset:
-    """Un géoset visible : l'élément du xdb et, le cas échéant, sa texture de remplacement."""
-    name: str
-    texture: str | None
-    ib0: int
-    ib1: int
-    blend: str = "BLEND_EFFECT_ALPHA"
-    transparent: bool = False
-    alpha: float = 1.0
-
-
-def _href_path(node: ET.Element | None) -> str | None:
-    if node is None:
-        return None
-    href = node.get("href")
-    return href.split("#")[0] if href else None
-
-
-def _read_xml(path: Path) -> ET.Element | None:
-    try:
-        return ET.fromstring(path.read_text(errors="replace"))
-    except (OSError, ET.ParseError):
+        block = BLOCK_BYTES[fmt]
+        for level in sorted(mips):
+            w, h = max(1, info.width >> level), max(1, info.height >> level)
+            if max(w, h) > max_size and level < max(mips):
+                continue
+            need = max(1, (w + 3) // 4) * max(1, (h + 3) // 4) * block
+            payload = mips[level]
+            if len(payload) < need:
+                continue
+            img = Image.open(io.BytesIO(build_dds(w, h, FOURCC[fmt], payload[:need])))
+            img.load()
+            img = img.convert("RGBA")
+            file = f"{_slug(name)}{'' if max_size >= 1024 else f'@{max_size}'}.png"
+            self.dir.mkdir(parents=True, exist_ok=True)
+            path = self.dir / file
+            if fmt == "DXT1" or img.getextrema()[3][0] == 255:
+                img = img.convert("RGB")
+            img.save(path, format="PNG", optimize=True)
+            self.bytes_written += path.stat().st_size
+            return file
         return None
 
 
-def default_variation_items(server_root: Path, character_dir: str,
-                            template_root: ET.Element | None) -> list[Path]:
-    """Chemins des `VisualItem` de la variation par défaut (coiffure, visage, ornements)."""
-    if template_root is None:
-        return []
-    variations = _href_path(template_root.find("variations"))
-    if not variations:
-        return []
-    root = _read_xml(server_root / variations.lstrip("/"))
-    if root is None:
-        return []
-    default = root.find("defaultVariation")
-    if default is None:
-        return []
-    out: list[Path] = []
-    for child in default:
-        path = _href_path(child)
-        if path and path.endswith("(VisualItem).xdb"):
-            out.append(server_root / path.lstrip("/"))
-    return out
+# --- squelettes et animations -------------------------------------------------------------------
+
+def clean_animation(skeleton: Skeleton, animation: SkeletalAnimation) -> list[str]:
+    """Règles établies sur les données (README, § « Scènes de menu ») appliquées à un clip :
+    une piste sans canal animé qui recopie le bind est écartée (le squelette fait foi, échelle
+    non uniforme comprise), puis les angles d'Euler fixes (écrits à 0) reprennent ceux du bind."""
+    obj = SimpleNamespace(skeleton=skeleton, animation=animation)
+    dropped = restore_static_binds(obj)
+    restore_fixed_rotations(obj)
+    return dropped
 
 
-def visual_item_shapes(path: Path) -> tuple[dict[str, str | None], set[str]]:
-    """`{géoset: texture de remplacement}` affichés par un VisualItem, et ses géosets cachés."""
-    root = _read_xml(path)
-    shown: dict[str, str | None] = {}
-    hidden: set[str] = set()
-    if root is None:
-        return shown, hidden
-    for item in root.iter("Item"):
-        shape = item.findtext("shapeName")
-        if shape:
-            shown[shape.strip()] = _href_path(item.find("replacement"))
-    for node in root.findall("./hiddenGeosets//Item"):
-        if node.text and node.text.strip():
-            hidden.add(node.text.strip())
-    return shown, hidden
+def bind_pose_positions(vertices: dict[str, np.ndarray], skeleton: Skeleton,
+                        static: np.ndarray) -> np.ndarray:
+    """Sommets skinnés ramenés dans le repère du modèle à la pose de bind :
+    `Σ w · monde_bind · inverse_native · v`. Identique à `v` quand l'inverse native est celle
+    du bind (cas des personnages) ; place correctement les sommets exprimés dans le repère de
+    leur articulation (inverse native identité, cas de nombreux effets). Les sommets des
+    éléments non skinnés (`static`) restent tels quels."""
+    world = rest_world_matrices(skeleton, None)
+    inverse = np.tile(np.eye(4), (len(skeleton), 1, 1))
+    inverse[:, :3, :] = skeleton.inverse.transpose(0, 2, 1)
+    palette = world @ inverse
+    joints, weights = skin_attributes(vertices, len(skeleton))
+    points = np.column_stack((vertices["position"].astype(np.float64), np.ones(len(vertices["position"]))))
+    out = np.zeros_like(points)
+    for slot in range(4):
+        out += np.einsum("nij,nj->ni", palette[joints[:, slot]], points) * (weights[:, slot] / 255.0)[:, None]
+    result = out[:, :3].astype(np.float32)
+    result[static] = vertices["position"][static].astype(np.float32)
+    return result
 
 
-def character_geosets(server_root: Path, spec: dict, doc: GeometryDoc) -> list[Geoset]:
-    """Géosets à afficher pour la tenue par défaut : ceux que `<Modèle>Default.(VisualItem)`
-    ne cache pas, plus ceux qu'ajoute la variation par défaut (avec leurs textures)."""
-    folder = server_root / "Characters" / spec["dir"]
-    template = _read_xml(folder / f"{spec['model']}.(VisCharacterTemplate).xdb")
-    hidden: set[str] = set()
-    shown: dict[str, str | None] = {}
-    default_dress = _href_path(template.find("defaultDress")) if template is not None else None
-    dress_path = server_root / default_dress.lstrip("/") if default_dress else folder / f"{spec['model']}Default.(VisualItem).xdb"
-    _, hidden = visual_item_shapes(dress_path)
-    for item in default_variation_items(server_root, spec["dir"], template):
-        add, _ = visual_item_shapes(item)
-        shown.update(add)
-    out: list[Geoset] = []
-    for element in doc.elements:
-        name = element.name
-        if name in shown:
-            texture = shown[name] or element.material.texture
-        elif name in hidden or not element.material.visible:
-            continue
-        else:
-            texture = element.material.texture
-        out.append(Geoset(name, texture, element.ib0, element.ib1, element.material.blend,
-                          element.material.transparent, element.material.alpha))
-    return out
-
-
-def character_scale(server_root: Path, spec: dict) -> float:
-    root = _read_xml(server_root / "Characters" / spec["dir"] / f"{spec['model']}.(VisObjectTemplate).xdb")
-    if root is None:
-        return 1.0
-    try:
-        return float(root.findtext("scale") or "1")
-    except ValueError:
-        return 1.0
-
-
-# --- assemblage glTF --------------------------------------------------------------------------
+# --- assemblage glTF ---------------------------------------------------------------------------
 
 @dataclass
 class Exporter:
-    server_root: Path
-    source: BinSource
-    max_texture: int = 1024
+    textures: TexturePool
+    texture_max: int
     notes: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         self.gltf = GltfBuilder()
         self.gltf.json["asset"]["generator"] = "allodex/extract_fatalities"
-        self.textures = RuTextureLibrary(self.source, self.server_root, self.max_texture)
-        self.texture_index: dict[str, int | None] = {}
-        self.material_index: dict[tuple, int] = {}
-        self.stats = {"triangles": 0, "textures": 0, "animations": 0, "objects": 0}
+        self.images: dict[str, int | None] = {}
+        self.materials: dict[tuple, int] = {}
+        self.stats = {"triangles": 0, "animations": 0, "objects": 0}
 
-    # -- ressources
-
-    def texture(self, href: str | None) -> int | None:
-        if not href:
+    def texture(self, name: str | None) -> int | None:
+        if not name:
             return None
-        key = href.split("#")[0]
-        if key not in self.texture_index:
-            png = self.textures.png(key)
-            if png is None:
-                self.texture_index[key] = None
-                self.notes.append(f"texture illisible : {key}")
+        if name not in self.images:
+            uri = self.textures.uri(name, self.texture_max)
+            if uri is None:
+                self.images[name] = None
+                self.notes.append(f"texture illisible : {name}")
             else:
-                data, _, _ = png
-                self.texture_index[key] = self.gltf.add_image(data, Path(key).name)
-                self.stats["textures"] += 1
-        return self.texture_index[key]
+                self.gltf.json["images"].append({"uri": uri, "name": Path(name).name})
+                self.gltf.json["textures"].append({"sampler": 0, "source": len(self.gltf.json["images"]) - 1})
+                self.images[name] = len(self.gltf.json["textures"]) - 1
+        return self.images[name]
 
-    def material(self, name: str, texture_href: str | None, blend: str, transparent: bool,
-                 alpha: float = 1.0) -> int:
-        # Le canal alpha des textures de peau est un masque (spéculaire, sous-vêtements),
-        # pas une transparence : un matériau non `transparent` est opaque, jamais découpé.
-        additive = blend == "BLEND_EFFECT_ADD" and transparent
-        tex = self.texture(texture_href)
-        key = (name, tex, additive, transparent, round(alpha, 4))
-        if key not in self.material_index:
-            alpha_mode = "BLEND" if (additive or transparent) else "OPAQUE"
-            self.material_index[key] = self.gltf.add_material(name, tex, alpha_mode, True, additive, alpha)
-        return self.material_index[key]
+    def material(self, element, orientation: str) -> int:
+        mat = element.material
+        # `BLEND_EFFECT_ADD` n'est additif que sur un matériau transparent (règle des scènes de
+        # menu, vérifiée ici sur les peaux des personnages, ADD mais opaques).
+        additive = mat.blend in ("BLEND_EFFECT_ADD", "BLEND_EFFECT_ALPHA_ADD", "BLEND_EFFECT_COLOR_ADD") and mat.transparent
+        tex = self.texture(mat.texture)
+        key = (tex, additive, mat.transparent, round(mat.alpha, 4), mat.blend)
+        if key not in self.materials:
+            alpha_mode = "BLEND" if mat.transparent else "OPAQUE"
+            index = self.gltf.add_material(mat.name, tex, alpha_mode, True, additive, mat.alpha)
+            extras = self.gltf.json["materials"][index].setdefault("extras", {})
+            extras["gameBlend"] = mat.blend
+            self.materials[key] = index
+        return self.materials[key]
 
-    # -- squelette et animations
+    # -- squelette
 
     def emit_skeleton(self, skeleton: Skeleton, prefix: str) -> list[int]:
-        """Un nœud par articulation, à la pose de bind du squelette (aucune animation ne fait
-        foi : plusieurs clips se partagent le squelette)."""
         nodes: list[int] = []
         for i, name in enumerate(skeleton.names):
-            t, q = rest_local(skeleton, None, i)
-            nodes.append(self.gltf.add_node({"name": f"{prefix}/{name}",
-                                             "translation": [float(v) for v in t],
-                                             "rotation": [float(v) for v in q]}))
+            t, q, s = rest_local(skeleton, None, i)
+            node = {"name": f"{prefix}/{name}", "translation": [float(v) for v in t],
+                    "rotation": [float(v) for v in q]}
+            if np.any(np.abs(s - 1.0) > 1e-7):
+                node["scale"] = [float(v) for v in s]
+            nodes.append(self.gltf.add_node(node))
         for i in range(len(skeleton)):
             parent = skeleton.parents[i]
             if 0 <= parent < len(skeleton) and parent != i:
                 self.gltf.json["nodes"][nodes[parent]].setdefault("children", []).append(nodes[i])
         return nodes
 
-    def emit_animation(self, name: str, skeleton: Skeleton, nodes: list[int],
-                       animation: SkeletalAnimation) -> bool:
-        known = [t for t in animation.tracks if t.name in skeleton.names]
-        moving = [t for t in known if t.animated]
-        if animation.frames <= 0 or not known:
-            return False
-        if moving:
-            times = np.arange(animation.frames, dtype=np.float32) / float(animation.fps)
-            tracks = moving
-        else:
-            # Pose figée (aucune articulation animée) : deux clés identiques sur toute la
-            # durée, pour chaque articulation — c'est le cas de `DeathFatality`, la pose que
-            # les fatalités de la boutique imposent à leur cible.
-            times = np.array([0.0, max(animation.frames - 1, 1) / float(animation.fps)], np.float32)
-            tracks = known
+    def emit_clip(self, name: str, skeleton: Skeleton, nodes: list[int], animation: SkeletalAnimation,
+                  speed: float = 1.0) -> float:
+        """Clip glTF d'une animation (pistes nettoyées) ; renvoie sa durée en secondes."""
+        clean_animation(skeleton, animation)
+        tracks = [t for t in animation.tracks if t.name in skeleton.names]
+        frames = max(animation.frames, 1)
+        duration = (frames - 1) / float(animation.fps) / max(speed, 1e-6) if frames > 1 else 0.0
+        if not tracks:
+            return duration
+        times = np.arange(frames, dtype=np.float32) / float(animation.fps) / max(speed, 1e-6)
+        if frames == 1:
+            times = np.array([0.0], np.float32)
         acc_time = self.gltf.add_accessor(times, "SCALAR", "f32", minmax=True)
         samplers: list[dict] = []
         channels: list[dict] = []
+
+        def channel(node: int, path: str, values: np.ndarray, kind: str) -> None:
+            if len(values) != len(times):
+                values = np.repeat(values[:1], len(times), axis=0)
+            acc = self.gltf.add_accessor(values.astype(np.float32), kind, "f32")
+            samplers.append({"input": acc_time, "output": acc, "interpolation": "LINEAR"})
+            channels.append({"sampler": len(samplers) - 1, "target": {"node": node, "path": path}})
+
         for track in tracks:
             node = nodes[skeleton.names.index(track.name)]
-            translation = track.translation.astype(np.float32)
-            rotation = track.rotation.astype(np.float32)
-            if len(translation) != len(times):
-                translation = np.repeat(translation[:1], len(times), axis=0)
-                rotation = np.repeat(rotation[:1], len(times), axis=0)
-            acc_t = self.gltf.add_accessor(translation, "VEC3", "f32")
-            samplers.append({"input": acc_time, "output": acc_t, "interpolation": "LINEAR"})
-            channels.append({"sampler": len(samplers) - 1, "target": {"node": node, "path": "translation"}})
-            acc_r = self.gltf.add_accessor(rotation, "VEC4", "f32")
-            samplers.append({"input": acc_time, "output": acc_r, "interpolation": "LINEAR"})
-            channels.append({"sampler": len(samplers) - 1, "target": {"node": node, "path": "rotation"}})
+            channel(node, "translation", np.asarray(track.translation), "VEC3")
+            channel(node, "rotation", np.asarray(track.rotation), "VEC4")
+            scale = np.asarray(track.scale, float)
+            if len(scale) == frames and np.ptp(scale) > 1e-7:
+                channel(node, "scale", np.repeat(scale[:, None], 3, axis=1), "VEC3")
         self.gltf.json["animations"].append({"name": name, "samplers": samplers, "channels": channels})
         self.stats["animations"] += 1
-        if animation.undecoded:
-            self.notes.append(f"{name} : {len(animation.undecoded)} articulation(s) figée(s) ({', '.join(animation.undecoded[:4])}…)")
-        return True
-
-    def load_animation(self, rel: str, skeleton: Skeleton, span: float) -> SkeletalAnimation | None:
-        blob = self.source.get(rel)
-        if blob is None:
-            return None
-        payload = read_chunks(blob).get(0)
-        if not payload:
-            return None
-        try:
-            return parse_skeletal_animation(payload, skeleton, span)
-        except (struct.error, ValueError, IndexError):
-            self.notes.append(f"animation illisible : {rel}")
-            return None
+        return duration
 
     # -- maillage
 
-    def emit_mesh(self, name: str, vertices: dict[str, np.ndarray], indices: np.ndarray,
-                  geosets: list[Geoset], skeleton: Skeleton | None,
-                  vertex_colors: bool) -> tuple[int | None, dict]:
+    def emit_mesh(self, name: str, geo: GeometryInfo, vertices: dict[str, np.ndarray], indices: np.ndarray,
+                  elements: list, skeleton: Skeleton | None, texture_override: dict[str, str] | None = None
+                  ) -> tuple[int | None, bool]:
+        doc = geo.doc
         position = vertices["position"].astype(np.float32)
-        uv = vertices.get("texcoord0", np.zeros((len(position), 2), np.float32)).astype(np.float32)
-        color = vertices.get("color") if vertex_colors else None
+        skinned = skeleton is not None and "indices" in vertices and "weights" in vertices
+        static = np.zeros(len(position), bool)
+        for e in doc.elements:
+            if e.skin_index < 0:
+                static[np.unique(indices[e.ib0:e.ib1])] = True
+        if skinned:
+            position = bind_pose_positions(vertices, skeleton, static)
+        uv = vertices.get("texcoord0", np.zeros((len(position), 2), np.float32)).astype(np.float32).copy()
+        uv[:, 1] = 1.0 - uv[:, 1]  # V = 0 en bas dans le jeu, en haut en glTF
+        color = vertices.get("color")
         if color is None:
             rgba = np.full((len(position), 4), 255, np.uint8)
         else:
@@ -423,419 +316,600 @@ class Exporter:
             norm = np.linalg.norm(normal, axis=1, keepdims=True)
             normal = np.where(norm > 1e-6, normal / np.maximum(norm, 1e-9), np.array([0, 0, 1], np.float32))
             attributes["NORMAL"] = self.gltf.add_accessor(normal.astype(np.float32), "VEC3", "f32", target=34962)
-        if skeleton is not None and "indices" in vertices and "weights" in vertices:
-            joints, weights = skin_attributes(vertices, len(skeleton))
+        if skinned:
+            joints, weights = skin_attributes(vertices, len(skeleton), static_joint=len(skeleton))
+            joints[static] = 0
+            joints[static, 0] = len(skeleton)
+            weights[static] = 0
+            weights[static, 0] = 255
             attributes["JOINTS_0"] = self.gltf.add_accessor(joints, "VEC4", "u8", target=34962)
             attributes["WEIGHTS_0"] = self.gltf.add_accessor(weights, "VEC4", "u8", normalized=True, target=34962)
         primitives = []
-        for geoset in geosets:
-            tri = indices[geoset.ib0:geoset.ib1]
-            if tri.size < 3:
+        for element in elements:
+            tri = indices[element.ib0:element.ib1]
+            if tri.size < 3 or int(tri.max()) >= len(position):
                 continue
             self.stats["triangles"] += tri.size // 3
-            acc_idx = self.gltf.add_accessor(tri.astype(np.uint32), "SCALAR", "u32", target=34963)
-            primitives.append({"attributes": attributes, "indices": acc_idx, "mode": 4,
-                               "material": self.material(geoset.name, geoset.texture, geoset.blend,
-                                                         geoset.transparent, geoset.alpha),
-                               "extras": {"element": geoset.name}})
+            if texture_override and element.name in texture_override:
+                element.material.texture = texture_override[element.name]
+            prim = {"attributes": attributes, "mode": 4,
+                    "indices": self.gltf.add_accessor(tri.astype(np.uint32), "SCALAR", "u32", target=34963),
+                    "material": self.material(element, geo.orientation),
+                    "extras": {"element": element.name}}
+            su, sv = element.material.uv_scroll
+            if su or sv:
+                prim["extras"]["uvScroll"] = [su, sv]
+            primitives.append(prim)
         if not primitives:
-            return None, attributes
+            return None, skinned
         self.gltf.json["meshes"].append({"name": name, "primitives": primitives})
-        return len(self.gltf.json["meshes"]) - 1, attributes
+        return len(self.gltf.json["meshes"]) - 1, skinned
 
-    def emit_skinned_object(self, name: str, vertices: dict[str, np.ndarray], indices: np.ndarray,
-                            geosets: list[Geoset], skeleton: Skeleton | None,
-                            animations: dict[str, SkeletalAnimation], scale: float = 1.0,
-                            vertex_colors: bool = False) -> int | None:
-        mesh_index, attributes = self.emit_mesh(name, vertices, indices, geosets, skeleton, vertex_colors)
-        if mesh_index is None:
-            return None
-        self.stats["objects"] += 1
-        children: list[int] = []
-        mesh_node: dict = {"name": f"{name}_mesh", "mesh": mesh_index}
-        if skeleton is not None and "JOINTS_0" in attributes:
-            joint_nodes = self.emit_skeleton(skeleton, name)
-            world = rest_world_matrices(skeleton, None)
-            inverse = np.zeros((len(skeleton), 16), np.float32)
-            for i in range(len(skeleton)):
-                inverse[i] = np.linalg.inv(world[i]).T.reshape(-1)
-            self.gltf.json["skins"].append({
-                "name": f"{name}_skin",
-                "inverseBindMatrices": self.gltf.add_accessor(inverse, "MAT4", "f32"),
-                "joints": joint_nodes,
-                "skeleton": joint_nodes[skeleton.topological_order()[0]],
-            })
-            mesh_node["skin"] = len(self.gltf.json["skins"]) - 1
-            children.extend(joint_nodes[i] for i in range(len(skeleton))
-                            if not (0 <= skeleton.parents[i] < len(skeleton)))
-            for clip_name, animation in animations.items():
-                self.emit_animation(clip_name, skeleton, joint_nodes, animation)
-        children.append(self.gltf.add_node(mesh_node))
-        node: dict = {"name": name, "children": children}
-        if abs(scale - 1.0) > 1e-9:
-            node["scale"] = [float(scale)] * 3
-        return self.gltf.add_node(node)
+    def skin(self, name: str, skeleton: Skeleton, joint_nodes: list[int], static_node: int) -> int:
+        world = rest_world_matrices(skeleton, None)
+        inverse = np.zeros((len(skeleton) + 1, 16), np.float32)
+        for i in range(len(skeleton)):
+            inverse[i] = np.linalg.inv(world[i]).T.reshape(-1)
+        inverse[len(skeleton)] = np.eye(4, dtype=np.float32).reshape(-1)
+        self.gltf.json["skins"].append({
+            "name": f"{name}_skin",
+            "inverseBindMatrices": self.gltf.add_accessor(inverse, "MAT4", "f32"),
+            "joints": joint_nodes + [static_node],
+        })
+        return len(self.gltf.json["skins"]) - 1
 
     def finish(self, roots: list[int]) -> bytes:
-        # Repère main gauche du jeu → main droite de glTF : nœud miroir, comme les scènes de menu.
-        mirror = self.gltf.add_node({"name": "scene", "scale": [-1.0, 1.0, 1.0], "children": roots})
-        self.gltf.json["scenes"][0]["nodes"].append(mirror)
+        self.gltf.json["scenes"][0]["nodes"].extend(roots)
         glb = self.gltf.to_glb()
         validate_glb(glb)
         return glb
 
 
-# --- personnages ------------------------------------------------------------------------------
+# --- chargement --------------------------------------------------------------------------------
 
-def build_character(spec: dict, server_root: Path, source: BinSource, max_texture: int,
-                    only_animations: re.Pattern[str] | None = None) -> tuple[bytes, dict, list[str]]:
-    exporter = Exporter(server_root, source, max_texture)
-    folder = f"Characters/{spec['dir']}"
-    xdb = server_root / folder / f"{spec['model']}.(Geometry).xdb"
-    if not xdb.is_file():
-        raise FileNotFoundError(f"xdb absent : {xdb}")
-    doc = parse_geometry_xdb(xdb.read_text(errors="replace"))
-    data = source.get(f"{folder}/{spec['model']}.(Geometry).bin")
-    if data is None:
-        raise FileNotFoundError(f"géométrie absente du client : {folder}/{spec['model']}.(Geometry).bin")
+@dataclass
+class Loaded:
+    geo: GeometryInfo
+    vertices: dict[str, np.ndarray]
+    indices: np.ndarray
+    skeleton: Skeleton | None
+
+
+def load_geometry(db: PackDB, cat: PakCatalog, bins: BinSource, off: int) -> Loaded | None:
+    geo = read_geometry(db, cat, off)
+    data = bins.get(geo.binary) if geo.binary else None
+    if data is None or not geo.doc.layouts:
+        return None
     chunks = read_chunks(data)
     vb, ib = chunks.get(0), chunks.get(1)
-    if vb is None or ib is None or not doc.layouts:
-        raise ValueError(f"tampons ou déclaration absents : {spec['model']}")
-    layout = doc.layouts[0]
-    count = len(vb) // layout.stride
-    if len(vb) % layout.stride:
-        raise ValueError(f"vertex buffer de {len(vb)} octets non multiple du stride {layout.stride}")
-    vertices = decode_vertex_buffer(vb, layout, count)
+    if vb is None or ib is None:
+        return None
+    layout = geo.doc.layouts[0]
+    if layout.stride <= 0 or len(vb) < layout.stride:
+        return None
+    vertices = decode_vertex_buffer(vb, layout, len(vb) // layout.stride)
     indices = np.frombuffer(ib, "<u2").astype(np.uint32)
-    if doc.skeleton_id is None or doc.skeleton_id not in chunks:
-        raise ValueError(f"squelette absent : {spec['model']}")
-    skeleton = parse_skeleton(chunks[doc.skeleton_id])
-    geosets = character_geosets(server_root, spec, doc)
-    last = len(indices)
-    for geoset in geosets:
-        if geoset.ib1 > last or geoset.ib0 >= geoset.ib1:
-            raise ValueError(f"géoset {geoset.name} hors de l'index buffer RU")
-        tri = indices[geoset.ib0:geoset.ib1]
-        if tri.max() >= count:
-            raise ValueError(f"géoset {geoset.name} référence un sommet inexistant")
-    span = float(np.max(doc.aabb[1]) * 4.0) if doc.aabb is not None else 0.0
-    prefix = f"{folder}/Animations/{spec['model']}.DeathFatality"
-    names = sorted(n for n in source.names() if n.startswith(prefix) and n.endswith(".(SkeletalAnimation).bin"))
-    animations: dict[str, SkeletalAnimation] = {}
-    for rel in names:
-        clip = rel[len(f"{folder}/Animations/{spec['model']}."):-len(".(SkeletalAnimation).bin")]
-        if only_animations and not only_animations.search(clip):
-            continue
-        animation = exporter.load_animation(rel, skeleton, span)
-        if animation is not None:
-            animations[clip] = animation
-    if not animations:
-        exporter.notes.append(f"{spec['id']} : aucune animation DeathFatality* trouvée")
-    scale = character_scale(server_root, spec)
-    root = exporter.emit_skinned_object(spec["model"], vertices, indices, geosets, skeleton, animations, scale)
+    skeleton = None
+    if geo.doc.skeleton_id is not None and geo.doc.skeleton_id in chunks:
+        try:
+            skeleton = parse_skeleton(chunks[geo.doc.skeleton_id])
+        except (struct.error, ValueError, IndexError):
+            skeleton = None
+    return Loaded(geo, vertices, indices, skeleton)
+
+
+def load_animation(bins: BinSource, name: str | None, skeleton: Skeleton, span: float) -> SkeletalAnimation | None:
+    data = bins.get(name) if name else None
+    if not data:
+        return None
+    payload = read_chunks(data).get(0)
+    if not payload:
+        return None
+    try:
+        return parse_skeletal_animation(payload, skeleton, span)
+    except (struct.error, ValueError, IndexError):
+        return None
+
+
+# --- personnages -------------------------------------------------------------------------------
+
+def _read_xml(path: Path) -> ET.Element | None:
+    try:
+        return ET.fromstring(path.read_text(errors="replace"))
+    except (OSError, ET.ParseError):
+        return None
+
+
+def _href(node: ET.Element | None) -> str | None:
+    href = node.get("href") if node is not None else None
+    return href.split("#")[0] if href else None
+
+
+def visual_item_shapes(path: Path) -> tuple[dict[str, str | None], set[str]]:
+    root = _read_xml(path)
+    shown: dict[str, str | None] = {}
+    hidden: set[str] = set()
     if root is None:
-        raise ValueError(f"aucun géoset visible : {spec['model']}")
-    glb = exporter.finish([root])
-    clips = [name for name in animations if any(a["name"] == name for a in exporter.gltf.json.get("animations", []))]
-    durations = {name: round(animations[name].frames / float(animations[name].fps), 3) for name in clips}
-    meta = {"id": spec["id"], "model": spec["model"], "scale": scale, "geosets": [g.name for g in geosets],
-            "animations": clips, "durations": durations, "height": float(vertices["position"][:, 2].max() * scale),
-            "stats": exporter.stats}
-    return glb, meta, exporter.notes
+        return shown, hidden
+    for item in root.iter("Item"):
+        shape = item.findtext("shapeName")
+        if shape:
+            shown[shape.strip()] = _href(item.find("replacement"))
+    for node in root.findall("./hiddenGeosets//Item"):
+        if node.text and node.text.strip():
+            hidden.add(node.text.strip())
+    return shown, hidden
 
 
-# --- effets -----------------------------------------------------------------------------------
+def character_selection(server_root: Path, spec: dict) -> tuple[set[str], dict[str, str | None]]:
+    """(géosets cachés par la tenue par défaut, géosets montrés par la variation par défaut →
+    texture de remplacement). Tiré des `.xdb` 7.0 du gabarit — les noms de géosets du client
+    RU sont les mêmes ; les `VisualItem` compilés du client restent à décoder."""
+    folder = server_root / "Characters" / spec["dir"]
+    template = _read_xml(folder / f"{spec['model']}.(VisCharacterTemplate).xdb")
+    dress = _href(template.find("defaultDress")) if template is not None else None
+    dress_path = server_root / dress.lstrip("/") if dress else folder / f"{spec['model']}Default.(VisualItem).xdb"
+    _, hidden = visual_item_shapes(dress_path)
+    shown: dict[str, str | None] = {}
+    variations = _href(template.find("variations")) if template is not None else None
+    root = _read_xml(server_root / variations.lstrip("/")) if variations else None
+    default = root.find("defaultVariation") if root is not None else None
+    for child in (list(default) if default is not None else []):
+        path = _href(child)
+        if path and path.endswith("(VisualItem).xdb"):
+            add, _ = visual_item_shapes(server_root / path.lstrip("/"))
+            shown.update(add)
+    return hidden, shown
 
-FX_DIRS = ("Spells/FX/Spells/Fatality", "Spells/FX/Spells", "Spells/FX/Mobs", "Spells/FX/Armors",
-           "Items/ObjectComponents/Wings")
+
+def xdb_texture_to_bin(href: str | None) -> str | None:
+    if not href:
+        return None
+    return href.lstrip("/").replace("(Texture).xdb", "(Texture).bin")
 
 
-def find_fx(source: BinSource, name: str) -> str | None:
-    """Dossier du client où vit `<name>.(Geometry).bin`."""
-    for folder in FX_DIRS:
-        if source.get(f"{folder}/{name}.(Geometry).bin") is not None:
-            return folder
+def find_template(db: PackDB, cat: PakCatalog, spec: dict) -> int | None:
+    """Gabarit du personnage joueur : le `VisCharacterTemplate` nommé comme le modèle dont la
+    géométrie vit sous `Characters/<dossier>/`."""
+    for off in sorted(db.resources("VisCharacterTemplate")):
+        if db.string(off + 0xE8) != spec["model"]:
+            continue
+        vot = db.ptr(off + 0x90)
+        geometry = db.ptr(vot + 0xC0) if vot is not None else None
+        name = cat.name(db.binary_ref(geometry)) if geometry is not None else None
+        if name and name.startswith(f"Characters/{spec['dir']}/"):
+            return off
     return None
 
 
-def build_fx(fatality: dict, server_root: Path, source: BinSource,
-             max_texture: int) -> tuple[bytes | None, dict, list[str]]:
-    exporter = Exporter(server_root, source, max_texture)
-    roots: list[int] = []
-    objects: list[dict] = []
-    for entry in fatality.get("fx", []):
-        spec = {"name": entry} if isinstance(entry, str) else dict(entry)
-        name = spec["name"]
-        folder = find_fx(source, name)
-        if folder is None:
-            exporter.notes.append(f"{fatality['id']} : géométrie absente du client : {name}")
+def animation_file(cat: PakCatalog, spec: dict, anim: str) -> str | None:
+    """Fichier d'une animation du personnage : `<Modèle>.<Nom>` sans égard à la casse."""
+    prefix = f"Characters/{spec['dir']}/Animations/{spec['model']}.".lower()
+    target = f"{prefix}{anim.lower()}.(skeletalanimation).bin"
+    for pak in ("Characters.Mini.pak",):
+        for name in cat.names.get(pak, []):
+            if name.lower() == target:
+                return name
+    return None
+
+
+def build_character(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, textures: TexturePool,
+                    server_root: Path, wanted: set[str]) -> tuple[bytes, dict, list[str]]:
+    exporter = Exporter(textures, CHARACTER_TEXTURE_MAX)
+    template = find_template(db, cat, spec)
+    if template is None:
+        raise ValueError(f"gabarit introuvable : {spec['model']}")
+    vot = read_visobject(db, cat, db.ptr(template + 0x90))
+    loaded = load_geometry(db, cat, bins, vot.geometry) if vot.geometry is not None else None
+    if loaded is None or loaded.skeleton is None:
+        raise ValueError(f"géométrie ou squelette illisible : {spec['model']}")
+    hidden, shown = character_selection(server_root, spec)
+    elements = []
+    override: dict[str, str] = {}
+    for element in loaded.geo.doc.elements:
+        name = element.name
+        if name in shown:
+            if shown[name]:
+                override[name] = xdb_texture_to_bin(shown[name])
+        elif name in hidden or not element.material.visible:
             continue
-        chunks = read_chunks(source.get(f"{folder}/{name}.(Geometry).bin") or b"")
-        vb, ib = chunks.get(0), chunks.get(1)
-        if vb is None or ib is None:
-            exporter.notes.append(f"{fatality['id']} : tampons absents : {name}")
+        elif _is_variant(name, shown):
             continue
-        indices = np.frombuffer(ib, "<u2").astype(np.uint32)
-        xdb = server_root / folder / f"{name}.(Geometry).xdb"
-        approx = not xdb.is_file()
-        doc = None if approx else parse_geometry_xdb(xdb.read_text(errors="replace"))
-        if doc is not None and doc.layouts and doc.vertex_buffer_size == len(vb) and doc.index_buffer_size == len(ib):
-            layout = doc.layouts[0]
-            geosets = [Geoset(e.name, e.material.texture, e.ib0, e.ib1, e.material.blend,
-                              e.material.transparent, e.material.alpha)
-                       for e in doc.elements if e.material.visible]
-            skeleton_id = doc.skeleton_id
-        else:
-            if doc is not None:
-                exporter.notes.append(f"{fatality['id']} : xdb 7.0 de {name} périmé (tailles différentes), décodage heuristique")
-                approx = True
-            layout = guess_layout(len(vb), int(indices.max()) if indices.size else 0)
-            if layout is None:
-                exporter.notes.append(f"{fatality['id']} : stride indéterminable : {name}")
+        if not element.material.texture and name not in override:
+            # Emplacement vide (jupes, capes des armures) : sans texture propre ni texture
+            # apportée par un objet, le géoset n'est pas dessiné par le client.
+            continue
+        elements.append(element)
+    mesh, skinned = exporter.emit_mesh(spec["model"], loaded.geo, loaded.vertices, loaded.indices,
+                                       elements, loaded.skeleton, override)
+    if mesh is None:
+        raise ValueError(f"aucun géoset visible : {spec['model']}")
+    skeleton = loaded.skeleton
+    joint_nodes = exporter.emit_skeleton(skeleton, spec["model"])
+    static_node = exporter.gltf.add_node({"name": f"{spec['model']}/Static"})
+    mesh_node = {"name": f"{spec['model']}_mesh", "mesh": mesh}
+    if skinned:
+        mesh_node["skin"] = exporter.skin(spec["model"], skeleton, joint_nodes, static_node)
+    roots = [joint_nodes[i] for i in range(len(skeleton)) if not (0 <= skeleton.parents[i] < len(skeleton))]
+    span = float(np.max(np.abs(loaded.vertices["position"])) * 4.0)
+    durations: dict[str, float] = {}
+    for anim in sorted(wanted | {IDLE_ANIMATION}):
+        file = animation_file(cat, spec, anim)
+        animation = load_animation(bins, file, skeleton, span)
+        if animation is None:
+            exporter.notes.append(f"{spec['id']} : animation absente {anim}")
+            continue
+        durations[anim] = round(exporter.emit_clip(anim, skeleton, joint_nodes, animation), 4)
+    root = exporter.gltf.add_node({"name": spec["model"], "children": roots + [static_node, exporter.gltf.add_node(mesh_node)],
+                                   **({"scale": [vot.scale] * 3} if abs(vot.scale - 1) > 1e-6 else {})})
+    glb = exporter.finish([root])
+    height = float(loaded.vertices["position"][:, 2].max() * vot.scale)
+    meta = {"id": spec["id"], "race": spec["race"], "sex": spec["sex"], "model": spec["model"],
+            "glb": f"characters/{spec['id']}.glb", "scale": vot.scale, "height": round(height, 3),
+            "animations": sorted(durations), "durations": durations, "stats": exporter.stats}
+    return glb, meta, exporter.notes
+
+
+def _is_variant(name: str, shown: dict[str, str | None]) -> bool:
+    """Géoset d'une famille à variantes (`hair_3`, `face_7`…) dont une autre variante est
+    choisie par la variation par défaut : caché, comme le fait le client."""
+    m = re.match(r"^([a-z]+)_(\d+|special|[0-9]+A)$", name)
+    if not m:
+        return False
+    family = m.group(1)
+    return any(other != name and other.startswith(family + "_") for other in shown)
+
+
+# --- effets ------------------------------------------------------------------------------------
+
+@dataclass
+class FxBuild:
+    exporter: Exporter
+    db: PackDB
+    cat: PakCatalog
+    bins: BinSource
+    names: dict[int, str] = field(default_factory=dict)       # décalage VOT → nom unique
+    meta: dict[str, dict] = field(default_factory=dict)
+    roots: list[int] = field(default_factory=list)
+    sounds: set[str] = field(default_factory=set)
+
+    def name_of(self, off: int) -> str:
+        if off not in self.names:
+            base = read_visobject(self.db, self.cat, off).name
+            name, k = base, 2
+            while name in self.names.values():
+                name, k = f"{base}#{k}", k + 1
+            self.names[off] = name
+        return self.names[off]
+
+    def emit(self, off: int, depth: int = 0) -> int | None:
+        """Nœud d'un gabarit : géométrie skinnée animée, composants accrochés."""
+        if depth > 8:
+            return None
+        vot = read_visobject(self.db, self.cat, off)
+        name = self.name_of(off)
+        ex = self.exporter
+        children: list[int] = []
+        joint_nodes: list[int] = []
+        joint_names: list[str] = []
+        locators: dict[str, tuple] = {}
+        duration = 0.0
+        loop = False
+        info: dict = {"fadeIn": vot.fade_in_ms / 1000.0, "fadeOut": vot.fade_out_ms / 1000.0,
+                      "scale": vot.scale}
+        if vot.sound:
+            info["sound"] = vot.sound
+            self.sounds.add(vot.sound)
+        if vot.particle is not None:
+            info["particles"] = self.cat.name(self.db.binary_ref(vot.particle))
+        loaded = load_geometry(self.db, self.cat, self.bins, vot.geometry) if vot.geometry is not None else None
+        if loaded is not None:
+            geo = loaded.geo
+            if geo.orientation != "COMMON":
+                info["orientation"] = geo.orientation
+            for loc in geo.doc.locators:
+                locators[loc.name] = loc
+            elements = [e for e in geo.doc.elements if e.material.visible]
+            mesh, skinned = ex.emit_mesh(name, geo, loaded.vertices, loaded.indices, elements, loaded.skeleton)
+            if mesh is not None:
+                ex.stats["objects"] += 1
+                mesh_node = {"name": f"{name}_mesh", "mesh": mesh}
+                skeleton = loaded.skeleton
+                if skeleton is not None and skinned:
+                    joint_nodes = ex.emit_skeleton(skeleton, name)
+                    joint_names = list(skeleton.names)
+                    static_node = ex.gltf.add_node({"name": f"{name}/Static"})
+                    mesh_node["skin"] = ex.skin(name, skeleton, joint_nodes, static_node)
+                    children.extend(joint_nodes[i] for i in range(len(skeleton))
+                                    if not (0 <= skeleton.parents[i] < len(skeleton)))
+                    children.append(static_node)
+                    anim_name = self.cat.name(self.db.binary_ref(vot.animation)) if vot.animation is not None else None
+                    span = float(np.max(np.abs(loaded.vertices["position"])) * 8.0) if len(loaded.vertices["position"]) else 0.0
+                    animation = load_animation(self.bins, anim_name, skeleton, span)
+                    if animation is not None:
+                        speed = self.db.f32(vot.animation + 0x100) or 1.0
+                        loop = bool(self.db.u8(vot.animation + 0x108))
+                        duration = ex.emit_clip(name, skeleton, joint_nodes, animation, speed)
+                children.append(ex.gltf.add_node(mesh_node))
+        info["duration"] = round(duration, 4)
+        info["loop"] = loop
+        attached = []
+        for comp in vot.components:
+            if comp.visobject is None:
                 continue
-            texture = spec.get("texture")
-            if texture is None and source.get(f"{folder}/{name}.(Texture).bin") is not None:
-                texture = f"/{folder}/{name}"
-            geosets = [Geoset(name, f"{texture}.(Texture).xdb" if texture else None, 0, len(indices),
-                              "BLEND_EFFECT_ALPHA", True)]
-            skeleton_id = 2 if 2 in chunks else None
-        count = len(vb) // layout.stride
-        vertices = decode_vertex_buffer(vb, layout, count)
-        skeleton = None
-        if skeleton_id is not None and skeleton_id in chunks:
-            try:
-                skeleton = parse_skeleton(chunks[skeleton_id])
-            except (struct.error, ValueError):
-                exporter.notes.append(f"{fatality['id']} : squelette illisible : {name}")
-        animations: dict[str, SkeletalAnimation] = {}
-        if skeleton is not None:
-            stems = [name] + list(spec.get("animations", []))
-            span = float(np.max(np.abs(vertices["position"])) * 8.0) if len(vertices["position"]) else 0.0
-            for stem in stems:
-                animation = exporter.load_animation(f"{folder}/{stem}.(SkeletalAnimation).bin", skeleton, span)
-                if animation is not None:
-                    animations[stem] = animation
-        root = exporter.emit_skinned_object(name, vertices, indices, geosets, skeleton, animations,
-                                            float(spec.get("scale", 1.0)), vertex_colors=layout.color is not None)
-        if root is None:
-            exporter.notes.append(f"{fatality['id']} : rien à afficher : {name}")
-            continue
-        roots.append(root)
-        objects.append({"name": name, "approx": approx, "animations": list(animations),
-                        "duration": max([a.frames / float(a.fps) for a in animations.values()] + [0.0])})
-    if not roots:
-        return None, {"objects": []}, exporter.notes
-    glb = exporter.finish(roots)
-    return glb, {"objects": objects, "stats": exporter.stats}, exporter.notes
-
-
-# --- index et CLI ------------------------------------------------------------------------------
-
-def check_meta(height: float) -> dict:
-    """Caméra de la planche de contrôle : de face, à hauteur de poitrine."""
-    h = max(height, 1.0)
-    return {"up": [0, 0, 1], "background": "#1a1d26",
-            "camera": {"position": [0.0, -h * 2.6, h * 0.55], "target": [0.0, 0.0, h * 0.45], "fov": 40}}
-
-
-def _node_local(node: dict) -> np.ndarray:
-    m = np.eye(4)
-    x, y, z, w = node.get("rotation", [0, 0, 0, 1])
-    m[:3, :3] = np.array([
-        [1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)],
-        [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)],
-        [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)],
-    ]) * np.array(node.get("scale", [1, 1, 1]))
-    m[:3, 3] = node.get("translation", [0, 0, 0])
-    return m
-
-
-def bake_pose(glb: bytes, time: float, clip: str | None = None) -> bytes:
-    """Recopie le `.glb` avec les sommets skinnés à l'instant `time` du clip demandé (le
-    premier sinon) et sans skin : le rasteriseur de contrôle, qui ignore les skins, montre
-    alors la pose. Réservé aux planches de contrôle."""
-    length, = struct.unpack_from("<I", glb, 12)
-    doc = json.loads(glb[20:20 + length])
-    blob = bytearray(glb[28 + length:])
-    views = doc["bufferViews"]
-
-    def read(index: int) -> np.ndarray:
-        acc = doc["accessors"][index]
-        view = views[acc["bufferView"]]
-        start = view.get("byteOffset", 0) + acc.get("byteOffset", 0)
-        n = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4, "MAT4": 16}[acc["type"]]
-        dtype = {5126: "<f4", 5121: "u1", 5123: "<u2", 5125: "<u4"}[acc["componentType"]]
-        return np.frombuffer(bytes(blob), dtype, count=acc["count"] * n, offset=start).reshape(acc["count"], n)
-
-    posed: dict[int, dict] = {}
-    animations = doc.get("animations", [])
-    chosen = [a for a in animations if clip is None or a["name"] == clip][:1] if animations else []
-    for animation in chosen:
-        for channel in animation["channels"]:
-            sampler = animation["samplers"][channel["sampler"]]
-            times = read(sampler["input"]).reshape(-1)
-            values = read(sampler["output"])
-            t = time % max(float(times[-1]), 1e-6) if times[-1] > 0 else 0.0
-            i = min(int(np.searchsorted(times, t)), len(values) - 1)
-            posed.setdefault(channel["target"]["node"], {})[channel["target"]["path"]] = [float(v) for v in values[i]]
-    world: dict[int, np.ndarray] = {}
-
-    def walk(index: int, parent: np.ndarray) -> None:
-        node = {**doc["nodes"][index], **posed.get(index, {})}
-        world[index] = parent @ _node_local(node)
-        for child in node.get("children", []):
-            walk(child, world[index])
-
-    for root in doc["scenes"][0]["nodes"]:
-        walk(root, np.eye(4))
-    for index, node in enumerate(doc["nodes"]):
-        if "skin" not in node or "mesh" not in node:
-            continue
-        skin = doc["skins"][node["skin"]]
-        ibm = read(skin["inverseBindMatrices"]).reshape(-1, 4, 4).transpose(0, 2, 1)
-        palette = np.array([world[j] for j in skin["joints"]]) @ ibm
-        back = np.linalg.inv(world[index])
-        done: set[int] = set()
-        for prim in doc["meshes"][node["mesh"]]["primitives"]:
-            attrs = prim["attributes"]
-            if attrs["POSITION"] in done or "JOINTS_0" not in attrs:
+            child = self.emit(comp.visobject, depth + 1)
+            if child is None:
                 continue
-            done.add(attrs["POSITION"])
-            pos = read(attrs["POSITION"]).astype(np.float64)
-            joints = read(attrs["JOINTS_0"]).astype(np.int64)
-            weights = read(attrs["WEIGHTS_0"]).astype(np.float64)
-            if doc["accessors"][attrs["WEIGHTS_0"]]["componentType"] == 5121:
-                weights /= 255.0
-            homogeneous = np.concatenate([pos, np.ones((len(pos), 1))], axis=1)
-            out = np.zeros((len(pos), 4))
-            for k in range(4):
-                out += weights[:, k, None] * np.einsum("nij,nj->ni", palette[joints[:, k]], homogeneous)
-            local = (back @ out.T).T[:, :3].astype("<f4")
-            acc = doc["accessors"][attrs["POSITION"]]
-            view = views[acc["bufferView"]]
-            start = view.get("byteOffset", 0) + acc.get("byteOffset", 0)
-            blob[start:start + local.nbytes] = local.tobytes()
-        del node["skin"]
-    doc.pop("skins", None)
-    doc.pop("animations", None)
-    payload = json.dumps(doc, separators=(",", ":")).encode("utf-8")
-    payload += b" " * ((4 - len(payload) % 4) % 4)
-    out = bytearray(struct.pack("<III", 0x46546C67, 2, 12 + 8 + len(payload) + 8 + len(blob)))
-    out += struct.pack("<II", len(payload), 0x4E4F534A) + payload
-    out += struct.pack("<II", len(blob), 0x004E4942) + bytes(blob)
-    return bytes(out)
+            node = ex.gltf.json["nodes"][child]
+            t = np.array(comp.offset, float)
+            r = comp.rotation
+            s = comp.scale
+            if comp.locator in joint_names:
+                ex.gltf.json["nodes"][joint_nodes[joint_names.index(comp.locator)]].setdefault("children", []).append(child)
+            elif comp.locator in locators:
+                loc = locators[comp.locator]
+                t = np.array(loc.position) + _rotate(loc.rotation, t) * loc.scale
+                r = _qmul(loc.rotation, r)
+                s = s * loc.scale
+                children.append(child)
+            else:
+                if comp.locator:
+                    self.exporter.notes.append(f"{name} : locator {comp.locator} introuvable (composant à l'origine)")
+                children.append(child)
+            if np.any(np.abs(t) > 1e-9):
+                node["translation"] = [float(v) for v in t]
+            if abs(r[3] - 1) > 1e-9 or any(abs(v) > 1e-9 for v in r[:3]):
+                node["rotation"] = [float(v) for v in r]
+            if abs(s - 1) > 1e-9:
+                node["scale"] = [float(s)] * 3
+            attached.append({"vot": self.name_of(comp.visobject), "locator": comp.locator})
+        if attached:
+            info["components"] = attached
+        self.meta[name] = info
+        return ex.gltf.add_node({"name": f"vot:{name}", "children": children, "extras": {"vot": name}})
 
 
-def write_check(glb: bytes, meta: dict, path: Path, times: tuple[float, ...] = (0.0, 2.0, 5.0),
-                clip: str | None = None) -> None:
-    frames = [render_glb(bake_pose(glb, t, clip), meta, width=480, height=540) for t in times]
-    sheet = Image.new("RGB", (frames[0].width * len(frames), frames[0].height))
-    for i, frame in enumerate(frames):
-        sheet.paste(frame, (i * frame.width, 0))
-    sheet.save(path)
+def _qmul(a, b):
+    ax, ay, az, aw = a
+    bx, by, bz, bw = b
+    return (aw * bx + ax * bw + ay * bz - az * by, aw * by - ax * bz + ay * bw + az * bx,
+            aw * bz + ax * by - ay * bx + az * bw, aw * bw - ax * bx - ay * by - az * bz)
 
 
-def run(manifest: dict, out_dir: Path, only: list[str] | None = None, only_fx: list[str] | None = None,
-        check_dir: Path | None = None, report: list[str] | None = None,
-        client_root: Path | None = None, animations: str | None = None) -> dict:
+def _rotate(q, v):
+    x, y, z, w = q
+    vx, vy, vz = v
+    tx, ty, tz = 2 * (y * vz - z * vy), 2 * (z * vx - x * vz), 2 * (x * vy - y * vx)
+    return np.array((vx + w * tx + (y * tz - z * ty), vy + w * ty + (z * tx - x * tz), vz + w * tz + (x * ty - y * tx)))
+
+
+# --- sons --------------------------------------------------------------------------------------
+
+SOUND_BANKS = ("SFX/Spells/Fatality.bsb", "SFX/Spells/Fatality2.bsb")
+
+
+def export_sounds(names: set[str], bins: BinSource, out_dir: Path, vgmstream: Path, report: list[str]) -> dict[str, str]:
+    """Événement FMOD → onde. Les événements des fatalités (`spells/FX/Spells/Fatality/X`)
+    n'ont qu'une onde, `fx/spells/fatality/X.wav` dans `Sounds.bev`, rangée sous le nom `X`
+    dans les banques `Fatality*.bsb` : on apparie par ce nom."""
+    from tools.extract_audio import encode_outputs, fsb_payload_from_bytes, run_vgmstream
+    import subprocess
+    wanted = {n.split("/")[-1]: n for n in names}
+    found: dict[str, str] = {}
+    target = out_dir / "sfx"
+    target.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        for bank in SOUND_BANKS:
+            data = bins.get(bank)
+            payload = fsb_payload_from_bytes(data, bank) if data else None
+            if payload is None:
+                report.append(f"AVERTISSEMENT : banque absente {bank}")
+                continue
+            fsb = Path(tmp) / (Path(bank).stem + ".fsb")
+            fsb.write_bytes(payload)
+            listing = subprocess.run([str(vgmstream), "-m", str(fsb)], capture_output=True, text=True).stdout
+            m = re.search(r"stream count: (\d+)", listing)
+            count = int(m.group(1)) if m else 1
+            for sub in range(1, count + 1):
+                info = subprocess.run([str(vgmstream), "-m", "-s", str(sub), str(fsb)], capture_output=True, text=True).stdout
+                sm = re.search(r"stream name: (.*)", info)
+                stream = sm.group(1).strip() if sm else ""
+                if stream not in wanted or stream in found:
+                    continue
+                base = target / stream
+                if not (base.with_suffix(".ogg").exists() and base.with_suffix(".mp3").exists()):
+                    wav = Path(tmp) / f"{stream}.wav"
+                    run_vgmstream(vgmstream, fsb, sub, wav)
+                    encode_outputs(wav, base, "sfx")
+                found[stream] = f"sfx/{stream}"
+    for short, full in wanted.items():
+        if short not in found:
+            report.append(f"AVERTISSEMENT : onde introuvable pour l'événement {full}")
+    return {wanted[k]: v for k, v in found.items()}
+
+
+# --- index -------------------------------------------------------------------------------------
+
+def collect_vots(node: dict | None, out: set[int]) -> None:
+    if not node:
+        return
+    if node.get("visObject") is not None:
+        out.add(node["visObject"])
+    for effect in node.get("effects", []):
+        if effect.get("visObject") is not None:
+            out.add(effect["visObject"])
+    for child in node.get("elements", []):
+        collect_vots(child, out)
+    collect_vots(node.get("playWhile"), out)
+
+
+def collect_animations(node: dict | None, names: dict[int, str], out: set[str]) -> None:
+    if not node:
+        return
+    if node.get("type") == "CreatureAnimationAction":
+        for idx in node.get("animations", []):
+            name = names.get(idx)
+            if name:
+                out.add(name[:1].upper() + name[1:])
+    for child in node.get("elements", []):
+        collect_animations(child, names, out)
+    collect_animations(node.get("playWhile"), names, out)
+
+
+def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = None,
+        only_fx: list[str] | None = None, characters: bool = True, sounds: bool = True,
+        report: list[str] | None = None) -> dict:
     report = report if report is not None else []
     server_root = Path(manifest["server_root"])
-    client = Path(client_root or os.environ.get("ALLODS_RU_CLIENT_DIR") or manifest["client_root"])
-    source = BinSource([], [str(client / pattern) for pattern in manifest["pak_globs"]])
-    if not (client / "data" / "Packs").is_dir():
-        report.append(f"AVERTISSEMENT : client absent : {client}")
-    if not server_root.is_dir():
-        report.append(f"AVERTISSEMENT : arbre serveur absent : {server_root}")
-    previous = {}
-    index_path = out_dir / "fatalities.json"
-    if index_path.is_file():
-        try:
-            previous = json.loads(index_path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            previous = {}
-    prev_chars = {c["id"]: c for c in previous.get("characters", [])}
-    prev_fx = {f["id"]: f for f in previous.get("fatalities", [])}
-    pattern = re.compile(animations) if animations else None
+    db = open_pack(client)
+    cat = open_catalog(db, client)
+    packs = client / "data" / "Packs"
+    bins = BinSource([], [str(packs / p) for p in sorted(cat.names)])
+    textures = TexturePool(db, cat, bins, out_dir)
+    schema = {int(k): v for k, v in manifest.get("animation_enum", {}).items()}
+    anim_names = animation_names(db, schema or None)
+    fatalities = read_fatalities(db)
+    by_type = {f["type"]: f for f in manifest["fatalities"]}
 
-    characters: list[dict] = []
+    # Animations demandées par les scripts (noms de fichiers : initiale en majuscule).
+    wanted: set[str] = set()
+    for fd in fatalities:
+        collect_animations(fd.offender, anim_names, wanted)
+
+    index_path = out_dir / "fatalities.json"
+    previous = json.loads(index_path.read_text(encoding="utf-8")) if index_path.is_file() else {}
+    prev_chars = {c["id"]: c for c in previous.get("characters", [])}
+
+    chars: list[dict] = []
     for spec in manifest["characters"]:
-        if (only and spec["id"] not in only) or only_fx:
+        if not characters or (only and spec["id"] not in only):
             if spec["id"] in prev_chars:
-                characters.append(prev_chars[spec["id"]])
+                chars.append(prev_chars[spec["id"]])
             continue
         try:
-            glb, meta, notes = build_character(spec, server_root, source, int(manifest.get("max_texture", 1024)), pattern)
-        except (FileNotFoundError, ValueError, struct.error) as error:
+            glb, meta, notes = build_character(spec, db, cat, bins, textures, server_root, wanted)
+        except (ValueError, struct.error) as error:
             report.append(f"AVERTISSEMENT : {spec['id']} — {error}")
             if spec["id"] in prev_chars:
-                characters.append(prev_chars[spec["id"]])
+                chars.append(prev_chars[spec["id"]])
             continue
-        target = out_dir / "characters"
-        target.mkdir(parents=True, exist_ok=True)
-        (target / f"{spec['id']}.glb").write_bytes(glb)
-        for note in notes:
-            report.append(f"AVERTISSEMENT : {spec['id']} — {note}")
-        stats = meta["stats"]
-        print(f"{spec['id']:>18}  characters/{spec['id']}.glb  {len(glb) / 1024:.0f} Kio  "
-              f"{stats['triangles']} triangles, {stats['textures']} textures, {stats['animations']} animations")
-        if check_dir is not None:
-            check_dir.mkdir(parents=True, exist_ok=True)
-            clip = next((c for c in meta["animations"] if c.endswith("Warrior")), None)
-            write_check(glb, check_meta(meta["height"]), check_dir / f"fatality-{spec['id']}.png", clip=clip)
-        characters.append({"id": spec["id"], "race": spec["race"], "sex": spec["sex"],
-                           "glb": f"characters/{spec['id']}.glb", "scale": meta["scale"], "height": round(meta["height"], 3),
-                           "animations": meta["animations"], "durations": meta["durations"]})
+        (out_dir / "characters").mkdir(parents=True, exist_ok=True)
+        (out_dir / "characters" / f"{spec['id']}.glb").write_bytes(glb)
+        report.extend(f"AVERTISSEMENT : {n}" for n in notes)
+        print(f"{spec['id']:>18}  {len(glb) / 1024:.0f} Kio  {meta['stats']['triangles']} triangles, "
+              f"{len(meta['animations'])} animations")
+        meta.pop("stats", None)
+        chars.append(meta)
+    templates = {c["id"]: c["model"] for c in chars}
 
-    fatalities: list[dict] = []
-    for fatality in manifest["fatalities"]:
-        entry = {"id": fatality["id"], "kind": fatality["kind"], "label": fatality["label"],
-                 "victim": fatality["victim"]}
-        if "note" in fatality:
-            entry["note"] = fatality["note"]
-        if (only_fx and fatality["id"] not in only_fx) or (only and not only_fx):
-            if fatality["id"] in prev_fx:
-                entry.update({k: v for k, v in prev_fx[fatality["id"]].items() if k in ("fx", "fxObjects", "approx")})
-            fatalities.append(entry)
+    prev_fx = {f["id"]: f for f in previous.get("fatalities", [])}
+    entries: list[dict] = []
+    all_sounds: set[str] = set()
+    for fd in fatalities:
+        spec = by_type.get(fd.type)
+        if spec is None:
+            report.append(f"AVERTISSEMENT : fatalité de type {fd.type} absente du manifeste")
             continue
-        glb, meta, notes = build_fx(fatality, server_root, source, int(manifest.get("max_texture", 1024)))
-        for note in notes:
-            report.append(f"AVERTISSEMENT : {note}")
-        if glb is not None:
-            target = out_dir / "fx"
-            target.mkdir(parents=True, exist_ok=True)
-            (target / f"{fatality['id']}.glb").write_bytes(glb)
-            entry["fx"] = f"fx/{fatality['id']}.glb"
-            entry["fxObjects"] = meta["objects"]
-            entry["approx"] = any(o["approx"] for o in meta["objects"])
-            stats = meta["stats"]
-            print(f"{fatality['id']:>18}  fx/{fatality['id']}.glb  {len(glb) / 1024:.0f} Kio  "
-                  f"{stats['triangles']} triangles, {stats['textures']} textures, {stats['animations']} animations"
-                  f"{'  (approx.)' if entry['approx'] else ''}")
-            if check_dir is not None:
-                check_dir.mkdir(parents=True, exist_ok=True)
-                write_check(glb, check_meta(2.0), check_dir / f"fatality-fx-{fatality['id']}.png", (0.0, 1.5, 4.0))
-        fatalities.append(entry)
+        if only_fx and spec["id"] not in only_fx:
+            if spec["id"] in prev_fx:
+                entries.append(prev_fx[spec["id"]])
+            continue
+        build = FxBuild(Exporter(textures, FX_TEXTURE_MAX), db, cat, bins)
+        roots: set[int] = set()
+        collect_vots(fd.offender, roots)
+        for off in sorted(roots):
+            node = build.emit(off)
+            if node is not None:
+                build.roots.append(node)
+        entry = {"id": spec["id"], "type": fd.type, "kind": spec["kind"], "label": spec["label"],
+                 "fadeStart": round(fd.fade_start, 4), "fadeDuration": round(fd.fade_duration, 4),
+                 "sparkDelay": round(fd.spark_delay, 4)}
+        if "note" in spec:
+            entry["note"] = spec["note"]
+        if build.roots:
+            glb = build.exporter.finish(build.roots)
+            (out_dir / "fx").mkdir(parents=True, exist_ok=True)
+            (out_dir / "fx" / f"{spec['id']}.glb").write_bytes(glb)
+            entry["fx"] = f"fx/{spec['id']}.glb"
+            print(f"{spec['id']:>18}  fx {len(glb) / 1024:.0f} Kio  {len(build.meta)} gabarits, "
+                  f"{build.exporter.stats['triangles']} triangles")
+        report.extend(f"AVERTISSEMENT : {spec['id']} — {n}" for n in build.exporter.notes)
+        entry["objects"] = build.meta
+        all_sounds |= build.sounds
+        timelines: dict[str, dict] = {}
+        for char in chars:
+            tl = flatten(fd.offender, templates.get(char["id"], ""), _lower_keys(char.get("durations", {})),
+                         {k: v for k, v in anim_names.items()})
+            timelines[char["id"]] = timeline_json(tl, build, anim_names)
+        entry["timelines"] = timelines
+        entries.append(entry)
 
-    index = {"races": manifest["races"], "characters": characters, "fatalities": fatalities}
+    sound_files: dict[str, str] = {}
+    if sounds and all_sounds:
+        from tools.extract_audio import DEFAULT_VGMSTREAM
+        vgm = Path(os.environ.get("VGMSTREAM", DEFAULT_VGMSTREAM))
+        if vgm.exists():
+            sound_files = export_sounds(all_sounds, bins, out_dir, vgm, report)
+        else:
+            report.append(f"AVERTISSEMENT : vgmstream absent ({vgm}), sons non exportés")
+    for entry in entries:
+        for info in entry.get("objects", {}).values():
+            if info.get("sound") in sound_files:
+                info["sfx"] = sound_files[info["sound"]]
+
+    index = {"races": manifest["races"], "characters": chars, "fatalities": entries}
     out_dir.mkdir(parents=True, exist_ok=True)
-    index_path.write_text(json.dumps(index, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    index_path.write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+    print(f"textures : {textures.bytes_written / 1024:.0f} Kio écrits")
     return index
 
 
+def _lower_keys(durations: dict[str, float]) -> dict[str, float]:
+    """Durées indexées par nom d'énumération (`deathFatalityBard`) à partir des noms de clips."""
+    return {k[:1].lower() + k[1:]: v for k, v in durations.items()}
+
+
+def timeline_json(tl, build: FxBuild, anim_names: dict[int, str]) -> dict:
+    def clip(name: str | None) -> str | None:
+        return None if not name else name[:1].upper() + name[1:]
+
+    out = {
+        "end": round(tl.end, 4),
+        "victim": [{**step, "anim": clip(step["anim"]),
+                    "alternatives": [clip(a) for a in step.get("alternatives", [])]} for step in tl.victim],
+        "scale": tl.scale,
+        "alpha": tl.alpha,
+        "spawns": [{**s, "vot": build.names.get(s["vot"])} for s in tl.spawns if s["vot"] in build.names],
+        "attached": [{**a, "vot": build.names.get(a["vot"])} for a in tl.attached if a["vot"] in build.names],
+    }
+    if tl.shakes:
+        out["shakes"] = tl.shakes
+    if tl.tints:
+        out["tints"] = tl.tints
+    if tl.ignored:
+        out["ignored"] = sorted(set(tl.ignored))
+    for key in ("victim", "spawns", "attached"):
+        for item in out[key]:
+            for k in list(item):
+                if item[k] is None or item[k] == []:
+                    del item[k]
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Export glTF des fatalités (personnages + effets)")
+    parser = argparse.ArgumentParser(description="Export des fatalités (personnages, effets, chronologies, sons)")
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
-    parser.add_argument("--client", type=Path, default=None, help="racine du client RU (sinon ALLODS_RU_CLIENT_DIR ou le manifeste)")
-    parser.add_argument("--only", action="append", help="limiter à un personnage (répétable)")
-    parser.add_argument("--only-fx", action="append", help="limiter aux effets d'une fatalité (répétable)")
-    parser.add_argument("--animations", default=None, help="regex : n'exporter que les animations qui la vérifient")
-    parser.add_argument("--check-dir", type=Path, default=None, help="planches de contrôle (rendu logiciel)")
+    parser.add_argument("--client", type=Path, default=None)
+    parser.add_argument("--only", action="append")
+    parser.add_argument("--only-fx", action="append")
+    parser.add_argument("--no-characters", action="store_true")
+    parser.add_argument("--no-sounds", action="store_true")
     args = parser.parse_args(argv)
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    client = Path(args.client or os.environ.get("ALLODS_RU_CLIENT_DIR") or manifest["client_root"])
     report: list[str] = []
-    run(manifest, args.out, args.only, args.only_fx, args.check_dir, report, args.client, args.animations)
+    run(manifest, args.out, client, args.only, args.only_fx, not args.no_characters, not args.no_sounds, report)
     for line in report:
         print(line, file=sys.stderr)
     return 0

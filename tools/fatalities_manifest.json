@@ -1,95 +1,397 @@
 {
-  "_note": "Écran « Fatality Showcases ». `client_root` = client Allods Online RU (17.x) monté sous WSL, d'où viennent tous les `.bin` (géométries, textures, animations) ; `server_root` = arbre serveur 7.0 décompressé, qui fournit les `.xdb` (déclarations de sommets, découpage en géosets, matériaux) : les géométries de personnage et les décors des fatalités de classe y correspondent encore, les effets ajoutés après la 7.0 (fatalités de la boutique) n'ont pas de xdb et sont décodés par heuristique (`approx: true` dans l'index). `victim` = animation jouée par la cible ; `fx` = objets 3D de l'effet (nom de géométrie sous /Spells/FX/…), `texture` force la texture d'un objet sans xdb. Les libellés sont bilingues.",
+  "_note": "Écran « Fatalités ». Source : le dernier client (RU 17.x, `client_root`) — géométries, textures, animations, sons ET métadonnées (compilées dans Bin/pack.bin, lues par tools/allods_packdb.py). `server_root` (arbre serveur 7.0) ne sert plus qu'à la sélection des géosets de la tenue par défaut des personnages (VisualItem pas encore décodés dans pack.bin) et aux comparaisons. `type` = valeur de FatalityType dans le SlonRoot du client (1-10 classes, 11-26 boutique) ; l'association type → effets, animations, délais vient des données. Les libellés sont bilingues ; ceux de la boutique sont des noms d'usage (le client RU ne donne que des noms internes).",
   "client_root": "/mnt/h/MyGames/AllodsRU",
   "server_root": "/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data",
-  "pak_globs": [
-    "data/Packs/Characters.*.pak",
-    "data/Packs/Spells_FX_Spells.*.pak",
-    "data/Packs/Spells_FX_Textures.*.pak",
-    "data/Packs/Spells_FX_Mobs.*.pak",
-    "data/Packs/Spells_FX_Armors.*.pak",
-    "data/Packs/Items.*.pak",
-    "data/Packs/Creatures.*.pak"
-  ],
-  "max_texture": 1024,
   "characters": [
-    { "id": "kania-male", "dir": "Kania_male", "model": "KaniaMale", "race": "kania", "sex": "male" },
-    { "id": "kania-female", "dir": "Kania_female", "model": "KaniaFemale", "race": "kania", "sex": "female" },
-    { "id": "elf-male", "dir": "Elf_male", "model": "ElfMale", "race": "elf", "sex": "male" },
-    { "id": "elf-female", "dir": "Elf_female", "model": "ElfFemale", "race": "elf", "sex": "female" },
-    { "id": "gibberling-male", "dir": "Gibberlings", "model": "GibberlingMale", "race": "gibberling", "sex": "male" },
-    { "id": "gibberling-female", "dir": "Gibberlings", "model": "GibberlingFemale", "race": "gibberling", "sex": "female" },
-    { "id": "aed-male", "dir": "Aed_male", "model": "AedMale", "race": "aed", "sex": "male" },
-    { "id": "aed-female", "dir": "Aed_female", "model": "AedFemale", "race": "aed", "sex": "female" },
-    { "id": "hadagan-male", "dir": "Hadagan_male", "model": "HadaganMale", "race": "hadagan", "sex": "male" },
-    { "id": "hadagan-female", "dir": "Hadagan_female", "model": "HadaganFemale", "race": "hadagan", "sex": "female" },
-    { "id": "orc-male", "dir": "Orc_male", "model": "OrcMale", "race": "orc", "sex": "male" },
-    { "id": "orc-female", "dir": "Orc_female", "model": "OrcFemale", "race": "orc", "sex": "female" },
-    { "id": "undead-male", "dir": "Undead_male", "model": "UndeadMale", "race": "undead", "sex": "male" },
-    { "id": "undead-female", "dir": "Undead_female", "model": "UndeadFemale", "race": "undead", "sex": "female" },
-    { "id": "praiden-male", "dir": "Praiden_male", "model": "PraidenMale", "race": "praiden", "sex": "male" },
-    { "id": "praiden-female", "dir": "Praiden_female", "model": "PraidenFemale", "race": "praiden", "sex": "female" }
+    {
+      "id": "kania-male",
+      "dir": "Kania_male",
+      "model": "KaniaMale",
+      "race": "kania",
+      "sex": "male"
+    },
+    {
+      "id": "kania-female",
+      "dir": "Kania_female",
+      "model": "KaniaFemale",
+      "race": "kania",
+      "sex": "female"
+    },
+    {
+      "id": "elf-male",
+      "dir": "Elf_male",
+      "model": "ElfMale",
+      "race": "elf",
+      "sex": "male"
+    },
+    {
+      "id": "elf-female",
+      "dir": "Elf_female",
+      "model": "ElfFemale",
+      "race": "elf",
+      "sex": "female"
+    },
+    {
+      "id": "gibberling-male",
+      "dir": "Gibberlings",
+      "model": "GibberlingMale",
+      "race": "gibberling",
+      "sex": "male"
+    },
+    {
+      "id": "gibberling-female",
+      "dir": "Gibberlings",
+      "model": "GibberlingFemale",
+      "race": "gibberling",
+      "sex": "female"
+    },
+    {
+      "id": "aed-male",
+      "dir": "Aed_male",
+      "model": "AedMale",
+      "race": "aed",
+      "sex": "male"
+    },
+    {
+      "id": "aed-female",
+      "dir": "Aed_female",
+      "model": "AedFemale",
+      "race": "aed",
+      "sex": "female"
+    },
+    {
+      "id": "hadagan-male",
+      "dir": "Hadagan_male",
+      "model": "HadaganMale",
+      "race": "hadagan",
+      "sex": "male"
+    },
+    {
+      "id": "hadagan-female",
+      "dir": "Hadagan_female",
+      "model": "HadaganFemale",
+      "race": "hadagan",
+      "sex": "female"
+    },
+    {
+      "id": "orc-male",
+      "dir": "Orc_male",
+      "model": "OrcMale",
+      "race": "orc",
+      "sex": "male"
+    },
+    {
+      "id": "orc-female",
+      "dir": "Orc_female",
+      "model": "OrcFemale",
+      "race": "orc",
+      "sex": "female"
+    },
+    {
+      "id": "undead-male",
+      "dir": "Undead_male",
+      "model": "UndeadMale",
+      "race": "undead",
+      "sex": "male"
+    },
+    {
+      "id": "undead-female",
+      "dir": "Undead_female",
+      "model": "UndeadFemale",
+      "race": "undead",
+      "sex": "female"
+    },
+    {
+      "id": "praiden-male",
+      "dir": "Praiden_male",
+      "model": "PraidenMale",
+      "race": "praiden",
+      "sex": "male"
+    },
+    {
+      "id": "praiden-female",
+      "dir": "Praiden_female",
+      "model": "PraidenFemale",
+      "race": "praiden",
+      "sex": "female"
+    }
   ],
   "races": {
-    "kania": { "fr": "Kanien", "en": "Kanian", "faction": "league" },
-    "elf": { "fr": "Elfe", "en": "Elf", "faction": "league" },
-    "gibberling": { "fr": "Gibelin", "en": "Gibberling", "faction": "league" },
-    "aed": { "fr": "Aède", "en": "Aed", "faction": "league" },
-    "hadagan": { "fr": "Xadaganien", "en": "Xadaganian", "faction": "empire" },
-    "orc": { "fr": "Orc", "en": "Orc", "faction": "empire" },
-    "undead": { "fr": "Ressuscité", "en": "Arisen", "faction": "empire" },
-    "praiden": { "fr": "Priden", "en": "Priden", "faction": "empire" }
+    "kania": {
+      "fr": "Kanien",
+      "en": "Kanian",
+      "faction": "league"
+    },
+    "elf": {
+      "fr": "Elfe",
+      "en": "Elf",
+      "faction": "league"
+    },
+    "gibberling": {
+      "fr": "Gibelin",
+      "en": "Gibberling",
+      "faction": "league"
+    },
+    "aed": {
+      "fr": "Aède",
+      "en": "Aed",
+      "faction": "league"
+    },
+    "hadagan": {
+      "fr": "Xadaganien",
+      "en": "Xadaganian",
+      "faction": "empire"
+    },
+    "orc": {
+      "fr": "Orc",
+      "en": "Orc",
+      "faction": "empire"
+    },
+    "undead": {
+      "fr": "Ressuscité",
+      "en": "Arisen",
+      "faction": "empire"
+    },
+    "praiden": {
+      "fr": "Priden",
+      "en": "Priden",
+      "faction": "empire"
+    }
   },
   "fatalities": [
-    { "id": "warrior", "kind": "class", "label": { "fr": "Guerrier", "en": "Warrior" }, "victim": "DeathFatalityWarrior",
-      "fx": ["FatalityWarrior"] },
-    { "id": "paladin", "kind": "class", "label": { "fr": "Paladin", "en": "Paladin" }, "victim": "DeathFatalityPaladin",
-      "fx": ["FatalityPaladin"] },
-    { "id": "stalker", "kind": "class", "label": { "fr": "Éclaireur", "en": "Scout" }, "victim": "DeathFatalityStalker",
-      "fx": ["FatalityStalkerOrc", "FatalityStalker_Target"] },
-    { "id": "priest", "kind": "class", "label": { "fr": "Guérisseur", "en": "Healer" }, "victim": "DeathFatalityPriest",
-      "fx": ["FatalityPriest"] },
-    { "id": "mage", "kind": "class", "label": { "fr": "Mage", "en": "Mage" }, "victim": "DeathFatalityMage",
-      "fx": ["FatalityMage"] },
-    { "id": "necromancer", "kind": "class", "label": { "fr": "Invocateur", "en": "Summoner" }, "victim": "DeathFatalityNecr",
-      "fx": ["FatalityNecr"] },
-    { "id": "psionic", "kind": "class", "label": { "fr": "Psioniste", "en": "Psionicist" }, "victim": "DeathFatalityPsionic",
-      "fx": ["FatalityPsionic"] },
-    { "id": "bard", "kind": "class", "label": { "fr": "Barde", "en": "Bard" }, "victim": "DeathFatalityBard",
-      "fx": ["FatalityBard"] },
-    { "id": "engineer", "kind": "class", "label": { "fr": "Ingénieur", "en": "Engineer" }, "victim": "DeathFatalityEngineer",
-      "fx": ["FatalityEngeneer"] },
-    { "id": "druid", "kind": "class", "label": { "fr": "Gardien", "en": "Warden" }, "victim": "DeathFatalityDruid",
-      "fx": ["FatalityDruid"] },
-
-    { "id": "phoenix", "kind": "shop", "label": { "fr": "Phénix", "en": "Phoenix" }, "victim": "DeathFatalityPhoenix",
-      "fx": ["FatalityPhoenix"] },
-    { "id": "tree", "kind": "shop", "label": { "fr": "Arbre (2025)", "en": "Tree (2025)" }, "victim": "DeathFatalityTree",
-      "fx": [{ "name": "Fatality2025_Wood", "texture": "/Spells/FX/Textures/Items/Fatality2025Wood" }],
-      "note": { "fr": "Association animation/effet déduite des noms de fichiers.", "en": "Animation/effect pairing inferred from file names." } },
-    { "id": "lotus", "kind": "shop", "label": { "fr": "Lotus", "en": "Lotus" }, "victim": "DeathFatality",
-      "fx": ["FatalityUniversalLotus", { "name": "FatalityUniversalLotusGrass" }] },
-    { "id": "executioner", "kind": "shop", "label": { "fr": "Exécuteur", "en": "Executioner" }, "victim": "DeathFatality",
-      "fx": [{ "name": "FatalityExecutioner2021_Main", "texture": "/Spells/FX/Textures/Items/FatalityExecutionersChest" }] },
-    { "id": "universal-2021", "kind": "shop", "label": { "fr": "Runes (2021)", "en": "Runes (2021)" }, "victim": "DeathFatality",
-      "fx": [{ "name": "FatalityUniversal2021_Main", "texture": "/Spells/FX/Textures/Items/NA_Fatality_2021" }] },
-    { "id": "universal-2022", "kind": "shop", "label": { "fr": "Chaînes (2022)", "en": "Chains (2022)" }, "victim": "DeathFatality",
-      "fx": [{ "name": "FatalityUniversal2022", "texture": "/Spells/FX/Textures/Items/FatalityUniversal2022_P" }] },
-    { "id": "universal-2023", "kind": "shop", "label": { "fr": "Avatar (2023)", "en": "Avatar (2023)" }, "victim": "DeathFatality",
-      "fx": ["FatalityUniversal2023"] },
-    { "id": "monkfish", "kind": "shop", "label": { "fr": "Baudroie", "en": "Monkfish" }, "victim": "DeathFatality",
-      "fx": ["FatalityMonkfish"] },
-    { "id": "skull-2024", "kind": "shop", "label": { "fr": "Crâne (2024)", "en": "Skull (2024)" }, "victim": "DeathFatality",
-      "fx": ["Fatality2024Scull", { "name": "Fatality2024ScullHands" }] },
-    { "id": "squirrel-2024", "kind": "shop", "label": { "fr": "Écureuil (2024)", "en": "Squirrel (2024)" }, "victim": "DeathFatality",
-      "fx": [{ "name": "Fatality2024SquirrelBig", "texture": "/Spells/FX/Textures/Items/Fatality2024SquirrelBig" }] },
-    { "id": "april-2024", "kind": "shop", "label": { "fr": "Avril 2024", "en": "April 2024" }, "victim": "DeathFatality",
-      "fx": [{ "name": "FatalityUniversal2024_Apr", "texture": "/Spells/FX/Textures/Items/Fatality_Aprel_24" }] },
-    { "id": "snake-2026", "kind": "shop", "label": { "fr": "Serpent (2026)", "en": "Snake (2026)" }, "victim": "DeathFatality",
-      "fx": ["Fatality2026Snake"] },
-    { "id": "warlock", "kind": "shop", "label": { "fr": "Occultiste", "en": "Warlock" }, "victim": "DeathFatality",
-      "fx": [{ "name": "FatalityWarlock", "texture": "/Spells/FX/Textures/Items/Fatality_Warlock_Icon" }] },
-    { "id": "universal", "kind": "shop", "label": { "fr": "Universelle", "en": "Universal" }, "victim": "DeathFatality",
-      "fx": [{ "name": "FatalityUniversal", "texture": "/Spells/FX/Textures/Items/FatalityUniversal" }] }
+    {
+      "type": 9,
+      "id": "warrior",
+      "kind": "class",
+      "label": {
+        "fr": "Guerrier",
+        "en": "Warrior"
+      }
+    },
+    {
+      "type": 5,
+      "id": "paladin",
+      "kind": "class",
+      "label": {
+        "fr": "Paladin",
+        "en": "Paladin"
+      }
+    },
+    {
+      "type": 8,
+      "id": "stalker",
+      "kind": "class",
+      "label": {
+        "fr": "Éclaireur",
+        "en": "Scout"
+      }
+    },
+    {
+      "type": 6,
+      "id": "priest",
+      "kind": "class",
+      "label": {
+        "fr": "Guérisseur",
+        "en": "Healer"
+      }
+    },
+    {
+      "type": 3,
+      "id": "mage",
+      "kind": "class",
+      "label": {
+        "fr": "Mage",
+        "en": "Mage"
+      }
+    },
+    {
+      "type": 4,
+      "id": "necromancer",
+      "kind": "class",
+      "label": {
+        "fr": "Invocateur",
+        "en": "Summoner"
+      }
+    },
+    {
+      "type": 7,
+      "id": "psionic",
+      "kind": "class",
+      "label": {
+        "fr": "Psioniste",
+        "en": "Psionicist"
+      }
+    },
+    {
+      "type": 1,
+      "id": "bard",
+      "kind": "class",
+      "label": {
+        "fr": "Barde",
+        "en": "Bard"
+      }
+    },
+    {
+      "type": 10,
+      "id": "engineer",
+      "kind": "class",
+      "label": {
+        "fr": "Ingénieur",
+        "en": "Engineer"
+      }
+    },
+    {
+      "type": 2,
+      "id": "druid",
+      "kind": "class",
+      "label": {
+        "fr": "Gardien",
+        "en": "Warden"
+      }
+    },
+    {
+      "type": 11,
+      "id": "warlock",
+      "kind": "shop",
+      "label": {
+        "fr": "Occultiste",
+        "en": "Warlock"
+      }
+    },
+    {
+      "type": 12,
+      "id": "universal",
+      "kind": "shop",
+      "label": {
+        "fr": "Universelle",
+        "en": "Universal"
+      }
+    },
+    {
+      "type": 13,
+      "id": "universal-new",
+      "kind": "shop",
+      "label": {
+        "fr": "Universelle (nouvelle)",
+        "en": "Universal (new)"
+      }
+    },
+    {
+      "type": 14,
+      "id": "executioners-chest",
+      "kind": "shop",
+      "label": {
+        "fr": "Coffre du bourreau",
+        "en": "Executioner's chest"
+      }
+    },
+    {
+      "type": 15,
+      "id": "universal-2021",
+      "kind": "shop",
+      "label": {
+        "fr": "Runes (2021)",
+        "en": "Runes (2021)"
+      }
+    },
+    {
+      "type": 16,
+      "id": "executioner-2021",
+      "kind": "shop",
+      "label": {
+        "fr": "Bourreau (2021)",
+        "en": "Executioner (2021)"
+      }
+    },
+    {
+      "type": 17,
+      "id": "universal-2022",
+      "kind": "shop",
+      "label": {
+        "fr": "Chaînes (2022)",
+        "en": "Chains (2022)"
+      }
+    },
+    {
+      "type": 18,
+      "id": "lotus",
+      "kind": "shop",
+      "label": {
+        "fr": "Lotus",
+        "en": "Lotus"
+      }
+    },
+    {
+      "type": 19,
+      "id": "phoenix",
+      "kind": "shop",
+      "label": {
+        "fr": "Phénix",
+        "en": "Phoenix"
+      }
+    },
+    {
+      "type": 20,
+      "id": "universal-2023",
+      "kind": "shop",
+      "label": {
+        "fr": "Avatar (2023)",
+        "en": "Avatar (2023)"
+      }
+    },
+    {
+      "type": 21,
+      "id": "april-2024",
+      "kind": "shop",
+      "label": {
+        "fr": "Avril 2024",
+        "en": "April 2024"
+      }
+    },
+    {
+      "type": 22,
+      "id": "squirrel-2024",
+      "kind": "shop",
+      "label": {
+        "fr": "Écureuil (2024)",
+        "en": "Squirrel (2024)"
+      }
+    },
+    {
+      "type": 23,
+      "id": "skull-2024",
+      "kind": "shop",
+      "label": {
+        "fr": "Crâne (2024)",
+        "en": "Skull (2024)"
+      }
+    },
+    {
+      "type": 24,
+      "id": "monkfish",
+      "kind": "shop",
+      "label": {
+        "fr": "Baudroie",
+        "en": "Monkfish"
+      }
+    },
+    {
+      "type": 25,
+      "id": "tree-2025",
+      "kind": "shop",
+      "label": {
+        "fr": "Arbre (2025)",
+        "en": "Tree (2025)"
+      }
+    },
+    {
+      "type": 26,
+      "id": "snake-2026",
+      "kind": "shop",
+      "label": {
+        "fr": "Serpent (2026)",
+        "en": "Snake (2026)"
+      }
+    }
   ]
 }
