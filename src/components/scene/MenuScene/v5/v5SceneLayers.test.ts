@@ -1,14 +1,28 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as THREE from 'three';
-import { findByNodeName, prepareV5Scroll, prepareV5Ship } from './v5SceneLayers';
+import { findByNodeName, prepareV5Layers, prepareV5Scroll, prepareV5Ship } from './v5SceneLayers';
 
-function mesh(parent: THREE.Object3D, element: string, order: number, map: THREE.Texture | null = new THREE.Texture()) {
+function mesh(parent: THREE.Object3D, element: string, order: number, map: THREE.Texture | null = new THREE.Texture(), x = 0) {
   const result = new THREE.Mesh(new THREE.PlaneGeometry(), new THREE.MeshBasicMaterial({ map }));
   result.geometry.userData.element = element;
   result.renderOrder = order;
+  result.position.x = x;
   parent.add(result);
   return result;
 }
+
+describe('V5 ordre de peinture natif (sortMode OFFSETS)', () => {
+  it('donne à chaque primitive son rang parmi ses frères, dans l’ordre du fichier', () => {
+    const root = new THREE.Group();
+    const group = new THREE.Group(); root.add(group);
+    const bowl = mesh(group, 'Back6', -70);   // le tri par profondeur l'aurait mis loin derrière…
+    const fog = mesh(group, 'Fog_01', -26);
+    const tower = mesh(group, 'Tower', -80);
+    const blink = mesh(group, 'Tower_blink', -83);
+    expect(prepareV5Layers(root)).toBe(4);
+    expect([bowl, fog, tower, blink].map(m => m.renderOrder)).toEqual([0, 1, 2, 3]);
+  });
+});
 
 describe('V5 défilement UV natif', () => {
   it('fait défiler chaque matériau sur sa propre texture, dans le sens des UV du fichier', () => {
@@ -39,19 +53,35 @@ describe('V5 défilement UV natif', () => {
     expect(dispose).toHaveBeenCalledOnce();
     expect(blink.material.map).toBe(shared);
   });
+
+  it('suit le retournement vertical des textures du client (repeat.y = -1, offset.y = 1)', () => {
+    const root = new THREE.Group();
+    const flipped = new THREE.Texture();
+    flipped.repeat.y = -1; flipped.offset.y = 1;
+    const blink = mesh(root, 'Tower_blink', -80, flipped);
+    blink.geometry.userData.uvScroll = [0, 0.02];
+    const scroll = prepareV5Scroll(root);
+    scroll.update(10, false);
+    expect(blink.material.map!.offset.y).toBeCloseTo(0.8); // +0,2 tour vers le haut de l'image
+    expect(blink.material.map!.repeat.y).toBe(-1);
+  });
 });
 
 describe('V5 navire de raid', () => {
+  // Caméra du manifeste : au centre du bol, regardant -X ; la tour est à 79 unités.
+  const camera = { position: [27, -1, -13], target: [-52, -1, -1] };
   function scene() {
     const root = new THREE.Group();
-    const tower = mesh(root, 'Tower', -80);
+    const group = new THREE.Group(); root.add(group);
+    const bowl = mesh(group, 'Back6', 0, new THREE.Texture(), -90);
+    const tower = mesh(group, 'Tower', 1, new THREE.Texture(), -52);
+    const fog = mesh(group, 'Fog_01', 2, new THREE.Texture(), -2);
     const ship = new THREE.Group(); ship.name = 'Raid_Ship'; root.add(ship);
     const bone = new THREE.Bone(); bone.name = 'Raid_ShipShip'; ship.add(bone); // nom nettoyé par GLTFLoader
-    const hull = mesh(ship, 'Ship', -35);
-    const sail = mesh(ship, 'group_Sails03', -34);
-    return { root, tower, ship, bone, hull, sail };
+    const hull = mesh(ship, 'Ship', 0);
+    const sail = mesh(ship, 'group_Sails03', 1);
+    return { root, bowl, tower, fog, ship, bone, hull, sail };
   }
-  const camera = { position: [135, 0, 0], target: [55, 0, 0] };
 
   it('retrouve un nœud par son nom natif ou nettoyé', () => {
     const { root, bone } = scene();
@@ -59,18 +89,22 @@ describe('V5 navire de raid', () => {
     expect(findByNodeName(root, 'Raid_Ship')).toBe(root.getObjectByName('Raid_Ship'));
   });
 
-  it('reclasse le navire selon la profondeur courante de son articulation racine', () => {
-    const { root, tower, bone, hull, sail } = scene();
+  it('peint le navire juste avant la tour quand il est derrière elle, après tout le décor sinon', () => {
+    const { root, bowl, tower, fog, bone, hull, sail } = scene();
     const layers = prepareV5Ship(root, camera);
     expect(layers.count).toBe(2);
-    bone.position.set(100, 0, 0); // premier passage : 35 unités devant la caméra, avant la tour (80)
+    expect(layers.towerDepth).toBeGreaterThan(78);
+    expect(layers.towerDepth).toBeLessThan(82);
+    bone.position.set(-87, 20, -15); // 40 s : derrière la tour, devant le fond
     layers.update();
-    expect(hull.renderOrder).toBeGreaterThan(tower.renderOrder);
-    expect(sail.renderOrder).toBeGreaterThan(hull.renderOrder); // ordre relatif des pièces conservé
-    bone.position.set(-15, 0, 0); // second passage : 150 unités, derrière la tour
-    layers.update();
+    expect(hull.renderOrder).toBeGreaterThan(bowl.renderOrder);
     expect(hull.renderOrder).toBeLessThan(tower.renderOrder);
-    expect(hull.renderOrder).toBeCloseTo(-150, 0);
+    expect(sail.renderOrder).toBeGreaterThan(hull.renderOrder); // ordre relatif des pièces conservé
+    expect(sail.renderOrder).toBeLessThan(tower.renderOrder);
+    bone.position.set(-2, 26, -5); // 70 s : au premier plan
+    layers.update();
+    expect(hull.renderOrder).toBeGreaterThan(fog.renderOrder);
+    expect(sail.renderOrder).toBeGreaterThan(hull.renderOrder);
   });
 
   it('reste inerte sans navire dans la scène', () => {

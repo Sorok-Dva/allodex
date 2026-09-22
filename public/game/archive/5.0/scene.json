@@ -7,18 +7,18 @@
   ],
   "camera": {
     "position": [
-      135,
-      -14,
-      8
+      27,
+      -1,
+      -13
     ],
     "target": [
-      55,
-      -14,
-      8
+      -52,
+      -1,
+      -1
     ],
-    "fov": 60
+    "fov": 53
   },
-  "background": "#3d4da9",
+  "background": "#776caa",
   "animations": [
     "Animated_Background_5_0",
     "Raid_Ship"
@@ -28,5 +28,517 @@
     "textures": 48,
     "animations": 2,
     "objects": 2
+  },
+  "sortMode": "OFFSETS",
+  "materials": {
+    "Animated_Background_5_0": [
+      {
+        "element": "Back6",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "BackBack",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Back1",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Back7",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Back2",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "Back_Brightness",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "Clouds_back_01",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Clouds_back04",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Allods",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Clouds_back03",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Occlud",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Tower_Up",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Fog_02",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Front_Clouds8",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "pistons_L1",
+        "blend": "add",
+        "transparent": false
+      },
+      {
+        "element": "pistons_R1",
+        "blend": "add",
+        "transparent": false
+      },
+      {
+        "element": "Trees_back",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Trees_back1",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Allods3",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tower",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tower",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tower3",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Vortex",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Gear",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "pistons_L",
+        "blend": "add",
+        "transparent": false
+      },
+      {
+        "element": "pistons_R",
+        "blend": "add",
+        "transparent": false
+      },
+      {
+        "element": "Cylinders",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Mayak_L",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "Mayak_R",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "Glow_L",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "Glow_R",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "Tower_Crystall",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Sabres",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Glow_Cr_01",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "Glow_Lightning_01",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "lightning_01",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "lightning_02",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "lightning_03",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "lightning_04",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "lightning_05",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "lightning_06",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "Clouds_Front",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tree_01_leafs_01",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tree_01_leafs_02",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Fog_03",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tree_02_leafs_01",
+        "blend": "add",
+        "transparent": false
+      },
+      {
+        "element": "Tree_02_leafs_01",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tree_02_leafs_01",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tree_02_leafs_01",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tree_02",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tree_02",
+        "blend": "add",
+        "transparent": false
+      },
+      {
+        "element": "Allods2",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tree_02_leafs_02",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tree_03",
+        "blend": "add",
+        "transparent": false
+      },
+      {
+        "element": "Tree_03",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tree_03_leafs_01",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Tree_03_leafs_02",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Fog_04",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Fog_01",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Sun_Light1",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "Front_Clouds7",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Front_Clouds4",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Front_Clouds2",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Front_Clouds1",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Front_Clouds6",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Front_Clouds3",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Lamps",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Tower_blink",
+        "blend": "add",
+        "transparent": true
+      }
+    ],
+    "Raid_Ship": [
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "Ship",
+        "blend": "alpha",
+        "transparent": false
+      },
+      {
+        "element": "SphereBack",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "group_SphereFront01",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "group_Sails03",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "group_Sails04",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "group_Sails05",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "Wave02",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "DoorBack2",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "DoorBack2",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "group_SphereFront03",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "group3_Sails05",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "group3_Sails03",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "group3_SphereFront01",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "group3_Sails04",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "group3_SphereFront03",
+        "blend": "add",
+        "transparent": true
+      },
+      {
+        "element": "ship_tail",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "Ship_Clouds",
+        "blend": "alpha",
+        "transparent": true
+      },
+      {
+        "element": "ship_trail1",
+        "blend": "alpha",
+        "transparent": true
+      }
+    ]
   }
 }
