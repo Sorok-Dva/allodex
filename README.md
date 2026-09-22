@@ -465,21 +465,25 @@ d'elle vit dans `tools/scenes/v5_0.py` et `src/components/scene/MenuScene/v5/` :
 ### Scène 6.0 « Broken Chains »
 
 Un seul maillage skinné (46 éléments) et son animation `idle` de 100 s : drapeau du
-laboratoire, arbres et balancement du train sont natifs et joués par le mixeur ; aucun
-matériau ne défile, le VisObjectTemplate n'attache aucun effet, `Manatrain_6_0_01_FX`, `Bird`
+laboratoire, arbres et balancement du train sont natifs et joués par le mixeur ; les
+46 matériaux arment tous le défilement UV (`scrollRGB`) mais le xdb n'en donne aucune
+vitesse, le VisObjectTemplate n'attache aucun effet, `Manatrain_6_0_01_FX`, `Bird`
 et `BackClouds_02` sont des textures que rien ne référence (reliquats d'une version
 antérieure de la scène). Les binaires sont identiques octet pour octet dans les clients 6.0
-(`/home/llyam/allods-clients/6.0`), 7.0 et 8.0. Quatre constats, tous tirés des fichiers :
+(`/home/llyam/allods-clients/6.0`), 7.0 et 8.0. Six constats, tous tirés des fichiers :
 
 - **caméra au centre du dôme de ciel.** `Sky_Back` est une demi-coque d'ellipsoïde
   (ajustement sur ses 158 sommets : centre (−2,8, 4,3, −2,8), demi-axes (83, 192, 83), erreur
   2 %) ; comme en 8.0 les calques de fond entourent le point de vue, et le manifeste y place
   la caméra, regard vers −X (laboratoire à Y > 0 à droite, station et pylône à Y < 0 à
-  gauche). Tangage (−7°) et champ sont ajustés sur `refs/captures-ui/menu-6.0-frame1.png`
+  gauche). Le champ est ajusté sur `refs/captures-ui/menu-6.0-frame1.png`
   (image 4:3 étirée en 16:9, abscisses corrigées) : champ vertical 92° en 4:3, soit 108°
   horizontal ; le lecteur gardant le champ vertical constant, le manifeste pose 76° pour
-  retrouver ce champ horizontal en 16:9 — le drapeau du mât, visible en haut à droite du 4:3,
-  sort alors du cadre. La première caméra (40, −7, 30, champ 56°), ajustée à l'aveugle sur des
+  retrouver ce champ horizontal en 16:9. Le tangage ajusté sur la capture valait −7°, et le
+  petit drapeau du mât du laboratoire (sommet à (−38,1 ; 48,8 ; 22,3)) sortait alors du cadre
+  par le haut en 16:9 ; **choix de l'utilisateur** : le tangage passe à **−1°** (cible relevée
+  de `z = −7,5` à `z = −3,449`), le drapeau rentre dans l'image et l'horizon descend plus bas
+  que sur la capture. La première caméra (40, −7, 30, champ 56°), ajustée à l'aveugle sur des
   repères, était trop haute et trop loin : elle rendait la station vue de haut et séparait
   les nappes de prairie ;
 - **`v = 0` en bas des textures**, comme en 7.0 et 8.0 (corrélation z/v positive sur 37 des
@@ -503,17 +507,58 @@ antérieure de la scène). Les binaires sont identiques octet pour octet dans le
   (`skinIndex` 0 : `Flag1`, `Train`, `Trees`), et applique la règle 7.0 « additif seulement
   si transparent » (le train est peint opaque). Le décor peint (`skinIndex` −1) est rattaché
   par l'export générique à une articulation immobile : l'ancien `v6Landscape` du lecteur, qui
-  le figeait, a été retiré.
+  le figeait, a été retiré ;
+- **le manatrain ne parcourt pas son câble** — les données ne l'y envoient nulle part. Le
+  blob d'animation a été relu champ par champ pour en avoir le cœur net : la piste `Train`
+  porte le drapeau `0b1011111` (bit levé = composante fixe), c'est-à-dire translation figée à
+  (0, 0, 0), échelle 1, angles Z et X fixes à 0, et **un seul canal** — l'angle Y, 3 001
+  entiers 16 bits dans [−165, +182], soit [−1,81°, +2,00°] avec une période de ≈ 16,7 s. Son
+  parent `group1` (le porte-train) est entièrement fixe. L'`aabb` du `(SkeletalAnimation).xdb`
+  ne dit pas autre chose : ce n'est pas un volume balayé mais la boîte des trois éléments
+  skinnés au repos. Recalculée avec la formule du jeu (palette = `W_anim · inverse_stockée`)
+  sur les 3 001 images, elle vaut [−38,659 ; −27,1694] × [−26,9695 ; 62,511] ×
+  [−23,5719 ; 22,3359] contre [−38,681 ; −27,1694] × [−26,9693 ; 62,756] × [−23,5719 ;
+  22,3359] déclarés : **quatre faces sur six à 3·10⁻⁴ près**. Les 90 unités en Y sont l'écart
+  entre le train (Y ≈ −22) et les arbres (Y de 25 à 62), pas un trajet. Surtout,
+  `aabbLastFrame` ne s'écarte de `aabb` que de 0,13 unité — là où, en 5.0, les deux boîtes
+  diffèrent de 4,3 unités parce que le navire de raid, lui, se déplace vraiment ;
+- **les arbres translatent de quelques dixièmes d'unité, sans tourner.** `Bush_joint9`,
+  `Tree01_joint3/4` et `Tree02_joint6/7` n'animent que Ty (et Tz pour trois d'entre eux), avec
+  des u16 qui couvrent toute la plage 0…65535 : l'amplitude lue est celle qui est stockée,
+  0,017 à 0,284 unité. Leurs trois angles sont fixes à zéro et leur rotation de bind est
+  l'identité. Le feuillage frémit donc à peine — c'est ce que disent les fichiers, et l'écart
+  de 0,13 unité entre `aabb` et `aabbLastFrame` l'exclut de faire davantage.
+
+Sur la lecture du blob : l'entête est `u16 fps, u16 nb_images`, un pointeur auto-relatif vers
+les descripteurs en **4**, puis trois couples `(count, ptr)` en 8/12 (noms), 16/20 (ordre
+d'évaluation) et 24/28 (une table posée juste après les descripteurs, inutilisée). Dans un
+descripteur de 20 octets, les deux pointeurs sont en **4** (`ptr_courbes`) et **12**
+(`ptr_flottants`), les deux compteurs en **8** (`nb_valeurs`) et **16** (`nb_flottants`) — ils
+s'entrelacent, ce qui se lit mal. Les 22 `ptr_flottants` du fichier 6.0 tombent exactement sur
+`adresse_du_nom + longueur arrondie à 4 octets` et les `ptr_courbes` sur
+`ptr_flottants + 4 × nb_flottants` : le découpage par le nom que fait
+`parse_skeletal_animation` est celui des pointeurs du fichier. `tools/tests/test_scenes_v6_0.py`
+reconstruit cette disposition (les autres tests écrivent des blobs *sans* table, décodés par
+inférence) et verrouille les trois pistes.
 
 Le bloc 6.0 du manifeste porte `"mirror": false` (décor modelé dans l'autre chiralité que la
 7.0). Côté lecteur, `v6SceneLayers` peint dans l'ordre des `modelElements` du xdb
-(`sortMode OFFSETS`) et `v6Sky` rend le dôme `Sky_Back` dont l'alpha de sommet est nul
-partout. Écart assumé : la capture montre la cabine du train en haut à gauche, sur la portion
-haute du câble, deux fois plus grande que ne le permet sa position dans les données
-(`group1` statique en (−36, −22, 9), confirmé par l'`aabb` de l'animation dans le xdb : Y de
-−27 à 63) ; elle vient sans doute d'une autre révision de la scène (les textures `Bird`,
-`BackClouds_02` inutilisées en témoignent). Le rendu suit les données : le train pend juste
-au-dessus du pylône 02, à gauche.
+(`sortMode OFFSETS`), `v6Sky` rend le dôme `Sky_Back` dont l'alpha de sommet est nul partout,
+et **`v6Clouds` fait dériver les nappes** : le xdb arme `scrollRGB` sur ses 46 matériaux sans
+donner une seule vitesse, exactement comme en 4.0, donc les vitesses sont **empruntées à la
+7.0** (`AMM_7_0.(Geometry).xdb`) comme l'utilisateur l'a validé pour la 4.0 — anneaux et
+nuages sombres 0,01 ou 0,02 tuile/s (`Back_Cloud_*`), brume de vallée `MidClouds_01` −0,05 à
+contresens (`Back_Myst`), rayons `Noise01White` 0,04 (`Ground_lights`). Deux contraintes de la
+6.0 : l'export ne distingue les matériaux que par (nom, texture, fusion, transparence), donc
+les six nappes `BackClouds_01`, les quatre `Ferris01_Clouds_Up` et les deux `MidClouds_01`
+partagent chacune un matériau et reçoivent la même vitesse (`Lab_Add` partage le
+`Noise01White` additif des rayons) ; et l'axe du motif change — les nuages sont tuilés en u
+(de −3,5 à 2,8), les rayons ont un u constant et défilent en v.
+
+Écart assumé : la capture montre la cabine du train deux fois plus grande que ne le permet sa
+position dans les données (`group1` statique en (−36, −22, 9)) ; elle vient sans doute d'une
+autre révision de la scène (les textures `Bird`, `BackClouds_02` inutilisées en témoignent).
+Le rendu suit les données : le train pend au-dessus du pylône 02, à gauche, et s'y balance.
 
 Reprise des deux écrans pour qu'ils soient visuellement identiques au jeu, à partir de captures live du client (spec détaillée : `docs/superpowers/specs/2026-09-19-iteration-2-fidelite-design.md`).
 
