@@ -412,25 +412,31 @@ un ciel plus sombre que dans le client (luminance 107 contre 143 en haut à gauc
 encore de page : `tools/extract_lore.py` rassemble les textes de lore **officiels** du client, leur
 anglais officiel quand il existe, un glossaire russe → anglais et un index du corpus communautaire.
 
-    python3 tools/extract_lore.py              # ≈ 75 s, écrit public/game/lore/
+    python3 tools/extract_lore.py              # ≈ 80 s, écrit public/game/lore/
     python3 tools/extract_lore.py --evaluate   # + précision du classifieur de types (80/20)
+    python3 tools/extract_lore.py --fr-client "/chemin/Allods Online FR (FR)"   # autre client FR
 
 ### Sources
 
 Toutes décrites dans `tools/lore_manifest.json` ; une source optionnelle absente est signalée.
+Chemins surchargeables : `--client` / `ALLODS_RU_CLIENT_DIR` (client 17.0), `--fr-client` /
+`ALLODS_FR_CLIENT_DIR` (à défaut `ALLODS_CLIENT_DIR`, la variable du client FR des autres outils),
+`--server-root` / `ALLODS_SERVER_ROOT`, `--corpus` / `ALLODS_LORE_CORPUS`.
 
 - **Dernier client officiel** (`/mnt/h/MyGames/AllodsRU`, 17.0.01.64) — référence. `Texts_x64.pak`
   contient `pack.rus.loc` et `pack.eng_eu.loc` : deux tables de 277 187 textes **alignées index par
   index** (même empreinte `5e102aa3`). L'anglais est celui de l'**édition européenne** : 250 654 des
-  250 869 textes anglais du client se retrouvent à l'identique dans les packs officiels EU 16.0 (CDN
-  my.games). Une entrée restée en cyrillique n'a pas de traduction officielle. Le client propose
+  250 869 textes anglais du client se retrouvaient à l'identique dans les packs officiels EU 16.0
+  (CDN my.games, contrôle ponctuel ; ces packs ne sont plus une source). Une entrée restée en cyrillique n'a pas de traduction officielle. Le client propose
   d'ailleurs cet anglais au joueur (`Profiles/localizations.cfg` : `eng_eu:English`).
 - **`Bin/pack.bin`** (`BaseLocall_x64.pak`, 703 Mo décompressé) — la base de ressources compilée.
   Elle ne contient pas les chemins, mais chaque ressource y référence ses textes par leur index dans
   les `.loc` : on sait quelle ressource porte quel texte, à quel décalage, ce qui regroupe les textes
   (une quête = nom, objectif, textes de début, de vérification et de fin). Format décodé dans la
   docstring de l'outil (tables de hachage à pointeurs auto-relatifs ; la table S3 associe le
-  `resourceId` des xdb à la ressource).
+  `resourceId` des xdb à la ressource). Les pointeurs du corps (références entre ressources,
+  tableaux) sont nuls dans le fichier ; une **table de relocation** de 7,66 M paires
+  `(emplacement | étiquette, cible)` suit la dernière ressource et permet de les résoudre.
 - **Arbre serveur** (`/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data`, dépôt git lu par
   `git cat-file`, contenus jusqu'à ZC14/Ferris/Umoir malgré l'étiquette 7.0) — chemins de
   ressources, types (balise racine du xdb) et champs (`name`, `startText`…) des contenus qui y
@@ -439,11 +445,19 @@ Toutes décrites dans `tools/lore_manifest.json` ; une source optionnelle absent
   disposition binaire par un classifieur bayésien naïf (décalages des textes + silhouette des
   premiers mots) : **94,9 %** de bonnes réponses sur 12 612 ressources connues tenues à l'écart ;
   quêtes 100 %, dialogues et objets 99,9 %, PNJ 98,9 %, zones 98 % (messages `TextMessage` : 77 %).
-- **Packs EU officiels 16.0** (en + fr, alignés) — pont anglais → français : le français n'est
-  retenu que si l'anglais du client 17.0 est identique à celui du pack EU (249 393 textes, dont
-  249 356 présents tels quels dans le client FR 16.0 `/mnt/h/MyGames/Allods Online FR (FR)`, qui
-  ne contient **que** le français).
-- **Corpus communautaire** (`refs/lorebook`, git-ignoré, don d'un membre de la communauté) —
+- **Client FR officiel** (`/mnt/h/MyGames/Allods Online FR (FR)`, 16.0.01.78.2, français seul :
+  `Texts_x64.pak` → `Bin/pack.loc`, 264 463 textes ; `BaseLocfra_x64.pak` → `Bin/pack.bin`) —
+  source du français, sans autre dépendance. Son `pack.bin` relie ses textes à ses ressources
+  comme pour le 17.0 ; une ressource commune (même `resourceId`) au même décalage de champ donne
+  la traduction (`bridge_fr`). Les deux `.loc` suivant l'ordre des chemins, l'écart d'index
+  17.0 → 16.0 est constant par plages : un appariement n'est gardé que si son écart est
+  **majoritaire** parmi les 8 appariements voisins (avant ou après) ; un « appariement » à écart
+  nul est un entier identique dans les deux builds, pas un texte, et il est écarté ; les trous
+  entre deux ancres de même écart (≤ 100 index) sont comblés par cet écart si les `<t href>` et
+  variables concordent — le même principe que le recalage des sous-titres des cinématiques
+  (décalage d'index constant par ressource).
+- **Corpus communautaire** (`refs/lorebook`, git-ignoré, fourni par **Makar Terentiev**,
+  GitHub [DarkyAndSparky](https://github.com/DarkyAndSparky/atlas-ao), voir « Provenance ») —
   jamais recopié : il est apparié au client et **référencé par chemin**. Les ~2 000 images (art de
   fans, fonds d'écran, artbook) sont écartées ; les dumps bruts de textes client (`Texts.pak`,
   `текстовик 15.0/pack.txt`) ne servent pas de source.
@@ -472,49 +486,87 @@ jeu jusqu'à la 16.0.
    (Cue : option du joueur + réponse du PNJ), `library` (objets lisibles : pages de livres, lettres,
    journaux — `kind: document` — et descriptions d'ambiance — `kind: flavor`), `scenes`
    (répliques scriptées, résumés d'intrigue, messages au monde), `events`, `places`, `characters`
-   (PNJ nommés : titre ou nom propre), `factions` (factions, races, classes), `mail`, `secrets`.
+   (PNJ nommés : titre ou nom propre), `factions` (factions, races, classes), `mail`, `secrets`
+   (secrets du monde, voir plus bas).
    `series.json` regroupe les documents en plusieurs pages (« Путеводитель Данаса », « Летопись
    Валиров », « Архив Скракана »…).
 4. Rendu : `<t href>` résolus dans la bonne langue, balises du jeu retirées, variables en `{nom}`.
+5. Noms : l'**anglais officiel fait foi** partout — `glossary.json` est la référence (Смеяна →
+   Catherina, Найан → Zayan, Иркалла → Hirkalla, Кадаган → Xadagan…). Un texte `ru_revised` garde
+   son anglais officiel, marqué ; sa retraduction viendra plus tard (rien n'est retraduit ici).
+
+### Secrets du monde
+
+La ressource `WorldSecrets` (`Mechanics/GameRoot/WorldSecrets.xdb`) est un tableau de secrets, dont
+chacun porte un tableau d'étapes, dont chacune porte un tableau de quêtes (`path`). Ces tableaux
+imbriqués sont rangés dans la région d'autres ressources et leurs pointeurs sont nuls dans le
+fichier : la **table de relocation** de `pack.bin` les résout exactement (élément de 56 o : étapes
+@8, ressource du secret @48 ; étape de 120 o : `finalQuest` @8, `path` @48, texte « pas encore
+disponible » @76, `startQuest` @80, texte de l'étape @148 ; taille d'un tableau 44 o après son
+pointeur). Résultat : **50 secrets, 283 étapes** (l'ancienne recherche par motifs en trouvait 47 et
+265), chacun avec son nom, sa description, sa question, son état, son titre une fois résolu, et
+pour chaque étape son texte, son texte d'attente et ses quêtes (`quests.start`, `quests.final`,
+`quests.path` : identifiants `r<rid>` des entrées de `quests.json`, 1 863 des 1 904 références y
+figurent). Vérification sur l'arbre serveur : les 32 secrets qui y figurent sont retrouvés ; 127
+étapes sur 131 ont exactement les mêmes textes et quêtes de début et de fin (les 4 autres suivent
+une étape **ajoutée** depuis dans « Абсолют » et « Боги Сарнаута »), 120 le même `path`. 814
+textes : 67 % avec anglais officiel, **90 % avec français**. Les 18 secrets récents (Великий Бал,
+Валиры, Бог Тьмы, Потерянная Иса…) n'ont pas de chemin xdb.
 
 ### Sorties (`public/game/lore/`)
 
 | Fichier | Contenu |
 |---|---|
 | `index.json` | sources, empreinte, couverture par catégorie et par ère, poids des fichiers |
-| `<catégorie>.json` | entrées par ressource : `id` (`r<rid>` de pack.bin), `resource_id`, `type`, `type_source` (`server`/`inferred`), `path` (xdb) si connu, `era`, et par champ `loc` (index dans les `.loc` 17.0.01.64), `en`, `en_status`, `ru_revised`, `fr` (présence) |
+| `<catégorie>.json` | entrées par ressource : `id` (`r<rid>` de pack.bin), `resource_id`, `type`, `type_source` (`server`/`inferred`/`relocation`), `path` (xdb) si connu, `era`, et par champ `loc` (index dans les `.loc` 17.0.01.64), `en`, `en_status`, `ru_revised`, `fr` (présence) ; `secrets.json` ajoute `order` et `components` (étapes) |
 | `ru/<catégorie>.json`, `fr/<catégorie>.json` | tables `loc → texte` |
 | `glossary.json` | 3 706 noms propres et termes russe → anglais officiel, variantes, fréquence dans le corpus |
-| `community.json` | chaque fichier du corpus : classe, couverture, textes du client retrouvés |
-| `atlas.json` | les allods de l'atlas communautaire ↔ client (ligne, nom, anglais officiel) |
+| `community.json` | `credit` (auteur, dépôt, licence, ligne de crédit) et `files` : pour chaque fichier du corpus, classe, couverture, textes du client retrouvés, `credit` et `source` (provenance précise) |
+| `atlas.json` | `credit`, `credit_source` et les allods de l'atlas communautaire ↔ client (ligne, nom, anglais officiel) |
 
-Poids : **50,8 Mo** (13,4 Mo gzip), dont 18,8 Mo pour les fichiers anglais + métadonnées ;
-`quests` (8,6 Mo en, 11,5 Mo ru) et `dialogues` (6,2 Mo en, 7,1 Mo ru) pèsent le plus. La page
-devra charger par catégorie, jamais tout d'un bloc.
+Poids : **52,2 Mo** (13,8 Mo gzip) : 19,0 Mo pour les fichiers anglais + métadonnées, 20,9 Mo
+pour `ru/`, 12,4 Mo pour `fr/` ; `quests` (8,5 Mo en, 11,4 Mo ru, 6,8 Mo fr) et `dialogues`
+(6,2 / 7,1 / 4,3 Mo) pèsent le plus. La page devra charger par catégorie et par langue, jamais tout
+d'un bloc.
 
 ### Couverture (client 17.0.01.64)
 
 Client entier : 272 146 textes non vides, **250 869 avec un anglais officiel (92,2 %)**. Sélection
-lore : 31 689 entrées, 71 080 textes, 1,70 M mots russes.
+lore : 31 699 entrées, 71 697 textes, 1,72 M mots russes.
 
-| Catégorie | Entrées | Textes | Anglais officiel | Mots EN disponibles | Mots RU à traduire |
-|---|---:|---:|---:|---:|---:|
-| quests | 7 001 | 32 483 | 89,4 % | 995 421 | 100 780 |
-| dialogues | 13 674 | 22 836 | 89,3 % | 577 889 | 88 351 |
-| scenes | 3 567 | 4 001 | 87,0 % | 64 433 | 7 687 |
-| library | 663 | 1 319 | 58,6 % | 26 938 | 16 410 |
-| mail | 698 | 1 667 | 90,2 % | 25 675 | 2 849 |
-| characters | 4 338 | 6 804 | 91,8 % | 13 985 | 1 137 |
-| events | 45 | 115 | 98,3 % | 4 508 | 27 |
-| places | 1 298 | 1 308 | 96,2 % | 3 053 | 100 |
-| factions | 404 | 544 | 97,4 % | 1 750 | 23 |
-| **total** | **31 689** | **71 080** | **89,1 %** | **1 713 739** | **217 364** |
+| Catégorie | Entrées | Textes | Anglais officiel | Français | Mots EN disponibles | Mots RU à traduire |
+|---|---:|---:|---:|---:|---:|---:|
+| quests | 6 962 | 32 289 | 89,5 % | 93,2 % | 993 475 | 96 749 |
+| dialogues | 13 674 | 22 836 | 89,3 % | 93,7 % | 577 889 | 88 351 |
+| scenes | 3 567 | 4 001 | 87,0 % | 91,4 % | 64 433 | 7 687 |
+| library | 663 | 1 319 | 58,6 % | 72,6 % | 26 938 | 16 410 |
+| mail | 698 | 1 667 | 90,2 % | 93,3 % | 25 675 | 2 849 |
+| secrets | 50 | 814 | 67,4 % | 90,2 % | 19 371 | 12 275 |
+| characters | 4 338 | 6 804 | 91,8 % | 90,7 % | 13 985 | 1 137 |
+| events | 45 | 115 | 98,3 % | 98,3 % | 4 508 | 27 |
+| places | 1 298 | 1 308 | 96,2 % | 96,9 % | 3 053 | 100 |
+| factions | 404 | 544 | 97,4 % | 83,8 % | 1 750 | 23 |
+| **total** | **31 699** | **71 697** | **88,9 %** | **92,6 %** | **1 731 077** | **225 608** |
 
-Par ère : **98,7 %** des textes anciens (présents dans l'arbre serveur) ont un anglais officiel,
-**79,9 %** des récents. Ce qui manque est surtout la 17.0 (Kvator : « Сказ о Валирах », « Сказ о
-Соловье-разбойнице »), Kadagan, les « Новости 1025/1026 года », le Jubilé 2025 et une partie des
-objets d'ambiance récents ; 163 793 mots russes supplémentaires ont un anglais **peut-être périmé**
-(`ru_revised`) à relire.
+Par ère : **98,5 %** des textes anciens (présents dans l'arbre serveur) ont un anglais officiel,
+**79,7 %** des récents. Ce qui manque est surtout la 17.0 (Kvator : « Сказ о Валирах », « Сказ о
+Соловье-разбойнице »), Kadagan, les « Новости 1025/1026 года », le Jubilé 2025, une partie des
+objets d'ambiance récents et des secrets récents ; 163 793 mots russes supplémentaires ont un
+anglais **peut-être périmé** (`ru_revised`) à relire.
+
+**Français (client FR 16.0.01.78.2)** : 231 357 textes du client 17.0 (197 516 par ressource
+commune, 33 841 comblés par décalage), dont **66 404 textes lore sur 71 697 (92,6 %)** — contre
+63 270 (88,3 %) avec l'ancien pont par les packs EU. Ce qui manque : textes absents du 16.0
+(contenu 17.0), ressources sans voisin fiable, textes restés en cyrillique ou en anglais dans le
+client FR. **Fiabilité**, mesurée contre le pont anglais → français des packs EU (outil de mesure
+seulement, plus une source) sur les 128 494 textes appariés dont l'anglais est unique dans les deux
+packs : **4 faux (0,003 %)** et 28 variantes proches (texte révisé entre les deux builds) ;
+l'ancienne règle « ≥ 2 voisins d'accord » en commettait 156 (0,12 %), surtout des répliques de
+cinématique décalées d'une ligne et des entiers pris pour des textes. Sur les textes lore communs
+aux deux méthodes, 62 643 / 62 665 sont identiques ; parmi les 22 écarts, des révisions entre builds
+(nombre de monstres, noms de PNJ) et quelques erreurs de l'ancien pont (« Остров Нордхейм » y
+donnait « Grotte du dragon »). 45 % des textes appariés ne sont pas vérifiables ainsi (anglais non
+unique ou absent) ; la méthode étant la même, on en attend la même fiabilité.
 
 ### Provenance
 
@@ -532,8 +584,9 @@ autres jeux : Allods Adventure, Cloud Pirates, Аллоды 1998). La règle : u
 moitié des phrases se retrouve dans le client est « en jeu » (et « EN disponible » si 80 % de ces
 phrases ont un anglais officiel) ; sinon, classement du manifeste (`provenance`), puis titre daté
 (format des articles du site officiel) ; sinon « community ». Les récits d'origine inconnue
-(« Путь Изгнанника », « Найан. Груз тысячелетий », « Воспоминания Смеяны »…) portent la note
-`verify`. Surprise utile : les lettres des jubilés 2023 et 2024 sont des textes **du jeu** (avec
+(« Путь Изгнанника », « Найан. Груз тысячелетий », « Воспоминания Смеяны »…) sont ceux du matériel
+fourni par Makar Terentiev : paternité et origine **à confirmer avec lui** avant toute reprise.
+Surprise utile : les lettres des jubilés 2023 et 2024 sont des textes **du jeu** (avec
 anglais officiel), celle de 2025 aussi (sans anglais).
 
 Atlas (`АТЛАС АЛЛОДЫ табл.xlsx`) : **318 allods** (la feuille s'étend sur 1 008 lignes, mais
@@ -542,15 +595,44 @@ texte, 49 ne sont que **mentionnés** dans des textes, 92 introuvables ; **173 o
 officiel**. Hors catégories d'autres jeux (Allods Adventure, Cloud Pirates), 216 des 274 allods
 sont rattachés au client (79 %).
 
+### Crédit du matériel communautaire
+
+Le matériel communautaire (l'atlas et les récits d'origine inconnue) vient de **Makar Terentiev**
+(Макар Терентьев, GitHub **DarkyAndSparky**), auteur du dépôt
+[atlas-ao](https://github.com/DarkyAndSparky/atlas-ao) — « site-atlas non officiel de l'univers
+d'Allods Online » (Node.js + SQLite : carte interactive, catalogue wiki, éditeur), créé le
+31/07/2026, étudié le 23/09/2026 :
+
+- **Ce qui est dans le dépôt** : le code du site et `server/seed-data.json`, **la même table de
+  318 allods** que `АТЛАС АЛЛОДЫ табл.xlsx` du corpus (318/318 noms, aux espaces près) — nom,
+  climat, taille, détenteur, faction, catégorie, archipel, type, extension, carte ; 9 courtes
+  descriptions, aucun texte d'histoire.
+- **Ce qui n'y est pas** : les récits, les documents de travail de l'atlas (`.docx`, « Астральные
+  Острова », « BETA », `sec list`) et les autres textes de `refs/lorebook`, fournis directement par
+  l'auteur. Quelques pièces du corpus ont une autre origine, notée dans `source` : billet de blog
+  reposté sur le forum (druidsdiary), artbook de Fardreamer, extraits d'anciens clients,
+  « Энциклопедия Сарнаута » signée « Номарх Авилар » (origine à confirmer).
+- **Licence** : MIT, mais **pour le code du site seulement**. Le fichier `LICENSE` exclut
+  explicitement le contenu du jeu et les **données de l'atlas** (`server/seed-data.json`,
+  `uploads/`, `atlas.db`) ; le site se présente comme un projet de fans « собранные энтузиастами ».
+  **Aucune licence n'est donc accordée sur les données ni sur les textes : leur reprise sur la page
+  demande l'autorisation de l'auteur.** En l'état, l'outil ne recopie rien : noms d'allods et
+  numéros de ligne servent à l'appariement, les fichiers sont référencés par chemin.
+
+L'attribution est enregistrée dans `tools/lore_manifest.json` (`credit`), reportée en tête de
+`community.json` et d'`atlas.json`, et par fichier (`credit`, `source`). Ligne de crédit prête pour
+la future page :
+
+> Allods atlas and community lore material compiled by Makar Terentiev (DarkyAndSparky) —
+> https://github.com/DarkyAndSparky/atlas-ao
+
 ### Droits
 
 Les textes du client appartiennent à l'éditeur (Astrum / My.Games) — comme les autres assets de
-`public/game/`. L'**atlas « Атлас Аллоды »** (DarkyAndSparky, 2020, VK `bladeinbutter`) et
-l'**« Энциклопедия Сарнаута. Номарх Авилар »** sont des travaux de fans : aucun texte, aucune carte,
-aucune donnée propre (climat, taille, détenteur, catégorie) n'est repris ; seuls les noms d'allods et
-les numéros de ligne servent à l'appariement. Toute reprise sur la page demandera **l'accord des
-auteurs et un crédit**. Même règle pour les récits de fans et les chronologies. Les images du corpus
-ne sont pas utilisables (droits inconnus).
+`public/game/`. L'atlas et l'« Энциклопедия Сарнаута » sont des travaux de fans : aucun texte,
+aucune carte, aucune donnée propre (climat, taille, détenteur, catégorie) n'est repris. Toute reprise
+sur la page demandera **l'accord des auteurs et le crédit ci-dessus** ; même règle pour les récits de
+fans et les chronologies. Les images du corpus ne sont pas utilisables (droits inconnus).
 
 ## Déploiement (production)
 
