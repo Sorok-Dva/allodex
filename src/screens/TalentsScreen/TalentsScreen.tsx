@@ -63,7 +63,9 @@ export function TalentsScreen() {
 
   const versions = (index.data?.versions ?? []).filter(v => v.classes.length);
   const versionOptions = versions.map(v => ({ value: v.id, label: v.label === v.id ? v.id : `${v.id} (${v.label})` }));
-  const classOptions = (sel.version?.classes ?? []).map(c => ({ value: c.slug, label: textFor(c.name, tl)?.text ?? c.code }));
+  const classOptions = (sel.version?.classes ?? [])
+    .map(c => ({ value: c.slug, label: textFor(c.name, tl)?.text ?? c.code }))
+    .sort((a, b) => a.label.localeCompare(b.label, lang));
   const bg = video('mainmenu');
 
   // Fenêtre 508 × 749 à l'échelle 1:1 quand la hauteur le permet, sinon réduite.

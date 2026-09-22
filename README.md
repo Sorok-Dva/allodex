@@ -406,6 +406,95 @@ ARGB) ne correspond pas non plus au voile pâle de la capture. Reste approximati
 horizontal des défilements, les rotations squelettiques (≈ 0,15°, arbres quasi immobiles), et
 un ciel plus sombre que dans le client (luminance 107 contre 143 en haut à gauche).
 
+## Talents
+
+`/talents` affiche les talents de chaque classe jouable, version par version, dans la fenêtre des
+talents du client 17.0 reconstruite depuis ses ressources. Le choix vit dans l'URL
+(`/talents?v=9.0&c=warrior&p=field&f=1` : version, classe, page `book`/`field`, grille).
+
+    python3 tools/extract_talents.py            # toutes les versions → public/game/talents/
+    python3 tools/extract_talents.py --only 17.0
+    python3 tools/extract_talents.py --ui       # fenêtre ContextTalents du client 17.0
+
+Sources par version : `tools/talents_manifest.json` (chemins absents signalés, jamais devinés).
+
+### Format des données du client
+
+Les clients ne livrent pas de `.xdb` : tout est compilé dans `Bin/pack.bin` (zlib), image
+mémoire des structures C++ `NDb::*` avec une table de relocalisation, et les textes dans
+`Bin/pack*.loc`. `tools/packbin.py` lit les deux familles :
+
+- **v1** (32 bits, 1.x → 11.x) : blocs `(id, taille)` — table des textes (chemin → indice),
+  hachage des chemins xdb, noms de types, objets, couples de relocalisation `X = 2·adresse + drapeau`
+  (pointeur d'objet, pointeur de données, étiquette de type à +1 ou +3 selon les builds) ;
+- **v2** (64 bits, 15.x → 17.x) : chemins supprimés (sauf ~500 racines), objets indexés par
+  identifiant ; relocalisations `X = 8·adresse + genre` en 15/16, `X = adresse + genre` en 17 ;
+  les `UITexture` désignent leur fichier par (indice de pak dans le bloc 6, indice d'entrée zip).
+
+L'extracteur ne dépend d'aucun décalage codé en dur pour les données de talents : il reconnaît
+les champs par leur structure (pointeurs typés, tableaux de pointeurs, chaînes `….Name.txt`).
+Deux heuristiques documentées dans le code : l'étalonnage des identifiants de texte des clients
+64 bits (emplacement dont les valeurs mènent à des textes variés ; le plus balisé `<html>` est la
+description) et la position du palier de points d'une couche du livre (entier qui vaut 0 sur la
+première couche et croît). La valeur des variables `<r name="…"/>` est la valeur brute du
+client ; les formules appliquées ensuite par le jeu (arme, caractéristiques) ne sont pas
+calculées et sont signalées par `*`.
+
+### Systèmes de talents identifiés
+
+| Système | Ressources | Versions |
+|---|---|---|
+| Livre (couches de 4 sorts débloquées par paliers de points dépensés) | `BaseTalentsTable.layers` | 1.1 (6 couches, paliers 0-36) → 2.0-4.0 (9 couches, 0-60) → 7.0-17.0 (10 couches, 0-60) |
+| Grilles de talents (3 par classe, une case par rang, départ au centre) | `TalentFieldResource` | 1.1 (7 × 7) → 2.0-4.0 (9 lignes × 7) → 7.0-17.0 (9 × 9) |
+| Coût en rubis de talents | `RubyCostCalcer` | 1.1-3.0 (non extrait) |
+| Talents de guilde | `GuildTalentFieldResource` | 7.0 → 17.0 (non extrait) |
+| Talents de monture | `MountTalentGroup` | 9.0 → 17.0 (non extrait) |
+| Talents de l'âme (graphe de capacités, niveau d'âme) | `SoulRoot → TalentGraph → AbilityGraphNode` | 9.0 (268 nœuds), 11.0 (345), 15.0-17.0 (550) — non extrait : le graphe n'a pas de coordonnées dans les données, la disposition est calculée par le script de l'addon `SoulTalents` |
+| Runes | `Rune`, `RuneRegistry` | toutes (objets d'équipement, hors arbre de talents) |
+
+Les talents ne dépendent pas de la race : `BaseTalentsTable` n'est référencée que par
+`CharacterClass`. Les classes `ANGEL` (réutilise la table du mage) et `CORK` (bouchon) sont
+écartées.
+
+### Versions
+
+| Version | Source | Textes | Classes | Talents |
+|---|---|---|---|---|
+| 1.1.02 | arbre de développement (`Allods 1.0/allods/Client`) | RU (fichiers `.txt`) | 8 | 438 |
+| 2.0.04 | client anglais | EN | 8 | 560 |
+| 3.0.2.19 | client russe | RU | 9 | 622 |
+| 4.0.02 | `pack.bin` d'origine du repacker (même empreinte que le client « AllodsLegend ») | FR (`Texts.pak` du même dossier) | 9 | 630 |
+| 7.0 | client « Revelation » | EN + RU | 10 | 880 |
+| 8.0 | client français | FR | 10 | 895 |
+| 9.0.01.89 | client français | FR | 11 | 1 003 |
+| 11.0 | client Steam anglais incomplet | aucun (noms internes) | 11 | 1 009 |
+| 15.0.03.23 | client français x64 | FR | 11 | 1 048 |
+| 16.0.01.78 | client français x64 | FR | 11 | 1 055 |
+| 17.0 | dernier client russe x64 | EN + RU | 11 | 1 058 |
+
+Sans données : 5.0 et 6.0 (clients partiels : interface et musiques seulement), 10.0, 12.0
+(paks de textes seuls), 13.0, 14.0 (aucun client). Le client arabe 3.0 et le client « Allods
+Warp » (`~/allods-clients/11.0`, autre jeu) sont lisibles mais non retenus. Le `.loc` anglais du
+17.0 contient des textes restés en russe : une entrée « en » identique à « ru » est retirée.
+
+### Fenêtre 17.0
+
+`public/game/talents/ui/context_talents.json` est l'arbre de widgets de l'addon
+`ContextTalents` du client 17.0 (nom, type, `WidgetPlacement` X/Y — alignement, position,
+position haute, taille —, priorité de tracé, calques et textures), décodé du `pack.bin` 64 bits
+après confrontation aux `.xdb` 7.0 de même nom (mêmes valeurs). Le site le rend widget par
+widget (`TalentWindow`) : `BasePanel<ligne><colonne>` porte le livre, `FieldButton<ligne><colonne>`
+la grille, `ChooseField0N` les signets des grilles, `Tab01`/`Tab02` les pages. Écarts assumés :
+les boutons d'action du jeu (valider, réinitialiser, changer de classe) sont masqués ; l'état
+appris/disponible des cases n'est pas simulé ; l'état normal des boutons du « Contextructor »
+(croix, onglets) est la texture sœur de leur calque de survol ; les couleurs des balises
+`tip_*` des descriptions sont approchées ; les grilles plus petites que 9 × 9 sont centrées ;
+l'habillage mana/rage est au choix (le script du jeu le choisit selon la classe).
+
+Poids : ≈ 9,6 Mo de JSON, 1 150 icônes PNG dédupliquées par contenu (6,4 Mo), 33 textures
+d'interface (≈ 1,9 Mo). 31 talents du 17.0 n'ont pas d'icône : leur `UISingleTexture` ne mène à
+aucune `UITexture` résoluble.
+
 ## Déploiement (production)
 
 Le site public (`allodex.eu`, `allodex.online`, `allodex.allods-developers.eu`) est servi
