@@ -1,31 +1,9 @@
-.screen { position: fixed; inset: 0; background: #000; overflow: hidden; font-family: var(--font-serif); }
-.bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(6px) brightness(0.5); transform: scale(1.04); }
+.screen { position: fixed; inset: 0; background: #000; overflow: auto; font-family: var(--font-serif); }
+.bg { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(6px) brightness(0.5); transform: scale(1.04); }
 
-.cartouche { position: absolute; left: 28px; top: 24px; z-index: 2; }
-.plate { position: relative; display: inline-block; height: 31px; min-width: 220px; padding: 0 48px; }
-.plateTitle {
-  position: relative; display: flex; align-items: flex-start; justify-content: center;
-  height: 31px; padding-top: 4px; line-height: 19px; white-space: nowrap;
-  font-size: 15px; color: #ffeb73; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
-}
-
-.panel {
-  position: absolute; left: 24px; top: 72px; width: 268px; max-height: calc(100vh - 96px); z-index: 3;
-  display: flex; flex-direction: column; gap: 10px; overflow: visible;
-  padding: 12px 12px 10px; border-style: solid; border-color: transparent;
-  background: rgba(0, 0, 0, 0.67); color: #e6f3e6;
-}
-.field { display: flex; align-items: center; justify-content: space-between; height: 24px; }
-.fieldLabel { color: #b0d9be; font-size: 13px; }
-.dropdown { position: relative !important; width: 150px; }
-.details { border-top: 1px solid rgba(176, 217, 190, 0.25); padding-top: 6px; color: #d7e6d7; font-size: 12px; line-height: 16px; overflow-y: auto; min-height: 0; }
-.detailTitle { color: #ffdc00; font-size: 12px; margin-top: 6px; }
-.warn { color: #e8c877; margin-top: 6px; }
-.unavailable { margin-top: 8px; color: #b0d9be; }
-.unavailable summary { cursor: inherit; color: #ffdc00; }
-.unavailable ul { margin: 4px 0 0; padding-left: 14px; }
-
-.stage { position: absolute; left: max(316px, calc(50% - 254px)); top: 50%; transform: translateY(-50%); z-index: 1; }
+/* Fenêtre centrée ; plus large que l'écran (téléphone), elle défile. */
+.stage { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; min-width: 100%; min-height: 100%; width: max-content; padding: 8px; box-sizing: border-box; }
+.frame { position: relative; flex: none; }
 .loading { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: #b0d9be; font-size: 15px; white-space: nowrap; }
 
 .card {
@@ -36,14 +14,6 @@
 .cardTitle { color: #ffdc00; font-size: 18px; line-height: 22px; }
 .cardHint { margin-top: 6px; color: #b0d9be; font-size: 13px; line-height: 17px; }
 
-.tooltip { width: auto !important; max-width: 360px; background: rgba(0, 0, 0, 0.9) !important; }
+.tooltip { width: auto !important; max-width: 360px; background: rgba(0, 0, 0, 0.9) !important; z-index: 50; }
 
-.close { position: absolute; right: 24px; top: 24px; width: 30px; height: 30px; padding: 0; border: 0; background: none center / 100% 100% no-repeat; cursor: inherit; z-index: 5; }
-.close:hover { filter: brightness(1.15); }
-.speaker { position: absolute; right: 24px; bottom: 24px; z-index: 5; }
-
-@media (max-width: 900px) {
-  .panel { position: relative; left: auto; top: auto; margin: 64px 12px 12px; width: auto; }
-  .stage { position: relative; left: auto; top: auto; transform: none; margin: 0 auto 24px; }
-  .screen { overflow-y: auto; }
-}
+.speaker { position: fixed; right: 16px; bottom: 16px; z-index: 5; }

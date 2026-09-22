@@ -84,10 +84,21 @@ export type TalentsIndex = {
   unavailable: { id: string; reason: string }[];
 };
 
-/* --- interface ContextTalents (17.0) --- */
+/* --- fenêtre TalentBuilder (17.0) --- */
 export type Align = 'low' | 'high' | 'center' | 'both' | 'lowAbs';
 export type AxisPlacement = { align: Align; pos?: number; high?: number; size?: number };
-export type UiLayer = { type: string; color: string; texture?: string };
+export type UiLayer = {
+  type: string;
+  /** ARGB en hexadécimal. */
+  color: string;
+  texture?: string;
+  /** Texture découpée en neuf (`WidgetLayerTiledTexture`) : haut, droite, bas, gauche, en pixels. */
+  slice?: [number, number, number, number];
+  middle?: [number, number];
+  /** Milieu étiré (1) ou répété (0), en X puis en Y. */
+  stretch?: [number, number];
+};
+export type UiVariant = Partial<Record<'highlight' | 'disabled' | 'highlighted' | 'normal' | 'pressed' | 'pressedHighlighted', UiLayer>>;
 export type UiWidget = {
   type: string;
   name: string | null;
@@ -96,14 +107,34 @@ export type UiWidget = {
   back?: UiLayer;
   front?: UiLayer | null;
   textTag?: string;
-  highlight?: (UiLayer | null)[];
+  variants?: UiVariant[];
   children?: UiWidget[];
 };
 export type UiTexture = { path: string; file?: string; width?: number; height?: number; w?: number; h?: number; realW?: number; realH?: number };
+export type Rgba = [number, number, number, number];
+type FieldConsts = { SCALE: number; LEFT_BORDER: number; UP_BORDER: number; INTERVAL_X: number; INTERVAL_Y: number };
+/** Constantes lues dans le bytecode des scripts de l'addon (voir `builder_layout` de l'extracteur). */
+export type BuilderLayout = {
+  baseField: FieldConsts & { arrow: [number, number, number]; side: { left: number; right: number } };
+  field: FieldConsts;
+  builder: { fieldsInterval: number; mainOffsetY: number };
+  counts: Record<'BASE_TALENTS_ROW_COUNT' | 'BASE_TALENTS_COL_COUNT' | 'FIELD_TALENTS_FIELD_COUNT' | 'FIELD_TALENTS_ROW_COUNT' | 'FIELD_TALENTS_COL_COUNT', number>;
+  /** Coût en points des rangs 1, 2, 3 d'un sort du livre. */
+  rankCost: number[];
+  fieldTalentSize: { main: number; done: number };
+  baseTalentSize: { main: number; icon: number };
+  fieldHighlight: Record<string, Rgba>;
+  classColors: Record<string, Rgba>;
+  /** Code de classe → texture de `PlayerClasses` (absente du client pour certaines classes). */
+  classIcons: Record<string, string>;
+};
 export type UiLayout = {
   addon: string;
   version: string;
   root: UiWidget;
+  templates: Record<string, UiWidget>;
+  namedTextures: Record<string, string>;
   related: string[];
   textures: Record<string, UiTexture>;
+  layout: BuilderLayout;
 };

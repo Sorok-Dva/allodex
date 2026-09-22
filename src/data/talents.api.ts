@@ -37,6 +37,6 @@ export function useJson<T>(url: string | null): Loaded<T> {
 }
 
 export const useTalentsIndex = () => useJson<TalentsIndex>('/game/talents/index.json');
-export const useUiLayout = () => useJson<UiLayout>('/game/talents/ui/context_talents.json');
+export const useUiLayout = () => useJson<UiLayout>('/game/talents/ui/talent_builder.json');
 export const useClassTalents = (version: string | null, slug: string | null) =>
   useJson<ClassTalents>(version && slug ? talentsFile(version, slug) : null);

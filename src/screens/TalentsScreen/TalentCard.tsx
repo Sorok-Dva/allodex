@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import type { ClassTalents, TalentInfo, TalentLang } from '@/data/talents.types';
 import { formatVar, parseGameText, talentName, textFor, type Prereq, type Segment } from '@/data/talents.logic';
 import { useI18n } from '@/lib/i18n';
@@ -22,8 +22,11 @@ function Segments({ segs }: { segs: Segment[] }) {
   );
 }
 
-/** Contenu de l'infobulle d'un talent : nom, rangs, prérequis, description et valeurs par rang. */
-export function TalentCard({ data, talentKey, prereqs, lang }: { data: ClassTalents; talentKey: string; prereqs: Prereq[]; lang: TalentLang }) {
+/**
+ * Contenu de l'infobulle d'un talent : nom, rangs, état dans le build (`status` : rang atteint,
+ * raison d'un blocage), prérequis, description et valeurs par rang.
+ */
+export function TalentCard({ data, talentKey, prereqs, lang, status }: { data: ClassTalents; talentKey: string; prereqs: Prereq[]; lang: TalentLang; status?: ReactNode }) {
   const { t } = useI18n();
   const talent: TalentInfo | undefined = data.talents[talentKey];
   if (!talent) return null;
@@ -46,6 +49,7 @@ export function TalentCard({ data, talentKey, prereqs, lang }: { data: ClassTale
         {' · '}{t('talents.ranks', { count: talent.ranks.length })}
         {name.internal && <> · <em>{t('talents.internalName')}</em></>}
       </div>
+      {status && <div className={s.status}>{status}</div>}
       {prereqs.length > 0 && (
         <ul className={s.prereqs}>
           {prereqs.map((p, i) => (

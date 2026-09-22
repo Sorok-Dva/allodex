@@ -2,6 +2,9 @@
 .head { display: flex; align-items: baseline; gap: 6px; }
 .name { color: #ffdc00; font-size: 15px; line-height: 19px; }
 .meta { color: #b0d9be; font-size: 12px; margin-top: 1px; }
+.status { margin-top: 5px; color: #e6f3e6; font-size: 12px; line-height: 16px; }
+.status b { color: #9dff77; font-weight: normal; }
+.status em { color: #ff9c7a; font-style: normal; }
 .prereqs { margin: 6px 0 0; padding: 0 0 0 14px; color: #e8c877; font-size: 12px; }
 .desc { margin-top: 6px; }
 .missing { margin-top: 6px; color: #8a9a8a; font-style: italic; }
