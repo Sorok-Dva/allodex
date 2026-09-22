@@ -60,6 +60,7 @@ from tools.allods_visdb import (  # noqa: E402
     GeometryInfo, VisObject, animation_names, read_fatalities, read_geometry, read_texture,
     read_visobject,
 )
+from tools import extract_menu_scene as _ems  # noqa: E402
 from tools.extract_menu_scene import (  # noqa: E402
     BLOCK_BYTES, FOURCC, BinSource, GeometryDoc, GltfBuilder, Skeleton, SkeletalAnimation,
     decode_vertex_buffer, parse_skeletal_animation, parse_skeleton, read_chunks, rest_local,
@@ -92,6 +93,36 @@ def _slug(name: str) -> str:
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", stem.replace("/", "__"))
 
 
+def infer_texture_dims(mips: dict[int, bytes]) -> list[tuple[str, int, int]]:
+    """Candidats `(format, largeur, hauteur)` d'une texture DXT à partir de ses mipmaps.
+
+    Chaque niveau `k` a pour dimensions `(w >> k, h >> k)` et la chaîne s'arrête quand la plus
+    petite dimension atteint 4 pixels (un bloc) : `min(w, h) = 4 << max(k)`. Le nombre de blocs
+    du niveau le plus fin donne l'autre dimension, pour chacun des deux formats possibles ; le
+    format est certain si le dernier niveau ne fait qu'un bloc (8 ou 16 octets).
+    """
+    if not mips:
+        return []
+    last = max(mips)
+    smallest = len(mips[last])
+    formats = ["DXT5"] if smallest == 16 else ["DXT1"] if smallest == 8 else ["DXT5", "DXT1"]
+    out: list[tuple[str, int, int]] = []
+    finest = min(mips)
+    for fmt in formats:
+        block = BLOCK_BYTES[fmt]
+        if len(mips[finest]) % block:
+            continue
+        blocks0 = len(mips[finest]) // block * (4 ** finest)
+        short = 4 << last
+        long_side = blocks0 * 16 // short
+        if long_side * short != blocks0 * 16 or long_side < short:
+            continue
+        for w, h in ((long_side, short), (short, long_side)):
+            if (w, h) not in [(c[1], c[2]) for c in out]:
+                out.append((fmt, w, h))
+    return out
+
+
 class TexturePool:
     """Textures du client décodées en PNG, une seule fois, dans `textures/` (partagées entre
     les `.glb` par URI relative)."""
@@ -100,6 +131,7 @@ class TexturePool:
         self.db, self.cat, self.bins = db, cat, bins
         self.dir = out_dir / "textures"
         self.done: dict[tuple[str, int], str | None] = {}
+        self.has_alpha: dict[str, bool] = {}
         self.by_name: dict[str, int] = {}
         for off in db.resources("Texture"):
             name = cat.name(db.binary_ref(off))
@@ -116,14 +148,16 @@ class TexturePool:
         file = self.done[key]
         return None if file is None else prefix + file
 
-    def _export(self, name: str, max_size: int) -> str | None:
+    def image(self, name: str, max_size: int) -> Image.Image | None:
+        """Texture décodée (RGBA), au plus grand niveau de mipmap qui tient dans `max_size`.
+
+        Sans ressource `Texture` (textures de terrain, lues par les calques de carte), format et
+        dimensions se déduisent de la chaîne de mipmaps (`infer_texture_dims`)."""
         off = self.by_name.get(name)
-        if off is None:
-            return None
-        info = read_texture(self.db, self.cat, off)
-        fmt = info.fmt
-        if fmt not in FOURCC or not info.width or not info.height:
-            return None
+        if off is not None:
+            info = read_texture(self.db, self.cat, off)
+        else:
+            info = SimpleNamespace(binary=name, binary_hi=name[:-4] + ".hi.bin", fmt=None, width=0, height=0)
         mips: dict[int, bytes] = {}
         for binary in (info.binary, info.binary_hi):
             data = self.bins.get(binary) if binary else None
@@ -132,30 +166,88 @@ class TexturePool:
                     mips.update(read_chunks(data))
                 except zlib.error:
                     pass
-        block = BLOCK_BYTES[fmt]
+        if info.fmt is None:
+            candidates = infer_texture_dims(mips)
+            if not candidates:
+                return None
+            fmt, width, height = next((c for c in candidates if c[1] == c[2]), candidates[0])
+            info = SimpleNamespace(binary=info.binary, binary_hi=info.binary_hi, fmt=fmt, width=width, height=height)
+        fmt = info.fmt
+        if (fmt not in FOURCC and fmt != "RGBA") or not info.width or not info.height:
+            return None
         for level in sorted(mips):
             w, h = max(1, info.width >> level), max(1, info.height >> level)
             if max(w, h) > max_size and level < max(mips):
                 continue
-            need = max(1, (w + 3) // 4) * max(1, (h + 3) // 4) * block
             payload = mips[level]
+            if fmt == "RGBA":
+                # Non compressée : 4 octets par pixel, ordre B G R A (A8R8G8B8 de Direct3D).
+                if len(payload) < w * h * 4:
+                    continue
+                bgra = np.frombuffer(payload[:w * h * 4], np.uint8).reshape(h, w, 4)
+                return Image.fromarray(bgra[:, :, [2, 1, 0, 3]].copy(), "RGBA")
+            need = max(1, (w + 3) // 4) * max(1, (h + 3) // 4) * BLOCK_BYTES[fmt]
             if len(payload) < need:
                 continue
             img = Image.open(io.BytesIO(build_dds(w, h, FOURCC[fmt], payload[:need])))
             img.load()
-            img = img.convert("RGBA")
-            file = f"{_slug(name)}{'' if max_size >= 1024 else f'@{max_size}'}.png"
-            self.dir.mkdir(parents=True, exist_ok=True)
-            path = self.dir / file
-            if fmt == "DXT1" or img.getextrema()[3][0] == 255:
-                img = img.convert("RGB")
-            img.save(path, format="PNG", optimize=True)
-            self.bytes_written += path.stat().st_size
-            return file
+            return img.convert("RGBA")
         return None
+
+    def _export(self, name: str, max_size: int) -> str | None:
+        img = self.image(name, max_size)
+        if img is None:
+            return None
+        file = f"{_slug(name)}{'' if max_size >= 1024 else f'@{max_size}'}.png"
+        self.dir.mkdir(parents=True, exist_ok=True)
+        path = self.dir / file
+        self.has_alpha[name] = img.getextrema()[3][0] < 255
+        if not self.has_alpha[name]:
+            img = img.convert("RGB")
+        img.save(path, format="PNG", optimize=True)
+        self.bytes_written += path.stat().st_size
+        return file
 
 
 # --- squelettes et animations -------------------------------------------------------------------
+
+# Écart toléré en retirant une clé d'animation (interpolation linéaire des voisines) :
+# 1 mm pour les translations (unités du jeu ≈ mètres), 2·10⁻⁴ par composante de quaternion
+# (≈ 0,02°). Invisible, et divise le poids des personnages par ~4.
+TRANSLATION_TOLERANCE = 1e-3
+ROTATION_TOLERANCE = 2e-4
+# Écart maximal entre deux clés gardées (images) : borne le coût du glouton.
+MAX_KEY_GAP = 48
+
+# glTF : composantes entières signées 16 bits (rotations quantifiées). Le constructeur glTF
+# des scènes de menu ne s'en sert pas ; on étend ses tables sans rien changer à ses sorties.
+_ems.COMPONENT.setdefault("i16", 5122)
+_ems.COMPONENT_BYTES.setdefault(5122, 2)
+
+
+def reduce_keys(values: np.ndarray, tolerance: float) -> np.ndarray:
+    """Indices des clés à garder pour que l'interpolation linéaire des clés gardées reste à
+    moins de `tolerance` (par composante) de chaque clé d'origine. Glouton, première et
+    dernière clés toujours gardées ; une piste constante se réduit à deux clés."""
+    n = len(values)
+    if n <= 2:
+        return np.arange(n)
+    if np.max(np.ptp(values, axis=0)) <= tolerance:
+        return np.array([0, n - 1])
+    keep = [0]
+    anchor = 0
+    i = 2
+    while i < n:
+        # Peut-on relier `anchor` à `i` sans trahir les clés intermédiaires ?
+        span = np.arange(anchor + 1, i)
+        w = ((span - anchor) / (i - anchor))[:, None]
+        interp = values[anchor] * (1 - w) + values[i] * w
+        if i - anchor > MAX_KEY_GAP or np.max(np.abs(interp - values[span])) > tolerance:
+            keep.append(i - 1)
+            anchor = i - 1
+        i += 1
+    keep.append(n - 1)
+    return np.array(keep)
 
 def clean_animation(skeleton: Skeleton, animation: SkeletalAnimation) -> list[str]:
     """Règles établies sur les données (README, § « Scènes de menu ») appliquées à un clip :
@@ -195,6 +287,8 @@ class Exporter:
     textures: TexturePool
     texture_max: int
     notes: list[str] = field(default_factory=list)
+    # Décor : les matériaux opaques dont la texture a de l'alpha sont des feuillages découpés.
+    cutout: bool = False
 
     def __post_init__(self) -> None:
         self.gltf = GltfBuilder()
@@ -229,6 +323,8 @@ class Exporter:
             index = self.gltf.add_material(mat.name, tex, alpha_mode, True, additive, mat.alpha)
             extras = self.gltf.json["materials"][index].setdefault("extras", {})
             extras["gameBlend"] = mat.blend
+            if self.cutout and not mat.transparent and self.textures.has_alpha.get(mat.texture or ""):
+                extras["cutout"] = True
             self.materials[key] = index
         return self.materials[key]
 
@@ -251,7 +347,10 @@ class Exporter:
 
     def emit_clip(self, name: str, skeleton: Skeleton, nodes: list[int], animation: SkeletalAnimation,
                   speed: float = 1.0) -> float:
-        """Clip glTF d'une animation (pistes nettoyées) ; renvoie sa durée en secondes."""
+        """Clip glTF d'une animation (pistes nettoyées) ; renvoie sa durée en secondes.
+
+        Pour le poids : clés redondantes retirées (`reduce_keys`) et rotations en entiers 16 bits
+        normalisés (`KHR_mesh_quantization`, lu par `GLTFLoader`)."""
         clean_animation(skeleton, animation)
         tracks = [t for t in animation.tracks if t.name in skeleton.names]
         frames = max(animation.frames, 1)
@@ -261,15 +360,26 @@ class Exporter:
         times = np.arange(frames, dtype=np.float32) / float(animation.fps) / max(speed, 1e-6)
         if frames == 1:
             times = np.array([0.0], np.float32)
-        acc_time = self.gltf.add_accessor(times, "SCALAR", "f32", minmax=True)
+        time_cache: dict[bytes, int] = {}
         samplers: list[dict] = []
         channels: list[dict] = []
 
         def channel(node: int, path: str, values: np.ndarray, kind: str) -> None:
+            values = np.asarray(values, np.float64)
             if len(values) != len(times):
                 values = np.repeat(values[:1], len(times), axis=0)
-            acc = self.gltf.add_accessor(values.astype(np.float32), kind, "f32")
-            samplers.append({"input": acc_time, "output": acc, "interpolation": "LINEAR"})
+            keep = reduce_keys(values, ROTATION_TOLERANCE if path == "rotation" else TRANSLATION_TOLERANCE)
+            key_times = times[keep]
+            token = keep.tobytes()
+            if token not in time_cache:
+                time_cache[token] = self.gltf.add_accessor(key_times.astype(np.float32), "SCALAR", "f32", minmax=True)
+            if path == "rotation":
+                quant = np.round(np.clip(values[keep], -1, 1) * 32767).astype(np.int16)
+                acc = self.gltf.add_accessor(quant, kind, "i16", normalized=True)
+                self.quantized = True
+            else:
+                acc = self.gltf.add_accessor(values[keep].astype(np.float32), kind, "f32")
+            samplers.append({"input": time_cache[token], "output": acc, "interpolation": "LINEAR"})
             channels.append({"sampler": len(samplers) - 1, "target": {"node": node, "path": path}})
 
         for track in tracks:
@@ -360,6 +470,11 @@ class Exporter:
 
     def finish(self, roots: list[int]) -> bytes:
         self.gltf.json["scenes"][0]["nodes"].extend(roots)
+        if getattr(self, "quantized", False):
+            for key in ("extensionsUsed", "extensionsRequired"):
+                used = self.gltf.json.setdefault(key, [])
+                if "KHR_mesh_quantization" not in used:
+                    used.append("KHR_mesh_quantization")
         glb = self.gltf.to_glb()
         validate_glb(glb)
         return glb
@@ -572,6 +687,8 @@ class FxBuild:
     meta: dict[str, dict] = field(default_factory=dict)
     roots: list[int] = field(default_factory=list)
     sounds: set[str] = field(default_factory=set)
+    particles: "ParticlePool | None" = None
+    report: list[str] = field(default_factory=list)
 
     def name_of(self, off: int) -> str:
         if off not in self.names:
@@ -601,7 +718,9 @@ class FxBuild:
             info["sound"] = vot.sound
             self.sounds.add(vot.sound)
         if vot.particle is not None:
-            info["particles"] = self.cat.name(self.db.binary_ref(vot.particle))
+            system = self.particles.system(vot.particle, self.report) if self.particles else None
+            if system is not None:
+                info["particles"] = system
         loaded = load_geometry(self.db, self.cat, self.bins, vot.geometry) if vot.geometry is not None else None
         if loaded is not None:
             geo = loaded.geo
@@ -609,7 +728,10 @@ class FxBuild:
                 info["orientation"] = geo.orientation
             for loc in geo.doc.locators:
                 locators[loc.name] = loc
-            elements = [e for e in geo.doc.elements if e.material.visible]
+            # Un élément sans texture n'est pas dessiné (mêmes emplacements vides que les
+            # armures des personnages ; ici les formes d'émission Maya — anneaux gris opaques
+            # de `FatalityWarlock` — qui boucheraient la vue).
+            elements = [e for e in geo.doc.elements if e.material.visible and e.material.texture]
             mesh, skinned = ex.emit_mesh(name, geo, loaded.vertices, loaded.indices, elements, loaded.skeleton)
             if mesh is not None:
                 ex.stats["objects"] += 1
@@ -643,7 +765,9 @@ class FxBuild:
             node = ex.gltf.json["nodes"][child]
             t = np.array(comp.offset, float)
             r = comp.rotation
-            s = comp.scale
+            # Échelle du composant × échelle propre du gabarit accroché (les racines, elles,
+            # reçoivent la leur dans le lecteur).
+            s = comp.scale * (read_visobject(self.db, self.cat, comp.visobject).scale or 1.0)
             if comp.locator in joint_names:
                 ex.gltf.json["nodes"][joint_nodes[joint_names.index(comp.locator)]].setdefault("children", []).append(child)
             elif comp.locator in locators:
@@ -683,9 +807,117 @@ def _rotate(q, v):
     return np.array((vx + w * tx + (y * tz - z * ty), vy + w * ty + (z * tx - x * tz), vz + w * tz + (x * ty - y * tx)))
 
 
+# --- particules --------------------------------------------------------------------------------
+
+class ParticlePool:
+    """Systèmes de particules exportés : binaire du client allégé (`allods_particles.simplify`,
+    même format) compressé en zlib dans `particles/`, et un atlas réduit aux seules images
+    utilisées (découpées dans `Client/Render/ParticleAtlas`)."""
+
+    def __init__(self, db: PackDB, cat: PakCatalog, bins: BinSource, out_dir: Path) -> None:
+        self.db, self.cat, self.bins = db, cat, bins
+        self.dir = out_dir / "particles"
+        self.systems: dict[str, dict] = {}
+        self.rects: list[tuple[str, int, int, int, int]] = []
+        self.rect_index: dict[tuple, int] = {}
+        self.bytes_written = 0
+
+    def system(self, off: int, report: list[str]) -> dict | None:
+        from tools.allods_particles import encode_particles, parse_particles, simplify
+        from tools.allods_visdb import atlas_rect, read_particle_animation
+        info = read_particle_animation(self.db, self.cat, off)
+        if not info.binary:
+            return None
+        if info.binary in self.systems:
+            return self.systems[info.binary]
+        data = self.bins.get(info.binary)
+        payload = read_chunks(data).get(0) if data else None
+        if not payload:
+            report.append(f"AVERTISSEMENT : particules absentes {info.binary}")
+            self.systems[info.binary] = None
+            return None
+        pf = parse_particles(payload)
+        if len(pf.emitters) != len(info.emitters):
+            report.append(f"AVERTISSEMENT : {info.binary} : {len(pf.emitters)} émetteurs dans le binaire, "
+                          f"{len(info.emitters)} dans la ressource")
+        packed = zlib.compress(encode_particles(simplify(pf)), 9)
+        file = re.sub(r"\.\(ParticleAnimation\)\.bin$", "", info.binary.split("/")[-1]) + ".bin"
+        self.dir.mkdir(parents=True, exist_ok=True)
+        (self.dir / file).write_bytes(packed)
+        self.bytes_written += len(packed)
+        frames = []
+        for element in info.textures:
+            rect = atlas_rect(self.db, self.cat, element)
+            if rect is None:
+                frames.append(-1)
+                continue
+            if rect not in self.rect_index:
+                self.rect_index[rect] = len(self.rects)
+                self.rects.append(rect)
+            frames.append(self.rect_index[rect])
+        entry = {
+            "file": f"particles/{file}", "speed": info.speed, "loop": info.looped,
+            "endFrame": info.end_frame, "loopFrame": info.loop_frame, "frames": frames,
+            "emitters": [{"additive": e.additive, "tint": [round(c / 128.0, 4) for c in e.color[:3]],
+                          "render": e.render, "pivot": [round(v, 4) for v in e.pivot],
+                          "virtualOffset": round(e.virtual_offset, 4), "looping": e.looping,
+                          "worldSpace": e.world_space, "flip": list(e.flip)} for e in info.emitters],
+        }
+        self.systems[info.binary] = entry
+        return entry
+
+    def write_atlas(self, textures: "TexturePool") -> dict | None:
+        """Assemble les images utilisées en rangées (plus haute d'abord) dans un atlas carré."""
+        if not self.rects:
+            return None
+        sources: dict[str, Image.Image] = {}
+        for name, *_ in self.rects:
+            if name and name not in sources:
+                img = textures.image(name, 4096)
+                if img is not None:
+                    sources[name] = img
+        order = sorted(range(len(self.rects)), key=lambda i: -self.rects[i][4])
+        width = PARTICLE_ATLAS_WIDTH
+        x = y = row = 0
+        placed: dict[int, tuple[int, int]] = {}
+        for i in order:
+            _, _, _, w, h = self.rects[i]
+            if x + w > width:
+                x, y, row = 0, y + row, 0
+            placed[i] = (x, y)
+            x += w
+            row = max(row, h)
+        height = 1
+        while height < y + row:
+            height *= 2
+        atlas = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        out_rects = []
+        for i, (name, sx, sy, w, h) in enumerate(self.rects):
+            src = sources.get(name)
+            px, py = placed[i]
+            if src is not None:
+                atlas.paste(src.crop((sx, sy, sx + w, sy + h)), (px, py))
+            out_rects.append([px, py, w, h])
+        self.dir.mkdir(parents=True, exist_ok=True)
+        atlas.save(self.dir / "atlas.png", format="PNG", optimize=True)
+        self.bytes_written += (self.dir / "atlas.png").stat().st_size
+        return {"file": "particles/atlas.png", "width": width, "height": height, "rects": out_rects}
+
+
+# Largeur de l'atlas réduit (les images de l'atlas du client font 32 à 256 px).
+PARTICLE_ATLAS_WIDTH = 1024
+
+
 # --- sons --------------------------------------------------------------------------------------
 
 SOUND_BANKS = ("SFX/Spells/Fatality.bsb", "SFX/Spells/Fatality2.bsb")
+
+
+def _sound_key(name: str) -> str:
+    """Clé d'appariement événement ↔ onde : casse et soulignés ignorés (l'événement
+    `FatalityUniversal` joue l'onde `fatality_universal.wav`, seul écart de nommage des banques
+    de fatalités)."""
+    return name.lower().replace("_", "")
 
 
 def export_sounds(names: set[str], bins: BinSource, out_dir: Path, vgmstream: Path, report: list[str]) -> dict[str, str]:
@@ -694,7 +926,7 @@ def export_sounds(names: set[str], bins: BinSource, out_dir: Path, vgmstream: Pa
     dans les banques `Fatality*.bsb` : on apparie par ce nom."""
     from tools.extract_audio import encode_outputs, fsb_payload_from_bytes, run_vgmstream
     import subprocess
-    wanted = {n.split("/")[-1]: n for n in names}
+    wanted = {_sound_key(n.split("/")[-1]): n for n in names}
     found: dict[str, str] = {}
     target = out_dir / "sfx"
     target.mkdir(parents=True, exist_ok=True)
@@ -714,18 +946,184 @@ def export_sounds(names: set[str], bins: BinSource, out_dir: Path, vgmstream: Pa
                 info = subprocess.run([str(vgmstream), "-m", "-s", str(sub), str(fsb)], capture_output=True, text=True).stdout
                 sm = re.search(r"stream name: (.*)", info)
                 stream = sm.group(1).strip() if sm else ""
-                if stream not in wanted or stream in found:
+                key = _sound_key(stream)
+                if key not in wanted or key in found:
                     continue
-                base = target / stream
+                stream_file = stream
+                base = target / stream_file
                 if not (base.with_suffix(".ogg").exists() and base.with_suffix(".mp3").exists()):
-                    wav = Path(tmp) / f"{stream}.wav"
+                    wav = Path(tmp) / f"{stream_file}.wav"
                     run_vgmstream(vgmstream, fsb, sub, wav)
                     encode_outputs(wav, base, "sfx")
-                found[stream] = f"sfx/{stream}"
+                found[key] = f"sfx/{stream_file}"
     for short, full in wanted.items():
         if short not in found:
             report.append(f"AVERTISSEMENT : onde introuvable pour l'événement {full}")
     return {wanted[k]: v for k, v in found.items()}
+
+
+# --- décor -------------------------------------------------------------------------------------
+
+# Convention des couleurs du jeu (lumières de zone comme couleurs de sommets) : 0x80 = 1.
+GAME_COLOR_UNIT = 128.0
+
+
+def _rgb(value: int) -> list[float]:
+    return [round(((value >> 16) & 255) / GAME_COLOR_UNIT, 4), round(((value >> 8) & 255) / GAME_COLOR_UNIT, 4),
+            round((value & 255) / GAME_COLOR_UNIT, 4)]
+
+
+def zone_light(server_root: Path, path: str, time: float) -> dict | None:
+    """Lumière d'une zone à une heure donnée (`ZoneLights` de l'arbre serveur 7.0 : le
+    `ZoneLights` compilé du client n'est pas encore décodé)."""
+    root = _read_xml(server_root / path)
+    if root is None:
+        return None
+    chosen = None
+    for item in root.findall("instantLights/Item"):
+        if abs(float(item.findtext("time") or "-1") - time) < 1e-6:
+            chosen = item.find("light")
+    if chosen is None:
+        chosen = root.find("defaultLight/light")
+    if chosen is None:
+        return None
+
+    def num(tag: str, default: float = 0.0) -> float:
+        return float(chosen.findtext(tag) or default)
+
+    def color(tag: str) -> int:
+        return int(float(chosen.findtext(tag) or "0")) & 0xFFFFFF
+
+    yaw, pitch = math.radians(num("SunLightYaw", 45)), math.radians(num("SunLightPitch", 45))
+    return {
+        "ambient": _rgb(color("AmbientColor")), "ambientFactor": num("AmbientFactor", 0.5),
+        "sun": _rgb(color("DiffuseColor")),
+        "sunDirection": [round(math.cos(pitch) * math.cos(yaw), 4), round(math.cos(pitch) * math.sin(yaw), 4),
+                         round(math.sin(pitch), 4)],
+        "fog": {"color": _rgb(color("FogColor")), "near": num("FogStart", 100), "far": num("FogEnd", 500)},
+    }
+
+
+def build_scene(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, textures: TexturePool,
+                server_root: Path) -> tuple[bytes, dict, list[str]]:
+    """Petit décor : sol texturé (textures de terrain de la zone), ornements (arbres, rochers,
+    buissons de la zone, à leur pose de bind), dôme de ciel du client. Tout vient du client ;
+    seule la disposition (manifeste, `scene.props`) est une mise en scène."""
+    ex = Exporter(textures, CHARACTER_TEXTURE_MAX, cutout=True)
+    roots: list[int] = []
+    geometries: dict[str, int] = {}
+    for off in db.resources("Geometry"):
+        name = cat.name(db.binary_ref(off))
+        if name:
+            geometries.setdefault(name, off)
+
+    # Sol : disque maillé en anneaux, UV répétées tous les `tile` mètres, et une tache de terre
+    # battue au centre dont le bord s'estompe (alpha de sommet).
+    ground = spec["ground"]
+
+    def disc(radius: float, tile: float, texture: str, fade: float | None, z: float, name: str) -> int | None:
+        rings, sectors = 24, 64
+        pts = [(0.0, 0.0)]
+        for i in range(1, rings + 1):
+            r = radius * (i / rings) ** 1.5
+            for j in range(sectors):
+                a = 2 * math.pi * j / sectors
+                pts.append((r * math.cos(a), r * math.sin(a)))
+        pos = np.array([[x, y, z] for x, y in pts], np.float32)
+        uv = (pos[:, :2] / tile).astype(np.float32)
+        dist = np.linalg.norm(pos[:, :2], axis=1)
+        alpha = np.ones(len(pos)) if fade is None else np.clip((radius - dist) / max(radius - fade, 1e-3), 0, 1)
+        rgba = np.column_stack([np.full((len(pos), 3), 255), np.round(alpha * 255)]).astype(np.uint8)
+        tris = []
+        for j in range(sectors):
+            tris += [0, 1 + j, 1 + (j + 1) % sectors]
+        for i in range(rings - 1):
+            a0, b0 = 1 + i * sectors, 1 + (i + 1) * sectors
+            for j in range(sectors):
+                j1 = (j + 1) % sectors
+                tris += [a0 + j, b0 + j, b0 + j1, a0 + j, b0 + j1, a0 + j1]
+        tex = ex.texture(texture)
+        mat = ex.gltf.add_material(name, tex, "BLEND" if fade is not None else "OPAQUE", True, False)
+        ex.gltf.json["materials"][mat].setdefault("extras", {})["lit"] = True
+        attrs = {"POSITION": ex.gltf.add_accessor(pos, "VEC3", "f32", target=34962, minmax=True),
+                 "TEXCOORD_0": ex.gltf.add_accessor(uv, "VEC2", "f32", target=34962),
+                 "NORMAL": ex.gltf.add_accessor(np.tile([0, 0, 1], (len(pos), 1)).astype(np.float32), "VEC3", "f32", target=34962),
+                 "COLOR_0": ex.gltf.add_accessor(rgba, "VEC4", "u8", normalized=True, target=34962)}
+        idx = ex.gltf.add_accessor(np.array(tris, np.uint32), "SCALAR", "u32", target=34963)
+        ex.gltf.json["meshes"].append({"name": name, "primitives": [{"attributes": attrs, "indices": idx, "material": mat, "mode": 4}]})
+        return ex.gltf.add_node({"name": name, "mesh": len(ex.gltf.json["meshes"]) - 1})
+
+    node = disc(ground["radius"], ground["tile"], ground["texture"], None, 0.0, "ground")
+    roots.append(node)
+    if ground.get("patch"):
+        patch = ground["patch"]
+        roots.append(disc(patch["radius"], patch.get("tile", ground["tile"]), patch["texture"], patch["radius"] * 0.45,
+                          0.01, "ground_patch"))
+
+    def static_object(name: str, off: int) -> int | None:
+        loaded = load_geometry(db, cat, bins, off)
+        if loaded is None:
+            ex.notes.append(f"décor illisible : {name}")
+            return None
+        vertices = dict(loaded.vertices)
+        if loaded.skeleton is not None and "indices" in vertices and "weights" in vertices:
+            static = np.zeros(len(vertices["position"]), bool)
+            for e in loaded.geo.doc.elements:
+                if e.skin_index < 0:
+                    static[np.unique(loaded.indices[e.ib0:e.ib1])] = True
+            vertices["position"] = bind_pose_positions(vertices, loaded.skeleton, static)
+        # Éléments sans texture lisible écartés (calques d'effet du ciel en L8 ou absents).
+        elements = [e for e in loaded.geo.doc.elements if e.material.visible and e.material.texture
+                    and ex.texture(e.material.texture) is not None]
+        mesh, _ = ex.emit_mesh(Path(name).stem, loaded.geo, vertices, loaded.indices, elements, None)
+        return None if mesh is None else ex.gltf.add_node({"name": Path(name).stem, "mesh": mesh})
+
+    for prop in spec.get("props", []):
+        off = geometries.get(prop["geometry"])
+        if off is None:
+            ex.notes.append(f"décor absent du client : {prop['geometry']}")
+            continue
+        child = static_object(prop["geometry"], off)
+        if child is None:
+            continue
+        x, y = prop["at"]
+        yaw = math.radians(prop.get("yaw", 0.0))
+        holder = {"name": f"prop:{Path(prop['geometry']).stem}", "children": [child],
+                  "translation": [float(x), float(y), 0.0],
+                  "rotation": [0.0, 0.0, math.sin(yaw / 2), math.cos(yaw / 2)]}
+        if abs(prop.get("scale", 1.0) - 1) > 1e-6:
+            holder["scale"] = [float(prop["scale"])] * 3
+        roots.append(ex.gltf.add_node(holder))
+
+    # Ciel : les géométries des parties du `SkyMesh` choisi (dômes centrés sur la caméra).
+    sky_nodes: list[int] = []
+    sky_name = spec.get("sky")
+    if sky_name:
+        for sky in db.resources("SkyMesh"):
+            parts = []
+            for loc, kind, target in db.relocs(sky, sky + 0x60):
+                if kind != 3:
+                    continue
+                size = db.u32(loc + 8)
+                for l2, k2, t2 in db.relocs(target, target + size):
+                    if k2 == 0 and db.vtype(t2) == "Geometry":
+                        parts.append(t2)
+            names = [cat.name(db.binary_ref(p)) or "" for p in parts]
+            if names and sky_name in names[0]:
+                for p, n in zip(parts, names):
+                    child = static_object(n, p)
+                    if child is not None:
+                        ex.gltf.json["nodes"][child]["extras"] = {"sky": True}
+                        sky_nodes.append(child)
+                break
+    if sky_nodes:
+        roots.append(ex.gltf.add_node({"name": "sky", "children": sky_nodes, "extras": {"sky": True}}))
+    glb = ex.finish([r for r in roots if r is not None])
+    light = zone_light(server_root, spec["zoneLights"], spec.get("time", 12)) if spec.get("zoneLights") else None
+    meta = {"glb": "scene/scene.glb", "label": spec.get("label")}
+    if light:
+        meta["environment"] = light
+    return glb, meta, ex.notes
 
 
 # --- index -------------------------------------------------------------------------------------
@@ -758,7 +1156,7 @@ def collect_animations(node: dict | None, names: dict[int, str], out: set[str]) 
 
 def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = None,
         only_fx: list[str] | None = None, characters: bool = True, sounds: bool = True,
-        report: list[str] | None = None) -> dict:
+        report: list[str] | None = None, scene: bool = True) -> dict:
     report = report if report is not None else []
     server_root = Path(manifest["server_root"])
     db = open_pack(client)
@@ -766,6 +1164,7 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
     packs = client / "data" / "Packs"
     bins = BinSource([], [str(packs / p) for p in sorted(cat.names)])
     textures = TexturePool(db, cat, bins, out_dir)
+    particles = ParticlePool(db, cat, bins, out_dir)
     schema = {int(k): v for k, v in manifest.get("animation_enum", {}).items()}
     anim_names = animation_names(db, schema or None)
     fatalities = read_fatalities(db)
@@ -814,7 +1213,7 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
             if spec["id"] in prev_fx:
                 entries.append(prev_fx[spec["id"]])
             continue
-        build = FxBuild(Exporter(textures, FX_TEXTURE_MAX), db, cat, bins)
+        build = FxBuild(Exporter(textures, FX_TEXTURE_MAX), db, cat, bins, particles=particles, report=report)
         roots: set[int] = set()
         collect_vots(fd.offender, roots)
         for off in sorted(roots):
@@ -840,6 +1239,7 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
         for char in chars:
             tl = flatten(fd.offender, templates.get(char["id"], ""), _lower_keys(char.get("durations", {})),
                          {k: v for k, v in anim_names.items()})
+            bound_loops(tl, fd.fade_start + fd.fade_duration)
             timelines[char["id"]] = timeline_json(tl, build, anim_names)
         entry["timelines"] = timelines
         entries.append(entry)
@@ -858,10 +1258,36 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
                 info["sfx"] = sound_files[info["sound"]]
 
     index = {"races": manifest["races"], "characters": chars, "fatalities": entries}
+    if manifest.get("scene") and scene:
+        glb, meta, notes = build_scene(manifest["scene"], db, cat, bins, textures, server_root)
+        (out_dir / "scene").mkdir(parents=True, exist_ok=True)
+        (out_dir / "scene" / "scene.glb").write_bytes(glb)
+        report.extend(f"AVERTISSEMENT : décor — {n}" for n in notes)
+        print(f"décor : {len(glb) / 1024:.0f} Kio")
+        index["scene"] = meta
+    elif previous.get("scene"):
+        index["scene"] = previous["scene"]
+    atlas = particles.write_atlas(textures)
+    if atlas is not None:
+        index["particleAtlas"] = atlas
+    elif previous.get("particleAtlas"):
+        index["particleAtlas"] = previous["particleAtlas"]
+    print(f"particules : {particles.bytes_written / 1024:.0f} Kio écrits")
     out_dir.mkdir(parents=True, exist_ok=True)
     index_path.write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"textures : {textures.bytes_written / 1024:.0f} Kio écrits")
     return index
+
+
+def bound_loops(tl, fade_end: float) -> None:
+    """Une animation en boucle sans borne (`Stun` de l'Avatar, d'Avril 2024…) dure jusqu'à ce
+    que la victime ait disparu : le fondu de fin (`fadeStartTime + fadeDuration`) l'efface, le
+    client n'a plus rien à montrer ensuite."""
+    from tools.fatality_script import UNBOUNDED_LOOP
+    for step in tl.victim:
+        if step["mode"] == "LOOP" and step["end"] - step["t"] >= UNBOUNDED_LOOP - 1e-6:
+            step["end"] = round(max(step["t"], fade_end), 4)
+    tl.end = max([s["end"] for s in tl.victim] + [0.0])
 
 
 def _lower_keys(durations: dict[str, float]) -> dict[str, float]:
@@ -905,11 +1331,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--only-fx", action="append")
     parser.add_argument("--no-characters", action="store_true")
     parser.add_argument("--no-sounds", action="store_true")
+    parser.add_argument("--no-scene", action="store_true")
+    parser.add_argument("--no-fx", action="store_true", help="ne réexporte aucune fatalité (garde l'index)")
     args = parser.parse_args(argv)
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     client = Path(args.client or os.environ.get("ALLODS_RU_CLIENT_DIR") or manifest["client_root"])
     report: list[str] = []
-    run(manifest, args.out, client, args.only, args.only_fx, not args.no_characters, not args.no_sounds, report)
+    only_fx = ["__none__"] if args.no_fx else args.only_fx
+    run(manifest, args.out, client, args.only, only_fx, not args.no_characters, not args.no_sounds, report,
+        not args.no_scene)
     for line in report:
         print(line, file=sys.stderr)
     return 0

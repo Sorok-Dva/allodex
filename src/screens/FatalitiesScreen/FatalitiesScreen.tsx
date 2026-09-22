@@ -22,11 +22,11 @@ const PILL_SLICE: [number, number, number, number] = [0, 30, 0, 24];
 const SPEEDS = ['0.25', '0.5', '1', '2'] as const;
 type Speed = (typeof SPEEDS)[number];
 
-/** Clip de la cible pour une fatalité : le nom du manifeste, sinon le premier clip qui commence pareil (variantes `01`/`02` des Gibelins). */
-export function victimClip(character: FatalityCharacter, fatality: FatalityEntry): string | null {
-  if (character.animations.includes(fatality.victim)) return fatality.victim;
-  const variant = new RegExp(`^${fatality.victim}\\d{2}$`);
-  return character.animations.find(name => variant.test(name)) ?? null;
+/** Animations jouées par la cible, dans l'ordre du script, avec leur vitesse (`DeathFatalityMage ×0.6 → DeathFatality`). */
+export function victimSummary(character: FatalityCharacter, fatality: FatalityEntry): string | null {
+  const steps = fatality.timelines?.[character.id]?.victim ?? [];
+  const names = steps.filter(step => step.anim).map(step => (step.speed && step.speed !== 1 ? `${step.anim} ×${+step.speed.toFixed(2)}` : step.anim!));
+  return names.length ? names.join(' → ') : null;
 }
 
 /**
@@ -38,7 +38,7 @@ export function victimClip(character: FatalityCharacter, fatality: FatalityEntry
 export function FatalitiesScreen() {
   const { t, lang } = useI18n();
   const { query } = useRoute();
-  const { playSfx } = useGameAudio();
+  const { playSfx, muted, volume } = useGameAudio();
   const index = useMemo(() => fatalitiesIndex(), []);
   const characters = index?.characters ?? [];
   const fatalities = index?.fatalities ?? [];
@@ -76,8 +76,10 @@ export function FatalitiesScreen() {
   const [showFx, setShowFx] = useState(true);
   const [progress, setProgress] = useState({ time: 0, duration: 0 });
   const [ready, setReady] = useState(false);
-  const clip = character && fatality ? victimClip(character, fatality) : null;
+  const summary = character && fatality ? victimSummary(character, fatality) : null;
+  const timeline = character && fatality ? fatality.timelines?.[character.id] ?? null : null;
   const fxUrl = fatality?.fx ? fatalityFile(fatality.fx) : null;
+  const sceneUrl = index?.scene ? fatalityFile(index.scene.glb) : null;
   useEffect(() => { setPlaying(true); setProgress({ time: 0, duration: 0 }); }, [character?.id, fatality?.id]);
   useEffect(() => { setReady(false); }, [character?.id, fxUrl]);
 
@@ -137,10 +139,9 @@ export function FatalitiesScreen() {
           aria-selected={current}
           className={`${s.pill} ${current ? s.pillActive : ''}`}
           onClick={() => { playSfx('ui-click'); select({ f: f.id }); }}
-          title={f.approx ? t('fatalities.approx') : undefined}
         >
           <span className={s.pillSkin} aria-hidden="true" style={nineSlice(current ? 'pill-full-open' : 'pill-full', PILL_SLICE)} />
-          <span className={s.pillLabel}>{pick(f.label, lang) ?? f.id}{f.approx ? <span className={s.approx} aria-hidden="true">≈</span> : null}</span>
+          <span className={s.pillLabel}>{pick(f.label, lang) ?? f.id}</span>
         </button>
       </li>
     );
@@ -148,13 +149,23 @@ export function FatalitiesScreen() {
 
   return (
     <div className={`${s.screen} ${fullscreen ? s.hudHidden : ''}`}>
-      {character && fatality && clip && webgl && (
+      {character && fatality && timeline && webgl && (
         <Suspense fallback={null}>
           <FatalityViewer
             ref={viewer}
             characterUrl={fatalityFile(character.glb)}
+            model={character.model}
             fxUrl={fxUrl}
-            clip={clip}
+            timeline={timeline}
+            objects={fatality.objects ?? {}}
+            fadeStart={fatality.fadeStart ?? 0}
+            fadeDuration={fatality.fadeDuration ?? 0}
+            sceneUrl={sceneUrl}
+            environment={index?.scene?.environment ?? null}
+            soundUrl={muted ? null : fatalityFile}
+            assetUrl={fatalityFile}
+            particleAtlas={index?.particleAtlas ?? null}
+            volume={volume}
             height={character.height}
             playing={playing}
             loop={loop}
@@ -204,9 +215,8 @@ export function FatalitiesScreen() {
             <ul className={s.list}>{list('shop')}</ul>
           </div>
           <div className={s.details}>
-            <div>{t('fatalities.victim', { name: clip ?? fatality.victim })}</div>
+            {summary && <div>{t('fatalities.victim', { name: summary })}</div>}
             {!fatality.fx && <div className={s.warn}>{t('fatalities.fxMissing')}</div>}
-            {fatality.approx && <div className={s.warn}>{t('fatalities.approx')}</div>}
             {fatality.note && <div className={s.warn}>{pick(fatality.note, lang)}</div>}
           </div>
         </aside>

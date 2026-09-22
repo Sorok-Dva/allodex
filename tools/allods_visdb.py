@@ -310,6 +310,97 @@ def read_visobject(db: PackDB, cat: PakCatalog, off: int) -> VisObject:
                      db.string(off + VOT_SOUND_NAME), components)
 
 
+# --- particules -------------------------------------------------------------------------------
+
+PART_EMITTERS = 0x28
+PART_END_FRAME = 0xC0
+PART_LOOP_FRAME = 0xD4
+PART_SPEED = 0x100
+PART_TEXTURES = 0x138
+PART_LOOPED = 0x158
+EMITTER_STRIDE = 88
+EM_BLEND = 0x04               # 0 ALPHA, 1 ADD (énumération propre aux particules)
+EM_COLOR = 0x08               # ARGB, 0x80 = neutre
+EM_RENDER = 0x0C              # 0 STD_MODE (face caméra), 1 Z_QUAD, 2 Z_BOX
+EM_NAME = 0x28
+EM_PIVOT = 0x40
+EM_VIRTUAL_OFFSET = 0x48
+EM_BOOLS = 0x4C               # UseLooping, WorldSpaceEmitter, decalEmitter, decalInheritRotation,
+                              # distortionEmitter, texFlipX, texFlipY, useScaleForVirtualOffset
+ELEMENT_ATLAS = 0x28
+ATLAS_TEXTURE = 0x28
+ATLAS_SOURCES = 0x30
+SOURCE_STRIDE = 48
+SOURCE_ELEMENT = 0x08
+SOURCE_HEIGHT = 0x04
+SOURCE_WIDTH = 0x10
+SOURCE_X = 0x14
+SOURCE_Y = 0x20
+
+
+@dataclass
+class ParticleEmitterInfo:
+    name: str
+    additive: bool
+    color: tuple[int, int, int, int]      # R G B A (0x80 = neutre)
+    render: int
+    pivot: tuple[float, float]
+    virtual_offset: float
+    looping: bool
+    world_space: bool
+    flip: tuple[bool, bool]
+
+
+@dataclass
+class ParticleInfo:
+    offset: int
+    binary: str | None
+    speed: float
+    looped: bool
+    end_frame: int
+    loop_frame: int
+    emitters: list[ParticleEmitterInfo]
+    textures: list[int]                   # décalages des TextureSingleElement
+
+
+def read_particle_animation(db: PackDB, cat: PakCatalog, off: int) -> ParticleInfo:
+    emitters = []
+    for e in db.elements(off + PART_EMITTERS, EMITTER_STRIDE):
+        argb = db.u32(e + EM_COLOR)
+        flags = db.bytes(e + EM_BOOLS, 8)
+        emitters.append(ParticleEmitterInfo(
+            name=db.string(e + EM_NAME) or "", additive=db.u32(e + EM_BLEND) == 1,
+            color=((argb >> 16) & 255, (argb >> 8) & 255, argb & 255, (argb >> 24) & 255),
+            render=db.u32(e + EM_RENDER), pivot=tuple(float(v) for v in db.floats(e + EM_PIVOT, 2)),
+            virtual_offset=db.f32(e + EM_VIRTUAL_OFFSET), looping=bool(flags[0]), world_space=bool(flags[1]),
+            flip=(bool(flags[5]), bool(flags[6]))))
+    textures = []
+    v = db.vec(off + PART_TEXTURES)
+    if v is not None:
+        for k in range(v[1] // 8):
+            textures.append(db.ptr(v[0] + 8 * k))
+    speed = db.f32(off + PART_SPEED)
+    return ParticleInfo(off, cat.name(db.binary_ref(off)), speed if speed > 0 else 1.0,
+                        bool(db.u8(off + PART_LOOPED)), db.i32(off + PART_END_FRAME),
+                        db.i32(off + PART_LOOP_FRAME), emitters, textures)
+
+
+def atlas_rect(db: PackDB, cat: PakCatalog, element: int | None) -> tuple[str, int, int, int, int] | None:
+    """(texture de l'atlas, x, y, largeur, hauteur) d'un élément d'atlas (`TextureSingleElement`)."""
+    if element is None:
+        return None
+    atlas = db.ptr(element + ELEMENT_ATLAS)
+    if atlas is None:
+        return None
+    texture = db.ptr(atlas + ATLAS_TEXTURE)
+    name = cat.name(db.binary_ref(texture)) if texture is not None else None
+    for src in db.elements(atlas + ATLAS_SOURCES, SOURCE_STRIDE):
+        if db.ptr(src + SOURCE_ELEMENT) == element:
+            return (name, db.i32(src + SOURCE_X), db.i32(src + SOURCE_Y), db.i32(src + SOURCE_WIDTH),
+                    db.i32(src + SOURCE_HEIGHT))
+    return None
+
+
 # --- scripts (VisActions) ---------------------------------------------------------------------
 
 def read_action(db: PackDB, off: int | None, depth: int = 0) -> dict | None:

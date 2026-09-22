@@ -1,22 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, fireEvent, act } from '@testing-library/react';
 import type { FatalitiesIndex } from '@/lib/assets';
-import { FatalitiesScreen, victimClip } from './FatalitiesScreen';
+import { FatalitiesScreen, victimSummary } from './FatalitiesScreen';
 
+const step = (anim: string, end: number, speed = 1) => ({ t: 0, end, anim, speed, mode: 'CLAMP' });
+const timeline = (anim: string, end: number, speed = 1) => ({ end, victim: [step(anim, end, speed)], scale: [], alpha: [], spawns: [], attached: [] });
 const INDEX: FatalitiesIndex = {
   races: { aed: { fr: 'Aède', en: 'Aed', faction: 'league' }, gibberling: { fr: 'Gibelin', en: 'Gibberling', faction: 'league' } },
   characters: [
-    { id: 'aed-female', race: 'aed', sex: 'female', glb: 'characters/aed-female.glb', scale: 1.26, height: 2.29,
+    { id: 'aed-female', race: 'aed', sex: 'female', model: 'AedFemale', glb: 'characters/aed-female.glb', scale: 1.26, height: 2.29,
       animations: ['DeathFatality', 'DeathFatalityWarrior'], durations: { DeathFatality: 2.5, DeathFatalityWarrior: 11.7 } },
-    { id: 'aed-male', race: 'aed', sex: 'male', glb: 'characters/aed-male.glb', scale: 1.26, height: 2.56,
+    { id: 'aed-male', race: 'aed', sex: 'male', model: 'AedMale', glb: 'characters/aed-male.glb', scale: 1.26, height: 2.56,
       animations: ['DeathFatality', 'DeathFatalityWarrior'], durations: { DeathFatality: 2.5, DeathFatalityWarrior: 11.7 } },
-    { id: 'gibberling-male', race: 'gibberling', sex: 'male', glb: 'characters/gibberling-male.glb', scale: 1, height: 1.28,
-      animations: ['DeathFatalityWarrior01', 'DeathFatalityWarrior02'], durations: { DeathFatalityWarrior01: 10, DeathFatalityWarrior02: 10 } },
+    { id: 'gibberling-male', race: 'gibberling', sex: 'male', model: 'GibberlingMale', glb: 'characters/gibberling-male.glb', scale: 1, height: 1.28,
+      animations: ['DeathFatalityWarrior'], durations: { DeathFatalityWarrior: 10 } },
   ],
   fatalities: [
-    { id: 'warrior', kind: 'class', label: { fr: 'Guerrier', en: 'Warrior' }, victim: 'DeathFatalityWarrior', fx: 'fx/warrior.glb' },
-    { id: 'phoenix', kind: 'shop', label: { fr: 'Phénix', en: 'Phoenix' }, victim: 'DeathFatalityPhoenix', fx: 'fx/phoenix.glb', approx: true },
-    { id: 'lotus', kind: 'shop', label: { fr: 'Lotus', en: 'Lotus' }, victim: 'DeathFatality' },
+    { id: 'warrior', kind: 'class', label: { fr: 'Guerrier', en: 'Warrior' }, fx: 'fx/warrior.glb', fadeStart: 8.2, fadeDuration: 0.1,
+      objects: {}, timelines: { 'aed-female': timeline('DeathFatalityWarrior', 11.7), 'aed-male': timeline('DeathFatalityWarrior', 11.7),
+        'gibberling-male': timeline('DeathFatalityWarrior', 10) } },
+    { id: 'phoenix', kind: 'shop', label: { fr: 'Phénix', en: 'Phoenix' }, fx: 'fx/phoenix.glb', objects: {},
+      timelines: { 'aed-female': timeline('DeathFatalityPhoenix', 9, 0.6) } },
+    { id: 'lotus', kind: 'shop', label: { fr: 'Lotus', en: 'Lotus' }, objects: {}, timelines: {} },
   ],
 };
 
@@ -44,11 +49,11 @@ beforeEach(() => {
   window.history.replaceState(null, '', '/fatalities');
 });
 
-describe('victimClip', () => {
-  it('prend le clip nommé par le manifeste, sinon la première variante qui commence pareil', () => {
-    expect(victimClip(INDEX.characters[0], INDEX.fatalities[0])).toBe('DeathFatalityWarrior');
-    expect(victimClip(INDEX.characters[2], INDEX.fatalities[0])).toBe('DeathFatalityWarrior01');
-    expect(victimClip(INDEX.characters[2], INDEX.fatalities[2])).toBeNull();
+describe('victimSummary', () => {
+  it('énumère les animations de la cible dans l’ordre du script, avec leur vitesse', () => {
+    expect(victimSummary(INDEX.characters[0], INDEX.fatalities[0])).toBe('DeathFatalityWarrior');
+    expect(victimSummary(INDEX.characters[0], INDEX.fatalities[1])).toBe('DeathFatalityPhoenix ×0.6');
+    expect(victimSummary(INDEX.characters[2], INDEX.fatalities[2])).toBeNull();
   });
 });
 
@@ -64,11 +69,11 @@ describe('FatalitiesScreen', () => {
     const { getByText, getAllByRole } = render(<FatalitiesScreen />);
     expect(getByText('Fatalités de classe')).toBeTruthy();
     expect(getByText('Fatalités de la boutique')).toBeTruthy();
-    expect(getAllByRole('option').map(o => o.textContent)).toEqual(['Guerrier', 'Phénix≈', 'Lotus']);
+    expect(getAllByRole('option').map(o => o.textContent)).toEqual(['Guerrier', 'Phénix', 'Lotus']);
     expect(getByText(/WebGL indisponible/)).toBeTruthy();
   });
 
-  it('met le choix dans l’URL et passe le clip de la cible au lecteur', async () => {
+  it('met le choix dans l’URL et passe la chronologie de la cible au lecteur', async () => {
     webgl = true;
     window.history.replaceState(null, '', '/fatalities?c=gibberling-male&f=warrior');
     const { getByRole } = render(<FatalitiesScreen />);
@@ -76,11 +81,13 @@ describe('FatalitiesScreen', () => {
     expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({
       characterUrl: '/game/fatalities/characters/gibberling-male.glb',
       fxUrl: '/game/fatalities/fx/warrior.glb',
-      clip: 'DeathFatalityWarrior01',
+      model: 'GibberlingMale',
+      fadeStart: 8.2,
+      timeline: INDEX.fatalities[0].timelines!['gibberling-male'],
     }));
     await act(async () => { fireEvent.click(getByRole('option', { name: /Lotus/ })); });
     expect(window.location.search).toBe('?c=gibberling-male&f=lotus');
-    // Le Gibelin n'a pas de clip `DeathFatality` : le lecteur n'est pas monté, la fiche l'annonce.
+    // Pas de chronologie pour ce personnage : le lecteur n'est pas monté.
     expect(getByRole('option', { name: /Lotus/ }).getAttribute('aria-selected')).toBe('true');
   });
 
@@ -105,13 +112,9 @@ describe('FatalitiesScreen', () => {
     expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({ playing: true }));
   });
 
-  it('signale les effets approximatifs ou absents', () => {
-    window.history.replaceState(null, '', '/fatalities?f=phoenix');
-    const { getByText, rerender } = render(<FatalitiesScreen />);
-    expect(getByText(/Effet approximatif/)).toBeTruthy();
+  it('signale les effets absents', () => {
     window.history.replaceState(null, '', '/fatalities?f=lotus');
-    window.dispatchEvent(new PopStateEvent('popstate'));
-    rerender(<FatalitiesScreen />);
+    const { getByText } = render(<FatalitiesScreen />);
     expect(getByText('Effet non extrait')).toBeTruthy();
   });
 });
