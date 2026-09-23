@@ -65,6 +65,8 @@ REGION_SIZE = 256.0
 ZONE_LIGHTS = 0x168
 ZONE_LIGHT_STRIDE = 280
 ZONE_SKY = 0x2C0
+ZONE_SINGLE_ITEM = 0x48           # éclairage unique en ligne (cartes d'intérieur)
+ZONE_SINGLE_POST = 0xF0
 SKY_GEOMETRY = 0x100
 SKY_PARTS = 0x28               # SkyMesh.parts (208 o : +0x08 animation, +0xB0 géométrie, +0xB8 shift)
 SKY_PART_STRIDE = 208
@@ -252,14 +254,18 @@ def read_lightvrt(db: PackDB, map_name: str, get) -> dict[tuple[str, int], np.nd
 
 def read_zone_light(db: PackDB) -> dict:
     """Premier éclairage de la zone de la carte (+ le ciel)."""
-    zones = [z for z in db.resources("ZoneLights") if not z & (1 << 40)]
-    if not zones:
-        return {}
-    items = db.elements(zones[0] + ZONE_LIGHTS, ZONE_LIGHT_STRIDE)
-    if not items:
-        return {}
-    e = items[0]
-    sky = db.ptr(zones[0] + ZONE_SKY)
+    local = [z for z in db.resources("ZoneLights") if not z & (1 << 40)]
+    zones = [z for z in local if db.elements(z + ZONE_LIGHTS, ZONE_LIGHT_STRIDE)]
+    if zones:
+        e = db.elements(zones[0] + ZONE_LIGHTS, ZONE_LIGHT_STRIDE)[0]
+        sky = db.ptr(zones[0] + ZONE_SKY)
+    else:
+        # Variante à un seul éclairage (`Ferris_indoor`) : l'élément est en ligne en `+0x48`
+        # (reconnu à ses `PostEffectParams` en `+0xF0`), sans ciel.
+        single = [z for z in local if (t := db.ptr(z + ZONE_SINGLE_POST)) is not None and db.vtype(t) == "PostEffectParams"]
+        if not single:
+            return {}
+        e, sky = single[0] + ZONE_SINGLE_ITEM, None
     return {"ambient": db.u32(e + 0x24), "ambientFactor": round(db.f32(e + 0x28), 4),
             "diffuse": db.u32(e + 0x30), "fog": db.u32(e + 0x3C), "fogEnd": round(db.f32(e + 0x40), 3),
             "fogStart": round(db.f32(e + 0x44), 3), "pointLight": db.u32(e + 0x48),

@@ -92,7 +92,7 @@ describe('engine cutscene paths, fades and sounds', () => {
   });
 
   it('plays buff animations in a loop or once, holding a death pose', () => {
-    const actor = { id: 'boss', idle: 'Idle', talk: undefined, animations: { Ready: 2, Death: 3, Special: 1 },
+    const actor = { id: 'boss', idle: 'Idle', talk: null, animations: { Ready: 2, Death: 3, Special: 1 },
       actions: [{ t: 0, until: 20, clips: ['Ready'], loop: true }, { t: 10, until: 20, clips: ['Death'], loop: false },
         { t: 30, until: 40, clips: ['Special'], loop: false }] };
     expect(actorClipAt(actor, [], 5)).toEqual({ clip: 'Ready', time: 1 });

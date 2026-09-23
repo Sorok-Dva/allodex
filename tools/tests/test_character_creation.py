@@ -14,12 +14,13 @@ import numpy as np
 import pytest
 
 from tools import allods_chargen as ac
+from tools.allods_packdb import packs_path
 from tools.chargen_scene import INDEX_PAGE, _quat_ypr, fix_index_pages
 from tools.chargen_ui import UiExtractor
 from tools.extract_character_creation import UI_CLASS_ORDER, UI_RACE_ORDER, class_key, with_fr
 
 CLIENT = Path("/mnt/h/MyGames/AllodsRU")
-client = pytest.mark.skipif(not (CLIENT / "data" / "Packs" / "BaseLocall_x64.pak").is_file(),
+client = pytest.mark.skipif(not packs_path(CLIENT / "data" / "Packs" / "BaseLocall_x64.pak").is_file(),
                             reason="client RU absent")
 
 
@@ -142,7 +143,7 @@ def test_addon_texts_and_ui_tree(pack, tmp_path):
     texts = ac.addon_texts(db, addon)
     assert set(texts) == {"Common", "RedefineRaceProgressTooltip", "CharacterGenerationProgressTooltip"}
     assert "ControlHairColors" in texts["Common"]
-    ui = UiExtractor(db, CLIENT / "data" / "Packs", tmp_path)
+    ui = UiExtractor(db, packs_path(CLIENT / "data" / "Packs"), tmp_path)
     root = ui.widget(db.ptr(addon + 0x28))
     names = [c["name"] for c in root["children"][0]["children"]]
     assert names == ["Progress", "Factions", "RaceClass", "Customization"]

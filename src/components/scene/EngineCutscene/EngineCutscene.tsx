@@ -364,9 +364,11 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       }) : Promise.resolve(null));
       factory.objects = data.objects;
       const systems = particleSystems(data.objects);
-      const [decor, fxGlb, lightBin, atlas, ...rest] = await Promise.all([
+      const [decor, fxGlb, skyGlb, terrainGlb, lightBin, atlas, ...rest] = await Promise.all([
         load(data.decor.glb),
         load(data.fx.glb),
+        load(data.decor.skyGlb ?? null),
+        load(data.decor.terrainGlb ?? null),
         fetcher(base + data.decor.light).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null),
         data.particleAtlas && systems.size && typeof DecompressionStream !== 'undefined'
           ? new THREE.TextureLoader().loadAsync(base + data.particleAtlas.file).catch(() => null) : Promise.resolve(null),
@@ -391,7 +393,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         clips.push(...gltf.animations);
       }
       // Ciel : dôme qui suit la caméra, derrière tout, hors brouillard.
-      const skyProto = decor?.scene.getObjectByName('sky');
+      const skyProto = skyGlb?.scene.getObjectByName('sky') ?? decor?.scene.getObjectByName('sky');
       if (skyProto) {
         const tinted: Tinted[] = [];
         factory.prepare(skyProto, false, tinted, null);
@@ -406,6 +408,23 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         });
         world.add(skyProto);
         sky = skyProto;
+      }
+      // Sol : texture × (ambiante de la zone + soleil · N·L), comme les acteurs ; les deux faces
+      // (le miroir du monde retourne l'ordre des sommets).
+      if (terrainGlb) {
+        const ambient = new THREE.Color(...argb(data.light.ambient, GAME_UNIT));
+        terrainGlb.scene.traverse(node => {
+          const mesh = node as THREE.Mesh;
+          if (!mesh.isMesh) return;
+          const source = mesh.material as THREE.MeshStandardMaterial;
+          if (source.map) source.map.colorSpace = THREE.NoColorSpace;
+          const material = new THREE.MeshLambertMaterial({ map: source.map ?? null, emissive: ambient, emissiveMap: source.map ?? null,
+            side: THREE.DoubleSide });
+          disposables.push(material);
+          mesh.material = material;
+          mesh.frustumCulled = false;
+        });
+        world.add(terrainGlb.scene);
       }
       const baked = lightBin ? new Uint8Array(lightBin) : null;
       const soundAt = (vot: string, p: THREE.Vector3 | null, start: number, until: number) => {
@@ -431,6 +450,9 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
           if (!mesh.isMesh) return;
           const material = mesh.material as THREE.MeshBasicMaterial;
           if (material.transparent || material.blending === THREE.AdditiveBlending) return;
+          // Décor opaque rendu d'une seule face, comme le jeu : une caméra de cinématique posée dans
+          // un rocher du décor (cristaux du portail de Ferris) ou sous une plateforme voit au travers.
+          if (data!.decor.oneSided) material.side = THREE.FrontSide;
           if (mesh === own && item.light && baked) {
             const [offset, count] = item.light;
             const geometry = mesh.geometry.clone();
