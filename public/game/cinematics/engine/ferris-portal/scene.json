@@ -1277,7 +1277,8 @@
    "radius": 1317.77,
    "parts": 14
   },
-  "skyGlb": "sky.glb"
+  "skyGlb": "sky.glb",
+  "terrainGlb": "../maps/Ferris4/terrain.glb"
  },
  "fx": {
   "glb": null,
