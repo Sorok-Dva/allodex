@@ -104,18 +104,29 @@ def sun_direction(light: dict) -> np.ndarray:
 def vertex_light(raw: np.ndarray, light: dict, normals: np.ndarray | None = None) -> np.ndarray:
     """Lumière d'un sommet du décor (unités du jeu, 1 = 0x80), depuis son `lightvrt`.
 
-    Établi sur les données : l'**octet 2** est l'éclairage précalculé des lumières ponctuelles de
-    la carte, `255 · Σ intensité · (1 − d / rayon)^atténuation · max(0, N·L)` borné à 255 — la
-    formule redonne l'octet à 1,000 de corrélation sur les objets du pilote (164 `LightComponent`,
-    `pivot`, `intensity`, `radius`, `attenuationPower`) ; leur couleur est la `PointLightColor` de
-    la zone. Les octets 0 et 1 (quantifiés sur 3 et 4 bits) ne sont pas élucidés : le soleil est
-    donc appliqué sans ombre portée, `DiffuseColor · max(0, N·S)`. Total : ambiante + soleil +
-    ponctuelles, comme le jeu éclaire ses personnages (`texture × (ambiante + soleil · N·L)`)."""
+    Établi sur les données :
+
+    * **octet 2** : lumières ponctuelles de la carte, `255 · Σ intensité · (1 − d / rayon)^atténuation ·
+      max(0, N·L)` (corrélation 1,000 sur le pilote et `Ferris4`) ; couleur `PointLightColor` ;
+    * **octet 1** (`128 + 127 · v`, 4 bits) : visibilité du ciel `v`, part de l'hémisphère supérieur
+      dégagée — corrélation 0,81 sur le pilote (tirs de rayons sur le décor), 0,73 sur `Isa` (feuillages
+      comptés opaques), pente 106 et ordonnée 138 pour 127 et 128 attendus ;
+    * **octet 0** (3 bits) : visibilité du soleil (ombre portée) — corrélation 0,81 sur le pilote pour
+      un soleil à 45° de hauteur ; le soleil de la cuisson est celui de la zone du lieu (`Isa` : lacet
+      225°, pas celui de la première zone de la carte), d'où un écart possible avec `sunDirection`.
+
+    Total : `AmbientColor · (f + (1 − f) · v) + DiffuseColor · max(0, N·S) · ombre + ponctuelles`, avec
+    `f` = `AmbientFactor` (0,5 partout) pris comme la part d'ambiante qui reste à l'ombre du ciel —
+    choix du lecteur, le shader du jeu n'étant pas lu."""
     point = raw[:, 2:3] / 255.0 * _rgb(light.get("pointLight", 0xFFFFFFFF))
+    sky = np.clip((raw[:, 1:2].astype(np.float64) - 128.0) / 127.0, 0.0, 1.0)
+    shadow = raw[:, 0:1].astype(np.float64) / 255.0
+    factor = float(light.get("ambientFactor", 0.5) or 0.0)
+    ambient = _rgb(light.get("ambient")) * (factor + (1.0 - factor) * sky)
     sun = 0.0
     if normals is not None and len(normals) == len(raw):
-        sun = np.clip(normals @ sun_direction(light), 0, None)[:, None] * _rgb(light.get("diffuse"))
-    return _rgb(light.get("ambient")) + sun + point
+        sun = np.clip(normals @ sun_direction(light), 0, None)[:, None] * _rgb(light.get("diffuse")) * shadow
+    return ambient + sun + point
 
 
 def encode_light(values: np.ndarray) -> np.ndarray:

@@ -45,12 +45,14 @@ def test_schedule_lines_opens_each_group_on_its_camera_segment():
 
 
 def test_vertex_light_is_ambient_plus_sun_plus_baked_point_lights():
-    light = {"ambient": 0xFF404040, "diffuse": 0xFF800000, "pointLight": 0xFF008000, "sunYaw": 0, "sunPitch": 90}
-    raw = np.array([[0, 128, 0, 0], [0, 128, 255, 0]], np.uint8)
-    up = np.array([[0, 0, 1.0], [0, 0, -1.0]])
+    light = {"ambient": 0xFF404040, "ambientFactor": 0.5, "diffuse": 0xFF800000, "pointLight": 0xFF008000,
+             "sunYaw": 0, "sunPitch": 90}
+    raw = np.array([[255, 255, 0, 0], [255, 255, 255, 0], [0, 128, 0, 0]], np.uint8)
+    up = np.array([[0, 0, 1.0], [0, 0, -1.0], [0, 0, 1.0]])
     out = vertex_light(raw, light, up)
-    assert np.allclose(out[0], [0.5 + 1.0, 0.5, 0.5])        # ambiante + soleil (normale vers le haut)
-    assert np.allclose(out[1], [0.5, 0.5 + 1.0, 0.5])        # ambiante + ponctuelles (octet 2 = 255)
+    assert np.allclose(out[0], [0.5 + 1.0, 0.5, 0.5])        # ciel dégagé + soleil au soleil
+    assert np.allclose(out[1], [0.5, 0.5 + 1.0, 0.5])        # ciel dégagé + ponctuelles (octet 2 = 255)
+    assert np.allclose(out[2], [0.25, 0.25, 0.25])           # ciel caché, à l'ombre : moitié de l'ambiante
     assert encode_light(np.array([[2.0, 1.0, 0.0]])).tolist() == [[255, 128, 0, 255]]
 
 
