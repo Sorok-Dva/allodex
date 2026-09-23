@@ -23,7 +23,7 @@ def _dump() -> bytes:
         struct.pack_into("<II", raw, field, target - field, count)
     selfptr(0x08, sets_at, 1)
     selfptr(0x10, tiles_at, 1)
-    raw[sets_at:sets_at + 9] = bytes([0, 1, 0, 0, 0x0B, 0x0D, 0xFF, 0, 0])
+    raw[sets_at:sets_at + 9] = bytes([0, 1, 0, 0, 0x0B, 0x0D, 0xFF, 0, 1])   # SplatMap_1
     struct.pack_into("<6f", raw, tiles_at, 16, 16, 0, 16, 16, 1)
     selfptr(tiles_at + 24, sub_at, 1)
     selfptr(sub_at + 0, coarse_at, 3)
@@ -46,7 +46,7 @@ def test_parse_terrain_dump_places_grid_vertices_with_float_heights():
     (patch,) = patches
     assert (patch.sx, patch.sy, patch.level) == (2, 3, 1)
     assert patch.points.tolist() == [[16, 24, 1], [16, 32, 2], [24, 32, 3]]
-    assert patch.triangles.tolist() == [[0, 2, 1]] and patch.passes == [(0, 0, 0, 0)]
+    assert patch.triangles.tolist() == [[0, 2, 1]] and patch.passes == [(0, 0, 0, 0, 1)]
     assert np.allclose(patch.normals[0], [0, 0, 1], atol=0.01)
 
 

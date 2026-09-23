@@ -342,11 +342,11 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
     régions (niveau de détail fin), ceux dont le centre tombe dans une zone de scène (+ 16 m). Chaque
     sommet porte les calques de ses deux passes au plus (`_LAYERS0/1`, indices dans la liste des
     calques de la carte, `extras.terrainLayers` : texture et taille de répétition) et leurs poids lus
-    dans le `SplatMap` (`_WEIGHTS0/1`) ; le lecteur les mélange. La lumière cuite des
+    dans le `SplatMap_N` de leur jeu (`_WEIGHTS0/1`) ; le lecteur les mélange. La lumière cuite des
     `lightmap` des régions est rangée dans un atlas (`lightmap_out`, `extras.terrainLightmap`), lue
     par `_LIGHTUV`. Rend aussi les triangles du sol, pour poser les acteurs."""
     from tools.allods_scenes import region_origin
-    from tools.allods_terrain import pass_weights, region_patches, region_splat, terrain_layers
+    from tools.allods_terrain import pass_weights, region_patches, region_splats, terrain_layers
     palette: dict[str, int] = {}
     tilings: list[float] = []
     pos, nor, lay0, wei0, lay1, wei1, idx, solids, lmuv = [], [], [], [], [], [], [], [], []
@@ -365,7 +365,7 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
             continue
         layer_sets, patches = parsed
         layers = terrain_layers(mp, cat, mp.ptr(region + 0x98))
-        splat = region_splat(bins.get, path)
+        splats = region_splats(bins.get, path)
 
         def slot(layer_id: int) -> int:
             name, tiling = layers[layer_id - 1] if 0 < layer_id <= len(layers) else (None, 30.0)
@@ -380,9 +380,9 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
                 continue
             n = len(patch.points)
             ids_w = []
-            for first, set_index, bc, bd in patch.passes[:2]:
+            for first, set_index, bc, bd, splat_map in patch.passes[:2]:
                 ids = list(layer_sets[set_index]) if set_index < len(layer_sets) else []
-                w = pass_weights(splat, patch, (bc, bd))
+                w = pass_weights(splats[splat_map] if splat_map < len(splats) else None, patch, (bc, bd))
                 slots = [slot(i) for i in ids] + [0] * (3 - len(ids))
                 w[:, len(ids):] = 0.0
                 ids_w.append((np.tile(np.array(slots[:3], np.float32), (n, 1)), w.astype(np.float32)))
