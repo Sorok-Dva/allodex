@@ -276,3 +276,11 @@ def test_camera_moves_cut_each_group_at_the_next_one():
     keys = camera_moves(Db(), 0)
     assert [k["t"] for k in keys] == [2.0, 3.999, 4.0]
     assert keys[1]["p"] == [10.0, 1.0, 5.0] and keys[2]["p"] == [20.0, 1.0, 5.0]
+
+
+def test_lightmap_uv_skips_the_two_texel_border_and_flips_y():
+    from tools.extract_engine_cutscene import lightmap_uv
+    pts = np.array([[0.0, 0.0, 5.0], [256.0, 256.0, 5.0], [128.0, 128.0, 5.0]])
+    uv = lightmap_uv(pts, (1, 0), 2) * 2 * 512          # en texels de l'atlas (deux cases de 512)
+    # x = 0 au bord des texels 1-2 de la case (512 + 2), x = 256 à celui des texels 509-510 ; y retourné
+    assert np.allclose(uv[0], [514, 510]) and np.allclose(uv[1], [1022, 2]) and np.allclose(uv[2], [768, 256])

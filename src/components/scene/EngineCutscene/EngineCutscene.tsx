@@ -62,8 +62,8 @@ const TERRAIN_SIZE = 512;
 const TERRAIN_MAX_LAYERS = 32;
 
 /** Charge les calques du sol dans un tableau de textures (512², répétées, mipmaps). */
-async function terrainMaterial(meta: { texture: string | null; tiling: number }[], glbUrl: URL,
-  light: EngineScene['light']): Promise<THREE.ShaderMaterial> {
+async function terrainMaterial(meta: { texture: string | null; tiling: number }[], lightmapUri: string | null,
+  glbUrl: URL, light: EngineScene['light']): Promise<THREE.ShaderMaterial> {
   const count = Math.max(1, Math.min(meta.length, TERRAIN_MAX_LAYERS));
   const data = new Uint8Array(TERRAIN_SIZE * TERRAIN_SIZE * 4 * count).fill(128);
   const canvas = document.createElement('canvas');
@@ -89,6 +89,18 @@ async function terrainMaterial(meta: { texture: string | null; tiling: number }[
   const tiling = new Array(TERRAIN_MAX_LAYERS).fill(30);
   meta.slice(0, count).forEach((layer, k) => { tiling[k] = layer.tiling || 30; });
   const dir = light.sunDirection ?? [0.5, 0.5, 0.7];
+  // Lumière cuite du sol (atlas des lightmap des régions) : R ciel, G soleil (ombres), B ponctuelles.
+  let lightmap: THREE.Texture | null = null;
+  if (lightmapUri) {
+    try {
+      lightmap = await new THREE.TextureLoader().loadAsync(new URL(lightmapUri, glbUrl).href);
+      lightmap.flipY = false;
+      lightmap.colorSpace = THREE.NoColorSpace;
+      lightmap.minFilter = lightmap.magFilter = THREE.LinearFilter;
+      lightmap.generateMipmaps = false;
+      lightmap.needsUpdate = true;
+    } catch { lightmap = null; }
+  }
   const material = new THREE.ShaderMaterial({
     glslVersion: THREE.GLSL3,
     fog: true,
@@ -98,14 +110,17 @@ async function terrainMaterial(meta: { texture: string | null; tiling: number }[
       ambient: { value: new THREE.Color(...argb(light.ambient, GAME_UNIT)) },
       sunColor: { value: new THREE.Color(...argb(light.diffuse, GAME_UNIT)) },
       sunDir: { value: new THREE.Vector3(dir[0], dir[1], dir[2]).normalize() },
+      pointColor: { value: new THREE.Color(...argb(light.pointLight ?? 0xFFFFFFFF, GAME_UNIT)) },
+      ambientFactor: { value: light.ambientFactor ?? 0.5 },
+      lightmap: { value: null }, hasLightmap: { value: lightmap ? 1 : 0 },
     }]),
     vertexShader: `
-      in vec3 _layers0; in vec3 _weights0; in vec3 _layers1; in vec3 _weights1;
-      out vec3 vL0; out vec3 vW0; out vec3 vL1; out vec3 vW1; out vec2 vXY; out vec3 vN;
+      in vec3 _layers0; in vec3 _weights0; in vec3 _layers1; in vec3 _weights1; in vec2 _lightuv;
+      out vec3 vL0; out vec3 vW0; out vec3 vL1; out vec3 vW1; out vec2 vXY; out vec3 vN; out vec2 vLM;
       #include <fog_pars_vertex>
       void main() {
         vL0 = _layers0; vW0 = _weights0; vL1 = _layers1; vW1 = _weights1;
-        vXY = position.xy; vN = normal;
+        vXY = position.xy; vN = normal; vLM = _lightuv;
         vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
         gl_Position = projectionMatrix * mvPosition;
         #include <fog_vertex>
@@ -115,8 +130,9 @@ async function terrainMaterial(meta: { texture: string | null; tiling: number }[
       layout(location = 0) out vec4 terrainColor;
       #define gl_FragColor terrainColor
       uniform sampler2DArray layers; uniform float tiling[${TERRAIN_MAX_LAYERS}];
-      uniform vec3 ambient; uniform vec3 sunColor; uniform vec3 sunDir;
-      in vec3 vL0; in vec3 vW0; in vec3 vL1; in vec3 vW1; in vec2 vXY; in vec3 vN;
+      uniform vec3 ambient; uniform vec3 sunColor; uniform vec3 sunDir; uniform vec3 pointColor;
+      uniform float ambientFactor; uniform sampler2D lightmap; uniform int hasLightmap;
+      in vec3 vL0; in vec3 vW0; in vec3 vL1; in vec3 vW1; in vec2 vXY; in vec3 vN; in vec2 vLM;
       #include <fog_pars_fragment>
       vec3 tap(float id, float w) {
         if (w <= 0.002) return vec3(0.0);
@@ -127,12 +143,18 @@ async function terrainMaterial(meta: { texture: string | null; tiling: number }[
         vec3 albedo = tap(vL0.x, vW0.x) + tap(vL0.y, vW0.y) + tap(vL0.z, vW0.z)
                     + tap(vL1.x, vW1.x) + tap(vL1.y, vW1.y) + tap(vL1.z, vW1.z);
         float ndl = max(dot(normalize(vN), sunDir), 0.0);
-        gl_FragColor = vec4(albedo * (ambient + sunColor * ndl), 1.0);
+        // Même formule que le décor : ambiante · (f + (1 − f) · ciel) + soleil · N·S · ombre + ponctuelles.
+        vec3 baked = vec3(1.0, 1.0, 0.0);
+        if (hasLightmap == 1 && vLM.x >= 0.0) baked = texture(lightmap, vLM).rgb;
+        vec3 lit = ambient * (ambientFactor + (1.0 - ambientFactor) * baked.r) + sunColor * ndl * baked.g
+                 + pointColor * baked.b;
+        gl_FragColor = vec4(albedo * lit, 1.0);
         #include <fog_fragment>
       }`,
   });
   material.uniforms.layers.value = layers;
-  material.addEventListener('dispose', () => layers.dispose());
+  material.uniforms.lightmap.value = lightmap;
+  material.addEventListener('dispose', () => { layers.dispose(); lightmap?.dispose(); });
   return material;
 }
 
@@ -488,12 +510,13 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         sky = skyProto;
       }
       // Sol : calques du terrain mélangés par sommet (poids du SplatMap, deux passes de trois calques),
-      // éclairés comme les acteurs : texture × (ambiante de la zone + soleil · N·L), brouillard.
+      // éclairés comme le décor avec la lumière cuite des lightmap (ciel, ombres, ponctuelles), brouillard.
       if (terrainGlb && data.decor.terrainGlb) {
         const terrainUrl = new URL(base + data.decor.terrainGlb, window.location.href);
         const terrainNode = terrainGlb.scene.getObjectByName('terrain');
-        const meta = (terrainNode?.userData as { terrainLayers?: { texture: string | null; tiling: number }[] })?.terrainLayers ?? [];
-        const material = await terrainMaterial(meta, terrainUrl, data.light);
+        const extras = terrainNode?.userData as {
+          terrainLayers?: { texture: string | null; tiling: number }[]; terrainLightmap?: string | null } | undefined;
+        const material = await terrainMaterial(extras?.terrainLayers ?? [], extras?.terrainLightmap ?? null, terrainUrl, data.light);
         if (!alive) return;
         disposables.push(material);
         terrainGlb.scene.traverse(node => {

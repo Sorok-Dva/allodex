@@ -5,9 +5,12 @@ de hauteurs de l'arbre serveur 7.0 (`5_4_terrain.bin`, carreaux de 8 × 8 hauteu
 de 33 × 33, marge d'un mètre) :
 
 * fichier `read_chunks`, bloc 0 ; entête de pointeurs relatifs `(décalage depuis le champ, nombre)` :
-  `+0x08` jeux de calques (9 o : 4 octets de drapeaux, 3 indices de calque, `0xFF` = aucun),
-  `+0x10` carreaux de 32 m (32 o : centre et demi-taille de la boîte, puis sous-carreaux),
-  `+0x18`, `+0x20` données par carreau (non utilisées ici) ;
+  `+0x00` tampons de sommets (4 o : `u16` taille, `u8` « complexe » — 12 o par sommet au lieu de 8,
+  la hauteur de la surface opposée en plus —, non utilisés ici), `+0x08` jeux de calques (9 o :
+  4 octets de drapeaux — complexe, `isXYZTextured`, couche, additive —, 3 indices de calque, `0xFF`
+  = aucun, `u8` tampon de sommets, `u8` **numéro du `SplatMap_N`** qui porte les poids),
+  `+0x10` carreaux de 32 m (32 o : centre et demi-taille de la boîte, puis sous-carreaux), puis,
+  non utilisés ici, `+0x18` occulteurs, `+0x20` herbe, `+0x28` matériaux et `+0x30` carreaux d'eau ;
 * sous-carreau de 8 m (40 o) : quatre couples `(décalage, nombre)` — indices du niveau de détail
   grossier (`u8`), indices du niveau fin (`u8`, triangles), sommets, passes —, puis la place du
   sous-carreau dans la région (`u16 x, u16 y`, en sous-carreaux), le nombre de sommets (`u16`) et
@@ -15,13 +18,19 @@ de 33 × 33, marge d'un mètre) :
 * sommet : 4 octets `(nx, ny, nz, g)` — normale (octets centrés sur 127,5) et `g` = indice dans la
   grille 9 × 9 du sous-carreau (`x = 8·sx + g // 9`, `y = 8·sy + g % 9`, en mètres) —, puis, après
   tous les sommets, une hauteur `f32` par sommet (maillage adaptatif : 66 des 81 points) ;
-* passe (6 o) : `u16` premier sommet dans la région, `u16` jeu de calques, `u8 c`, `u8 d` : le bloc de
-  8 × 8 texels du `SplatMap` qui porte ses poids (lignes `8c…8c+7`, colonnes `8d…8d+7`).
+* passe (6 o) : `u16` premier sommet dans le tampon, `u16` jeu de calques, `u8 c`, `u8 d` : le bloc de
+  8 × 8 texels du `SplatMap_N` de son jeu qui porte ses poids (lignes `8c…8c+7`, colonnes `8d…8d+7`).
 
-Calques : `TerraLayers` de la région (`MapRegion +0x98`) : entrées de 376 o à partir de `+0x230`
-(texture, taille de répétition en mètres en `+0x08`) ; l'indice d'un jeu de calques est décalé
-d'un (le 0 du `.xdb` 7.0 est vide). Poids : `SplatMap_0` de la région (256², R5G6B5) est un **atlas de
-blocs** de 8 × 8 texels, un par passe (`c`, `d`) : la ligne `i` du bloc est à `x = 8·sx + i·8/7`, la
+Structures recoupées avec les patterns ImHex de Paulus (`tools/reverse/terrain.hexpat`,
+`splatmap.hexpat`).
+
+Calques : `TerraLayers` de la région (`MapRegion +0x98`) : 256 entrées de 376 o à partir de `+0xB0`
+(texture en `+0x08`, taille de répétition en mètres en `+0x10`), indexées directement par les
+identifiants des jeux de calques (l'entrée 0 est vide en 7.0 et dans `Ferris4`, pas partout). Poids : les `SplatMap_0…2` de la région (256², R5G6B5) sont des
+**atlas de blocs** de 8 × 8 texels, un par passe (`c`, `d`), distribués dans l'ordre de dessin (le
+`_0` plein, 1 024 blocs, puis le `_1`, puis le `_2`) ; le jeu de calques nomme le sien — lu dans le
+`_0` par erreur, un bloc du `_1` met du poids sur un calque absent (63 % des passes de
+`FerrisRaid`, 0 % dans le bon atlas) : la ligne `i` du bloc est à `x = 8·sx + i·8/7`, la
 colonne `j` à `y = 8·sy + j·8/7` — les blocs de deux sous-carreaux voisins partagent leur bord à
 l'identique (écart moyen 0,0000 sur `Ferris4`, 229 paires). R, G, B sont les poids des trois calques
 du jeu de la passe dans l'ordre ; une passe unique somme à 1, deux passes (la seconde marquée par le
@@ -36,9 +45,12 @@ from dataclasses import dataclass
 import numpy as np
 
 REGION_SIZE = 256.0
-LAYER_FIRST = 0x230
+LAYER_TABLE = 0x30        # vecteur des entrées de calque, la première en `+0xB0`
+LAYER_ENTRY0 = 0xB0
 LAYER_STRIDE = 376
-LAYER_TILING = 0x08
+LAYER_TEXTURE = 0x08
+LAYER_TILING = 0x10
+SPLAT_MAPS = 3
 
 
 @dataclass
@@ -50,7 +62,7 @@ class Patch:
     normals: np.ndarray         # (n, 3)
     triangles: np.ndarray       # (m, 3) indices locaux
     coarse: np.ndarray          # (k, 3) niveau de détail grossier
-    passes: list[tuple[int, int, int, int]]   # (premier sommet, jeu de calques, bloc c, bloc d)
+    passes: list[tuple[int, int, int, int, int]]   # (premier sommet, jeu de calques, bloc c, bloc d, SplatMap_N)
     level: int = 0                  # couche (`FerrisRaid` : deux sols superposés dans une région)
 
 
@@ -62,10 +74,11 @@ def _selfptr(raw: bytes, off: int) -> tuple[int, int]:
 def parse_terrain_dump(raw: bytes) -> tuple[list[tuple[int, ...]], list[Patch]]:
     """Bloc 0 décompressé d'un `terrainDump.bin` → (jeux de calques, sous-carreaux)."""
     sets_at, sets_n = _selfptr(raw, 0x08)
-    layer_sets = []
+    layer_sets, splat_of_set = [], []
     for k in range(sets_n):
         ids = raw[sets_at + 9 * k + 4:sets_at + 9 * k + 7]
         layer_sets.append(tuple(i for i in ids if i != 0xFF))
+        splat_of_set.append(raw[sets_at + 9 * k + 8])
     tiles_at, tiles_n = _selfptr(raw, 0x10)
     patches: list[Patch] = []
     for t in range(tiles_n):
@@ -85,7 +98,8 @@ def parse_terrain_dump(raw: bytes) -> tuple[list[tuple[int, ...]], list[Patch]]:
             normals /= np.maximum(np.linalg.norm(normals, axis=1, keepdims=True), 1e-9)
             fine = np.frombuffer(raw, np.uint8, f_n, f_at)
             coarse = np.frombuffer(raw, np.uint8, c_n, c_at)
-            passes = [struct.unpack_from("<HHBB", raw, p_at + 6 * j) for j in range(p_n)]
+            passes = [(*link, splat_of_set[link[1]] if link[1] < sets_n else 0)
+                      for link in (struct.unpack_from("<HHBB", raw, p_at + 6 * j) for j in range(p_n))]
             patches.append(Patch(sx, sy, points, normals, fine[: len(fine) // 3 * 3].reshape(-1, 3).astype(np.int64),
                                  coarse[: len(coarse) // 3 * 3].reshape(-1, 3).astype(np.int64), passes, level))
     return layer_sets, patches
@@ -99,15 +113,20 @@ def splat_weights(raw: bytes) -> np.ndarray:
 
 
 def terrain_layers(db, cat, terra: int | None) -> list[tuple[str | None, float]]:
-    """Calques de `TerraLayers` : (nom de la texture, taille de répétition en mètres)."""
+    """Calques de `TerraLayers`, indexés par l'identifiant des jeux de calques : (nom de la texture,
+    taille de répétition en mètres). Le tableau (vecteur en `+0x30`, entrées de 376 o, texture en
+    `+0x08`, répétition en `+0x10`) a 256 entrées fixes, avec des trous ; l'entrée 0 compte :
+    `Inst_ZoneContested12_Start` la nomme (répétition 40 m) et 1 629 de ses jeux y renvoient, comme
+    aux calques 54 à 121 — la liste commençait à l'entrée 1 et s'arrêtait au premier trou après la
+    40ᵉ, ces sous-carreaux prenaient un calque sans texture."""
     out: list[tuple[str | None, float]] = []
     if terra is None:
         return out
-    for k in range(64):
-        entry = terra + LAYER_FIRST + LAYER_STRIDE * k
-        tex = db.ptr(entry)
-        if tex is None and k > 40:
-            break
+    table = db.vec(terra + LAYER_TABLE)
+    first, count = (table[0], table[1] // LAYER_STRIDE) if table else (terra + LAYER_ENTRY0, 65)
+    for k in range(count):
+        entry = first + LAYER_STRIDE * k
+        tex = db.ptr(entry + LAYER_TEXTURE)
         name = cat.name(db.binary_ref(tex)) if tex is not None and db.vtype(tex) == "Texture" else None
         tiling = db.f32(entry + LAYER_TILING) if name else 0.0
         out.append((name, tiling if tiling > 0 else 30.0))
@@ -145,8 +164,13 @@ def pass_weights(splat: np.ndarray | None, patch: Patch, block: tuple[int, int])
     return (w00 * (1 - fx) + w10 * fx) * (1 - fy) + (w01 * (1 - fx) + w11 * fx) * fy
 
 
-def region_splat(get, region_path: str) -> np.ndarray | None:
+def region_splats(get, region_path: str) -> list[np.ndarray | None]:
+    """Poids des `SplatMap_0…2` de la région (`None` pour un atlas absent), indexés par le numéro
+    que porte le jeu de calques d'une passe."""
     from tools.extract_menu_scene import read_chunks
-    raw = get(region_path.replace("_MapRegion.xdb", "_SplatMap_0.(Texture).bin"))
-    chunk = read_chunks(raw).get(0) if raw else None
-    return splat_weights(chunk) if chunk and len(chunk) >= 256 * 256 * 2 else None
+    out: list[np.ndarray | None] = []
+    for k in range(SPLAT_MAPS):
+        raw = get(region_path.replace("_MapRegion.xdb", f"_SplatMap_{k}.(Texture).bin"))
+        chunk = read_chunks(raw).get(0) if raw else None
+        out.append(splat_weights(chunk) if chunk and len(chunk) >= 256 * 256 * 2 else None)
+    return out
