@@ -20,10 +20,11 @@ Règles établies sur les données (septembre 2026, client RU 17.0.01.64), chaqu
 sur les `.xdb` 7.0 des mêmes ressources (`HadaganFemale`, `Underwear_HadaganFemale`,
 `HadaganFemaleFace03`…) :
 
-* visibilité : tous les géosets de la géométrie, moins ceux que cachent la tenue par défaut et
-  les objets (`hiddenGeosets`, listes par sexe + unisexe), plus ceux que montrent leurs
-  `armorShapes` (la variation par défaut montre `face_0`, `hair_0`, `facial_0`…) ; un géoset
-  sans texture n'est pas dessiné (emplacements vides de jupes et capes) ;
+* visibilité : tous les géosets de la géométrie, moins ceux que cache la tenue par défaut, plus
+  ceux que montrent les `armorShapes` des objets (la variation par défaut montre `face_0`,
+  `hair_0`, `facial_0`…), moins ceux que cachent les objets portés (`hiddenGeosets`, listes par
+  sexe + unisexe) — ce dernier cache l'emporte (cheveux sous un casque) ; un géoset sans texture
+  n'est pas dessiné (emplacements vides de jupes et capes) ;
 * calques : rectangles en fraction de la texture de peau, **V compté depuis le bas** (le visage,
   `y 0 → 0,375`, occupe le bas de l'image) ; ordre des coordonnées `x1, x2, y1, y2` ;
 * couleurs ARGB (`-1` = blanc, sans effet) ; teinte de peau multipliée sous le masque (alpha de
@@ -64,7 +65,10 @@ VAR_FACIAL = 0xF0
 VAR_HAIR = 0x110
 VAR_HAIR_COLORS = 0x130
 VAR_MAIN_TEXTURES = 0x150
-VAR_SKIN_COLORS = 0x170
+# 0x170 = couleurs de pierres d'épaule (Aoidoi) ; les couleurs de peau sont en 0x1B0 (relevé par
+# l'écran de création de personnage, `tools/allods_chargen.py`).
+VAR_SHOULDER_STONE_COLORS = 0x170
+VAR_SKIN_COLORS = 0x1B0
 # CharacterVariation (relatif à son début)
 CV_ADDITIONAL = 0x08
 CV_FACE = 0x10
@@ -172,6 +176,9 @@ class Variations:
     hair_colors: list[int]
     skin_colors: list[int]
     default: Variation
+    # `mainTextures` : peaux de base au choix ; la première sert quand le gabarit n'a pas de
+    # `mainBakedTexture` (PNJ uniques : `Creatures/Mirianna`, peau `ElfFemaleSkin00`).
+    main_textures: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -245,7 +252,7 @@ def _ints(db: PackDB, loc: int) -> list[int]:
 
 def read_variation(db: PackDB, cat: PakCatalog, off: int) -> Variation:
     skin = db.ptr(off + CV_SKIN)
-    skin_bin = cat.name((db.u32(skin + INDEXED_BINARY), db.u32(skin + INDEXED_BINARY + 8))) if skin is not None else None
+    skin_bin = cat.name(db.file_ref(skin, INDEXED_BINARY)) if skin is not None else None
     return Variation(additional=_item(db, cat, db.ptr(off + CV_ADDITIONAL)), face=_item(db, cat, db.ptr(off + CV_FACE)),
                      facial=_item(db, cat, db.ptr(off + CV_FACIAL)), hair=_item(db, cat, db.ptr(off + CV_HAIR)),
                      hair_color=db.i32(off + CV_HAIR_COLOR), skin=skin_bin, skin_color=db.i32(off + CV_SKIN_COLOR))
@@ -255,7 +262,8 @@ def read_variations(db: PackDB, cat: PakCatalog, off: int) -> Variations:
     return Variations(faces=db.pointers(off + VAR_FACES), facials=db.pointers(off + VAR_FACIAL),
                       hairs=db.pointers(off + VAR_HAIR), additionals=db.pointers(off + VAR_ADDITIONAL),
                       hair_colors=_ints(db, off + VAR_HAIR_COLORS), skin_colors=_ints(db, off + VAR_SKIN_COLORS),
-                      default=read_variation(db, cat, off + VAR_DEFAULT))
+                      default=read_variation(db, cat, off + VAR_DEFAULT),
+                      main_textures=[n for n in (_texture_name(db, cat, t) for t in db.pointers(off + VAR_MAIN_TEXTURES)) if n])
 
 
 def find_character_template(db: PackDB, cat: PakCatalog, model: str, folder: str) -> int | None:
@@ -317,10 +325,15 @@ def resolve_appearance(template: CharacterTemplate, element_names: Iterable[str]
     if variation:
         worn += variation.items()
     worn += list(items)
+    # La tenue par défaut cache les variantes (visages, coiffures…) que les objets remontrent ;
+    # un géoset caché par un objet porté (variation ou objet) l'emporte, lui, sur un géoset
+    # montré : les cheveux disparaissent sous un casque (règle de l'écran de création).
+    default_hidden: set[str] = set(template.default_dress.hidden_for(gender)) if template.default_dress else set()
     hidden: set[str] = set()
     shown: dict[str, ArmorShape] = {}
     for item in worn:
-        hidden.update(item.hidden_for(gender))
+        if item is not template.default_dress:
+            hidden.update(item.hidden_for(gender))
     for item in worn:
         for shape in item.shapes_for(gender):
             shown[shape.shape] = shape
@@ -329,7 +342,7 @@ def resolve_appearance(template: CharacterTemplate, element_names: Iterable[str]
     visible: list[str] = []
     hair_color = variation.hair_color if variation else WHITE
     for name in element_names:
-        if name in hidden and name not in shown:
+        if name in hidden or (name in default_hidden and name not in shown):
             continue
         shape = shown.get(name)
         texture = (shape.replacement if shape and shape.replacement else None) or element_textures.get(name)

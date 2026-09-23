@@ -29,9 +29,16 @@ en relit la structure, établie sur les données (septembre 2026) :
   ressources communes à l'arbre serveur 7.0 ;
 * **fichiers binaires** : une ressource qui a un `.bin` (géométrie, texture, animation…) porte
   `(u32 code de pak, u32 rang dans le pak)` ; le rang est l'ordre du répertoire central du
-  zip. La table code → pak n'existe pas dans les données lues : `PakCatalog` la reconstitue
-  par vote (le nom trouvé au rang indiqué doit finir par le type de la ressource), ce qui
-  suffit à nommer toutes les ressources.
+  zip. La table code → pak est le **bloc 6** de la base (après le bloc 5, `n × u64`) : `n`
+  noms de paks en UTF-16 (`u64 longueur en octets` + texte), le code est leur rang
+  (`PackDB.pak_names`, relevé par le pilote des cinématiques moteur ; il redonne les 170 codes
+  que le vote `vote_pak_codes` retrouvait). `open_catalog` s'en sert, et garde le vote en repli ;
+* **bases de carte** : chaque carte a sa base, `Bin/Maps_<carte>.bin` (même format : régions
+  `MapRegion`, objets posés, géométries propres). Sa table de relocation a un genre de plus :
+  **1 = pointeur vers un objet de `pack.bin`** (cible = décalage dans les données de
+  `pack.bin`). `open_map` rend une `LinkedDB` qui suit ces pointeurs de façon transparente :
+  un décalage de `pack.bin` y porte le bit `EXTERN` (2⁴⁰), et les codes de pak de la carte sont
+  décalés de `MAP_CODES` pour que le même `PakCatalog` nomme les fichiers des deux bases.
 
 La base est décompressée une fois dans un cache (`~/.cache/allodex`, ou `ALLODEX_CACHE`) puis
 projetée en mémoire.
@@ -66,6 +73,7 @@ BLOCK_DATA = 3
 BLOCK_RELOCATIONS = 4
 
 RELOC_POINTER = 0
+RELOC_EXTERN = 1               # base de carte : pointeur vers un objet de pack.bin
 RELOC_VECTOR = 3
 RELOC_RESOURCE = 4
 RELOC_STRUCT = 5
@@ -109,6 +117,9 @@ class PackDB:
         self.res_type = self.rtgt[res]
         self.data_size = data_size
         self._paths: dict[str, int] | None = None
+        self._ids: dict[int, int] | None = None
+        self._pak_names: list[str] | None = None
+        self._reloc_end = reloc_at + 16 * count
 
     # -- structure du fichier
 
@@ -161,6 +172,45 @@ class PackDB:
                     out[name] = offset
             self._paths = out
         return self._paths
+
+    @property
+    def ids(self) -> dict[int, int]:
+        """Identifiant de ressource → décalage (table de hachage de l'entête en 0x18). Les
+        ressources d'un même dossier ont des identifiants consécutifs."""
+        if self._ids is None:
+            base, buckets = self._selfptr(HEADER_OBJECT_HASH)
+            out: dict[int, int] = {}
+            for b in range(buckets):
+                p, n = self._selfptr(base + 8 * b)
+                for k in range(n):
+                    e = p + 16 * k
+                    rec, _ = self._selfptr(e)
+                    offset, = struct.unpack_from("<Q", self.raw, e + 8)
+                    out[self._u32(rec + 4)] = offset
+            self._ids = out
+        return self._ids
+
+    @property
+    def pak_names(self) -> list[str]:
+        """Table code → pak (bloc 6, noms UTF-16 ; le code est le rang), vide si absente."""
+        if self._pak_names is None:
+            names: list[str] = []
+            off = self._reloc_end
+            while off + 12 <= len(self.raw):
+                kind = self._u32(off)
+                n, = struct.unpack_from("<Q", self.raw, off + 4)
+                off += 12
+                if kind == 5:
+                    off += 8 * n
+                    continue
+                if kind == 6:
+                    for _ in range(n):
+                        length, = struct.unpack_from("<Q", self.raw, off)
+                        names.append(bytes(self.raw[off + 8:off + 8 + length]).decode("utf-16-le", "replace"))
+                        off += 8 + length
+                break
+            self._pak_names = names
+        return self._pak_names
 
     # -- lecture des données (décalages relatifs au bloc de données)
 
@@ -251,6 +301,10 @@ class PackDB:
         mask = (self.rkind == RELOC_STRUCT) & (self.rtgt == ti)
         return self.rloc[mask].tolist()
 
+    def file_ref(self, off: int, field: int) -> tuple[int, int]:
+        """(code de pak, rang) posé au champ `field` d'une ressource (second fichier d'une texture…)."""
+        return self.u32(off + field), self.u32(off + field + 8)
+
     def binary_ref(self, off: int) -> tuple[int, int] | None:
         """(code de pak, rang) du fichier binaire principal d'une ressource."""
         field = BINARY_REF.get(self.vtype(off) or "")
@@ -275,6 +329,88 @@ def open_pack(client_root: Path, cache_dir: Path | None = None) -> PackDB:
         tmp.replace(raw_path)
     handle = open(raw_path, "rb")
     return PackDB(mmap.mmap(handle.fileno(), 0, access=mmap.ACCESS_READ))
+
+
+EXTERN = 1 << 40               # bit des décalages de pack.bin vus depuis une base de carte
+MAP_CODES = 1 << 16            # décalage des codes de pak propres à une base de carte
+
+
+class LinkedDB(PackDB):
+    """Base de carte liée à `pack.bin` : même interface que `PackDB`, les décalages portant le bit
+    `EXTERN` sont lus dans `pack.bin`, et les pointeurs de genre 1 y mènent."""
+
+    def __init__(self, raw, parent: PackDB, name: str = "") -> None:
+        super().__init__(raw)
+        self.parent = parent
+        self.name = name
+
+    def _local(self, off: int) -> bool:
+        return not off & EXTERN
+
+    def u32(self, off: int) -> int:
+        return super().u32(off) if self._local(off) else self.parent.u32(off & ~EXTERN)
+
+    def i32(self, off: int) -> int:
+        return super().i32(off) if self._local(off) else self.parent.i32(off & ~EXTERN)
+
+    def f32(self, off: int) -> float:
+        return super().f32(off) if self._local(off) else self.parent.f32(off & ~EXTERN)
+
+    def floats(self, off: int, n: int) -> tuple[float, ...]:
+        return super().floats(off, n) if self._local(off) else self.parent.floats(off & ~EXTERN, n)
+
+    def u8(self, off: int) -> int:
+        return super().u8(off) if self._local(off) else self.parent.u8(off & ~EXTERN)
+
+    def bytes(self, off: int, n: int) -> bytes:
+        return super().bytes(off, n) if self._local(off) else self.parent.bytes(off & ~EXTERN, n)
+
+    def reloc(self, loc: int) -> tuple[int, int] | None:
+        if not self._local(loc):
+            r = self.parent.reloc(loc & ~EXTERN)
+            # un pointeur ou un vecteur de pack.bin reste dans pack.bin
+            return None if r is None else (r[0], r[1] | EXTERN if r[0] in (RELOC_POINTER, RELOC_VECTOR) else r[1])
+        return super().reloc(loc)
+
+    def ptr(self, loc: int) -> int | None:
+        r = self.reloc(loc)
+        if r is None:
+            return None
+        if r[0] == RELOC_POINTER:
+            return r[1]
+        if r[0] == RELOC_EXTERN and self._local(loc):
+            return r[1] | EXTERN
+        return None
+
+    def vtype(self, off: int) -> str | None:
+        return super().vtype(off) if self._local(off) else self.parent.vtype(off & ~EXTERN)
+
+    def resources(self, type_name: str) -> list[int]:
+        own = super().resources(type_name) if type_name in self.types else []
+        return own + [o | EXTERN for o in self.parent.resources(type_name)]
+
+    def file_ref(self, off: int, field: int) -> tuple[int, int]:
+        if not self._local(off):
+            return self.parent.file_ref(off & ~EXTERN, field)
+        code, rank = super().file_ref(off, field)
+        return code + MAP_CODES, rank
+
+    def binary_ref(self, off: int) -> tuple[int, int] | None:
+        if not self._local(off):
+            return self.parent.binary_ref(off & ~EXTERN)
+        ref = super().binary_ref(off)
+        return None if ref is None else (ref[0] + MAP_CODES, ref[1])
+
+
+def open_map(pack: PackDB, client_root: Path, map_name: str) -> LinkedDB:
+    """Base de la carte `map_name` (`BaseLocall_x64.pak` → `Bin/Maps_<carte>.bin`), liée à `pack`."""
+    with zipfile.ZipFile(Path(client_root) / "data" / "Packs" / PACK_PAK) as zf:
+        data = zf.read(f"Bin/Maps_{map_name}.bin")
+    try:
+        data = zlib.decompress(data)
+    except zlib.error:
+        pass
+    return LinkedDB(data, pack, map_name)
 
 
 # --- paks et noms des fichiers binaires ------------------------------------------------------
@@ -379,7 +515,22 @@ PAK_VOTE_VERSION = 2
 
 
 def open_catalog(db: PackDB, client_root: Path, cache_dir: Path | None = None) -> PakCatalog:
+    """Catalogue des paks : codes lus dans le bloc 6 de la base (et de sa base parente pour une
+    carte), sinon votés (anciennes bases, données de test)."""
     packs_dir = Path(client_root) / "data" / "Packs"
+    if db.pak_names:
+        root = db.parent if isinstance(db, LinkedDB) else db
+        codes = dict(enumerate(root.pak_names)) if root.pak_names else {}
+        if isinstance(db, LinkedDB):
+            codes.update({MAP_CODES + i: name for i, name in enumerate(db.pak_names)})
+        names = {}
+        for pak in sorted(set(codes.values())):
+            try:
+                with zipfile.ZipFile(packs_dir / pak) as zf:
+                    names[pak] = [n.replace("\\", "/") for n in zf.namelist()]
+            except (OSError, zipfile.BadZipFile):
+                continue
+        return PakCatalog(packs_dir, names, codes)
     names = list_paks(packs_dir)
     cache_dir = Path(cache_dir or default_cache_dir())
     digest = hashlib.sha1(json.dumps({"v": PAK_VOTE_VERSION, **{k: len(v) for k, v in sorted(names.items())}}).encode()).hexdigest()[:12]

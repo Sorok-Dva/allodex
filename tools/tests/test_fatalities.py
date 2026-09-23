@@ -436,3 +436,17 @@ def test_flatten_records_channel_rays():
     tl = flatten(script, "KaniaMale", {}, {})
     assert tl.channels == [{"t": 1.2, "until": 3.5, "vot": 7, "fadeIn": 0.2, "fadeOut": 0.1, "length": 10.0,
                             "velocity": 2.0, "start": ray["start"], "end": ray["end"]}]
+
+
+def test_resolve_appearance_lets_an_item_hide_a_shown_geoset():
+    from tools.allods_characters import VisualItem, resolve_appearance
+    names = ["torso_0", "face_0", "hair_1"]
+    textures = {n: "skin.bin" for n in names}
+    helmet = VisualItem(9, hidden={"unisex": ["hair_1"]})
+    app = resolve_appearance(_template(), names, textures, items=[helmet])
+    assert app.visible == ["torso_0", "face_0"]   # la coiffure montrée disparaît sous le casque
+
+
+def test_skin_colors_are_read_after_the_shoulder_stone_colors():
+    from tools.allods_characters import VAR_SHOULDER_STONE_COLORS, VAR_SKIN_COLORS
+    assert (VAR_SHOULDER_STONE_COLORS, VAR_SKIN_COLORS) == (0x170, 0x1B0)

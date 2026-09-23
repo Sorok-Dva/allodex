@@ -8,6 +8,13 @@
    },
    "version": "16.0"
   },
+  "ferris": {
+   "title": {
+    "fr": "Ferris",
+    "en": "Ferris"
+   },
+   "version": "6.0"
+  },
   "invasion": {
    "title": {
     "fr": "L'Invasion",
@@ -1161,6 +1168,96 @@
     "en": "The hidden world"
    },
    "chronology": "Cinématique moteur de la quête « AO12_Prologue04 » (prologue 12.0, carte AO12_PrologueInst, la Citadelle de Nihaz) : Klavdia y trouve dans les souvenirs gardés par Nihaz « le monde qu’il cherchait à cacher », d’où partent les arcs 12.0 et 13.0 (Eden, la Toute-Mère) ; placée avant les vidéos de Suslanger (12.0). Recréée en 3D, voir engine_scenes.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-retrospective",
+   "kind": "engine",
+   "source": "main",
+   "event": "Ferris_4_secret1",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 150,
+   "title": {
+    "fr": "Rétrospective",
+    "en": "Retrospective"
+   },
+   "chronology": "Cinématique moteur de la quête « Ferris_4_secret1 » (« Ретроспектива », Ferris, 6.0) : le journal de l’« Objet » fait revivre la réunion de Vasily Promozglin, du nécromant Negus Jig et d’une laborantine avant la catastrophe de Ferris ; 6.0 précède l’Invasion (7.0).",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-portal",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid FR4Intro",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 160,
+   "title": {
+    "fr": "Le portail de Ferris",
+    "en": "The Ferris Portal"
+   },
+   "chronology": "Cinématique moteur d’entrée du raid de Ferris (« FR4Intro », 6.0) : devant le portail, Élisabeth Rysina, Marianne di Arder et le Ваятель (un Colosse) envoient les héros dans le cœur de Ferris ; après la rétrospective du laboratoire, avant l’Invasion (7.0).",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-order",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid CutScene_GeneralStart",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 170,
+   "title": {
+    "fr": "Les serviteurs de l’Ordre",
+    "en": "Servants of Order"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« CutScene_GeneralStart », 6.0) : le Colosse gardien tombe, Élisabeth Rysina et Marianne di Arder rejoignent les héros au cœur de Ferris.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-locus",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid LastStart_CutScene",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 180,
+   "title": {
+    "fr": "Le Locus",
+    "en": "The Locus"
+   },
+   "chronology": "Cinématique moteur avant le dernier combat du raid de Ferris (« LastStart_CutScene », 6.0) : le Ваятель présente le Locus, puis le Cœur du Locus, l’Architecte, s’adresse aux héros.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-locus-fall",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid LastEnd_CutScene",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 190,
+   "title": {
+    "fr": "La chute du Locus",
+    "en": "The Fall of the Locus"
+   },
+   "chronology": "Cinématique moteur de fin du raid de Ferris (« LastEnd_CutScene », 6.0) : le Locus s’effondre, la fuite, puis le Ваятель révèle ce qui attend Sarnaut ; clôt l’arc de Ferris avant l’Invasion (7.0).",
    "audio": {
     "language": "ru"
    }
@@ -22509,29 +22606,167 @@
     {
      "id": "nihaz",
      "mob": 507561,
-     "position": [
-      148.35,
-      135.07,
-      230
-     ],
      "ground": true,
-     "face": [
-      171.6,
-      145.4
-     ],
      "idle": "Idle",
      "talk": "SpellCastOmni",
      "animations": [
       "Idle",
+      "Run",
       "SpellCastOmni"
      ],
      "speaker_prefixes": [
       "Нихаз:"
      ],
-     "appear": 39
+     "appear": 39,
+     "path": [
+      {
+       "t": 0,
+       "p": [
+        148.35,
+        135.07,
+        230
+       ],
+       "face": [
+        171.6,
+        145.4
+       ]
+      },
+      {
+       "t": 63,
+       "p": [
+        148.35,
+        135.07,
+        230
+       ],
+       "face": [
+        171.6,
+        145.4
+       ]
+      },
+      {
+       "t": 65.5,
+       "p": [
+        80.0,
+        147.58,
+        201.0
+       ],
+       "air": true,
+       "face": [
+        147.26,
+        147.58
+       ]
+      }
+     ],
+     "move": "Run"
     }
    ],
-   "staging_note": "Le groupe (Reniesta, Klavdia, Gort) entoure le Pointeur de Nihaz, visé par la caméra pendant les 42 premières secondes ; Nihaz (modèle NihazDragonBoss, le seul visuel du MobWorld « Нихаз » 507561 rangé avec les données de la quête) se tient au point visé par le plan fixe de ses répliques (148,3 ; 135,1). Nihaz n’apparaît qu’à 39 s, quand la caméra quitte le Pointeur pour le point qu’il occupe (sinon il masquerait le premier plan, visé à travers ce point)."
+   "staging_note": "Le groupe (Reniesta, Klavdia, Gort) entoure le Pointeur de Nihaz, visé par la caméra pendant les 42 premières secondes ; Nihaz (NihazDragonBoss, seul visuel du MobWorld « Нихаз » 507561 rangé avec la quête) arrive par un portail au point visé par le plan fixe de ses trois répliques (148,3 ; 135,1), puis rejoint le point visé par le dernier travelling (90,1 ; 147,6 ; 210,3), où il prononce les trois dernières : la caméra se rapproche du dragon. Effets : portail, bouclier de Reniesta, hologramme du quartier général sur le Pointeur.",
+   "spawns": [
+    {
+     "mob": 507537,
+     "p": [
+      148.35,
+      135.07,
+      230
+     ],
+     "ground": true,
+     "t": 38,
+     "until": 46,
+     "_note": "Portail de Nihaz (PNJ d'effet 507537, Nihaz_FlyPart_PortaOn02) à son arrivée."
+    },
+    {
+     "buff": 507572,
+     "attach": "reniesta",
+     "t": 42,
+     "until": 63,
+     "_note": "Bouclier de Reniesta (buff 507572 = AO12_Prologue04_Cutscene_Reniesta_ShieldCast, RysinaShield_Main) pendant les répliques de Nihaz."
+    },
+    {
+     "mob": 507559,
+     "p": [
+      174.92,
+      147.87,
+      196.0
+     ],
+     "t": 0,
+     "until": 82,
+     "scale": 1,
+     "_note": "Hologramme du quartier général (PNJ d'effet 507559, Nihaz_HQ_Hologram) sur le Pointeur, que Reniesta lit."
+    }
+   ],
+   "post": [
+    {
+     "t": 0,
+     "kind": "fadeIn",
+     "duration": 2.0,
+     "_note": "AO12_Prologue04_TransitionToCutscene : Black_Long"
+    },
+    {
+     "t": 81.0,
+     "kind": "fadeOut",
+     "duration": 1.0,
+     "_note": "AO12_Prologue04_CutsceneFinal : Black_Instant"
+    }
+   ],
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
+   }
+  },
+  {
+   "id": "ferris-retrospective",
+   "source": "xdb70",
+   "first_buff": "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_fade_start.(BuffResource).xdb",
+   "_note": "Déroulé serveur relu dans l’arbre 7.0 (buffs Cutscene_fade_start → Cutscene_01 … Cutscene07 → Cutscene_fade_end), rapporté au client 17.0 : caméras, répliques et locuteurs, PNJ et leur place (5_4_ServerObjects), ciel et lumière de la vision, musique et ambiance."
+  },
+  {
+   "id": "ferris-portal",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_Main.(BuffResource).xdb",
+   "map": "Ferris4",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder"
+   },
+   "_note": "Déroulé serveur 7.0 (Ferris_Cutscene_Main → Ferris_Cutscene … _9ID) ; PNJ invoqués sur les repères de 5_5_ServerObjects ; répliques posées sur le joueur attribuées par le nom de la voix (FR_PreRaidRysina → Rysina ; Vayatel → le Colosse, Marianna → di Arder)."
+  },
+  {
+   "id": "ferris-order",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/CutScene_GeneralStart_Main.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Сердце Локуса"
+   },
+   "_note": "Déroulé serveur 7.0 du raid de Ferris ; PNJ invoqués sur les repères de la carte FerrisRaid ; locuteurs par le nom de la voix (Vayatel → le Colosse, Marianna → di Arder, Arch → le Cœur du Locus)."
+  },
+  {
+   "id": "ferris-locus",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Сердце Локуса"
+   },
+   "_note": "Déroulé serveur 7.0 du raid de Ferris ; PNJ invoqués sur les repères de la carte FerrisRaid ; locuteurs par le nom de la voix (Vayatel → le Colosse, Marianna → di Arder, Arch → le Cœur du Locus)."
+  },
+  {
+   "id": "ferris-locus-fall",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/LastEnd_CutScene_Main.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Сердце Локуса"
+   },
+   "_note": "Déroulé serveur 7.0 du raid de Ferris ; PNJ invoqués sur les repères de la carte FerrisRaid ; locuteurs par le nom de la voix (Vayatel → le Colosse, Marianna → di Arder, Arch → le Cœur du Locus)."
   }
  ]
 }

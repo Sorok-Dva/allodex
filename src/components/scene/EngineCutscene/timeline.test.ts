@@ -45,3 +45,59 @@ describe('engine cutscene timeline', () => {
     expect(argb(0xff808080, 4)).toEqual([1, 1, 1]);
   });
 });
+
+describe('engine cutscene paths, fades and sounds', () => {
+  it('interpolates actor paths and reports movement', async () => {
+    const { pathAt } = await import('./timeline');
+    const path = [{ t: 0, p: [0, 0, 0] as [number, number, number], yaw: 0 }, { t: 10, p: [0, 0, 0] as [number, number, number], yaw: 0 },
+      { t: 12, p: [4, 0, 2] as [number, number, number], yaw: 1 }];
+    expect(pathAt(path, 5)).toEqual({ p: [0, 0, 0], yaw: 0, moving: false });
+    expect(pathAt(path, 11)).toEqual({ p: [2, 0, 1], yaw: 0.5, moving: true });
+    expect(pathAt(path, 20).p).toEqual([4, 0, 2]);
+  });
+
+  it('fades in from black and out to black', async () => {
+    const { veilAt } = await import('./timeline');
+    const post = [{ t: 0, kind: 'fadeIn' as const, duration: 2 }, { t: 10, kind: 'fadeOut' as const, duration: 1 }];
+    expect(veilAt(post, 0)).toBe(1);
+    expect(veilAt(post, 1)).toBe(0.5);
+    expect(veilAt(post, 5)).toBe(0);
+    expect(veilAt(post, 10.5)).toBe(0.5);
+    expect(veilAt(post, 12)).toBe(1);
+  });
+
+  it('attenuates point sounds linearly with distance', async () => {
+    const { falloff } = await import('./timeline');
+    expect(falloff(0)).toBe(1);
+    expect(falloff(30, 60)).toBe(0.5);
+    expect(falloff(90, 60)).toBe(0);
+  });
+
+  it('raises and lowers a black veil around its span', async () => {
+    const { veilAt } = await import('./timeline');
+    const post = [{ t: 4, kind: 'veil' as const, until: 8, fadeIn: 2, fadeOut: 1 }];
+    expect(veilAt(post, 3)).toBe(0);
+    expect(veilAt(post, 5)).toBe(0.5);
+    expect(veilAt(post, 7)).toBe(1);
+    expect(veilAt(post, 8.5)).toBe(0.5);
+    expect(veilAt(post, 10)).toBe(0);
+  });
+
+  it('chains the client clips of a line with their own lengths', () => {
+    const actor = { id: 'saw', idle: 'Idle01', talk: 'EmoteSpeech', animations: { Point: 1.5, EmoteSpeech: 2 } };
+    const lines = [{ ...line(1, 10, 5, 'saw', 3, ['point', 'emoteSpeech']), clips: ['Point', 'EmoteSpeech', 'Missing'] }];
+    expect(actorClipAt(actor, lines, 11)).toEqual({ clip: 'Point', time: 1 });
+    expect(actorClipAt(actor, lines, 12)).toEqual({ clip: 'EmoteSpeech', time: 0.5 });
+    expect(actorClipAt(actor, lines, 14)).toEqual({ clip: 'Idle01', time: 14 });
+  });
+
+  it('plays buff animations in a loop or once, holding a death pose', () => {
+    const actor = { id: 'boss', idle: 'Idle', talk: undefined, animations: { Ready: 2, Death: 3, Special: 1 },
+      actions: [{ t: 0, until: 20, clips: ['Ready'], loop: true }, { t: 10, until: 20, clips: ['Death'], loop: false },
+        { t: 30, until: 40, clips: ['Special'], loop: false }] };
+    expect(actorClipAt(actor, [], 5)).toEqual({ clip: 'Ready', time: 1 });
+    expect(actorClipAt(actor, [], 11)).toEqual({ clip: 'Death', time: 1 });
+    expect(actorClipAt(actor, [], 15).clip).toBe('Death');
+    expect(actorClipAt(actor, [], 32)).toEqual({ clip: 'Idle', time: 32 });
+  });
+});

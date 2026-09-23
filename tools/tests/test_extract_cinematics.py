@@ -255,5 +255,8 @@ def test_engine_chapters_have_an_extraction_spec(manifest):
     engine = [c for c in manifest["cinematics"] if c.get("kind") == "engine"]
     assert engine and all(c["id"] in specs for c in engine)
     for spec in specs.values():
+        if spec.get("source") == "xdb70":
+            assert spec["first_buff"].endswith(".(BuffResource).xdb")   # déroulé serveur 7.0
+            continue
         numbered = sorted(n for g in spec["timing"]["groups"] for n in g["lines"])
         assert numbered == list(range(1, len(spec["lines"]) + 1))
