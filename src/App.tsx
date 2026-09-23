@@ -19,6 +19,9 @@ const CharacterCreationScreen = import.meta.env.DEV
 import { LorebookScreen } from '@/screens/LorebookScreen/LorebookScreen';
 import { CinematicsScreen } from '@/screens/CinematicsScreen/CinematicsScreen';
 
+// Tableau de bord d'audience : chargé à part, seul l'administrateur y accède.
+const StatsScreen = lazy(() => import('@/screens/StatsScreen/StatsScreen'));
+
 export default function App() {
   const [ready, setReady] = useState(false);
   const { path } = useRoute();
@@ -42,6 +45,7 @@ export default function App() {
        path === '/talents' ? <TalentsScreen /> :
        path === '/lorebook' || path.startsWith('/lorebook/') ? <LorebookScreen /> :
        path === '/cinematics' || path === '/cinematiques' ? <CinematicsScreen /> :
+       path === '/stats' ? <Suspense fallback={null}><StatsScreen /></Suspense> :
        <OpeningScreen />}
     </AudioProvider>
     </I18nProvider>
