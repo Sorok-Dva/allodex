@@ -490,7 +490,7 @@ tenue et attente ; repère converti en Y en haut (nœud racine), descripteur dan
 **Écarts connus** : caméra de la place de *sélection* (`UICharacterScenes`), celle de la création
 (`preMissionCamera`) n'étant pas décodée ; effets animés des tenues (plantes du Pacificateur,
 lueurs) non rejoués ; ambiances FMOD relevées mais non jouées (musique du menu 17.0 à la place) ;
-morphologie (`morphPresets`) absente du 17 (listes vides) ; aèdes : estrade reprise du décor.
+morphologie (`morphPresets`, citée par le script) non décodée ; aèdes : estrade reprise du décor.
 
 ## Déploiement (production)
 
