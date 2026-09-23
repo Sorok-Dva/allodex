@@ -176,5 +176,7 @@ def test_menu_zone_light_and_ambience_grid(pack):
     place = {s.name: s for s in ac.character_scenes(db)}["CharacterSelectElf"].character
     light = zone_light(mp, zone_lights_at(mp, place))
     assert light["ambient"] & 0xFFFFFF == 0x312E47 and light["fogEnd"] == 220.0
+    # PointLightColor de `ZoneLights/Elf_Chargen.(ZoneLights).xdb` (7.0 : -11913109), en +0x4C.
+    assert light["pointLight"] & 0xFFFFFFFF == 0xFF4A386B
     amb = zone_lights_at(mp, place, REGION_AMBIENCES, reach=2)
     assert mp.string(amb + 0x58) == "Ambience/OutdoorAmbience/Zones/AI36"

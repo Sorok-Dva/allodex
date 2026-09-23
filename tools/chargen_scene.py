@@ -94,16 +94,24 @@ def zone_lights_at(m: PackDB, pos, grid: int = REGION_ZONE_LIGHTS, reach: int = 
 def zone_light(m: PackDB, zl: int) -> dict:
     """Éclairage d'une zone du menu, au format de `allods_scenes.read_zone_light` (couleurs ARGB,
     unité 0x80 = 1) : ambiante, diffuse (soleil), brouillard, lumière ponctuelle, auto-illumination,
-    spéculaire, soleil (degrés), ciel. Valeurs lues telles quelles, comme dans les cinématiques :
-    `PointLightColor` vaut `0xFFFFFF` (2) à sept places, `0xA59243` à celle des aèdes, et le
-    client pose aussi `0x808080` (1) ailleurs (zone de `ferris-retrospective`) : une valeur choisie
-    par zone, qu'aucune donnée ne demande de rééchelonner."""
+    spéculaire, soleil (degrés), ciel.
+
+    Les champs du `StaticLight` sont rangés par ordre alphabétique (schéma 7.0 : `AmbientColor`,
+    `AmbientFactor`, `ContourColor`, `DiffuseColor`, `FadeEnd`, `FadeStart`, `FogColor`, `FogEnd`,
+    `FogStart`, `PointLightColor`, `SelfIllumColor`, `SpecularColor`, `SpecularWaterColor`,
+    `SunLightPitch`, `SunLightYaw`…) ; le 17 a ajouté un mot en `+0x48`, entre `FogStart` et
+    `PointLightColor`, qui vaut `0xFFFFFFFF` partout. `PointLightColor` est donc en **`+0x4C`**,
+    `SelfIllumColor` en `+0x50` : recoupé sur les `ZoneLights/*_Chargen` de l'arbre 7.0, où les
+    sept couleurs de lumière ponctuelle (`0xFF4A386B` elfe, `0xFF615329` gibberling, `0xFF8A6A39`
+    hadagan, `0xFFBFA355` kanian, `0xFF936700` orc, `0xFF80514D` priden, `0xFF7D6444` mort-vivant)
+    et les auto-illuminations (`0x78659FDA` gibberling, `0xFF150A00` priden) se retrouvent à ces
+    places dans le 17. Lu en `+0x48`, le blanc (2) doublait les lanternes et délavait les acteurs."""
     e = zl + ZONE_ITEM
     sky = m.ptr(zl + ZONE_SKY)
     return {"ambient": m.u32(e + 0x24), "ambientFactor": round(m.f32(e + 0x28), 4),
             "diffuse": m.u32(e + 0x30), "fog": m.u32(e + 0x3C), "fogEnd": round(m.f32(e + 0x40), 3),
-            "fogStart": round(m.f32(e + 0x44), 3), "pointLight": m.u32(e + 0x48),
-            "selfIllum": m.u32(e + 0x4C), "specular": m.u32(e + 0x54),
+            "fogStart": round(m.f32(e + 0x44), 3), "pointLight": m.u32(e + 0x4C),
+            "selfIllum": m.u32(e + 0x50), "specular": m.u32(e + 0x54),
             "sunPitch": round(m.f32(e + 0x5C), 3), "sunYaw": round(m.f32(e + 0x60), 3),
             "sky": sky if sky is not None and m.vtype(sky) == "SkyMesh" else None}
 
