@@ -11,6 +11,7 @@ import {
   victimStepAt, type ChannelEvent, type VictimStep, type ChannelPoint, type FatalityObject, type FatalityTimeline,
 } from './timeline';
 import { CameraCollider, decorColliders } from './cameraCollision';
+import { buildTerrainExtras, type TerrainExtras } from '@/components/scene/vot/terrainExtras';
 import { loadParticleFile, type ParticleAtlasMeta } from './particles';
 import { bindClips, dressedBodies, tintedOf, type Body, type FatalityDress } from './dress';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -239,6 +240,9 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     const factory = new VotFactory({ objects, baseUrl: fxUrl, disposables, anisotropy: () => renderer?.capabilities?.getMaxAnisotropy?.() ?? 1 });
     const prepare = (root: THREE.Object3D, lit: boolean, tinted: Tinted[], scrolling: null) => factory.prepare(root, lit, tinted, scrolling);
     let skyNode: THREE.Object3D | null = null;
+    // Herbe et eau : horloge propre (le vent ne repart pas à chaque boucle de la fatalité).
+    let terrainExtras: TerrainExtras | null = null;
+    let extrasClock = 0;
     const instantiate = (proto: THREE.Object3D, clips: THREE.AnimationClip[], start: number, lifeTime: number,
       fadeIn: number, fadeOut: number): VotInstance => factory.instantiate(proto, clips, start, lifeTime, fadeIn, fadeOut);
 
@@ -246,6 +250,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     let firstFrame = true;
     const draw = () => {
       if (!renderer) return;
+      terrainExtras?.update(renderer, scene, camera, extrasClock);
       renderer.render(scene, camera);
       st.dirty = false;
       if (firstFrame) { firstFrame = false; callbacks.current.onReady?.(); }
@@ -354,6 +359,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       const delta = previous ? Math.min((now - previous) / 1000, 0.25) : 0;
       previous = now;
       if (st.playing && st.duration > 0) {
+        extrasClock += delta * st.speed;
         st.time += delta * st.speed;
         if (st.time >= st.duration) {
           if (st.loop) { st.time -= st.duration; st.seeked = true; }
@@ -439,6 +445,18 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
           });
           const sky = decor.scene.getObjectByName('sky');
           if (sky) skyNode = sky;
+          // Herbe et eau du sol réel (`terrainDump`), éclairées par la lumière de la zone.
+          if (sceneUrl) {
+            const env = environment;
+            const sunDir = env?.sunDirection ?? [-0.3, -0.6, 0.8];
+            terrainExtras = await buildTerrainExtras(decor.scene, new URL(sceneUrl, window.location.href), {
+              ambient: env?.ambient ? new THREE.Color(...env.ambient) : ambientColor.clone(),
+              sun: env?.sun ? new THREE.Color(...env.sun) : new THREE.Color(0, 0, 0),
+              point: new THREE.Color(0, 0, 0), sunDir: new THREE.Vector3(...sunDir), ambientFactor: 1, lightmap: null,
+            });
+            if (!alive) { terrainExtras?.dispose(); return; }
+            if (terrainExtras) disposables.push(terrainExtras);
+          }
           world.add(decor.scene);
           const { ground, obstacles } = decorColliders(decor.scene);
           collider.setColliders(ground, obstacles);
