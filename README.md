@@ -203,9 +203,12 @@ noire, et l'ouverture de la sphère (drapeau visuel) n'est pas reproduite.
 placement de caméra en doubles x, y, f32 lacet, double z ; PNJ par `VisualMob`) jouée par le
 `GameViewScript` d'un `ShowSceneAction` : chaque créature joue l'animation que le script lui donne,
 son animation de cinématique portant son déplacement ; caméra au placement du spectateur, à 2 m
-au-dessus (vue de joueur, choix documenté). `CameraMovesAction` (caméra animée, positions en doubles)
-est repéré mais pas encore lu : les scènes qui l'emploient (explosion du navire, Koursk, pont) sont
-déjà dans le film en vidéo.
+au-dessus (vue de joueur, choix documenté). Caméra animée `CameraMovesAction` lue : groupes de 48 o
+(`+0x04` délai, `+0x08` mouvements), mouvements de 120 o (pose en doubles x, y, z, f32 lacet, tangage,
+roulis ; `+0x6C` durée) — recoupés au millième sur le `.xdb` 7.0 ; un groupe coupe le précédent. Le
+sens du lacet n'est pas établi : la seule scène du 17.0 qui l'emploie (l'explosion du navire, déjà
+dans le film en vidéo) montre un navire posé par une stèle (`DeviceVisActionChangeModel`) que le
+client ne place pas, sans lequel les plans ne se vérifient pas (option `yaw_offset` du manifeste).
 
 **Scènes d'après 7.0, constat** : le client 17.0 ne relie aucune réplique à son buff de caméra (aucune
 ressource ne cite ces `ClientData` ; c'est le script serveur) et ne pose ni les PNJ ni les objets de
@@ -304,8 +307,20 @@ liées), `allods_visdb.py`, `allods_characters.py` (habillage, corrigé : couleu
 `allods_fx.py`, `allods_scenes.py`, et côté lecteur `votInstances.ts`, partagés avec les
 fatalités et la création de personnage.
 
-**Manques** : poids des calques du sol (`SplatMap`) ; octets 0-1 du `lightvrt` (quantifiés sur 3 et
-4 bits : pleins dans les intérieurs sans lumière, peut-être un éclairage indirect) ; le fichier
+**Éclairage des sommets du décor** (`lightvrt`, 4 octets par sommet) : octet 0 = visibilité du soleil
+(ombre portée ; corrélation 0,81 avec des tirs de rayons sur le pilote, au soleil de la cuisson),
+octet 1 = visibilité du ciel (`128 + 127 · v` ; 0,81 sur le pilote, 0,73 sur `Isa`), octet 2 = lumières
+ponctuelles (1,000). Lumière = `AmbientColor · (f + (1 − f) · v) + DiffuseColor · max(0, N·S) · ombre +
+ponctuelles`, `f` = `AmbientFactor`. Le soleil de la cuisson est celui de la zone du lieu (`Isa` : 225°),
+pas toujours celui de la première zone de la carte.
+
+**Sol mélangé** : `SplatMap_0` = atlas de blocs de 8 × 8 texels, un par passe de sous-carreau (octets
+`c`, `d` de la passe) ; texel `i` à `i·8/7` m du coin, bords partagés à l'identique entre voisins ;
+R, G, B = poids des trois calques de la passe (deux passes somment à 1). Le lecteur mélange jusqu'à six
+calques par sommet dans un tableau de textures (`terrainMaterial`).
+
+**Manques** : `ferris-sarcophagus` reste sombre même lu en entier (zone violette, aucune lumière
+ponctuelle ; octets 0-1 pleins) ; le fichier
 d'événements FMOD `.bev` (sons appariés par nom : quelques ambiances introuvables) ; les effets de
 sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce que montre
 « Оглянитесь ! » ; les drapeaux visuels (`CreatureSetFlagVisAction`) ; les scènes faites de

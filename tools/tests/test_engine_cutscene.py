@@ -248,3 +248,31 @@ def test_animation_file_falls_back_to_the_base_model():
     bins = SimpleNamespace(_pak_index=lambda: {"Characters/Kania_male/Animations/KaniaMale.Special08.(SkeletalAnimation).bin": 0})
     name = animation_file(bins, "Characters/Kania_male/KaniaMale_CutScene.(Geometry).bin", "Special08")
     assert name == "Characters/Kania_male/Animations/KaniaMale.Special08.(SkeletalAnimation).bin"
+
+
+def test_camera_moves_cut_each_group_at_the_next_one():
+    from tools.extract_engine_cutscene import CAMMOVE_STRIDE, camera_moves
+
+    class Db:
+        """Deux groupes (délais 2 et 4 s), le premier de deux mouvements de 3 s."""
+        data = 0
+
+        def __init__(self):
+            self.raw = bytearray(4096)
+            self.groups = [100, 148]
+            self.moves = {100: [1000, 1000 + CAMMOVE_STRIDE], 148: [2000]}
+            for g, delay in zip(self.groups, (2.0, 4.0)):
+                struct.pack_into("<f", self.raw, g + 4, delay)
+            for i, m in enumerate([1000, 1000 + CAMMOVE_STRIDE, 2000]):
+                struct.pack_into("<2d", self.raw, m + 0x18, 10.0 * i, 1.0)
+                struct.pack_into("<d", self.raw, m + 0x30, 5.0)
+                struct.pack_into("<f", self.raw, m + 0x6C, 3.0)
+
+        def elements(self, loc, stride):
+            return self.groups if loc == 0x48 else self.moves[loc - 8]
+
+        def f32(self, off):
+            return struct.unpack_from("<f", self.raw, off)[0]
+    keys = camera_moves(Db(), 0)
+    assert [k["t"] for k in keys] == [2.0, 3.999, 4.0]
+    assert keys[1]["p"] == [10.0, 1.0, 5.0] and keys[2]["p"] == [20.0, 1.0, 5.0]

@@ -1136,6 +1136,55 @@ def _placement(db: PackDB, off: int) -> tuple[list[float], float]:
     return [round(x, 4), round(y, 4), round(z, 4)], db.f32(off + 0x10)
 
 
+CAMMOVES_GROUPS = 0x48
+CAMMOVE_GROUP_STRIDE = 48
+CAMMOVE_GROUP_DELAY = 0x04
+CAMMOVE_GROUP_MOVES = 0x08
+CAMMOVE_STRIDE = 120
+CAMMOVE_PITCH = 0x10
+CAMMOVE_XY = 0x18          # doubles x, y ; f32 lacet en +0x28, roulis en +0x2C ; double z en +0x30
+CAMMOVE_TIME = 0x6C
+CAMMOVE_TIME_START = 0x70
+
+
+def find_action(db: PackDB, off: int | None, kind: str, depth: int = 0) -> int | None:
+    if off is None or depth > 8:
+        return None
+    if db.vtype(off) == kind:
+        return off
+    for loc, rk, target in db.relocs(off, off + 0x120):
+        for child in ([db.ptr(loc)] if rk == 0 else db.pointers(loc) if rk == 3 else []):
+            if child is not None and db.vtype(child):
+                found = find_action(db, child, kind, depth + 1)
+                if found is not None:
+                    return found
+    return None
+
+
+def camera_moves(db: PackDB, action: int) -> list[dict]:
+    """`CameraMovesAction` : groupes de mouvements (48 o : `+0x04` délai de départ, `+0x08` mouvements),
+    mouvement (120 o : pose de départ en doubles x, y, z et f32 lacet, tangage, roulis ; `+0x6C`
+    durée vers la pose suivante, `+0x70` `timeStart`) — recoupé au millième sur le `.xdb` 7.0 de
+    `ShipExplosion_Script`. Rend les poses datées (s) ; un groupe coupe le précédent."""
+    groups = db.elements(action + CAMMOVES_GROUPS, CAMMOVE_GROUP_STRIDE)
+    keys = []
+    for k, g in enumerate(groups):
+        t = db.f32(g + CAMMOVE_GROUP_DELAY)
+        end = db.f32(groups[k + 1] + CAMMOVE_GROUP_DELAY) if k + 1 < len(groups) else None
+        for m in db.elements(g + CAMMOVE_GROUP_MOVES, CAMMOVE_STRIDE):
+            x, y = struct.unpack_from("<2d", db.raw, db.data + m + CAMMOVE_XY)
+            z, = struct.unpack_from("<d", db.raw, db.data + m + CAMMOVE_XY + 0x18)
+            if end is not None and t >= end - 1e-3:
+                # pose d'arrivée atteinte à l'instant de la coupe
+                keys.append({"t": round(end - 1e-3, 3), "p": [round(x, 4), round(y, 4), round(z, 4)],
+                             "yaw": db.f32(m + CAMMOVE_XY + 0x10), "pitch": db.f32(m + CAMMOVE_PITCH)})
+                break
+            keys.append({"t": round(t, 3), "p": [round(x, 4), round(y, 4), round(z, 4)],
+                         "yaw": db.f32(m + CAMMOVE_XY + 0x10), "pitch": db.f32(m + CAMMOVE_PITCH)})
+            t += db.f32(m + CAMMOVE_TIME) or 1.0
+    return keys
+
+
 def plan_gameview(spec: dict, db: PackDB, texts: Texts, anim_names: dict, report: list[str]) -> dict:
     """Scène entièrement du client (`GameViewScene` + `GameViewScript` d'un `ShowSceneAction`) : PNJ
     posés à la place de la scène (leur animation de cinématique porte leur déplacement), chacun jouant
@@ -1189,6 +1238,22 @@ def plan_gameview(spec: dict, db: PackDB, texts: Texts, anim_names: dict, report
     cam = [round(cam[0] - back * direction[0], 4), round(cam[1] - back * direction[1], 4), round(cam[2] + eye, 4)]
     target = [round(cam[i] + 20 * direction[i], 4) for i in range(3)]
     camera = {"points": [{"t": 0, "p": cam}], "targets": [{"t": 0, "p": target}], "duration": float(spec.get("duration", 0))}
+    moves_action = find_action(db, script, "CameraMovesAction") if script is not None else None
+    if moves_action is not None:
+        # Caméra animée du script : poses datées, visée à 20 m selon lacet et tangage (même
+        # convention que le `cameraPlacement`).
+        points, targets = [], []
+        for key in camera_moves(db, moves_action):
+            cp, sp = math.cos(key["pitch"]), math.sin(key["pitch"])
+            yaw = key["yaw"] + float(spec.get("yaw_offset", 0.0))
+            d = [math.cos(yaw) * cp, math.sin(yaw) * cp, sp]
+            points.append({"t": key["t"], "p": key["p"]})
+            targets.append({"t": key["t"], "p": [round(key["p"][i] + 20 * d[i], 4) for i in range(3)]})
+        if points:
+            if points[0]["t"] > 0:
+                points.insert(0, {"t": 0, "p": points[0]["p"]})
+                targets.insert(0, {"t": 0, "p": targets[0]["p"]})
+            camera = {"points": points, "targets": targets, "duration": float(spec.get("duration", 0))}
     report.append(f"{spec['id']} : GameViewScene {spec['scene']} sur {map_name}, {len(actors)} PNJ, "
                   f"{sum(1 for a in actors if a['animations'])} animés")
     return {"map": map_name, "camera": camera, "lines": [], "actors": actors, "weather": None,
