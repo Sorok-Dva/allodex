@@ -364,9 +364,10 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       }) : Promise.resolve(null));
       factory.objects = data.objects;
       const systems = particleSystems(data.objects);
-      const [decor, fxGlb, lightBin, atlas, ...rest] = await Promise.all([
+      const [decor, fxGlb, skyGlb, lightBin, atlas, ...rest] = await Promise.all([
         load(data.decor.glb),
         load(data.fx.glb),
+        load(data.decor.skyGlb ?? null),
         fetcher(base + data.decor.light).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null),
         data.particleAtlas && systems.size && typeof DecompressionStream !== 'undefined'
           ? new THREE.TextureLoader().loadAsync(base + data.particleAtlas.file).catch(() => null) : Promise.resolve(null),
@@ -391,7 +392,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         clips.push(...gltf.animations);
       }
       // Ciel : dôme qui suit la caméra, derrière tout, hors brouillard.
-      const skyProto = decor?.scene.getObjectByName('sky');
+      const skyProto = skyGlb?.scene.getObjectByName('sky') ?? decor?.scene.getObjectByName('sky');
       if (skyProto) {
         const tinted: Tinted[] = [];
         factory.prepare(skyProto, false, tinted, null);

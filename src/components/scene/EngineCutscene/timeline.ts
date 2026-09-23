@@ -80,7 +80,8 @@ export type EngineScene = {
   camera: { points: CameraKey[]; targets: CameraKey[]; duration: number; fov: number };
   lines: EngineLine[];
   actors: EngineActor[];
-  decor: { glb: string; light: string; instances: DecorInstance[]; sky: { radius: number } | null };
+  /** `glb` : décor commun de la carte (`../maps/<carte>/decor.glb`) ; `skyGlb` : ciel propre à la scène. */
+  decor: { glb: string; light: string; instances: DecorInstance[]; sky: { radius: number } | null; skyGlb?: string | null };
   fx: { glb: string | null; spawns: FxSpawn[] };
   objects: Record<string, import('@/components/scene/FatalityViewer/timeline').FatalityObject>;
   particleAtlas: import('@/components/scene/FatalityViewer/particles').ParticleAtlasMeta | null;

@@ -177,3 +177,23 @@ def test_xdb70_blank_shots_leave_the_previous_view():
              {"t": 5.0, "duration": 5.0, "points": [(1, (1, 2, 3))], "targets": [(1, (4, 5, 6))]}]
     keys = cutscene_xdb70.camera_keys(shots)
     assert keys["points"][0] == {"t": 0.0, "p": [1, 2, 3]} and keys["points"][1]["t"] == 5.0
+
+
+def test_light_decor_keeps_the_scene_circle_and_lights_with_its_weather():
+    from tools.extract_engine_cutscene import light_decor
+    loaded = SimpleNamespace(vertices={"normal": np.array([[0, 0, 1.0], [0, 0, 1.0]])})
+    decor = {"geometries": {7: loaded}, "instances": [
+        {"vot": "A", "p": [0, 0, 0], "yaw": 0, "_geo": 7, "_m": np.eye(3), "_raw": np.array([[0, 0, 255, 0]] * 2, np.uint8)},
+        {"vot": "B", "p": [500, 0, 0], "yaw": 0, "_geo": 7, "_m": np.eye(3)}]}
+    light = {"ambient": 0xFF000000, "pointLight": 0xFF808080, "diffuse": 0xFF000000}
+    instances, blob = light_decor(decor, light, [0, 0], 150)
+    assert [i["vot"] for i in instances] == ["A"] and instances[0]["light"] == [0, 2]
+    assert not any(k.startswith("_") for k in instances[0]) and len(blob) == 8
+
+
+def test_rebase_objects_points_particle_files_to_the_map_folder():
+    from tools.extract_engine_cutscene import map_prefix, rebase_objects
+    objects = {"Fx": {"particles": {"file": "particles/Fx.bin"}}, "Mesh": {"scale": 1}}
+    out = rebase_objects(objects, map_prefix("Ferris4"))
+    assert out["Fx"]["particles"]["file"] == "../maps/Ferris4/particles/Fx.bin"
+    assert objects["Fx"]["particles"]["file"] == "particles/Fx.bin"      # l'original n'est pas touché

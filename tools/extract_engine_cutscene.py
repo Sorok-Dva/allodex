@@ -180,22 +180,26 @@ def ground_z(solids: np.ndarray, x: float, y: float, below: float) -> float | No
     return float(z.max()) if len(z) else None
 
 
-def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: ParticlePool, light: dict,
-                spec: dict, report: list[str]) -> dict:
-    """Décor : gabarits des objets posés (une fois chacun) dans `decor.glb`, instances dans
-    `scene.json`, éclairage précalculé de chaque instance dans `decor-light.bin`."""
-    fx = FxBuild(Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/"), mp, cat, bins, particles=particles, report=report)
-    lightvrt = read_lightvrt(mp, spec["map"], lambda name, pak: bins.get(name))
+def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: ParticlePool, map_name: str,
+                areas: list[tuple[list[float] | None, float]], report: list[str]) -> dict:
+    """Décor d'une carte, **commun aux scènes qui s'y jouent** : les gabarits des objets posés dans
+    l'une des zones (`areas` : centre, rayon de chaque scène) une fois chacun dans `decor.glb`, les
+    instances avec ce qu'il faut pour éclairer chacune (`light_decor`, par scène : l'éclairage
+    dépend du temps de la scène)."""
+    fx = FxBuild(Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/"), mp, cat, bins,
+                 particles=particles, report=report)
+    lightvrt = read_lightvrt(mp, map_name, lambda name, pak: bins.get(name))
     objects = read_regions(mp)
-    center, radius = spec.get("decor_center"), spec.get("decor_radius", 1e9)
-    instances, blobs, solids = [], [], []
-    offset = 0
+    instances, solids = [], []
     emitted: set[str] = set()
     geometries: dict[int, object] = {}
     skipped = 0
+
+    def inside(x: float, y: float) -> bool:
+        return any(c is None or math.hypot(x - c[0], y - c[1]) <= r for c, r in areas)
     for obj in objects:
         x, y, z = obj.position
-        if center and math.hypot(x - center[0], y - center[1]) > radius:
+        if not inside(x, y):
             continue
         vot = static_visobject(mp, obj.static_object)
         if vot is None:
@@ -217,7 +221,6 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
             inst["tilt"] = [round(a, 5) for a in obj.tilt]
         if abs(obj.scale - 1) > 1e-6 and obj.scale > 0:
             inst["scale"] = round(obj.scale, 5)
-        raw = lightvrt.get((obj.region, obj.index))
         loaded = None
         if vis.geometry is not None:
             if vis.geometry not in geometries:
@@ -227,17 +230,11 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
             world = np.eye(4)
             world[:3, :3] = obj.matrix() * (obj.scale if obj.scale > 0 else 1.0)
             world[:3, 3] = obj.position
-            normals = loaded.vertices.get("normal")
-            wn = normals.astype(np.float64) @ world[:3, :3].T if normals is not None else None
-            if wn is not None:
-                wn /= np.maximum(np.linalg.norm(wn, axis=1, keepdims=True), 1e-9)
+            raw = lightvrt.get((obj.region, obj.index))
+            # Données privées (préfixe `_`) pour l'éclairage de chaque scène, retirées du JSON.
+            inst["_geo"], inst["_m"] = vis.geometry, world[:3, :3]
             if raw is not None and len(raw) == len(loaded.vertices["position"]):
-                colors = encode_light(vertex_light(raw, light, wn))
-                blobs.append(colors.tobytes())
-                inst["light"] = [offset, len(colors)]
-                offset += len(colors)
-            else:
-                inst["ambient"] = [round(float(v), 4) for v in _rgb(light.get("ambient"))]
+                inst["_raw"] = raw
             tris = [loaded.indices[e.ib0:e.ib1] for e in loaded.geo.doc.elements
                     if e.material.visible and not e.material.transparent and e.material.texture]
             if tris:
@@ -246,33 +243,80 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
                 pts = np.column_stack([loaded.vertices["position"].astype(np.float64), np.ones(len(loaded.vertices["position"]))])
                 solids.append(((pts @ world.T)[:, :3])[idx].reshape(-1, 3, 3))
         instances.append(inst)
-    sky = None
-    parts = sky_parts(mp, light.get("sky"))
-    if light.get("skyParts"):
-        parts = light["skyParts"]
+    glb = fx.exporter.finish(fx.roots)
+    report.append(f"décor {map_name} : {len(instances)} objets posés ({len(emitted)} gabarits), {skipped} sans gabarit visuel, "
+                  f"{sum(1 for i in instances if '_raw' in i)} avec éclairage précalculé")
+    report += fx.exporter.notes
+    return {"glb": glb, "instances": instances, "objects": fx.meta, "sounds": fx.sounds, "geometries": geometries,
+            "solids": np.concatenate(solids) if solids else np.zeros((0, 3, 3)),
+            "pointLights": point_lights(mp, objects)}
+
+
+def light_decor(decor: dict, light: dict, center: list[float] | None, radius: float) -> tuple[list[dict], bytes]:
+    """Instances d'une scène (dans son cercle) et leur éclairage de sommets (`decor-light.bin`) :
+    ambiante + soleil (`N·S`) + octet 2 du `lightvrt`, avec la lumière de la scène."""
+    out, blobs, offset = [], [], 0
+    for inst in decor["instances"]:
+        x, y = inst["p"][0], inst["p"][1]
+        if center is not None and math.hypot(x - center[0], y - center[1]) > radius:
+            continue
+        entry = {k: v for k, v in inst.items() if not k.startswith("_")}
+        loaded = decor["geometries"].get(inst.get("_geo"))
+        if loaded is not None:
+            normals = loaded.vertices.get("normal")
+            wn = normals.astype(np.float64) @ inst["_m"].T if normals is not None else None
+            if wn is not None:
+                wn /= np.maximum(np.linalg.norm(wn, axis=1, keepdims=True), 1e-9)
+            if "_raw" in inst:
+                colors = encode_light(vertex_light(inst["_raw"], light, wn))
+                blobs.append(colors.tobytes())
+                entry["light"] = [offset, len(colors)]
+                offset += len(colors)
+            else:
+                entry["ambient"] = [round(float(v), 4) for v in _rgb(light.get("ambient"))]
+        out.append(entry)
+    return out, b"".join(blobs)
+
+
+def build_sky(mp: PackDB, cat, bins, textures: TexturePool, light: dict, texture_prefix: str,
+              report: list[str]) -> tuple[bytes | None, dict | None]:
+    """Ciel d'une scène (`sky.glb`) : tous les calques du `SkyMesh` de la zone, ou de celui du temps
+    de la scène (`skyParts`)."""
+    parts = light.get("skyParts") or sky_parts(mp, light.get("sky"))
+    ex = Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix=texture_prefix)
     children, radius = [], 0.0
     for geo, _anim, shift in parts:
         loaded = load_geometry(mp, cat, bins, geo)
         if loaded is None:
             continue
         elements = [e for e in loaded.geo.doc.elements if e.material.visible and e.material.texture]
-        mesh, _ = fx.exporter.emit_mesh("sky", loaded.geo, loaded.vertices, loaded.indices, elements, None)
+        mesh, _ = ex.emit_mesh("sky", loaded.geo, loaded.vertices, loaded.indices, elements, None)
         if mesh is not None:
             node = {"mesh": mesh}
             if shift:
                 node["translation"] = [0.0, 0.0, float(shift)]
-            children.append(fx.exporter.gltf.add_node(node))
+            children.append(ex.gltf.add_node(node))
             radius = max(radius, float(np.max(np.abs(np.concatenate(loaded.geo.doc.aabb)))))
-    if children:
-        fx.roots.append(fx.exporter.gltf.add_node({"name": "sky", "children": children, "extras": {"sky": True}}))
-        sky = {"radius": round(radius, 2), "parts": len(children)}
-    glb = fx.exporter.finish(fx.roots)
-    report.append(f"décor : {len(instances)} objets posés ({len(emitted)} gabarits), {skipped} sans gabarit visuel, "
-                  f"{sum(1 for i in instances if 'light' in i)} avec éclairage précalculé")
-    report += fx.exporter.notes
-    return {"glb": glb, "light": b"".join(blobs), "instances": instances, "objects": fx.meta, "sounds": fx.sounds,
-            "solids": np.concatenate(solids) if solids else np.zeros((0, 3, 3)), "sky": sky,
-            "pointLights": point_lights(mp, objects)}
+    if not children:
+        return None, None
+    root = ex.gltf.add_node({"name": "sky", "children": children, "extras": {"sky": True}})
+    report += ex.notes
+    return ex.finish([root]), {"radius": round(radius, 2), "parts": len(children)}
+
+
+def map_prefix(map_name: str) -> str:
+    """Chemin du dossier commun d'une carte vu depuis le dossier d'une scène."""
+    return f"../maps/{map_name}/"
+
+
+def rebase_objects(objects: dict, prefix: str) -> dict:
+    """Copie des métadonnées de gabarits, fichiers de particules rapportés au dossier de la carte."""
+    out = json.loads(json.dumps(objects))
+    for info in out.values():
+        system = info.get("particles")
+        if isinstance(system, dict) and str(system.get("file", "")).startswith("particles/"):
+            system["file"] = prefix + system["file"]
+    return out
 
 
 def map_sounds(mp: PackDB) -> dict[str, list[str]]:
@@ -331,7 +375,8 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
     # présente dans les paks (`Creatures/Rysina/Rysina.(Texture).bin`).
     stem = (loaded.geo.binary or "").replace(".(Geometry).bin", "")
     fallback = f"{stem}.(Texture).bin" if stem else None
-    if fallback and any(e.material.visible and not e.material.texture for e in geo_elements) and bins.get(fallback):
+    if fallback and template.default_dress is None and \
+            any(e.material.visible and not e.material.texture for e in geo_elements) and bins.get(fallback):
         for e in geo_elements:
             if e.material.visible and not e.material.texture:
                 e.material.texture = fallback
@@ -451,8 +496,9 @@ def spawn_template(db: PackDB, spawn: dict) -> int | None:
 
 
 def build_fx(spawns: list[dict], db: PackDB, cat, bins, textures: TexturePool, particles: ParticlePool,
-             report: list[str]) -> tuple[bytes | None, dict, set[str], list[dict]]:
-    fx = FxBuild(Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/"), db, cat, bins, particles=particles, report=report)
+             report: list[str], texture_prefix: str = "textures/") -> tuple[bytes | None, dict, set[str], list[dict]]:
+    fx = FxBuild(Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix=texture_prefix), db, cat, bins,
+                 particles=particles, report=report)
     out = []
     for spawn in spawns:
         vot = spawn_template(db, spawn)
@@ -1010,6 +1056,58 @@ def weather_sky(root: Path, db: PackDB, cat, sky_path: str) -> list[tuple[int, i
 
 # --- export ---------------------------------------------------------------------------------------
 
+def scene_area(spec: dict, plan: dict) -> tuple[list[float] | None, float]:
+    return spec.get("decor_center") or plan.get("decor_center"), float(spec.get("decor_radius", 150))
+
+
+def scene_light(spec: dict, plan: dict, mp: PackDB, cat, root: Path, report: list[str]) -> dict:
+    """Éclairage d'une scène : celui de la zone, remplacé par le temps du déroulé s'il en pose un."""
+    light = read_zone_light(mp)
+    if plan["weather"]:
+        light = weather_light(plan["weather"], light)
+        if plan["weather"].get("sky"):
+            parts = weather_sky(root, mp, cat, plan["weather"]["sky"])
+            if parts:
+                light["skyParts"] = parts
+            else:
+                report.append(f"{spec['id']} : ciel du déroulé introuvable dans le 17.0 : {plan['weather']['sky']}")
+    return light
+
+
+def build_map(map_name: str, specs: list[dict], plans: dict[str, dict], db: PackDB, client: Path, bins, root: Path,
+              out_root: Path, report: list[str]) -> dict:
+    """Dossier commun d'une carte (`engine/maps/<carte>/`) : décor des zones de toutes ses scènes,
+    textures du décor, des effets et des ciels, particules et leur atlas ; puis, dans le dossier de
+    chaque scène, son ciel (`sky.glb`) et ses effets (`fx.glb`), qui y renvoient."""
+    mp = open_map(db, client, map_name)
+    cat = open_catalog(mp, client)
+    map_dir = out_root / "engine" / "maps" / map_name
+    for stale in ("textures", "particles"):
+        shutil.rmtree(map_dir / stale, ignore_errors=True)
+    map_dir.mkdir(parents=True, exist_ok=True)
+    textures = TexturePool(mp, cat, bins, map_dir, jpeg=True)
+    particles = ParticlePool(mp, cat, bins, map_dir)
+    decor = build_decor(mp, cat, bins, textures, particles, map_name, [scene_area(s, plans[s["id"]]) for s in specs], report)
+    (map_dir / "decor.glb").write_bytes(decor["glb"])
+    prefix = map_prefix(map_name) + "textures/"
+    lights, fx, sky = {}, {}, {}
+    for spec in specs:
+        out = out_root / "engine" / spec["id"]
+        out.mkdir(parents=True, exist_ok=True)
+        lights[spec["id"]] = light = scene_light(spec, plans[spec["id"]], mp, cat, root, report)
+        sky_glb, sky_meta = build_sky(mp, cat, bins, textures, light, prefix, report)
+        sky[spec["id"]] = (sky_glb, sky_meta)
+        (out / "sky.glb").write_bytes(sky_glb) if sky_glb else (out / "sky.glb").unlink(missing_ok=True)
+        fx_glb, fx_objects, fx_sounds, spawns = build_fx(spec.get("spawns", []), mp, cat, bins, textures, particles, report,
+                                                         texture_prefix=prefix)
+        fx[spec["id"]] = (fx_glb, fx_objects, fx_sounds, spawns)
+        (out / "fx.glb").write_bytes(fx_glb) if fx_glb else (out / "fx.glb").unlink(missing_ok=True)
+    atlas = particles.write_atlas(textures)
+    report.append(f"carte {map_name} : décor {len(decor['glb']) / 1e6:.1f} Mo, textures {textures.bytes_written / 1e6:.1f} Mo, "
+                  f"particules {particles.bytes_written / 1e6:.2f} Mo, pour {len(specs)} scène(s)")
+    return {"mp": mp, "cat": cat, "decor": decor, "lights": lights, "fx": fx, "sky": sky, "atlas": atlas}
+
+
 def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, voices: bool, vgmstream: Path,
         server_root: Path | None = None) -> list[str]:
     report: list[str] = []
@@ -1022,36 +1120,37 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     root = Path(server_root or manifest.get("server_root") or "/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data")
     index = sound_index(bins, Path(os.environ.get("ALLODEX_CACHE") or Path.home() / ".cache" / "allodex"))
     entries = []
+    pack_cat = open_catalog(db, client)
+    # Plans de toutes les scènes : le décor d'une carte est commun à toutes celles qui s'y jouent,
+    # il couvre donc leurs zones à toutes, même quand une seule est réextraite (`--only`).
+    plans: dict[str, dict] = {}
+    for spec in manifest["engine_scenes"]:
+        plans[spec["id"]] = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report) \
+            if spec.get("source") == "xdb70" else plan_manual(spec, db, texts, lines17, anim_names, report)
+    wanted_maps = {plans[s["id"]]["map"] for s in manifest["engine_scenes"] if not only or s["id"] in only}
+    maps: dict[str, dict] = {}
+    for map_name in sorted(wanted_maps):
+        on_map = [s for s in manifest["engine_scenes"] if plans[s["id"]]["map"] == map_name]
+        maps[map_name] = build_map(map_name, on_map, plans, db, client, bins, root, out_root, report)
     for spec in manifest["engine_scenes"]:
         if only and spec["id"] not in only:
             continue
+        plan = plans[spec["id"]]
+        ctx = maps[plan["map"]]
+        mp, cat, prefix = ctx["mp"], ctx["cat"], map_prefix(plan["map"])
         out = out_root / "engine" / spec["id"]
         out.mkdir(parents=True, exist_ok=True)
-        pack_cat = open_catalog(db, client)
-        plan = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report) if spec.get("source") == "xdb70" \
-            else plan_manual(spec, db, texts, lines17, anim_names, report)
-        mp = open_map(db, client, plan["map"])
-        cat = open_catalog(mp, client)
-        for stale in ("textures", "particles"):   # régénérés en entier : pas de restes d'un décor plus large
-            shutil.rmtree(out / stale, ignore_errors=True)
-        textures = TexturePool(mp, cat, bins, out, jpeg=True)
-        particles = ParticlePool(mp, cat, bins, out)
-        light = read_zone_light(mp)
-        if plan["weather"]:
-            light = weather_light(plan["weather"], light)
-            if plan["weather"].get("sky"):
-                parts = weather_sky(root, mp, cat, plan["weather"]["sky"])
-                if parts:
-                    light["skyParts"] = parts
-                else:
-                    report.append(f"{spec['id']} : ciel du déroulé introuvable dans le 17.0 : {plan['weather']['sky']}")
+        for stale in ("textures", "particles", "decor.glb"):   # décor et particules : dossier de la carte
+            path = out / stale
+            shutil.rmtree(path, ignore_errors=True) if path.is_dir() else path.unlink(missing_ok=True)
+        textures = TexturePool(mp, cat, bins, out, jpeg=True)          # textures des acteurs
+        light = ctx["lights"][spec["id"]]
         camera = plan["camera"]
         camera["fov"] = spec.get("fov", 45)
-        decor_spec = {"map": plan["map"], "decor_center": spec.get("decor_center") or plan.get("decor_center"),
-                      "decor_radius": spec.get("decor_radius", 150)}
-        decor = build_decor(mp, cat, bins, textures, particles, light, decor_spec, report)
-        (out / "decor.glb").write_bytes(decor["glb"])
-        (out / "decor-light.bin").write_bytes(decor["light"])
+        decor = ctx["decor"]
+        center, radius = scene_area(spec, plan)
+        instances, light_blob = light_decor(decor, light, center, radius)
+        (out / "decor-light.bin").write_bytes(light_blob)
         solids = decor["solids"]
 
         # voix d'abord : le minutage estimé (scènes sans déroulé) en dépend
@@ -1072,10 +1171,14 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         actors_meta = []
         built: dict = {}
         shutil.rmtree(out / "actors", ignore_errors=True)
+        # Animations voulues par modèle : les doubles d'un même PNJ partagent un seul fichier.
+        clips_of: dict[int, set[str]] = {}
         for actor in plan["actors"]:
-            spec_actor = {"id": actor["id"], "mob": None, "sex": actor.get("sex"), "animations": sorted(
-                set(actor.get("animations", [])) | {actor.get("idle") or "Idle", "Idle01", "Idle"} | set(actor.get("clips_wanted", [])) |
-                ({actor["move"]} if actor.get("move") else set()))}
+            clips_of.setdefault(actor["mob_offset"], set()).update(
+                set(actor.get("animations", [])) | {actor.get("idle") or "Idle", "Idle01", "Idle"} |
+                set(actor.get("clips_wanted", [])) | ({actor["move"]} if actor.get("move") else set()))
+        for actor in plan["actors"]:
+            spec_actor = {"id": actor["id"], "mob": None, "sex": actor.get("sex"), "animations": sorted(clips_of[actor["mob_offset"]])}
             glb = f"actors/{actor['id']}.glb"
             twin = built.get((actor["mob_offset"], tuple(spec_actor["animations"])))
             if twin is not None:          # même PNJ en double (deux invocations à la fois) : même modèle
@@ -1107,12 +1210,13 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                                 **({"actions": sorted(actor["actions"], key=lambda a: a["t"])} if actor.get("actions") else {}),
                                 "light": light_at(path[0]["p"], decor["pointLights"], light), **meta})
 
-        fx_glb, fx_objects, fx_sounds, spawns = build_fx(spec.get("spawns", []), mp, cat, bins, textures, particles, report)
+        fx_glb, fx_objects, fx_sounds, spawns = ctx["fx"][spec["id"]]
+        spawns = json.loads(json.dumps(spawns))
         for spawn in spawns:
             if "p" in spawn:
                 spawn["p"] = place(spawn["p"], solids, bool(spawn.pop("ground", False)))
-        if fx_glb:
-            (out / "fx.glb").write_bytes(fx_glb)
+        sky_glb, sky = ctx["sky"][spec["id"]]
+        objects = rebase_objects({**decor["objects"], **fx_objects}, prefix)
 
         cue_lines = [Line(l["duration"], l["text"]) for l in plan["lines"]]
         cues = build_cues(cue_lines, [l["start"] for l in plan["lines"]], camera["duration"])
@@ -1137,10 +1241,9 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
             {s["event"] for key in ("music", "ambience") for s in timed.get(key, [])}
         waves = export_waves(wanted, bins, out, vgmstream, report, camera["duration"] + 1) if voices or not (out / "scene.json").is_file() else \
             json.loads((out / "scene.json").read_text(encoding="utf-8")).get("sounds", {}).get("waves", {})
-        for objects in (decor["objects"], fx_objects):
-            for info in objects.values():
-                if info.get("sound") in waves:
-                    info["sfx"] = waves[info["sound"]]["file"]
+        for info in objects.values():
+            if info.get("sound") in waves:
+                info["sfx"] = waves[info["sound"]]["file"]
 
         def loops(key: str) -> list:
             out_list: list = [waves[m]["file"] for m in audio.get(key, []) if m in waves]
@@ -1148,7 +1251,9 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                          for s in timed.get(key, []) if s["event"] in waves]
             return out_list
 
-        atlas = particles.write_atlas(textures)
+        atlas = json.loads(json.dumps(ctx["atlas"])) if ctx["atlas"] else None
+        if atlas:
+            atlas["file"] = prefix + atlas["file"]
         scene_lines = []
         for i, line in enumerate(plan["lines"]):
             scene_lines.append({"n": i + 1, "start": line["start"], "duration": line["duration"], "speaker": line["speaker"],
@@ -1158,9 +1263,10 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         scene = {
             "id": spec["id"], "map": plan["map"], "up": [0, 0, 1], "mirror": True, "duration": camera["duration"],
             "timing": plan["timing"], "camera": camera, "lines": scene_lines, "actors": actors_meta,
-            "decor": {"glb": "decor.glb", "light": "decor-light.bin", "instances": decor["instances"], "sky": decor["sky"]},
+            "decor": {"glb": prefix + "decor.glb", "light": "decor-light.bin", "instances": instances, "sky": sky,
+                      "skyGlb": "sky.glb" if sky_glb else None},
             "fx": {"glb": "fx.glb" if fx_glb else None, "spawns": spawns},
-            "objects": {**decor["objects"], **fx_objects}, "particleAtlas": atlas,
+            "objects": objects, "particleAtlas": atlas,
             "light": {**zone, "sunDirection": [round(float(v), 4) for v in sun_direction(light)]},
             "pointLights": decor["pointLights"],
             "sounds": {"music": loops("music"), "ambience": loops("ambience"), "events": audio, "waves": waves,
@@ -1168,8 +1274,8 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
             "post": plan["post"], "sources": plan["sources"],
         }
         (out / "scene.json").write_text(json.dumps(scene, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-        report.append(f"{spec['id']} : décor {len(decor['glb']) / 1e6:.1f} Mo, textures {textures.bytes_written / 1e6:.1f} Mo, "
-                      f"particules {particles.bytes_written / 1e6:.2f} Mo, {len(actors_meta)} acteurs, {len(spawns)} effets, "
+        report.append(f"{spec['id']} : {len(instances)} objets du décor de {plan['map']}, textures des acteurs "
+                      f"{textures.bytes_written / 1e6:.1f} Mo, {len(actors_meta)} acteurs, {len(spawns)} effets, "
                       f"{len(waves)} sons, {len(scene_lines)} répliques, {camera['duration']:.0f} s")
         entries.append({"spec": spec, "duration": camera["duration"], "tracks": tracks, "lines": len(scene_lines),
                         "timing": plan["timing"]})
