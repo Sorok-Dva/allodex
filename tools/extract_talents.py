@@ -39,6 +39,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from tools import luajit  # noqa: E402
+from tools.allods_packdb import packs_path  # noqa: E402
 from tools.packbin import KIND_CLASS, KIND_DATA, KIND_PTR, KIND_TYPE, LocTable, PackBin, inflate  # noqa: E402
 from tools.uitexture import decode_uitexture  # noqa: E402
 
@@ -89,16 +90,45 @@ def read_source(spec: list | None) -> bytes | None:
     """`[chemin, entrée zip | None]` → octets décompressés (None si introuvable)."""
     if not spec:
         return None
-    path, entry = os.path.expanduser(spec[0]), spec[1]
+    path, entry = str(packs_path(Path(os.path.expanduser(spec[0])))), spec[1]
     if not os.path.exists(path):
         return None
     if entry is None:
         return inflate(Path(path).read_bytes())
+    if entry == "Bin/pack.bin":
+        return cached_pack(Path(path))
     try:
         with zipfile.ZipFile(path) as z:
             return inflate(z.read(entry))
     except (KeyError, zipfile.BadZipFile, OSError):
         return None
+
+
+def cached_pack(pak: Path):
+    """`Bin/pack.bin` décompressé une fois dans le cache partagé avec `tools/allods_packdb.py`
+    (même clé : chemin, taille, date du pak), puis projeté en mémoire : ≈ 700 Mo de moins en RAM
+    pour les clients 64 bits."""
+    import mmap
+    from tools.allods_packdb import default_cache_dir
+    if not pak.exists():
+        return None
+    stat = pak.stat()
+    key = hashlib.sha1(f"{pak}:{stat.st_size}:{int(stat.st_mtime)}".encode()).hexdigest()[:12]
+    cache = Path(default_cache_dir())
+    raw = cache / f"pack-{key}.raw"
+    if not raw.is_file():
+        try:
+            with zipfile.ZipFile(pak) as z:
+                data = inflate(z.read("Bin/pack.bin"))
+        except (KeyError, zipfile.BadZipFile):
+            return None  # une erreur d'E/S (mémoire…) remonte : ce n'est pas un pak absent
+        cache.mkdir(parents=True, exist_ok=True)
+        tmp = raw.with_suffix(".tmp")
+        tmp.write_bytes(data)
+        tmp.replace(raw)
+        del data
+    handle = open(raw, "rb")
+    return mmap.mmap(handle.fileno(), 0, access=mmap.ACCESS_READ)
 
 
 class TextSource:
@@ -578,7 +608,7 @@ class Extractor:
             return None
         dims = {"w": self.pb.u32(tex + 0x94), "h": self.pb.u32(tex + 0x78),
                 "realW": self.pb.u32(tex + 0x8c), "realH": self.pb.u32(tex + 0x88)}
-        pak = os.path.join(os.path.expanduser(self.spec["packs_dir"]), names[pak_i])
+        pak = str(packs_path(Path(os.path.expanduser(self.spec["packs_dir"])) / names[pak_i]))
         return pak, entry, dims
 
     # sorts et capacités -----------------------------------------------------------------------
@@ -1052,7 +1082,7 @@ class UiExtractor:
         """Textures du dossier de l'addon que seuls les scripts désignent (boutons I/II…),
         décodées avec les dimensions de leur `UITexture`."""
         keys = []
-        packs = os.path.expanduser(self.ex.spec["packs_dir"])
+        packs = str(packs_path(Path(os.path.expanduser(self.ex.spec["packs_dir"]))))
         dims = self.texture_dims()
         for pak_name in self.pb.pak_names:
             if not pak_name.startswith("Interface"):
@@ -1144,7 +1174,7 @@ def builder_layout(packs_dir: str) -> dict:
     * `ClassFieldTalent`/`ClassBaseTalent` : tailles et couleurs de surbrillance ;
     * `ScriptPlayerClasses` : icône et couleur de chaque classe.
     """
-    z = zipfile.ZipFile(os.path.join(os.path.expanduser(packs_dir), LUA_PAK))
+    z = zipfile.ZipFile(packs_path(Path(os.path.expanduser(packs_dir)) / LUA_PAK))
 
     def protos(name: str) -> list[luajit.Prototype]:
         return luajit.parse(z.read(BUILDER_SCRIPTS + name + ".luac"))
@@ -1209,7 +1239,7 @@ def fallback_class_icons(ui: UiExtractor, spec: dict, manifest: dict, names: lis
             if name and name.startswith(folder):
                 fb_dims[name] = loc
     added = []
-    own = _zip(os.path.expanduser(spec["pack"][0]))
+    own = _zip(str(packs_path(Path(os.path.expanduser(spec["pack"][0])))))
     for n in missing:
         path = f"{folder}{n}.(UITexture).bin"
         if path not in fb_dims:
