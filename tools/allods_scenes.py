@@ -282,8 +282,11 @@ def read_zone_light(db: PackDB) -> dict:
         e, sky = single[0] + ZONE_SINGLE_ITEM, None
     return {"ambient": db.u32(e + 0x24), "ambientFactor": round(db.f32(e + 0x28), 4),
             "diffuse": db.u32(e + 0x30), "fog": db.u32(e + 0x3C), "fogEnd": round(db.f32(e + 0x40), 3),
-            "fogStart": round(db.f32(e + 0x44), 3), "pointLight": db.u32(e + 0x48),
-            "selfIllum": db.u32(e + 0x4C), "specular": db.u32(e + 0x54),
+            # `+0x48` vaut −1 partout (champ inconnu) ; `PointLightColor` et `SelfIllumColor` suivent,
+            # recoupés sur les 26 éléments du 7.0 de Ferris4, FerrisRaid, Inst_EmpireStart,
+            # Inst_ZoneContested12_Start, Hadagan_Sanatorium et l'élément en ligne de Ferris_indoor.
+            "fogStart": round(db.f32(e + 0x44), 3), "pointLight": db.u32(e + 0x4C),
+            "selfIllum": db.u32(e + 0x50), "specular": db.u32(e + 0x54),
             "sunPitch": round(db.f32(e + 0x5C), 3), "sunYaw": round(db.f32(e + 0x60), 3),
             # Eau (recoupé sur `Ferris4_Base` 7.0) : `SpecularWaterColor`, `WaterGradientStart/End`.
             "waterSpecular": db.u32(e + 0x58), "waterGradientStart": db.u32(e + 0x74),

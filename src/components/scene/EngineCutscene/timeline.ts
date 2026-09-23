@@ -67,7 +67,8 @@ export type EngineLight = {
 };
 
 /** `tilt` : (roulis X, tangage Y) des objets inclinés, composés `Rz(yaw)·Ry·Rx` (Euler `ZYX`). */
-export type ActorAction = { t: number; until: number; clips: string[]; loop: boolean };
+/** `hold` : jouée une fois puis tenue sur sa dernière image (`CLAMP` du jeu : mort, navire parti). */
+export type ActorAction = { t: number; until: number; clips: string[]; loop: boolean; hold?: boolean };
 export type DecorInstance = { vot: string; p: Vec3; yaw: number; tilt?: [number, number]; scale?: number; light?: [number, number]; ambient?: Vec3 };
 export type FxSpawn = { vot: string; t: number; until: number; p?: Vec3; yaw?: number; scale?: number; attach?: string; locator?: string };
 export type PostEffect =
@@ -94,7 +95,8 @@ export type EngineScene = {
   objects: Record<string, import('@/components/scene/FatalityViewer/timeline').FatalityObject>;
   particleAtlas: import('@/components/scene/FatalityViewer/particles').ParticleAtlasMeta | null;
   light: EngineLight;
-  sounds: { music: SoundLoop[]; ambience: SoundLoop[]; volume?: Partial<Record<'music' | 'ambience' | 'sfx' | 'voice', number>> };
+  /** `sfx` : sons ponctuels du déroulé, joués une fois de `t` à `until`. */
+  sounds: { music: SoundLoop[]; ambience: SoundLoop[]; sfx?: { file: string; t: number; until: number }[]; volume?: Partial<Record<'music' | 'ambience' | 'sfx' | 'voice', number>> };
   post: PostEffect[];
 };
 
@@ -165,7 +167,7 @@ export function actorClipAt(actor: Pick<EngineActor, 'id' | 'idle' | 'talk'> & {
     if (action.loop) local %= total;
     else if (local >= total) {
       const last = clips[clips.length - 1];
-      if (/death|die/i.test(last)) return { clip: last, time: lengths[last] - 1e-3 };
+      if (action.hold || /death|die/i.test(last)) return { clip: last, time: lengths[last] - 1e-3 };
       continue;
     }
     for (const clip of clips) {

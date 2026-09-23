@@ -8,6 +8,13 @@
    },
    "version": "16.0"
   },
+  "empire-start": {
+   "title": {
+    "fr": "La zone de départ de l’Empire",
+    "en": "The Empire starting zone"
+   },
+   "version": "7.0"
+  },
   "ferris": {
    "title": {
     "fr": "Ferris",
@@ -230,6 +237,42 @@
      }
     ]
    },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "empire-start-boarding",
+   "kind": "engine",
+   "source": "main",
+   "event": "Jump",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 110,
+   "title": {
+    "fr": "L’abordage",
+    "en": "Boarding the enemy ship"
+   },
+   "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; juste après le prologue de l’Empire. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "empire-start-knight-defeated",
+   "kind": "engine",
+   "source": "main",
+   "event": "DeathTriggerPaladinFinal",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 120,
+   "title": {
+    "fr": "Le chevalier vaincu",
+    "en": "The knight defeated"
+   },
+   "chronology": "Fin du tutoriel de l’Empire : Gradimir Belov vaincu, le joueur quitte le navire kanien pour Igsh (Hadagan_Sanatorium) ; suit l’abordage.",
    "audio": {
     "language": "ru"
    }
@@ -23078,6 +23121,50 @@
    "source": "gameview",
    "scene": 438509,
    "_note": "GameViewScene 438509 (CutScene_EngineerDeathKania, Inst_ZoneContested12_Start) jouée par le ShowSceneAction de la stèle 438512 : trois assassins colosses (special03, 04, 05) et Luka (special08) à la place de la scène, caméra au cameraPlacement. Caméra : le cameraPlacement (drapeau use) pose le spectateur ; caméra à 2 m au-dessus, regard selon son lacet (vue de joueur). La version hadagane (CutScene_EngineerDeathHadagan du 7.0) n’existe plus dans le 17.0 : la GameViewScene 443968, voisine, est l’explosion du navire, déjà dans le film en vidéo."
+  },
+  {
+   "id": "empire-start-boarding",
+   "source": "xdb70",
+   "trigger": "Maps/Inst_EmpireStart/ScriptZones/Jump.(ScriptZone).xdb",
+   "map": "Inst_EmpireStart",
+   "states": {
+    "Empire_Ship_Fight1": 1,
+    "League_Ship_Fight1": 1,
+    "League_Ship_Final": 0
+   },
+   "states_note": "États des stèles à l’entrée de la zone Jump, laissés par le tutoriel (arbre serveur 7.0) : LastEventStart met Empire_Ship_Fight1 à 1 (combat), TeleportPaladin met League_Ship_Fight1 à 1 et n’active Jump que 9 s plus tard (ImpactScriptZoneSetDisabled, disable=false) ; rien ne touche League_Ship_Final avant Jump (action par défaut : modèle KaniaShip, idle tenu).",
+   "audio": {
+    "music": [
+     "Music/ZonesMusic/IE1_main"
+    ],
+    "ambience": [
+     "Ambience/AstralAmbience/4Layer_3Tier"
+    ]
+   },
+   "audio_note": "Buffs posés avant la scène et encore actifs : MusicBuff (EnemyAtack ; retiré plus tard par Key2_Spell) joue Music/ZonesMusic/IE1_main, IE1_Ships_Ambient (LastEventStart ; retiré à la mort de Gradimir) joue Ambience/AstralAmbience/4Layer_3Tier.",
+   "_note": "Zone de script Jump du tutoriel de l’Empire (Inst_EmpireStart, quête Quest4_4 « Схватка с витязем ») : buff Jump_Camera (14 s, plan JumpCameraFix), le navire impérial touché (Shield.CanonHitFire aux repères IE_Boom_01…04, Hull.Death à IE_ShipDestroy et IE_ShipDestroy2, son IE1_ShipDestroy), les combattants de la GameViewScene IE1_EmpireShip_Fight1 tombent (état 2) puis disparaissent (état 3), le Спрутоглав (IE1_Ktulha) suit son chemin puis est retiré, débarquement (Demon_Desant : SummonUndead aux repères d’arrivée), le navire kanien (stèle League_Ship_Final) passe à idle01. Le joueur, qui saute (ShipOutJump, route FromShipFly), n’est pas montré."
+  },
+  {
+   "id": "empire-start-knight-defeated",
+   "source": "xdb70",
+   "trigger": "Mechanics/Spells/QuestSpells/IE1_DesantDeath/DeathTriggerPaladinFinal.(AbilityResource).xdb",
+   "trigger_effect": "HealthTrigger",
+   "trigger_owner": "IE1_Paladin02",
+   "map": "Inst_EmpireStart",
+   "states": {
+    "Empire_Ship_Fight1": 3,
+    "League_Ship_Fight1": 2,
+    "League_Ship_Final": 2
+   },
+   "states_note": "États laissés par le tutoriel à la mort de Gradimir Belov : Jump a mis Empire_Ship_Fight1 à 3 (plus personne) et League_Ship_Final à 2 (idle01) ; Key2_Spell (le Лазор, après l’abordage : il retire le bouclier de Gradimir que TeleportPaladin avait posé) a mis League_Ship_Fight1 à 2 (morts).",
+   "audio": {
+    "music": [],
+    "ambience": [
+     "Ambience/AstralAmbience/4Layer_3Tier"
+    ]
+   },
+   "audio_note": "MusicBuff a été retiré par Key2_Spell : pas de musique de buff ; IE1_Ships_Ambient reste jusqu’à la téléportation (retiré à 24 s).",
+   "_note": "Capacité DeathTriggerPaladinFinal de Gradimir Belov (Quest4_4) : à sa mort, le joueur se téléporte (Teleport4sec, fondu au noir Effect_Avatar_Fade), à 9 s le buff Teleport4sec_Camera (17 s, plan IE1_Teleport_Camera), à 10 s le navire kanien joue « special » (League_Ship_Final, état 3) et ses combattants disparaissent (League_Ship_Fight1, état 3), à 24 s le joueur part pour Hadagan_Sanatorium (ImpactTeleport) : la scène va du premier plan (9 s) au départ (24 s). La réplique de la mort de Gradimir (IE1/24_Gradimir_Death, bulle sans sous-titre) est dite à 0 s, avant le plan : hors scène."
   }
  ]
 }

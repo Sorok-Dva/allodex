@@ -256,7 +256,10 @@ def test_engine_chapters_have_an_extraction_spec(manifest):
     assert engine and all(c["id"] in specs for c in engine)
     for spec in specs.values():
         if spec.get("source") == "xdb70":
-            assert spec["first_buff"].endswith(".(BuffResource).xdb")   # déroulé serveur 7.0
+            if "trigger" in spec:                                       # zone de script ou capacité
+                assert spec["trigger"].endswith((".(ScriptZone).xdb", ".(AbilityResource).xdb"))
+            else:
+                assert spec["first_buff"].endswith(".(BuffResource).xdb")   # déroulé serveur 7.0
             continue
         if spec.get("source") == "gameview":
             assert isinstance(spec["scene"], int)                       # GameViewScene du client
