@@ -174,7 +174,7 @@ ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le rest
 
 ### Cinématiques moteur recréées en 3D
 
-Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Onze
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Treize
 sont **recréées dans three.js** avec les données du dernier client et jouées dans le film comme
 des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix russes) :
 
@@ -186,20 +186,40 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Ferris 6.0 · « Le portail de Ferris » (`ferris-portal`, `FR4Intro`) | serveur 7.0 | `Ferris4` | 94 s |
 | Ferris 6.0 · « La profanation du Fractal » (`ferris-fractal`, `Portal_Start`) | serveur 7.0 | `FerrisRaid` | 64 s |
 | Ferris 6.0 · « Pas de retour » (`ferris-no-way-back`, `Portal_Ending_Main`) | serveur 7.0 | `FerrisRaid` | 44 s |
+| Ferris 6.0 · « L’essaim » (`ferris-swarm`, `Swarm_CutScene`) | serveur 7.0 | `FerrisRaid` | 72 s |
 | Ferris 6.0 · « La force de l’Ordre » (`ferris-power-of-order`, `Swarm_Ending_Main`) | serveur 7.0 | `FerrisRaid` | 54 s |
 | Ferris 6.0 · « Les serviteurs de l’Ordre » (`ferris-order`) | serveur 7.0 | `FerrisRaid` | 51 s |
 | Ferris 6.0 · « Le Locus » (`ferris-locus`) | serveur 7.0 | `FerrisRaid` | 162 s |
 | Ferris 6.0 · « La chute du Locus » (`ferris-locus-fall`) | serveur 7.0 | `FerrisRaid` | 122 s |
+| Invasion 7.0 · « La mort de l’ingénieur » (`invasion-engineer-kania`, Ligue) | client (`GameViewScene`) | `Inst_ZoneContested12_Start` | 13 s |
 | Citadelle de Nihaz 12.0 · « Le monde caché » (`ao12-prologue04`, pilote) | manifeste | `AO12_PrologueInst` | 82 s |
 
-En attente, hors du film : `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
+En attente, hors du film : `isa-freya` (Isa 14.0 : le navire « Freya », sujet du plan, est posé par le
+serveur et n'est pas dans le décor du client) et `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
 éclairée par le seul éclairage de zone du 17.0 (violet sombre, sans lumière ponctuelle), est presque
 noire, et l'ouverture de la sphère (drapeau visuel) n'est pas reproduite.
+
+**Troisième source : les scènes du client** (`"source": "gameview"`) : une `GameViewScene` (place et
+placement de caméra en doubles x, y, f32 lacet, double z ; PNJ par `VisualMob`) jouée par le
+`GameViewScript` d'un `ShowSceneAction` : chaque créature joue l'animation que le script lui donne,
+son animation de cinématique portant son déplacement ; caméra au placement du spectateur, à 2 m
+au-dessus (vue de joueur, choix documenté). `CameraMovesAction` (caméra animée, positions en doubles)
+est repéré mais pas encore lu : les scènes qui l'emploient (explosion du navire, Koursk, pont) sont
+déjà dans le film en vidéo.
+
+**Scènes d'après 7.0, constat** : le client 17.0 ne relie aucune réplique à son buff de caméra (aucune
+ressource ne cite ces `ClientData` ; c'est le script serveur) et ne pose ni les PNJ ni les objets de
+quête. Kanaan/Nayan et le sanatorium « Снежинка » sont des présentations de zone (survols de 16 à
+32 s, une narration par lieu ; au sanatorium, la voix est un paramètre fictif, `CS_FR_PortalArch03`) ;
+le mariage de Quator (ch. 5) est une caméra d'ambiance de 240 s sur un événement serveur (huit
+répliques, dont l'attaque de Svetlana, sans ordre établi) ; Eden2 ne porte qu'une réplique.
 
 **Dossiers** : chaque carte a son dossier commun `engine/maps/<carte>/` — décor (`decor.glb`, les
 objets des zones de toutes ses scènes), sol (`terrain.glb`), textures, particules et leur atlas ;
 chaque scène garde les siens : éclairage de sommets (`decor-light.bin`, qui dépend du temps de la
-scène), ciel (`sky.glb`), effets, acteurs, voix, sons, sous-titres. Si `data/Packs` du client est un
+scène), ciel (`sky.glb`), effets, voix, sons, sous-titres. Les acteurs sont communs à tout le film :
+un modèle par `MobWorld` (ou `VisualMob`) dans `engine/shared/actors/`, avec toutes les animations que
+les scènes lui demandent (110 Mo pour les treize scènes). Si `data/Packs` du client est un
 lien illisible depuis WSL, les outils lisent `data/Packs.adc-real`.
 
     python3 tools/extract_engine_cutscene.py                      # toutes les scènes
@@ -293,7 +313,7 @@ sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce
 
 ### Ce qui manque
 
-- **Cinématiques moteur** : onze sont recréées (voir plus haut). Liste dans
+- **Cinématiques moteur** : treize sont recréées (voir plus haut). Liste dans
   `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
   (7_0Events), extraites ici.
 - **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et
