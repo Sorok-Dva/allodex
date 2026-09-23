@@ -3,6 +3,7 @@ import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { loadParticleFile } from '@/components/scene/FatalityViewer/particles';
 import { VotFactory, particleSystems, updateInstance, type Tinted, type VotInstance } from '@/components/scene/vot/votInstances';
 import { argb, falloff } from '@/components/scene/EngineCutscene/timeline';
+import { terrainMaterial } from '@/components/scene/EngineCutscene/EngineCutscene';
 import type { ChargenSceneFile } from '@/data/character/chargen.types';
 
 /** Couleurs du jeu : 0x80 = 1. */
@@ -78,16 +79,17 @@ export async function loadChargenDecor(scene: ChargenSceneFile, base: string,
     group.add(skyProto);
     sky = skyProto;
   }
-  // Sol : texture × (ambiante + soleil · N·L).
-  if (terrainGlb) {
-    terrainGlb.scene.traverse(node => {
-      const mesh = node as THREE.Mesh;
+  // Sol de la carte : calques mélangés par le SplatMap et lumière cuite des lightmaps, même
+  // matériau que les cinématiques moteur (`terrainMaterial`).
+  if (terrainGlb && scene.decor.terrainGlb) {
+    const terrainUrl = new URL(base + scene.decor.terrainGlb, window.location.href);
+    const node = terrainGlb.scene.getObjectByName('terrain');
+    const extras = node?.userData as { terrainLayers?: { texture: string | null; tiling: number }[]; terrainLightmap?: string | null } | undefined;
+    const material = await terrainMaterial(extras?.terrainLayers ?? [], extras?.terrainLightmap ?? null, terrainUrl, light);
+    disposables.push(material);
+    terrainGlb.scene.traverse(child => {
+      const mesh = child as THREE.Mesh;
       if (!mesh.isMesh) return;
-      const source = mesh.material as THREE.MeshStandardMaterial;
-      if (source.map) source.map.colorSpace = THREE.NoColorSpace;
-      const material = new THREE.MeshLambertMaterial({ map: source.map ?? null, emissive: new THREE.Color(...ambient),
-        emissiveMap: source.map ?? null, side: THREE.DoubleSide });
-      disposables.push(material);
       mesh.material = material;
       mesh.frustumCulled = false;
     });

@@ -62,7 +62,7 @@ const TERRAIN_SIZE = 512;
 const TERRAIN_MAX_LAYERS = 32;
 
 /** Charge les calques du sol dans un tableau de textures (512², répétées, mipmaps). */
-async function terrainMaterial(meta: { texture: string | null; tiling: number }[], lightmapUri: string | null,
+export async function terrainMaterial(meta: { texture: string | null; tiling: number }[], lightmapUri: string | null,
   glbUrl: URL, light: EngineScene['light']): Promise<THREE.ShaderMaterial> {
   const count = Math.max(1, Math.min(meta.length, TERRAIN_MAX_LAYERS));
   const data = new Uint8Array(TERRAIN_SIZE * TERRAIN_SIZE * 4 * count).fill(128);

@@ -252,10 +252,14 @@ def export_scenes(ctx, races: list[str], race_scene: dict[str, str], vgmstream: 
     areas = [([float(p["origin"][0]), float(p["origin"][1])], SCENE_RADIUS) for p in plans.values()]
     decor = build_decor(mp, cat, bins, textures, particles, MAP, areas, report)
     (map_dir / "decor.glb").write_bytes(decor["glb"])
-    # Pas de sol de carte : chaque décor de création porte le sien ; celui de la carte, sous le
-    # décor elfe, sortait sans texture (tache blanche à droite de l'estrade).
-    terrain_glb = None
-    (map_dir / "terrain.glb").unlink(missing_ok=True)
+    # Sol de la carte (`terrainDump` des régions, calques du SplatMap, lightmaps) : sans lui, les
+    # décors kanian et gibberling s'ouvrent sur le vide (le sol de leurs places n'est que du
+    # terrain). Même décodeur que les cinématiques (`build_terrain`), même rendu (`terrainMaterial`).
+    terrain_glb, _ = build_terrain(mp, cat, bins, textures, areas, report, lightmap_out=map_dir / "terrain-lightmap.png")
+    if terrain_glb:
+        (map_dir / "terrain.glb").write_bytes(terrain_glb)
+    else:
+        (map_dir / "terrain.glb").unlink(missing_ok=True)
     prefix = f"maps/{MAP}/"
     objects_meta = rebase_objects(decor["objects"], prefix)
 
