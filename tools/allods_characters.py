@@ -249,7 +249,7 @@ def _ints(db: PackDB, loc: int) -> list[int]:
 
 def read_variation(db: PackDB, cat: PakCatalog, off: int) -> Variation:
     skin = db.ptr(off + CV_SKIN)
-    skin_bin = cat.name((db.u32(skin + INDEXED_BINARY), db.u32(skin + INDEXED_BINARY + 8))) if skin is not None else None
+    skin_bin = cat.name(db.file_ref(skin, INDEXED_BINARY)) if skin is not None else None
     return Variation(additional=_item(db, cat, db.ptr(off + CV_ADDITIONAL)), face=_item(db, cat, db.ptr(off + CV_FACE)),
                      facial=_item(db, cat, db.ptr(off + CV_FACIAL)), hair=_item(db, cat, db.ptr(off + CV_HAIR)),
                      hair_color=db.i32(off + CV_HAIR_COLOR), skin=skin_bin, skin_color=db.i32(off + CV_SKIN_COLOR))

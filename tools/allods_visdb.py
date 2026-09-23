@@ -198,7 +198,7 @@ def read_texture(db: PackDB, cat: PakCatalog, off: int) -> TextureInfo:
     """Le second fichier (`.hi.bin`, niveaux de mipmap les plus fins) vit dans un pak `*.HiRes`
     dont le code n'est pas voté : on le retrouve par son nom, celui du `.bin` suffixé."""
     binary = cat.name(db.binary_ref(off))
-    hi = cat.name((db.u32(off + TEXTURE_HIRES_REF), db.u32(off + TEXTURE_HIRES_REF + 8)))
+    hi = cat.name(db.file_ref(off, TEXTURE_HIRES_REF))
     if hi is None and binary:
         hi = binary[:-4] + ".hi.bin"
     return TextureInfo(off, binary, hi, db.u32(off + TEX_WIDTH),

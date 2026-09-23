@@ -301,6 +301,10 @@ class PackDB:
         mask = (self.rkind == RELOC_STRUCT) & (self.rtgt == ti)
         return self.rloc[mask].tolist()
 
+    def file_ref(self, off: int, field: int) -> tuple[int, int]:
+        """(code de pak, rang) posé au champ `field` d'une ressource (second fichier d'une texture…)."""
+        return self.u32(off + field), self.u32(off + field + 8)
+
     def binary_ref(self, off: int) -> tuple[int, int] | None:
         """(code de pak, rang) du fichier binaire principal d'une ressource."""
         field = BINARY_REF.get(self.vtype(off) or "")
@@ -384,6 +388,12 @@ class LinkedDB(PackDB):
     def resources(self, type_name: str) -> list[int]:
         own = super().resources(type_name) if type_name in self.types else []
         return own + [o | EXTERN for o in self.parent.resources(type_name)]
+
+    def file_ref(self, off: int, field: int) -> tuple[int, int]:
+        if not self._local(off):
+            return self.parent.file_ref(off & ~EXTERN, field)
+        code, rank = super().file_ref(off, field)
+        return code + MAP_CODES, rank
 
     def binary_ref(self, off: int) -> tuple[int, int] | None:
         if not self._local(off):

@@ -22509,29 +22509,114 @@
     {
      "id": "nihaz",
      "mob": 507561,
-     "position": [
-      148.35,
-      135.07,
-      230
-     ],
      "ground": true,
-     "face": [
-      171.6,
-      145.4
-     ],
      "idle": "Idle",
      "talk": "SpellCastOmni",
      "animations": [
       "Idle",
+      "Run",
       "SpellCastOmni"
      ],
      "speaker_prefixes": [
       "Нихаз:"
      ],
-     "appear": 39
+     "appear": 39,
+     "path": [
+      {
+       "t": 0,
+       "p": [
+        148.35,
+        135.07,
+        230
+       ],
+       "face": [
+        171.6,
+        145.4
+       ]
+      },
+      {
+       "t": 63,
+       "p": [
+        148.35,
+        135.07,
+        230
+       ],
+       "face": [
+        171.6,
+        145.4
+       ]
+      },
+      {
+       "t": 65.5,
+       "p": [
+        96.0,
+        147.58,
+        202.0
+       ],
+       "air": true,
+       "face": [
+        147.26,
+        147.58
+       ]
+      }
+     ],
+     "move": "Run"
     }
    ],
-   "staging_note": "Le groupe (Reniesta, Klavdia, Gort) entoure le Pointeur de Nihaz, visé par la caméra pendant les 42 premières secondes ; Nihaz (modèle NihazDragonBoss, le seul visuel du MobWorld « Нихаз » 507561 rangé avec les données de la quête) se tient au point visé par le plan fixe de ses répliques (148,3 ; 135,1). Nihaz n’apparaît qu’à 39 s, quand la caméra quitte le Pointeur pour le point qu’il occupe (sinon il masquerait le premier plan, visé à travers ce point)."
+   "staging_note": "Le groupe (Reniesta, Klavdia, Gort) entoure le Pointeur de Nihaz, visé par la caméra pendant les 42 premières secondes ; Nihaz (NihazDragonBoss, seul visuel du MobWorld « Нихаз » 507561 rangé avec la quête) arrive par un portail au point visé par le plan fixe de ses trois répliques (148,3 ; 135,1), puis rejoint le point visé par le dernier travelling (90,1 ; 147,6 ; 210,3), où il prononce les trois dernières : la caméra se rapproche du dragon. Effets : portail, bouclier de Reniesta, hologramme du quartier général sur le Pointeur.",
+   "spawns": [
+    {
+     "mob": 507537,
+     "p": [
+      148.35,
+      135.07,
+      230
+     ],
+     "ground": true,
+     "t": 38,
+     "until": 46,
+     "_note": "Portail de Nihaz (PNJ d'effet 507537, Nihaz_FlyPart_PortaOn02) à son arrivée."
+    },
+    {
+     "buff": 507572,
+     "attach": "reniesta",
+     "t": 42,
+     "until": 63,
+     "_note": "Bouclier de Reniesta (buff 507572 = AO12_Prologue04_Cutscene_Reniesta_ShieldCast, RysinaShield_Main) pendant les répliques de Nihaz."
+    },
+    {
+     "mob": 507559,
+     "p": [
+      174.92,
+      147.87,
+      196.0
+     ],
+     "t": 0,
+     "until": 82,
+     "scale": 1,
+     "_note": "Hologramme du quartier général (PNJ d'effet 507559, Nihaz_HQ_Hologram) sur le Pointeur, que Reniesta lit."
+    }
+   ],
+   "post": [
+    {
+     "t": 0,
+     "kind": "fadeIn",
+     "duration": 2.0,
+     "_note": "AO12_Prologue04_TransitionToCutscene : Black_Long"
+    },
+    {
+     "t": 81.0,
+     "kind": "fadeOut",
+     "duration": 1.0,
+     "_note": "AO12_Prologue04_CutsceneFinal : Black_Instant"
+    }
+   ],
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
+   }
   }
  ]
 }
