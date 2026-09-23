@@ -302,6 +302,162 @@
    }
   },
   {
+   "id": "ferris-order",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 170,
+   "event": "FerrisRaid CutScene_GeneralStart",
+   "title": {
+    "fr": "Les serviteurs de l’Ordre",
+    "en": "Servants of Order"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« CutScene_GeneralStart », 6.0) : le Colosse gardien tombe, Élisabeth Rysina et Marianne di Arder rejoignent les héros au cœur de Ferris.",
+   "bonus": false,
+   "duration": 51.0,
+   "files": {
+    "poster": "engine/ferris-order/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-order/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/ferris-order/fr.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/ferris-order/en.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/ferris-order/ru.vtt",
+     "lines": 5
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 5,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-locus",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 180,
+   "event": "FerrisRaid LastStart_CutScene",
+   "title": {
+    "fr": "Le Locus",
+    "en": "The Locus"
+   },
+   "chronology": "Cinématique moteur avant le dernier combat du raid de Ferris (« LastStart_CutScene », 6.0) : le Ваятель présente le Locus, puis le Cœur du Locus, l’Architecte, s’adresse aux héros.",
+   "bonus": false,
+   "duration": 162.0,
+   "files": {
+    "poster": "engine/ferris-locus/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-locus/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/ferris-locus/fr.vtt",
+     "lines": 7
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/ferris-locus/en.vtt",
+     "lines": 13
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/ferris-locus/ru.vtt",
+     "lines": 13
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 13,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-locus-fall",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 190,
+   "event": "FerrisRaid LastEnd_CutScene",
+   "title": {
+    "fr": "La chute du Locus",
+    "en": "The Fall of the Locus"
+   },
+   "chronology": "Cinématique moteur de fin du raid de Ferris (« LastEnd_CutScene », 6.0) : le Locus s’effondre, la fuite, puis le Ваятель révèle ce qui attend Sarnaut ; clôt l’arc de Ferris avant l’Invasion (7.0).",
+   "bonus": false,
+   "duration": 122.5,
+   "files": {
+    "poster": "engine/ferris-locus-fall/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-locus-fall/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/ferris-locus-fall/fr.vtt",
+     "lines": 14
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/ferris-locus-fall/en.vtt",
+     "lines": 14
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/ferris-locus-fall/ru.vtt",
+     "lines": 16
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 16,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "invasion-plague",
    "title": {
     "fr": "La peste",

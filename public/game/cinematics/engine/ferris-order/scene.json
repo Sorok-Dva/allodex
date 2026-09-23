@@ -1,0 +1,1618 @@
+{
+ "id": "ferris-order",
+ "map": "FerrisRaid",
+ "up": [
+  0,
+  0,
+  1
+ ],
+ "mirror": true,
+ "duration": 51.0,
+ "timing": "server",
+ "camera": {
+  "points": [
+   {
+    "t": 0.0,
+    "p": [
+     13973.0,
+     16001.0,
+     227.0
+    ]
+   },
+   {
+    "t": 23.0,
+    "p": [
+     13973.0,
+     16001.0,
+     227.0
+    ]
+   },
+   {
+    "t": 31.999,
+    "p": [
+     13979.0,
+     15993.0,
+     228.0
+    ]
+   },
+   {
+    "t": 32.0,
+    "p": [
+     13953.0,
+     16012.0,
+     222.0
+    ]
+   },
+   {
+    "t": 40.999,
+    "p": [
+     13953.0,
+     16012.0,
+     222.0
+    ]
+   },
+   {
+    "t": 41.0,
+    "p": [
+     13963.0,
+     16020.0,
+     222.0
+    ]
+   },
+   {
+    "t": 43.429,
+    "p": [
+     13967.0,
+     16019.0,
+     222.0
+    ]
+   },
+   {
+    "t": 46.999,
+    "p": [
+     13968.0,
+     16024.0,
+     222.0
+    ]
+   }
+  ],
+  "targets": [
+   {
+    "t": 0.0,
+    "p": [
+     13945.0,
+     16038.0,
+     224.0
+    ]
+   },
+   {
+    "t": 23.0,
+    "p": [
+     13945.0,
+     16038.0,
+     224.0
+    ]
+   },
+   {
+    "t": 31.999,
+    "p": [
+     13945.0,
+     16038.0,
+     224.0
+    ]
+   },
+   {
+    "t": 32.0,
+    "p": [
+     13963.0,
+     16023.0,
+     224.0
+    ]
+   },
+   {
+    "t": 40.999,
+    "p": [
+     13963.0,
+     16023.0,
+     224.0
+    ]
+   },
+   {
+    "t": 41.0,
+    "p": [
+     13964.0,
+     16023.0,
+     223.0
+    ]
+   },
+   {
+    "t": 46.999,
+    "p": [
+     13964.0,
+     16023.0,
+     223.0
+    ]
+   }
+  ],
+  "duration": 51.0,
+  "fov": 45
+ },
+ "lines": [
+  {
+   "n": 1,
+   "start": 23.0,
+   "duration": 13.0,
+   "speaker": "genera",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_GeneralRysina01",
+    "wave": "CS_FR_GeneralRysina01",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/01.ogg",
+    "mp3": "voice/01.mp3",
+    "duration": 3.458
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Держитесь!",
+    "en": "Hold on tight!",
+    "fr": "Accrochez-vous !"
+   },
+   "source": "Mechanics/RaidInstances/FerrisRaid/CutScene/General_Text.(ClientData).xdb"
+  },
+  {
+   "n": 2,
+   "start": 27.0,
+   "duration": 13.0,
+   "speaker": "genera-3",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_GeneralMarianna01",
+    "wave": "CS_FR_GeneralMarianna01",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/02.ogg",
+    "mp3": "voice/02.mp3",
+    "duration": 2.418
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Думаешь? Какой в этом смысл?",
+    "en": "You think so? But what for?",
+    "fr": "Vous croyez ? Mais pourquoi ?"
+   },
+   "source": "Mechanics/RaidInstances/FerrisRaid/CutScene/General_text_2.(ClientData).xdb"
+  },
+  {
+   "n": 3,
+   "start": 32.0,
+   "duration": 13.0,
+   "speaker": "genera-3",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_GeneralRysina02",
+    "wave": "CS_FR_GeneralRysina02",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/03.ogg",
+    "mp3": "voice/03.mp3",
+    "duration": 7.673
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Слишком уж сложный мир у этих «слуг Порядка».",
+    "en": "These \"servants of Order\" live in a world way too complicated.",
+    "fr": "Ces « serviteurs de l'Ordre » vivent dans un monde bien trop compliqué."
+   },
+   "source": "Mechanics/RaidInstances/FerrisRaid/CutScene/General_text_3.(ClientData).xdb"
+  },
+  {
+   "n": 4,
+   "start": 36.0,
+   "duration": 5.0,
+   "speaker": null,
+   "voice": null,
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "А я предпочитаю простые и надёжные решения!"
+   },
+   "source": "Mechanics/RaidInstances/FerrisRaid/CutScene/General_text_4.(ClientData).xdb"
+  },
+  {
+   "n": 5,
+   "start": 42.0,
+   "duration": 6.0,
+   "speaker": "genera-3",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_GeneralMarianna02",
+    "wave": "CS_FR_GeneralMarianna02",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/05.ogg",
+    "mp3": "voice/05.mp3",
+    "duration": 4.256
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Чем проще, тем надёжней, да? Не спорю. Приступим?",
+    "en": "The simpler it is, the safer, right? So let's get going!",
+    "fr": "Le plus simple est le plus sûr, non ? Alors, allons-y !"
+   },
+   "source": "Mechanics/RaidInstances/FerrisRaid/CutScene/General_text_5.(ClientData).xdb"
+  }
+ ],
+ "actors": [
+  {
+   "id": "boss",
+   "glb": "actors/boss.glb",
+   "name": {
+    "ru": "Колосс",
+    "en": "Colossus"
+   },
+   "path": [
+    {
+     "t": 0.0,
+     "p": [
+      14046.854,
+      15968.1129,
+      230.226
+     ],
+     "yaw": 3.12414
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     0.0,
+     20.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 0.0,
+     "until": 20.0,
+     "clips": [
+      "ReadySpellOmni"
+     ],
+     "loop": true
+    }
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/Colossus/Colossus.(Geometry).bin",
+   "height": 6.331,
+   "animations": {
+    "Idle": 6.6667,
+    "Walk": 6.6333
+   }
+  },
+  {
+   "id": "genera",
+   "glb": "actors/genera.glb",
+   "name": {
+    "ru": "",
+    "en": ""
+   },
+   "path": [
+    {
+     "t": 19.0,
+     "p": [
+      14046.854,
+      15968.1129,
+      230.226
+     ],
+     "yaw": 2.26893
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     19.0,
+     24.0
+    ]
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/GolemJunes/GolemJunes.(Geometry).bin",
+   "height": 3.433,
+   "animations": {
+    "Idle": 2.6333,
+    "Walk": 1.3
+   }
+  },
+  {
+   "id": "genera-2",
+   "glb": "actors/genera.glb",
+   "name": {
+    "ru": "",
+    "en": ""
+   },
+   "path": [
+    {
+     "t": 19.0,
+     "p": [
+      14046.854,
+      15968.1129,
+      230.226
+     ],
+     "yaw": 2.26893
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     19.0,
+     24.0
+    ]
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/GolemJunes/GolemJunes.(Geometry).bin",
+   "height": 3.433,
+   "animations": {
+    "Idle": 2.6333,
+    "Walk": 1.3
+   }
+  },
+  {
+   "id": "genera-3",
+   "glb": "actors/genera.glb",
+   "name": {
+    "ru": "",
+    "en": ""
+   },
+   "path": [
+    {
+     "t": 19.0,
+     "p": [
+      14046.854,
+      15968.1129,
+      230.226
+     ],
+     "yaw": 2.26893
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     19.0,
+     51.0
+    ]
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/GolemJunes/GolemJunes.(Geometry).bin",
+   "height": 3.433,
+   "animations": {
+    "Idle": 2.6333,
+    "Walk": 1.3
+   }
+  },
+  {
+   "id": "genera-4",
+   "glb": "actors/genera.glb",
+   "name": {
+    "ru": "",
+    "en": ""
+   },
+   "path": [
+    {
+     "t": 19.0,
+     "p": [
+      14046.854,
+      15968.1129,
+      230.226
+     ],
+     "yaw": 2.26893
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     19.0,
+     24.0
+    ]
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/GolemJunes/GolemJunes.(Geometry).bin",
+   "height": 3.433,
+   "animations": {
+    "Idle": 2.6333,
+    "Walk": 1.3
+   }
+  },
+  {
+   "id": "genera-5",
+   "glb": "actors/genera.glb",
+   "name": {
+    "ru": "",
+    "en": ""
+   },
+   "path": [
+    {
+     "t": 19.0,
+     "p": [
+      14046.854,
+      15968.1129,
+      230.226
+     ],
+     "yaw": 2.26893
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     19.0,
+     24.0
+    ]
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/GolemJunes/GolemJunes.(Geometry).bin",
+   "height": 3.433,
+   "animations": {
+    "Idle": 2.6333,
+    "Walk": 1.3
+   }
+  },
+  {
+   "id": "rysina",
+   "glb": "actors/rysina.glb",
+   "name": {
+    "ru": "Елизавета Рысина",
+    "en": "Elizaveta Rysina"
+   },
+   "path": [
+    {
+     "t": 23.0,
+     "p": [
+      13950.517,
+      16026.38,
+      219.771
+     ],
+     "yaw": 5.3058
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     23.0,
+     51.0
+    ]
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/Rysina/Rysina.(Geometry).bin",
+   "height": 1.916,
+   "animations": {
+    "Idle": 2.6333,
+    "Walk": 1.6333
+   }
+  },
+  {
+   "id": "diarder",
+   "glb": "actors/diarder.glb",
+   "name": {
+    "ru": "Марианна ди Ардер",
+    "en": "Marianne de Ardeur"
+   },
+   "path": [
+    {
+     "t": 23.0,
+     "p": [
+      13957.041,
+      16031.251,
+      219.759
+     ],
+     "yaw": 5.3058
+    },
+    {
+     "t": 24.0,
+     "p": [
+      13957.041,
+      16031.251,
+      219.759
+     ],
+     "yaw": 5.3058
+    },
+    {
+     "t": 29.251,
+     "p": [
+      13964.561,
+      16023.92,
+      221.495
+     ],
+     "yaw": 0.7981
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     23.0,
+     51.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 23.0,
+     "until": 53.0,
+     "clips": [
+      "EmoteSpeech"
+     ],
+     "loop": true
+    }
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/Mirianna/Mirianna.(Geometry).bin",
+   "height": 2.34,
+   "animations": {
+    "EmoteSpeech": 5.3333,
+    "Idle": 4.0,
+    "Idle01": 3.0,
+    "Walk": 1.0
+   }
+  }
+ ],
+ "decor": {
+  "glb": "decor.glb",
+  "light": "decor-light.bin",
+  "instances": [
+   {
+    "vot": "Architect_Rock_02",
+    "p": [
+     13819.552,
+     16008.367,
+     0.0
+    ],
+    "yaw": 4.07336,
+    "scale": 7.5,
+    "light": [
+     0,
+     824
+    ]
+   },
+   {
+    "vot": "Architect_Big_Portal",
+    "p": [
+     14062.289,
+     15987.022,
+     229.733
+    ],
+    "yaw": 5.73436,
+    "tilt": [
+     0.00039,
+     6.28184
+    ],
+    "scale": 1.39855,
+    "light": [
+     824,
+     13853
+    ]
+   },
+   {
+    "vot": "Architect_Rock_04",
+    "p": [
+     13999.927,
+     15910.9227,
+     18.5951
+    ],
+    "yaw": 5.78062,
+    "scale": 4.72611,
+    "light": [
+     14677,
+     753
+    ]
+   },
+   {
+    "vot": "Architect_Rock_Small_04",
+    "p": [
+     13961.83,
+     15933.9289,
+     234.161
+    ],
+    "yaw": 5.98264,
+    "scale": 2.86284,
+    "light": [
+     15430,
+     455
+    ]
+   },
+   {
+    "vot": "Architect_Teleport_Place",
+    "p": [
+     14043.159,
+     15934.0609,
+     229.726
+    ],
+    "yaw": 6.23584,
+    "tilt": [
+     0.01118,
+     6.26912
+    ],
+    "light": [
+     15885,
+     583
+    ]
+   },
+   {
+    "vot": "Architect_Teleport_Place",
+    "p": [
+     14030.838,
+     15998.634,
+     229.689
+    ],
+    "yaw": 6.23584,
+    "tilt": [
+     0.01118,
+     6.26912
+    ],
+    "light": [
+     16468,
+     583
+    ]
+   },
+   {
+    "vot": "Architect_Teleport_Place",
+    "p": [
+     14065.605,
+     15967.157,
+     229.739
+    ],
+    "yaw": 6.23251,
+    "tilt": [
+     0.00523,
+     6.27821
+    ],
+    "light": [
+     17051,
+     583
+    ]
+   },
+   {
+    "vot": "Architect_Rock_05",
+    "p": [
+     13961.492,
+     15941.206,
+     231.475
+    ],
+    "yaw": 0.37015,
+    "tilt": [
+     6.27539,
+     6.28058
+    ],
+    "scale": 2.42062,
+    "light": [
+     17634,
+     462
+    ]
+   },
+   {
+    "vot": "Architect_Rock_Lantern",
+    "p": [
+     13962.032,
+     15941.9983,
+     242.765
+    ],
+    "yaw": 5.30012,
+    "scale": 1.37693,
+    "light": [
+     18096,
+     1396
+    ]
+   },
+   {
+    "vot": "Architect_Rock_05",
+    "p": [
+     13961.508,
+     15932.1015,
+     226.396
+    ],
+    "yaw": 5.05143,
+    "tilt": [
+     0.00285,
+     6.27549
+    ],
+    "scale": 2.42062,
+    "light": [
+     19492,
+     462
+    ]
+   },
+   {
+    "vot": "Arch_BigStone_03",
+    "p": [
+     13966.301,
+     15935.0764,
+     234.973
+    ],
+    "yaw": 4.73402,
+    "scale": 2.42528,
+    "light": [
+     19954,
+     2124
+    ]
+   },
+   {
+    "vot": "Architect_Flying_Bot",
+    "p": [
+     13980.75,
+     15928.2289,
+     260.515
+    ],
+    "yaw": 0.93105,
+    "light": [
+     22078,
+     1023
+    ]
+   },
+   {
+    "vot": "Architect_Flying_Bot",
+    "p": [
+     13944.762,
+     16043.673,
+     270.233
+    ],
+    "yaw": 1.73448,
+    "light": [
+     23101,
+     1023
+    ]
+   }
+  ],
+  "sky": {
+   "radius": 735.69,
+   "parts": 4
+  }
+ },
+ "fx": {
+  "glb": null,
+  "spawns": []
+ },
+ "objects": {
+  "Architect_Rock_02#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Kernel_Big_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/Architect_Kernel_Big_01.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 4801,
+    "loopFrame": 2401,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "orientation": "BILLBOARD",
+   "duration": 80.0,
+   "loop": true
+  },
+  "Architect_Kernel_Big": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 0.699999988079071,
+   "sound": "World/Races/Architectors/Kernel",
+   "particles": {
+    "file": "particles/Architect_Kernel_Big.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 4801,
+    "loopFrame": 2401,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "orientation": "Z_AXIS",
+   "duration": 80.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Kernel_Big_01",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Rock_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.6667,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Rock_02#2",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Architect_Kernel_Big",
+     "locator": "Slot_Special02"
+    }
+   ]
+  },
+  "Architect_Portal_Big_In_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "spells/World/UI04/idle01",
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Portal_Big_In": {
+   "fadeIn": 0.5,
+   "fadeOut": 0.5,
+   "scale": 1.0,
+   "duration": 50.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Portal_Big_In_01",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Big_Portal_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "BILLBOARD",
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Big_Portal_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "spells/FX/Mobs/ArchitectFX/ArchitectBigPortal",
+   "particles": {
+    "file": "particles/Architect_Big_Portal_01.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 3001,
+    "loopFrame": 1501,
+    "frames": [
+     1
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       0.0,
+       1.0234,
+       1.2812
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.8,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 50.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Big_Portal_02",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Big_Portal#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Architect_Big_Portal_01",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Big_Portal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Architect_Portal_Big_In",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Architect_Big_Portal#2",
+     "locator": "Slot_Special02"
+    }
+   ]
+  },
+  "Architect_Rock_04#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.6667,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Kernel_Big",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Architect_Rock_04#2",
+     "locator": "Slot_Special02"
+    }
+   ]
+  },
+  "Architect_Rock_Small_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ArhangelWingsGlo_2": {
+   "fadeIn": 0.0,
+   "fadeOut": 2.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/ArhangelWingsGlo_2.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 261,
+    "loopFrame": 201,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.1406,
+       0.1797,
+       0.375
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Teleport_Place": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "ArhangelWingsGlo_2",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "ArhangelWingsGlo_2",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "ArhangelWingsGlo_2",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "ArhangelWingsGlo_2",
+     "locator": "Slot_Special04"
+    }
+   ]
+  },
+  "Architect_Rock_05": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_Lantern": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Architect_Kernel_Big",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Arch_BigStone_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Tripod_Eye": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.8,
+   "scale": 1.0,
+   "orientation": "BILLBOARD",
+   "duration": 0.0,
+   "loop": false
+  },
+  "ArchitectBot_BodyFX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/ArchitectBot_BodyFX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 121,
+    "frames": [
+     0,
+     2
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.1719,
+       0.6875,
+       0.5859
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.1484,
+       0.3906,
+       0.7812
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": -1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 4.0,
+   "loop": true
+  },
+  "Architect_Flying_Bot": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 85.8667,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Tripod_Eye",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "ArchitectBot_BodyFX",
+     "locator": "Hips"
+    }
+   ]
+  }
+ },
+ "particleAtlas": {
+  "file": "particles/atlas.png",
+  "width": 1024,
+  "height": 128,
+  "rects": [
+   [
+    128,
+    0,
+    64,
+    64
+   ],
+   [
+    0,
+    0,
+    128,
+    128
+   ],
+   [
+    192,
+    0,
+    64,
+    64
+   ]
+  ],
+  "sources": [
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1440,
+    1152,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1280,
+    1152,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1536,
+    448,
+    64,
+    64
+   ]
+  ]
+ },
+ "light": {
+  "ambient": 4283131779,
+  "ambientFactor": 0.5,
+  "diffuse": 4280421122,
+  "fog": 4279245607,
+  "fogEnd": 200.0,
+  "fogStart": -50.0,
+  "pointLight": 4294967295,
+  "selfIllum": 2013265920,
+  "specular": 0,
+  "sunPitch": 45.0,
+  "sunYaw": 0.0,
+  "sunDirection": [
+   0.7071,
+   0.0,
+   0.7071
+  ]
+ },
+ "pointLights": [
+  {
+   "p": [
+    13553.984,
+    13906.69,
+    150.348
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    13433.057,
+    13925.436,
+    144.244
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    13600.936,
+    13918.547,
+    167.971
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    13608.704,
+    13948.3,
+    165.384
+   ],
+   "intensity": 0.9,
+   "radius": 4.0,
+   "attenuation": 0.8
+  },
+  {
+   "p": [
+    13558.215,
+    16120.715,
+    14.405
+   ],
+   "intensity": 1.0,
+   "radius": 36.221,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    13542.012,
+    16119.907,
+    22.861
+   ],
+   "intensity": 2.0,
+   "radius": 18.727,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15333.962,
+    15798.019,
+    205.389
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15332.221,
+    15796.864,
+    211.803
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15224.645,
+    15732.833,
+    221.693
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15228.792,
+    15720.661,
+    228.074
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15206.035,
+    15751.836,
+    185.975
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15205.995,
+    15755.87,
+    184.463
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15251.593,
+    15816.162,
+    206.92
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15104.0,
+    15616.0,
+    0.0
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15286.443,
+    15778.439,
+    233.255
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15344.237,
+    15757.772,
+    228.742
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15334.17,
+    15717.426,
+    226.799
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15322.663,
+    15747.009,
+    253.591
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15294.532,
+    15685.503,
+    229.214
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15262.427,
+    15705.956,
+    246.818
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15249.11,
+    15716.808,
+    195.977
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15255.359,
+    15731.293,
+    193.338
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15253.358,
+    15810.62,
+    200.837
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15234.031,
+    15722.377,
+    174.686
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15345.161,
+    15795.967,
+    199.504
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  }
+ ],
+ "sounds": {
+  "music": [
+   {
+    "file": "sfx/UmoirAwry_I_adaptive",
+    "t": 0.0,
+    "until": 51.0
+   }
+  ],
+  "ambience": [],
+  "events": {
+   "music": [],
+   "ambience": [
+    "Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1"
+   ]
+  },
+  "waves": {
+   "Music/ZonesMusic/UmoirAwry_I_adaptive": {
+    "file": "sfx/UmoirAwry_I_adaptive",
+    "wave": "UmoirAwry_I_adaptive",
+    "bank": "SFX/Music/Music_Zone.fsb",
+    "duration": 52.0
+   }
+  },
+  "volume": {}
+ },
+ "post": [],
+ "sources": {
+  "timeline": "Mechanics/RaidInstances/FerrisRaid/CutScene/CutScene_GeneralStart_Main.(BuffResource).xdb",
+  "buffs": [
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/CutScene_GeneralStart_Main.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/CutScene_GeneralStart.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_General_Animation.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Projectile_Plane_General.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Projectile_Plane_General.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Projectile_Plane_General.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Projectile_Plane_General.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/CutScene_General_1.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/DiArder_Animation.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/CutScene_General_2.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/CutScene_General_3.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Cooldown_GeneralIntro.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/CutsceneWatchersCount.(BuffResource).xdb"
+  ],
+  "spawns": [
+   "Maps/FerrisRaid/050_060/4_2_ServerObjects.xdb"
+  ]
+ }
+}

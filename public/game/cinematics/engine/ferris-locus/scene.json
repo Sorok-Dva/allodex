@@ -1,0 +1,1851 @@
+{
+ "id": "ferris-locus",
+ "map": "FerrisRaid",
+ "up": [
+  0,
+  0,
+  1
+ ],
+ "mirror": true,
+ "duration": 162.0,
+ "timing": "server",
+ "camera": {
+  "points": [
+   {
+    "t": 0.0,
+    "p": [
+     15750.0,
+     15755.0,
+     228.0
+    ]
+   },
+   {
+    "t": 26.999,
+    "p": [
+     15750.0,
+     15755.0,
+     228.0
+    ]
+   },
+   {
+    "t": 27.0,
+    "p": [
+     15739.0,
+     15756.0,
+     228.0
+    ]
+   },
+   {
+    "t": 37.999,
+    "p": [
+     15712.0,
+     15759.0,
+     224.0
+    ]
+   },
+   {
+    "t": 38.0,
+    "p": [
+     15739.0,
+     15756.0,
+     228.0
+    ]
+   },
+   {
+    "t": 54.999,
+    "p": [
+     15739.0,
+     15756.0,
+     228.0
+    ]
+   },
+   {
+    "t": 55.0,
+    "p": [
+     15721.0,
+     15757.0,
+     222.0
+    ]
+   },
+   {
+    "t": 60.999,
+    "p": [
+     15720.0,
+     15754.0,
+     222.0
+    ]
+   },
+   {
+    "t": 61.0,
+    "p": [
+     15740.0,
+     16467.0,
+     72.0
+    ]
+   },
+   {
+    "t": 67.999,
+    "p": [
+     15740.0,
+     16467.0,
+     72.0
+    ]
+   },
+   {
+    "t": 68.0,
+    "p": [
+     15714.0,
+     16407.0,
+     52.0
+    ]
+   },
+   {
+    "t": 76.999,
+    "p": [
+     15716.0,
+     16430.0,
+     52.0
+    ]
+   },
+   {
+    "t": 77.0,
+    "p": [
+     15723.0,
+     15750.0,
+     222.0
+    ]
+   },
+   {
+    "t": 85.999,
+    "p": [
+     15721.0,
+     15750.0,
+     222.0
+    ]
+   },
+   {
+    "t": 86.0,
+    "p": [
+     15721.0,
+     15757.0,
+     222.0
+    ]
+   },
+   {
+    "t": 88.999,
+    "p": [
+     15720.0,
+     15754.0,
+     222.0
+    ]
+   },
+   {
+    "t": 89.0,
+    "p": [
+     15763.0,
+     15781.0,
+     940.0
+    ]
+   },
+   {
+    "t": 97.5,
+    "p": [
+     15750.0,
+     15785.0,
+     940.0
+    ]
+   },
+   {
+    "t": 105.999,
+    "p": [
+     15779.0,
+     15762.0,
+     940.0
+    ]
+   }
+  ],
+  "targets": [
+   {
+    "t": 0.0,
+    "p": [
+     15709.0,
+     15718.0,
+     237.0
+    ]
+   },
+   {
+    "t": 7.0,
+    "p": [
+     15693.0,
+     15714.0,
+     229.0
+    ]
+   },
+   {
+    "t": 16.0,
+    "p": [
+     15704.0,
+     15748.0,
+     227.0
+    ]
+   },
+   {
+    "t": 26.999,
+    "p": [
+     15663.0,
+     15756.0,
+     228.0
+    ]
+   },
+   {
+    "t": 27.0,
+    "p": [
+     15757.0,
+     15766.0,
+     231.0
+    ]
+   },
+   {
+    "t": 37.999,
+    "p": [
+     15739.0,
+     15756.0,
+     228.0
+    ]
+   },
+   {
+    "t": 38.0,
+    "p": [
+     15739.0,
+     15756.0,
+     228.0
+    ]
+   },
+   {
+    "t": 54.999,
+    "p": [
+     15739.0,
+     15756.0,
+     228.0
+    ]
+   },
+   {
+    "t": 55.0,
+    "p": [
+     15724.0,
+     15752.0,
+     223.0
+    ]
+   },
+   {
+    "t": 60.999,
+    "p": [
+     15724.0,
+     15752.0,
+     223.0
+    ]
+   },
+   {
+    "t": 61.0,
+    "p": [
+     15709.0,
+     16427.0,
+     104.0
+    ]
+   },
+   {
+    "t": 67.999,
+    "p": [
+     15643.0,
+     16519.0,
+     130.0
+    ]
+   },
+   {
+    "t": 68.0,
+    "p": [
+     15697.0,
+     16425.0,
+     44.0
+    ]
+   },
+   {
+    "t": 76.999,
+    "p": [
+     15697.0,
+     16425.0,
+     44.0
+    ]
+   },
+   {
+    "t": 77.0,
+    "p": [
+     15724.0,
+     15759.0,
+     225.0
+    ]
+   },
+   {
+    "t": 85.999,
+    "p": [
+     15724.0,
+     15759.0,
+     225.0
+    ]
+   },
+   {
+    "t": 86.0,
+    "p": [
+     15724.0,
+     15752.0,
+     223.0
+    ]
+   },
+   {
+    "t": 88.999,
+    "p": [
+     15724.0,
+     15752.0,
+     223.0
+    ]
+   },
+   {
+    "t": 89.0,
+    "p": [
+     15750.0,
+     15763.0,
+     950.0
+    ]
+   },
+   {
+    "t": 105.999,
+    "p": [
+     15750.0,
+     15763.0,
+     950.0
+    ]
+   }
+  ],
+  "duration": 162.0,
+  "fov": 45
+ },
+ "lines": [
+  {
+   "n": 1,
+   "start": 16.0,
+   "duration": 2.0,
+   "speaker": "diarder",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierMarianna01",
+    "wave": "CS_FR_CarrierMarianna01",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/01.ogg",
+    "mp3": "voice/01.mp3",
+    "duration": 2.006
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Помилуй нас Свет...",
+    "en": "Oh Light, have mercy...",
+    "fr": "Ô Lumière, ayez pitié..."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub1.(ClientData).xdb"
+  },
+  {
+   "n": 2,
+   "start": 22.0,
+   "duration": 4.0,
+   "speaker": "rysina",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierRysina01",
+    "wave": "CS_FR_CarrierRysina01",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/02.ogg",
+    "mp3": "voice/02.mp3",
+    "duration": 6.226
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Боюсь, Свет нам тут не поможет... Что это такое?",
+    "en": "I'm afraid, the Light won't help us here... What is this?",
+    "fr": "J'ai peur que la Lumière ne puisse nous aider ici... Qu'est-ce que c'est ?"
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub2.(ClientData).xdb"
+  },
+  {
+   "n": 3,
+   "start": 27.0,
+   "duration": 2.0,
+   "speaker": "colossus",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierVayatel01",
+    "wave": "CS_FR_CarrierVayatel01",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/03.ogg",
+    "mp3": "voice/03.mp3",
+    "duration": 3.256
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Это - Локус.",
+    "en": "This is Locus.",
+    "fr": "C'est le Locus."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub3.(ClientData).xdb"
+  },
+  {
+   "n": 4,
+   "start": 30.0,
+   "duration": 5.0,
+   "speaker": "colossus",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierVayatel02",
+    "wave": "CS_FR_CarrierVayatel02",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/04.ogg",
+    "mp3": "voice/04.mp3",
+    "duration": 10.507
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Здесь материя обретает форму и становится частью единого целого.",
+    "en": "Here matter acquires shape and becomes a part of the whole."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub4.(ClientData).xdb"
+  },
+  {
+   "n": 5,
+   "start": 38.0,
+   "duration": 4.0,
+   "speaker": "colossus",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierVayatel03",
+    "wave": "CS_FR_CarrierVayatel03",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/05.ogg",
+    "mp3": "voice/05.mp3",
+    "duration": 8.257
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Совершенство есть порядок. Порядок есть целостность.",
+    "en": "Perfectness is order. Order is wholeness."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub5.(ClientData).xdb"
+  },
+  {
+   "n": 6,
+   "start": 46.0,
+   "duration": 4.0,
+   "speaker": "colossus",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierVayatel04",
+    "wave": "CS_FR_CarrierVayatel04",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/06.ogg",
+    "mp3": "voice/06.mp3",
+    "duration": 7.506
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Нарушив целостность Локуса, вы нарушите гармонию Порядка...",
+    "en": "If you disrupt Locus' wholeness, you will disrupt the harmony of the world..."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub6.(ClientData).xdb"
+  },
+  {
+   "n": 7,
+   "start": 55.0,
+   "duration": 4.0,
+   "speaker": "rysina",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierRysina02",
+    "wave": "CS_FR_CarrierRysina02",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/07.ogg",
+    "mp3": "voice/07.mp3",
+    "duration": 4.084
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Не время для философии! Мы должны остановить его!",
+    "en": "No time for philosophy! We have to stop him!",
+    "fr": "Nous n'avons pas le temps de philosopher ! Nous devons l'arrêter !"
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub7.(ClientData).xdb"
+  },
+  {
+   "n": 8,
+   "start": 61.0,
+   "duration": 6.0,
+   "speaker": "colossus",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierVayatel05",
+    "wave": "CS_FR_CarrierVayatel05",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/08.ogg",
+    "mp3": "voice/08.mp3",
+    "duration": 10.257
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Вы? Это не имеет смысла. Вам не нарушить столь совершенной структуры.",
+    "en": "You? This is pointless. You cannot break such a perfect structure."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub8.(ClientData).xdb"
+  },
+  {
+   "n": 9,
+   "start": 68.0,
+   "duration": 4.0,
+   "speaker": "colossus",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierVayatel06",
+    "wave": "CS_FR_CarrierVayatel06",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/09.ogg",
+    "mp3": "voice/09.mp3",
+    "duration": 13.507
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Если только... Уничтожьте материю! Разрушьте Низших! И тогда бытие Локуса потеряет смысл.",
+    "en": "Unless... You destroy matter! Destroy the Inferiors! Then the existence of Locus will lose its meaning."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub9.(ClientData).xdb"
+  },
+  {
+   "n": 10,
+   "start": 77.0,
+   "duration": 6.0,
+   "speaker": "colossus",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierVayatel07",
+    "wave": "CS_FR_CarrierVayatel07",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/10.ogg",
+    "mp3": "voice/10.mp3",
+    "duration": 9.007
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Мы... Я... Целое зовёт меня. Не рассчитывайте на мою помощь.",
+    "en": "We... I... The whole is calling for me. Don't count on my help.",
+    "fr": "Nous... Je... Le tout m'appelle. Ne comptez pas sur mon aide."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub10.(ClientData).xdb"
+  },
+  {
+   "n": 11,
+   "start": 86.0,
+   "duration": 3.0,
+   "speaker": "rysina",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierRysina03",
+    "wave": "CS_FR_CarrierRysina03",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/11.ogg",
+    "mp3": "voice/11.mp3",
+    "duration": 1.608
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Да уж как-нибудь обойдёмся...",
+    "en": "We'll get along somehow...",
+    "fr": "Nous nous sommes d'une certaine façon entendus..."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub11.(ClientData).xdb"
+  },
+  {
+   "n": 12,
+   "start": 89.0,
+   "duration": 4.0,
+   "speaker": "bosslast",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierArch01",
+    "wave": "CS_FR_CarrierArch01",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/12.ogg",
+    "mp3": "voice/12.mp3",
+    "duration": 4.368
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Порождения хаоса... Зачем вы пришли в мой мир? Аз есмь архитектор! Аз есмь Порядок!",
+    "en": "Children of chaos... Why did you come to my world? I am the Architect! I am the Order!"
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub12.(ClientData).xdb"
+  },
+  {
+   "n": 13,
+   "start": 101.0,
+   "duration": 2.0,
+   "speaker": "bosslast",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_CarrierArch02",
+    "wave": "CS_FR_CarrierArch02",
+    "bank": "SFX/Voice/Voice_CS_FR602_cs_rus.bsb",
+    "ogg": "voice/13.ogg",
+    "mp3": "voice/13.mp3",
+    "duration": 5.425
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Вам предстоит возвыситься. Стать совершенными. Целостными... Как и нашей отколовшейся частице!",
+    "en": "You are going to ascend. Become perfect. Become whole... as well as our loose shard!",
+    "fr": "Vous allez connaître l'Ascension. Devenir parfaits. Faire partie du tout... comme notre éclat perdu !"
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub13.(ClientData).xdb"
+  }
+ ],
+ "actors": [
+  {
+   "id": "rysina",
+   "glb": "actors/rysina.glb",
+   "name": {
+    "ru": "Елизавета Рысина",
+    "en": "Elizaveta Rysina"
+   },
+   "path": [
+    {
+     "t": 0.0,
+     "p": [
+      15749.891,
+      15760.314,
+      228.5
+     ],
+     "yaw": 0.0
+    },
+    {
+     "t": 4.0,
+     "p": [
+      15749.891,
+      15760.314,
+      228.5
+     ],
+     "yaw": 0.0
+    },
+    {
+     "t": 11.163,
+     "p": [
+      15730.066,
+      15752.019,
+      222.181
+     ],
+     "yaw": -1.1745
+    },
+    {
+     "t": 54.999,
+     "p": [
+      15730.066,
+      15752.019,
+      222.181
+     ],
+     "yaw": -1.1745
+    },
+    {
+     "t": 55.0,
+     "p": [
+      15724.62,
+      15752.11,
+      221.149
+     ],
+     "yaw": 1.78024
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     0.0,
+     25.0
+    ],
+    [
+     55.0,
+     95.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 0.0,
+     "until": 25.0,
+     "clips": [
+      "EmoteSpeech"
+     ],
+     "loop": false
+    },
+    {
+     "t": 55.0,
+     "until": 95.0,
+     "clips": [
+      "EmoteSpeech"
+     ],
+     "loop": true
+    }
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/Rysina/Rysina.(Geometry).bin",
+   "height": 1.916,
+   "animations": {
+    "EmoteSpeech": 5.3333,
+    "Idle": 2.6333,
+    "Walk": 1.6333
+   }
+  },
+  {
+   "id": "diarder",
+   "glb": "actors/diarder.glb",
+   "name": {
+    "ru": "Марианна ди Ардер",
+    "en": "Marianne de Ardeur"
+   },
+   "path": [
+    {
+     "t": 0.0,
+     "p": [
+      15749.891,
+      15760.314,
+      228.5
+     ],
+     "yaw": 0.0
+    },
+    {
+     "t": 4.0,
+     "p": [
+      15749.891,
+      15760.314,
+      228.5
+     ],
+     "yaw": 0.0
+    },
+    {
+     "t": 13.1,
+     "p": [
+      15731.717,
+      15761.287,
+      222.434
+     ],
+     "yaw": 4.6589
+    },
+    {
+     "t": 54.999,
+     "p": [
+      15731.717,
+      15761.287,
+      222.434
+     ],
+     "yaw": 4.6589
+    },
+    {
+     "t": 55.0,
+     "p": [
+      15721.646,
+      15752.589,
+      220.993
+     ],
+     "yaw": 1.18682
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     0.0,
+     25.0
+    ],
+    [
+     55.0,
+     95.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 0.0,
+     "until": 25.0,
+     "clips": [
+      "EmoteSpeech"
+     ],
+     "loop": false
+    },
+    {
+     "t": 55.0,
+     "until": 95.0,
+     "clips": [
+      "Idle02"
+     ],
+     "loop": false
+    },
+    {
+     "t": 55.0,
+     "until": 95.0,
+     "clips": [
+      "Idle02"
+     ],
+     "loop": false
+    }
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/Mirianna/Mirianna.(Geometry).bin",
+   "height": 2.34,
+   "animations": {
+    "EmoteSpeech": 5.3333,
+    "Idle": 4.0,
+    "Idle01": 3.0,
+    "Idle02": 4.1,
+    "Walk": 1.0
+   }
+  },
+  {
+   "id": "colossus",
+   "glb": "actors/colossus.glb",
+   "name": {
+    "ru": "Колосс",
+    "en": "Colossus"
+   },
+   "path": [
+    {
+     "t": 27.0,
+     "p": [
+      15749.891,
+      15760.314,
+      228.5
+     ],
+     "yaw": -0.3419
+    },
+    {
+     "t": 29.239,
+     "p": [
+      15748.39,
+      15756.096,
+      225.137
+     ],
+     "yaw": -0.3419
+    },
+    {
+     "t": 32.0,
+     "p": [
+      15748.39,
+      15756.096,
+      225.137
+     ],
+     "yaw": -0.3419
+    },
+    {
+     "t": 43.864,
+     "p": [
+      15724.687,
+      15757.189,
+      221.146
+     ],
+     "yaw": 4.6663
+    },
+    {
+     "t": 54.999,
+     "p": [
+      15724.687,
+      15757.189,
+      221.146
+     ],
+     "yaw": 4.6663
+    },
+    {
+     "t": 55.0,
+     "p": [
+      15723.992,
+      15759.656,
+      221.114
+     ],
+     "yaw": 4.38078
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     27.0,
+     52.0
+    ],
+    [
+     55.0,
+     95.0
+    ]
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/Colossus/Colossus.(Geometry).bin",
+   "height": 6.331,
+   "animations": {
+    "Idle": 6.6667,
+    "Walk": 6.6333
+   }
+  },
+  {
+   "id": "bosslast",
+   "glb": "actors/bosslast.glb",
+   "name": {
+    "ru": "Сердце Локуса",
+    "en": "Locus' Heart"
+   },
+   "path": [
+    {
+     "t": 89.0,
+     "p": [
+      15750.528,
+      15763.795,
+      941.093
+     ],
+     "yaw": 1.51844
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     89.0,
+     111.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 89.0,
+     "until": 111.0,
+     "clips": [
+      "ReadySpellOmni"
+     ],
+     "loop": false
+    },
+    {
+     "t": 89.0,
+     "until": 111.0,
+     "clips": [
+      "SpellCastOmni"
+     ],
+     "loop": false
+    }
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/ArchitectFinalBoss/ArchitectFinalBoss.(Geometry).bin",
+   "height": 14.804,
+   "animations": {
+    "Idle": 16.0,
+    "ReadySpellOmni": 2.1667,
+    "SpellCastOmni": 1.3333
+   }
+  }
+ ],
+ "decor": {
+  "glb": "decor.glb",
+  "light": "decor-light.bin",
+  "instances": [
+   {
+    "vot": "Architect_Rock_04",
+    "p": [
+     15588.274,
+     15931.7113,
+     214.593
+    ],
+    "yaw": 0.0,
+    "scale": 2.0,
+    "light": [
+     0,
+     753
+    ]
+   },
+   {
+    "vot": "Architect_World_HugeStone_01",
+    "p": [
+     15584.901,
+     15912.455,
+     184.948
+    ],
+    "yaw": 1.67357,
+    "tilt": [
+     6.23046,
+     5.9417
+    ],
+    "scale": 1.47966,
+    "light": [
+     753,
+     4131
+    ]
+   },
+   {
+    "vot": "Architect_World_HugeStone_01",
+    "p": [
+     15737.087,
+     15757.933,
+     197.781
+    ],
+    "yaw": 0.0,
+    "scale": 1.47966,
+    "light": [
+     4884,
+     4131
+    ]
+   },
+   {
+    "vot": "Architect_Teleport_Place",
+    "p": [
+     15757.012,
+     15766.8,
+     226.555
+    ],
+    "yaw": 6.01084,
+    "tilt": [
+     0.08998,
+     6.2404
+    ],
+    "light": [
+     9015,
+     583
+    ]
+   },
+   {
+    "vot": "Architect_World_InfectedStone_01",
+    "p": [
+     15782.9,
+     15787.5,
+     223.182
+    ],
+    "yaw": 0.0,
+    "scale": 1.25077,
+    "light": [
+     9598,
+     736
+    ]
+   },
+   {
+    "vot": "Architect_World_MagicStone",
+    "p": [
+     15725.522,
+     15787.145,
+     225.319
+    ],
+    "yaw": 0.74632,
+    "scale": 0.88424,
+    "light": [
+     10334,
+     503
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     15674.6327,
+     15832.839,
+     103.142
+    ],
+    "yaw": 1.5708,
+    "scale": 150.0,
+    "light": [
+     10837,
+     24
+    ]
+   },
+   {
+    "vot": "Architect_Rock_Small_01",
+    "p": [
+     15622.7524,
+     15833.18,
+     245.273
+    ],
+    "yaw": 0.0,
+    "light": [
+     10861,
+     90
+    ]
+   },
+   {
+    "vot": "Architect_Rock_Small_02",
+    "p": [
+     15624.7069,
+     15835.438,
+     245.792
+    ],
+    "yaw": 0.0,
+    "light": [
+     10951,
+     323
+    ]
+   },
+   {
+    "vot": "Architect_Rock_05",
+    "p": [
+     15699.5272,
+     15827.674,
+     250.324
+    ],
+    "yaw": 0.0,
+    "light": [
+     11274,
+     462
+    ]
+   },
+   {
+    "vot": "Carrier_Arena",
+    "p": [
+     15750.126,
+     15763.262,
+     942.035
+    ],
+    "yaw": 0.0,
+    "scale": 0.91492,
+    "light": [
+     11736,
+     200351
+    ]
+   },
+   {
+    "vot": "Architect_Rock_05",
+    "p": [
+     15715.077,
+     15768.568,
+     213.754
+    ],
+    "yaw": 5.3374,
+    "scale": 1.44669,
+    "light": [
+     212087,
+     462
+    ]
+   },
+   {
+    "vot": "Architect_Rock_Small_04",
+    "p": [
+     15637.1306,
+     15954.042,
+     82.528
+    ],
+    "yaw": 1.5708,
+    "scale": 1.64269,
+    "light": [
+     212549,
+     455
+    ]
+   },
+   {
+    "vot": "Architect_Rock_Small_04",
+    "p": [
+     15636.4686,
+     15954.8058,
+     87.6285
+    ],
+    "yaw": 4.7125,
+    "tilt": [
+     3.1417,
+     0.01329
+    ],
+    "scale": 1.14147,
+    "light": [
+     213004,
+     455
+    ]
+   },
+   {
+    "vot": "Architect_Rock_Small_04",
+    "p": [
+     15679.4046,
+     15954.042,
+     256.954
+    ],
+    "yaw": 1.5708,
+    "scale": 1.64269,
+    "light": [
+     213459,
+     455
+    ]
+   },
+   {
+    "vot": "Architect_Rock_Small_04",
+    "p": [
+     15678.7426,
+     15954.8058,
+     262.055
+    ],
+    "yaw": 4.7125,
+    "tilt": [
+     3.1417,
+     0.01329
+    ],
+    "scale": 1.14147,
+    "light": [
+     213914,
+     455
+    ]
+   }
+  ],
+  "sky": {
+   "radius": 735.69,
+   "parts": 4
+  }
+ },
+ "fx": {
+  "glb": null,
+  "spawns": []
+ },
+ "objects": {
+  "Architect_Rock_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.6667,
+   "loop": true
+  },
+  "Architect_World_HugeStone_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ArhangelWingsGlo_2": {
+   "fadeIn": 0.0,
+   "fadeOut": 2.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/ArhangelWingsGlo_2.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 261,
+    "loopFrame": 201,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.1406,
+       0.1797,
+       0.375
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Teleport_Place": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "ArhangelWingsGlo_2",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "ArhangelWingsGlo_2",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "ArhangelWingsGlo_2",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "ArhangelWingsGlo_2",
+     "locator": "Slot_Special04"
+    }
+   ]
+  },
+  "Architect_World_InfectedStone_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_World_MagicStone": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "InstLeague1_AI_2X2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_Small_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_Small_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_05": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena_Ray": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "Z_AXIS",
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena_Ray_Out": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "spells/FX/Mobs/ArchitectFX/ArchitectBigPortal",
+   "particles": {
+    "file": "particles/Carrier_Arena_Ray_Out.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 121,
+    "frames": [
+     1
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.4688,
+       1.5938,
+       1.8203
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Carrier_Arena_Ray",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Carrier_Arena_Sky": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena_SkyRing": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena_Ring": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena_Line": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Carrier_Arena_Ray_Out",
+     "locator": ""
+    },
+    {
+     "vot": "Carrier_Arena_Sky",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena#2",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena#2",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena#2",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena#2",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena_SkyRing",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena_Ring",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena_Line",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Rock_Small_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  }
+ },
+ "particleAtlas": {
+  "file": "particles/atlas.png",
+  "width": 1024,
+  "height": 64,
+  "rects": [
+   [
+    0,
+    0,
+    64,
+    64
+   ],
+   [
+    64,
+    0,
+    64,
+    64
+   ]
+  ],
+  "sources": [
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1440,
+    1152,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1568,
+    1280,
+    64,
+    64
+   ]
+  ]
+ },
+ "light": {
+  "ambient": 4283131779,
+  "ambientFactor": 0.5,
+  "diffuse": 4280421122,
+  "fog": 4279245607,
+  "fogEnd": 200.0,
+  "fogStart": -50.0,
+  "pointLight": 4294967295,
+  "selfIllum": 2013265920,
+  "specular": 0,
+  "sunPitch": 45.0,
+  "sunYaw": 0.0,
+  "sunDirection": [
+   0.7071,
+   0.0,
+   0.7071
+  ]
+ },
+ "pointLights": [
+  {
+   "p": [
+    13553.984,
+    13906.69,
+    150.348
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    13433.057,
+    13925.436,
+    144.244
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    13600.936,
+    13918.547,
+    167.971
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    13608.704,
+    13948.3,
+    165.384
+   ],
+   "intensity": 0.9,
+   "radius": 4.0,
+   "attenuation": 0.8
+  },
+  {
+   "p": [
+    13558.215,
+    16120.715,
+    14.405
+   ],
+   "intensity": 1.0,
+   "radius": 36.221,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    13542.012,
+    16119.907,
+    22.861
+   ],
+   "intensity": 2.0,
+   "radius": 18.727,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15333.962,
+    15798.019,
+    205.389
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15332.221,
+    15796.864,
+    211.803
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15224.645,
+    15732.833,
+    221.693
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15228.792,
+    15720.661,
+    228.074
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15206.035,
+    15751.836,
+    185.975
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15205.995,
+    15755.87,
+    184.463
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15251.593,
+    15816.162,
+    206.92
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15104.0,
+    15616.0,
+    0.0
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15286.443,
+    15778.439,
+    233.255
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15344.237,
+    15757.772,
+    228.742
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15334.17,
+    15717.426,
+    226.799
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15322.663,
+    15747.009,
+    253.591
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15294.532,
+    15685.503,
+    229.214
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15262.427,
+    15705.956,
+    246.818
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15249.11,
+    15716.808,
+    195.977
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15255.359,
+    15731.293,
+    193.338
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15253.358,
+    15810.62,
+    200.837
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15234.031,
+    15722.377,
+    174.686
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15345.161,
+    15795.967,
+    199.504
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  }
+ ],
+ "sounds": {
+  "music": [
+   "sfx/Winter",
+   "sfx/AC5_Main_NM"
+  ],
+  "ambience": [],
+  "events": {
+   "music": [
+    "Music/ZonesMusic/Winter",
+    "Music/ZonesMusic/AC5_main"
+   ],
+   "ambience": [
+    "Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1"
+   ]
+  },
+  "waves": {
+   "Music/ZonesMusic/AC5_main": {
+    "file": "sfx/AC5_Main_NM",
+    "wave": "AC5_Main_NM",
+    "bank": "SFX/Music/Music_Zone.fsb",
+    "duration": 163.0
+   },
+   "Music/ZonesMusic/Winter": {
+    "file": "sfx/Winter",
+    "wave": "Winter",
+    "bank": "SFX/Music/Music_Zone.fsb",
+    "duration": 126.575
+   }
+  },
+  "volume": {}
+ },
+ "post": [],
+ "sources": {
+  "timeline": "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene.(BuffResource).xdb",
+  "buffs": [
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_RysinaAnimation.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_DiArderAnimation.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_1.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_ColossusAnimation.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_2.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_3.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_RysinaAnimation_1.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_DiArderAnimation_1.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_ColossusAnimation_1.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_4.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_5.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_6.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_7.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_8.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_LastAnimation.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Cooldown_CarrierIntro.(BuffResource).xdb"
+  ],
+  "spawns": [
+   "Maps/FerrisRaid/060_060/1_1_ServerObjects.xdb"
+  ]
+ }
+}

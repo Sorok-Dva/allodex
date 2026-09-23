@@ -1207,6 +1207,60 @@
    "audio": {
     "language": "ru"
    }
+  },
+  {
+   "id": "ferris-order",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid CutScene_GeneralStart",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 170,
+   "title": {
+    "fr": "Les serviteurs de l’Ordre",
+    "en": "Servants of Order"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« CutScene_GeneralStart », 6.0) : le Colosse gardien tombe, Élisabeth Rysina et Marianne di Arder rejoignent les héros au cœur de Ferris.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-locus",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid LastStart_CutScene",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 180,
+   "title": {
+    "fr": "Le Locus",
+    "en": "The Locus"
+   },
+   "chronology": "Cinématique moteur avant le dernier combat du raid de Ferris (« LastStart_CutScene », 6.0) : le Ваятель présente le Locus, puis le Cœur du Locus, l’Architecte, s’adresse aux héros.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-locus-fall",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid LastEnd_CutScene",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 190,
+   "title": {
+    "fr": "La chute du Locus",
+    "en": "The Fall of the Locus"
+   },
+   "chronology": "Cinématique moteur de fin du raid de Ferris (« LastEnd_CutScene », 6.0) : le Locus s’effondre, la fuite, puis le Ваятель révèle ce qui attend Sarnaut ; clôt l’arc de Ferris avant l’Invasion (7.0).",
+   "audio": {
+    "language": "ru"
+   }
   }
  ],
  "excluded": [
@@ -22677,6 +22731,42 @@
     "Marianna": "diarder"
    },
    "_note": "Déroulé serveur 7.0 (Ferris_Cutscene_Main → Ferris_Cutscene … _9ID) ; PNJ invoqués sur les repères de 5_5_ServerObjects ; répliques posées sur le joueur attribuées par le nom de la voix (FR_PreRaidRysina → Rysina ; Vayatel → le Colosse, Marianna → di Arder)."
+  },
+  {
+   "id": "ferris-order",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/CutScene_GeneralStart_Main.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Сердце Локуса"
+   },
+   "_note": "Déroulé serveur 7.0 du raid de Ferris ; PNJ invoqués sur les repères de la carte FerrisRaid ; locuteurs par le nom de la voix (Vayatel → le Colosse, Marianna → di Arder, Arch → le Cœur du Locus)."
+  },
+  {
+   "id": "ferris-locus",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Сердце Локуса"
+   },
+   "_note": "Déroulé serveur 7.0 du raid de Ferris ; PNJ invoqués sur les repères de la carte FerrisRaid ; locuteurs par le nom de la voix (Vayatel → le Colosse, Marianna → di Arder, Arch → le Cœur du Locus)."
+  },
+  {
+   "id": "ferris-locus-fall",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/LastEnd_CutScene_Main.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Сердце Локуса"
+   },
+   "_note": "Déroulé serveur 7.0 du raid de Ferris ; PNJ invoqués sur les repères de la carte FerrisRaid ; locuteurs par le nom de la voix (Vayatel → le Colosse, Marianna → di Arder, Arch → le Cœur du Locus)."
   }
  ]
 }
