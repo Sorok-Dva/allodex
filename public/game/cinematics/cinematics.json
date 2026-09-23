@@ -250,6 +250,91 @@
    }
   },
   {
+   "id": "ferris-incident",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 152,
+   "event": "Ferris_4_secret2",
+   "title": {
+    "fr": "Incident n° 42",
+    "en": "Incident No. 42"
+   },
+   "chronology": "Cinématique moteur de la quête secrète « Ferris_4_secret2 » (« Происшествие №42 », Ferris, 6.0) : second souvenir du journal de l’« Objet » — les modifiés déferlent sur la base hadagane, les désinfecteurs ouvrent le feu et l’on ferme les portes.",
+   "bonus": false,
+   "duration": 42.3,
+   "files": {
+    "poster": "engine/ferris-incident/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-incident/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/ferris-incident/fr.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/ferris-incident/en.vtt",
+     "lines": 3
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/ferris-incident/ru.vtt",
+     "lines": 3
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 3,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-awakening",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 155,
+   "event": "Ferris_4_6_1",
+   "title": {
+    "fr": "Un dialogue parfait",
+    "en": "A Perfect Dialogue"
+   },
+   "chronology": "Cinématique moteur de la quête « Ferris_4_6_1 » (« Совершенный диалог », Ferris, 6.0) : l’Architecte ami s’éveille ; avant le raid de Ferris.",
+   "bonus": false,
+   "duration": 13.0,
+   "files": {
+    "poster": "engine/ferris-awakening/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-awakening/scene.json"
+   },
+   "tracks": [],
+   "subtitles": {
+    "status": "official",
+    "lines": 0,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "ferris-portal",
    "arc": "ferris",
    "version": "6.0",
