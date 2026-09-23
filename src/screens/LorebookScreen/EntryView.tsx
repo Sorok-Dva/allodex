@@ -7,6 +7,7 @@ import {
   FLAG_COMMUNITY, chunkForId, isHidden, lorePath, neededFallbacks, refPath, resolveBody,
   type Body, type ContentLang, type Links, type ListData, type ResolvedText, type SectionId,
 } from './lorebook.logic';
+import { loreEntryTitle } from '@/seo/meta';
 import { RichText } from './RichText';
 import { useAsync } from './useAsync';
 import s from './LorebookScreen.module.css';
@@ -94,9 +95,9 @@ export function EntryView({ section, id, list, lang, meta }: Props) {
 
   useEffect(() => {
     const previous = document.title;
-    document.title = `${title} — ${t('lore.title')} — Allodex`;
+    document.title = loreEntryTitle(title, t(`lore.section.${section}` as MessageKey));
     return () => { document.title = previous; };
-  }, [title, t]);
+  }, [title, section, t]);
 
   const located = row || (isHidden(section) && (hiddenIndex.loading || bodies.loading || own));
   if (!located) return <div className={s.entry}><p className={s.empty}>{t('lore.notFound')}</p></div>;

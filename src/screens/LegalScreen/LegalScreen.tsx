@@ -5,12 +5,11 @@ import { Link } from '@/lib/router';
 import { T, tex } from '@/lib/assets';
 import s from './LegalScreen.module.css';
 
-const sections = ['project', 'use', 'rights', 'availability', 'storage', 'links', 'changes'] as const;
+const sections = ['project', 'use', 'rights', 'availability', 'storage', 'audience', 'links', 'changes'] as const;
 
 export function LegalScreen() {
   const { t } = useI18n();
   const heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => { document.title = `${t('legal.title')} — Allodex`; }, [t]);
   useEffect(() => { heading.current?.focus(); }, []);
   return <main className={s.screen} style={{ backgroundImage: `linear-gradient(#07110ce8, #07110cf5), url(${tex(`${T.main2}/Background_14_0_Temp`)})` }}>
     <article className={s.document}>

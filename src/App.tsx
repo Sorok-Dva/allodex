@@ -3,6 +3,8 @@ import { loadManifest, cursor, hasAssets } from '@/lib/assets';
 import { useRoute } from '@/lib/router';
 import { AudioProvider } from '@/lib/audio/AudioProvider';
 import { I18nProvider } from '@/lib/i18n';
+import { PageHead } from '@/seo/PageHead';
+import { PageTracker } from '@/analytics/PageTracker';
 import { OpeningScreen } from '@/screens/OpeningScreen/OpeningScreen';
 import { MedalsScreen } from '@/screens/MedalsScreen/MedalsScreen';
 import { ChroniclesScreen } from '@/screens/ChroniclesScreen/ChroniclesScreen';
@@ -19,6 +21,9 @@ const CharacterCreationScreen = import.meta.env.DEV
 import { LorebookScreen } from '@/screens/LorebookScreen/LorebookScreen';
 import { CinematicsScreen } from '@/screens/CinematicsScreen/CinematicsScreen';
 
+// Tableau de bord d'audience : chargé à part, seul l'administrateur y accède.
+const StatsScreen = lazy(() => import('@/screens/StatsScreen/StatsScreen'));
+
 export default function App() {
   const [ready, setReady] = useState(false);
   const { path } = useRoute();
@@ -27,6 +32,8 @@ export default function App() {
   if (!ready) return null;
   return (
     <I18nProvider>
+    <PageHead />
+    <PageTracker />
     <AudioProvider>
       {import.meta.env.DEV && !hasAssets() && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 99, background: '#a33', color: '#fff', padding: 6, textAlign: 'center', fontSize: 14 }}>
@@ -42,6 +49,7 @@ export default function App() {
        path === '/talents' ? <TalentsScreen /> :
        path === '/lorebook' || path.startsWith('/lorebook/') ? <LorebookScreen /> :
        path === '/cinematics' || path === '/cinematiques' ? <CinematicsScreen /> :
+       path === '/stats' ? <Suspense fallback={null}><StatsScreen /></Suspense> :
        <OpeningScreen />}
     </AudioProvider>
     </I18nProvider>

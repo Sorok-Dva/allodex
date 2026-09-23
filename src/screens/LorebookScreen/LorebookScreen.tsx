@@ -98,11 +98,6 @@ export function LorebookScreen({ storage = typeof window !== 'undefined' ? windo
   const [q, setQ] = useState(route.view === 'search' ? route.q : '');
   const debounce = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  useEffect(() => {
-    const previous = document.title;
-    document.title = `${t('lore.title')} — Allodex`;
-    return () => { document.title = previous; };
-  }, [t]);
   useEffect(() => { if (route.view === 'search') setQ(route.q); }, [route.view, route.view === 'search' ? route.q : '']);
 
   const setLang = useCallback((next: ContentLang) => {
