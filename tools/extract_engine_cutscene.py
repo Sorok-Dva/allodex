@@ -40,6 +40,7 @@ import math
 import os
 import re
 import shutil
+import struct
 import subprocess
 import sys
 import tempfile
@@ -470,7 +471,7 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
         if base is not None:
             image_of = lambda name: textures.image(name, 2048)  # noqa: E731
             mask = textures.image(appearance.skin_mask, 2048) if appearance.skin_mask else None
-            baked_name = f"actors/{actor['id']}-skin"
+            baked_name = f"actors/{actor.get('file', actor['id'])}-skin"
             textures.add_image(baked_name, bake_skin(base, appearance, image_of, mask, min(max(base.size), ACTOR_TEXTURE_MAX)),
                                ACTOR_TEXTURE_MAX)
             for e in geo_elements:
@@ -1241,16 +1242,27 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     for map_name in sorted(wanted_maps):
         on_map = [s for s in manifest["engine_scenes"] if plans[s["id"]]["map"] == map_name and (s["id"] in chapters or s in selected)]
         maps[map_name] = build_map(map_name, on_map, plans, db, client, bins, root, out_root, report)
+    # Acteurs communs : un modèle par PNJ (et par jeu d'animations réuni sur toutes les scènes du
+    # film), dans `engine/shared/actors/`, textures dans `engine/shared/textures/`.
+    shared = out_root / "engine" / "shared"
+    shared_tex = TexturePool(db, pack_cat, bins, shared, jpeg=True)
+    clips_of: dict[int, set[str]] = {}
+    for s_id in {s["id"] for s in manifest["engine_scenes"] if s["id"] in chapters} | {s["id"] for s in selected}:
+        for actor in plans[s_id]["actors"]:
+            clips_of.setdefault(actor["mob_offset"], set()).update(
+                set(actor.get("animations", [])) | {actor.get("idle") or "Idle", "Idle01", "Idle"} |
+                set(actor.get("clips_wanted", [])) | ({actor["move"]} if actor.get("move") else set()))
+    built: dict = {}
     for spec in selected:
         plan = plans[spec["id"]]
         ctx = maps[plan["map"]]
         mp, cat, prefix = ctx["mp"], ctx["cat"], map_prefix(plan["map"])
         out = out_root / "engine" / spec["id"]
         out.mkdir(parents=True, exist_ok=True)
-        for stale in ("textures", "particles", "decor.glb"):   # décor et particules : dossier de la carte
+        for stale in ("textures", "particles", "decor.glb", "actors"):   # dossiers de la carte et communs
             path = out / stale
             shutil.rmtree(path, ignore_errors=True) if path.is_dir() else path.unlink(missing_ok=True)
-        textures = TexturePool(mp, cat, bins, out, jpeg=True)          # textures des acteurs
+        textures = shared_tex
         light = ctx["lights"][spec["id"]]
         camera = plan["camera"]
         camera["fov"] = spec.get("fov", 45)
@@ -1276,25 +1288,19 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                 line["start"] = t
 
         actors_meta = []
-        built: dict = {}
         shutil.rmtree(out / "actors", ignore_errors=True)
-        # Animations voulues par modèle : les doubles d'un même PNJ partagent un seul fichier.
-        clips_of: dict[int, set[str]] = {}
         for actor in plan["actors"]:
-            clips_of.setdefault(actor["mob_offset"], set()).update(
-                set(actor.get("animations", [])) | {actor.get("idle") or "Idle", "Idle01", "Idle"} |
-                set(actor.get("clips_wanted", [])) | ({actor["move"]} if actor.get("move") else set()))
-        for actor in plan["actors"]:
-            spec_actor = {"id": actor["id"], "mob": None, "sex": actor.get("sex"), "animations": sorted(clips_of[actor["mob_offset"]])}
-            glb = f"actors/{actor['id']}.glb"
-            twin = built.get((actor["mob_offset"], tuple(spec_actor["animations"])))
-            if twin is not None:          # même PNJ en double (deux invocations à la fois) : même modèle
-                glb, meta = twin[0], json.loads(json.dumps(twin[1]))
+            key = f"mob-{actor['mob_offset']:x}"      # un fichier par `MobWorld` du 17.0, quel que soit son rôle
+            spec_actor = {"id": actor["id"], "file": key, "mob": None, "sex": actor.get("sex"),
+                          "animations": sorted(clips_of[actor["mob_offset"]])}
+            glb = f"../shared/actors/{key}.glb"
+            if key in built:            # PNJ déjà exporté (double, ou autre scène du même passage)
+                meta = json.loads(json.dumps(built[key]))
             else:
-                data, meta = build_actor_offset(spec_actor, actor["mob_offset"], mp, cat, bins, textures, report)
-                (out / "actors").mkdir(exist_ok=True)
-                (out / "actors" / f"{actor['id']}.glb").write_bytes(data)
-                built[(actor["mob_offset"], tuple(spec_actor["animations"]))] = (glb, json.loads(json.dumps(meta)))
+                data, meta = build_actor_offset(spec_actor, actor["mob_offset"], db, pack_cat, bins, shared_tex, report)
+                (shared / "actors").mkdir(parents=True, exist_ok=True)
+                (shared / "actors" / f"{key}.glb").write_bytes(data)
+                built[key] = json.loads(json.dumps(meta))
             idle = actor.get("idle") or next((c for c in ("Idle01", "Idle") if c in meta["animations"]), None)
             ground = bool(actor.get("ground"))
             path = []
@@ -1391,7 +1397,29 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         entries.append({"spec": spec, "duration": camera["duration"], "tracks": tracks, "lines": len(scene_lines),
                         "timing": plan["timing"]})
     update_index(manifest, out_root, entries)
+    prune_shared_actors(out_root / "engine")
     return report
+
+
+def prune_shared_actors(engine: Path) -> None:
+    """Retire les modèles communs qu'aucune scène ne cite plus."""
+    used = set()
+    for scene in engine.glob("*/scene.json"):
+        for actor in json.loads(scene.read_text(encoding="utf-8")).get("actors", []):
+            used.add(Path(actor["glb"]).name)
+    images = set()
+    for glb in (engine / "shared" / "actors").glob("*.glb"):
+        if glb.name not in used:
+            glb.unlink()
+            continue
+        raw = glb.read_bytes()
+        size = struct.unpack_from("<I", raw, 12)[0]
+        for image in json.loads(raw[20:20 + size]).get("images", []):
+            if "uri" in image:
+                images.add(Path(image["uri"]).name)
+    for texture in (engine / "shared" / "textures").glob("*"):
+        if texture.name not in images:
+            texture.unlink()
 
 
 def update_index(manifest: dict, out_root: Path, entries: list[dict]) -> None:
