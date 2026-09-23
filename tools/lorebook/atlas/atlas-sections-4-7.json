@@ -1,0 +1,474 @@
+[
+ {
+  "part": "4",
+  "section": "0",
+  "ru": "Другие острова",
+  "en": "Other Islands",
+  "parent": "",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1",
+  "ru": "Острава ПВП Сражений",
+  "en": "Islands of PvP Battles",
+  "parent": "",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1",
+  "ru": "Доминион",
+  "en": "Dominion",
+  "parent": "1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1.1",
+  "ru": "Мглистая Падь (Гибельный Остров)",
+  "en": "Misty Valley (Isle of Perils)",
+  "parent": "1.1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1.2",
+  "ru": "Коч-Ицмаль",
+  "en": "Koch-Itzmahl",
+  "parent": "1.1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1.3",
+  "ru": "Остров Проклятых",
+  "en": "Isle of the Damned",
+  "parent": "1.1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1.4",
+  "ru": "Заверть",
+  "en": "Vortex Isle",
+  "parent": "1.1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1.5",
+  "ru": "Осколок Силы",
+  "en": "Shard of Power",
+  "parent": "1.1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1.6",
+  "ru": "Лаборатория №9",
+  "en": "Lab Nine",
+  "parent": "1.1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1.7",
+  "ru": "Енох",
+  "en": "Enoch Isle",
+  "parent": "1.1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1.8",
+  "ru": "Лабиринт Гласов",
+  "en": "Maze of Voices",
+  "parent": "1.1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1.9",
+  "ru": "Развалины Северска",
+  "en": "Seversk Ruins",
+  "parent": "1.1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1.10",
+  "ru": "Белое Ристалище",
+  "en": "White Tilt Yard",
+  "parent": "1.1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1.11",
+  "ru": "Горнило",
+  "en": "The Crucible",
+  "parent": "1.1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.1.12",
+  "ru": "Узилище",
+  "en": "The Jail",
+  "parent": "1.1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.2",
+  "ru": "БГ",
+  "en": "Battlegrounds",
+  "parent": "1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.2.1",
+  "ru": "Арена смерти",
+  "en": "Arena of Death",
+  "parent": "1.2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.2.2",
+  "ru": "Дикий Хутор",
+  "en": "Deserted Farm",
+  "parent": "1.2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.2.3",
+  "ru": "Ведьмин Яр",
+  "en": "Witch's Hollow",
+  "parent": "1.2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.2.4",
+  "ru": "Алый Бастион",
+  "en": "Scarlet Bastion",
+  "parent": "1.2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.2.5",
+  "ru": "Смородиновка",
+  "en": "Summerhold",
+  "parent": "1.2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.2.6",
+  "ru": "Каргаллас",
+  "en": "Cargallas",
+  "parent": "1.2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.2.7",
+  "ru": "Полигон",
+  "en": "Training Camp",
+  "parent": "1.2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.2.8",
+  "ru": "Башня Порядка",
+  "en": "Tower of Order",
+  "parent": "1.2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.3",
+  "ru": "Тающий Остров",
+  "en": "Melting Isle",
+  "parent": "1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.4",
+  "ru": "Арены",
+  "en": "Arenas",
+  "parent": "1",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.4.1",
+  "ru": "Гильдейская Арена",
+  "en": "Guild Arena",
+  "parent": "1.4",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "1.4.2",
+  "ru": "Другие Арены",
+  "en": "Other Arenas",
+  "parent": "1.4",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "2",
+  "ru": "Фармовые Острава",
+  "en": "Farming Islands",
+  "parent": "",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "2.1",
+  "ru": "Тропический Атолл",
+  "en": "Tropical Atoll",
+  "parent": "2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "2.2",
+  "ru": "Зимний Атолл",
+  "en": "Winter Atoll",
+  "parent": "2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "2.3",
+  "ru": "Царство Стихий",
+  "en": "Kingdom of Elements",
+  "parent": "2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "2.4",
+  "ru": "Царство Природы",
+  "en": "Kingdom of Nature",
+  "parent": "2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "2.5",
+  "ru": "Безвременье",
+  "en": "Time Void",
+  "parent": "2",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "3",
+  "ru": "Личный аллод",
+  "en": "Private Allod",
+  "parent": "",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "3.1",
+  "ru": "Личный аллод (Лето)",
+  "en": "Private Allod (Summer)",
+  "parent": "3",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "3.2",
+  "ru": "Личный аллод (Зима)",
+  "en": "Private Allod (Winter)",
+  "parent": "3",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "3.4",
+  "ru": "Личный аллод (Пустыня)",
+  "en": "Private Allod (Desert)",
+  "parent": "3",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "4",
+  "ru": "Гильдейский Оплот",
+  "en": "Guild Stronghold",
+  "parent": "",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "4.1",
+  "ru": "ГО Империи",
+  "en": "Imperial Guild Stronghold",
+  "parent": "4",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "4.2",
+  "ru": "ГО Лиги",
+  "en": "League Guild Stronghold",
+  "parent": "4",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "5",
+  "ru": "Торговые острова",
+  "en": "Trading Islands",
+  "parent": "",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "5.1",
+  "ru": "Далекая станица/Дальняя застава",
+  "en": "Distant League Settlement / Remote Imperial Outpost",
+  "parent": "5",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "5.1.1",
+  "ru": "Далекая Станица (Лига)",
+  "en": "Distant League Settlement (League)",
+  "parent": "5.1",
+  "text": "[Map missing]"
+ },
+ {
+  "part": "4",
+  "section": "5.1.2",
+  "ru": "Далекая Застава (Империя)",
+  "en": "Remote Imperial Outpost (Empire)",
+  "parent": "5.1",
+  "text": "[Map missing]"
+ },
+ {
+  "part": "4",
+  "section": "5.2",
+  "ru": "Астральный торговый пост",
+  "en": "Astral Trading Post",
+  "parent": "5",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "5.3",
+  "ru": "Астральная фабрика",
+  "en": "Astral Factory",
+  "parent": "5",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "5.4",
+  "ru": "Астральная мануфактура",
+  "en": "Astral Manufactory",
+  "parent": "5",
+  "text": ""
+ },
+ {
+  "part": "4",
+  "section": "6",
+  "ru": "Мавзолей Искр",
+  "en": "Mausoleum of Sparks",
+  "parent": "",
+  "text": "The Mausoleum of Sparks is an ancient structure built by Tep himself somewhere in the deep layers of the Astral. The mighty sorcerer used it as a place for mysterious experiments on the Sparks of ordinary inhabitants of Sarnaut. Thanks to the life energy contained in the Sparks, which was extracted by enormous devices, Tep could work true miracles…"
+ },
+ {
+  "part": "4",
+  "section": "7",
+  "ru": "Арена Героев",
+  "en": "Arena of Heroes",
+  "parent": "",
+  "text": "A counterpart of the Mausoleum of Sparks."
+ },
+ {
+  "part": "5",
+  "section": "0",
+  "ru": "Несортированные",
+  "en": "Unsorted",
+  "parent": "",
+  "text": "Contents of this section:\n\n- Horizon (Край Мира)\n- The Barrow\n- The Mines\n- Rift Dungeon 7, 8, 9, 10, 11\n- TWars_Isle_01\n- Allods: Treasure Hunt (islands)\n- Pirate Outpost\n- Buyan\n- Witch Forest (Cards of Fate)\n- Valley of the Ancients\n- Iron Tower (Cards of Fate)\n- Golden Forest (Cards of Fate)\n- Transit Point\n- Sands of the Scarabs (Cards of Fate)\n- Fairy-Tale Forest (Cards of Fate)\n- Dread Forest\n- Gorge of the Cursed Treasure (Cards of Fate)\n- Black Wasteland\n- Old Churchyard (Cards of Fate)\n- Scorpion\n- Copperlock\n- Islands from Cloud Pirates"
+ },
+ {
+  "part": "5",
+  "section": "1",
+  "ru": "Край мира",
+  "en": "Horizon",
+  "parent": "",
+  "text": ""
+ },
+ {
+  "part": "5",
+  "section": "2",
+  "ru": "RiftDungeons",
+  "en": "Rift Dungeons",
+  "parent": "",
+  "text": "Mysterious locations from the game files."
+ },
+ {
+  "part": "5",
+  "section": "3",
+  "ru": "TWars_Isle_01",
+  "en": "TWars_Isle_01",
+  "parent": "",
+  "text": ""
+ },
+ {
+  "part": "5",
+  "section": "4",
+  "ru": "Аллоды: Охота за сокровищами",
+  "en": "Allods: Treasure Hunt",
+  "parent": "",
+  "text": "Islands from the mobile version of Allods."
+ },
+ {
+  "part": "5",
+  "section": "5",
+  "ru": "Копперлок",
+  "en": "Copperlock",
+  "parent": "",
+  "text": "The Allod of Copperlock\n\nIt is the home of the Kudiyar race. Once, in the ancient times of the Old Era, there lived a small tribe of Kudiyars. They led a secretive life and tried not to leave the forests, especially in daylight, for danger lurked all around. Their leader is Jeter, a young albino kudiyar, the successor to his father's rule.\n\nThe allod is divided into three parts:\n\nThe Centre is the most important structure in Copperlock. It houses various stations and workshops, the departure point of the cable car and all the government institutions. The only things the Centre lacks are dwellings and shops. All of those lie along the whole length of Copperlock's street.\n\nThe Working Allod\n\nThe neighbouring allods serve an economic purpose. Mining meteorite ore allowed the kudiyars to build airships capable of travelling from one allod to another. As already mentioned, two cable cars run downward from the Centre of Copperlock, each ending on a different outlying allod. One line runs through all the levels of the city and stops at every station. It leads to the Working Allod. On the Working Allod the kudiyars, naturally, work. There is a farm, sown fields, a port for building airships and mines for extracting ore. The kudiyars travel to this allod precisely to work.\n\nThe Allod of the Red Forest\n\nThe second cable car leads to the second allod, the Red Forest. It was on this allod that the kudiyars found themselves after the Cataclysm. It is covered with trees of extraordinary red foliage. Wild animals live in the forest."
+ },
+ {
+  "part": "5",
+  "section": "6",
+  "ru": "Острова из Пираты штурм небес",
+  "en": "Islands from Cloud Pirates",
+  "parent": "",
+  "text": ""
+ },
+ {
+  "part": "6",
+  "section": "0",
+  "ru": "Список изменений",
+  "en": "Changelog",
+  "parent": "",
+  "text": "Version 0.1 – The first version of the project.\n\nVersion 0.2 – Added the map of Irene Palace. Filled in the Ferris section and astral island 76 (thanks to Evpraksiya). Lots of small fixes and improvements. Initial layout of the raids. Updated the description of Grok. Added the islands from Evpraksiya's list.\n\nVersion 0.3 – Added more astral islands from the early (beta) versions of AO (thanks to Rpikt), added descriptions to most of the astral islands. Improved some descriptions (thanks to Evgeny Ptitsyn). Added descriptions to some story islands (from AA, for those that had them). Added the map of Goblinball Stadium. Updated Irene (current versions of the maps). The “Unsorted” section was updated. The Pearl Ring was filled in, the Interreality was added. Some old versions of island maps appeared. Lots of small fixes and improvements.\n\nVersion 0.4 – Added Freedom Isle (the anarchist aviaks of the Pearl Ring). Added the fan allod Copperlock. Fixes to Ferris and Ammer. Added descriptions of the islands near Umoir. Improved the list and the descriptions of the open-beta islands. Added boss lists for the Astral Islands and the Reflections. Added the island of Suslanger from AO times. Added the Mausoleum of Sparks and the Arena of Heroes. Added the never-released Free City (Tortuga).\n\nVersion 0.5 – Added the Astral Trading Post, the Astral Factory, the Astral Manufactory, The Thing (beta island), Liberation (beta island); updated the Zalesky Patrimony island (beta island) and the Refuge of the Outcasts. Minor changes and additions."
+ },
+ {
+  "part": "7",
+  "section": "0",
+  "ru": "Используемые материалы",
+  "en": "Materials Used",
+  "parent": "",
+  "text": "- Official group of the project: https://vk.com/bladeinbutter\n- https://posmotre.li/Аллоды#.D0.90.D0.BB.D0.BB.D0.BE.D0.B4.D1.8B_.D0.9E.D0.BD.D0.BB.D0.B0.D0.B9.D0.BD\n- https://www.allodswiki.ru/\n- https://alloder.pro/\n- https://allods.gipat.ru/\n- https://all0ds.fandom.com/\n- http://diardeur.blogspot.com/p/blog-page_10.html#.XsVGutkue00\n- https://alloder.pro/main/lore/ostrova-rannego-obt-r715/\n- https://ficbook.net/readfic/5956558/15387913?tab=2\n- https://alloder.pro/lore/\n- https://allods.mail.ru/about_game.php?show=world\n- https://allods.mail.ru/forums/showthread.php?t=139291\n- https://gameinlife.ucoz.ru/\n- Videos by the author of the YouTube channel Rpikt (Sharadovets): https://www.youtube.com/channel/UCS_421FOUoq_GEi_tDL_loQ\n- A pack of maps extracted from the MMORPG ALLODS ONLINE"
+ }
+]
