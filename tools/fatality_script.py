@@ -40,6 +40,7 @@ class Timeline:
     spawns: list[dict] = field(default_factory=list)       # objets posés : {t, vot, lifeTime, offset, rotation, scale}
     attached: list[dict] = field(default_factory=list)     # objets accrochés : {t, vot, locator, scale, fadeIn, fadeOut, offset}
     shakes: list[dict] = field(default_factory=list)       # {t, params}
+    channels: list[dict] = field(default_factory=list)     # rayons : {t, until, vot, fadeIn, fadeOut, length, start, end}
     tints: list[dict] = field(default_factory=list)        # {t, type}
     ignored: list[str] = field(default_factory=list)
     end: float = 0.0
@@ -134,6 +135,13 @@ def run(node: dict | None, t0: float, ctx: Context, limit: float | None = None) 
     if kind == "CreatureSetTransparencyAction":
         tl.alpha.append({"t": round(t0, 4), "value": node.get("transparency", 1.0),
                          "fadeMult": node.get("fadeMult", 1.0), "priority": node.get("priority", 1)})
+        return t0
+    if kind == "CreatureChannelDirectAction":
+        if node.get("visObject") is not None:
+            tl.channels.append({"t": round(t0, 4), "until": None if limit is None else round(limit, 4),
+                                "vot": node["visObject"], "fadeIn": node.get("fadeIn", 0.0),
+                                "fadeOut": node.get("fadeOut", 0.0), "length": node.get("length", 0.0),
+                                "velocity": node.get("velocity", 0.0), "start": node.get("start"), "end": node.get("end")})
         return t0
     if kind == "ShakeAction":
         tl.shakes.append({"t": round(t0, 4), "params": node.get("params")})

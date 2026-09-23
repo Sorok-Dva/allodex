@@ -19,7 +19,7 @@ from tools import allods_visdb as vis
 from tools.allods_packdb import PackDB, PakCatalog, vote_pak_codes
 from tools.allods_particles import (Channel, Emitter, Particle, ParticleFile, encode_particles,
                                     parse_particles, sample, simplify, simplify_channel)
-from tools.extract_fatalities import (_is_variant, _sound_key, bind_pose_positions, clean_animation,
+from tools.extract_fatalities import (_sound_key, bind_pose_positions, clean_animation,
                                       infer_texture_dims, reduce_keys, zone_light)
 from tools.extract_menu_scene import JointTrack, Skeleton, SkeletalAnimation
 from tools.fatality_script import flatten
@@ -277,11 +277,6 @@ def test_clean_animation_drops_static_copies_of_the_bind():
     assert clean_animation(skeleton, animation) == ["j"] and animation.tracks == []
 
 
-def test_is_variant_hides_other_family_members():
-    shown = {"hair_0": None, "face_0": None}
-    assert _is_variant("hair_3", shown) and not _is_variant("hair_0", shown) and not _is_variant("torso_0", shown)
-
-
 def test_zone_light_reads_the_requested_hour(tmp_path):
     xml = """<ZoneLights><instantLights><Item><time>12</time><light><AmbientColor>5657187</AmbientColor>
     <DiffuseColor>8388608</DiffuseColor><FogColor>0</FogColor><FogStart>80</FogStart><FogEnd>700</FogEnd>
@@ -349,3 +344,78 @@ def test_real_particle_file_roundtrips_byte_for_byte(real):
         for p0, p1 in zip(e0.particles, e1.particles):
             for name in p0.channels:
                 assert np.array_equal(p0.channels[name].values, p1.channels[name].values)
+
+
+# --- personnages (tools/allods_characters.py) -------------------------------------------------
+
+def _template(**kw):
+    from tools.allods_characters import ArmorShape, CharacterTemplate, TextureRect, Variation, Variations, VisualItem
+    dress = VisualItem(1, hidden={"unisex": ["face_0", "face_1", "hair_0", "hair_1", "torso_1"]})
+    face = VisualItem(2, shapes={"unisex": [ArmorShape("face_0")]},
+                      gendered={"patches": {"unisex": [TextureRect((0.0, 0.5, 0.0, 0.25), "face.bin")]}})
+    hair = VisualItem(3, shapes={"unisex": [ArmorShape("hair_1", replacement="hair1.bin")]})
+    under = VisualItem(4, gendered={"pants": {"female": [TextureRect((0.5, 1.0, 0.5, 0.625), "pants_f.bin")],
+                                              "male": [TextureRect((0.5, 1.0, 0.5, 0.625), "pants_m.bin")]}})
+    variation = Variation(additional=None, face=face, facial=None, hair=hair, hair_color=kw.get("hair_color", -1),
+                          skin="mask.bin", skin_color=kw.get("skin_color", -1))
+    return CharacterTemplate(offset=0, model="TestFemale", gender="female", visobject=0, geometry=0,
+                             main_texture="skin.bin", default_dress=dress, underwear=under,
+                             variations=Variations([], [], [], [], [], [], variation),
+                             hair_colored=["hair_1"], special_hair_patch=[])
+
+
+def test_resolve_appearance_hides_dress_geosets_and_shows_variation_shapes():
+    from tools.allods_characters import resolve_appearance
+    names = ["torso_0", "torso_1", "face_0", "face_1", "hair_0", "hair_1", "skirt_0"]
+    textures = {n: "skin.bin" for n in names} | {"skirt_0": None}
+    app = resolve_appearance(_template(hair_color=0xFF808080 - (1 << 32)), names, textures)
+    # tenue par défaut : face_1, hair_0, torso_1 cachés ; la variation remontre face_0 et hair_1 ;
+    # la jupe sans texture n'est pas dessinée
+    assert app.visible == ["torso_0", "face_0", "hair_1"]
+    assert app.replacements == {"hair_1": "hair1.bin"}
+    assert app.tints["hair_1"] == pytest.approx((128 / 255,) * 3)
+    # calques : visage, puis sous-vêtement du sexe du gabarit
+    assert [p.texture for p in app.patches] == ["face.bin", "pants_f.bin"]
+
+
+def test_bake_skin_counts_v_from_the_bottom_and_tints_under_the_mask():
+    from PIL import Image
+    from tools.allods_characters import Appearance, TextureRect, bake_skin
+    base = Image.new("RGB", (8, 8), (200, 200, 200))
+    patch = Image.new("RGBA", (4, 2), (255, 0, 0, 255))
+    mask = Image.new("RGBA", (8, 8), (0, 0, 0, 255))
+    mask.paste((0, 0, 0, 0), (0, 0, 8, 4))       # moitié haute hors masque
+    app = Appearance(visible=[], replacements={}, tints={}, patches=[TextureRect((0.0, 0.5, 0.0, 0.25), "p")],
+                     skin_texture="skin", skin_mask="mask", skin_color=0xFF808080 - (1 << 32), hair_color=-1)
+    img = bake_skin(base, app, lambda name: patch, mask, 8)
+    px = img.load()
+    assert px[0, 7] == (255, 0, 0) and px[0, 6] == (255, 0, 0)   # y 0 → 0,25 = bas de l'image
+    assert px[6, 6] == (100, 100, 100)                            # teinte ×128/255 sous le masque
+    assert px[6, 1] == (200, 200, 200)                            # hors masque : intact
+
+
+@client
+def test_real_character_template_matches_server_xdb(real):
+    from tools.allods_characters import find_character_template, read_character_template
+    db, cat = real
+    off = find_character_template(db, cat, "HadaganFemale", "Hadagan_female")
+    tpl = read_character_template(db, cat, off)
+    assert tpl.gender == "female" and tpl.main_texture.endswith("HadaganFemaleSkin00.(Texture).bin")
+    assert tpl.hair_colored[:2] == ["hair_special", "hair_1"]
+    hidden = tpl.default_dress.hidden_for("female")
+    assert {"torso_1", "hair_0", "face_20", "skeleton", "skull"} <= set(hidden)
+    default = tpl.variations.default
+    assert [s.shape for s in default.face.shapes_for("female")] == ["face_0"]
+    rects = [(p.rect, p.texture.split("/")[-1]) for p in tpl.underwear.patches_for("female")]
+    # `Underwear_HadaganFemale.(VisualItem).xdb` : soutien-gorge puis culotte (deux rectangles)
+    assert rects[0][1] == "Underwear_A_02HadaganRed_Bra_TU_F_D.(Texture).bin"
+    assert rects[-1] == ((0.5, 1.0, 0.5, 0.625), "Underwear_A_02HadaganRed_LU_F_D.(Texture).bin")
+
+
+def test_flatten_records_channel_rays():
+    ray = {"type": "CreatureChannelDirectAction", "visObject": 7, "fadeIn": 0.2, "fadeOut": 0.1, "length": 10.0,
+           "velocity": 2.0, "start": {"locator": "Global", "shift": [0, 0, 1]}, "end": {"locator": "Global", "shift": [0, 0, 1]}}
+    script = _list("InSequence", [{"type": "VisActionDelay", "time": 1.2}, ray], {"type": "VisActionDelay", "time": 3.5})
+    tl = flatten(script, "KaniaMale", {}, {})
+    assert tl.channels == [{"t": 1.2, "until": 3.5, "vot": 7, "fadeIn": 0.2, "fadeOut": 0.1, "length": 10.0,
+                            "velocity": 2.0, "start": ray["start"], "end": ray["end"]}]

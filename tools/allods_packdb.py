@@ -77,6 +77,7 @@ BINARY_REF = {
     "ParticleAnimation": 0x88,
     "SkeletalAnimation": 0x98,
     "Texture": 0x40,
+    "IndexedTexture": 0x40,    # sous-classe de Texture (masques de teinte de peau)
 }
 # Deuxième fichier d'une texture : la version haute résolution (`.hi.bin`, pak `*.HiRes`).
 TEXTURE_HIRES_REF = 0x68
@@ -240,6 +241,8 @@ class PackDB:
         return None
 
     def resources(self, type_name: str) -> list[int]:
+        if type_name not in self.types:
+            return []
         ti = self.types.index(type_name)
         return self.res_loc[self.res_type == ti].tolist()
 

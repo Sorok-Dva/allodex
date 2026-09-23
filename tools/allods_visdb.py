@@ -55,6 +55,8 @@ EL_BOOLS = 0x6C                # scrollAlpha, scrollRGB, ignoreDiffuseAlpha, tra
 EL_MATERIAL_NAME = 0x78
 EL_NAME = 0x90
 EL_SKIN_INDEX = 0xA8
+EL_PARAMS = 0x58               # MaterialParams (polymorphe)
+PARAMS_ENV_TEXTURE = 0x48      # CommonMaterialParams.envReflectionTexture
 
 NODE_STRIDE = 64
 NODE_NAME = 0x08
@@ -146,6 +148,16 @@ EFFECT_OFFSET = 0x88
 PREDICATE_FLAG = 0x48
 PREDICATE_TEMPLATES = 0x48
 TEMPLATE_NAME = 0xE8
+CHANNEL_FX = 0x58             # CreatureChannelDirectAction : channelingFx
+CHANNEL_END = 0x60            # endPoint (VisPoint)
+CHANNEL_FADE_IN = 0x68        # ms
+CHANNEL_FADE_OUT = 0x6C       # ms
+CHANNEL_LENGTH = 0x70         # fxLength : longueur modelée du rayon (m)
+CHANNEL_VELOCITY = 0x98
+CHANNEL_START = 0xB0          # startPoint (VisPoint)
+POINT_SHIFT = 0x24            # VisPoint.shift (vec3), puis VisPointLocator : locator, nom
+POINT_LOCATOR = 0x38
+POINT_LOCATOR_NAME = 0x40
 SHAKE_PARAMS = 0x48
 SHAKE_FIELDS = 0x20            # 8 flottants bruts de CameraShakeParameters
 
@@ -249,6 +261,12 @@ def read_geometry(db: PackDB, cat: PakCatalog, off: int) -> GeometryInfo:
                            transparent=bool(flags[3]), visible=bool(flags[6]),
                            alpha=db.f32(el + EL_TRANSPARENCY),
                            uv_scroll=(db.f32(el + EL_U_SPEED), db.f32(el + EL_V_SPEED)))
+        params = db.ptr(el + EL_PARAMS)
+        if params is not None and db.vtype(params) == "CommonMaterialParams":
+            env = db.ptr(params + PARAMS_ENV_TEXTURE)
+            # Texture d'environnement : `SoftGeometryGrain*` sert de masque d'alpha indexé par la
+            # normale vue de la caméra (disque blanc = bords estompés, « géométrie douce »).
+            mat.env_texture = cat.name(db.binary_ref(env)) if env is not None else None
         doc.elements.append(ElementSpec(name=db.string(el + EL_NAME) or "?", ib0=ib0, ib1=ib1,
                                         vb0=vb0, vb1=vb1, material=mat,
                                         skin_index=db.i32(el + EL_SKIN_INDEX)))
@@ -489,11 +507,30 @@ def read_action(db: PackDB, off: int | None, depth: int = 0) -> dict | None:
         node["flag"] = db.string(off + PREDICATE_FLAG)
     elif kind == "PredicateCreatureVisCharacterAction":
         node["templates"] = [db.string(t + TEMPLATE_NAME) for t in db.pointers(off + PREDICATE_TEMPLATES)]
+    elif kind == "CreatureChannelDirectAction":
+        node["visObject"] = db.ptr(off + CHANNEL_FX)
+        node["fadeIn"] = db.i32(off + CHANNEL_FADE_IN) / 1000.0
+        node["fadeOut"] = db.i32(off + CHANNEL_FADE_OUT) / 1000.0
+        node["length"] = db.f32(off + CHANNEL_LENGTH)
+        node["velocity"] = db.f32(off + CHANNEL_VELOCITY)
+        node["start"] = read_point(db, db.ptr(off + CHANNEL_START))
+        node["end"] = read_point(db, db.ptr(off + CHANNEL_END))
     elif kind == "ShakeAction":
         params = db.ptr(off + SHAKE_PARAMS)
         if params is not None:
             node["params"] = [round(float(v), 4) for v in db.floats(params + SHAKE_FIELDS, 8)]
     return node
+
+
+def read_point(db: PackDB, off: int | None) -> dict:
+    """`VisPoint` d'un rayon : décalage et, pour un `VisPointLocator`, le locator (défaut
+    `Global`, la racine de la créature)."""
+    if off is None:
+        return {"locator": "Global", "shift": [0.0, 0.0, 0.0]}
+    loc = db.u32(off + POINT_LOCATOR)
+    name = db.string(off + POINT_LOCATOR_NAME)
+    locator = name if (loc == 19 and name) else (FX_LOCATORS[loc] if loc < len(FX_LOCATORS) else "Global")
+    return {"locator": locator, "shift": [round(float(v), 4) for v in db.floats(off + POINT_SHIFT, 3)]}
 
 
 @dataclass

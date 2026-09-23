@@ -55,6 +55,9 @@ from PIL import Image
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from tools.allods_characters import (  # noqa: E402
+    bake_skin, find_character_template, read_character_template, resolve_appearance,
+)
 from tools.allods_packdb import PackDB, PakCatalog, open_catalog, open_pack  # noqa: E402
 from tools.allods_visdb import (  # noqa: E402
     GeometryInfo, VisObject, animation_names, read_fatalities, read_geometry, read_texture,
@@ -133,10 +136,11 @@ class TexturePool:
         self.done: dict[tuple[str, int], str | None] = {}
         self.has_alpha: dict[str, bool] = {}
         self.by_name: dict[str, int] = {}
-        for off in db.resources("Texture"):
-            name = cat.name(db.binary_ref(off))
-            if name:
-                self.by_name.setdefault(name, off)
+        for kind in ("Texture", "IndexedTexture"):
+            for off in db.resources(kind):
+                name = cat.name(db.binary_ref(off))
+                if name:
+                    self.by_name.setdefault(name, off)
         self.bytes_written = 0
 
     def uri(self, name: str | None, max_size: int, prefix: str = "../textures/") -> str | None:
@@ -194,19 +198,32 @@ class TexturePool:
             return img.convert("RGBA")
         return None
 
+    def add_image(self, name: str, img: Image.Image, max_size: int) -> None:
+        """Image calculée (peau cuite d'un personnage) servie sous `name` comme une texture."""
+        self.done[(name, max_size)] = self._write(name, img, max_size)
+
     def _export(self, name: str, max_size: int) -> str | None:
         img = self.image(name, max_size)
-        if img is None:
-            return None
+        return None if img is None else self._write(name, img, max_size)
+
+    def _write(self, name: str, img: Image.Image, max_size: int) -> str:
+        if max(img.size) > max_size:
+            img = img.resize((min(img.width, max_size), min(img.height, max_size)), Image.LANCZOS)
         file = f"{_slug(name)}{'' if max_size >= 1024 else f'@{max_size}'}.png"
         self.dir.mkdir(parents=True, exist_ok=True)
         path = self.dir / file
-        self.has_alpha[name] = img.getextrema()[3][0] < 255
+        self.has_alpha[name] = img.mode == "RGBA" and img.getextrema()[3][0] < 255
         if not self.has_alpha[name]:
             img = img.convert("RGB")
         img.save(path, format="PNG", optimize=True)
         self.bytes_written += path.stat().st_size
         return file
+
+
+def is_soft_geometry(env: str) -> bool:
+    """Textures d'environnement qui sont en fait des masques de « géométrie douce » (disque
+    d'alpha lu par la normale vue de la caméra) — pas des cartes de reflets (`Refmap*`)."""
+    return Path(env).name.startswith("SoftGeometryGrain")
 
 
 # --- squelettes et animations -------------------------------------------------------------------
@@ -291,6 +308,8 @@ class Exporter:
     cutout: bool = False
 
     def __post_init__(self) -> None:
+        # Teinte multiplicative par géoset (couleur des cheveux, couleur d'armure).
+        self.tints: dict[str, tuple[float, float, float]] = {}
         self.gltf = GltfBuilder()
         self.gltf.json["asset"]["generator"] = "allodex/extract_fatalities"
         self.images: dict[str, int | None] = {}
@@ -317,12 +336,20 @@ class Exporter:
         # menu, vérifiée ici sur les peaux des personnages, ADD mais opaques).
         additive = mat.blend in ("BLEND_EFFECT_ADD", "BLEND_EFFECT_ALPHA_ADD", "BLEND_EFFECT_COLOR_ADD") and mat.transparent
         tex = self.texture(mat.texture)
-        key = (tex, additive, mat.transparent, round(mat.alpha, 4), mat.blend)
+        tint = self.tints.get(element.name)
+        env = getattr(mat, "env_texture", None)
+        soft = self.textures.uri(env, FX_TEXTURE_MAX) if env and mat.transparent and is_soft_geometry(env) else None
+        key = (tex, additive, mat.transparent, round(mat.alpha, 4), mat.blend, tint, soft)
         if key not in self.materials:
             alpha_mode = "BLEND" if mat.transparent else "OPAQUE"
             index = self.gltf.add_material(mat.name, tex, alpha_mode, True, additive, mat.alpha)
             extras = self.gltf.json["materials"][index].setdefault("extras", {})
             extras["gameBlend"] = mat.blend
+            if tint:
+                self.gltf.json["materials"][index]["pbrMetallicRoughness"]["baseColorFactor"][:3] = [round(c, 4) for c in tint]
+                extras["tint"] = True
+            if soft:
+                extras["soft"] = soft
             if self.cutout and not mat.transparent and self.textures.has_alpha.get(mat.texture or ""):
                 extras["cutout"] = True
             self.materials[key] = index
@@ -540,101 +567,61 @@ def _href(node: ET.Element | None) -> str | None:
     return href.split("#")[0] if href else None
 
 
-def visual_item_shapes(path: Path) -> tuple[dict[str, str | None], set[str]]:
-    root = _read_xml(path)
-    shown: dict[str, str | None] = {}
-    hidden: set[str] = set()
-    if root is None:
-        return shown, hidden
-    for item in root.iter("Item"):
-        shape = item.findtext("shapeName")
-        if shape:
-            shown[shape.strip()] = _href(item.find("replacement"))
-    for node in root.findall("./hiddenGeosets//Item"):
-        if node.text and node.text.strip():
-            hidden.add(node.text.strip())
-    return shown, hidden
-
-
-def character_selection(server_root: Path, spec: dict) -> tuple[set[str], dict[str, str | None]]:
-    """(géosets cachés par la tenue par défaut, géosets montrés par la variation par défaut →
-    texture de remplacement). Tiré des `.xdb` 7.0 du gabarit — les noms de géosets du client
-    RU sont les mêmes ; les `VisualItem` compilés du client restent à décoder."""
-    folder = server_root / "Characters" / spec["dir"]
-    template = _read_xml(folder / f"{spec['model']}.(VisCharacterTemplate).xdb")
-    dress = _href(template.find("defaultDress")) if template is not None else None
-    dress_path = server_root / dress.lstrip("/") if dress else folder / f"{spec['model']}Default.(VisualItem).xdb"
-    _, hidden = visual_item_shapes(dress_path)
-    shown: dict[str, str | None] = {}
-    variations = _href(template.find("variations")) if template is not None else None
-    root = _read_xml(server_root / variations.lstrip("/")) if variations else None
-    default = root.find("defaultVariation") if root is not None else None
-    for child in (list(default) if default is not None else []):
-        path = _href(child)
-        if path and path.endswith("(VisualItem).xdb"):
-            add, _ = visual_item_shapes(server_root / path.lstrip("/"))
-            shown.update(add)
-    return hidden, shown
-
-
-def xdb_texture_to_bin(href: str | None) -> str | None:
-    if not href:
-        return None
-    return href.lstrip("/").replace("(Texture).xdb", "(Texture).bin")
-
-
-def find_template(db: PackDB, cat: PakCatalog, spec: dict) -> int | None:
-    """Gabarit du personnage joueur : le `VisCharacterTemplate` nommé comme le modèle dont la
-    géométrie vit sous `Characters/<dossier>/`."""
-    for off in sorted(db.resources("VisCharacterTemplate")):
-        if db.string(off + 0xE8) != spec["model"]:
+def bake_size(base: Image.Image, patches, image_of) -> int:
+    """Côté de la peau cuite : celui de la peau de base, relevé si un calque est plus fin que
+    son rectangle ne le permet (sans dépasser `CHARACTER_TEXTURE_MAX`)."""
+    size = max(base.size)
+    for patch in patches:
+        img = image_of(patch.texture) if patch.texture else None
+        if img is None:
             continue
-        vot = db.ptr(off + 0x90)
-        geometry = db.ptr(vot + 0xC0) if vot is not None else None
-        name = cat.name(db.binary_ref(geometry)) if geometry is not None else None
-        if name and name.startswith(f"Characters/{spec['dir']}/"):
-            return off
-    return None
-
-
-def animation_file(cat: PakCatalog, spec: dict, anim: str) -> str | None:
-    """Fichier d'une animation du personnage : `<Modèle>.<Nom>` sans égard à la casse."""
-    prefix = f"Characters/{spec['dir']}/Animations/{spec['model']}.".lower()
-    target = f"{prefix}{anim.lower()}.(skeletalanimation).bin"
-    for pak in ("Characters.Mini.pak",):
-        for name in cat.names.get(pak, []):
-            if name.lower() == target:
-                return name
-    return None
+        x1, x2, y1, y2 = patch.rect
+        if x2 > x1:
+            size = max(size, round(img.width / (x2 - x1)))
+        if y2 > y1:
+            size = max(size, round(img.height / (y2 - y1)))
+    return min(1 << max(size - 1, 1).bit_length(), CHARACTER_TEXTURE_MAX)
 
 
 def build_character(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, textures: TexturePool,
-                    server_root: Path, wanted: set[str]) -> tuple[bytes, dict, list[str]]:
+                    wanted: set[str]) -> tuple[bytes, dict, list[str]]:
+    """Personnage jouable tel que le client le montre sans équipement : apparence par défaut
+    (`tools/allods_characters.py` : tenue par défaut, sous-vêtements, variation par défaut du
+    client), peau cuite avec ses calques, squelette et clips demandés."""
     exporter = Exporter(textures, CHARACTER_TEXTURE_MAX)
-    template = find_template(db, cat, spec)
-    if template is None:
+    off = find_character_template(db, cat, spec["model"], spec["dir"])
+    if off is None:
         raise ValueError(f"gabarit introuvable : {spec['model']}")
-    vot = read_visobject(db, cat, db.ptr(template + 0x90))
+    template = read_character_template(db, cat, off)
+    if template.gender != spec["sex"]:
+        raise ValueError(f"{spec['id']} : le gabarit est {template.gender}")
+    vot = read_visobject(db, cat, template.visobject)
     loaded = load_geometry(db, cat, bins, vot.geometry) if vot.geometry is not None else None
     if loaded is None or loaded.skeleton is None:
         raise ValueError(f"géométrie ou squelette illisible : {spec['model']}")
-    hidden, shown = character_selection(server_root, spec)
+    geo_elements = loaded.geo.doc.elements
+    appearance = resolve_appearance(template, [e.name for e in geo_elements],
+                                    {e.name: e.material.texture for e in geo_elements if e.material.visible})
+    # Peau cuite : remplace la peau de base sur tous les géosets qui la portent.
+    override = dict(appearance.replacements)
+    skin = template.main_texture
+    base = textures.image(skin, 4096) if skin else None
+    baked_name = None
+    if base is not None:
+        image_of = lambda name: textures.image(name, 4096)  # noqa: E731
+        mask = textures.image(appearance.skin_mask, 4096) if appearance.skin_mask else None
+        baked = bake_skin(base, appearance, image_of, mask, bake_size(base, appearance.patches, image_of))
+        baked_name = f"characters/{spec['id']}-skin"
+        textures.add_image(baked_name, baked, CHARACTER_TEXTURE_MAX)
+    visible = set(appearance.visible)
     elements = []
-    override: dict[str, str] = {}
-    for element in loaded.geo.doc.elements:
-        name = element.name
-        if name in shown:
-            if shown[name]:
-                override[name] = xdb_texture_to_bin(shown[name])
-        elif name in hidden or not element.material.visible:
+    for element in geo_elements:
+        if element.name not in visible:
             continue
-        elif _is_variant(name, shown):
-            continue
-        if not element.material.texture and name not in override:
-            # Emplacement vide (jupes, capes des armures) : sans texture propre ni texture
-            # apportée par un objet, le géoset n'est pas dessiné par le client.
-            continue
+        if baked_name and element.name not in override and element.material.texture == skin:
+            override[element.name] = baked_name
         elements.append(element)
+    exporter.tints = appearance.tints
     mesh, skinned = exporter.emit_mesh(spec["model"], loaded.geo, loaded.vertices, loaded.indices,
                                        elements, loaded.skeleton, override)
     if mesh is None:
@@ -661,18 +648,20 @@ def build_character(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, te
     height = float(loaded.vertices["position"][:, 2].max() * vot.scale)
     meta = {"id": spec["id"], "race": spec["race"], "sex": spec["sex"], "model": spec["model"],
             "glb": f"characters/{spec['id']}.glb", "scale": vot.scale, "height": round(height, 3),
+            "geosets": [e.name for e in elements],
             "animations": sorted(durations), "durations": durations, "stats": exporter.stats}
     return glb, meta, exporter.notes
 
 
-def _is_variant(name: str, shown: dict[str, str | None]) -> bool:
-    """Géoset d'une famille à variantes (`hair_3`, `face_7`…) dont une autre variante est
-    choisie par la variation par défaut : caché, comme le fait le client."""
-    m = re.match(r"^([a-z]+)_(\d+|special|[0-9]+A)$", name)
-    if not m:
-        return False
-    family = m.group(1)
-    return any(other != name and other.startswith(family + "_") for other in shown)
+def animation_file(cat: PakCatalog, spec: dict, anim: str) -> str | None:
+    """Fichier d'une animation du personnage : `<Modèle>.<Nom>` sans égard à la casse."""
+    prefix = f"Characters/{spec['dir']}/Animations/{spec['model']}.".lower()
+    target = f"{prefix}{anim.lower()}.(skeletalanimation).bin"
+    for pak in ("Characters.Mini.pak",):
+        for name in cat.names.get(pak, []):
+            if name.lower() == target:
+                return name
+    return None
 
 
 # --- effets ------------------------------------------------------------------------------------
@@ -910,7 +899,17 @@ class ParticlePool:
         self.dir.mkdir(parents=True, exist_ok=True)
         atlas.save(self.dir / "atlas.png", format="PNG", optimize=True)
         self.bytes_written += (self.dir / "atlas.png").stat().st_size
-        return {"file": "particles/atlas.png", "width": width, "height": height, "rects": out_rects}
+        return {"file": "particles/atlas.png", "width": width, "height": height, "rects": out_rects,
+                "sources": [list(r) for r in self.rects]}
+
+    def seed(self, previous: dict | None) -> None:
+        """Reprend les images de l'atlas précédent, dans le même ordre : un export partiel
+        (`--only-fx`) garde valables les indices des fatalités qu'il ne réécrit pas."""
+        for rect in (previous or {}).get("sources", []):
+            key = tuple(rect)
+            if key not in self.rect_index:
+                self.rect_index[key] = len(self.rects)
+                self.rects.append(key)
 
 
 # Largeur de l'atlas réduit (les images de l'atlas du client font 32 à 256 px).
@@ -919,7 +918,11 @@ PARTICLE_ATLAS_WIDTH = 1024
 
 # --- sons --------------------------------------------------------------------------------------
 
-SOUND_BANKS = ("SFX/Spells/Fatality.bsb", "SFX/Spells/Fatality2.bsb")
+# Banques des fatalités, puis celles des deux effets empruntés à d'autres sorts (gel du Mage :
+# `Mobs/WormGracial/FrozenStatue`, dans `WormGracialSpells` ; lance de Smeyana :
+# `SmeyanaFX/spearFireHit`, dans `Spells_FX2`), fouillées seulement pour les ondes manquantes.
+SOUND_BANKS = ("SFX/Spells/Fatality.bsb", "SFX/Spells/Fatality2.bsb", "SFX/Spells/WormGracialSpells.bsb",
+               "SFX/Spells/Spells_FX2.bsb")
 
 
 def _sound_key(name: str) -> str:
@@ -941,6 +944,8 @@ def export_sounds(names: set[str], bins: BinSource, out_dir: Path, vgmstream: Pa
     target.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         for bank in SOUND_BANKS:
+            if len(found) == len(wanted):
+                break
             data = bins.get(bank)
             payload = fsb_payload_from_bytes(data, bank) if data else None
             if payload is None:
@@ -1183,10 +1188,13 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
     wanted: set[str] = set()
     for fd in fatalities:
         collect_animations(fd.offender, anim_names, wanted)
+        collect_animations(fd.caster, anim_names, wanted)
 
     index_path = out_dir / "fatalities.json"
     previous = json.loads(index_path.read_text(encoding="utf-8")) if index_path.is_file() else {}
     prev_chars = {c["id"]: c for c in previous.get("characters", [])}
+    if only_fx:
+        particles.seed(previous.get("particleAtlas"))
 
     chars: list[dict] = []
     for spec in manifest["characters"]:
@@ -1195,7 +1203,7 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
                 chars.append(prev_chars[spec["id"]])
             continue
         try:
-            glb, meta, notes = build_character(spec, db, cat, bins, textures, server_root, wanted)
+            glb, meta, notes = build_character(spec, db, cat, bins, textures, wanted)
         except (ValueError, struct.error) as error:
             report.append(f"AVERTISSEMENT : {spec['id']} — {error}")
             if spec["id"] in prev_chars:
@@ -1225,6 +1233,7 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
         build = FxBuild(Exporter(textures, FX_TEXTURE_MAX), db, cat, bins, particles=particles, report=report)
         roots: set[int] = set()
         collect_vots(fd.offender, roots)
+        collect_vots(fd.caster, roots)
         for off in sorted(roots):
             node = build.emit(off)
             if node is not None:
@@ -1250,6 +1259,9 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
                          {k: v for k, v in anim_names.items()})
             bound_loops(tl, fd.fade_start + fd.fade_duration)
             timelines[char["id"]] = timeline_json(tl, build, anim_names)
+            ctl = flatten(fd.caster, templates.get(char["id"], ""), _lower_keys(char.get("durations", {})),
+                          dict(anim_names))
+            timelines[char["id"]]["caster"] = caster_json(ctl, build, fd.fade_start + fd.fade_duration)
         entry["timelines"] = timelines
         entries.append(entry)
 
@@ -1328,6 +1340,27 @@ def timeline_json(tl, build: FxBuild, anim_names: dict[int, str]) -> dict:
             for k in list(item):
                 if item[k] is None or item[k] == []:
                     del item[k]
+    return out
+
+
+def caster_json(tl, build: FxBuild, fade_end: float) -> dict:
+    """Chronologie du tueur (`casterFxScript`) : ses animations, les effets accrochés à ses
+    locators et les rayons tendus vers la victime. Le script n'a pas de borne propre : il
+    s'éteint avec la victime (`fadeStartTime + fadeDuration`)."""
+    def bounded(until):
+        return round(fade_end if until is None else min(until, fade_end), 4)
+
+    out = {
+        "anims": [{"t": s["t"], "end": bounded(s["end"]), "anim": s["anim"][:1].upper() + s["anim"][1:],
+                   "speed": s["speed"], "mode": s["mode"]} for s in tl.victim if s.get("anim")],
+        "attached": [{**a, "vot": build.names[a["vot"]], "until": bounded(a.get("until"))}
+                     for a in tl.attached if a["vot"] in build.names],
+        "channels": [{**c, "vot": build.names[c["vot"]], "until": bounded(c.get("until"))}
+                     for c in tl.channels if c["vot"] in build.names],
+    }
+    for item in out["attached"]:
+        for k in [k for k, v in item.items() if v is None]:
+            del item[k]
     return out
 
 
