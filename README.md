@@ -823,53 +823,93 @@ La page `/character` (entrée « Personnage » de l'accueil, désactivée et abs
 production : la route n'existe que si `import.meta.env.DEV`) reproduit l'écran de création du
 **client 17.0** (`/mnt/h/MyGames/AllodsRU`), dans l'ordre du jeu : **faction** → **race et
 classe** (avec sexe et niveau de tenue) → **apparence et nom** (familier des Pacificateurs, trio
-des gibberlings), puis « Créer ».
+des gibberlings), puis « Créer ». En développement, `?race=Elf&class=MAGE&sex=female&step=race`
+ouvre directement une étape (captures comparées aux écrans du jeu).
 
-    python3 tools/extract_character_creation.py          # tout (≈ 25 min)
+    python3 tools/extract_character_creation.py          # tout (≈ 30 min)
     python3 tools/extract_character_creation.py --only Elf --no-scenes
 
-**Sources, toutes dans le client 17** (`Bin/pack.bin`, lu par `tools/allods_packdb.py`) :
+**Sources, toutes dans le client 17** (`Bin/pack.bin`, lu par `tools/allods_packdb.py` ; paks
+lus par `packs_path()`, qui passe par `Packs.adc-real` quand `Packs` est une jonction illisible) :
 
-- interface : addon `CharacterGenerator` (arbre de widgets, placements, calques, textures de
+- interface : addon `CharacterGenerator` (arbre de widgets, placements, **visibilité initiale**
+  — octet `+0x184` —, calques, textes fixes des `WidgetTextView`, textures de
   `Interface/Wrap/MainMenu/CharacterGenerator3`, icônes de races et de classes, textes RU/EN du
-  `.loc`, FR relus par clé dans le client FR) — `tools/chargen_ui.py` ;
+  `.loc`, FR relus par clé et par chemin de widget dans le client FR) et **bandeau bas** des écrans
+  du menu (`BottomLine`, addon `Main`, 67 px pleine largeur) — `tools/chargen_ui.py` ;
 - données : `CharacterRoot` → factions → races → classes → deux sexes (`Character` : trois tenues
-  de création avec leurs animations `chargen<Classe>Start`/`chargen<Classe>`, familier), gabarits
-  `VisCharacterTemplate` et `CharacterVariations` (visages, traits, coiffures, couleurs, peaux,
-  teintes, signes, pierres des aèdes), `VisualItem` (géosets montrés/cachés, calques de peau,
-  modèles accrochés), règles de nommage `NameRules` — `tools/allods_chargen.py` ;
-- décors : la carte `MainMenu` compilée à part dans `Bin/Maps_MainMenu.bin` (même format, codes
-  de pak propres) : décor `World/MainMenu/Chargen_<Race>` et ses objets accrochés et animés,
-  `ZoneLights` de la case (ambiante, soleil, brouillard), ambiance sonore ; place et caméra de
-  `UICharacterScenes` (`CharacterSelect<Race>`) — `tools/chargen_scene.py`.
+  de création avec leurs animations `chargen<Classe>Start`/`chargen<Classe>` et leurs effets,
+  familier), gabarits `VisCharacterTemplate` et `CharacterVariations` (visages, traits, coiffures,
+  couleurs, peaux, teintes, signes, pierres des aèdes), **corpulence** (`ModelMorphSettings` du
+  gabarit, `+0x148` : 15 commandes d'échelle d'os, 9 à 12 préréglages), `VisualItem` (géosets
+  montrés/cachés, calques de peau, modèles accrochés et leurs effets), règles de nommage
+  `NameRules` — `tools/allods_chargen.py`, effets `tools/chargen_fx.py` ;
+- décors : la carte `MainMenu` (`Bin/Maps_MainMenu.bin`, liée à `pack.bin` par `open_map`),
+  construite par la **chaîne commune des cinématiques moteur** (`build_decor`, `light_decor`,
+  `build_sky`, `export_waves` de `tools/extract_engine_cutscene.py`) : gabarits posés, éclairage
+  précalculé de chaque sommet (`lightvrt` : ambiante + soleil + lumières ponctuelles des lanternes et
+  cristaux), particules (feuilles d'automne), animations, ciel, `ZoneLights` de la case, ambiance
+  sonore ; place et caméra de `UICharacterScenes` (`CharacterSelect<Race>`) — `tools/chargen_scene.py`.
 
 Sorties dans `public/game/character/` : `chargen.json` (index versionné, `schema: 1`),
 `ui/layout.json` + textures, `models/<Gabarit>.glb` (tous les géosets, squelette, attente et
-animations de création), `attach/` (casques, épaulières, armes), `textures/`, `scenes/<Race>.glb`.
+animations de création), `attach/` (casques, épaulières, armes), `fx/` + `particles/` (effets),
+`textures/` (WebP), `maps/MainMenu/` (décor commun, textures, particules), `scenes/<Race>.json`
+(+ `-light.bin`, `-sky.glb`), `sfx/` (ambiances, sons de l'interface `Chargen.bsb`).
 
 **Règles établies sur les données** : tenue par défaut = corps nu (cache tous les géosets à
 variantes) ; un objet porté montre ses formes et cache ses géosets, un géoset caché par un objet
 l'emporte (le casque cache les cheveux) ; texture cuite = peau (`IndexedTexture`, teinte sous le
 masque alpha) puis calques (visage, pilosité, signe, cuir chevelu teint de la couleur des cheveux,
 sous-vêtements `bra`/`pants`, pièces de tenue), rectangles `x1 x2 y1 y2` avec V depuis le bas ;
-décors de plus de 32 768 sommets : indices 16 bits par pages de 32 768 ; calques additifs de
-l'interface (`WidgetLayer` +0x24 = 2) rendus en alpha (noir transparent).
+indices 16 bits des grandes géométries relatifs au `vertexBufferOffset` de l'élément ; calques
+additifs de l'interface (`WidgetLayer` +0x24 = 2) rendus en alpha (noir transparent) ; états des
+boutons **par place** dans la variante (`+0x08` surbrillance, `+0x70` désactivé, `+0xA0` survolé,
+`+0xD0` normal, `+0x100`/`+0x130` appuyé), la variante 1 étant le choix (bande claire de la race
+et de la classe choisies) ; panneaux redimensionnés par les scripts (`SetPlacementPlain`) :
+apparence `n × 68` px, noms `(1 + n) × 130` px, emplacements de nom remplis dans l'ordre ;
+commandes d'apparence dans l'ordre `variationOrder` du script (`faces`, `facials`, `hairs`,
+`hairColors`, `shoulderStones`, `additionals`, `skins`, `skinColors`, `morphPresets`), montrées
+si leur plage compte plus d'une valeur ; l'objet de main secondaire se tient dans la main gauche,
+l'arme à distance n'est pas tenue ; les matériaux transparents des personnages (ailes des elfes,
+lueurs) sont sans éclairage.
+
+**Repère** : sans miroir. Confronté aux écrans du 17.0, le repère du jeu (X, Y au sol, Z en haut)
+se lit en main droite — méridienne à gauche du décor elfe, orbe du mage dans la main levée ; avec
+le miroir X des autres lecteurs, décor et personnage sortaient inversés. L'export `.glb` tourne
+seulement Z en haut → Y en haut (plus d'échelle négative).
+
+**Caméra** : celle de la place (`UICharacterScenes`, champ horizontal 1,36 rad), **tangage compté
+positif vers le bas** (−3° pour l'elfe : visée relevée, d'après le quaternion de la place 7.0),
+reculée sur son axe de `preMissionAdditionalAway` du gabarit (0,5 m) : statues et estrade entières
+comme à l'écran du jeu, même plan aux étapes race et apparence (le script n'a pas de caméra :
+`preMissionCamera` du 7.0 ne porte que `cameraFullTime`). **Molette** et **pincement** (mobile) :
+zoom de ce plan vers `preMissionFaceCameraAnchor` (hauteur du visage), jusqu'à 1,3 m ; le
+glisser tourne toujours le personnage.
 
 **Descripteur** (`src/data/character/descriptor.ts`, `kind: "allodex.character"`, `version: 1`) :
-faction, race, sexe, classe, nom, indices d'apparence dans les listes du gabarit, niveau de tenue,
-compagnons du trio, familier (gabarit, pelage, nom). Validé contre `chargen.json`
-(`validateDescriptor`, utilisable côté serveur). Persistance derrière `CharacterStore`
-(`src/data/character/store.ts`) : `LocalCharacterStore` (`localStorage`) aujourd'hui, une
-implémentation HTTP demain sans toucher à l'écran.
+faction, race, sexe, classe, nom, indices d'apparence dans les listes du gabarit (corpulence
+comprise), niveau de tenue, compagnons du trio, familier (gabarit, pelage, nom). Validé contre
+`chargen.json` (`validateDescriptor`, utilisable côté serveur). Persistance derrière
+`CharacterStore` (`src/data/character/store.ts`) : `LocalCharacterStore` (`localStorage`)
+aujourd'hui, une implémentation HTTP demain sans toucher à l'écran.
 
 **Export `.glb`** : côté navigateur (`GLTFExporter`), de ce qui est affiché — géosets visibles,
 texture cuite composée, modèles accrochés, compagnons et familier en nœuds frères, clips de la
-tenue et attente ; repère converti en Y en haut (nœud racine), descripteur dans les `extras`.
+tenue et attente ; descripteur dans les `extras`.
 
-**Écarts connus** : caméra de la place de *sélection* (`UICharacterScenes`), celle de la création
-(`preMissionCamera`) n'étant pas décodée ; effets animés des tenues (plantes du Pacificateur,
-lueurs) non rejoués ; ambiances FMOD relevées mais non jouées (musique du menu 17.0 à la place) ;
-morphologie (`morphPresets`, citée par le script) non décodée ; aèdes : estrade reprise du décor.
+**Décisions de l'utilisateur (septembre 2026)** : textures en **WebP sans réduction** (taille
+d'origine, qualité 90) ; ambiances sonores de chaque décor branchées (événement FMOD → onde par son
+nom, puis boucle `_lp` des banques d'ambiance dont le nom contient tous les mots de l'événement —
+`SteppeWindy_AP` → `steppe_wind_lp` —, rien sinon) ; caméra de création décodée (voir « Caméra ») ;
+ordre des étapes du jeu (faction → race et classe → apparence et nom).
+
+**Écarts connus** : plages d'apparence envoyées par le serveur, reprises de l'écran de l'elfe
+(« Qualité de peau » et « Caractéristiques additionnelles » fermées pour toutes les races) ;
+ambiances sans onde retrouvable (`AI36` de l'elfe, `LoginScreen`, `SnowWindy_AP`…) muettes, le
+projet d'événements FMOD des ambiances n'étant pas livré ; places du familier et des compagnons du
+trio inventées (le client ne les publie pas) ; aèdes : estrade reprise du décor ; préréglage de
+corpulence par défaut = le plus proche de l'échelle 1.
 
 ## Talents
 

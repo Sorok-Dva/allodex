@@ -42,15 +42,15 @@ function exportable(rig: CharacterRig, prefix: string): THREE.Object3D {
  * `.glb` unique du personnage configuré (export côté navigateur, `GLTFExporter`) : le
  * squelette, les géosets visibles, la texture cuite et les clips demandés ; le trio gibberling
  * et le familier sont des nœuds frères, chacun avec son squelette et son attente (`<nœud>:idle`).
- * Le repère du jeu (Z en haut, main gauche) est converti en celui du glTF (Y en haut, main
- * droite) par le nœud racine ; le descripteur voyage dans `asset.extras`.
+ * Le repère du jeu (Z en haut, main droite : comparé aux écrans du client, sans miroir) est
+ * tourné vers celui du glTF (Y en haut) par le nœud racine — sans échelle négative, que les
+ * visionneuses rendent retournée ; le descripteur voyage dans `asset.extras`.
  */
 export async function exportCharacterGlb(req: ExportRequest): Promise<Blob> {
   const root = new THREE.Group();
   root.name = req.name;
-  // Z en haut → Y en haut, et miroir X (le jeu est en main gauche).
+  // Z en haut → Y en haut.
   root.rotation.x = -Math.PI / 2;
-  root.scale.set(-1, 1, 1);
   root.userData = { allodex: req.descriptor };
   const main = exportable(req.primary, req.name);
   // Pose native du modèle : ni la rotation du glisser, ni l'échelle de la place du décor.

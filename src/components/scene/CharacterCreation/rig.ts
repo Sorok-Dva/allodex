@@ -27,18 +27,21 @@ export function uvScrollOf(gltf: GLTF, mesh: THREE.Object3D): [number, number] |
 }
 
 /**
- * Matériau éclairé d'un primitif de personnage. Les textures du jeu sont des octets (pas de
- * conversion sRGB, comme les scènes de menu) ; les matériaux transparents du jeu (ailes des
- * elfes, lueurs) restent sans écriture de profondeur, les additifs en mélange additif.
+ * Matériau d'un primitif de personnage. Les textures du jeu sont des octets (pas de conversion
+ * sRGB, comme les scènes de menu). Le corps est éclairé (Lambert : texture × (ambiante + soleil ·
+ * N·L)) ; les matériaux transparents du jeu (ailes des elfes, lueurs d'orbe) sont des effets, **sans
+ * éclairage** comme dans le client — éclairés, les ailes sortaient noires — et sans écriture de
+ * profondeur ; les additifs en mélange additif.
  */
-export function characterMaterial(source: THREE.Material): THREE.MeshLambertMaterial {
+export function characterMaterial(source: THREE.Material): THREE.MeshLambertMaterial | THREE.MeshBasicMaterial {
   const src = source as THREE.MeshBasicMaterial;
   const additive = (source.userData as { blend?: string }).blend === 'add';
   const translucent = source.transparent || additive;
-  const material = new THREE.MeshLambertMaterial({
+  const options = {
     name: source.name, map: src.map ?? null, color: 0xffffff, transparent: translucent,
     alphaTest: translucent ? 0 : 0.5, side: THREE.DoubleSide, vertexColors: false, fog: false,
-  });
+  };
+  const material = translucent ? new THREE.MeshBasicMaterial(options) : new THREE.MeshLambertMaterial(options);
   if (translucent) material.depthWrite = false;
   if (additive) material.blending = THREE.AdditiveBlending;
   if (material.map) material.map.colorSpace = THREE.NoColorSpace;
@@ -64,6 +67,8 @@ export class CharacterRig {
   private bakedTexture: THREE.CanvasTexture | null = null;
   private current: THREE.AnimationAction | null = null;
   private token = 0;
+  /** Corpulence : os, échelle de repos, facteur. */
+  private morph: { bone: THREE.Object3D; rest: THREE.Vector3; factor: THREE.Vector3 }[] = [];
 
   private cache: AssetCache;
   readonly template: string;
@@ -104,6 +109,7 @@ export class CharacterRig {
     const images = await Promise.all(look.bake.map(b => this.cache.image(b.texture).catch(() => null)));
     const models = await Promise.all(look.attachments.map(a => this.cache.gltf(a.model).then(g => ({ a, g })).catch(() => null)));
     if (token !== this.token) return;
+    this.setMorph(look.morph);
     const texOf = new Map(textures);
     // Texture cuite.
     const layers = look.bake.map((b, i) => ({ image: images[i], rect: b.rect, tint: b.tint, tintThroughAlpha: b.throughAlpha }))
@@ -182,8 +188,21 @@ export class CharacterRig {
     this.pendingLoop = null;
   };
 
+  /** Corpulence : facteurs d'échelle des os, reposés à chaque image par-dessus l'animation. */
+  setMorph(scales: { bone: string; scale: [number, number, number] }[]): void {
+    for (const m of this.morph) m.bone.scale.copy(m.rest);
+    this.morph = [];
+    for (const { bone, scale } of scales) {
+      const node = this.joint(bone);
+      if (node) this.morph.push({ bone: node, rest: node.scale.clone(), factor: new THREE.Vector3(...scale) });
+    }
+  }
+
   update(dt: number): void {
+    // L'animation ne pose pas toujours l'échelle : on repart de celle de repos avant de mélanger.
+    for (const m of this.morph) m.bone.scale.copy(m.rest);
     this.mixer.update(dt);
+    for (const m of this.morph) m.bone.scale.multiply(m.factor);
   }
 
   dispose(): void {

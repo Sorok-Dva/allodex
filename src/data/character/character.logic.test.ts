@@ -4,7 +4,8 @@ import {
   checkName, clampAppearance, defaultAppearance, newDescriptor, parseDescriptor, randomAppearance, serialize,
   shiftAppearance, templateFor, validateDescriptor, withSelection, DESCRIPTOR_KIND, DESCRIPTOR_VERSION,
 } from './descriptor';
-import { resolveLook } from './look';
+import { morphScales, otherHand, resolveLook } from './look';
+import { chargenCamera, clampZoom } from '@/components/scene/CharacterCreation/stage';
 import { findWidget, gameText, parseGameMarkup, placeAxis, placeWidget, uiScale } from './layout';
 import { LocalCharacterStore } from './store';
 
@@ -199,5 +200,47 @@ describe('CharacterStore local', () => {
     const storage = memory();
     storage.setItem('allodex:characters', '{oops');
     expect(await new LocalCharacterStore(storage).list()).toEqual([]);
+  });
+});
+
+describe('corpulence, mains et plan de la création', () => {
+  it('met les os à l’échelle `valeur ** puissance`, commandes multipliées', () => {
+    const tpl = { ...data().templates.KaniaFemale, morph: {
+      0: [{ bone: 'Global', power: [1, 1, 1] as [number, number, number] }, { bone: 'Slot_Hand_R', power: [-0.5, -0.5, -0.5] as [number, number, number] }],
+      1: [{ bone: 'Head', power: [1, 1, 1] as [number, number, number] }],
+    } };
+    const scales = morphScales(tpl, { 0: 0.81, 1: 1 });
+    expect(scales[0]).toEqual({ bone: 'Global', scale: [0.81, 0.81, 0.81] });
+    expect(scales[1].bone).toBe('Slot_Hand_R');
+    expect(scales[1].scale[0]).toBeCloseTo(1 / 0.9, 6);
+    expect(scales).toHaveLength(2);
+    expect(morphScales(tpl, undefined)).toEqual([]);
+  });
+
+  it('tient l’objet de main secondaire dans l’autre main et range l’arme à distance', () => {
+    expect(otherHand('Slot_Hand_R')).toBe('Slot_Hand_L');
+    expect(otherHand('Slot_Hand_L')).toBe('Slot_Hand_R');
+    const d = data();
+    d.items.iorb = { shapes: { unisex: [{ model: 'attach/Orb.glb', locator: 'Slot_Hand_R', fx: 'fx/OrbFx.glb' }] } };
+    d.items.iwand = { shapes: { unisex: [{ model: 'attach/Wand.glb', locator: 'Slot_Hand_L' }] } };
+    const look = resolveLook(d, 'KaniaMale', d.templates.KaniaMale, 'male', {},
+      [{ slot: 'OFFHAND', item: 'iorb' }, { slot: 'RANGED', item: 'iwand' }], { equipment: 0, helmet: true });
+    expect(look.attachments).toEqual([{ model: 'attach/Orb.glb', locator: 'Slot_Hand_L', template: 'KaniaMale' }]);
+    expect(look.fx).toEqual([{ fx: 'fx/OrbFx.glb', locator: 'Slot_Hand_L' }]);
+  });
+
+  it('recule la caméra de la place sur son axe, tangage positif vers le bas, et zoome vers le visage', () => {
+    const meta = { file: 'scenes/Elf.json', character: { yaw: 0, scale: 1, position: [0, 0, 0] as [number, number, number] },
+      camera: { position: [0, 5, 1] as [number, number, number], yaw: -90, pitch: -3, height: 0, fov: 1.36 } };
+    const tpl = { ...data().templates.KaniaFemale, ui: { cameraAnchor: [0, 0, 1.8], cameraBodyAnchorCoeff: 0.6,
+      preMissionAdditionalAway: 0.5, preMissionFaceCameraAnchor: [0.6, 0, 1.8], scale: 1 } };
+    const far = chargenCamera(meta, tpl, 0);
+    expect(far.position.y).toBeCloseTo(5 + 0.5 * Math.cos(Math.PI / 60), 3);
+    expect(far.target.z).toBeGreaterThan(far.position.z);           // −3° = visée relevée
+    const near = chargenCamera(meta, tpl, 1);
+    expect(near.target.z).toBeCloseTo(1.8, 5);
+    expect(near.position.distanceTo(near.target)).toBeCloseTo(1.3, 3);
+    expect(clampZoom(2)).toBe(1);
+    expect(clampZoom(-1)).toBe(0);
   });
 });
