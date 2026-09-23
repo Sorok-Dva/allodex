@@ -186,14 +186,26 @@ class IconSink:
         self.by_key: dict[str, str | None] = {}
         self.written: dict[str, int] = {}
 
-    def add(self, key: str, loader) -> str | None:
+    def add(self, key: str, loader, dims: dict | None = None) -> str | None:
+        """`dims` : dimensions de la `UITexture` (`w`, `h`, `realW`, `realH`). Le jeu n'affiche que
+        la zone utile `realW × realH` en haut à gauche de la texture (icônes de 39 × 39 dans une
+        texture de 64 × 64, sans fond) : l'image est recadrée dessus, sans quoi l'icône, étirée
+        avec sa marge transparente, paraît décalée en haut à gauche de sa case."""
+        rw, rh = (dims or {}).get("realW") or 0, (dims or {}).get("realH") or 0
+        key = f"{key}@{rw}x{rh}" if rw and rh else key
         if key in self.by_key:
             return self.by_key[key]
         name = None
         data = loader()
         if data:
             try:
-                img, _ = decode_uitexture(data)
+                hint = (dims["w"], dims["h"]) if dims and dims.get("w") and dims.get("h") else None
+                try:
+                    img, _ = decode_uitexture(data, hint)
+                except ValueError:
+                    img, _ = decode_uitexture(data)
+                if rw and rh and (rw < img.width or rh < img.height):
+                    img = img.crop((0, 0, min(rw, img.width), min(rh, img.height)))
                 buf = io.BytesIO()
                 img.save(buf, format="PNG", optimize=True)
                 png = buf.getvalue()
@@ -278,6 +290,7 @@ class Talent:
     icon: str | None = None
     ranks: list = field(default_factory=list)
     missing: list = field(default_factory=list)
+    links: list = field(default_factory=list)
 
 
 class Extractor:
@@ -501,12 +514,41 @@ class Extractor:
             if not path:
                 return None
             binpath = re.sub(r"\.xdb$", ".bin", path)
-            return self.icons.add(f"{self.spec['id']}:{binpath}", lambda: self.paks.get(binpath))
+            return self.icons.add(f"{self.spec['id']}:{binpath}", lambda: self.paks.get(binpath), self.texture_dims_v1(tex))
         loc = self.texture_location(tex)
         if loc is None:
             return None
-        pak, entry, _ = loc
-        return self.icons.add(f"{os.path.basename(pak)}#{entry}", lambda: read_pak_entry(pak, entry))
+        pak, entry, dims = loc
+        return self.icons.add(f"{os.path.basename(pak)}#{entry}", lambda: read_pak_entry(pak, entry), dims)
+
+    def texture_dims_v1(self, tex: int) -> dict | None:
+        """Zone utile d'une `UITexture` 32 bits (`realHeight`, `realWidth`), repérée par le
+        marqueur `0xFFFFFFFF` suivi de la dimension (puissance de deux) de la texture :
+
+        * 7.0 → 11.x : `FFFFFFFF, dim, FFFFFFFF, 1, n, realH, realW` (zone utile à marqueur + 0x14) ;
+        * 1.1 → 4.0 : `realW, realH, 1, FFFFFFFF, dim` (zone utile à marqueur − 0xC).
+
+        Ordre vérifié sur les icônes de monnaie 32 × 39 (texture 32 × 64) de 2.0 et 9.0.
+
+        Relevé sur les icônes de talents du mage (`MagicMirrorF` : 39 × 39 dans 64 × 64) des
+        clients 1.1, 2.0, 7.0 et 9.0 ; la zone est rejetée si elle dépasse la dimension.
+        """
+        end = min(self.obj_end(tex), tex + 0x100)
+        pow2 = lambda v: 4 <= v <= 4096 and v & (v - 1) == 0  # noqa: E731
+        for m in range(tex, end - 0xC, 4):
+            if self.pb.u32(m) != 0xFFFFFFFF or not pow2(self.pb.u32(m + 4)):
+                continue
+            dim = self.pb.u32(m + 4)
+            recent = self.pb.u32(m + 8) == 0xFFFFFFFF
+            at = m + 0x14 if recent else m - 0xC
+            if at < tex or at + 8 > end:
+                return None
+            a, b = self.pb.u32(at), self.pb.u32(at + 4)
+            rh, rw = (a, b) if recent else (b, a)
+            if 0 < rh <= dim and 0 < rw <= dim * 4:
+                return {"realH": rh, "realW": rw}
+            return None
+        return None
 
     def single_to_texture(self, single: int) -> int | None:
         """`UISingleTexture` → `UITexture` (pointeur direct, ou identifiant d'objet en 17.x)."""
@@ -694,6 +736,39 @@ class Extractor:
             elif is_spell_type(tt) or is_ability_type(tt):
                 cell.setdefault("linked", []).append(self.talent(t))
         return cell if "talent" in cell else None
+
+    def link_talents(self) -> None:
+        """Sorts qu'une capacité modifie : tableau de la partie fixe de l'`AbilityResource` dont
+        tous les éléments sont des sorts (17.0 : `+0xE8`, relevé en suivant les références des
+        rubis vers les sorts du livre ; « Sève toxique » → « Chute des feuilles »…). C'est le lien
+        que le jeu surligne au survol (`GetLinkedTalents`, `ClassBuild.CalcTalentLinkedResources`).
+        Seuls les talents de la table sont retenus."""
+        by_addr: dict[int, str] = {}
+        for base, t in self.talents.items():
+            fam = is_ability_type if t.kind == "ability" else is_spell_type
+            for r in self.rank_objects(base, fam):
+                by_addr.setdefault(r, t.key)
+        for base, t in self.talents.items():
+            if t.kind != "ability":
+                continue
+            keys: list[str] = []
+            for v in self.vectors(*self.head(base)):
+                if v.data is None:
+                    continue
+                items = []
+                for o in range(v.data, v.data + v.size, self.ps):
+                    tg = self.pb.ptr(o)
+                    if tg is None and self.pb.ids:
+                        rel = self.pb.reloc(o, KIND_CLASS)
+                        tg = self.pb.ids.get(rel.target) if rel else None
+                    items.append(tg)
+                if not items or not all(x is not None and is_spell_type(self.type_at(x)) for x in items):
+                    continue
+                for x in items:
+                    k = by_addr.get(x)
+                    if k and k != t.key and k not in keys:
+                        keys.append(k)
+            t.links = keys
 
     # tables -------------------------------------------------------------------------------
     def grid_rows(self, v: Vec) -> list[tuple[Vec, int, int]]:
@@ -1114,7 +1189,45 @@ def builder_layout(packs_dir: str) -> dict:
     }
 
 
-def extract_ui(spec: dict, out: Path, log=print) -> dict:
+def fallback_class_icons(ui: UiExtractor, spec: dict, manifest: dict, names: list[str], log=print) -> list[str]:
+    """Icônes de classe que le pack.bin 17.0 ne décrit pas (Paladin, Priest : `GetUnitClassIcon`
+    ne les trouve pas dans ses `UITexture`). Fichier pris dans le pak localisé du 17.0, sinon dans
+    celui de la version de repli ; dimensions lues dans la `UITexture` de même chemin de la version
+    de repli (`ui_class_icons` du manifeste)."""
+    conf = manifest.get("ui_class_icons") or {}
+    folder = conf.get("folder", CLASS_ICONS)
+    fb_spec = next((v for v in manifest["versions"] if v["id"] == conf.get("fallback_version")), None)
+    missing = [n for n in names if n not in ui.textures]
+    if not missing or fb_spec is None:
+        return []
+    fb = Extractor(fb_spec, IconSink(Path("/nonexistent"), dry=True), log)
+    fb_dims: dict[str, tuple[str, int, dict]] = {}
+    for t in fb.pb.objects_of("UITexture"):
+        loc = fb.texture_location(t)
+        if loc:
+            name = pak_entry_name(loc[0], loc[1])
+            if name and name.startswith(folder):
+                fb_dims[name] = loc
+    added = []
+    own = _zip(os.path.expanduser(spec["pack"][0]))
+    for n in missing:
+        path = f"{folder}{n}.(UITexture).bin"
+        if path not in fb_dims:
+            log(f"  icône de classe introuvable : {n}")
+            continue
+        pak, entry, dims = fb_dims[path]
+        data, origin = None, spec["id"]
+        if own is not None and path in own.namelist():
+            data = own.read(path)
+        else:
+            data, origin = read_pak_entry(pak, entry), fb_spec["id"]
+        ui.save_texture(n, path, data, dims)
+        ui.textures[n].update({"from": origin, "dimsFrom": fb_spec["id"]})
+        added.append(n)
+    return added
+
+
+def extract_ui(spec: dict, out: Path, log=print, manifest: dict | None = None) -> dict:
     ex = Extractor(spec, IconSink(out / "icons", dry=True), log)
     ui_dir = out / "ui"
     if ui_dir.exists():
@@ -1125,6 +1238,8 @@ def extract_ui(spec: dict, out: Path, log=print) -> dict:
     data["layout"] = builder_layout(spec["packs_dir"])
     # Icônes de classe (`GetUnitClassIcon` → `PlayerClasses/<Nom>`), teintées par le script.
     data["related"] += ui.related(CLASS_ICONS)
+    if manifest:
+        data["related"] += fallback_class_icons(ui, spec, manifest, list(data["layout"]["classIcons"].values()), log)
     ui_dir.mkdir(parents=True, exist_ok=True)
     (ui_dir / "talent_builder.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")))
     log(f"interface {spec['id']} : {len(data['textures'])} textures")
@@ -1140,6 +1255,8 @@ def talent_json(t: Talent) -> dict:
     if t.icon:
         d["icon"] = t.icon
     d["ranks"] = t.ranks
+    if t.links:
+        d["links"] = t.links
     if t.missing:
         d["missing"] = t.missing
     return d
@@ -1169,6 +1286,7 @@ def extract_version(spec: dict, out: Path, icons: IconSink, log=print) -> dict:
             log(f"  {c['code']}: pas de BaseTalentsTable")
             continue
         table = ex.talents_table(c["table"])
+        ex.link_talents()
         n_talents = len(ex.talents)
         data = {
             "version": spec["id"], "code": c["code"], "ref": c["ref"], "name": c["name"],
@@ -1191,24 +1309,38 @@ def extract_version(spec: dict, out: Path, icons: IconSink, log=print) -> dict:
             "format": ex.pb.fmt, "classes": entries}
 
 
+def apply_manifest_fields(entry: dict, spec: dict) -> dict:
+    """Champs de l'index qui viennent du manifeste et non du client : totaux de points
+    (`points` : {book, field, source}), absents des données du jeu."""
+    entry.pop("points", None)
+    if spec.get("points"):
+        entry["points"] = spec["points"]
+    return entry
+
+
 def run(manifest: dict, out: Path, only: list[str] | None = None, log=print) -> dict:
     icons = IconSink(out / "icons")
     index_path = out / "index.json"
     previous = {}
-    if index_path.exists() and only:
+    if index_path.exists() and only is not None:
         previous = {v["id"]: v for v in json.loads(index_path.read_text()).get("versions", [])}
     versions = []
     for spec in manifest["versions"]:
-        if only and spec["id"] not in only:
+        if only is not None and spec["id"] not in only:
             if spec["id"] in previous:
-                versions.append(previous[spec["id"]])
+                versions.append(apply_manifest_fields(previous[spec["id"]], spec))
             continue
         try:
-            versions.append(extract_version(spec, out, icons, log))
+            versions.append(apply_manifest_fields(extract_version(spec, out, icons, log), spec))
         except FileNotFoundError as exc:
             log(f"  ignorée : {exc}")
     index = {"versions": versions, "unavailable": manifest.get("unavailable", [])}
     index_path.write_text(json.dumps(index, ensure_ascii=False, indent=1))
+    if only is None and icons.written:
+        # Extraction complète : les icônes qu'aucune version ne référence plus sont retirées.
+        for f in (out / "icons").glob("*.png"):
+            if f.name not in icons.written:
+                f.unlink()
     total = sum(icons.written.values())
     log(f"icônes écrites : {len(icons.written)} ({total / 1e6:.1f} Mo)")
     return index
@@ -1220,13 +1352,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
     ap.add_argument("--only", nargs="*")
     ap.add_argument("--ui", action="store_true", help="n'extraire que la fenêtre TalentBuilder du client 17.0")
+    ap.add_argument("--index-only", action="store_true", help="réécrire l'index (champs du manifeste) sans rien extraire")
     args = ap.parse_args(argv)
     manifest = json.loads(args.manifest.read_text())
     if args.ui:
         spec = next(v for v in manifest["versions"] if v["id"] == manifest.get("ui_version", "17.0"))
-        extract_ui(spec, args.out)
+        extract_ui(spec, args.out, manifest=manifest)
         return 0
-    run(manifest, args.out, args.only)
+    run(manifest, args.out, [] if args.index_only else args.only)
     return 0
 
 

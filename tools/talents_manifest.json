@@ -1,5 +1,5 @@
 {
-  "_doc": "Sources par version pour tools/extract_talents.py. pack = [chemin, entrée zip | null] ; texts = {langue: [chemin, entrée | null] | {tree: dossier}} ; icons = globs de paks (v1) ou dossier Packs (v2). Les chemins absents sont signalés, jamais devinés.",
+  "_doc": "Sources par version pour tools/extract_talents.py. pack = [chemin, entrée zip | null] ; texts = {langue: [chemin, entrée | null] | {tree: dossier}} ; icons = globs de paks (v1) ou dossier Packs (v2). Les chemins absents sont signalés, jamais devinés. points = totaux du livre (points de compétence) et des grilles (événements de développement) au niveau maximal, hors 3 points offerts, avec leur source : ils ne sont pas dans les données du client. ui_class_icons = provenance des icônes de classe de la fenêtre 17.0.",
   "versions": [
     {
       "id": "1.1",
@@ -215,7 +215,12 @@
           "Bin/pack.rus.loc"
         ]
       },
-      "packs_dir": "/mnt/h/MyGames/AllodsRU/data/Packs"
+      "packs_dir": "/mnt/h/MyGames/AllodsRU/data/Packs",
+      "points": {
+        "book": 82,
+        "field": 77,
+        "source": "Fenêtre Talents du client FR, personnage au niveau maximal (« Points de compétence : 0/82 », « Événements de développement : 0/77 ») ; confirmé par les rangs appris de la capture (85 = 82 + 3 offerts)."
+      }
     }
   ],
   "unavailable": [
@@ -243,5 +248,10 @@
       "id": "14.0",
       "reason": "aucun client 14.x disponible"
     }
-  ]
+  ],
+  "ui_class_icons": {
+    "folder": "Interface/Ingame/ContextRelatedTextures/PlayerClasses/",
+    "fallback_version": "16.0",
+    "note": "Paladin et Priest : fichiers présents dans BaseLocall_x64.pak du client 17.0 mais sans ressource UITexture dans son pack.bin ; dimensions (32 × 32) reprises de la UITexture de même chemin du client FR 16.0, fichier repris du 16.0 s'il manque au 17.0."
+  }
 }
