@@ -795,6 +795,7 @@
    "geometry": "Creatures/Rysina/Rysina.(Geometry).bin",
    "height": 1.916,
    "animations": {
+    "EmoteSpeech": 5.3333,
     "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
     "Special": 12.0,
@@ -867,12 +868,13 @@
    "animations": {
     "Idle": 4.0,
     "Idle01": 3.0,
+    "Ready": 2.6667,
     "Walk": 1.0
    }
   },
   {
    "id": "rysina-2",
-   "glb": "actors/rysina-2.glb",
+   "glb": "actors/rysina.glb",
    "name": {
     "ru": "Елизавета Рысина",
     "en": "Elizaveta Rysina"
@@ -936,13 +938,15 @@
    "height": 1.916,
    "animations": {
     "EmoteSpeech": 5.3333,
+    "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
+    "Special": 12.0,
     "Walk": 1.6333
    }
   },
   {
    "id": "diarder-2",
-   "glb": "actors/diarder-2.glb",
+   "glb": "actors/diarder.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -1114,7 +1118,7 @@
   }
  ],
  "decor": {
-  "glb": "decor.glb",
+  "glb": "../maps/FerrisRaid/decor.glb",
   "light": "decor-light.bin",
   "instances": [
    {
@@ -1379,14 +1383,255 @@
   "sky": {
    "radius": 735.69,
    "parts": 4
-  }
+  },
+  "skyGlb": "sky.glb"
  },
  "fx": {
   "glb": null,
   "spawns": []
  },
  "objects": {
-  "Architect_World_HugeStone_01": {
+  "Architect_Rock_02#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Kernel_Big_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/Architect_Kernel_Big_01.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 4801,
+    "loopFrame": 2401,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "orientation": "BILLBOARD",
+   "duration": 80.0,
+   "loop": true
+  },
+  "Architect_Kernel_Big": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 0.699999988079071,
+   "sound": "World/Races/Architectors/Kernel",
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/Architect_Kernel_Big.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 4801,
+    "loopFrame": 2401,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "orientation": "Z_AXIS",
+   "duration": 80.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Kernel_Big_01",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Rock_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.6667,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Rock_02#2",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Architect_Kernel_Big",
+     "locator": "Slot_Special02"
+    }
+   ]
+  },
+  "Architect_Portal_Big_In_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "spells/World/UI04/idle01",
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Portal_Big_In": {
+   "fadeIn": 0.5,
+   "fadeOut": 0.5,
+   "scale": 1.0,
+   "duration": 50.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Portal_Big_In_01",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Big_Portal_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "BILLBOARD",
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Big_Portal_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "spells/FX/Mobs/ArchitectFX/ArchitectBigPortal",
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/Architect_Big_Portal_01.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 3001,
+    "loopFrame": 1501,
+    "frames": [
+     1
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       0.0,
+       1.0234,
+       1.2812
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.8,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 50.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Big_Portal_02",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Big_Portal#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Architect_Big_Portal_01",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Big_Portal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Architect_Portal_Big_In",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Architect_Big_Portal#2",
+     "locator": "Slot_Special02"
+    }
+   ]
+  },
+  "Architect_Rock_04#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.6667,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Kernel_Big",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Architect_Rock_04#2",
+     "locator": "Slot_Special02"
+    }
+   ]
+  },
+  "Architect_Rock_Small_04": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
@@ -1398,7 +1643,7 @@
    "fadeOut": 2.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/ArhangelWingsGlo_2.bin",
+    "file": "../maps/FerrisRaid/particles/ArhangelWingsGlo_2.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 261,
@@ -1457,6 +1702,132 @@
     }
    ]
   },
+  "Architect_Rock_05": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_Lantern": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Architect_Kernel_Big",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Arch_BigStone_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Tripod_Eye": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.8,
+   "scale": 1.0,
+   "orientation": "BILLBOARD",
+   "duration": 0.0,
+   "loop": false
+  },
+  "ArchitectBot_BodyFX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/ArchitectBot_BodyFX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 121,
+    "frames": [
+     0,
+     2
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.1719,
+       0.6875,
+       0.5859
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.1484,
+       0.3906,
+       0.7812
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": -1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 4.0,
+   "loop": true
+  },
+  "Architect_Flying_Bot": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 85.8667,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Tripod_Eye",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "ArchitectBot_BodyFX",
+     "locator": "Hips"
+    }
+   ]
+  },
+  "Architect_Rock_04#3": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.6667,
+   "loop": true
+  },
+  "Architect_World_HugeStone_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
   "Architect_World_InfectedStone_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -1492,13 +1863,6 @@
    "duration": 0.0,
    "loop": false
   },
-  "Architect_Rock_05": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
   "Carrier_Arena_Ray": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -1513,13 +1877,13 @@
    "scale": 1.0,
    "sound": "spells/FX/Mobs/ArchitectFX/ArchitectBigPortal",
    "particles": {
-    "file": "particles/Carrier_Arena_Ray_Out.bin",
+    "file": "../maps/FerrisRaid/particles/Carrier_Arena_Ray_Out.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 241,
     "loopFrame": 121,
     "frames": [
-     1
+     3
     ],
     "emitters": [
      {
@@ -1635,18 +1999,30 @@
   }
  },
  "particleAtlas": {
-  "file": "particles/atlas.png",
+  "file": "../maps/FerrisRaid/particles/atlas.png",
   "width": 1024,
-  "height": 64,
+  "height": 128,
   "rects": [
    [
-    0,
+    128,
     0,
     64,
     64
    ],
    [
+    0,
+    0,
+    128,
+    128
+   ],
+   [
+    192,
+    0,
     64,
+    64
+   ],
+   [
+    256,
     0,
     64,
     64
@@ -1657,6 +2033,20 @@
     "Client/Render/ParticleAtlas.(Texture).bin",
     1440,
     1152,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1280,
+    1152,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1536,
+    448,
     64,
     64
    ],
