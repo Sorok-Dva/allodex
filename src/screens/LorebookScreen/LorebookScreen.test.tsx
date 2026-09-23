@@ -17,6 +17,8 @@ const files: Record<string, unknown> = {
   'text/en/library-0.json': { 'c-memories': { t: [['communityText', '## 13 March\n\nCatherina was born in Scarge.', 0, { md: true }]], m: { credit: credit.line, translated: 'x', source: 'stories/memories.txt' } } },
   'names/en.json': { Catherina: 'characters/r20', Scarge: 'atlas/a-a100' },
   [`search/en/${shardKey('wolf')}.json`]: { wolf: '0|0', wolves: '1' },
+  'list/dialogues-index.json': { first: [31] },
+  'text/en/dialogues-0.json': { r31: { t: [['text', 'The wolves are coming back.', 0]], n: 'The wolves are coming back.', g: 0, l: { quests: [['quests/r10', 'Wolf Threat']] } } },
   'dir/en/0.json': [['quests', 'r10', 'Wolf Threat', 2], ['characters', 'r21', 'Wolves of Kania', 0]],
 };
 
@@ -75,6 +77,14 @@ describe('LorebookScreen', () => {
     await waitFor(() => expect(page.getByText('2 results for “wol”')).toBeTruthy());
     const links = page.getByTestId('lore-search').querySelectorAll('a');
     expect([...links].map(a => a.getAttribute('href'))).toEqual(['/lorebook/quests/r10', '/lorebook/characters/r21']);
+  });
+
+  it('ouvre une réplique cachée (sans liste) par son index de blocs', async () => {
+    go('/lorebook/dialogues/r31');
+    const page = mount();
+    await waitFor(() => expect(page.getByRole('heading', { name: 'The wolves are coming back.' })).toBeTruthy());
+    expect(page.getByRole('link', { name: 'Wolf Threat' }).getAttribute('href')).toBe('/lorebook/quests/r10');
+    expect(page.queryByTestId('lore-list')).toBeNull();
   });
 
   it('prend la langue du contenu dans l’URL, puis le choix mémorisé, anglais par défaut', () => {

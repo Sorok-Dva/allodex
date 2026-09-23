@@ -2,9 +2,9 @@ import { useEffect, useMemo } from 'react';
 import { Link } from '@/lib/router';
 import { useI18n } from '@/lib/i18n';
 import { MESSAGES, type MessageKey } from '@/lib/i18n/messages';
-import { loadChunk, loadNames, type LoreMeta } from './lorebook.data';
+import { loadChunk, loadHiddenIndex, loadNames, type LoreMeta } from './lorebook.data';
 import {
-  FLAG_COMMUNITY, lorePath, neededFallbacks, refPath, resolveBody,
+  FLAG_COMMUNITY, chunkForId, isHidden, lorePath, neededFallbacks, refPath, resolveBody,
   type Body, type ContentLang, type Links, type ListData, type ResolvedText, type SectionId,
 } from './lorebook.logic';
 import { RichText } from './RichText';
@@ -14,7 +14,7 @@ import s from './LorebookScreen.module.css';
 const hasKey = (k: string): k is MessageKey => k in MESSAGES.fr;
 const LINK_ORDER = ['secrets', 'region', 'place', 'places', 'characters', 'quests'];
 
-type Props = { section: SectionId; id: string; list: ListData; lang: ContentLang; meta: LoreMeta };
+type Props = { section: SectionId; id: string; list?: ListData; lang: ContentLang; meta: LoreMeta };
 
 function Badges({ text, lang }: { text: ResolvedText; lang: ContentLang }) {
   const { t } = useI18n();
@@ -68,8 +68,10 @@ function LinkLists({ links }: { links?: Links }) {
 /** Fiche d'une entrée : textes dans la langue du contenu (repli signalé), éléments, liens. */
 export function EntryView({ section, id, list, lang, meta }: Props) {
   const { t } = useI18n();
-  const row = list.rows.find(r => r[0] === id);
-  const chunk = row?.[2];
+  const row = list?.rows.find(r => r[0] === id);
+  const hiddenIndex = useAsync(() => (isHidden(section) ? loadHiddenIndex(section) : undefined), [section]);
+  const hiddenChunk = hiddenIndex.data ? chunkForId(id, hiddenIndex.data.first) : undefined;
+  const chunk = isHidden(section) ? (hiddenChunk !== undefined && hiddenChunk >= 0 ? hiddenChunk : undefined) : row?.[2];
   const bodies = useAsync<Partial<Record<ContentLang, Body>>>(() => {
     if (chunk === undefined) return undefined;
     return loadChunk(lang, section, chunk).then(async data => {
@@ -84,7 +86,9 @@ export function EntryView({ section, id, list, lang, meta }: Props) {
   const namesData = useAsync(() => loadNames(lang), [lang]);
   const names = useMemo(() => namesData.data ? new Map(Object.entries(namesData.data)) : undefined, [namesData.data]);
   const body = bodies.data ? resolveBody(bodies.data, lang) : undefined;
-  const title = row?.[4] ?? id;
+  const own = bodies.data?.[lang];
+  const title = row?.[4] ?? own?.n ?? id;
+  const flags = row?.[3] ?? own?.g ?? 0;
   const self = `${section}/${id}`;
   const used = new Set<string>();
 
@@ -94,13 +98,14 @@ export function EntryView({ section, id, list, lang, meta }: Props) {
     return () => { document.title = previous; };
   }, [title, t]);
 
-  if (!row) return <div className={s.entry}><p className={s.empty}>{t('lore.notFound')}</p></div>;
-  const community = Boolean(row[3] & FLAG_COMMUNITY);
+  const located = row || (isHidden(section) && (hiddenIndex.loading || bodies.loading || own));
+  if (!located) return <div className={s.entry}><p className={s.empty}>{t('lore.notFound')}</p></div>;
+  const community = Boolean(flags & FLAG_COMMUNITY);
   const bodyMeta = body?.meta;
 
   return (
     <article className={s.entry} data-testid="lore-entry" lang={lang}>
-      <Link to={lorePath({ view: 'section', section })} className={s.backToList}>‹ {t('lore.backToList')}</Link>
+      {!isHidden(section) && <Link to={lorePath({ view: 'section', section })} className={s.backToList}>‹ {t('lore.backToList')}</Link>}
       <header className={s.entryHead}>
         <h2 className={s.entryTitle}>{title}</h2>
         {body?.subtitle && <p className={s.entrySub}>{body.subtitle}</p>}
