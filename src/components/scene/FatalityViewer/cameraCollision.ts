@@ -142,7 +142,8 @@ export function decorColliders(decor: THREE.Object3D): { ground: THREE.Object3D[
   };
   decor.traverse(node => {
     const mesh = node as THREE.Mesh;
-    if (!mesh.isMesh || flagged(mesh, 'sky')) return;
+    // Herbe et eau du sol (`terrainExtras`) : ni sol ni obstacle.
+    if (!mesh.isMesh || flagged(mesh, 'sky') || (mesh.userData as { noCollide?: boolean }).noCollide) return;
     if (flagged(mesh, 'ground')) { ground.push(mesh); obstacles.push(mesh); return; }
     const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
     if (materials.every(m => !m.transparent && !(m.alphaTest > 0))) obstacles.push(mesh);
