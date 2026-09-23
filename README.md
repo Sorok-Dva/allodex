@@ -285,7 +285,7 @@ c'est le serveur qui enchaîne les buffs.
   sommet, triangles `u8`, jeux de trois calques ; hauteurs identiques **au centimètre** à la carte
   de hauteurs de l'arbre serveur 7.0 (`terrain.bin`, carreaux 8 × 8 sur 33 × 33). Plusieurs couches
   superposées par région (`FerrisRaid`). Calques : `TerraLayers` (texture, répétition en mètres) ;
-  le sol prend le premier calque de sa première passe (poids du `SplatMap` non élucidés) ;
+  poids des calques lus dans les `SplatMap` (voir « Sol mélangé ») ;
 - décor opaque rendu **d'une seule face**, comme le jeu : l'ouverture de `ferris-locus-fall`, caméra
   sous la plateforme du Locus, montre alors le Cœur au-dessus ; les cristaux du portail
   (`ferris-portal`, 20 à 37 s) restent : le même objet `FerrisRaid_CoreBottom` est à la même place en
@@ -314,10 +314,25 @@ ponctuelles (1,000). Lumière = `AmbientColor · (f + (1 − f) · v) + DiffuseC
 ponctuelles`, `f` = `AmbientFactor`. Le soleil de la cuisson est celui de la zone du lieu (`Isa` : 225°),
 pas toujours celui de la première zone de la carte.
 
-**Sol mélangé** : `SplatMap_0` = atlas de blocs de 8 × 8 texels, un par passe de sous-carreau (octets
-`c`, `d` de la passe) ; texel `i` à `i·8/7` m du coin, bords partagés à l'identique entre voisins ;
-R, G, B = poids des trois calques de la passe (deux passes somment à 1). Le lecteur mélange jusqu'à six
-calques par sommet dans un tableau de textures (`terrainMaterial`).
+**Sol mélangé** : `SplatMap_0…2` = atlas de blocs de 8 × 8 texels, un par passe de sous-carreau
+(octets `c`, `d` de la passe), remplis dans l'ordre de dessin ; le dernier octet du jeu de calques de
+la passe nomme son atlas (lu toujours dans le `_0`, 63 % des passes du `_1` de `FerrisRaid` mettaient
+du poids sur un calque absent) ; texel `i` à `i·8/7` m du coin, bords partagés à l'identique entre
+voisins ; R, G, B = poids des trois calques de la passe (deux passes somment à 1). Calques : les 256
+entrées de `TerraLayers`, indexées directement, trous et entrée 0 compris (`Inst_ZoneContested12_Start`
+nomme les calques 0 et 54 à 121). Le lecteur mélange jusqu'à six calques par sommet dans un tableau
+de textures (`terrainMaterial`).
+
+**Lumière cuite du sol** (`<région>_lightmap.bin`, 512² dont deux texels de bordure recopiés de la
+voisine — 508 texels pour les 256 m —, axe Y retourné ;
+`_lightmapDown.bin` pour la couche du dessous) : R = visibilité du ciel, G = soleil de la cuisson
+(ombres portées), B = lumières ponctuelles ; même formule que le décor. Les cartes des régions sont
+rangées dans un atlas (`terrain-light.png`, 4 096 px au plus) lu par l'attribut `_LIGHTUV`.
+
+**Formats du sol** : les patterns ImHex de **Paulus** (`tools/reverse/terrain.hexpat` pour
+`terrainDump.bin`, `tools/reverse/splatmap.hexpat` pour les `SplatMap`) décrivent aussi les champs
+que l'extraction ignore (tampons de sommets « complexes », occulteurs, herbe, eau) ; leur offset
+d'entête `0x08` compte l'entête `(niveau, taille)` que `read_chunks` retire.
 
 **Manques** : `ferris-sarcophagus` reste sombre même lu en entier (zone violette, aucune lumière
 ponctuelle ; octets 0-1 pleins) ; le fichier
