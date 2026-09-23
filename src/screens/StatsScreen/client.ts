@@ -2,7 +2,7 @@
  * Accès au backend d'audience (contrat : `src/analytics/api.ts`). La maquette de
  * développement (`mock.ts`) expose la même interface.
  */
-import type { LiveSnapshot, Range, StatsResponse } from '@/analytics/api';
+import type { LiveSnapshot, Range, StatsResponse, TalentStatsResponse } from '@/analytics/api';
 import { statsRequestUrl } from './format';
 
 export class UnauthorizedError extends Error {
@@ -24,6 +24,8 @@ export type StatsSource = {
   login(password: string): Promise<boolean>;
   logout(): Promise<void>;
   stats(range: Range, path: string | null, signal?: AbortSignal): Promise<StatsResponse>;
+  /** Builds du calculateur de talents sur la période. */
+  talents(range: Range, signal?: AbortSignal): Promise<TalentStatsResponse>;
   /** Abonnement au direct ; renvoie la fonction de désabonnement. */
   live(handlers: LiveHandlers): () => void;
 };
@@ -59,6 +61,13 @@ export const httpSource: StatsSource = {
     if (r.status === 401) throw new UnauthorizedError();
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     return (await r.json()) as StatsResponse;
+  },
+
+  async talents(range, signal) {
+    const r = await fetch(`/api/admin/talents?range=${range}`, { ...opts, signal, cache: 'no-store' });
+    if (r.status === 401) throw new UnauthorizedError();
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return (await r.json()) as TalentStatsResponse;
   },
 
   live({ onSnapshot, onStatus, onUnauthorized }) {

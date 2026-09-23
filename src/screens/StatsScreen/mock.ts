@@ -3,7 +3,7 @@
  * en développement seulement : `StatsScreen` ne l'importe que sous `import.meta.env.DEV`).
  * Données crédibles et stables d'un rendu à l'autre (générateur pseudo-aléatoire à graine).
  */
-import type { Count, LiveSnapshot, Range, StatsResponse, Totals } from '@/analytics/api';
+import type { Count, LiveSnapshot, Range, StatsResponse, TalentStatsResponse, Totals } from '@/analytics/api';
 import type { StatsSource } from './client';
 import { parisParts } from './format';
 
@@ -186,6 +186,31 @@ export function mockLive(onSnapshot: (s: LiveSnapshot) => void): () => void {
 
 const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
 
+const RANGE_DAYS: Record<Range, number> = { '24h': 1, '7d': 7, '30d': 30, '90d': 90, '12m': 365 };
+const MOCK_CLASSES = ['warrior', 'mage', 'healer', 'scout', 'paladin', 'psionic', 'necromancer', 'bard', 'druid', 'stalker', 'engineer'];
+
+function mockTalents(range: Range): TalentStatsResponse {
+  const r = rng(RANGE_DAYS[range] * 7919);
+  const days = RANGE_DAYS[range];
+  const to = Date.now() + 1;
+  const classes = MOCK_CLASSES.map((cls, i) => {
+    const builds = Math.round((12 - i) * days * (0.6 + r()));
+    return { version: '17.0', cls, builds, generations: Math.round(builds * 1.3), shares: Math.round(builds * 0.35), views: Math.round(builds * (0.8 + r() * 2)) };
+  }).sort((a, b) => b.builds - a.builds);
+  const sum = (k: 'builds' | 'generations' | 'shares' | 'views') => classes.reduce((n, c) => n + c[k], 0);
+  const totals = { builds: sum('builds'), generations: sum('generations'), shares: sum('shares'), views: sum('views') };
+  const top = Array.from({ length: 14 }, (_, i) => {
+    const views = Math.round((60 - i * 4) * (0.5 + r()) * Math.sqrt(days));
+    return {
+      id: `mock${String(i).padStart(8, '0')}`, version: '17.0', cls: MOCK_CLASSES[i % MOCK_CLASSES.length],
+      b: `1.${String(Math.floor(r() * 1e12)).slice(0, 10)}.gAI4`, b2: i % 3 ? null : '1.1112', playerId: null, firstTs: to - Math.floor(r() * days * DAY),
+      period: { generations: 1, shares: Math.round(views / 6), views }, total: { generations: 1, shares: Math.round(views / 5), views: Math.round(views * 1.4) },
+    };
+  }).sort((a, b) => b.period.views - a.period.views);
+  const allTime = { builds: totals.builds * 3, generations: totals.generations * 3, shares: totals.shares * 3, views: totals.views * 3 };
+  return { range, from: to - days * DAY, to, totals, allTime, classes, top };
+}
+
 export const mockSource: StatsSource = {
   me: async () => true,
   login: async () => true,
@@ -193,6 +218,10 @@ export const mockSource: StatsSource = {
   async stats(range, path) {
     await delay(350);
     return mockStats(range, path);
+  },
+  async talents(range) {
+    await delay(300);
+    return mockTalents(range);
   },
   live({ onSnapshot, onStatus }) {
     onStatus('open');

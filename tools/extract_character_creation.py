@@ -40,7 +40,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from tools import allods_chargen as ac  # noqa: E402
-from tools.allods_packdb import PackDB, PakCatalog, open_catalog, open_pack, vote_pak_codes  # noqa: E402
+from tools.allods_packdb import PackDB, PakCatalog, open_catalog, open_pack, packs_path, vote_pak_codes  # noqa: E402
 from tools.allods_visdb import read_geometry, read_visobject  # noqa: E402
 from tools.chargen_gltf import (  # noqa: E402
     BinSource, Exporter, TexturePool, load_animation, load_geometry,
@@ -53,10 +53,10 @@ DEFAULT_MANIFEST = HERE / "character_creation_manifest.json"
 DEFAULT_OUT = HERE.parent / "public" / "game" / "character"
 SCHEMA_VERSION = 1
 
-# Côté maximal des textures exportées : celui des sources (la peau cuite fait 512 ; les patchs
-# et coiffures 64 à 256 ; les pelages des familiers 512). Les décors sont limités à 512.
-CHARACTER_TEXTURE_MAX = 1024
-SCENE_TEXTURE_MAX = 512
+# Textures exportées à leur taille d'origine, en WebP (décision de l'utilisateur : pas de
+# réduction ; voir `chargen_scene.WebpTexturePool`) — la peau cuite fait 512, les patchs et
+# coiffures 64 à 256, les pelages des familiers 512, les décors jusqu'à 2048.
+CHARACTER_TEXTURE_MAX = 4096
 IDLE = "Idle01"
 
 
@@ -77,6 +77,7 @@ class Ctx:
     notes: list[str] = field(default_factory=list)
     items: dict[int, dict] = field(default_factory=dict)
     attach: dict[int, str] = field(default_factory=dict)
+    fx: object = None          # tools.chargen_fx.CharacterFx
     _pak_listing: dict[str, list[str]] = field(default_factory=dict)
 
     def text(self, tid: int | None) -> dict[str, str] | None:
@@ -112,8 +113,8 @@ def french_texts(fr_client: Path) -> dict | None:
     """Textes français, relus dans le client FR (MY.GAMES Europe) par clé et non par identifiant :
     son `pack.bin` est d'une autre construction (format 15/16, `tools/packbin.py`), mêmes
     structures. Clés : textes de l'addon, noms système des races, classes, combinaisons et factions."""
-    pak = fr_client / "data" / "Packs" / "BaseLocfra_x64.pak"
-    texts = fr_client / "data" / "Packs" / "Texts_x64.pak"
+    pak = packs_path(fr_client / "data" / "Packs" / "BaseLocfra_x64.pak")
+    texts = packs_path(fr_client / "data" / "Packs" / "Texts_x64.pak")
     if not pak.is_file() or not texts.is_file():
         return None
     from tools.allods_packdb import default_cache_dir
@@ -126,10 +127,24 @@ def french_texts(fr_client: Path) -> dict | None:
     pb = PackBin(raw_path.read_bytes())
     loc = LocTable(inflate(zipfile.ZipFile(texts).read("Bin/pack.loc")))
     get = lambda tid: loc.get(tid) if 0 < tid < loc.count else None  # noqa: E731
-    out: dict = {"ui": {}, "races": {}, "sexes": {}, "classes": {}, "combos": {}, "factions": {}}
+    out: dict = {"ui": {}, "races": {}, "sexes": {}, "classes": {}, "combos": {}, "factions": {}, "widgets": {}}
     for a in pb.objects_of("UIAddon"):
         if pb.string(a + ac.ADDON_NAME) != "CharacterGenerator":
             continue
+
+        # Textes fixes des widgets (« Sexe »…) : même arbre, identifiant à +0x1B0 dans ce format.
+        def walk(w: int | None, path: str, depth: int = 0) -> None:
+            if w is None or depth > 16:
+                return
+            path = f"{path}/{pb.string(w + 0x58) or ''}"
+            if pb.type_at(w) == "WidgetTextView":
+                txt = get(pb.u64(w + 0x1B0))
+                if txt:
+                    out["widgets"][path] = txt
+            d, n = pb.vector(w + 0x30)
+            for k in range(0, n if d is not None else 0, 8):
+                walk(pb.ptr(d + k), path, depth + 1)
+        walk(pb.ptr(a + 0x28), "")
         # vecteur des groupes de textes : premier vecteur dont les entrées (40 o) pointent un UIRelatedTexts
         for o in range(a + 0x80, a + 0x140, 8):
             d, n = pb.data_ptr(o), pb.word(o + 8)
@@ -180,7 +195,7 @@ def with_fr(value: dict | None, fr: str | None) -> dict | None:
 
 
 def open_locs(client: Path) -> dict[str, LocTable]:
-    z = zipfile.ZipFile(client / "data" / "Packs" / "Texts_x64.pak")
+    z = zipfile.ZipFile(packs_path(client / "data" / "Packs" / "Texts_x64.pak"))
     out = {}
     for lang, entry in (("ru", "Bin/pack.rus.loc"), ("en", "Bin/pack.eng_eu.loc")):
         out[lang] = LocTable(inflate(z.read(entry)))
@@ -213,6 +228,13 @@ def export_item(ctx: Ctx, off: int | None) -> str | None:
                 if model:
                     d["model"] = model
                     d["locator"] = s.locator or ""
+                # Effets de l'objet (boule de feu du mage) : gabarit complet, particules comprises.
+                from tools.chargen_fx import has_effect
+                if ctx.fx is not None and has_effect(ctx.db, ctx.cat, s.visobject):
+                    fx = ctx.fx.export(s.visobject)
+                    if fx:
+                        d["fx"] = fx
+                        d["locator"] = s.locator or ""
             if s.replacement is not None:
                 tex = ctx.texture(s.replacement)
                 if tex:
@@ -438,6 +460,13 @@ def export_template(ctx: Ctx, off: int, clips: list[str], build: bool) -> tuple[
             c = v.default.get(key)
             if c in lst:
                 default[lst_key] = lst.index(c)
+        morph = ac.read_morph(db, db.ptr(off + ac.VCT_MORPH))
+        if morph:
+            entry["morph"] = morph["controls"]
+            var["morphPresets"] = morph["presets"]
+            # Préréglage par défaut : le plus proche de l'échelle 1 (le client n'en désigne pas).
+            default["morphPresets"] = min(range(len(morph["presets"])),
+                                          key=lambda i: sum(abs(v - 1) for v in morph["presets"][i].values()))
         var["default"] = default
         entry["variations"] = {k: val for k, val in var.items() if val not in ([], {})}
     return name, entry
@@ -462,10 +491,16 @@ def class_key(sysname: str) -> str:
 def run(out: Path, client: Path, only: list[str] | None, models: bool, scenes: bool, ui: bool) -> dict:
     db = open_pack(client)
     cat = open_catalog(db, client)
-    packs = client / "data" / "Packs"
+    packs = packs_path(client / "data" / "Packs")
     bins = BinSource([], [str(packs / p) for p in sorted(cat.names)])
-    textures = TexturePool(db, cat, bins, out)
+    from tools.chargen_scene import WebpTexturePool
+    for old in (out / "textures").glob("*.png"):   # PNG réduits des extractions précédentes
+        old.unlink()
+    textures = WebpTexturePool(db, cat, bins, out)
     ctx = Ctx(db, cat, bins, textures, out, open_locs(client))
+    if models:
+        from tools.chargen_fx import CharacterFx
+        ctx.fx = CharacterFx(db, cat, bins, textures, out)
     out.mkdir(parents=True, exist_ok=True)
 
     addon = ac.find_addon(db, "CharacterGenerator")
@@ -484,7 +519,19 @@ def run(out: Path, client: Path, only: list[str] | None, models: bool, scenes: b
         layout = uix.widget(db.ptr(addon + 0x28))
         related = {k: uix.related_textures(v) for k, v in ac.addon_texture_groups(db, addon).items()}
         (out / "ui").mkdir(parents=True, exist_ok=True)
-        (out / "ui" / "layout.json").write_text(json.dumps({"root": layout, "related": related,
+        bottom = uix.wrap_bottom_line()
+
+        def resolve(w: dict, path: str) -> None:
+            path = f"{path}/{w.get('name') or ''}"
+            tid = w.pop("textId", None)
+            if tid is not None:
+                t = with_fr(ctx.text(tid), fr.get("widgets", {}).get(path))
+                if t:
+                    w["text"] = t
+            for c in w.get("children", []):
+                resolve(c, path)
+        resolve(layout, "")
+        (out / "ui" / "layout.json").write_text(json.dumps({"root": layout, "related": related, "bottomLine": bottom,
                                                            "textures": uix.textures}, ensure_ascii=False,
                                                           separators=(",", ":")), encoding="utf-8")
         index["ui"] = {"layout": "ui/layout.json", "related": related}
@@ -553,7 +600,8 @@ def run(out: Path, client: Path, only: list[str] | None, models: bool, scenes: b
             growths.append({"start": g.start, "loop": g.loop,
                             "items": [{"slot": s, "item": export_item(ctx, i)} for s, i in g.items],
                             "fx": [{"locator": f["locator"], "scale": f["scale"],
-                                    "model": export_attachment(ctx, f["visObject"])} for f in g.fx]})
+                                    "fx": ctx.fx.export(f["visObject"]) if ctx.fx is not None else None}
+                                   for f in g.fx if f["visObject"] is not None]})
             for clip in (g.start, g.loop):
                 if clip:
                     template_clips.setdefault(e.template, set()).add(clip[0].upper() + clip[1:])
@@ -595,12 +643,16 @@ def run(out: Path, client: Path, only: list[str] | None, models: bool, scenes: b
     index["templates"] = templates
     index["pets"] = pets
     index["items"] = {item_id(k): v for k, v in sorted(ctx.items.items())}
+    if ctx.fx is not None:
+        index["fx"] = ctx.fx.finish()
+        ctx.notes.extend(ctx.fx.report)
     index["slots"] = sorted({s["slot"] for c in combos.values() for x in c["sexes"].values()
                              for g in x["growths"] for s in g["items"]})
 
     if scenes:
         from tools.chargen_scene import export_scenes
         index["scenes"] = export_scenes(ctx, [r for r in UI_RACE_ORDER if not only or r in only], RACE_SCENE)
+        index["sounds"] = getattr(ctx, "sounds", {})
 
     index["notes"] = sorted(set(ctx.notes))
     path = out / "chargen.json"
@@ -614,6 +666,9 @@ def run(out: Path, client: Path, only: list[str] | None, models: bool, scenes: b
                 entry.update({k: old[k] for k in model_keys if k in old})
     if not scenes and "scenes" in prev:
         index["scenes"] = prev["scenes"]
+        index["sounds"] = prev.get("sounds", {})
+    if "fx" not in index and "fx" in prev:
+        index["fx"] = prev["fx"]
     if only and path.is_file():
         # extraction partielle : fusion avec l'index existant
         prev = json.loads(path.read_text(encoding="utf-8"))

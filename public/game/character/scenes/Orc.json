@@ -1,7 +1,9 @@
 {
- "glb": "scenes/Orc.glb",
- "objects": 1,
- "clips": 6,
+ "origin": [
+  391.903,
+  825.8195,
+  27.9913
+ ],
  "character": {
   "yaw": 4.0,
   "scale": 1.3,
@@ -9,6 +11,11 @@
    0.004,
    -0.175,
    0.367
+  ],
+  "light": [
+   0.6906,
+   0.8469,
+   1.1672
   ]
  },
  "camera": {
@@ -17,15 +24,3246 @@
    -5.886,
    1.3306
   ],
-  "placeOffset": [
-   0.004,
-   -0.175,
-   0.367
-  ],
   "yaw": 91.0,
   "pitch": 0.0,
   "height": -0.1,
   "fov": 1.36
+ },
+ "decor": {
+  "glb": "maps/MainMenu/decor.glb",
+  "light": "scenes/Orc-light.bin",
+  "instances": [
+   {
+    "vot": "AC7_Smoke",
+    "p": [
+     375.262,
+     860.004,
+     27.8281
+    ],
+    "yaw": 0.74364,
+    "scale": 0.54026
+   },
+   {
+    "vot": "Orc_Scene",
+    "p": [
+     391.903,
+     825.8195,
+     27.9913
+    ],
+    "yaw": 3.14159,
+    "light": [
+     0,
+     52516
+    ]
+   }
+  ],
+  "sky": {
+   "radius": 1136.53,
+   "parts": 6
+  },
+  "skyGlb": "scenes/Orc-sky.glb",
+  "terrainGlb": null
+ },
+ "objects": {
+  "Chargen_Net": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 2.0,
+   "loop": true
+  },
+  "Chargen_Fish_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 3.0,
+   "loop": true
+  },
+  "Chargen_Stick_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 2.5,
+   "loop": true
+  },
+  "Lamp02_gold": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/Lamp02_gold.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 151,
+    "loopFrame": 121,
+    "frames": [
+     0,
+     1,
+     2
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Lamp": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 3.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Lamp02_gold",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Kania_HouseTubeSmoke": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/Kania_HouseTubeSmoke.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 681,
+    "loopFrame": 501,
+    "frames": [
+     3
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Astral_ObjectShining": {
+   "fadeIn": 0.5,
+   "fadeOut": 0.5,
+   "scale": 1.0,
+   "duration": 666.6667,
+   "loop": true
+  },
+  "Chargen_Drape_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 3.0,
+   "loop": true
+  },
+  "Chargen_Boat_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 3.0,
+   "loop": true
+  },
+  "Chargen_Gibber_Flora": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.6667,
+   "loop": true
+  },
+  "Gibberling_Scene": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Chargen_Net",
+     "locator": ""
+    },
+    {
+     "vot": "Chargen_Net",
+     "locator": ""
+    },
+    {
+     "vot": "Chargen_Fish_01",
+     "locator": ""
+    },
+    {
+     "vot": "Chargen_Stick_01",
+     "locator": ""
+    },
+    {
+     "vot": "Chargen_Lamp",
+     "locator": ""
+    },
+    {
+     "vot": "Chargen_Lamp",
+     "locator": ""
+    },
+    {
+     "vot": "Chargen_Lamp",
+     "locator": ""
+    },
+    {
+     "vot": "Chargen_Lamp",
+     "locator": ""
+    },
+    {
+     "vot": "Kania_HouseTubeSmoke",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Kania_HouseTubeSmoke",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Kania_HouseTubeSmoke",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Kania_HouseTubeSmoke",
+     "locator": "Slot_Special04"
+    },
+    {
+     "vot": "Astral_ObjectShining",
+     "locator": "Slot_Special05"
+    },
+    {
+     "vot": "Chargen_Drape_01",
+     "locator": "Slot_Special06"
+    },
+    {
+     "vot": "Chargen_Boat_01",
+     "locator": "Slot_Special07"
+    },
+    {
+     "vot": "Chargen_Gibber_Flora",
+     "locator": "Slot_Special08"
+    }
+   ]
+  },
+  "ForestVolumetricLight05": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/ForestVolumetricLight05.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 871,
+    "loopFrame": 841,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.5469,
+       0.5469,
+       0.5469
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.5469,
+       0.5469,
+       0.5469
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.5469,
+       0.5469,
+       0.5469
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Undead_CubGlo": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Zem_Cube": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 26.6667,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Undead_CubGlo",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "TenzisTemple_Keywall_GL": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/TenzisTemple_Keywall_GL.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 181,
+    "loopFrame": 120,
+    "frames": [
+     1,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 3.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 3.9667,
+   "loop": true
+  },
+  "TenzisTemple_Door": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 2.5,
+   "loop": true
+  },
+  "Zem_Scene": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "ForestVolumetricLight05",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "ForestVolumetricLight05",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "ForestVolumetricLight05",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Chargen_Zem_Cube",
+     "locator": "Slot_Special04"
+    },
+    {
+     "vot": "TenzisTemple_Keywall_GL",
+     "locator": "Slot_Special05"
+    },
+    {
+     "vot": "TenzisTemple_Door",
+     "locator": "Slot_Special06"
+    },
+    {
+     "vot": "ForestVolumetricLight05",
+     "locator": "Slot_Special07"
+    }
+   ]
+  },
+  "AC7_Smoke": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/AC7_Smoke.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 1121,
+    "loopFrame": 401,
+    "frames": [
+     19,
+     20
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Orc_Sign01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 3.0,
+   "loop": true
+  },
+  "Chargen_Orc_Torch#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/Chargen_Orc_Torch.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 121,
+    "frames": [
+     21,
+     22,
+     3,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30,
+     31
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.8359,
+       0.7422,
+       0.7422
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.2109,
+       0.2109,
+       0.2109
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Orc_Torch": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Chargen_Orc_Torch#2",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Chargen_Orc_FireBig": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Generic_Hunting_CampFire": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "World/Flame/Campfire1_OrcChargen",
+   "particles": {
+    "file": "maps/MainMenu/particles/Generic_Hunting_CampFire.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 391,
+    "loopFrame": 300,
+    "frames": [
+     0,
+     32,
+     21,
+     23,
+     3,
+     24,
+     25,
+     26,
+     27,
+     28,
+     22,
+     29,
+     30,
+     31
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.2,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": -0.5,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.5,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Orc_Stadium_Emblem_Animation": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 2.9333,
+   "loop": true
+  },
+  "Orc_Scene": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Chargen_Orc_Sign01",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Chargen_Orc_Sign01",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Chargen_Orc_Torch",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Chargen_Orc_Torch",
+     "locator": "Slot_Special04"
+    },
+    {
+     "vot": "Chargen_Orc_Torch",
+     "locator": "Slot_Special05"
+    },
+    {
+     "vot": "Chargen_Orc_Torch",
+     "locator": "Slot_Special06"
+    },
+    {
+     "vot": "Chargen_Orc_FireBig",
+     "locator": "Slot_Special07"
+    },
+    {
+     "vot": "Chargen_Orc_FireBig",
+     "locator": "Slot_Special08"
+    },
+    {
+     "vot": "Generic_Hunting_CampFire",
+     "locator": "Slot_Special07"
+    },
+    {
+     "vot": "Generic_Hunting_CampFire",
+     "locator": "Slot_Special08"
+    },
+    {
+     "vot": "Orc_Stadium_Emblem_Animation",
+     "locator": "Slot_Special09"
+    }
+   ]
+  },
+  "Heart_Stone_Flame_Fare_Blue": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "Z_AXIS",
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Elf_FlyHouse": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 10.0,
+   "loop": true
+  },
+  "Chargen_Elf_FlyRoof": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 16.0,
+   "loop": true
+  },
+  "Chargen_Elf_Lantern": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 12.0,
+   "loop": true
+  },
+  "Chargen_Elf_Table01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 8.1,
+   "loop": true
+  },
+  "Chargen_Elf_Flora": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 20.0,
+   "loop": true
+  },
+  "Elf_Scene": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Heart_Stone_Flame_Fare_Blue",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Chargen_Elf_FlyHouse",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Chargen_Elf_FlyRoof",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Chargen_Elf_Lantern",
+     "locator": "Slot_Special04"
+    },
+    {
+     "vot": "Chargen_Elf_Lantern",
+     "locator": "Slot_Special05"
+    },
+    {
+     "vot": "Chargen_Elf_Lantern",
+     "locator": "Slot_Special06"
+    },
+    {
+     "vot": "Chargen_Elf_Lantern",
+     "locator": "Slot_Special07"
+    },
+    {
+     "vot": "Chargen_Elf_Lantern",
+     "locator": "Slot_Special08"
+    },
+    {
+     "vot": "Chargen_Elf_Table01",
+     "locator": "Slot_Special09"
+    },
+    {
+     "vot": "Chargen_Elf_Flora",
+     "locator": "Slot_Special10"
+    }
+   ]
+  },
+  "AI36_Autumn_FallingLeaves": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/AI36_Autumn_FallingLeaves.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 376,
+    "loopFrame": 301,
+    "frames": [
+     33
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.875,
+       1.4844,
+       0.4453
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Hadagan_MonumentStar": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/Hadagan_MonumentStar.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 241,
+    "frames": [
+     34,
+     35
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 2.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       0.5156,
+       0.4453,
+       0.3984
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "orientation": "BILLBOARD",
+   "duration": 8.0,
+   "loop": true
+  },
+  "Chargen_Hadagan_Fountain": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "World/Water/Fontain_Hadagan_Chargen",
+   "particles": {
+    "file": "maps/MainMenu/particles/Chargen_Hadagan_Fountain.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 481,
+    "loopFrame": 301,
+    "frames": [
+     36
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Hadagan_Flag_Blue": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 10.0,
+   "loop": true
+  },
+  "Chargen_Hadagan_Flag_White": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 10.0,
+   "loop": true
+  },
+  "Chargen_Hadagan_Flag_Red": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 10.0,
+   "loop": true
+  },
+  "Chargen_Hadagan_Flag_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Chargen_Hadagan_Flag_Blue",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_White",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_White",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_White",
+     "locator": "Slot_Special04"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_White",
+     "locator": "Slot_Special05"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_Blue",
+     "locator": "Slot_Special06"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_Blue",
+     "locator": "Slot_Special07"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_Red",
+     "locator": "Slot_Special08"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_Red",
+     "locator": "Slot_Special09"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_Red",
+     "locator": "Slot_Special10"
+    }
+   ]
+  },
+  "Chargen_Hadagan_Flag_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 10.0,
+   "loop": true
+  },
+  "Chargen_Hadagan_Flora": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 20.0,
+   "loop": true
+  },
+  "Hadagan_Scene": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Hadagan_MonumentStar",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Lamp02_gold",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Lamp02_gold",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Lamp02_gold",
+     "locator": "Slot_Special04"
+    },
+    {
+     "vot": "Chargen_Hadagan_Fountain",
+     "locator": "Slot_Special05"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_01",
+     "locator": "Slot_Special06"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_01",
+     "locator": "Slot_Special07"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_01",
+     "locator": "Slot_Special08"
+    },
+    {
+     "vot": "ForestVolumetricLight05",
+     "locator": "Slot_Special09"
+    },
+    {
+     "vot": "ForestVolumetricLight05",
+     "locator": "Slot_Special10"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_02",
+     "locator": "Slot_Special11"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_02",
+     "locator": "Slot_Special12"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flag_02",
+     "locator": "Slot_Special13"
+    },
+    {
+     "vot": "Chargen_Hadagan_Flora",
+     "locator": "Slot_Special14"
+    }
+   ]
+  },
+  "Chargen_Priden_BackWaterfall": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/Chargen_Priden_BackWaterfall.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 201,
+    "loopFrame": 201,
+    "frames": [
+     37
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Flag": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 3.3333,
+   "loop": true
+  },
+  "Priden_Props_Lantern_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/Priden_Props_Lantern_FX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 181,
+    "loopFrame": 91,
+    "frames": [
+     32,
+     38,
+     0
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.4297,
+       1.4297,
+       1.4297
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": true,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.375,
+       1.375,
+       1.375
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": true,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.875,
+       0.875,
+       0.875
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Lantern": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 3.3333,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Priden_Props_Lantern_FX",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Priden_Props_Lantern_FX",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Chargen_BlazerFire": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/Chargen_BlazerFire.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 211,
+    "loopFrame": 151,
+    "frames": [
+     39,
+     40,
+     32
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.6797,
+       0.6797,
+       0.6797
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.3,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.9062,
+       0.9062,
+       0.9062
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.3,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Priden_Braizer": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/Chargen_Priden_Braizer.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 121,
+    "loopFrame": 61,
+    "frames": [
+     1,
+     38,
+     41
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.4922,
+       0.2031,
+       0.0234
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.9922,
+       1.9922,
+       1.9922
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.6172,
+       0.6172
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.6172,
+       0.6172
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.6172,
+       0.6172
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.6172,
+       0.6172
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.6172,
+       0.6172
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.6172,
+       0.6172
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.6172,
+       0.6172
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Mist_Astral_Air_1": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 13.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Priden_Flora": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 20.0,
+   "loop": true
+  },
+  "Priden_Scene": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Chargen_Priden_BackWaterfall",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Chargen_Flag",
+     "locator": "Slot_Special07"
+    },
+    {
+     "vot": "Chargen_Lantern",
+     "locator": "Slot_Special08"
+    },
+    {
+     "vot": "Chargen_Lantern",
+     "locator": "Slot_Special09"
+    },
+    {
+     "vot": "Chargen_Lantern",
+     "locator": "Slot_Special10"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special14"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special15"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special16"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special17"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special18"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special19"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special20"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special21"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special22"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special23"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special27"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special28"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special29"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special30"
+    },
+    {
+     "vot": "Chargen_BlazerFire",
+     "locator": "Slot_Special31"
+    },
+    {
+     "vot": "Chargen_Priden_Braizer",
+     "locator": "Slot_Special24"
+    },
+    {
+     "vot": "Chargen_Priden_Braizer",
+     "locator": "Slot_Special25"
+    },
+    {
+     "vot": "Mist_Astral_Air_1",
+     "locator": "Slot_Special32"
+    },
+    {
+     "vot": "Chargen_Lantern",
+     "locator": "Slot_Special44"
+    },
+    {
+     "vot": "Chargen_Priden_Flora",
+     "locator": "Slot_Special45"
+    }
+   ]
+  },
+  "Mist_1": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Aed_Landmark": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/Chargen_Aed_Landmark.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 121,
+    "frames": [
+     1
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "orientation": "Z_AXIS",
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Aed_Pylon02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Aed_PylonUp": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "Z_AXIS",
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Aed_Pylon03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Chargen_Aed_PylonUp",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Chargen_Aed_Pylon01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/Chargen_Aed_Pylon01.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 721,
+    "loopFrame": 361,
+    "frames": [
+     1
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 12.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Chargen_Aed_PylonUp",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Chargen_Animated_Objects": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 12.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Chargen_Aed_Pylon03",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Chargen_Aed_Pylon03",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Chargen_Aed_Pylon01",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Chargen_Aed_Pylon01",
+     "locator": "Slot_Special04"
+    }
+   ]
+  },
+  "Chargen_Flora": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 3.3333,
+   "loop": true
+  },
+  "Chargen_Aed_Portal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Aed": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Chargen_Aed_Landmark",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Chargen_Aed_Pylon02",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Chargen_Aed_Pylon02",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Chargen_Aed_Pylon02",
+     "locator": "Slot_Special04"
+    },
+    {
+     "vot": "Chargen_Animated_Objects",
+     "locator": "Slot_Special10"
+    },
+    {
+     "vot": "Chargen_Flora",
+     "locator": "Slot_Special10"
+    },
+    {
+     "vot": "Chargen_Aed_Portal",
+     "locator": "Slot_Special11"
+    }
+   ]
+  },
+  "Ferris_MountainSmoke_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Kania_TowerElements": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 80.0,
+   "loop": true
+  },
+  "Kania_CapitalBigTower_TopFX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/Kania_CapitalBigTower_TopFX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 451,
+    "loopFrame": 300,
+    "frames": [
+     42,
+     1,
+     43
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6641,
+       0.5781,
+       0.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 2.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6641,
+       0.5781,
+       0.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 2.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6641,
+       0.5781,
+       0.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 2.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6641,
+       0.5781,
+       0.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 2.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 5.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 49.8333,
+   "loop": true
+  },
+  "Lamp01_Gold": {
+   "fadeIn": 0.2,
+   "fadeOut": 0.2,
+   "scale": 1.0,
+   "particles": {
+    "file": "maps/MainMenu/particles/Lamp01_Gold.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 240,
+    "frames": [
+     32,
+     1
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.4,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.4,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Chargen_Kania_Flora": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 20.0,
+   "loop": true
+  },
+  "Interface_Scene": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Chargen_Kania_TowerElements",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Kania_CapitalBigTower_TopFX",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Lamp01_Gold",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Lamp01_Gold",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Lamp01_Gold",
+     "locator": "Slot_Special04"
+    },
+    {
+     "vot": "Kania_HouseTubeSmoke",
+     "locator": "Slot_Special05"
+    },
+    {
+     "vot": "Kania_HouseTubeSmoke",
+     "locator": "Slot_Special06"
+    },
+    {
+     "vot": "Chargen_Kania_Flora",
+     "locator": "Slot_Special07"
+    }
+   ]
+  }
+ },
+ "particleAtlas": {
+  "file": "maps/MainMenu/particles/atlas.png",
+  "width": 1024,
+  "height": 256,
+  "rects": [
+   [
+    640,
+    0,
+    64,
+    64
+   ],
+   [
+    704,
+    0,
+    64,
+    64
+   ],
+   [
+    0,
+    0,
+    128,
+    128
+   ],
+   [
+    128,
+    0,
+    128,
+    128
+   ],
+   [
+    768,
+    0,
+    64,
+    64
+   ],
+   [
+    832,
+    0,
+    64,
+    64
+   ],
+   [
+    896,
+    0,
+    64,
+    64
+   ],
+   [
+    960,
+    0,
+    64,
+    64
+   ],
+   [
+    0,
+    128,
+    64,
+    64
+   ],
+   [
+    64,
+    128,
+    64,
+    64
+   ],
+   [
+    128,
+    128,
+    64,
+    64
+   ],
+   [
+    192,
+    128,
+    64,
+    64
+   ],
+   [
+    256,
+    128,
+    64,
+    64
+   ],
+   [
+    320,
+    128,
+    64,
+    64
+   ],
+   [
+    384,
+    128,
+    64,
+    64
+   ],
+   [
+    448,
+    128,
+    64,
+    64
+   ],
+   [
+    512,
+    128,
+    64,
+    64
+   ],
+   [
+    576,
+    128,
+    64,
+    64
+   ],
+   [
+    640,
+    128,
+    64,
+    64
+   ],
+   [
+    704,
+    128,
+    64,
+    64
+   ],
+   [
+    768,
+    128,
+    64,
+    64
+   ],
+   [
+    832,
+    128,
+    64,
+    64
+   ],
+   [
+    832,
+    192,
+    32,
+    32
+   ],
+   [
+    896,
+    128,
+    64,
+    64
+   ],
+   [
+    960,
+    128,
+    64,
+    64
+   ],
+   [
+    0,
+    192,
+    64,
+    64
+   ],
+   [
+    64,
+    192,
+    64,
+    64
+   ],
+   [
+    128,
+    192,
+    64,
+    64
+   ],
+   [
+    192,
+    192,
+    64,
+    64
+   ],
+   [
+    256,
+    192,
+    64,
+    64
+   ],
+   [
+    320,
+    192,
+    64,
+    64
+   ],
+   [
+    384,
+    192,
+    64,
+    64
+   ],
+   [
+    448,
+    192,
+    64,
+    64
+   ],
+   [
+    864,
+    192,
+    32,
+    32
+   ],
+   [
+    896,
+    192,
+    32,
+    32
+   ],
+   [
+    512,
+    192,
+    64,
+    64
+   ],
+   [
+    576,
+    192,
+    64,
+    64
+   ],
+   [
+    640,
+    192,
+    64,
+    64
+   ],
+   [
+    256,
+    0,
+    128,
+    128
+   ],
+   [
+    384,
+    0,
+    128,
+    128
+   ],
+   [
+    928,
+    192,
+    32,
+    32
+   ],
+   [
+    704,
+    192,
+    64,
+    64
+   ],
+   [
+    512,
+    0,
+    128,
+    128
+   ],
+   [
+    768,
+    192,
+    64,
+    64
+   ]
+  ],
+  "sources": [
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1568,
+    1152,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1440,
+    1152,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1024,
+    768,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    896,
+    1280,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1664,
+    576,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1728,
+    1856,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1540,
+    1408,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1792,
+    1728,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    1728,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1728,
+    0,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1504,
+    1216,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1856,
+    192,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1664,
+    0,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1728,
+    640,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1536,
+    512,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1792,
+    128,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    192,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1664,
+    1856,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1440,
+    1280,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1792,
+    1600,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1888,
+    896,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1568,
+    1216,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1920,
+    608,
+    32,
+    32
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1664,
+    1664,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1412,
+    1472,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1856,
+    1984,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1664,
+    768,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1728,
+    1984,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1568,
+    1024,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1792,
+    1920,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    1984,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1728,
+    128,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1536,
+    448,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1920,
+    2016,
+    32,
+    32
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1920,
+    224,
+    32,
+    32
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1728,
+    1536,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1856,
+    1920,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1824,
+    1216,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1152,
+    1024,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    896,
+    1024,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1920,
+    32,
+    32,
+    32
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1536,
+    768,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1152,
+    512,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1856,
+    768,
+    64,
+    64
+   ]
+  ]
+ },
+ "light": {
+  "ambient": 4282471806,
+  "ambientFactor": 0.0,
+  "diffuse": 4288443467,
+  "fog": 4283578668,
+  "fogEnd": 250.0,
+  "fogStart": -10.0,
+  "pointLight": 4294967295,
+  "selfIllum": 4287850240,
+  "specular": 0,
+  "sunPitch": 45.0,
+  "sunYaw": 25.0,
+  "sunDirection": [
+   0.6409,
+   0.2988,
+   0.7071
+  ]
+ },
+ "sounds": {
+  "ambience": [
+   "sfx/DeathRealmAmbient_lp"
+  ],
+  "events": {
+   "ambience": "Ambience/IndoorAmbience/Zones/DeathRealm",
+   "music": []
+  }
  },
  "source": {
   "scene": "CharacterSelectOrc",
@@ -35,30 +3273,5 @@
    825.645,
    28.358
   ]
- },
- "light": {
-  "ambient": "#41557e",
-  "sun": "#9c744b",
-  "point": "#936700",
-  "specular": "#000000",
-  "sunPitch": 45.0,
-  "sunYaw": 25.0,
-  "sunDirection": [
-   0.6409,
-   0.2988,
-   0.7071
-  ],
-  "fog": {
-   "color": "#52392c",
-   "near": -10.0,
-   "far": 250.0
-  }
- },
- "ambience": "Ambience/OutdoorAmbience/AmbiencePresets/SteppeWindy_AP",
- "bytes": 3422168,
- "stats": {
-  "triangles": 56329,
-  "animations": 6,
-  "objects": 0
  }
 }

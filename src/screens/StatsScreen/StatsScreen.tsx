@@ -9,6 +9,7 @@ import {
 } from './format';
 import { LivePanel } from './LivePanel';
 import { RankList, type RankRow } from './RankList';
+import { TalentsPanel } from './TalentsPanel';
 import { TrafficChart, TrafficTable } from './TrafficChart';
 import s from './StatsScreen.module.css';
 
@@ -363,8 +364,9 @@ function Dashboard({ source, query, onUnauthorized }: { source: StatsSource; que
             <RankList title="Systèmes" metric="Visiteurs" tone="visitors" rows={lists.os} format={formatCount} extraHeads={[{ label: 'Part' }]} />
             <RankList title="Langues" metric="Visiteurs" tone="visitors" rows={lists.langs} format={formatCount} extraHeads={[{ label: 'Part' }]} />
           </div>
+          <TalentsPanel source={source} range={range} onUnauthorized={onUnauthorized} />
           <p className={s.footnote}>
-            Mesure sans cookie : un visiteur est compté une fois par jour et par navigateur. Heures de Paris.
+            Mesure sans cookie : un visiteur est compté une fois par jour et par navigateur (et par build pour le calculateur). Heures de Paris.
           </p>
         </div>
       )}

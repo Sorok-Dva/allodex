@@ -40,20 +40,34 @@ export type ChargenUiProps = {
 
 /** Plaques des races (`RacePlate01…08`) et des classes (`ClassPlate01…11`), dans l'ordre du script. */
 const RACE_PLATES = ['RacePlate01', 'RacePlate02', 'RacePlate03', 'RacePlate04', 'RacePlate05', 'RacePlate06', 'RacePlate07', 'RacePlate08'];
-/** Commandes d'apparence, ordre `controlOrder` de `ScriptCustomization`, et clé de libellé. */
+/** Commandes d'apparence, ordre `variationOrder` de `ScriptCustomization`, et clé de libellé. */
 export const CONTROLS: { key: AppearanceKey; label: string }[] = [
   { key: 'faces', label: 'ControlFaces' },
   { key: 'facials', label: 'ControlFacials' },
   { key: 'hairs', label: 'ControlHairs' },
   { key: 'hairColors', label: 'ControlHairColors' },
   { key: 'shoulderStones', label: 'ControlShoulderStones' },
-  { key: 'shoulderStoneColors', label: 'ControlShoulderStoneColors' },
   { key: 'additionals', label: 'ControlAdditionals' },
   { key: 'skins', label: 'ControlSkins' },
   { key: 'skinColors', label: 'ControlSkinColors' },
+  { key: 'morphPresets', label: 'ControlMorphPresets' },
 ];
+/**
+ * Commandes que le serveur ferme (plage d'une seule valeur) : le script ne montre une commande que
+ * si sa plage, envoyée par le serveur, compte plus d'une valeur ; l'écran du 17.0 (elfe) n'affiche ni
+ * « Qualité de peau » (`skins`) ni « Caractéristiques additionnelles » (`additionals`).
+ */
+export const SERVER_LOCKED = new Set<AppearanceKey>(['skins', 'additionals']);
+/** Hauteur par commande du panneau d'apparence et par plaque du panneau des noms (`SetPlacementPlain`). */
+const APPEARANCE_ROW = 68;
+const NAME_ROW = 130;
+/** Emplacements des plaques de nom, remplis dans l'ordre des personnages montrés (`nameControls`). */
+const NAME_SLOTS = ['primary01', 'secondary02', 'tertiary03', 'pet04'];
 
 type Hover = { name: string; desc: string } | null;
+
+/** Widgets cachés au départ que les scripts montrent : panneaux d'étape, lueurs des factions, bouton du familier. */
+const SHOWN_BY_SCRIPT = /\/MainPanel\/(Factions|Customization)$|\/PanelFX$|\/pet04\/ButtonPet$/;
 
 function Markup({ text }: { text: string }) {
   return (
@@ -126,16 +140,21 @@ export function ChargenUi(props: ChargenUiProps) {
   const node = (w: UiWidget, pw: number, ph: number, path: string, custom: (w: UiWidget, r: Rect, path: string) => ReactNode | undefined): ReactNode => {
     const r = placeWidget(w, pw, ph);
     const id = `${path.replace(/#\d+$/, '')}/${w.name ?? `_${path.match(/#(\d+)$/)?.[1] ?? ''}`}`;
+    // Widget caché au départ (octet de visibilité) : seuls les scripts le montrent — ici le
+    // panneau de l'étape, rendu directement, et les lueurs de survol que `custom` pose.
+    if (w.hidden && !SHOWN_BY_SCRIPT.test(id)) return null;
     const c = custom(w, r, id);
     if (c !== undefined) return c;
-    if (w.type === 'TextView') return null;
-    return (
-      <div key={id} className={s.widget} style={box(r)} data-widget={id}>
-        {layer(w.back)}
-        {byPriority(w.children).map((child, i) => node(child, r.w, r.h, `${id}#${i}`, custom))}
-      </div>
-    );
+    if (w.type === 'TextView') return w.text ? text(r, id, <Markup text={gameText(w.text, lang)} />, s.static) : null;
+    return plain(w, r, id, custom);
   };
+  const plain = (w: UiWidget, r: Rect, id: string, custom: (w: UiWidget, r: Rect, path: string) => ReactNode | undefined) => (
+    <div key={id} className={s.widget} style={box(r)} data-widget={id}>
+      {layer(w.back)}
+      {w.layers?.map((l, i) => layer(l, `layer${i}`))}
+      {byPriority(w.children).map((child, i) => node(child, r.w, r.h, `${id}#${i}`, custom))}
+    </div>
+  );
 
   const text = (r: Rect, id: string, content: ReactNode, cls = '') => (
     <div key={id} className={`${s.widget} ${s.text} ${cls}`} style={box(r)} data-widget={id}>{content}</div>
@@ -148,18 +167,9 @@ export function ChargenUi(props: ChargenUiProps) {
   const vw = props.width;
   const vh = props.height;
   const panelName = step === 'faction' ? 'Factions' : step === 'race' ? 'RaceClass' : 'Customization';
-  const stepIndex = step === 'faction' ? 0 : step === 'race' ? 1 : 2;
 
   const custom = (w: UiWidget, r: Rect, id: string): ReactNode | undefined => {
     const name = w.name ?? '';
-    // Progression (en haut à gauche).
-    if (id.endsWith('/Progress/Label')) return text(r, id, tx('ProgressHeaderCharGeneration'), s.header);
-    if (id.endsWith('/Progress/Desc')) return text(r, id, gameText(data.progress[`Indicator0${stepIndex + 1}`], lang), s.sub);
-    if (/\/Progress\/Frame\/Indicator0\d$/.test(id)) {
-      const k = Number(name.slice(-1)) - 1;
-      const variant = k < stepIndex ? 1 : k === stepIndex ? 2 : 0;
-      return button(w, r, id, { variant, tip: { name: gameText(data.progress[name], lang), desc: '' } });
-    }
     // Choix de la faction.
     if (/\/Faction(League|Empire)Panel\/Recommended$/.test(id)) return null;
     const fm = /\/Faction(League|Empire)Panel\/Button$/.exec(id);
@@ -179,6 +189,9 @@ export function ChargenUi(props: ChargenUiProps) {
       const desc = step === 'faction' ? tx('ExitDesc') : step === 'race' ? tx('BackToFactionsDesc') : tx('BackToRaceClassDesc');
       return button(w, r, id, { onClick: props.onBack, tip: { name: step === 'faction' ? tx('Exit') : tx('Back'), desc } });
     }
+    // Description : montrée au survol d'une race, d'une classe ou d'un bouton (le script la vide
+    // et la cache sinon) ; à l'étape des factions, celle de la faction choisie.
+    if (/\/BottomControlPanel\/DescPanel$/.test(id) && !hover && step !== 'faction') return null;
     if (/\/BottomControlPanel\/DescPanel\/Text$/.test(id)) {
       const t = hover ?? defaultDesc();
       return text(r, id, <><div className={s.descTitle}>{t.name}</div><div className={s.descBody}><Markup text={t.desc} /></div></>, s.desc);
@@ -229,7 +242,6 @@ export function ChargenUi(props: ChargenUiProps) {
       );
     }
     // Sexe.
-    if (id.endsWith('/GenderPanel/Label')) return text(r, id, gameText(data.races[d.race]?.sexNames[d.sex], lang), s.label);
     if (id.endsWith('/GenderPanel/Male') || id.endsWith('/GenderPanel/Female')) {
       const sex = name === 'Male' ? 'male' : 'female';
       const sexes = availableSexes(data, d.race, d.class);
@@ -258,13 +270,25 @@ export function ChargenUi(props: ChargenUiProps) {
     if (/\/Customization\/BottomControlPanel\/Accept$/.test(id)) {
       return button(w, r, id, { onClick: props.onNext, tip: { name: tx('CreateAvatar'), desc: tx('CreateAvatarDesc') } });
     }
-    // Plaques de nom.
-    const nm = /\/Name\/(primary01|secondary02|tertiary03|pet04)$/.exec(id);
-    if (nm) {
-      const place = nm[1].replace(/\d+$/, '') as 'primary' | 'secondary' | 'tertiary' | 'pet';
-      if ((place === 'secondary' || place === 'tertiary') && !trio) return null;
-      if (place === 'pet' && !pets.length) return null;
-      return namePlate(w, r, id, place);
+    // Plaques de nom : le script remplit les emplacements dans l'ordre des personnages montrés
+    // (principal, compagnons du trio, familier) et donne au panneau (1 + n) × 130 px de haut.
+    if (id.endsWith('/Customization/Name')) {
+      const places: Place[] = ['primary', ...(trio ? ['secondary', 'tertiary'] as Place[] : []), ...(pets.length ? ['pet'] as Place[] : [])];
+      const placed = placeWidget({ place: { x: w.place.x, y: { ...w.place.y, size: (1 + places.length) * NAME_ROW } } }, pr(id).w, pr(id).h);
+      return (
+        <div key={id} className={s.widget} style={box(placed)} data-widget={id}>
+          {places.map((place, k) => {
+            const slot = w.children?.find(c => c.name === NAME_SLOTS[k]);
+            return slot ? namePlate(slot, placeWidget(slot, placed.w, placed.h), `${id}/${NAME_SLOTS[k]}`, place) : null;
+          })}
+        </div>
+      );
+    }
+    // Panneau d'apparence : n × 68 px de haut, centré (−50) ; les plaques restent à 72 px d'écart.
+    if (id.endsWith('/Customization/Appearance')) {
+      const n = appearanceControls().length;
+      const placed = placeWidget({ place: { x: w.place.x, y: { ...w.place.y, size: n * APPEARANCE_ROW } } }, pr(id).w, pr(id).h);
+      return plain(w, placed, id, custom);
     }
     // Plaques d'apparence.
     const ap = /^AppearancePlate(\d\d)$/.exec(name);
@@ -344,7 +368,8 @@ export function ChargenUi(props: ChargenUiProps) {
     const t = templateFor(data, d.race, d.class, sex) ?? tpl;
     const appearance = props.place === 'primary' ? d.appearance : d.companions?.[props.place as 'secondary' | 'tertiary']?.appearance ?? {};
     const counts = appearanceCounts(t);
-    return CONTROLS.filter(c => counts[c.key] > 0).map(c => ({ key: c.key, label: c.label, count: counts[c.key], index: appearanceIndex(t, appearance, c.key) }));
+    const race = d.race;
+    return CONTROLS.filter(c => counts[c.key] > 1 && !SERVER_LOCKED.has(c.key) && !(race === 'Aed' && c.key === 'hairColors')).map(c => ({ key: c.key, label: c.label, count: counts[c.key], index: appearanceIndex(t, appearance, c.key) }));
   }
 
   function appearancePlate(w: UiWidget, r: Rect, id: string, k: number) {
@@ -366,6 +391,7 @@ export function ChargenUi(props: ChargenUiProps) {
           return (
             <div className={s.widget} style={box(or)}>
               {layer(orb.back)}
+              {orb.layers?.map((l, i) => layer(l, `layer${i}`))}
               {value && text(placeWidget(value, or.w, or.h), `${id}/Value`, `${control.index + 1}`, s.orbValue)}
             </div>
           );
@@ -376,12 +402,14 @@ export function ChargenUi(props: ChargenUiProps) {
     );
   }
 
-  const progress = main.children?.find(c => c.name === 'Progress');
   const panel = main.children?.find(c => c.name === panelName);
+  // Taille du parent d'un widget du panneau d'étape (plein écran : les panneaux sont étirés).
+  function pr(_id: string) { return { w: vw, h: vh }; }
   return (
     <div className={s.root} style={{ width: vw, height: vh }} data-step={step}>
+      {/* Bandeau bas des écrans du menu (addon `Main`), sous les boutons de l'étape. */}
+      {step !== 'faction' && layout.bottomLine && node(layout.bottomLine, vw, vh, '/Main', () => undefined)}
       {panel && node(panel, vw, vh, '/MainPanel', custom)}
-      {progress && node(progress, vw, vh, '/MainPanel', custom)}
       {step === 'custom' && hover && (
         <div className={s.tooltip}><div className={s.descTitle}>{hover.name}</div>{hover.desc && <div className={s.descBody}><Markup text={hover.desc} /></div>}</div>
       )}

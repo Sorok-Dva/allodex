@@ -67,6 +67,8 @@ export type LiveSnapshot = {
  *   GET  /api/admin/me             204 si connecté, 401 sinon
  *   GET  /api/admin/stats?range=7d[&path=/talents]  → StatsResponse
  *   GET  /api/admin/live           text/event-stream, `data: LiveSnapshot`
+ *   POST /api/talents/events       événement du calculateur de talents (public, `TalentEvent`)
+ *   GET  /api/admin/talents?range=7d  → TalentStatsResponse
  */
 export type CollectEvent = {
   /** `view` : nouvelle page ; `ping` : toujours là (toutes les 20 s) ; `leave` : fin de la vue. */
@@ -81,4 +83,60 @@ export type CollectEvent = {
   width?: number;
   /** `ping` et `leave` : temps de visibilité cumulé de la vue, en millisecondes. */
   duration?: number;
+};
+
+/* --- calculateur de talents ------------------------------------------------------------------- */
+
+export const TALENT_EVENT_KINDS = ['generate', 'share', 'view'] as const;
+export type TalentEventKind = (typeof TALENT_EVENT_KINDS)[number];
+
+/**
+ * Événement d'un build (`POST /api/talents/events`, `sendBeacon`) : `generate`, build composé
+ * dans le calculateur (envoyé quand l'édition se pose) ; `share`, lien copié ; `view`, build
+ * ouvert depuis un lien. Le build est celui de l'URL : version `v`, classe `c`, codes `b` et
+ * `b2` (au moins un). Le serveur le vérifie contre les données des talents avant de l'écrire.
+ */
+export type TalentEvent = {
+  kind: TalentEventKind;
+  v: string;
+  c: string;
+  b?: string | null;
+  b2?: string | null;
+  lang?: string;
+};
+
+/**
+ * `builds` : builds distincts composés (au moins une génération) ; `generations`, `shares`,
+ * `views` : un par visiteur, par jour et par build.
+ */
+export type TalentCounts = { builds: number; generations: number; shares: number; views: number };
+type TalentActivity = Omit<TalentCounts, 'builds'>;
+
+export type TalentBuildRow = {
+  /** Condensat du contenu : identifiant stable du build. */
+  id: string;
+  version: string;
+  cls: string;
+  b: string | null;
+  b2: string | null;
+  /** Auteur (« build de X ») : réservé, toujours null tant que les joueurs n'existent pas. */
+  playerId: number | null;
+  firstTs: number;
+  /** Sur la période demandée. */
+  period: TalentActivity;
+  /** Depuis le début. */
+  total: TalentActivity;
+};
+
+export type TalentStatsResponse = {
+  range: Range;
+  from: number;
+  to: number;
+  totals: TalentCounts;
+  /** Depuis le début de la mesure. */
+  allTime: TalentCounts;
+  /** Par version et classe, sur la période. */
+  classes: (TalentCounts & { version: string; cls: string })[];
+  /** Builds les plus vus sur la période (puis partagés, composés). */
+  top: TalentBuildRow[];
 };

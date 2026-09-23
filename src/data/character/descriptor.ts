@@ -40,7 +40,7 @@ export type CharacterDescriptor = {
 };
 
 export const APPEARANCE_KEYS: AppearanceKey[] = ['faces', 'facials', 'hairs', 'hairColors', 'skins', 'skinColors',
-  'additionals', 'shoulderStones', 'shoulderStoneColors'];
+  'additionals', 'shoulderStones', 'shoulderStoneColors', 'morphPresets'];
 
 /** Races jouées en trio (trois personnages nommés) : les gibberlings. */
 export const TRIO_RACES = new Set(['Gibberling']);

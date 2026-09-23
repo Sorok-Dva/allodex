@@ -6,10 +6,16 @@ fusionnée) et porté sur `tools/allods_packdb.py`. Décalages des champs `clien
 `FactionsPanel/Part01` : 433 × 736, calée en bas à gauche, texture 512 × 1024 utile 433 × 736) :
 
 * `Widget` : calque de fond `+0x28`, enfants `+0x30`, nom `+0x58`, placement X `+0x78` et Y
-  `+0x98` (`align` u32, `highPos` f32 +4, `pos` f32 +0x10, `size` f32 +0x14), priorité `+0xE8` ;
+  `+0x98` (`align` u32, `highPos` f32 +4, `pos` f32 +0x10, `size` f32 +0x14), priorité `+0xE8`,
+  visibilité initiale : octet `+0x184` (0 = caché ; la progression, le panneau des factions et le
+  bouton « Terminer » partent cachés, les scripts les montrent selon l'étape) ;
 * `WidgetButton` : balise de texte `+0x120`, variantes `+0x1C0` (pas 0x188), chacune portant les
-  calques de ses états ; l'état (normal, survolé, appuyé, désactivé…) se lit dans le nom de la
-  texture (`ButtonAcceptPressedHighlighted`) ;
+  calques de ses états **à place fixe** : `+0x08` surbrillance de survol (dessinée par-dessus),
+  `+0x70` désactivé, `+0xA0` survolé, `+0xD0` normal, `+0x100` appuyé, `+0x130` appuyé survolé
+  (établi sur les boutons nommés `NamePlateButton*`, `ButtonGenderMale*`). La variante 1 est l'état
+  « choisi » que posent les scripts (`SetVariant(1)`) : sur les plaques de race et de classe elle
+  seule a un calque normal, la bande claire du choix ; le nom de la texture ne suffit pas (la
+  variante 1 du bouton de nom reprend la texture « Highlighted » comme état normal) ;
 * `WidgetLayer*` : mélange `+0x24` (0 alpha, 2 additif), couleur ARGB `+0x28`, `UISingleTexture` → `UITexture` ;
 * `UITexture` : indice du pak (bloc 6 du `pack.bin`) `+0x40`, rang dans le pak `+0x48`, hauteur
   `+0x78`, hauteur utile `+0x88`, largeur utile `+0x8C`, format `+0x90`, largeur `+0x94`.
@@ -30,12 +36,17 @@ W_NAME = 0x58
 W_X = 0x78
 W_Y = 0x98
 W_PRIORITY = 0xE8
+W_VISIBLE = 0x184
+TV_TEXT = 0x1C0     # WidgetTextView : identifiant du texte fixe (0x1B0 dans le client FR 16.x)
 B_TEXTTAG = 0x120
 B_VARIANTS = 0x1C0
 B_VARIANT_STRIDE = 0x188
 L_COLOR = 0x28
 L_BLEND = 0x24     # 0 alpha ; 2 additif (lueurs de survol des factions, noir = transparent)
 ALIGN = ["low", "high", "center", "both", "lowAbs"]
+# État d'un calque de variante de bouton selon sa place dans la variante.
+VARIANT_SLOTS = {0x08: "highlight", 0x70: "disabled", 0xA0: "highlighted", 0xD0: "normal", 0x100: "pressed",
+                 0x130: "pressedHighlighted"}
 STATES = ("PressedHighlighted", "Highlighted", "Pressed", "Disabled", "Selected", "Normal", "Highlight",
           "Current", "Expects", "Finished", "Over")
 
@@ -168,9 +179,18 @@ class UiExtractor:
         ty = db.vtype(a) or "?"
         w: dict = {"type": ty.replace("Widget", ""), "name": db.string(a + W_NAME), "place": self.placement(a),
                    "priority": db.i32(a + W_PRIORITY)}
+        if not db.bytes(a + W_VISIBLE, 1)[0]:
+            w["hidden"] = True
         back = self.layer(db.ptr(a + W_BACK))
         if back:
             w["back"] = back
+        if ty in ("WidgetPanel", "WidgetForm"):
+            # Calques suivants du panneau (`+0x50`… : perle de l'orbe d'apparence, reflet du bandeau).
+            extra = [self.layer(t) for loc, t in self.ptrs(a + W_BACK + 8, a + W_CHILDREN) ]
+            extra += [self.layer(t) for loc, t in self.ptrs(a + W_CHILDREN + 0x10, a + W_NAME)]
+            extra = [x for x in extra if x and x.get("texture")]
+            if extra:
+                w["layers"] = extra
         if ty == "WidgetButton":
             tag = db.string(a + B_TEXTTAG)
             if tag:
@@ -178,16 +198,18 @@ class UiExtractor:
             states: dict[str, dict] = {}
             for v in db.elements(a + B_VARIANTS, B_VARIANT_STRIDE):
                 variant: dict[str, dict] = {}
-                for _, t in self.ptrs(v, v + B_VARIANT_STRIDE):
+                for loc, t in self.ptrs(v, v + B_VARIANT_STRIDE):
                     lay = self.layer(t)
                     if lay and lay.get("texture"):
-                        variant.setdefault(self.state_of(lay["texture"]), lay)
+                        variant.setdefault(VARIANT_SLOTS.get(loc - v) or self.state_of(lay["texture"]), lay)
                 if variant:
                     states.setdefault("variants", []).append(variant)
             if states:
                 w["variants"] = states["variants"]
-        elif ty == "WidgetEditLine":
-            pass
+        elif ty == "WidgetTextView":
+            tid = struct.unpack("<Q", bytes(db.bytes(a + TV_TEXT, 8)))[0]
+            if 0 < tid < 0xFFFFFFFF:
+                w["textId"] = tid
         kids = []
         d = db.vec(a + W_CHILDREN)
         if d is not None and depth < 16:
@@ -198,6 +220,33 @@ class UiExtractor:
         if kids:
             w["children"] = kids
         return w
+
+    def wrap_bottom_line(self) -> dict | None:
+        """Bandeau bas des écrans du menu (`BottomLine` de l'addon `Main`, `Wrap/MainMenu/Main2`) :
+        pleine largeur, 67 px, calé en bas ; il reste affiché sous la création de personnage et
+        porte ses boutons du bas."""
+        db = self.db
+        for addon in db.resources("UIAddon"):
+            if db.string(addon + 0x30) != "Main":
+                continue
+            found = self._find(db.ptr(addon + 0x28), "BottomLine")
+            if found is not None:
+                return self.widget(found)
+        return None
+
+    def _find(self, a: int | None, name: str, depth: int = 0) -> int | None:
+        if a is None or depth > 6:
+            return None
+        if self.db.string(a + W_NAME) == name:
+            return a
+        d = self.db.vec(a + W_CHILDREN)
+        for k in range(0, d[1] if d else 0, 8):
+            t = self.db.ptr(d[0] + k)
+            if t is not None and (self.db.vtype(t) or "").startswith("Widget"):
+                hit = self._find(t, name, depth + 1)
+                if hit is not None:
+                    return hit
+        return None
 
     def related_textures(self, group: int) -> dict[str, str]:
         """`UIRelatedTextures` : {clé: texture} (icônes des races et des classes…)."""
