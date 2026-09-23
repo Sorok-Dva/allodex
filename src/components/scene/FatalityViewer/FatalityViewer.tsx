@@ -7,7 +7,7 @@ import {
   VotFactory, faceCamera, particleSystems, toViewerMaterial, updateInstance, type Tinted, type VotInstance,
 } from '@/components/scene/vot/votInstances';
 import {
-  objectClipTime, spawnOpacity, stepAt, timelineDuration, timelineSounds, victimClipTime, victimOpacityAt, victimScaleAt,
+  objectClipTime, shakeOffsetAt, spawnOpacity, stepAt, victimTintAt, timelineDuration, timelineSounds, victimClipTime, victimOpacityAt, victimScaleAt,
   victimStepAt, type ChannelEvent, type VictimStep, type ChannelPoint, type FatalityObject, type FatalityTimeline,
 } from './timeline';
 import { CameraCollider, decorColliders } from './cameraCollision';
@@ -90,9 +90,9 @@ const ATTACKER_BEARING = THREE.MathUtils.degToRad(-55);
  * modèles du jeu, −Y (`Fatality_Channel` s'étend de 0 à −8,6 m à sa pose de bind).
  */
 /** Part du chemin victime → tueur où se pose la cible du cadrage initial (victime au premier plan). */
-const ATTACKER_FOCUS = 0.4;
+const ATTACKER_FOCUS = 0.3;
 /** Marge du cadrage initial autour du segment victime → tueur (fraction de sa longueur). */
-const ATTACKER_FRAME_MARGIN = 1.25;
+const ATTACKER_FRAME_MARGIN = 1.5;
 const CHANNEL_AXIS = new THREE.Vector3(0, -1, 0);
 /** Compense la division par π du Lambert de three.js : une lumière du jeu à 1 éclaire à 1. */
 const LIGHT_SCALE = Math.PI;
@@ -277,6 +277,20 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       root.scale.set(1, event.length > 0 ? distance / event.length : 1, 1);
     };
 
+    /** Couleurs d'origine des matériaux teints (la teinte les multiplie, sans les perdre). */
+    const baseColors = new Map<THREE.Material, THREE.Color>();
+    const applyTint = (body: Body, tint: ReturnType<typeof victimTintAt>) => {
+      for (const { material } of body.tinted) {
+        const m = material as THREE.Material & { color?: THREE.Color; emissive?: THREE.Color };
+        if (!m.color) continue;
+        let base = baseColors.get(m);
+        if (!base) { base = m.color.clone(); baseColors.set(m, base); }
+        m.color.setRGB(base.r * tint.mul[0], base.g * tint.mul[1], base.b * tint.mul[2]);
+        m.emissive?.setRGB(tint.add[0], tint.add[1], tint.add[2]);
+      }
+    };
+    const shake = new THREE.Vector3();
+
     const applyTime = (t: number) => {
       const pose = (body: Body, step: VictimStep | null) => {
         const idle = [...body.actions.keys()].find(name => /^idle/i.test(name));
@@ -295,8 +309,10 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
         const step = victimStepAt(timeline, t);
         const scale = victimScaleAt(timeline, t);
         const opacity = victimOpacityAt(timeline, t, fadeStart, fadeDuration);
+        const tint = victimTintAt(timeline, t);
         for (const body of victim) {
           pose(body, step);
+          applyTint(body, tint);
           body.modelRoot.scale.copy(body.baseScale).multiplyScalar(scale);
           body.holder.visible = opacity > 0.001;
           for (const { material, base, transparent } of body.tinted) {
@@ -352,12 +368,17 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       orbit.copy(camera.position);
       const settling = st.controls ? collider.resolve(st.controls.target, orbit, delta, camera.position) : false;
       if (!camera.position.equals(orbit) && st.controls) camera.lookAt(st.controls.target);
+      // Secousses du script (`ShakeAction`) : décalage rendu seulement (repère du jeu → miroir X).
+      const [sx, sy, sz] = timeline ? shakeOffsetAt(timeline, st.time, camera.position.length()) : [0, 0, 0];
+      shake.set(-sx, sy, sz);
+      const shaking = shake.lengthSq() > 0;
+      if (shaking) camera.position.add(shake);
       shown.copy(camera.position);
       if (skyNode?.parent) {
         const eye = skyNode.parent.worldToLocal(camera.position.clone());
         skyNode.position.set(eye.x, eye.y, 0);
       }
-      if (!st.dirty && !moved && !settling && !instances.some(i => i.billboards.length && i.root.visible)) return;
+      if (!st.dirty && !moved && !settling && !shaking && !instances.some(i => i.billboards.length && i.root.visible)) return;
       applyTime(st.time);
       syncSounds(st.time, st.playing && st.speed > 0);
       st.seeked = false;
