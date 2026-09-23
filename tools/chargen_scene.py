@@ -47,6 +47,8 @@ REGION = 256.0
 REGION_OBJECTS = 0xA0
 OBJECT_STRIDE = 72
 REGION_ZONE_LIGHTS = 0x160
+REGION_AMBIENCES = 0xE0
+TASSEL_EVENT = 0x58        # Sound2DTassel : événement FMOD de l'ambiance
 STATIC_VISOBJECT = 0x30
 SCENE_RADIUS = 40.0        # rayon (m) autour du personnage : le décor et ses voisins immédiats
 SCENE_TEXTURE_MAX = 512
@@ -147,7 +149,7 @@ INDEX_PAGE = 32768
 def fix_index_pages(loaded) -> int:
     """Géométries de plus de 32 768 sommets (décors de création) : les indices 16 bits sont
     relatifs à une « page » de 32 768 sommets. Les éléments sont rangés dans l'ordre des sommets ;
-    quand leur plage de sommets (`vb0`) repart loin en arrière, on passe à la page suivante — la
+    quand la fin de leur plage de sommets (`vb1`) repart loin en arrière, on passe à la page suivante — la
     dernière page finit exactement au dernier sommet (`Interface_Scene` de Kania : 32 976 puis
     208…7 154 = 39 922 sommets). Renvoie le nombre de pages décalées."""
     n = len(loaded.vertices["position"])
@@ -157,7 +159,7 @@ def fix_index_pages(loaded) -> int:
     for e in loaded.geo.doc.elements:
         if e.vb1 <= e.vb0:
             continue
-        if e.vb0 < top - INDEX_PAGE // 2:
+        if e.vb1 < top - INDEX_PAGE // 2:
             page += 1
             top = 0
         top = max(top, e.vb1)
@@ -266,13 +268,15 @@ def region_objects(m: PackDB) -> list[dict]:
     return out
 
 
-def zone_lights_at(m: PackDB, pos: tuple[float, float, float]) -> int | None:
+def zone_lights_at(m: PackDB, pos: tuple[float, float, float], grid: int = REGION_ZONE_LIGHTS) -> int | None:
+    """Objet de la grille 16 × 16 d'une région (lumières en `+0x160`, ambiances sonores en
+    `+0xE0`) sous une position de la carte."""
     rx, ry = int(pos[0] // REGION), int(pos[1] // REGION)
     a = m.paths.get(f"Maps/MainMenu/000_000/{rx}_{ry}_MapRegion.xdb")
     if a is None:
         return None
     cx, cy = int((pos[0] % REGION) // 16), int((pos[1] % REGION) // 16)
-    rows = m.elements(a + REGION_ZONE_LIGHTS, 32)
+    rows = m.elements(a + grid, 32)
     if not rows:
         return None
     row = rows[min(cy, len(rows) - 1)]
@@ -327,6 +331,9 @@ def export_scenes(ctx, races: list[str], race_scene: dict[str, str]) -> dict:
         zl = zone_lights_at(m, place.character)
         if zl is not None and m.vtype(zl) == "ZoneLights":
             meta["light"] = zone_light(m, zl)
+        amb = zone_lights_at(m, place.character, REGION_AMBIENCES)
+        if amb is not None and m.vtype(amb) == "Sound2DTassel":
+            meta["ambience"] = m.string(amb + TASSEL_EVENT)
         if roots:
             glb = sx.ex.finish(roots)
             (ctx.out / meta["glb"]).write_bytes(glb)

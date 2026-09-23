@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { loadManifest, cursor, hasAssets } from '@/lib/assets';
 import { useRoute } from '@/lib/router';
 import { AudioProvider } from '@/lib/audio/AudioProvider';
@@ -9,6 +9,12 @@ import { ChroniclesScreen } from '@/screens/ChroniclesScreen/ChroniclesScreen';
 import { MusicScreen } from '@/screens/MusicScreen/MusicScreen';
 import { LegalScreen } from '@/screens/LegalScreen/LegalScreen';
 import { FatalitiesScreen } from '@/screens/FatalitiesScreen/FatalitiesScreen';
+
+// Création de personnage : fonction de test, absente du build de production (la condition
+// `import.meta.env.DEV` est remplacée par `false` au build, l'import dynamique disparaît).
+const CharacterCreationScreen = import.meta.env.DEV
+  ? lazy(() => import('@/screens/CharacterCreationScreen/CharacterCreationScreen'))
+  : null;
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -29,6 +35,7 @@ export default function App() {
        path === '/chronicles' || path === '/chroniques' ? <ChroniclesScreen /> :
        path === '/music' || path === '/musiques' ? <MusicScreen /> :
        path === '/fatalities' || path === '/fatalites' ? <FatalitiesScreen /> :
+       CharacterCreationScreen && (path === '/character' || path === '/personnage') ? <Suspense fallback={null}><CharacterCreationScreen /></Suspense> :
        <OpeningScreen />}
     </AudioProvider>
     </I18nProvider>

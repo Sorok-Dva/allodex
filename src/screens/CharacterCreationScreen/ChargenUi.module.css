@@ -1,0 +1,154 @@
+/* Interface de la création de personnage : widgets du client posés en pixels du jeu, dans un
+   repère mis à l'échelle par l'écran (voir `uiScale`). */
+.root {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+  font-family: var(--font-serif);
+  color: #f3e6c4;
+}
+
+.widget {
+  position: absolute;
+  pointer-events: none;
+}
+
+.button {
+  pointer-events: auto;
+  cursor: inherit;
+  display: block;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+}
+
+.button:focus-visible {
+  outline: 1px dashed rgba(255, 231, 160, 0.8);
+  outline-offset: -3px;
+}
+
+.text {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-shadow: 0 0 3px #000, 0 1px 2px #000;
+  line-height: 1.15;
+}
+
+.header {
+  font-size: 26px;
+  color: #ffe9a8;
+  padding-left: 12px;
+}
+
+.sub {
+  font-size: 16px;
+  color: #d9c79a;
+  padding-left: 14px;
+}
+
+.label {
+  font-size: 19px;
+  color: #efe2bf;
+  justify-content: flex-start;
+}
+
+.selectedLabel {
+  color: #fff5c9;
+}
+
+.plateLabel {
+  font-size: 18px;
+  color: #f0dfb0;
+  justify-content: flex-end;
+  padding-right: 8px;
+}
+
+.orbValue {
+  font-size: 20px;
+  justify-content: center;
+  color: #fff4d0;
+}
+
+.desc {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  font-size: 15px;
+  text-align: center;
+  padding: 6px 12px;
+}
+
+.descTitle {
+  font-size: 18px;
+  color: #ffe08a;
+  margin-bottom: 4px;
+}
+
+.descBody {
+  color: #e8dcc0;
+}
+
+.locked {
+  filter: grayscale(0.85) brightness(0.7);
+}
+
+.editline {
+  position: absolute;
+  pointer-events: auto;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: #fff3cc;
+  font: inherit;
+  font-size: 17px;
+  text-align: center;
+  padding: 0;
+  text-shadow: 0 0 2px #000;
+  user-select: text;
+}
+
+.editError {
+  color: #ff8c7a;
+}
+
+.tooltip {
+  position: absolute;
+  right: 520px;
+  bottom: 170px;
+  max-width: 360px;
+  padding: 10px 14px;
+  background: rgba(10, 8, 6, 0.86);
+  border: 1px solid #8b6b32;
+  border-radius: 3px;
+  font-size: 15px;
+  color: #eadbb6;
+  pointer-events: none;
+}
+
+.nameError {
+  position: absolute;
+  left: 40px;
+  bottom: 170px;
+  max-width: 340px;
+  padding: 8px 12px;
+  background: rgba(40, 6, 4, 0.85);
+  border: 1px solid #a8412e;
+  color: #ffc9b8;
+  font-size: 15px;
+}
+
+/* Balisage des textes du client. */
+.tip_white { color: #ffffff; }
+.tip_green { color: #7fd35a; }
+.tip_grey { color: #b8b3a6; }
+.tip_golden { color: #f6c945; }
+.tip_red { color: #ff6b57; }
+.tip_blue { color: #7ab8ff; }
+.header_ { font-size: 1.15em; }

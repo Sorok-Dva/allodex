@@ -13,7 +13,9 @@ export function placeAxis(axis: Axis, parent: number): [number, number] {
   const high = axis.high ?? 0;
   const size = axis.size ?? 0;
   switch (axis.align) {
-    case 'high': return [parent - high - size, size];
+    // Taille nulle calée à droite / en bas : texte ajusté à son contenu dans le client ; on lui
+    // donne la place entre le bord opposé et la marge.
+    case 'high': return size ? [parent - high - size, size] : [pos, Math.max(0, parent - high - pos)];
     // Taille nulle centrée : le texte s'ajuste à son contenu dans le client ; on occupe tout le parent.
     case 'center': return size ? [(parent - size) / 2 + pos, size] : [pos, parent];
     case 'both': return [pos, Math.max(0, parent - pos - high)];

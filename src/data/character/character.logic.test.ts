@@ -149,6 +149,7 @@ describe('placement des widgets du client', () => {
     expect(placeAxis({ align: 'center', pos: -130, size: 259 }, 1000)).toEqual([240.5, 259]);
     expect(placeAxis({ align: 'both', pos: 12, high: 8 }, 100)).toEqual([12, 80]);
     expect(placeAxis({ align: 'center', pos: -6 }, 150)).toEqual([-6, 150]);
+    expect(placeAxis({ align: 'high', high: 163 }, 450)).toEqual([0, 287]);
     expect(placeWidget({ place: { x: { align: 'low', pos: 1, size: 2 }, y: { align: 'high', size: 10 } } }, 100, 50)).toEqual({ x: 1, y: 40, w: 2, h: 10 });
   });
 
