@@ -39,6 +39,7 @@ import json
 import math
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -894,6 +895,8 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
             else plan_manual(spec, db, texts, lines17, anim_names, report)
         mp = open_map(db, client, plan["map"])
         cat = open_catalog(mp, client)
+        for stale in ("textures", "particles"):   # régénérés en entier : pas de restes d'un décor plus large
+            shutil.rmtree(out / stale, ignore_errors=True)
         textures = TexturePool(mp, cat, bins, out, jpeg=True)
         particles = ParticlePool(mp, cat, bins, out)
         light = read_zone_light(mp)
