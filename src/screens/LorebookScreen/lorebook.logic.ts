@@ -7,7 +7,10 @@
 export const CONTENT_LANGS = ['en', 'fr', 'ru'] as const;
 export type ContentLang = (typeof CONTENT_LANGS)[number];
 export const SECTIONS = ['timeline', 'atlas', 'library', 'characters', 'secrets', 'quests'] as const;
-export type SectionId = (typeof SECTIONS)[number];
+/** Sections sans onglet ni liste (répliques non rattachées à un PNJ) : recherche et liens seulement. */
+export const HIDDEN_SECTIONS = ['dialogues'] as const;
+export type SectionId = (typeof SECTIONS)[number] | (typeof HIDDEN_SECTIONS)[number];
+export const isHidden = (s: SectionId): boolean => (HIDDEN_SECTIONS as readonly string[]).includes(s);
 
 /** Ordre de repli d'un texte absent dans la langue demandée (même règle que l'outil de construction). */
 export const FALLBACK: Record<ContentLang, readonly ContentLang[]> = {
@@ -34,6 +37,9 @@ export type Body = {
   i?: Item[];
   l?: Links;
   m?: { era?: string; source?: string; credit?: string; translated?: string; name_official?: boolean };
+  /** Sections cachées : titre et drapeaux de l'entrée (pas de ligne de liste). */
+  n?: string;
+  g?: number;
 };
 export type ListGroup = { id: string; key?: string; label?: string; count: number };
 export type ListRow = [id: string, group: number, chunk: number, flags: number, title: string, subtitle: string];
@@ -50,7 +56,7 @@ export type LoreRoute =
 
 export const LORE_BASE = '/lorebook';
 
-const isSection = (s: string | undefined): s is SectionId => !!s && (SECTIONS as readonly string[]).includes(s);
+const isSection = (s: string | undefined): s is SectionId => !!s && ([...SECTIONS, ...HIDDEN_SECTIONS] as readonly string[]).includes(s);
 
 /** `/lorebook`, `/lorebook/<section>[?group=]`, `/lorebook/<section>/<id>`, `/lorebook/search?q=`. */
 export function parseLoreRoute(path: string, query: URLSearchParams): LoreRoute {
@@ -76,6 +82,22 @@ export function lorePath(route: LoreRoute): string {
 export function refPath(ref: string): string {
   const [section, id] = ref.split('/');
   return isSection(section) && id ? lorePath({ view: 'entry', section, id }) : LORE_BASE;
+}
+
+/**
+ * Bloc d'une entrée d'une section cachée : les entrées y sont rangées par rid croissant et
+ * `firsts` donne le premier rid de chaque bloc (dichotomie). -1 si l'id n'est pas un rid.
+ */
+export function chunkForId(id: string, firsts: readonly number[]): number {
+  const rid = /^r(\d+)$/.exec(id);
+  if (!rid || !firsts.length) return -1;
+  const n = Number(rid[1]);
+  let lo = 0, hi = firsts.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (firsts[mid] <= n) lo = mid; else hi = mid - 1;
+  }
+  return firsts[lo] <= n ? lo : -1;
 }
 
 // --- langues du contenu -----------------------------------------------------------------------------

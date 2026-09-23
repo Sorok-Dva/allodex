@@ -1,0 +1,394 @@
+[
+ {
+  "part": "3",
+  "section": "1",
+  "ru": "Ранние Астральные Острова",
+  "en": "Early Astral Islands",
+  "parent": "",
+  "text": ""
+ },
+ {
+  "part": "3",
+  "section": "1.1",
+  "ru": "Лаборатория №9",
+  "en": "Lab Nine",
+  "parent": "1",
+  "text": "As you can see, the map changed a little, but even so this is one of the most authentic islands. The quests there went like this: we arrive, there are zombies everywhere, we meet a lone survivor… In essence, the story there later stayed the same, only without that soldier. On top of that, a monument to a stone was added as an Easter egg. However, this whole business with the numbered Imperial islands spawned an entire chain of stories about various Zem rising up in the Empire's secret research camps and getting up to no good. Then came White 17, then Zone 51 — roughly about the same thing."
+ },
+ {
+  "part": "3",
+  "section": "1.2",
+  "ru": "Могильный остров / Заверть!",
+  "en": "Grave Island / Vortex Isle",
+  "parent": "1",
+  "text": "It was quite different — there was no mountain with a cave in the middle.\n\nAn allod wrapped in a snowy blizzard. On arrival you come upon a Gibberling camp, and they tell you the legend of the island. Once, on this island, a legendary dragon hunter managed to kill one of the last dragons, but the monster's spirit is still alive, and the Gibberlings plan to get their hands on its treasures. Besides the dragon, there was also the ghost of a June hunter... by the way, that is the very Hunter who imprisoned Nordrak. So the storyline from the Frozen Frontier continued here."
+ },
+ {
+  "part": "3",
+  "section": "1.3",
+  "ru": "Осколок Умойра",
+  "en": "Umoir Shard",
+  "parent": "1",
+  "text": "It reveals a little of the story of what befell this ancient allod after the events of the game series. The allod is dead. Or rather, almost all of its population, apart from the fauna, is dead. You arrive right at the camp of an Aviak and a Kanian woman, and each of these NPCs asks you to carry out a request. The first, the Aviak, lost close friends here and wants to recover their rings; the second has come on the orders of Nesmeyana, the new Great Mage of the allod of Umoir, and asks you to help her gather deadcaps. Deadcaps are mushrooms that grow all over the allod. Right up to 5.0 this was almost the only mention of Catherina (the second one was on the Coba Plateau). Amusingly, the mushroom-gathering storyline carried on on Umoir."
+ },
+ {
+  "part": "3",
+  "section": "1.4",
+  "ru": "Религиозный вопрос / Мировая Ладья / Осколок Силы!",
+  "en": "A Religious Question / World Boat / Shard of Power",
+  "parent": "1",
+  "text": "Not far from the landing site stands a village of neutral Waterfolk, whose chief sends you to find a tribesman captured by a group of aggressive kinsmen who worship some sea monster (Rybko).\n\n\"I dreamed of many things. I understood almost none of it. I dreamed of some terrible creature with a great beard, chained to the sky. I dreamed of monsters with tentacles on their faces... Oh, it's all so complicated\" — this passage is interesting. It was long, long before Sarn appeared in the story, and back then hardly anyone understood it.\n\nOn the whole the story here is clear: one of the Sites of Power of the Holy Land (the Source of Cold Fire) broke away and gave power to the local Waterfolk, and they thought it was the Fish (later the scorpion Serket) that had given it to them, and began offering sacrifices to it."
+ },
+ {
+  "part": "3",
+  "section": "1.5",
+  "ru": "Новая жизнь / Приют Отверженных!",
+  "en": "A New Life / Refuge of the Outcasts",
+  "parent": "1",
+  "text": "This one was about the House de Doucer: what those who did not become vampires get up to. As I said before, the stories continued certain threads of the main storyline that had not been finished at the time... In some ways this island probably later became the basis for Enoch, which was indeed about vampires."
+ },
+ {
+  "part": "3",
+  "section": "1.6",
+  "ru": "Воды большого каньона / Сушь! / Каньон больших вод",
+  "en": "Waters of the Great Canyon / Drought / Canyon of Great Waters",
+  "parent": "1",
+  "text": "The island is being occupied by cultists who have recently arrived from a neighbouring allod. Quickly working out how the island is laid out, and meeting almost no resistance, they seize its only source of water. The orcs — the local population — have fallen back right up against the walls of their village, while the goblins, not a particularly courageous people, surrendered at once. You must free the allod from the usurping bandits and save the orc and goblin tribes. Here again it was a story about Tep. In general he was clearly also being lined up as a main enemy for the future."
+ },
+ {
+  "part": "3",
+  "section": "1.7",
+  "ru": "Своя игра / Залесская вотчина!",
+  "en": "A Game of One's Own / Zalesky Patrimony",
+  "parent": "1",
+  "text": "A rather interesting island; there was a very long scripted quest chain here. Alas, it kept glitching and breaking... It was also called \"The Lady\", after the main boss. I hope the quests make it clear who says what... As you can see, there was a choice here — to kill Otrad or Verona. In general you can see how much everything relied on scripts and with what difficulty it worked in those days. Most people got stuck at the point where we reached the Gibberlings and walked into an ambush — the ambush simply never appeared."
+ },
+ {
+  "part": "3",
+  "section": "1.8",
+  "ru": "Астральное кладбище!",
+  "en": "Astral Cemetery",
+  "parent": "1",
+  "text": "It was probably the basis for the Astral Graveyard that was made later, the place we reach right before Kirah... at least visually it is very similar. The quests there were given by a Zem locked inside the body of his Guardian."
+ },
+ {
+  "part": "3",
+  "section": "1.9",
+  "ru": "Великий Мастер / Осколок Исы!",
+  "en": "The Great Master / Isa Shard",
+  "parent": "1",
+  "text": "Speaking of this island, it is a great pity it was never introduced. It continued the Gibberlings' storyline about the search for their Homeland, putting a full stop to that story, and it had an atmosphere all of its own. The quests were given by the Gibberling Yodo, the Great Master. The idea is that it really is a chunk of rock on which the Great Tree is hidden under a dome. That is why, so to speak, it was never found."
+ },
+ {
+  "part": "3",
+  "section": "1.10",
+  "ru": "Притон контрабандистов / Притон!",
+  "en": "Smugglers' Den / The Den",
+  "parent": "1",
+  "text": "It is also known as the Isle of Suckers. It lay in the League's home sector, so many League players know it well: there were the sucker Forestfolk and their chief Barefoot, and of course the orc smuggler, from whom we carried off a heap of loot! Here too you can see that the writers had given some thought to why these islands exist in the astral at all. It is not clear, though, how this island existed before those crates were brought to it."
+ },
+ {
+  "part": "3",
+  "section": "1.11",
+  "ru": "На краю / Колония",
+  "en": "On the Edge / Colony",
+  "parent": "1",
+  "text": "It lay somewhere very deep in the astral, so few people saw it. Though I believe a playthrough was lying about somewhere on YouTube. There is mention of a sphere with which an allod could be protected from the advance of the astral. And it is precisely such a Sphere that is used to protect this colony."
+ },
+ {
+  "part": "3",
+  "section": "1.12",
+  "ru": "Вражеское гнездо / Осколок Хикута / Остров Грани!",
+  "en": "Enemy Nest / Hickut Shard / Isle of the Edge",
+  "parent": "1",
+  "text": "There was a bugged boss there, so everyone usually flew away from it. And I think it was also in the League's starting sector. After the rework the story there is roughly the same, although Tep was no longer mentioned."
+ },
+ {
+  "part": "3",
+  "section": "1.13",
+  "ru": "Райский уголок",
+  "en": "Paradise Nook",
+  "parent": "1",
+  "text": "It resembles Darkwater.\n\nA Kanian ship was wrecked here. At first the crew only wanted to repair the ship, but they liked the allod so much that they decided to found a settlement here. On arriving, the character helps the settlers with everyday tasks, and then they ask him to explore the island while \"the lads go fishing\". At the bottom of the lake a tunnel with a magical barrier is discovered, and through it our character goes on exploring the island. Swimming up out of the lake at the far end, we find Forestfolk and help them find their Chief. The Chief asks for help in killing the monster in the lake. Once it is killed, the Chief proposes to seal the peace between the settlements by giving his daughter in marriage to one of the Kanian men."
+ },
+ {
+  "part": "3",
+  "section": "1.14",
+  "ru": "Астральная Жемчужина",
+  "en": "Astral Pearl",
+  "parent": "1",
+  "text": "It resembles Eljune.\n\nWe end up in a camp of Free Traders who want to destroy the lair of the pirates who have settled here. They want to do it by killing their leader and the goblins, so that the rest will kill one another fighting for power. Naturally, we are the ones who do all of it for them. Along the way we also catch fish for an Orc and kill a hydra that roars and keeps a delicate Elf lady awake at night."
+ },
+ {
+  "part": "3",
+  "section": "1.15",
+  "ru": "Великий Дракон",
+  "en": "The Great Dragon",
+  "parent": "1",
+  "text": "It resembles Asee-Teph.\n\nWe meet an unknown Elf, who introduces himself as a hero with many feats to his name (he is lying shamelessly), sent by the Conclave of Great Mages to obtain dragon blood. He proposes that we team up and, before setting out on the job, asks us to practise on a draconid. We make our way to the cave with the dragon and kill it. The Elf thanks us for the help and shows off, saying that one day we too will become as famous as he is."
+ },
+ {
+  "part": "3",
+  "section": "1.16",
+  "ru": "Бунт Машин",
+  "en": "Revolt of the Machines",
+  "parent": "1",
+  "text": "It resembles Tenebra.\n\nWe meet the Elf Scius de Desirae. He tells us that there is a copy of the Galleon Castle here, which has slipped out of control and turned against the elves in its rage. He asks us to help destroy the elementals. After defeating them we return to the Elf. He thanks us for the help and gives us the \"Ring of the Eight Houses\", which was supposed to continue the story... But nothing further is known."
+ },
+ {
+  "part": "3",
+  "section": "1.17",
+  "ru": "Темная Сторона",
+  "en": "The Dark Side",
+  "parent": "1",
+  "text": "In places it resembles a snowbound Eljune.\n\nWe meet an Aviak Elder, who tells us that this island has been cursed for a hundred years. The Aviaks guard this place from wanderers so that their deaths do not strengthen the unclean creatures, and so that the curse does not creep out into the outside world. We try to defeat the nearest creatures and somehow manage. The Elder tells us that there is, you see, a Spirit here that helps them in this task, and since we are stronger than the Aviaks, we might ask the spirit and perhaps defeat the curse.\n\nThe Spirit tells us that long ago a strange shadow flew in from the distant astral but stopped here, by the church. And it began spreading its corruption: the people abandoned this place, the land rotted, the animals were twisted. So the spirit stayed behind to fight the curse. He sends us to the south-west of the island to find and destroy the source of the corruption. It turns out to be the Dark Side of Tensess."
+ },
+ {
+  "part": "3",
+  "section": "1.18",
+  "ru": "Одинокая Крепость",
+  "en": "Lonely Fortress",
+  "parent": "1",
+  "text": "It resembles Lightwood.\n\nWe meet a Sailor who asks for help and sends us to the Great Mage Svetalan. He tells us that the island broke away from Kania long, long ago; it is not large — just a Fortress on a mountain and a small settlement in the valley. But now this settlement has been attacked by strange astral creatures, and the situation must be looked into. In the settlement we find the Voivode, who tells us that they can manage to kill the creatures themselves, one at a time, but a couple of lads who went scouting towards the mill may not survive. The scouts say they saw some cultists, but they are badly wounded and cannot stand against them, so we go to find out their plans and \"act according to the situation\". In the end, according to the situation, we staged a massacre and set off to Svetalan to tell him what was going on. The chief demon, whom the cultists had managed to summon, invaded the fortress, and the Great Mage asks us to help one last time and destroy it. After the demons are defeated, Svetalan offers to let us stay and to introduce us to his granddaughter (if she survived)."
+ },
+ {
+  "part": "3",
+  "section": "1.19",
+  "ru": "Проклятье Тэпа",
+  "en": "Tep's Curse",
+  "parent": "1",
+  "text": "No information."
+ },
+ {
+  "part": "3",
+  "section": "1.20",
+  "ru": "Покинутая пирамида",
+  "en": "Abandoned Pyramid",
+  "parent": "1",
+  "text": "No information."
+ },
+ {
+  "part": "3",
+  "section": "1.21",
+  "ru": "Освобождение",
+  "en": "Liberation",
+  "parent": "1",
+  "text": "No information."
+ },
+ {
+  "part": "3",
+  "section": "1.22",
+  "ru": "Реликвия",
+  "en": "Relic",
+  "parent": "1",
+  "text": "No information."
+ },
+ {
+  "part": "3",
+  "section": "1.23",
+  "ru": "Республика Гоблинов",
+  "en": "Goblin Republic",
+  "parent": "1",
+  "text": "It resembles Siveria.\n\nThe island was supposed to be populated entirely by hostile goblins, with no quests and no friendly NPCs.\n\nBut it was found without NPCs or monsters... It is mentioned on the astral island Drought (Waters of the Great Canyon)."
+ },
+ {
+  "part": "3",
+  "section": "1.24",
+  "ru": "«нечто»",
+  "en": "\"The Thing\"",
+  "parent": "1",
+  "text": "No information."
+ },
+ {
+  "part": "3",
+  "section": "2",
+  "ru": "Астральные Острова",
+  "en": "Astral Islands",
+  "parent": "",
+  "text": ""
+ },
+ {
+  "part": "3",
+  "section": "2.1",
+  "ru": "Астральный Шип",
+  "en": "Astral Horn",
+  "parent": "2",
+  "text": "Perhaps you have come across creatures touched by the astral. Under its influence they change, and more often than not they do not change for the better… The Astral Horn is just such a creature. It is a unicorn turned into a dangerous monster. Even reaching it will not be easy, let alone defeating it. But there are a few things I know… Once you find the Astral Horn's island, you will have to hack your way through the astral crystals. Quite literally. You need the Hammer of Pain. You can obtain the hammer itself by defeating Splasher, a dangerous water elemental. Then, fighting the granite trolls, you will win the Shards of Pain. The power hidden within them will let you charge your weapon with magic. That can be done in the June ruins guarded by a cyclops called Stomper. Only once you have that weapon will you be able to break through the magic shield barring the way into the Horn's lair. I do not know what awaits you there. Be ready for anything. All that is known is that the Horn is hard to find — it knows how to hide.\n\nBosses: Splasher, Stomper, Astral Horn."
+ },
+ {
+  "part": "3",
+  "section": "2.2",
+  "ru": "Атолл Квага",
+  "en": "Quag Atoll",
+  "parent": "2",
+  "text": "Ploughing the boundless astral, you are unlikely to sail past Quag Atoll. Perhaps you will be tempted by its sun-warmed beaches and marvellous fruit palms that bear fruit all year round. Or the boatswain, swivelling his visor, will start spinning yarns about chests of gold hidden here. And your crew will certainly not remain indifferent to the island's mysterious magic, which irresistibly draws every passing ship to its shore!\n\nThere is a legend that among the hundreds of local croakers lives one who, at a single kiss, will turn into a princess of the glorious Valir line. Don't miss your chance, but keep an eye on where you step: some of these amphibians explode instantly if you tread on them!\n\nThe local population is a race of intelligent toads found almost nowhere else in Sarnaut. The natives are lazy and not especially vicious. Shipwrecked sailors they swallow whole, without chewing or tormenting them. Be sure to get a closer look at their way of life by visiting their reed huts.\n\nIn the wicker baskets you can find bottles of a tasty, strong brew, which the toads distil from the local fruit. Drink with care — hallucinations are possible! The same baskets also hold gold coins struck by the mints of the League and the Empire. Perhaps the boatswain was right about the treasure after all?\n\nAnd of course your adventure will not be complete without a visit to the atoll's chief landmark — the stone totem of the toad people! Be sure to note the wondrous magical patterns that adorn it.\n\nAnd also the simple fact that unless you destroy the totem, you will not be able to leave Quag Atoll and will most likely be eaten alive by the local shaman and his servants.\n\nBosses: Hump, Scabies, Pimple, Dead Captain."
+ },
+ {
+  "part": "3",
+  "section": "2.3",
+  "ru": "Безмятежный Погост",
+  "en": "Peaceful Cemetery",
+  "parent": "2",
+  "text": "Will-o'-the-wisps are a sure sign of buried treasure. The brighter they are, the greater the riches hidden in the ground. And in the Peaceful Cemetery the wisps positively sparkle! They say a wealthy sorcerer is buried here. Only treasure-hunters never come back from this deadly place: either they become food for the local troll, or the drowned drag them into the bog.\n\nAt night ghosts moan in the surrounding ravines, and hands rise from the marshes and grope blindly across the mossy ground. Whatever riches the dead are guarding, they guard them like the apple of their eye. If you value your life, better simply give this old Kanian cemetery a wide berth.\n\nBosses: Ferryman, Zhiroslav Glumeevich, Hell Sheer, Volokh Kromeshnikov."
+ },
+ {
+  "part": "3",
+  "section": "2.4",
+  "ru": "Белая Гора",
+  "en": "White Mountain",
+  "parent": "2",
+  "text": "I happened to go there as part of a missionary and enlightenment mission. You see, White Mountain is home to a tribe of utterly savage goblins. The poor wretches don't even know who the Great Nezeb is! A thoroughly benighted people, and aggressive into the bargain! They wanted to sacrifice our missionaries to some scaly beast that the local goblins consider — just imagine — a god! Sacrilege, pure and simple!\n\nWhen the missionaries and I left the island, a punitive detachment of the Committee arrived there to instil in the filthy heathens the fundamentals of the true faith, mutual respect and reverence for the Trinity Church.\n\nWhat happened on the island I do not know, but I do know that the Committee men came back from it thoroughly battered and as angry as a thousand dragons, after which the island's coordinates and the records of the two expeditions the Empire had made to White Mountain were classified.\n\nBut from rumours and gossip I heard of some idol that the shaggy savage runts worship and which supposedly gave its servants the strength to overcome seasoned Imperial fighters.\n\nIf your path leads to White Mountain, remember: fanatics do not heed the voice of reason. Brute force is the only thing they understand well!\n\nBosses: Mosol, Potbelly, Kazhetan, I'do-ol."
+ },
+ {
+  "part": "3",
+  "section": "2.5",
+  "ru": "Белый-17",
+  "en": "White 17",
+  "parent": "2",
+  "text": "Yes, I have heard of such a town. White 17 is a secret military town hidden somewhere deep in the astral. And, as far as I know, there is plenty there to hide. You see, in White 17 Imperial scientists were working on extremely dangerous projects. I don't know for certain, but rumour has it that Nomarkh Ebol, the lead researcher, maintained very close ties with Yasskul Setnakhte. And I have already told you about Yasskul Setnakhte and the incident at Lab Nine.\n\nAnd recently contact with White 17 was lost. Completely. Not a letter, not a messenger, not a single word... I fear some disaster may have happened there, like the one that befell General Plague and his men. So if in your wanderings you come across a snowbound island guarded by Imperial soldiers, you had better turn back at once. But if you do risk landing there and get into trouble, look for Valentin Shtammin, an acquaintance of mine. I believe he is listed there as chief mechanic. Oh, my heart tells me something is wrong with that White 17…\n\nBosses: Distemper, Venomisk, Crunch, Nomarkh Ebol."
+ },
+ {
+  "part": "3",
+  "section": "2.6",
+  "ru": "Вертеп",
+  "en": "The Den",
+  "parent": "2",
+  "text": "Do you hear the roar of the crowd? The spectators want to see new heroes! Cowards, weaklings and pacifists had better keep away from this place! Everyone else will find on the island of the Den wealth, entertainment and the love of a gambling crowd. You will have a chance to meet the most famous smugglers, mercenaries and slave traders. And the master of the allod is so fond of cruel entertainments that he holds gladiatorial fights every day.\n\nFight other daredevils in the arena to win fabulous treasures. Like true gladiators, you are not obliged to kill defeated enemies — perhaps some of them deserve mercy. The crowd craves only one thing: the ring of steel and hot blood spilling onto the sand!\n\nBosses: Mussle, Spartacus, Cerbarath, Caligula."
+ },
+ {
+  "part": "3",
+  "section": "2.7",
+  "ru": "Волчий Остров",
+  "en": "Wolf Isle",
+  "parent": "2",
+  "text": "In my travels I always steer clear of Wolf Isle. An ancient legend connected with this accursed place tells of a Kanian village that became a feasting hall for a werewolf.\n\nThey say that long, long ago a Kanian druid named Vseslav the Charming grew so close to the wolves living on the island that he learned to change into wolf form. He became the leader of the pack, and his neighbours its first victims. In time no one was left there but wolves and werewolves. Luckless travellers who risk landing on the island become a welcome treat for its inhabitants.\n\nIf you long to perform a heroic deed, Wolf Isle is a fitting place. But here is my advice: think a hundred times before you challenge the pack!\n\nBosses: Chernobog, the Bane of Wolf Isle, Vseslav the Charming."
+ },
+ {
+  "part": "3",
+  "section": "2.8",
+  "ru": "Гибнущий Фрактал",
+  "en": "Dying Fractal",
+  "parent": "2",
+  "text": "And the accursed Architects were never fully dealt with. The main attack was beaten back with the greatest effort, but at one point those creatures scattered all over the world. And then a captain I know told me — he saw a familiar island in the deep astral, once green as green could be, a real oasis. Now it's bare as a bone. Only those blue spires sticking up. And beasts living there. They look at you with dead eyes. Great eyes glowing blue. Ugh, it gives me the creeps… The Architects must have settled there and are remaking everything in their own wretched likeness again. Oh, if only someone would smash them to pieces…\n\nBosses: Pteros, Oculus, Arctus, Zero."
+ },
+ {
+  "part": "3",
+  "section": "2.9",
+  "ru": "Гнездилище Роя",
+  "en": "Swarm Nest",
+  "parent": "2",
+  "text": "Besides pirates, demons and anomalies, termites are sometimes encountered in the open astral. The senior members of your guild may still remember how, a couple of years ago, a large swarm of these insects appeared in the sky over Nezebgrad. The winged \"guests\" were promptly exterminated, after which scientists dissected several carcasses and found a logical explanation for the phenomenon. In the creatures' stomachs they discovered traces of meteorite dust — the best protection against the destructive effect of the astral.\n\nLater many heroes rushed off in search of the colony to which the travelling termites belonged. For if one swarm made it, sooner or later others will follow! Better not to wait for disaster, but to find and destroy the royal nest.\n\nBosses: Ground Beetle, Murava, Itch, Chrysalis."
+ },
+ {
+  "part": "3",
+  "section": "2.10",
+  "ru": "Гнилотопь",
+  "en": "Rotswamp",
+  "parent": "2",
+  "text": "Ugh, what a question! Rotswamp is the vilest place in the astral. It squelches underfoot, drips down your collar, insects swarm in the mud, and the fog is so thick you can't see your own feet. In short, Rotswamp is the vilest bog in the world! And how many travellers have perished there... Wherever you go, you run straight into dangerous creatures!\n\nWhen I had the bad luck to end up in that stinking bog with an expedition, on the very first day we lost three guards in fights with hydras. Terrible, venom-spitting creatures — and the oldest hydra, which we nicknamed Echidna, bit a pack horse in half in a single snap!\n\nAt night we woke to horrible screams: lamias armed to the teeth had attacked the camp, cut down the sentry and rushed at us, shouting something about two sisters thirsting for our blood. We barely fought them off!\n\nBut as we retreated, we went deep into the heart of the bog, and that is where the main danger lay in wait for us. We had barely had time to wonder why the lamias had stopped chasing us when a huge drake dived out of the night sky straight onto our party, pouring fire over everything around, while smaller drakes circled overhead to make sure none of us escaped. I survived only by a miracle — I fell into the mud, burrowed into it, and the drakes did not notice me. My comrades were not so lucky...\n\nBy morning, having waited until the drakes finished their bloody feast and flew away, I crept back to the ship. Utterly exhausted, wounded and covered in mud from head to toe, at the sight of the ship waiting for us I almost wept with relief, and I swore I would never set foot in that accursed place again!\n\nBosses: Echidna, Euriala and Stheno, Old Swamper, Venomwing."
+ },
+ {
+  "part": "3",
+  "section": "2.11",
+  "ru": "Горнило",
+  "en": "The Crucible",
+  "parent": "2",
+  "text": "Ah, so the rumours about this island have reached you too?\n\nA mysterious place. An ancient June forge, now seized by the cultists of Tep. What goes on there, nobody knows. I heard of a group of desperate travellers who dared to make their way into the belly of the ancient volcano where the forge is located. Only one of them managed to return. According to him, Tep's cultists are trying to take control of the ancient June mechanisms and make them their loyal servants. If they succeed… June genius plus Tep's madness... Oh dear, oh dear... Be extremely careful if you dare to challenge this explosive mixture.\n\nBosses: Tep's Punisher, Tep's Rider, Dark Mistress, Shadow Devourer."
+ },
+ {
+  "part": "3",
+  "section": "2.12",
+  "ru": "Гробница",
+  "en": "Catacombs",
+  "parent": "2",
+  "text": "During one of my expeditions I... hmm... had the misfortune to visit the island of the Catacombs. On my first visit it was a deserted place, keeping the peace of one of Tep's Pyramids.\n\nMy second visit was clear confirmation of the sad fact that the cult of Tep has been restored. Now his followers are in charge of the Catacombs. They are using stone elementals to dig out the Pyramid. I don't know what they are looking for there — my companions and I, many of whom were seriously wounded in the fight, had to leave the island in haste. I am sure nothing good can come of the activities of Tep's followers. I ask you to find this island and put an end to the cultists' doings. You will have to fight both them and their stone elementals. And above all, destroy Isdes, the high priest of Tep, who is directing the excavation of the Pyramid.\n\nBosses: Variant 1: Tep's Prelate, Tailstabber, Isdes. Variant 2: Longbelly, Tep's Prelate, Isdes, Sefnut."
+ },
+ {
+  "part": "3",
+  "section": "2.13",
+  "ru": "Джунгли Мбоа-Мбоа",
+  "en": "Jungles of Mboa-Mboa",
+  "parent": "2",
+  "text": "The unusual name of this allod, Mboa-Mboa, can most likely be pronounced only by the intelligent lizards who inhabit the island. And although the place is heavenly beautiful, seasoned astral explorers try to steer clear of it. Some travellers say that somewhere in the jungles of Mboa-Mboa lives a huge monster that hurls boulders at astral ships sailing past the island. Most likely these are just tall tales. But of smaller creatures, no less dangerous, the allod has plenty: predatory turtles, lions and even crocodiles.\n\nBosses: Swiss, Zuul, Boomer, Tom-Tom."
+ },
+ {
+  "part": "3",
+  "section": "2.14",
+  "ru": "Енох",
+  "en": "Enoch Isle",
+  "parent": "2",
+  "text": "Who would have thought that people and vampires could live in peace anywhere? But, believe it or not, there is such a place! It is called Enoch Isle. Once Enoch was a backwater islet of two villages. And then, not so long ago, vampires who had renounced their creator, Armando de Doucer, arrived on the island. Somehow they came to an agreement with the peasants, and they receive blood in exchange for their goods, healing magic and other useful things. You won't believe it, but I saw with my own eyes that people and vampires live in perfect harmony! But everything changed when werewolves appeared on Enoch. A savage pack of half-intelligent beasts invaded Enoch, and peaceful life came to an end. Their leader, the former bandit chieftain Lyut the Bobtailed, has sworn to devour everyone who does not bow before him. The vampires have shut themselves off from the werewolves with magical barriers, closing the passages between the villages, and together with the peasants they are holding back the monsters' attacks with the last of their strength. So if your adventures take you to Enoch, prepare for a fierce battle! Until you manage to completely clear both villages of werewolves, you will not reach their leader.\n\nBosses: Murk, Paul de Doucer, Vasilissa the Terrible, Lyut the Bobtailed."
+ },
+ {
+  "part": "3",
+  "section": "2.15",
+  "ru": "Забытый Храм",
+  "en": "Forgotten Temple",
+  "parent": "2",
+  "text": "The Forgotten Temple? And what, may I ask, has drawn your interest to that accursed place? Believe me, anyone who ends up there will want to forget the nightmares they lived through as quickly as possible. Once it was a heap of June ruins of no interest to anyone, in the middle of an islet of no interest even to demons, but then the Wormfaces reached the temple and awoke the flame that had slumbered in it for centuries. The island blazed like a torch until, by a whim of fate, it collided with an icy fragment of another island. Now half of the island on which the temple stands breathes fire, while on the other half you can freeze to the bone. On top of that it is full of aggressive elementals, old but still working sentry golems, and Wormfaces who greatly dislike strangers. Still, there are madmen among the Historians ready to risk their lives for knowledge. I heard that an expedition led by Martin de Blizare recently set out for the Forgotten Temple... And nobody has heard of that expedition since!\n\nBosses: Glacier, Ekaterina Arhivina, Sleepless Guard, Az and Yaz."
+ },
+ {
+  "part": "3",
+  "section": "2.16",
+  "ru": "Заверть",
+  "en": "Vortex Isle",
+  "parent": "2",
+  "text": "Have you ever heard of the island of the Vortex?\n\nA chunk of ice-bound earth floating in the astral. The grave of a Great Dragon that perished back in the days of the June. For many thousands of years its ghost has guarded its grave. Meanwhile, the depths of this island hold considerable deposits of meteorite iron. The Empire has a vital interest in seizing it. Perhaps you will manage to do it? Then remember this. To reach the ghost you will have to fight ice elementals, the wild yetis living in the cave, and the harpies guarding the passage to the Great Dragon's grave. Only once you are beside it will you be able to see the ghost and defeat it. Will you take it on?\n\nBosses: Yeti Tribal Chief, Vladimir Evdokimov, Ghost of the Great Dragon."
+ },
+ {
+  "part": "3",
+  "section": "2.17",
+  "ru": "Залесский Посад",
+  "en": "Zalesky Posad",
+  "parent": "2",
+  "text": "I have been to that island. Bliss: green forests, singing streams... There stands a posad — bigger than a village, smaller than a town. Red walls, a church with a bell tower, people prosperous and friendly. In a word, it is pleasant to visit and profitable to trade there. They say, though, that some bandits have recently begun to threaten them. Well, they are not poor people — they have enough gold to hire mercenaries. Or perhaps you will help them and show some heroism?\n\nBosses: Forest Bear, Penny Pincher, Mira Hooves, Newsor Rotheart."
+ },
+ {
+  "part": "3",
+  "section": "2.18",
+  "ru": "Зеленый Лабиринт",
+  "en": "Green Maze",
+  "parent": "2",
+  "text": "Oh, I wouldn't advise you to get mixed up with the draconids. Dangerous creatures. Even the demon hunters who have made an alliance with them do not fully trust these beings. And why? Because the draconids guard their secrets like the apple of their eye! And they do not trust them even to their friends.\n\nI do not know what secret is kept in the Green Maze. The Historians who tried to explore it never managed to get into its far part, access to which is closed off by a magical barrier. As soon as they tried to get past it, two supreme draconids appeared — two Guardians of the Limit, as they call themselves — and drove the Historians out. Since then the draconids greet all uninvited guests with steel.\n\nIf risk is to your taste, you can try to uncover the secret of the Green Maze. But you will have to find your own way through the ancient ruins.\n\nBosses: Version 1: Supreme Spellcaster, Supreme Healer, Cursed Warrior. Version 2: Supreme Spellcaster, Supreme Healer, Reborn Warrior, Twice Born."
+ },
+ {
+  "part": "3",
+  "section": "2.19",
+  "ru": "Земля Тысячи Крыльев",
+  "en": "Land of a Thousand Wings",
+  "parent": "2",
+  "text": "Oh, that is a very interesting place. And a dangerous one!\n\nThe Land of a Thousand Wings is a jumble of rocks and fragments of ancient buildings destroyed centuries ago. Three islands are joined together by narrow walkways that offer a dizzying view. And the Land of a Thousand Wings is inhabited by the only ones who can live there without the constant risk of falling into the astral or breaking their necks on the mountain slopes. I mean the Aviaks and the harpies.\n\nAs far as I understood, the Aviaks came to the Land of a Thousand Wings first, and the harpies invaded the island much later, and it all ended in a great brawl. But somehow Cual the Stormbearer, the elder of the Aviaks, managed to tame the unruly harpies. He and the harpy queen made peace, and now these two peoples live in complete harmony, helping each other in every way. I even suspect that between Cual himself and Olivia the Temptress there is something more than a business relationship. But that is beside the point.\n\nWhen I was a guest on this island, I was always struck by Cual's wisdom and quick mind. He even managed to tame a wild manticore that lived in the ruins of the old temple! But in recent years the Aviaks have shut themselves off from the rest of the world, accused both the League and the Empire of greed and stupidity, and deal harshly with anyone who dares to set foot on their land. I do not know what caused this sudden hatred of the other peoples. Perhaps you will manage to find out the reason? But if you really intend to go to the Land of a Thousand Wings — prepare for a fierce battle!\n\nBosses: Olivia the Temptress, Silverwing, Murka, Cual the Stormbearer."
+ },
+ {
+  "part": "3",
+  "section": "2.20",
+  "ru": "Зона-51",
+  "en": "Zone 51",
+  "parent": "2",
+  "text": "From afar this island looks like a fairy tale from a distant childhood. Emerald greenery spreads out like a carpet, the peaceful singing of birds caresses the ear, and the friendly sun gently warms the earth. But be careful: this island hides many secrets, and it is not as simple as it seems at first glance.\n\nBosses: Scar, Kiddo, Crash, Nomarkh Sadaffee."
+ },
+ {
+  "part": "3",
+  "section": "2.21",
+  "ru": "Зубастая Лагуна",
+  "en": "Tusky Lagoon",
+  "parent": "2",
+  "text": "Bosses: Rattle, Ssera-Hay, Cau the Stormbringer, Tsol the Bloodstained Feather."
+ },
+ {
+  "part": "3",
+  "section": "2.22",
+  "ru": "Изумрудный Остров",
+  "en": "Emerald Isle",
+  "parent": "2",
+  "text": "Now there is a truly interesting place! There are no end of rumours about the Emerald Isle. Some say it is ruled by the Great Mage Dobrinya Velikov, who has no equal and never has had. He lives in a castle of green gems and can grant any wish. Others tell of a strange company who sought out the mage long ago: a girl named Alla, a Scarecrow, a Talking Lion and an Iron Golem.\n\nStill others retort that it is all just dust in the eyes. Dobrinya is a charlatan, and he was never blessed with any talent but cunning.\n\nBosses: Brainless Scarecrow, Steel Lumberjack, Cowardly Lion, Dobrinya Velikov."
+ },
+ {
+  "part": "3",
+  "section": "2.23",
+  "ru": "Имение Кощунского",
+  "en": "Jeer's House",
+  "parent": "2",
+  "text": "Oh, the boyar Jeer is a living legend! Although \"living\" depends on how you look at it... He is a necromancer, one of the best in the world. Some even say he is a Great Mage! Whether that's the truth or a lie, I can't say: for many years he has lived alone on his estate and talks only to the dead. His peasants are another matter: cheerful, talkative, and not poor either — if the goods are good, they always have money to spare. True, a merchant I know was there recently and told me something strange. He steps off the ship, lays out his wares, and the peasants don't even look his way: they all stand stock-still, staring at a single point. He looked closer and saw what seemed like a ghostly mist creeping over them all... He took to his heels and fled! Whether it's true or not, I can't say — I'm selling it as I bought it! If you go there, maybe you'll find out the truth?\n\nBosses: Clockwork Madman, Ill-Rot, Raven Tome, Vasilissa Artful."
+ }
+]

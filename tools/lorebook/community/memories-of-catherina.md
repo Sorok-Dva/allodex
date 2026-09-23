@@ -153,7 +153,7 @@ Darkness squeezed my head like an iron band. Losing consciousness, I cast the la
 
 ## 10 May 910
 
-Politics, as always, is made in the capital. Alas, as always, they barely take me into account! And yet it was I who saved their marvellous Kvatoh when I took up the holding spell after the death of Tensess.
+Politics, as always, is made in the capital. Alas, as always, they barely take me into account! And yet it was I who saved their marvellous Kania when I took up the holding spell after the death of Tensess.
 
 But the Conclave does not want to see me as the holder of this allod. As if they had a wide choice, ha! Catastrophe has befallen us; more than half the members of the Conclave are dead, and there are hardly many candidates.
 
@@ -163,9 +163,9 @@ However, there is another way out. Old Skrakan proposed it to me. The former hea
 
 Skrakan proposed an advantageous exchange: he will cede to me his own Umoir, the largest of the existing allods, held securely not only by spells but also by a number of powerful artefacts (as far as I understood from rumours, meteorite iron is somehow involved here).
 
-He himself will move to Kvatoh, because the war with the demons requires his presence in the capital. And the creatures, although their first onslaught was repelled, have by no means disappeared. As I understand it, Skrakan has encountered these beings once before. Most curious; I want to get to the bottom of it.
+He himself will move to Kania, because the war with the demons requires his presence in the capital. And the creatures, although their first onslaught was repelled, have by no means disappeared. As I understand it, Skrakan has encountered these beings once before. Most curious; I want to get to the bottom of it.
 
-Well, the capital is not for me (yet!), but Umoir looks like a tasty morsel too. I think I can bring a measure of progress to this backwater. The capital, the city of Plagot, is destroyed, and so is Rahl-Umoir, so this allod needs sweeping changes!
+Well, the capital is not for me (yet!), but Umoir looks like a tasty morsel too. I think I can bring a measure of progress to this backwater. The capital, the city of Plagot, is destroyed, and so is Skytower, so this allod needs sweeping changes!
 
 ## 17 March 1005
 

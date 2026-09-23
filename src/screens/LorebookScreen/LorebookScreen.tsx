@@ -5,7 +5,7 @@ import { useI18n } from '@/lib/i18n';
 import type { MessageKey } from '@/lib/i18n/messages';
 import { LanguageSwitcher } from '@/components/controls/LanguageSwitcher';
 import { loadList, loadMeta, type LoreMeta } from './lorebook.data';
-import { CONTENT_LANGS, SECTIONS, lorePath, parseLoreRoute, type ContentLang, type LoreRoute, type SectionId } from './lorebook.logic';
+import { CONTENT_LANGS, SECTIONS, isHidden, lorePath, parseLoreRoute, type ContentLang, type LoreRoute, type SectionId } from './lorebook.logic';
 import { EntryList } from './EntryList';
 import { EntryView } from './EntryView';
 import { SearchView } from './SearchView';
@@ -48,9 +48,24 @@ function SectionHome({ meta }: { meta: LoreMeta }) {
   );
 }
 
+/** Section cachée : pas de liste, une seule page de lecture (entrée atteinte par recherche ou lien). */
+function HiddenPane({ route, lang, meta }: { route: Extract<LoreRoute, { section: SectionId }>; lang: ContentLang; meta: LoreMeta }) {
+  const { t } = useI18n();
+  return (
+    <div className={`${s.book} ${s.bookSingle}`}>
+      <div className={s.pageRight} style={{ borderImageSource: `url(${tex(`${FRAME}/MainFrameRight`)})` }}>
+        {route.view === 'entry'
+          ? <EntryView key={`${route.section}/${route.id}`} section={route.section} id={route.id} lang={lang} meta={meta} />
+          : <div className={s.entry}><p className={s.empty}>{t('lore.hiddenSection')}</p></div>}
+      </div>
+    </div>
+  );
+}
+
 function SectionPane({ route, lang, meta }: { route: Extract<LoreRoute, { section: SectionId }>; lang: ContentLang; meta: LoreMeta }) {
   const { t } = useI18n();
-  const list = useAsync(() => loadList(lang, route.section), [lang, route.section]);
+  const list = useAsync(() => (isHidden(route.section) ? undefined : loadList(lang, route.section)), [lang, route.section]);
+  if (isHidden(route.section)) return <HiddenPane route={route} lang={lang} meta={meta} />;
   if (list.error) return <p className={s.empty}>{t('lore.error')}</p>;
   if (!list.data) return <p className={s.empty}>{t('lore.loading')}</p>;
   const entry = route.view === 'entry';

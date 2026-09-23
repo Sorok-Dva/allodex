@@ -71,6 +71,7 @@
   border-image-slice: 58 50 22 20 fill; border-image-width: 58px 50px 22px 20px; border-image-repeat: stretch;
   position: relative;
 }
+.bookSingle { grid-template-columns: minmax(0, 1fr); max-width: 980px; }
 .pageLeft { display: flex; flex-direction: column; margin-top: 0; }
 .pageRight { display: flex; }
 
@@ -172,6 +173,8 @@
   .bookList .pageRight { display: none; }
   .bookList .pageLeft { height: var(--page-h); }
   .bookEntry .pageLeft { display: none; }
+  .bookSingle .pageRight { border: 0; display: block; }
+  .bookSingle .entry { position: static; inset: auto; overflow: visible; }
   .bookEntry .pageRight { border: 0; display: block; }
   .bookEntry .entry { position: static; inset: auto; overflow: visible; }
   .backToList { display: inline-block; }

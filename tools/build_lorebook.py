@@ -55,6 +55,10 @@ def default_corpus() -> Path:
 LANGS = ("en", "fr", "ru")
 FALLBACK = {"en": ("en", "fr", "ru"), "fr": ("fr", "en", "ru"), "ru": ("ru", "en", "fr")}
 SECTIONS = ("timeline", "atlas", "library", "characters", "secrets", "quests")
+# sections sans liste ni onglet : leurs entrées ne sont atteintes que par la recherche et les liens
+# (les 10 500 répliques qu'aucun PNJ ne rattache alourdissaient la liste des personnages)
+HIDDEN = ("dialogues",)
+ALL_SECTIONS = SECTIONS + HIDDEN
 MIN_LOC = 300            # sous ce seuil, les rattachements de pack.bin sont peu fiables (petits entiers)
 CHUNK_BYTES = 90_000     # taille visée d'un bloc de corps (anglais, JSON compact)
 DIR_BLOCK = 64
@@ -239,7 +243,10 @@ def zone_of(path: str | None) -> str | None:
 
 ATLAS_CATEGORIES = ["Story allod", "Mentioned island", "Confrontation island", "Unstable island", "Other",
                     "Allods Adventure", "Cloud Pirates"]
-ATLAS_DOCS = {"1": "ATLAS ALLODS.docx", "2": "ATLAS ALLODS.docx",
+ATLAS_DOC_TITLES = {"ao1": "Astral Islands (AO 2.0+), part 1", "ao2": "Astral Islands (AO 2.0+), part 2",
+                    "ao3": "Astral Islands (AO 2.0+), part 3", "beta": "Astral Islands (beta and classic)"}
+ATLAS_DOCS = {"1": "ATLAS ALLODS.docx", "2": "ATLAS ALLODS.docx", "3": "ATLAS ALLODS.docx", "4": "ATLAS ALLODS.docx",
+              "5": "ATLAS ALLODS.docx", "6": "ATLAS ALLODS.docx", "7": "ATLAS ALLODS.docx",
               "ao1": "Астральные Острова(AO2.0+) ч1.docx", "ao2": "Астральные Острова(AO2.0+) ч2.docx",
               "ao3": "Астральные Острова(AO2.0+) Часть 3.docx", "beta": "Астральные Острова BETA(ОБТ и Классики).docx"}
 
@@ -262,9 +269,10 @@ class Builder:
         self.corpus = corpus
         cc = (lore.community or {}).get("credit") or {}
         self.credit = {**CREDIT_FALLBACK, **{k: v for k, v in cc.items() if k in ("line", "short", "url", "author")}, **(credit or {})}
-        self.entries: dict[str, list[dict]] = {s: [] for s in SECTIONS}
-        self.groups: dict[str, list[dict]] = {s: [] for s in SECTIONS}
+        self.entries: dict[str, list[dict]] = {s: [] for s in ALL_SECTIONS}
+        self.groups: dict[str, list[dict]] = {s: [] for s in ALL_SECTIONS}
         self.ref_of: dict[str, str] = {}        # id → « section/id »
+        self._lower_words: dict[str, collections.Counter] = {}
 
     # -- enregistrements ---------------------------------------------------------------------
     def field(self, key: str, f: dict) -> dict | None:
@@ -431,7 +439,8 @@ class Builder:
         desc_path = self.src / "atlas" / "descriptions.json"
         allods = json.loads(allods_path.read_text(encoding="utf-8")) if allods_path.exists() else []
         descs = json.loads(desc_path.read_text(encoding="utf-8")) if desc_path.exists() else []
-        for extra in sorted((self.src / "atlas").glob("astral-islands-*.json")):
+        extras = sorted((self.src / "atlas").glob("atlas-section*.json")) + sorted((self.src / "atlas").glob("astral-islands-*.json"))
+        for extra in extras:
             descs += json.loads(extra.read_text(encoding="utf-8"))
         by_ru = collections.defaultdict(list)
         for d in descs:
@@ -458,10 +467,14 @@ class Builder:
             if a.get("description"):
                 texts.append({"key": "atlasSummary", "texts": {"en": a["description"], "fr": None, "ru": None},
                               "revised": False})
-            for d in by_ru.get(atlas_key(a["ru"]), []):
+            found = by_ru.get(atlas_key(a["ru"]), [])
+            for d in found:
                 used_descs.add(id(d))
-                texts.append({"key": "atlasDescription", "texts": {"en": d["text"], "fr": None, "ru": None},
-                              "revised": False, "markdown": True})
+                rec = {"key": "atlasDescription", "texts": {"en": d["text"], "fr": None, "ru": None},
+                       "revised": False, "markdown": True}
+                if len(found) > 1:
+                    rec["heading"] = ATLAS_DOC_TITLES.get(str(d.get("part")), "Atlas of the Allods")
+                texts.append(rec)
                 # sous-lieux de la même rubrique (1.1.1 Новоград…)
                 for sub in descs:
                     if sub.get("part") == d.get("part") and sub.get("parent") == d["section"] and sub.get("text") \
@@ -546,7 +559,10 @@ class Builder:
             if meta.get("kind") == "chronology":
                 continue
             ru = read_source(self.corpus, meta.get("source", ""))
-            self.add("library", gstories, self.community_entry(meta, body, ru, meta.get("id") or f"c-{p.stem}", "story"))
+            note = meta.get("kind") == "note"
+            group = self.group("library", "notes", key="lore.group.communityNotes") if note else gstories
+            self.add("library", group, self.community_entry(meta, body, ru, meta.get("id") or f"c-{p.stem}",
+                                                            "note" if note else "story"))
         gd = self.group("library", "documents", key="lore.group.documents")
         ga = self.group("library", "ambience", key="lore.group.ambience")
         for e in self.lore.cats.get("library", []):
@@ -628,7 +644,7 @@ class Builder:
             if entry:
                 self.add("characters", gf, entry)
         self.attached_dialogues = attached
-        gd = self.group("characters", "dialogues", key="lore.group.dialogues")
+        gd = self.group("dialogues", "dialogues", key="lore.group.dialogues")
         for d in self.lore.cats.get("dialogues", []):
             if d["id"] in attached:
                 continue
@@ -637,7 +653,7 @@ class Builder:
             if entry:
                 if q:
                     entry["links"] = {"quests": [q]}
-                self.add("characters", gd, entry)
+                self.add("dialogues", gd, entry)
 
     def dialogue_item(self, d: dict) -> dict | None:
         recs = self.fields(d, ("name", "text"))
@@ -707,7 +723,7 @@ class Builder:
                 for s, ids in back[e["id"]].items():
                     e.setdefault("links", {})[s] = ids
         alias = getattr(self, "char_alias", {})
-        for s in SECTIONS:
+        for s in ALL_SECTIONS:
             for e in self.entries[s]:
                 for container in [e, *e.get("items", [])]:
                     links = container.get("links")
@@ -793,7 +809,7 @@ class Builder:
                 if p.is_file():
                     p.unlink()
         out.mkdir(parents=True, exist_ok=True)
-        self.entry_by_id = {e["id"]: e for s in SECTIONS for e in self.entries[s]}
+        self.entry_by_id = {e["id"]: e for s in ALL_SECTIONS for e in self.entries[s]}
         sizes = collections.Counter()
 
         def dump(rel: str, data) -> int:
@@ -806,7 +822,11 @@ class Builder:
 
         global_ids: list[tuple[str, dict]] = []
         meta_sections = {}
-        for s in SECTIONS:
+        for s in ALL_SECTIONS:
+            if s in HIDDEN:
+                # rangées par rid croissant : la page retrouve le bloc d'une entrée par dichotomie
+                # sur le premier rid de chaque bloc (`list/<section>-index.json`), sans liste
+                self.entries[s].sort(key=lambda e: int(e["id"][1:]) if e["id"][1:].isdigit() else 0)
             # groupes « autres » en fin de liste, puis entrées regroupées (tri stable)
             gs = self.groups[s]
             rank = sorted(range(len(gs)), key=lambda i: (gs[i]["id"] == "other", i))
@@ -814,7 +834,7 @@ class Builder:
             self.groups[s] = [gs[i] for i in rank]
             for e in self.entries[s]:
                 e["group"] = remap[e["group"]]
-            es = self.entries[s] = sorted(self.entries[s], key=lambda e: e["group"])
+            es = self.entries[s] = sorted(self.entries[s], key=lambda e: e["group"]) if s not in HIDDEN else self.entries[s]
             # blocs : l'ordre de la liste, coupé à ~CHUNK_BYTES d'anglais
             chunk, acc = 0, 0
             for e in es:
@@ -826,7 +846,11 @@ class Builder:
             for lang in LANGS:
                 by_chunk = collections.defaultdict(dict)
                 for e in es:
-                    by_chunk[e["chunk"]][e["id"]] = self.body(e, lang)
+                    body = self.body(e, lang)
+                    if s in HIDDEN:
+                        body["n"] = self.title_in(e, lang)[0]
+                        body["g"] = self.flags(e)
+                    by_chunk[e["chunk"]][e["id"]] = body
                 for c, data in by_chunk.items():
                     dump(f"text/{lang}/{s}-{c}.json", data)
             global_ids.extend((s, e) for e in es)
@@ -835,6 +859,11 @@ class Builder:
                 g = dict(g)
                 g["count"] = sum(1 for e in es if e["group"] == i)
                 groups.append(g)
+            if s in HIDDEN:
+                firsts = [int(e["id"][1:]) for i, e in enumerate(es) if i == 0 or es[i - 1]["chunk"] != e["chunk"]]
+                dump(f"list/{s}-index.json", {"first": firsts})
+                meta_sections[s] = {"count": len(es), "chunks": len(firsts), "hidden": True, "groups": []}
+                continue
             for lang in LANGS:
                 rows = [[e["id"], e["group"], e["chunk"], self.flags(e), self.title_in(e, lang)[0],
                          resolve(e["subtitle"], lang)[0] if e.get("subtitle") else ""] for e in es]
@@ -845,7 +874,7 @@ class Builder:
                                 "groups": [{"id": g["id"], "count": g["count"]} for g in groups]}
         # recherche et répertoire : ids globaux numérotés par priorité de type (à score égal, la
         # page classe par id croissant) : entités nommées d'abord, répliques et scènes en dernier
-        order = {s: i for i, s in enumerate(SECTIONS)}
+        order = {s: i for i, s in enumerate(ALL_SECTIONS)}
         global_ids.sort(key=lambda se: (SEARCH_PRIORITY.get(se[1]["kind"], 5), order[se[0]]))
         for lang in LANGS:
             postings: dict[str, list[int]] = collections.defaultdict(list)
@@ -894,8 +923,20 @@ class Builder:
                 if len(name) < 4 or not name[:1].isupper() or norm_text(name) in STOPWORDS or len(name.split()) > 5:
                     continue
                 cands[name].append(e)
+        # un nom d'un seul mot qui s'écrit surtout en minuscules dans les textes est un nom commun
+        # (« Mage », « Guard ») : pas de lien automatique
+        if lang not in self._lower_words:
+            low = collections.Counter()
+            for s in ALL_SECTIONS:
+                for e in self.entries[s]:
+                    for r in self.all_fields(e):
+                        low.update(w for w in re.findall(r"\b[a-zà-ÿа-яё]+\b", r["texts"].get(lang) or ""))
+            self._lower_words[lang] = low
+        low = self._lower_words[lang]
         out = {}
         for name in sorted(cands):
+            if " " not in name and low[name.lower()] >= 5:
+                continue
             es = cands[name]
             if len(es) == 1:
                 out[name] = self.ref_of[es[0]["id"]]
