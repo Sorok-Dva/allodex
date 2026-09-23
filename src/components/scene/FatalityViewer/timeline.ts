@@ -36,6 +36,25 @@ export type AttachEvent = {
   offset?: [number, number, number];
   until?: number;
 };
+/** Extrémité d'un rayon : un locator de la créature (`Global` = sa racine) et un décalage. */
+export type ChannelPoint = { locator: string; shift: [number, number, number] };
+/**
+ * Rayon (`CreatureChannelDirectAction`) tendu du tueur vers la victime : gabarit modelé sur
+ * `length` mètres le long de son axe Y, étiré à la distance réelle, fondus d'entrée et de sortie.
+ */
+export type ChannelEvent = {
+  t: number;
+  until: number;
+  vot: string;
+  fadeIn: number;
+  fadeOut: number;
+  length: number;
+  velocity?: number;
+  start?: ChannelPoint | null;
+  end?: ChannelPoint | null;
+};
+/** Script du tueur (`casterFxScript`) : ses animations, ses effets accrochés, ses rayons. */
+export type CasterTimeline = { anims: VictimStep[]; attached: AttachEvent[]; channels: ChannelEvent[] };
 export type FatalityTimeline = {
   end: number;
   victim: VictimStep[];
@@ -43,6 +62,7 @@ export type FatalityTimeline = {
   alpha: AlphaEvent[];
   spawns: SpawnEvent[];
   attached: AttachEvent[];
+  caster?: CasterTimeline;
   ignored?: string[];
 };
 export type FatalityObject = {
@@ -74,9 +94,14 @@ export const TRANSPARENCY_FADE_SECONDS = 1;
  * jouée par-dessus une boucle (sort de l'Écureuil) rend ainsi la main à la boucle.
  */
 export function victimStepAt(timeline: FatalityTimeline, t: number): VictimStep | null {
+  return stepAt(timeline.victim, t);
+}
+
+/** Même règle pour une liste de pas quelconque (animations du tueur). */
+export function stepAt(steps: VictimStep[], t: number): VictimStep | null {
   let running: VictimStep | null = null;
   let last: VictimStep | null = null;
-  for (const step of timeline.victim) {
+  for (const step of steps) {
     if (step.t > t || !step.anim) continue;
     last = step;
     if (t < step.end) running = step;
@@ -160,5 +185,7 @@ export function timelineSounds(timeline: FatalityTimeline, objects: Record<strin
   };
   for (const spawn of timeline.spawns) visit(spawn.vot, spawn.t, 0);
   for (const item of timeline.attached) visit(item.vot, item.t, 0);
+  for (const item of timeline.caster?.attached ?? []) visit(item.vot, item.t, 0);
+  for (const item of timeline.caster?.channels ?? []) visit(item.vot, item.t, 0);
   return out.sort((a, b) => a.t - b.t);
 }

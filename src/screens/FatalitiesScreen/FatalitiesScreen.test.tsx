@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, fireEvent, act } from '@testing-library/react';
 import type { FatalitiesIndex } from '@/lib/assets';
-import { FatalitiesScreen, victimSummary } from './FatalitiesScreen';
+import { FatalitiesScreen, defaultAttacker, victimSummary } from './FatalitiesScreen';
 
 const step = (anim: string, end: number, speed = 1) => ({ t: 0, end, anim, speed, mode: 'CLAMP' });
 const timeline = (anim: string, end: number, speed = 1) => ({ end, victim: [step(anim, end, speed)], scale: [], alpha: [], spawns: [], attached: [] });
@@ -54,6 +54,18 @@ describe('victimSummary', () => {
     expect(victimSummary(INDEX.characters[0], INDEX.fatalities[0])).toBe('DeathFatalityWarrior');
     expect(victimSummary(INDEX.characters[0], INDEX.fatalities[1])).toBe('DeathFatalityPhoenix ×0.6');
     expect(victimSummary(INDEX.characters[2], INDEX.fatalities[2])).toBeNull();
+  });
+});
+
+describe('defaultAttacker', () => {
+  it('choisit un tueur de l’autre faction, du même sexe si possible', () => {
+    const races = { ...INDEX.races, orc: { fr: 'Orc', en: 'Orc', faction: 'empire' } };
+    const orc = { ...INDEX.characters[0], id: 'orc-female', race: 'orc' };
+    const orcMale = { ...INDEX.characters[1], id: 'orc-male', race: 'orc' };
+    expect(defaultAttacker([...INDEX.characters, orcMale, orc], races, INDEX.characters[0])?.id).toBe('orc-female');
+    expect(defaultAttacker([...INDEX.characters, orcMale], races, INDEX.characters[0])?.id).toBe('orc-male');
+    // Sans adversaire, la victime se tue elle-même plutôt que rien.
+    expect(defaultAttacker(INDEX.characters, INDEX.races, INDEX.characters[0])?.id).toBe('aed-female');
   });
 });
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  objectClipTime, spawnOpacity, timelineDuration, timelineSounds, victimClipTime, victimOpacityAt, victimScaleAt,
+  objectClipTime, spawnOpacity, stepAt, timelineDuration, timelineSounds, victimClipTime, victimOpacityAt, victimScaleAt,
   victimStepAt, type FatalityTimeline,
 } from './timeline';
 import { parseParticles, particleFrame, sampleChannel, maxAlive } from './particles';
@@ -56,6 +56,19 @@ describe('objets d’effet', () => {
       B: { fadeIn: 0, fadeOut: 0, scale: 1, duration: 1, loop: false, sfx: 'sfx/B' } };
     expect(timelineDuration(TL, objects, 9, 2)).toBe(11);
     expect(timelineSounds(TL, objects)).toEqual([{ t: 1, sfx: 'sfx/A' }, { t: 1, sfx: 'sfx/B' }]);
+  });
+
+  it('le script du tueur : ses animations, et les sons de ses effets et de ses rayons', () => {
+    const objects = { C: { fadeIn: 0, fadeOut: 0, scale: 1, duration: 1, loop: false, sfx: 'sfx/C' },
+      R: { fadeIn: 0, fadeOut: 0, scale: 1, duration: 1, loop: true, sfx: 'sfx/R' } };
+    const caster = {
+      anims: [{ t: 0, end: 2, anim: 'LevelUp', speed: 1.5, mode: 'DIE' }],
+      attached: [{ t: 0, vot: 'C', locator: 'Slot_BodyFX', scale: 1, fadeIn: 0, fadeOut: 0, until: 9 }],
+      channels: [{ t: 1.2, until: 3.5, vot: 'R', fadeIn: 0.2, fadeOut: 0.1, length: 10 }],
+    };
+    expect(stepAt(caster.anims, 1)?.anim).toBe('LevelUp');
+    expect(stepAt(caster.anims, 5)?.anim).toBe('LevelUp');
+    expect(timelineSounds({ ...TL, spawns: [], attached: [], caster }, objects)).toEqual([{ t: 0, sfx: 'sfx/C' }, { t: 1.2, sfx: 'sfx/R' }]);
   });
 });
 

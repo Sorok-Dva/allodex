@@ -5,10 +5,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import type { LoadedScene, SceneLoader } from '@/components/scene/MenuScene';
 import {
-  objectClipTime, spawnOpacity, timelineDuration, timelineSounds, victimClipTime, victimOpacityAt, victimScaleAt,
-  victimStepAt, type FatalityObject, type FatalityTimeline,
+  objectClipTime, spawnOpacity, stepAt, timelineDuration, timelineSounds, victimClipTime, victimOpacityAt, victimScaleAt,
+  victimStepAt, type ChannelEvent, type ChannelPoint, type FatalityObject, type FatalityTimeline,
 } from './timeline';
 import { CameraCollider, decorColliders } from './cameraCollision';
+import { SoftMaskCache, applySoftGeometry } from './softGeometry';
 import { ParticleSystemView, loadParticleFile, type ParticleAtlasMeta, type ParticleFile, type ParticleSystemMeta } from './particles';
 import s from './FatalityViewer.module.css';
 
@@ -21,6 +22,10 @@ export type FatalityViewerProps = {
   characterUrl: string;
   /** Nom du modèle dans le `.glb` (`KaniaMale`) : préfixe des articulations, pour les locators. */
   model: string;
+  /** `.glb` du tueur (script `casterFxScript` : effets, rayon vers la victime), ou `null`. */
+  attackerUrl?: string | null;
+  /** Nom du modèle du tueur dans son `.glb` (préfixe de ses articulations). */
+  attackerModel?: string;
   /** `.glb` des gabarits d'objets de la fatalité (nœuds `vot:<nom>`), ou `null`. */
   fxUrl: string | null;
   /** Chronologie de la fatalité pour ce personnage (`tools/extract_fatalities.py`). */
@@ -64,6 +69,20 @@ export type FatalityEnvironment = {
   fog?: { color: [number, number, number]; near: number; far: number } | null;
 };
 
+/**
+ * Place du tueur : à `ATTACKER_DISTANCE` m de la victime, décalé de `ATTACKER_BEARING` depuis
+ * l'avant de la victime (côté +X du jeu), tourné vers elle. Mise en scène : le client pose le
+ * tueur où il se trouvait au coup fatal ; c'est la distance d'un sort à portée moyenne.
+ */
+const ATTACKER_DISTANCE = 5;
+const ATTACKER_BEARING = THREE.MathUtils.degToRad(55);
+/**
+ * Axe le long duquel les rayons (`CreatureChannelDirectAction`) sont modelés : l'avant des
+ * modèles du jeu, −Y (`Fatality_Channel` s'étend de 0 à −8,6 m à sa pose de bind).
+ */
+const CHANNEL_AXIS = new THREE.Vector3(0, -1, 0);
+/** Compense la division par π du Lambert de three.js : une lumière du jeu à 1 éclaire à 1. */
+const LIGHT_SCALE = Math.PI;
 /** Seuil de découpe des feuillages (textures opaques à trous). */
 const CUTOUT_ALPHA = 0.5;
 /** Couleur de fond sans décor (et sous le ciel tant qu'il charge). */
@@ -130,7 +149,8 @@ export function toViewerMaterial(source: THREE.Material, lit = true): THREE.Mate
   const common = {
     name: source.name,
     map: src.map ?? null,
-    color: 0xffffff,
+    // Teinte d'un géoset (couleur des cheveux, d'armure) portée par `baseColorFactor`.
+    color: (source.userData as { tint?: boolean } | undefined)?.tint && src.color ? src.color.clone() : new THREE.Color(0xffffff),
     opacity: source.opacity,
     alphaTest: translucent ? 0 : source.alphaTest,
     transparent: translucent,
@@ -177,7 +197,7 @@ export function faceCamera(node: THREE.Object3D, mode: string, base: THREE.Quate
  * les sons partent avec leur objet. Le temps est piloté à la main : pause, vitesse, recherche.
  */
 export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerProps>(function FatalityViewer(
-  { characterUrl, model, fxUrl, timeline, objects, fadeStart, fadeDuration, sceneUrl = null, environment = null, height,
+  { characterUrl, model, attackerUrl = null, attackerModel = '', fxUrl, timeline, objects, fadeStart, fadeDuration, sceneUrl = null, environment = null, height,
     playing, loop, speed, showFx, soundUrl = null, assetUrl, particleAtlas = null, volume = 1, className, onProgress, onEnded, onReady, createLoader, createRenderer },
   ref,
 ) {
@@ -249,11 +269,13 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     const orbit = new THREE.Vector3();
     const shown = new THREE.Vector3(Number.NaN, 0, 0);
 
-    // Lumières : celles de la zone quand un décor est posé, sinon un éclairage neutre.
+    // Lumières : celles de la zone quand un décor est posé, sinon un éclairage neutre. Le jeu
+    // éclaire en `texture × (ambiante + soleil · N·L)`, couleurs à 1 = 0x80 ; le Lambert de
+    // three.js divise par π (BRDF physique) : on le compense (`LIGHT_SCALE`).
     const ambientColor = environment?.ambient ? new THREE.Color(...environment.ambient) : new THREE.Color(0xb8c2dc);
-    scene.add(new THREE.AmbientLight(ambientColor, environment?.ambient ? 1 : 1.0));
+    scene.add(new THREE.AmbientLight(ambientColor, LIGHT_SCALE));
     const sun = new THREE.DirectionalLight(environment?.sun ? new THREE.Color(...environment.sun) : new THREE.Color(0xfff1dc),
-      environment?.sun ? 1.2 : 1.4);
+      environment?.sun ? LIGHT_SCALE : LIGHT_SCALE * 0.6);
     const dir = environment?.sunDirection ?? [-0.3, -0.6, 0.8];
     sun.position.set(-dir[0], dir[1], dir[2]);
     scene.add(sun);
@@ -281,15 +303,28 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     let victim: { root: THREE.Object3D; mixer: THREE.AnimationMixer; actions: Map<string, THREE.AnimationAction>;
       durations: Map<string, number>; tinted: Tinted[]; baseScale: THREE.Vector3 } | null = null;
     const instances: Instance[] = [];
+    let attacker: { root: THREE.Object3D; mixer: THREE.AnimationMixer; actions: Map<string, THREE.AnimationAction> } | null = null;
+    const channels: { inst: Instance; event: ChannelEvent }[] = [];
     const sounds: { t: number; audio: HTMLAudioElement; duration: number }[] = [];
 
-    const prepare = (root: THREE.Object3D, lit: boolean, tinted: Tinted[], scrolling: Scrolling[] | null) => {
+    const softMasks = new SoftMaskCache();
+    disposables.push(softMasks);
+    /** URL absolue d'une ressource référencée par un `.glb` (chemin relatif au `.glb`). */
+    const resolveFrom = (base: string | null, uri: string) => {
+      try { return new URL(uri, new URL(base ?? '', window.location.href)).href; } catch { return uri; }
+    };
+    const prepare = (root: THREE.Object3D, lit: boolean, tinted: Tinted[], scrolling: Scrolling[] | null, baseUrl: string | null = null) => {
       root.traverse(object => {
         const mesh = object as THREE.Mesh;
         if (!mesh.isMesh) return;
         mesh.frustumCulled = false;
         const source = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        const converted = source.map(m => toViewerMaterial(m, lit));
+        const converted = source.map(m => {
+          const material = toViewerMaterial(m, lit);
+          const soft = (m.userData as { soft?: string } | undefined)?.soft;
+          if (soft && material.transparent && typeof document !== 'undefined') applySoftGeometry(material, softMasks.get(resolveFrom(baseUrl, soft)));
+          return material;
+        });
         const speedPair = (mesh.geometry.userData as { uvScroll?: [number, number] }).uvScroll;
         for (const material of converted) {
           const basic = material as THREE.MeshBasicMaterial;
@@ -339,7 +374,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
         const system = info?.particles as ParticleSystemMeta | undefined;
         if (system && typeof system === 'object') withParticles.push([node, system]);
       });
-      prepare(root, false, inst.tinted, inst.scrolling);
+      prepare(root, false, inst.tinted, inst.scrolling, fxUrl);
       if (atlasTexture && particleAtlas) {
         for (const [node, system] of withParticles) {
           const file = particleFiles.get(system.file);
@@ -360,6 +395,32 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       renderer.render(scene, camera);
       st.dirty = false;
       if (firstFrame) { firstFrame = false; callbacks.current.onReady?.(); }
+    };
+
+    const pointA = new THREE.Vector3();
+    const pointB = new THREE.Vector3();
+    /** Position (repère du jeu) d'une extrémité de rayon sur une créature. */
+    const channelPoint = (who: { root: THREE.Object3D; model: string } | null, point: ChannelPoint | null | undefined, out: THREE.Vector3) => {
+      if (!who) return out.set(0, 0, 0);
+      const [sx, sy, sz] = point?.shift ?? [0, 0, 0];
+      const node = point && point.locator !== 'Global'
+        ? who.root.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(`${who.model}/${point.locator}`)) : null;
+      who.root.updateWorldMatrix(true, true);
+      (node ?? who.root).localToWorld(out.set(sx, sy, sz));
+      return world.worldToLocal(out);
+    };
+    let victimAnchor: { root: THREE.Object3D; model: string } | null = null;
+    let attackerAnchor: { root: THREE.Object3D; model: string } | null = null;
+    /** Tend un rayon du tueur à la victime : origine au départ, axe Y vers l'arrivée, étiré. */
+    const stretchChannel = (root: THREE.Object3D, event: ChannelEvent) => {
+      channelPoint(attackerAnchor, event.start, pointA);
+      channelPoint(victimAnchor, event.end, pointB);
+      const dir = pointB.sub(pointA);
+      const distance = dir.length();
+      if (distance < 1e-4) return;
+      root.position.copy(pointA);
+      root.quaternion.setFromUnitVectors(CHANNEL_AXIS, dir.divideScalar(distance));
+      root.scale.set(1, event.length > 0 ? distance / event.length : 1, 1);
     };
 
     const applyTime = (t: number) => {
@@ -385,6 +446,21 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
           if (material.transparent !== want) { material.transparent = want; material.needsUpdate = true; }
         }
       }
+      if (attacker) {
+        const step = stepAt(timeline?.caster?.anims ?? [], t);
+        const idle = [...attacker.actions.keys()].find(name => /^idle/i.test(name));
+        const active = step?.anim && attacker.actions.has(step.anim) ? step.anim : idle;
+        for (const [name, action] of attacker.actions) {
+          const on = name === active;
+          action.enabled = on;
+          action.setEffectiveWeight(on ? 1 : 0);
+          if (!on) continue;
+          const duration = action.getClip().duration;
+          action.time = step && name === step.anim ? victimClipTime(step, t, duration) : objectClipTime(t, duration, true);
+        }
+        attacker.mixer.update(0);
+      }
+      for (const { inst, event } of channels) stretchChannel(inst.root, event);
       for (const inst of instances) {
         const local = t - inst.start;
         const fade = st.showFx ? spawnOpacity(local, inst.lifeTime, inst.fadeIn, inst.fadeOut) : 0;
@@ -476,10 +552,11 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       resize();
 
       try {
-        const [character, fx, decor] = await Promise.all([
+        const [character, fx, decor, killer] = await Promise.all([
           load(characterUrl),
           fxUrl ? load(fxUrl).catch(warnLoad) : Promise.resolve(null),
           sceneUrl ? load(sceneUrl).catch(warnLoad) : Promise.resolve(null),
+          attackerUrl ? load(attackerUrl).catch(warnLoad) : Promise.resolve(null),
         ]);
         if (!alive) return;
         if (decor) {
@@ -518,6 +595,28 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
         }
         const modelRoot = character.scene.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(model)) ?? character.scene;
         victim = { root: modelRoot, mixer, actions, durations, tinted, baseScale: modelRoot.scale.clone() };
+        victimAnchor = { root: character.scene, model };
+
+        // Tueur : face à la victime, à distance ; il joue son attente (ou les animations de son script).
+        if (killer) {
+          prepare(killer.scene, true, [], null);
+          const holder = new THREE.Group();
+          holder.position.set(ATTACKER_DISTANCE * Math.sin(ATTACKER_BEARING), -ATTACKER_DISTANCE * Math.cos(ATTACKER_BEARING), 0);
+          // Les modèles regardent −Y : on les tourne vers la victime (origine).
+          holder.rotation.z = Math.atan2(-holder.position.x, holder.position.y);
+          holder.add(killer.scene);
+          world.add(holder);
+          const kMixer = new THREE.AnimationMixer(killer.scene);
+          const kActions = new Map<string, THREE.AnimationAction>();
+          for (const clip of killer.animations) {
+            const action = kMixer.clipAction(clip);
+            action.play();
+            action.paused = true;
+            kActions.set(clip.name, action);
+          }
+          attacker = { root: holder, mixer: kMixer, actions: kActions };
+          attackerAnchor = { root: killer.scene, model: attackerModel };
+        }
 
         // Particules : fichiers des gabarits utilisés, puis l'atlas commun de leurs images.
         const systems = new Set<string>();
@@ -569,6 +668,29 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
             holder.add(inst.root);
             instances.push(inst);
           }
+          if (killer && timeline.caster) {
+            for (const item of timeline.caster.attached) {
+              const p = proto(item.vot);
+              const info = objects[item.vot];
+              if (!p || !info) continue;
+              const inst = instantiate(p, fx.animations, item.t, (item.until ?? Infinity) - item.t, item.fadeIn || info.fadeIn, item.fadeOut || info.fadeOut);
+              const holder = (item.locator && killer.scene.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(`${attackerModel}/${item.locator}`))) || killer.scene;
+              const [x, y, z] = item.offset ?? [0, 0, 0];
+              inst.root.position.set(x, y, z);
+              inst.root.scale.setScalar((item.scale || 1) * (info.scale || 1));
+              holder.add(inst.root);
+              instances.push(inst);
+            }
+            for (const event of timeline.caster.channels) {
+              const p = proto(event.vot);
+              const info = objects[event.vot];
+              if (!p || !info) continue;
+              const inst = instantiate(p, fx.animations, event.t, event.until - event.t, event.fadeIn || info.fadeIn, event.fadeOut || info.fadeOut);
+              world.add(inst.root);
+              instances.push(inst);
+              channels.push({ inst, event });
+            }
+          }
         }
         if (timeline && soundUrl) {
           const ogg = typeof Audio !== 'undefined' && new Audio().canPlayType?.('audio/ogg') ? 'ogg' : 'mp3';
@@ -587,7 +709,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
         if (import.meta.env.DEV) console.warn('[FatalityViewer] chargement impossible', error);
         return;
       }
-      if (import.meta.env.DEV) (window as Window & { __fatalityViewer?: unknown }).__fatalityViewer = { scene, world, state: st, instances, victim };
+      if (import.meta.env.DEV) (window as Window & { __fatalityViewer?: unknown }).__fatalityViewer = { scene, world, state: st, instances, victim, attacker, channels };
       document.addEventListener('visibilitychange', onVisibility);
       if (!document.hidden) start();
     };
@@ -603,6 +725,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       st.controls?.dispose();
       st.controls = null;
       victim?.mixer.stopAllAction();
+      attacker?.mixer.stopAllAction();
       for (const inst of instances) inst.mixer.stopAllAction();
       st.duration = 0;
       st.time = 0;
@@ -615,7 +738,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     // La scène se reconstruit quand le personnage, la fatalité ou le décor changent ; les
     // réglages de lecture passent par l'effet précédent.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [characterUrl, fxUrl, sceneUrl, timeline, createLoader, createRenderer]);
+  }, [characterUrl, attackerUrl, fxUrl, sceneUrl, timeline, createLoader, createRenderer]);
 
   return <canvas ref={canvasRef} className={`${s.canvas} ${className ?? ''}`} data-testid="fatality-viewer" aria-hidden="true" />;
 });
