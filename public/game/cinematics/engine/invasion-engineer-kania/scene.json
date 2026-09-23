@@ -2607,14 +2607,30 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.027,
+    -0.049,
+    2.683,
+    2.2,
+    2.2,
+    3.203
+   ]
   },
   "ZC12_Statue_DemonHunter": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.1,
+    0.0,
+    4.936,
+    1.951,
+    2.134,
+    4.963
+   ]
   },
   "ZC12_Street_Torch": {
    "fadeIn": 0.0,
@@ -2752,7 +2768,15 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.001,
+    0.001,
+    -0.029,
+    0.096,
+    0.096,
+    0.0
+   ]
   },
   "ZC12_Street_Pillar_03": {
    "fadeIn": 0.0,
@@ -2760,6 +2784,14 @@
    "scale": 1.0,
    "duration": 4.0,
    "loop": true,
+   "bounds": [
+    1.37,
+    0.0,
+    4.136,
+    0.35,
+    0.357,
+    0.69
+   ],
    "components": [
     {
      "vot": "ZC12_Street_Torch",
@@ -2773,168 +2805,360 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    5.173,
+    0.102,
+    0.234,
+    6.129,
+    0.778,
+    0.367
+   ]
   },
   "ZC12_City_Border_01_X5": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    10.346,
+    0.103,
+    0.285,
+    12.257,
+    0.904,
+    0.417
+   ]
   },
   "ZC12_Street_Garbage_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.001,
+    0.047,
+    1.403,
+    4.241,
+    3.767,
+    1.668
+   ]
   },
   "Caravan_Pike": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.012,
+    0.675,
+    0.085,
+    2.257,
+    0.721,
+    0.135
+   ]
   },
   "ZC12_Bush_Small_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 4.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -0.003,
+    -0.056,
+    0.915,
+    0.778,
+    0.806,
+    0.93
+   ]
   },
   "Caravan_Barrel": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.012,
+    -0.007,
+    0.964,
+    0.402,
+    0.402,
+    0.985
+   ]
   },
   "ZC12_Aspen_Small": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 6.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -0.004,
+    -0.144,
+    4.2,
+    2.332,
+    2.563,
+    4.577
+   ]
   },
   "ZC12_Gates_Arch": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.474,
+    0.0,
+    10.429,
+    17.099,
+    7.36,
+    11.216
+   ]
   },
   "ZC12_Filbert_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 10.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -0.068,
+    0.344,
+    2.627,
+    3.131,
+    2.705,
+    2.78
+   ]
   },
   "Umoir_GreenBush_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.006,
+    0.0,
+    1.816,
+    1.566,
+    1.646,
+    1.816
+   ]
   },
   "ZC12_Street_Pillar_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.534,
+    0.0,
+    3.187,
+    1.132,
+    0.598,
+    3.187
+   ]
   },
   "Blood_Puddle": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    0.0,
+    0.637,
+    0.632,
+    0.0
+   ]
   },
   "Corpses_KaniaWarrior_M02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.003,
+    -0.01,
+    0.133,
+    0.856,
+    1.01,
+    0.186
+   ]
   },
   "Corpses_KaniaWarrior_M": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.002,
+    -0.008,
+    0.471,
+    0.923,
+    0.967,
+    0.629
+   ]
   },
   "Traders_Tent_05": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 8.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.222,
+    0.109,
+    3.351,
+    1.455,
+    2.903,
+    1.999
+   ]
   },
   "Hadagan_Hatch_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    0.091,
+    2.031,
+    2.032,
+    0.099
+   ]
   },
   "Axe": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.085,
+    -0.094,
+    0.006,
+    0.162,
+    0.381,
+    0.037
+   ]
   },
   "Kania_Big_Chest": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.003,
+    -0.036,
+    0.565,
+    0.873,
+    0.569,
+    0.567
+   ]
   },
   "Kania_Big_Kettle": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.0,
+    0.0,
+    0.482,
+    0.419,
+    0.419,
+    0.482
+   ]
   },
   "Kania_Fencelet_Frozen": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    0.7,
+    1.524,
+    1.472,
+    0.894
+   ]
   },
   "ZC12_City_Border_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    2.07,
+    0.029,
+    0.186,
+    2.494,
+    0.706,
+    0.319
+   ]
   },
   "Caravan_Barrel_Broken": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.009,
+    -0.078,
+    0.343,
+    0.511,
+    0.611,
+    0.422
+   ]
   },
   "Caravan_Dead_Horse": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.086,
+    0.317,
+    0.354,
+    1.502,
+    1.965,
+    0.527
+   ]
   },
   "ZC12_BombCrater_Fire": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.462,
+    0.313,
+    -0.156,
+    4.157,
+    4.013,
+    0.569
+   ]
   },
   "ZC12_Smoke": {
    "fadeIn": 0.0,
@@ -3163,231 +3387,495 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    18.528,
+    11.584,
+    11.584,
+    19.329
+   ]
   },
   "ZC12_House_03": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.559,
+    -0.48,
+    11.416,
+    15.152,
+    11.128,
+    13.834
+   ]
   },
   "ZC12_Wall_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    10.429,
+    21.354,
+    7.817,
+    11.216
+   ]
   },
   "ZC12_House_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.014,
+    0.014,
+    11.187,
+    8.658,
+    9.117,
+    11.728
+   ]
   },
   "ZC12_Gates_Opened": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.474,
+    0.0,
+    10.429,
+    17.099,
+    7.36,
+    11.216
+   ]
   },
   "Demonic_Hunters_Detector": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 10.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -2.643,
+    0.016,
+    11.141,
+    3.831,
+    3.474,
+    11.157
+   ]
   },
   "Kania_Port_Cage_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.005,
+    -0.003,
+    1.802,
+    2.669,
+    1.819,
+    1.805
+   ]
   },
   "Kania_Port_Cage_BrokenAI": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.006,
+    0.002,
+    1.298,
+    1.762,
+    1.357,
+    1.298
+   ]
   },
   "ZC12_Tower_04": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -0.087,
+    11.497,
+    6.32,
+    9.29,
+    12.284
+   ]
   },
   "ZC12_Aspen_Medium": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 6.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -0.742,
+    -0.358,
+    6.113,
+    4.008,
+    4.459,
+    7.018
+   ]
   },
   "Kania_Port_Barrel_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.016,
+    0.0,
+    2.881,
+    5.184,
+    1.197,
+    2.855
+   ]
   },
   "ZC12_Fir_03": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 5.3333,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.017,
+    -0.048,
+    2.192,
+    2.816,
+    3.145,
+    3.421
+   ]
   },
   "Place_A_DemonHunters_Banner_09": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.037,
+    -0.086,
+    -3.029,
+    2.487,
+    0.109,
+    2.966
+   ]
   },
   "Kania_Samovar": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.078,
+    0.0,
+    0.86,
+    0.537,
+    0.462,
+    0.868
+   ]
   },
   "ZC12_Street_Sign_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    2.496,
+    0.0,
+    -1.191,
+    2.496,
+    0.183,
+    1.568
+   ]
   },
   "Place_A_DemonHunters_Banner_05": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.014,
+    -0.067,
+    -3.028,
+    2.496,
+    0.103,
+    2.965
+   ]
   },
   "Caravan_Box": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -0.0,
+    0.764,
+    0.87,
+    1.536,
+    0.759
+   ]
   },
   "Caravan_Box_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.01,
+    0.011,
+    0.531,
+    0.722,
+    0.571,
+    0.531
+   ]
   },
   "Caravan_Desk": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.003,
+    0.247,
+    0.061,
+    0.907,
+    1.373,
+    0.074
+   ]
   },
   "Instrument_Box_Closed": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.017,
+    0.016,
+    0.315,
+    1.079,
+    0.544,
+    0.324
+   ]
   },
   "Kania_Cart": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -0.374,
+    1.214,
+    0.987,
+    1.286,
+    1.222
+   ]
   },
   "Kania_Keg": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.001,
+    -0.001,
+    0.619,
+    0.562,
+    0.562,
+    0.616
+   ]
   },
   "Traders_Tent_04": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 8.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.319,
+    0.02,
+    3.579,
+    1.444,
+    2.693,
+    1.749
+   ]
   },
   "Kania_Port_Box_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    1.272,
+    1.449,
+    2.557,
+    1.264
+   ]
   },
   "Kania_Port_Box_03": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    0.932,
+    1.025,
+    1.541,
+    0.927
+   ]
   },
   "Kania_Ship_Old_Spares": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    0.514,
+    1.445,
+    1.795,
+    0.627
+   ]
   },
   "Kania_Smith_Hammer_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.0,
+    0.0,
+    0.548,
+    0.258,
+    0.098,
+    0.545
+   ]
   },
   "Kania_Smith_Grindery": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.001,
+    -0.025,
+    0.816,
+    0.808,
+    0.679,
+    0.817
+   ]
   },
   "Kania_Toilet": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 120.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -0.14,
+    -1.108,
+    1.385,
+    0.844,
+    0.197,
+    1.077
+   ]
   },
   "Kania_Bigtit_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.079,
+    -0.047,
+    0.103,
+    0.441,
+    0.438,
+    0.106
+   ]
   },
   "ZC12_House_Enter_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -1.004,
+    0.634,
+    2.986,
+    1.686,
+    0.952
+   ]
   },
   "Bandit_Bottle_Box": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.006,
+    -0.003,
+    0.354,
+    0.483,
+    0.383,
+    0.353
+   ]
   },
   "InstLeague1_AI_2X2": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -0.857,
+    -310.401,
+    0.119,
+    0.119,
+    0.119
+   ]
   },
   "Architect_Cruiser_Glow": {
    "fadeIn": 0.0,
@@ -3609,6 +4097,14 @@
    },
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.007,
+    -9.012,
+    -1.793,
+    9.643,
+    23.153,
+    4.709
+   ],
    "components": [
     {
      "vot": "Architect_Cruiser_Glow",
@@ -3777,6 +4273,14 @@
    "scale": 1.0,
    "duration": 42.6667,
    "loop": true,
+   "bounds": [
+    38.689,
+    134.783,
+    17.721,
+    119.621,
+    314.429,
+    95.337
+   ],
    "components": [
     {
      "vot": "Architect_Cruiser_Hips",
@@ -3793,7 +4297,15 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.38,
+    0.0,
+    0.495,
+    6.209,
+    5.829,
+    0.568
+   ]
   },
   "Teleport_01": {
    "fadeIn": 0.0,
@@ -3801,6 +4313,14 @@
    "scale": 1.0,
    "duration": 6.0,
    "loop": true,
+   "bounds": [
+    0.539,
+    0.0,
+    0.18,
+    5.074,
+    4.535,
+    0.706
+   ],
    "components": [
     {
      "vot": "Teleport_01_Base",
@@ -3813,14 +4333,30 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -2.399,
+    41.595,
+    11.636,
+    45.577,
+    75.048,
+    26.724
+   ]
   },
   "Manapipe_KaniaGroupNew_Level2": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -2.698,
+    -4.513,
+    16.662,
+    58.174,
+    7.863
+   ]
   },
   "ZC6_IW_DemonHunters_Ship": {
    "fadeIn": 0.0,
@@ -3828,6 +4364,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    -0.167,
+    0.968,
+    3.234,
+    73.315,
+    72.964,
+    56.956
+   ],
    "components": [
     {
      "vot": "Manapipe_KaniaGroupNew_Level2",
@@ -3840,14 +4384,30 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.003,
+    -0.002,
+    0.425,
+    9.224,
+    6.801,
+    2.24
+   ]
   },
   "ExternalEngine_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 4.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.0,
+    4.447,
+    -4.146,
+    17.014,
+    20.359,
+    12.666
+   ]
   },
   "FireLava": {
    "fadeIn": 0.0,
@@ -3916,70 +4476,150 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.454,
+    -1.434,
+    17.685,
+    7.303,
+    25.926,
+    17.958
+   ]
   },
   "ZC12_House_04": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -3.162,
+    3.517,
+    17.886,
+    16.832,
+    16.831,
+    20.338
+   ]
   },
   "ZC12_House_05": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.011,
+    -0.089,
+    22.627,
+    11.627,
+    14.931,
+    25.898
+   ]
   },
   "ZC12_Fir_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 5.3333,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.428,
+    0.139,
+    6.448,
+    5.34,
+    5.675,
+    8.171
+   ]
   },
   "ZC12_Pine_Small_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 6.6667,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.574,
+    -0.269,
+    10.787,
+    6.891,
+    7.261,
+    14.585
+   ]
   },
   "ZC12_House_05_Damaged": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.075,
+    -0.065,
+    18.894,
+    11.627,
+    14.907,
+    22.165
+   ]
   },
   "ZC12_House_04_Damaged": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.07,
+    -0.146,
+    16.178,
+    13.298,
+    14.597,
+    18.846
+   ]
   },
   "ZC12_House_Balcony_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -0.732,
+    0.552,
+    2.482,
+    1.021,
+    0.73
+   ]
   },
   "ZC12_Pile_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    1.374,
+    14.379,
+    13.554,
+    2.062
+   ]
   },
   "ZC12_House_01_Damaged": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.015,
+    0.086,
+    12.155,
+    9.119,
+    10.06,
+    13.293
+   ]
   },
   "DrakonidFire_smol": {
    "fadeIn": 0.0,
@@ -4162,6 +4802,14 @@
    },
    "duration": 3.3333,
    "loop": true,
+   "bounds": [
+    0.501,
+    0.831,
+    5.631,
+    3.203,
+    2.734,
+    5.178
+   ],
    "sfx": "sfx/Torch02Red_lp"
   }
  },
@@ -4623,8 +5271,8 @@
   "fog": 4283458949,
   "fogEnd": 600.0,
   "fogStart": 20.0,
-  "pointLight": 4294967295,
-  "selfIllum": 2013265920,
+  "pointLight": 2013265920,
+  "selfIllum": 4283769856,
   "specular": 722692,
   "sunPitch": 90.0,
   "sunYaw": 100.0,
@@ -5584,6 +6232,7 @@
   "ambience": [
    "sfx/astral_coast_accents_day_lp"
   ],
+  "sfx": [],
   "events": {
    "music": [
     "Music/ZonesMusic/ZC12_Main",

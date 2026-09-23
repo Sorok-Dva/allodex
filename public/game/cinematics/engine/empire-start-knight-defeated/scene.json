@@ -798,49 +798,105 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    7.709,
+    -5.308,
+    -9.788,
+    48.576,
+    45.836,
+    26.477
+   ]
   },
   "Teleport_01damaged": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 6.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.38,
+    0.0,
+    0.301,
+    6.209,
+    5.829,
+    0.827
+   ]
   },
   "Hadagan_Ships_Instance_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -0.94,
+    -2.766,
+    34.803,
+    74.699,
+    45.375
+   ]
   },
   "IH1_Door_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 1.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -0.19,
+    0.922,
+    2.07,
+    1.295,
+    1.301,
+    2.063
+   ]
   },
   "Kania_Ships_Instance_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.005,
+    2.341,
+    3.378,
+    68.591,
+    67.258,
+    54.61
+   ]
   },
   "Hadagan_Ship_Interior_Front": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.015,
+    -50.27,
+    -9.021,
+    10.292,
+    15.071,
+    7.58
+   ]
   },
   "Hadagan_Ship_CaptainRoom": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.003,
+    43.098,
+    9.114,
+    13.735,
+    14.215,
+    8.052
+   ]
   },
   "Hadagan_Ship_Interior": {
    "fadeIn": 0.0,
@@ -848,6 +904,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.0,
+    -7.035,
+    -9.014,
+    19.455,
+    51.986,
+    12.872
+   ],
    "components": [
     {
      "vot": "Hadagan_Ship_CaptainRoom",
@@ -860,14 +924,30 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.015,
+    -50.27,
+    -9.021,
+    10.292,
+    15.071,
+    7.58
+   ]
   },
   "Hadagan_Ship_CaptainRoom_LOD": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.003,
+    38.352,
+    3.539,
+    11.728,
+    1.964,
+    2.471
+   ]
   },
   "Hadagan_Ship_DefaultSkin": {
    "fadeIn": 0.0,
@@ -875,6 +955,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.0,
+    -2.26,
+    4.611,
+    27.803,
+    73.38,
+    37.998
+   ],
    "components": [
     {
      "vot": "Hadagan_Ship_Interior_Front",
@@ -1020,7 +1108,15 @@
    },
    "orientation": "Z_AXIS",
    "duration": 150.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    2.869,
+    -2.294,
+    132.454,
+    165.32,
+    0.975,
+    62.958
+   ]
   },
   "DrakonidFire": {
    "fadeIn": 0.0,
@@ -1222,28 +1318,60 @@
     ]
    },
    "duration": 3.3333,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.35,
+    0.065,
+    6.599,
+    7.276,
+    3.5,
+    6.286
+   ]
   },
   "Cannon_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 3.3,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -0.0,
+    0.878,
+    0.884,
+    0.905,
+    2.106,
+    0.881
+   ]
   },
   "Cannon_01broken": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.049,
+    1.377,
+    1.363,
+    1.227,
+    2.181,
+    1.424
+   ]
   },
   "Astral_ObjectShining": {
    "fadeIn": 0.5,
    "fadeOut": 0.5,
    "scale": 1.0,
    "duration": 666.6667,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.0,
+    0.0,
+    0.0,
+    1.084,
+    1.137,
+    1.161
+   ]
   },
   "Fake_ShipShield": {
    "fadeIn": 0.0,
@@ -1251,6 +1379,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    0.0,
+    0.5,
+    0.5,
+    0.5
+   ],
    "components": [
     {
      "vot": "Astral_ObjectShining",
@@ -1263,7 +1399,15 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.009,
+    0.059,
+    0.01,
+    0.146,
+    0.073,
+    0.0
+   ]
   }
  },
  "particleAtlas": {
@@ -1997,11 +2141,14 @@
   "fog": 1181222,
   "fogEnd": 950.0,
   "fogStart": 100.0,
-  "pointLight": 4294967295,
+  "pointLight": 2017861120,
   "selfIllum": 2017861120,
   "specular": 1250303,
   "sunPitch": 45.0,
   "sunYaw": 0.0,
+  "waterSpecular": 0,
+  "waterGradientStart": 838860800,
+  "waterGradientEnd": 4116010329,
   "sunDirection": [
    0.7071,
    0.0,
