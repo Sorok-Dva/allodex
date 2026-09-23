@@ -16,8 +16,10 @@ des `.xdb` de l'arbre serveur 7.0 :
   (`VisCharacterTemplate`), `+0x60` objets portés (24 o : `+0x08` `VisualItem`), `+0xD8`
   variation en ligne (`CharacterVariation` : visage, pilosité, couleur et coiffure, peau) ;
 * `MapRegion` (`Maps/<carte>/<bloc>/<i>_<j>_MapRegion.xdb` de la base de carte) : `+0xA0` objets
-  de 72 o `(8 inutilisés, f32 x, y, z, f32[4] rotation — lacet en +0x20 —, f32 échelle en +0x28,
-  StaticObject en +0x30)`, coordonnées locales à la région (256 m : région `i_j` du bloc
+  de 72 o `(8 inutilisés, f32 x, y, z, f32[4] rotation, f32 échelle en +0x28, StaticObject en
+  +0x30)` ; rotation `(0, tangage autour de Y, roulis autour de X, lacet autour de Z)` composée
+  `Rz(lacet)·Ry(tangage)·Rx(roulis)` (établi sur l'éclairage précalculé des rochers inclinés de
+  `Ferris4` : corrélation 1,000 contre ≤ 0,5 pour le lacet seul), coordonnées locales à la région (256 m : région `i_j` du bloc
   `bx_by` à `(256·(bx+i), 256·(by+j))`) ; `StaticObject` : `+0x30` `VisObjectTemplate` ;
 * `ZoneLights` : `+0x168` éclairages (280 o), champs rangés par ordre alphabétique de leur nom
   (recoupé sur `AC5_base` 7.0 ↔ 17.0) ; `+0x2C0` `SkyMesh` (`+0x100` géométrie) ;
@@ -64,6 +66,8 @@ ZONE_LIGHTS = 0x168
 ZONE_LIGHT_STRIDE = 280
 ZONE_SKY = 0x2C0
 SKY_GEOMETRY = 0x100
+SKY_PARTS = 0x28               # SkyMesh.parts (208 o : +0x08 animation, +0xB0 géométrie, +0xB8 shift)
+SKY_PART_STRIDE = 208
 
 
 def _vec3(db: PackDB, off: int) -> tuple[float, float, float]:
@@ -170,6 +174,24 @@ class PlacedObject:
     def yaw(self) -> float:
         return self.rotation[3]
 
+    @property
+    def tilt(self) -> tuple[float, float]:
+        """(roulis autour de X, tangage autour de Y), nuls pour un objet seulement tourné."""
+        return self.rotation[2], self.rotation[1]
+
+    def matrix(self) -> np.ndarray:
+        """Rotation 3×3 locale → carte, `Rz(lacet)·Ry(tangage)·Rx(roulis)`."""
+        return euler_zyx(self.rotation[2], self.rotation[1], self.rotation[3])
+
+
+def euler_zyx(rx: float, ry: float, rz: float) -> np.ndarray:
+    """`Rz(rz)·Ry(ry)·Rx(rx)` (ordre `ZYX` d'un `THREE.Euler`)."""
+    cx, sx, cy, sy, cz, sz = np.cos(rx), np.sin(rx), np.cos(ry), np.sin(ry), np.cos(rz), np.sin(rz)
+    x = np.array([[1, 0, 0], [0, cx, -sx], [0, sx, cx]])
+    y = np.array([[cy, 0, sy], [0, 1, 0], [-sy, 0, cy]])
+    z = np.array([[cz, -sz, 0], [sz, cz, 0], [0, 0, 1]])
+    return z @ y @ x
+
 
 def region_origin(path: str) -> tuple[float, float]:
     """`Maps/X/000_000/1_0_MapRegion.xdb` → origine (x, y) de la région en mètres."""
@@ -244,3 +266,54 @@ def read_zone_light(db: PackDB) -> dict:
             "selfIllum": db.u32(e + 0x4C), "specular": db.u32(e + 0x54),
             "sunPitch": round(db.f32(e + 0x5C), 3), "sunYaw": round(db.f32(e + 0x60), 3),
             "sky": sky, "skyGeometry": db.ptr(sky + SKY_GEOMETRY) if sky is not None else None}
+
+
+def sky_parts(db: PackDB, sky: int | None) -> list[tuple[int, int | None, float]]:
+    """Calques d'un `SkyMesh` : (géométrie, animation, décalage vertical `shift`). Recoupé sur
+    `AI52_BossFight` (7.0 : `shift` −55 sur l'horizon animé)."""
+    if sky is None:
+        return []
+    out = []
+    for e in db.elements(sky + SKY_PARTS, SKY_PART_STRIDE):
+        geo = db.ptr(e + 0xB0)
+        if geo is not None:
+            out.append((geo, db.ptr(e + 0x08), db.f32(e + 0xB8)))
+    if not out and db.ptr(sky + SKY_GEOMETRY) is not None:
+        out.append((db.ptr(sky + SKY_GEOMETRY), None, 0.0))
+    return out
+
+
+class PackBinView:
+    """Vue `PackDB` minimale (lecture des répliques) sur une base lue par `tools/packbin.py` : le client
+    FR 16.0 a un `pack.bin` de format 15/16 que `PackDB` ne lit pas, mêmes structures et **mêmes
+    identifiants de ressources** que le 17.0 (constat de `tools/extract_lore.py`)."""
+
+    def __init__(self, pb) -> None:
+        self.pb = pb
+        self.ids = pb.ids
+
+    def u32(self, off: int) -> int:
+        return self.pb.u32(off)
+
+    def ptr(self, off: int) -> int | None:
+        return self.pb.ptr(off)
+
+    def vtype(self, off: int) -> str | None:
+        return self.pb.type_at(off)
+
+    def vec(self, off: int) -> tuple[int, int] | None:
+        target, size = self.pb.vector(off)
+        return None if target is None else (target, size)
+
+    def elements(self, off: int, stride: int) -> list[int]:
+        v = self.vec(off)
+        return [] if v is None else [v[0] + stride * k for k in range(v[1] // stride)]
+
+    def pointers(self, off: int) -> list[int]:
+        v = self.vec(off)
+        if v is None:
+            return []
+        return [p for p in (self.pb.ptr(v[0] + 8 * k) for k in range(v[1] // 8)) if p is not None]
+
+    def string(self, off: int) -> str | None:
+        return self.pb.string(off)

@@ -72,4 +72,22 @@ describe('engine cutscene paths, fades and sounds', () => {
     expect(falloff(30, 60)).toBe(0.5);
     expect(falloff(90, 60)).toBe(0);
   });
+
+  it('raises and lowers a black veil around its span', async () => {
+    const { veilAt } = await import('./timeline');
+    const post = [{ t: 4, kind: 'veil' as const, until: 8, fadeIn: 2, fadeOut: 1 }];
+    expect(veilAt(post, 3)).toBe(0);
+    expect(veilAt(post, 5)).toBe(0.5);
+    expect(veilAt(post, 7)).toBe(1);
+    expect(veilAt(post, 8.5)).toBe(0.5);
+    expect(veilAt(post, 10)).toBe(0);
+  });
+
+  it('chains the client clips of a line with their own lengths', () => {
+    const actor = { id: 'saw', idle: 'Idle01', talk: 'EmoteSpeech', animations: { Point: 1.5, EmoteSpeech: 2 } };
+    const lines = [{ ...line(1, 10, 5, 'saw', 3, ['point', 'emoteSpeech']), clips: ['Point', 'EmoteSpeech', 'Missing'] }];
+    expect(actorClipAt(actor, lines, 11)).toEqual({ clip: 'Point', time: 1 });
+    expect(actorClipAt(actor, lines, 12)).toEqual({ clip: 'EmoteSpeech', time: 0.5 });
+    expect(actorClipAt(actor, lines, 14)).toEqual({ clip: 'Idle01', time: 14 });
+  });
 });

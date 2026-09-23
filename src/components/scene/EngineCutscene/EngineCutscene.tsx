@@ -306,6 +306,8 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       state.ready = 1;
       callbacks.current.onLoadedMetadata?.();
       camera.fov = data.camera.fov || 45;
+      // Désaturation d'un changement de temps (vision, souvenir) : filtre de l'image entière.
+      if (data.light.desaturation) canvas.style.filter = `saturate(${Math.max(0, 1 - data.light.desaturation)})`;
       if (data.mirror) world.scale.set(-1, 1, 1);
       const light = data.light;
       const fog = new THREE.Color(...argb(light.fog));
@@ -335,15 +337,13 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         }
         return audio;
       });
-      for (const file of data.sounds.music ?? []) {
-        const audio = audioFile(file);
-        audio.loop = true;
-        state.loops.push({ audio, volume: volume.music ?? 0.4, position: null, start: 0, until: Infinity, kind: 'music' });
-      }
-      for (const file of data.sounds.ambience ?? []) {
-        const audio = audioFile(file);
-        audio.loop = true;
-        state.loops.push({ audio, volume: volume.ambience ?? 0.5, position: null, start: 0, until: Infinity, kind: 'ambience' });
+      for (const kind of ['music', 'ambience'] as const) {
+        for (const entry of data.sounds[kind] ?? []) {
+          const item = typeof entry === 'string' ? { file: entry, t: 0, until: Infinity } : entry;
+          const audio = audioFile(item.file);
+          audio.loop = true;
+          state.loops.push({ audio, volume: volume[kind] ?? (kind === 'music' ? 0.4 : 0.5), position: null, start: item.t, until: item.until, kind });
+        }
       }
 
       renderer = createRenderer
@@ -419,7 +419,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         if (!proto || !info) continue;
         const inst = factory.instantiate(proto, clips, 0, Infinity, 0, 0);
         inst.root.position.set(...item.p);
-        inst.root.rotation.z = item.yaw;
+        inst.root.rotation.set(item.tilt?.[0] ?? 0, item.tilt?.[1] ?? 0, item.yaw, 'ZYX');
         inst.root.scale.setScalar((item.scale || 1) * (info.scale || 1));
         // Éclairage précalculé de l'instance (octets à moitié : le matériau double) sur son maillage
         // propre ; les autres maillages opaques (composants) prennent l'ambiante.
@@ -483,7 +483,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       state.ready = 4;
       state.dirty = true;
       setLoading(false);
-      if (import.meta.env.DEV) (window as Window & { __engineCutscene?: unknown }).__engineCutscene = { view, world, camera, state, actors, renderer, decorInstances, spawns };
+      if (import.meta.env.DEV) (window as Window & { __engineCutscene?: unknown }).__engineCutscene = { THREE, view, world, camera, state, actors, renderer, decorInstances, spawns };
       frame = requestAnimationFrame(tick);
     };
     void setup();

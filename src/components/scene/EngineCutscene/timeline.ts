@@ -17,6 +17,8 @@ export type EngineLine = {
   speaker: string | null;
   voice: EngineVoice | null;
   animations: string[];
+  /** Clips joués à la suite par le locuteur (animations de son `ClientData`), puis l'attente. */
+  clips?: string[];
   text: Partial<Record<SubtitleLang, string>>;
 };
 
@@ -52,11 +54,18 @@ export type EngineLight = {
   sunYaw?: number;
   sunPitch?: number;
   sunDirection?: Vec3;
+  /** Désaturation de l'image (0 à 1) d'un changement de temps (`WeatherCreatureVisAction`). */
+  desaturation?: number;
 };
 
-export type DecorInstance = { vot: string; p: Vec3; yaw: number; scale?: number; light?: [number, number]; ambient?: Vec3 };
+/** `tilt` : (roulis X, tangage Y) des objets inclinés, composés `Rz(yaw)·Ry·Rx` (Euler `ZYX`). */
+export type DecorInstance = { vot: string; p: Vec3; yaw: number; tilt?: [number, number]; scale?: number; light?: [number, number]; ambient?: Vec3 };
 export type FxSpawn = { vot: string; t: number; until: number; p?: Vec3; yaw?: number; scale?: number; attach?: string; locator?: string };
-export type PostEffect = { t: number; kind: 'fadeIn' | 'fadeOut'; duration: number };
+export type PostEffect =
+  | { t: number; kind: 'fadeIn' | 'fadeOut'; duration: number }
+  /** Voile noir d'un `UserPostEffect` : monte en `fadeIn` s dès `t`, tient, redescend en `fadeOut` s à `until`. */
+  | { t: number; kind: 'veil'; until: number; fadeIn: number; fadeOut: number };
+export type SoundLoop = string | { file: string; t: number; until: number };
 
 export type EngineScene = {
   id: string;
@@ -71,7 +80,7 @@ export type EngineScene = {
   objects: Record<string, import('@/components/scene/FatalityViewer/timeline').FatalityObject>;
   particleAtlas: import('@/components/scene/FatalityViewer/particles').ParticleAtlasMeta | null;
   light: EngineLight;
-  sounds: { music: string[]; ambience: string[]; volume?: Partial<Record<'music' | 'ambience' | 'sfx' | 'voice', number>> };
+  sounds: { music: SoundLoop[]; ambience: SoundLoop[]; volume?: Partial<Record<'music' | 'ambience' | 'sfx' | 'voice', number>> };
   post: PostEffect[];
 };
 
@@ -124,15 +133,27 @@ export function voiceAt(lines: readonly EngineLine[], t: number): { index: numbe
 }
 
 /**
- * Clip d'un acteur à l'instant `t` : le clip de parole pendant une réplique dont le `ClientData`
- * demande une animation (`emoteSpeech`), l'attente sinon ; renvoie aussi le temps dans le clip.
+ * Clip d'un acteur à l'instant `t` : pendant une réplique dont le `ClientData` demande des animations,
+ * ses clips à la suite (durées de l'acteur), sinon le clip de parole de l'acteur (scènes mises en
+ * scène), sinon l'attente ; renvoie aussi le temps dans le clip.
  */
-export function actorClipAt(actor: Pick<EngineActor, 'id' | 'idle' | 'talk'>, lines: readonly EngineLine[], t: number): { clip: string; time: number } {
-  if (actor.talk) {
-    for (const line of lines) {
-      if (line.speaker !== actor.id || !line.animations.length) continue;
+export function actorClipAt(actor: Pick<EngineActor, 'id' | 'idle' | 'talk'> & { animations?: Record<string, number> },
+  lines: readonly EngineLine[], t: number): { clip: string; time: number } {
+  for (const line of lines) {
+    if (line.speaker !== actor.id || t < line.start) continue;
+    const clips = (line.clips ?? []).filter(c => !actor.animations || c in actor.animations);
+    if (clips.length && actor.animations) {
+      let local = t - line.start;
+      for (const clip of clips) {
+        const length = actor.animations[clip] || 0;
+        if (local < length) return { clip, time: local };
+        local -= length;
+      }
+      continue;
+    }
+    if (actor.talk && line.animations.length) {
       const length = line.voice?.duration ?? line.duration;
-      if (t >= line.start && t < line.start + length) return { clip: actor.talk, time: t - line.start };
+      if (t < line.start + length) return { clip: actor.talk, time: t - line.start };
     }
   }
   return { clip: actor.idle, time: t };
@@ -174,6 +195,12 @@ export function veilAt(post: readonly PostEffect[], t: number): number {
     const local = t - fx.t;
     if (fx.kind === 'fadeIn' && local < fx.duration) veil = Math.max(veil, local < 0 ? 1 : 1 - local / fx.duration);
     if (fx.kind === 'fadeOut' && local >= 0) veil = Math.max(veil, fx.duration > 0 ? Math.min(1, local / fx.duration) : 1);
+    if (fx.kind === 'veil' && local >= 0) {
+      const up = fx.fadeIn > 0 ? Math.min(1, local / fx.fadeIn) : 1;
+      const after = t - fx.until;
+      const down = after <= 0 ? 1 : fx.fadeOut > 0 ? Math.max(0, 1 - after / fx.fadeOut) : 0;
+      veil = Math.max(veil, Math.min(up, down));
+    }
   }
   return veil;
 }

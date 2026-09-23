@@ -52,14 +52,13 @@ from PIL import Image
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from tools import extract_menu_scene as _ems  # noqa: E402
 from tools.allods_characters import bake_skin, read_character_template, read_variation, read_visual_item, resolve_appearance  # noqa: E402
 from tools.allods_fx import FxBuild, ParticlePool, fsb5_stream_names  # noqa: E402
 from tools.allods_gltf import Exporter, TexturePool, load_animation, load_geometry  # noqa: E402
 from tools.allods_packdb import EXTERN, PackDB, open_catalog, open_map, open_pack  # noqa: E402
 from tools.allods_scenes import (  # noqa: E402
     VM_VARIATION, buff_camera_track, buff_scripts, mob_name_index, mob_visual, read_client_line, read_lightvrt,
-    read_regions, read_zone_light, static_visobject, visual_dress, visual_template,
+    read_regions, read_zone_light, sky_parts, static_visobject, visual_dress, visual_template,
 )
 from tools.allods_visdb import animation_names, read_action, read_visobject  # noqa: E402
 from tools.extract_cinematics import (  # noqa: E402
@@ -125,20 +124,22 @@ def encode_light(values: np.ndarray) -> np.ndarray:
 
 def point_lights(db: PackDB, objects) -> list[dict]:
     """Lumières ponctuelles des objets posés (`LightComponent` : +0x44 attenuationPower,
-    +0x64 intensity, +0x6C pivot, +0x78 radius ; recoupé sur `AC6_Torch_Cup_Red` 7.0)."""
+    +0x64 intensity, +0x6C pivot, +0x78 radius ; recoupé sur `AC6_Torch_Cup_Red` 7.0). Pivot et
+    rayon suivent l'échelle de l'objet (lumières de `Ferris4` posées à l'échelle 2,8 à 6,2 : sans
+    elle, l'octet 2 des murs éclairés n'a pas de source) ; une intensité négative assombrit."""
     out = []
     for obj in objects:
         vot = static_visobject(db, obj.static_object)
         if vot is None:
             continue
+        scale = obj.scale if obj.scale > 0 else 1.0
         for comp in db.pointers(vot + 0x138):
             if db.vtype(comp) != "LightComponent":
                 continue
-            pivot = np.array(db.floats(comp + 0x6C, 3))
-            c, s = math.cos(obj.yaw), math.sin(obj.yaw)
-            pos = np.array(obj.position) + np.array([pivot[0] * c - pivot[1] * s, pivot[0] * s + pivot[1] * c, pivot[2]])
+            pivot = np.array(db.floats(comp + 0x6C, 3), float)
+            pos = np.array(obj.position) + obj.matrix() @ pivot * scale
             out.append({"p": [round(float(v), 3) for v in pos], "intensity": round(db.f32(comp + 0x64), 4),
-                        "radius": round(db.f32(comp + 0x78), 3), "attenuation": round(db.f32(comp + 0x44), 4)})
+                        "radius": round(db.f32(comp + 0x78) * scale, 3), "attenuation": round(db.f32(comp + 0x44), 4)})
     return out
 
 
@@ -151,15 +152,11 @@ def light_at(position, lights: list[dict], light: dict) -> list[float]:
         d = float(np.linalg.norm(np.array(lt["p"]) - p))
         if d < lt["radius"]:
             total += lt["intensity"] * (1 - d / lt["radius"]) ** lt["attenuation"] * 0.5
-    rgb = _rgb(light.get("ambient")) + min(total, 1.0) * _rgb(light.get("pointLight", 0xFFFFFFFF))
+    rgb = _rgb(light.get("ambient")) + min(max(total, 0.0), 1.0) * _rgb(light.get("pointLight", 0xFFFFFFFF))
     return [round(float(v), 4) for v in rgb]
 
 
 # --- décor ---------------------------------------------------------------------------------------
-
-def yaw_quaternion(yaw: float) -> list[float]:
-    return [0.0, 0.0, math.sin(yaw / 2), math.cos(yaw / 2)]
-
 
 def ground_z(solids: np.ndarray, x: float, y: float, below: float) -> float | None:
     """Plus haute surface opaque du décor sous le point (x, y), sous l'altitude `below`."""
@@ -215,6 +212,8 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
         if name not in fx.meta:
             continue
         inst = {"vot": name, "p": [round(v, 4) for v in obj.position], "yaw": round(obj.yaw, 5)}
+        if any(abs(math.sin(a)) > 1e-4 for a in obj.tilt):
+            inst["tilt"] = [round(a, 5) for a in obj.tilt]
         if abs(obj.scale - 1) > 1e-6 and obj.scale > 0:
             inst["scale"] = round(obj.scale, 5)
         raw = lightvrt.get((obj.region, obj.index))
@@ -225,7 +224,7 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
             loaded = geometries[vis.geometry]
         if loaded is not None:
             world = np.eye(4)
-            world[:3, :3] = _ems.quat_matrix(np.array(yaw_quaternion(obj.yaw))) * (obj.scale if obj.scale > 0 else 1.0)
+            world[:3, :3] = obj.matrix() * (obj.scale if obj.scale > 0 else 1.0)
             world[:3, 3] = obj.position
             normals = loaded.vertices.get("normal")
             wn = normals.astype(np.float64) @ world[:3, :3].T if normals is not None else None
@@ -247,15 +246,25 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
                 solids.append(((pts @ world.T)[:, :3])[idx].reshape(-1, 3, 3))
         instances.append(inst)
     sky = None
-    if light.get("skyGeometry") is not None:
-        loaded = load_geometry(mp, cat, bins, light["skyGeometry"])
-        if loaded is not None:
-            elements = [e for e in loaded.geo.doc.elements if e.material.visible and e.material.texture]
-            mesh, _ = fx.exporter.emit_mesh("sky", loaded.geo, loaded.vertices, loaded.indices, elements, None)
-            if mesh is not None:
-                fx.roots.append(fx.exporter.gltf.add_node({"name": "sky", "mesh": mesh, "extras": {"sky": True}}))
-                aabb = loaded.geo.doc.aabb
-                sky = {"radius": round(float(np.max(np.abs(np.concatenate(aabb)))), 2)}
+    parts = sky_parts(mp, light.get("sky"))
+    if light.get("skyParts"):
+        parts = light["skyParts"]
+    children, radius = [], 0.0
+    for geo, _anim, shift in parts:
+        loaded = load_geometry(mp, cat, bins, geo)
+        if loaded is None:
+            continue
+        elements = [e for e in loaded.geo.doc.elements if e.material.visible and e.material.texture]
+        mesh, _ = fx.exporter.emit_mesh("sky", loaded.geo, loaded.vertices, loaded.indices, elements, None)
+        if mesh is not None:
+            node = {"mesh": mesh}
+            if shift:
+                node["translation"] = [0.0, 0.0, float(shift)]
+            children.append(fx.exporter.gltf.add_node(node))
+            radius = max(radius, float(np.max(np.abs(np.concatenate(loaded.geo.doc.aabb)))))
+    if children:
+        fx.roots.append(fx.exporter.gltf.add_node({"name": "sky", "children": children, "extras": {"sky": True}}))
+        sky = {"radius": round(radius, 2), "parts": len(children)}
     glb = fx.exporter.finish(fx.roots)
     report.append(f"décor : {len(instances)} objets posés ({len(emitted)} gabarits), {skipped} sans gabarit visuel, "
                   f"{sum(1 for i in instances if 'light' in i)} avec éclairage précalculé")
@@ -295,10 +304,12 @@ def animation_file(bins, geometry_binary: str, anim: str) -> str | None:
     return None
 
 
-def build_actor(actor: dict, db: PackDB, cat, bins, textures: TexturePool, report: list[str]) -> tuple[bytes, dict]:
+def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, textures: TexturePool,
+                       report: list[str]) -> tuple[bytes, dict]:
     """Acteur : gabarit de sa `VisualMob` ; un personnage (gabarit à tenue par défaut) est habillé
     par `allods_characters` avec la variation et les objets de sa `VisualMob`."""
-    mob = pack_offset(db, actor["mob"])
+    if mob is not None and getattr(db, "parent", None) is not None:
+        mob |= EXTERN   # ressource de pack.bin vue depuis la base de carte
     if mob is None:
         raise ValueError(f"{actor['id']} : MobWorld {actor['mob']} introuvable")
     visual = mob_visual(db, mob)
@@ -373,7 +384,8 @@ def build_actor(actor: dict, db: PackDB, cat, bins, textures: TexturePool, repor
         file = animation_file(bins, loaded.geo.binary, anim)
         animation = load_animation(bins, file, skeleton, span)
         if animation is None:
-            report.append(f"{actor['id']} : animation absente {anim}")
+            if anim not in ("Idle", "Idle01"):
+                report.append(f"{actor['id']} : animation absente {anim}")
             continue
         durations[anim] = round(ex.emit_clip(anim, skeleton, joints, animation), 4)
     scale = vot.scale if vot.scale > 0 else 1.0
@@ -536,30 +548,28 @@ def export_waves(events: set[str], bins, out_dir: Path, vgmstream: Path, report:
     return found
 
 
-def export_voices(events: list[str | None], bank: str, bins, out_dir: Path, vgmstream: Path,
-                  report: list[str]) -> list[dict | None]:
-    data = bins.get(bank)
-    if data is None:
-        report.append(f"banque vocale introuvable : {bank}")
-        return [None] * len(events)
-    if bank.endswith(".bsb"):
-        data = zlib.decompress(data)
-    payload = data[data.find(b"FSB5"):]
-    names = fsb5_stream_names(payload)
+def export_voices(events: list[str | None], bins, out_dir: Path, vgmstream: Path, report: list[str],
+                  index: dict) -> list[dict | None]:
+    """Voix des répliques : onde nommée comme la fin de l'événement (`Cutscenes/Eden2/Prologue04_Cutscene_1`
+    → `Prologue04_Cutscene_1`), cherchée dans les banques `SFX/Voice/*` d'abord."""
     out_dir.mkdir(parents=True, exist_ok=True)
     result: list[dict | None] = []
     with tempfile.TemporaryDirectory(prefix="allodex-voice-") as tmp:
-        fsb = Path(tmp) / "bank.fsb"
-        fsb.write_bytes(payload)
         for n, event in enumerate(events, 1):
-            tail = (event or "").split("/")[-1]
-            if tail not in names:
-                report.append(f"voix absente de la banque : {event}")
+            hit = find_wave(event, index, "SFX/Voice/") if event else None
+            if hit is None:
+                if event:
+                    report.append(f"voix introuvable : {event}")
                 result.append(None)
                 continue
+            bank, sub, stream = hit
+            raw = bins.get(bank)
+            if bank.lower().endswith(".bsb"):
+                raw = zlib.decompress(raw)
+            fsb = Path(tmp) / "bank.fsb"
+            fsb.write_bytes(raw[raw.find(b"FSB5"):])
             wav = Path(tmp) / f"{n}.wav"
-            subprocess.run([str(vgmstream), "-i", "-s", str(names.index(tail) + 1), "-o", str(wav), str(fsb)],
-                           check=True, capture_output=True)
+            subprocess.run([str(vgmstream), "-i", "-s", str(sub), "-o", str(wav), str(fsb)], check=True, capture_output=True)
             base = out_dir / f"{n:02d}"
             for ext, args in (("ogg", ["-c:a", "libopus", "-b:a", "48k"]), ("mp3", ["-c:a", "libmp3lame", "-b:a", "64k"])):
                 subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav), "-ac", "1", *args,
@@ -567,7 +577,8 @@ def export_voices(events: list[str | None], bank: str, bins, out_dir: Path, vgms
             duration = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of",
                                              "default=nw=1:nk=1", str(base.with_suffix(".ogg"))],
                                             capture_output=True, text=True).stdout.strip() or 0)
-            result.append({"event": event, "ogg": f"voice/{n:02d}.ogg", "mp3": f"voice/{n:02d}.mp3", "duration": round(duration, 3)})
+            result.append({"event": event, "wave": stream, "bank": bank, "ogg": f"voice/{n:02d}.ogg",
+                           "mp3": f"voice/{n:02d}.mp3", "duration": round(duration, 3)})
     return result
 
 
@@ -588,9 +599,10 @@ def camera_keys(track) -> dict:
     return {"points": cam, "targets": tgt, "duration": round(total, 3)}
 
 
-def schedule_lines(spec: dict, camera: dict, voices: list[dict | None], lines: list[Line]) -> list[float]:
-    """Départ de chaque réplique : chaque groupe du manifeste s'ouvre au début du tronçon de caméra
-    indiqué (+ `lead`), les répliques d'un groupe s'enchaînent à la fin de la voix précédente (+ `gap`)."""
+def schedule_lines(spec: dict, camera: dict, voices: list[dict | None], lines: list) -> list[float]:
+    """Départ de chaque réplique (scènes sans déroulé serveur) : chaque groupe du manifeste s'ouvre au
+    début du tronçon de caméra indiqué (+ `lead`), les répliques d'un groupe s'enchaînent à la fin de
+    la voix précédente (+ `gap`)."""
     starts = [0.0] * len(lines)
     times = [k["t"] for k in camera["points"]]
     lead, gap = spec["timing"].get("lead", 0.5), spec["timing"].get("gap", 0.6)
@@ -599,47 +611,13 @@ def schedule_lines(spec: dict, camera: dict, voices: list[dict | None], lines: l
         for n in group["lines"]:
             i = n - 1
             starts[i] = round(t, 3)
-            length = voices[i]["duration"] if voices[i] else lines[i].duration
+            length = voices[i]["duration"] if voices[i] else lines[i]["duration"]
             t += length + gap
     return starts
 
 
-def resolve_scene_lines(spec: dict, db: PackDB, main: TextSet, fr: TextSet | None, report: list[str]) -> tuple[list[Line], list]:
-    lines, raw = [], []
-    delta = None
-    for n, rid in enumerate(spec["lines"], 1):
-        cd = db.ids.get(int(rid))
-        if cd is None:
-            raise ValueError(f"ClientData {rid} introuvable")
-        cl = read_client_line(db, cd)
-        raw.append(cl)
-        idx = cl.text_index
-        text = {"ru": clean_text(main.texts["ru"][idx])}
-        en = clean_text(main.texts["en"][idx])
-        if en and not has_cyrillic(en):
-            text["en"] = en
-        if fr is not None:
-            if delta is None and spec.get("fr_anchor"):
-                delta = idx - fr.find("fr", spec["fr_anchor"])
-            j = idx - (delta or 0)
-            if delta is not None and fr.subtitles.get(j) == cl.delay_ms:
-                text["fr"] = clean_text(fr.texts["fr"][j])
-            else:
-                report.append(f"réplique {n} : pas de français (index {j})")
-        lines.append(Line(cl.delay_ms / 1000, text))
-    return lines, raw
-
-
-def speaker_of(line: Line, actors: list[dict]) -> str | None:
-    ru = line.text.get("ru", "")
-    for a in actors:
-        if any(ru.startswith(p) for p in a.get("speaker_prefixes", [])):
-            return a["id"]
-    return None
-
-
 def place(point: list[float], solids: np.ndarray, ground: bool) -> list[float]:
-    """Pose un point du manifeste sur le décor (`ground`) : z = surface sous `point[2]`."""
+    """Pose un point sur le décor (`ground`) : z = surface opaque sous `point[2]`."""
     if not ground:
         return [round(float(v), 4) for v in point]
     z = ground_z(solids, point[0], point[1], point[2] if len(point) > 2 else 1e9)
@@ -650,50 +628,318 @@ def face_yaw(position: list[float], face: list[float]) -> float:
     return round(math.atan2(face[1] - position[1], face[0] - position[0]) - MODEL_FORWARD, 4)
 
 
+def clip_name(anim: str) -> str:
+    """Nom d'animation du jeu (`emoteSpeech`) → nom de fichier (`EmoteSpeech`)."""
+    return anim[:1].upper() + anim[1:]
+
+
+class Texts:
+    """Textes des répliques : RU/EN du 17.0 par indice ; FR du client 16.0 par l'événement de voix de
+    son `ClientData` (même voix, autre construction), sinon par décalage d'indice ancré."""
+
+    def __init__(self, manifest: dict, report: list[str]) -> None:
+        main_spec, fr_spec = manifest["sources"]["main"], manifest["sources"]["fr"]
+        self.main = load_textset(Path(main_spec["root"]), main_spec)
+        try:
+            self.fr = load_textset(Path(fr_spec["root"]), fr_spec)
+        except (OSError, KeyError, zipfile.BadZipFile) as exc:
+            report.append(f"textes FR illisibles : {exc}")
+            self.fr = None
+        self.fr_voice: dict[str, tuple[int, int]] = {}
+        self.fr_root = Path(fr_spec["root"])
+
+    def load_fr_voices(self) -> None:
+        if self.fr_voice or self.fr is None:
+            return
+        from tools.allods_packdb import default_cache_dir
+        from tools.allods_scenes import PackBinView
+        from tools.packbin import PackBin
+        pak = self.fr_root / "data" / "Packs" / "BaseLocfra_x64.pak"
+        stat = pak.stat()
+        raw_path = default_cache_dir() / f"pack-fr-{stat.st_size}-{int(stat.st_mtime)}.raw"
+        if not raw_path.is_file():
+            raw_path.parent.mkdir(parents=True, exist_ok=True)
+            raw_path.write_bytes(zlib.decompress(zipfile.ZipFile(pak).read("Bin/pack.bin")))
+        pb = PackBin(raw_path.read_bytes())
+        view = PackBinView(pb)
+        for off in pb.objects_of("ClientData"):
+            try:
+                cl = read_client_line(view, off)
+            except Exception:  # noqa: BLE001 — ClientData d'une autre forme
+                continue
+            if cl.voice and cl.text_index is not None:
+                self.fr_voice.setdefault(cl.voice, (cl.text_index, cl.delay_ms))
+
+    def line(self, idx: int | None, voice: str | None, delay_ms: int, anchor_delta: int | None) -> dict:
+        text: dict[str, str] = {}
+        if idx is not None:
+            text["ru"] = clean_text(self.main.texts["ru"][idx])
+            en = clean_text(self.main.texts["en"][idx])
+            if en and not has_cyrillic(en):
+                text["en"] = en
+        if self.fr is not None:
+            self.load_fr_voices()
+            j = None
+            if voice and voice in self.fr_voice:
+                j = self.fr_voice[voice][0]
+            elif anchor_delta is not None and idx is not None and self.fr.subtitles.get(idx - anchor_delta) == delay_ms:
+                j = idx - anchor_delta
+            if j is not None and j < len(self.fr.texts["fr"]):
+                text["fr"] = clean_text(self.fr.texts["fr"][j])
+        return text
+
+
+class ClientLines:
+    """Répliques du 17.0 indexées par événement de voix et par texte russe."""
+
+    def __init__(self, db: PackDB, texts: Texts) -> None:
+        from tools.extract_cinematics import norm_key
+        self.by_voice: dict[str, list[int]] = {}
+        self.by_text: dict[str, list[int]] = {}
+        self.lines: dict[int, object] = {}
+        for off in db.resources("ClientData"):
+            try:
+                cl = read_client_line(db, off)
+            except Exception:  # noqa: BLE001
+                continue
+            if not (cl.voice or cl.text_index is not None):
+                continue
+            self.lines[off] = cl
+            if cl.voice:
+                self.by_voice.setdefault(cl.voice, []).append(off)
+            if cl.text_index is not None and cl.text_index < len(texts.main.texts["ru"]):
+                self.by_text.setdefault(norm_key(texts.main.texts["ru"][cl.text_index]), []).append(off)
+
+    def find(self, voice: str | None, ru: str) -> object | None:
+        from tools.extract_cinematics import norm_key
+        for key, table in ((voice, self.by_voice), (norm_key(ru) if ru else None, self.by_text)):
+            if key and key in table:
+                return self.lines[table[key][0]]
+        return None
+
+
+def find_mob_by_name(db: PackDB, cat, texts: Texts, name: str, model_hint: str) -> int | None:
+    """`MobWorld` du 17.0 au nom russe `name` ; entre plusieurs, celui dont le modèle vient du même
+    dossier que le `MobWorld` 7.0 (`Characters/Hadagan_male/…`)."""
+    from tools.extract_cinematics import norm_key
+    want = norm_key(name)
+    ru = texts.main.texts["ru"]
+    hint = "/".join(model_hint.split("/")[:2]).lower() if model_hint else ""
+    best = None
+    for off in db.resources("MobWorld"):
+        idx = mob_name_index(db, off)
+        if idx >= len(ru) or norm_key(ru[idx]) != want:
+            continue
+        visual = mob_visual(db, off)
+        tpl = visual_template(db, visual) if visual is not None else None
+        if tpl is None:
+            continue
+        best = best or off
+        vot = db.ptr(tpl + 0x90)
+        geo = db.ptr(vot + 0xC0) if vot is not None else None
+        path = (cat.name(db.binary_ref(geo)) or "").lower() if geo is not None else ""
+        if hint and path.startswith(hint):
+            return off
+    return best
+
+
+def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: ClientLines, anim_names: dict,
+               report: list[str]) -> dict:
+    """Plan d'une scène de 7.0 ou d'avant : déroulé serveur de l'arbre 7.0 (`tools/cutscene_xdb70.py`)
+    rapporté aux ressources du 17.0 (répliques, PNJ)."""
+    from tools import cutscene_xdb70 as x70
+    tl = x70.simulate(root, spec["first_buff"])
+    map_name = spec.get("map") or sorted(tl.maps)[0]
+    spawns = x70.find_spawns(root, map_name, tl.scripts)
+    camera = x70.camera_keys(tl.shots)
+    camera["duration"] = round(tl.duration, 3)
+    actors: dict[str, dict] = {}
+    for script, sp in spawns.items():
+        mob = find_mob_by_name(db, cat, texts, sp["name"], sp["mob"] or "")
+        if mob is None:
+            report.append(f"{spec['id']} : PNJ introuvable dans le 17.0 : {sp['name']} ({script})")
+            continue
+        actors[script] = {"id": re.sub(r"[^a-z0-9]+", "-", script.lower()).strip("-"), "mob_offset": mob,
+                          "path": [{"t": 0, "p": sp["p"], "yaw": round(sp["yaw"], 5)}], "server": sp}
+    plan_lines = []
+    for line in tl.lines:
+        if not line["ru"] and not line["voice"]:
+            continue
+        cl = lines17.find(line["voice"], line["ru"])
+        idx = cl.text_index if cl is not None else None
+        text = texts.line(idx, line["voice"], line["delay_ms"], None)
+        if "ru" not in text and line["ru"]:
+            text["ru"] = line["ru"]
+        speaker = actors.get(line["speaker"], {}).get("id")
+        plan_lines.append({"start": line["t"], "duration": line["delay_ms"] / 1000.0, "voice_event": line["voice"],
+                           "speaker": speaker, "clips": [clip_name(a) for a in line["animations"]], "text": text,
+                           "source": line["clientdata"]})
+    for info in actors.values():
+        used = sorted({c for l in plan_lines if l["speaker"] == info["id"] for c in l["clips"]})
+        info.update({"animations": used, "clips_wanted": used})
+    weather = [w for w in tl.weather if (w["until"] - w["t"]) >= 0.8 * tl.duration - tl.weather[0]["t"]] if tl.weather else []
+    sounds = {"music": [], "ambience": []}
+    for snd in tl.sounds:
+        key = "music" if snd["kind"] == "Music" else "ambience"
+        sounds[key].append({"event": snd["name"], "t": snd["t"], "until": snd["until"]})
+    post = [{"t": p["t"], "until": p["until"], "kind": "veil", "fadeIn": p["fadeIn"], "fadeOut": p["fadeOut"]}
+            for p in tl.post if p["black"]]
+    centre = np.mean([k["p"] for k in camera["points"]], axis=0) if camera["points"] else np.zeros(3)
+    return {"map": map_name, "camera": camera, "lines": plan_lines, "actors": list(actors.values()),
+            "weather": weather[0] if weather else None, "sounds": sounds, "post": post,
+            "decor_center": [float(centre[0]), float(centre[1])], "timing": "server",
+            "sources": {"timeline": spec["first_buff"], "buffs": [b["buff"] for b in tl.buffs],
+                        "spawns": sorted({sp["file"] for sp in spawns.values()})}}
+
+
+def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim_names: dict, report: list[str]) -> dict:
+    """Plan d'une scène sans déroulé serveur connu (après 7.0) : ressources du 17.0 nommées par le
+    manifeste, mise en scène et minutage du manifeste."""
+    track = buff_camera_track(db, db.ids[int(spec["buff"])])
+    camera = camera_keys(track)
+    plan_lines = []
+    anchor = None
+    for n, rid in enumerate(spec["lines"], 1):
+        cd = db.ids.get(int(rid))
+        if cd is None:
+            raise ValueError(f"ClientData {rid} introuvable")
+        cl = read_client_line(db, cd)
+        if anchor is None and spec.get("fr_anchor") and texts.fr is not None and cl.text_index is not None:
+            anchor = cl.text_index - texts.fr.find("fr", spec["fr_anchor"])
+        text = texts.line(cl.text_index, cl.voice, cl.delay_ms, anchor)
+        speaker = next((a["id"] for a in spec["actors"] if any(text.get("ru", "").startswith(p) for p in a.get("speaker_prefixes", []))), None)
+        actor = next((a for a in spec["actors"] if a["id"] == speaker), None)
+        clips = [actor["talk"]] if actor and actor.get("talk") and cl.animations else []
+        plan_lines.append({"start": None, "duration": cl.delay_ms / 1000.0, "voice_event": cl.voice, "speaker": speaker,
+                           "clips": clips, "text": text, "source": f"ClientData {rid}"})
+    actors = []
+    for a in spec["actors"]:
+        entry = dict(a)
+        entry["mob_offset"] = pack_offset(db, a["mob"])
+        entry["path"] = a.get("path") or [{"t": 0, "p": a["position"], "face": a.get("face")}]
+        actors.append(entry)
+    return {"map": spec["map"], "camera": camera, "lines": plan_lines, "actors": actors, "weather": None,
+            "sounds": {"music": [], "ambience": []}, "post": spec.get("post", []),
+            "decor_center": spec.get("decor_center"), "timing": "estimated", "sources": spec.get("sources", {})}
+
+
+def weather_light(weather: dict, base: dict) -> dict:
+    """Lumière d'un `WeatherCreatureVisAction` (valeurs ARGB signées du `.xdb`) au format de la zone."""
+    light = dict(base)
+    values = weather.get("light", {})
+
+    def num(tag: str):
+        try:
+            return float(values[tag]) if tag in values else None
+        except (TypeError, ValueError):
+            return None
+    for key, tag in (("ambient", "AmbientColor"), ("diffuse", "DiffuseColor"), ("fog", "FogColor"),
+                     ("pointLight", "PointLightColor"), ("selfIllum", "SelfIllumColor"), ("specular", "SpecularColor")):
+        v = num(tag)
+        if v is not None:
+            light[key] = int(v) & 0xFFFFFFFF
+    for key, tag in (("fogStart", "FogStart"), ("fogEnd", "FogEnd"), ("sunYaw", "SunLightYaw"), ("sunPitch", "SunLightPitch"),
+                     ("desaturation", "desaturation")):
+        v = num(tag)
+        if v is not None:
+            light[key] = v
+    return light
+
+
+def weather_sky(root: Path, db: PackDB, cat, sky_path: str) -> list[tuple[int, int | None, float]]:
+    """Calques 17.0 du `SkyMesh` d'un déroulé 7.0 : le `SkyMesh` du client dont un calque porte la
+    géométrie d'un des calques du `.xdb` (la ressource a pu changer de calques depuis)."""
+    from xml.etree import ElementTree as ET
+    try:
+        doc = ET.fromstring((Path(root) / sky_path).read_bytes())
+    except (OSError, ET.ParseError):
+        return []
+    base = (Path(root) / sky_path).parent
+    wanted = set()
+    for e in doc.iter("geometry"):
+        href = (e.get("href") or "").split("#")[0]
+        if href:
+            path = Path(root) / href.lstrip("/") if href.startswith("/") else base / href
+            wanted.add(path.resolve().relative_to(Path(root).resolve()).as_posix().replace("(Geometry).xdb", "(Geometry).bin").lower())
+    root_db = getattr(db, "parent", None) or db
+    for sky in root_db.resources("SkyMesh"):
+        parts = sky_parts(root_db, sky)
+        if any((cat.name(root_db.binary_ref(g)) or "").lower() in wanted for g, _, _ in parts):
+            ext = EXTERN if root_db is not db else 0
+            return [(g | ext, (a | ext) if a is not None else None, sh) for g, a, sh in parts]
+    return []
+
+
 # --- export ---------------------------------------------------------------------------------------
 
-def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, voices: bool, vgmstream: Path) -> list[str]:
+def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, voices: bool, vgmstream: Path,
+        server_root: Path | None = None) -> list[str]:
     report: list[str] = []
     db = open_pack(client)
     packs = client / "data" / "Packs"
     bins = BinSource([], [str(packs / "*.pak")])
-    main_spec, fr_spec = manifest["sources"]["main"], manifest["sources"]["fr"]
-    main = load_textset(Path(main_spec["root"]), main_spec)
-    try:
-        fr = load_textset(Path(fr_spec["root"]), fr_spec)
-    except (OSError, KeyError, zipfile.BadZipFile) as exc:
-        report.append(f"textes FR illisibles : {exc}")
-        fr = None
+    texts = Texts(manifest, report)
     anim_names = animation_names(db)
+    lines17 = ClientLines(db, texts)
+    root = Path(server_root or manifest.get("server_root") or "/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data")
+    index = sound_index(bins, Path(os.environ.get("ALLODEX_CACHE") or Path.home() / ".cache" / "allodex"))
     entries = []
     for spec in manifest["engine_scenes"]:
         if only and spec["id"] not in only:
             continue
         out = out_root / "engine" / spec["id"]
         out.mkdir(parents=True, exist_ok=True)
-        mp = open_map(db, client, spec["map"])
+        pack_cat = open_catalog(db, client)
+        plan = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report) if spec.get("source") == "xdb70" \
+            else plan_manual(spec, db, texts, lines17, anim_names, report)
+        mp = open_map(db, client, plan["map"])
         cat = open_catalog(mp, client)
         textures = TexturePool(mp, cat, bins, out, jpeg=True)
         particles = ParticlePool(mp, cat, bins, out)
         light = read_zone_light(mp)
-        track = buff_camera_track(db, db.ids[int(spec["buff"])])
-        camera = camera_keys(track)
+        if plan["weather"]:
+            light = weather_light(plan["weather"], light)
+            if plan["weather"].get("sky"):
+                parts = weather_sky(root, mp, cat, plan["weather"]["sky"])
+                if parts:
+                    light["skyParts"] = parts
+                else:
+                    report.append(f"{spec['id']} : ciel du déroulé introuvable dans le 17.0 : {plan['weather']['sky']}")
+        camera = plan["camera"]
         camera["fov"] = spec.get("fov", 45)
-        lines, raw = resolve_scene_lines(spec, db, main, fr, report)
-
-        decor = build_decor(mp, cat, bins, textures, particles, light, spec, report)
+        decor_spec = {"map": plan["map"], "decor_center": spec.get("decor_center") or plan.get("decor_center"),
+                      "decor_radius": spec.get("decor_radius", 150)}
+        decor = build_decor(mp, cat, bins, textures, particles, light, decor_spec, report)
         (out / "decor.glb").write_bytes(decor["glb"])
         (out / "decor-light.bin").write_bytes(decor["light"])
         solids = decor["solids"]
 
+        # voix d'abord : le minutage estimé (scènes sans déroulé) en dépend
+        events = [l["voice_event"] for l in plan["lines"]]
+        voice_meta: list[dict | None] = [None] * len(events)
+        if voices:
+            voice_meta = export_voices(events, bins, out / "voice", vgmstream, report, index)
+        elif (out / "scene.json").is_file():
+            old = json.loads((out / "scene.json").read_text(encoding="utf-8"))
+            old_lines = old.get("lines", [])
+            if len(old_lines) == len(events):
+                voice_meta = [l.get("voice") for l in old_lines]
+        if plan["timing"] == "estimated":
+            starts = schedule_lines(spec, camera, voice_meta, plan["lines"])
+            for line, t in zip(plan["lines"], starts):
+                line["start"] = t
+
         actors_meta = []
-        for actor in spec["actors"]:
-            data, meta = build_actor(actor, mp, cat, bins, textures, report)
+        for actor in plan["actors"]:
+            spec_actor = {"id": actor["id"], "mob": None, "sex": actor.get("sex"), "animations": sorted(
+                set(actor.get("animations", [])) | {actor.get("idle") or "Idle", "Idle01", "Idle"} | set(actor.get("clips_wanted", [])))}
+            data, meta = build_actor_offset(spec_actor, actor["mob_offset"], mp, cat, bins, textures, report)
             (out / "actors").mkdir(exist_ok=True)
             (out / "actors" / f"{actor['id']}.glb").write_bytes(data)
+            idle = actor.get("idle") or next((c for c in ("Idle01", "Idle") if c in meta["animations"]), None)
             ground = bool(actor.get("ground"))
             path = []
-            for key in actor.get("path") or [{"t": 0, "p": actor["position"], "face": actor.get("face")}]:
+            for key in actor["path"]:
                 p = place(key["p"], solids, ground and not key.get("air"))
                 if key.get("lift"):
                     p[2] = round(p[2] + key["lift"], 4)
@@ -705,8 +951,8 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                 path.append(entry)
             name_idx = meta.pop("name_index")
             actors_meta.append({"id": actor["id"], "glb": f"actors/{actor['id']}.glb",
-                                "name": {"ru": clean_text(main.texts["ru"][name_idx]), "en": clean_text(main.texts["en"][name_idx])},
-                                "path": path, "scale": actor.get("scale", 1.0), "idle": actor.get("idle", "Idle"),
+                                "name": {"ru": clean_text(texts.main.texts["ru"][name_idx]), "en": clean_text(texts.main.texts["en"][name_idx])},
+                                "path": path, "scale": actor.get("scale", 1.0), "idle": idle,
                                 "talk": actor.get("talk"), "move": actor.get("move"), "appear": actor.get("appear", 0.0),
                                 "light": light_at(path[0]["p"], decor["pointLights"], light), **meta})
 
@@ -717,15 +963,8 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         if fx_glb:
             (out / "fx.glb").write_bytes(fx_glb)
 
-        voice_meta = [None] * len(lines)
-        events = [cl.voice for cl in raw]
-        if voices:
-            voice_meta = export_voices(events, spec["voice_bank"], bins, out / "voice", vgmstream, report)
-        elif (out / "scene.json").is_file():
-            old = json.loads((out / "scene.json").read_text(encoding="utf-8"))
-            voice_meta = [l.get("voice") for l in old.get("lines", [])] or voice_meta
-        starts = schedule_lines(spec, camera, voice_meta, lines)
-        cues = build_cues(lines, starts, camera["duration"])
+        cue_lines = [Line(l["duration"], l["text"]) for l in plan["lines"]]
+        cues = build_cues(cue_lines, [l["start"] for l in plan["lines"]], camera["duration"])
         tracks = []
         for lang in LANGS:
             vtt = to_vtt(cues, lang)
@@ -734,10 +973,17 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                 path.write_text(vtt, encoding="utf-8")
                 tracks.append({"lang": lang, "label": LANG_LABELS[lang], "src": f"engine/{spec['id']}/{lang}.vtt",
                                "lines": sum(1 for c in cues if lang in c[2])})
+            elif path.exists():
+                path.unlink()
 
         audio = map_sounds(mp)
+        timed = plan["sounds"]
+        for key in ("music", "ambience"):
+            if timed.get(key):
+                audio[key] = []   # le déroulé remplace la musique et l'ambiance de la carte
         audio.update({k: v for k, v in spec.get("audio", {}).items() if not k.startswith("_")})
-        wanted = set(decor["sounds"]) | set(fx_sounds) | set(audio.get("music", [])) | set(audio.get("ambience", []))
+        wanted = set(decor["sounds"]) | set(fx_sounds) | set(audio.get("music", [])) | set(audio.get("ambience", [])) | \
+            {s["event"] for key in ("music", "ambience") for s in timed.get(key, [])}
         waves = export_waves(wanted, bins, out, vgmstream, report, camera["duration"] + 1) if voices or not (out / "scene.json").is_file() else \
             json.loads((out / "scene.json").read_text(encoding="utf-8")).get("sounds", {}).get("waves", {})
         for objects in (decor["objects"], fx_objects):
@@ -745,31 +991,37 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                 if info.get("sound") in waves:
                     info["sfx"] = waves[info["sound"]]["file"]
 
+        def loops(key: str) -> list:
+            out_list: list = [waves[m]["file"] for m in audio.get(key, []) if m in waves]
+            out_list += [{"file": waves[s["event"]]["file"], "t": s["t"], "until": s["until"]}
+                         for s in timed.get(key, []) if s["event"] in waves]
+            return out_list
+
         atlas = particles.write_atlas(textures)
         scene_lines = []
-        for i, (line, cl) in enumerate(zip(lines, raw)):
-            scene_lines.append({"n": i + 1, "start": starts[i], "duration": line.duration, "speaker": speaker_of(line, spec["actors"]),
-                                "voice": voice_meta[i], "animations": [anim_names.get(a, str(a)) for a in cl.animations],
-                                "text": line.text})
-        zone = {k: v for k, v in light.items() if k not in ("sky", "skyGeometry")}
+        for i, line in enumerate(plan["lines"]):
+            scene_lines.append({"n": i + 1, "start": line["start"], "duration": line["duration"], "speaker": line["speaker"],
+                                "voice": voice_meta[i], "clips": line["clips"], "animations": line["clips"],
+                                "text": line["text"], "source": line["source"]})
+        zone = {k: v for k, v in light.items() if k not in ("sky", "skyGeometry", "skyParts")}
         scene = {
-            "id": spec["id"], "map": spec["map"], "up": [0, 0, 1], "mirror": True, "duration": camera["duration"],
-            "camera": camera, "lines": scene_lines, "actors": actors_meta,
+            "id": spec["id"], "map": plan["map"], "up": [0, 0, 1], "mirror": True, "duration": camera["duration"],
+            "timing": plan["timing"], "camera": camera, "lines": scene_lines, "actors": actors_meta,
             "decor": {"glb": "decor.glb", "light": "decor-light.bin", "instances": decor["instances"], "sky": decor["sky"]},
             "fx": {"glb": "fx.glb" if fx_glb else None, "spawns": spawns},
             "objects": {**decor["objects"], **fx_objects}, "particleAtlas": atlas,
             "light": {**zone, "sunDirection": [round(float(v), 4) for v in sun_direction(light)]},
             "pointLights": decor["pointLights"],
-            "sounds": {"music": [waves[m]["file"] for m in audio.get("music", []) if m in waves],
-                       "ambience": [waves[a]["file"] for a in audio.get("ambience", []) if a in waves],
-                       "events": audio, "waves": waves, "volume": spec.get("mix", {})},
-            "post": spec.get("post", []),
+            "sounds": {"music": loops("music"), "ambience": loops("ambience"), "events": audio, "waves": waves,
+                       "volume": spec.get("mix", {})},
+            "post": plan["post"], "sources": plan["sources"],
         }
         (out / "scene.json").write_text(json.dumps(scene, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         report.append(f"{spec['id']} : décor {len(decor['glb']) / 1e6:.1f} Mo, textures {textures.bytes_written / 1e6:.1f} Mo, "
                       f"particules {particles.bytes_written / 1e6:.2f} Mo, {len(actors_meta)} acteurs, {len(spawns)} effets, "
-                      f"{len(waves)} sons, {len(lines)} répliques, {camera['duration']:.0f} s")
-        entries.append({"spec": spec, "duration": camera["duration"], "tracks": tracks, "lines": len(lines)})
+                      f"{len(waves)} sons, {len(scene_lines)} répliques, {camera['duration']:.0f} s")
+        entries.append({"spec": spec, "duration": camera["duration"], "tracks": tracks, "lines": len(scene_lines),
+                        "timing": plan["timing"]})
     update_index(manifest, out_root, entries)
     return report
 
@@ -788,7 +1040,7 @@ def update_index(manifest: dict, out_root: Path, entries: list[dict]) -> None:
             "files": {"poster": f"engine/{spec['id']}/poster.jpg"},
             "engine": {"scene": f"engine/{spec['id']}/scene.json"},
             "tracks": e["tracks"],
-            "subtitles": {"status": "official", "lines": e["lines"], "timing": "estimated", "audio": {"language": "ru"}},
+            "subtitles": {"status": "official", "lines": e["lines"], "timing": e.get("timing", "estimated"), "audio": {"language": "ru"}},
             "audio": {"language": "ru"},
         }
         index["cinematics"] = [c for c in index["cinematics"] if c["id"] != spec["id"]] + [entry]
