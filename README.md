@@ -331,9 +331,45 @@ voisine — 508 texels pour les 256 m —, axe Y retourné ;
 rangées dans un atlas (`terrain-light.png`, 4 096 px au plus) lu par l'attribut `_LIGHTUV`.
 
 **Formats du sol** : les patterns ImHex de **Paulus** (`tools/reverse/terrain.hexpat` pour
-`terrainDump.bin`, `tools/reverse/splatmap.hexpat` pour les `SplatMap`) décrivent aussi les champs
-que l'extraction ignore (tampons de sommets « complexes », occulteurs, herbe, eau) ; leur offset
-d'entête `0x08` compte l'entête `(niveau, taille)` que `read_chunks` retire.
+`terrainDump.bin`, `tools/reverse/splatmap.hexpat` pour les `SplatMap`) ; leur offset d'entête
+`0x08` compte l'entête `(niveau, taille)` que `read_chunks` retire. Tous les blocs sont lus
+(`parse_terrain_extras`) : tampons de sommets (taille, « complexe »), occulteurs, herbe, eau.
+
+**Herbe** (`tools/allods_terrain_extras.py`, lecteur `src/components/scene/vot/terrainExtras.ts`) :
+carreaux de 32 m, un jeu de places au mètre par (calque du sol, touffe) — l'octet « type » est
+l'entrée de `TerraLayers`, le « sous-type » sa touffe `foliage0…3` (bit 7 : jeu jumeau, mêmes places,
+toujours ; non doublé). Les nombres de touffes suivent la `probability` des touffes (7 : 30 : 27 : 2 →
+1 631 : 7 137 : 6 190 : 457 sur `Ferris4` 4_4). Touffe (72 o depuis `+0x48` de l'entrée de calque,
+recoupé sur `layers.xdb` 7.0) : `bottom`/`top` (hauteur, décalage, largeur), `min`/`maxScale`,
+`numLeaves`, `probability`, élément de l'atlas `Maps/<carte>/layers.(Texture)` (`TerraLayers +0x60`,
+sources de 48 o : x `+0x14`, y `+0x20`, largeur `+0x10`, hauteur `+0x04`). Le shader du client
+(`Material/grass-dx11.bin`, désassemblé, noms des constantes lus dans son `RDEF`) donne le reste :
+couleur = texture × lumière du sommet, test d'alpha `a × fondu < 0,02`, vent = produit complexe
+d'un coefficient par sommet (nul au pied) et d'un vecteur global. Rendu instancié (une touffe par
+instance, 24 o par touffe, un carreau de 32 m par objet, masqué au-delà de 70 m), éclairé comme le
+sol à son pied. **Choix du lecteur**, faute de données (le moteur les calcule) : répartition des
+feuilles en étoile, lacet/échelle/phase tirés au hasard, amplitude et fréquence du vent, fondu à
+45-70 m.
+
+**Eau** : carreaux de 32 m, hauteur (`Vec4`, égale aux quatre coins partout), vitesses (nulles
+partout), éléments de 8 m `(x, y, i, j)` : `(i, j)` = place dans le carreau, `(x, y)` = **bloc de
+8 × 8 texels du `SplatMap_N`** (N = texture de son matériau d'eau), alloué à la suite des passes du
+sol. Ses texels : B = 0,5 + profondeur/8, R, G = 0,5 + normale du fond/2 (corrélations 0,997 sur
+`Ferris4`). Type d'eau = entrée de `TerraLayers.waterLayers` (`+0x90`, 136 o, recoupé sur 7.0) :
+textures (relief, Fresnel), alpha, reflet, spéculaire, vitesse ; couleurs du dégradé et du
+spéculaire dans l'éclairage de zone (`WaterGradientStart/End`, `SpecularWaterColor`). Le lecteur
+porte le shader `StaticWater` du client (`Material/StaticWater-dx11.bin`) : relief défilant,
+dégradé selon la profondeur, reflet (caméra miroir, demi-résolution), réfraction (copie de l'image),
+Fresnel, alpha `sat(8B − 4)/(N·V + 0,01)`. Supposés : l'unité du temps
+(`s × waterSpeedMultiply / 1000`) et les textures de repli (`WaterFresnel`, `WaterNoise`) des types
+sans Fresnel ou sans relief (`Kania_River`, `Ferris4`). Aucune scène actuelle ne voit d'eau (la plus
+proche est à 157 m de la caméra de `ferris-retrospective`) ; la fatalité (Prés bénis) en a à 277 m.
+
+**Occulteurs** : un par carreau de 32 m (56 o) : `xmin` (4 hauteurs, à 96 % égales à une hauteur de
+sommet du carreau), `xmax` (`−FLT_MAX` dans 89 % des cas), boîte haute de 1 024 m ; avec
+`<région>_terrainDumpOcc.bin` (`extraOcclusion` de `TerrainPackInfo`), ce sont les données
+d'occlusion du sol (culling). Invisibles, non rendus ni exploités : three.js ne fait que du
+culling par frustum et nos décors sont petits.
 
 **Manques** : `ferris-sarcophagus` reste sombre même lu en entier (zone violette, aucune lumière
 ponctuelle ; octets 0-1 pleins) ; le fichier
@@ -821,7 +857,10 @@ choisi pour ses calques d'herbe et son relief doux (5 m sur 120 m) — niveau de
 90 m, grossier jusqu'à 300 m ; chaque sous-carreau prend le premier calque de sa première passe (le
 mélange du `SplatMap` n'est pas élucidé), terre battue redessinée au centre ; bouleaux, pins,
 rochers et buissons de la zone posés sur ce sol (disposition mise en scène, `scene.props`) ; ciel
-`Sky01_Day*` ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi.
+`Sky01_Day*` ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi. Herbe du
+`terrainDump` jusqu'à 110 m du centre et eau jusqu'à 300 m, rendues par le code commun aux
+cinématiques moteur (`vot/terrainExtras.ts`, voir « Herbe » et « Eau »), éclairées par la lumière de
+la zone (pas de lumière cuite ici) ; ni l'une ni l'autre n'arrête la caméra.
 
 **Table des paks** (`tools/allods_packdb.vote_pak_codes`) : le vote « l'entrée au rang indiqué
 finit par `(Texture).bin` » ne départage pas deux paks de textures (n'importe quel rang y tombe
