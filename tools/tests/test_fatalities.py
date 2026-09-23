@@ -107,6 +107,23 @@ def test_vote_pak_codes_matches_type_suffix():
     assert cat.name(db.binary_ref(0x100)) == "b.(Geometry).bin"
 
 
+def test_vote_pak_codes_prefers_texture_pairs_over_bigger_texture_paks():
+    data = bytearray(0x200)
+    # une texture : `.bin` (code 25, rang 1), `.hi.bin` (code 26, rang 0)
+    struct.pack_into("<I", data, 0x40, 25)
+    struct.pack_into("<I", data, 0x48, 1)
+    struct.pack_into("<I", data, 0x68, 26)
+    struct.pack_into("<I", data, 0x70, 0)
+    db = PackDB(make_pack(["Geometry", "ParticleAnimation", "SkeletalAnimation", "Texture"], bytes(data),
+                          [(0x000, 4, 3)]))
+    # Le grand pak d'effets a aussi une texture au rang 1 ; seul le pak du ciel a la paire `.hi`.
+    names = {"FX.pak": ["a.(Texture).bin", "b.(Texture).bin", "c.(Texture).bin"],
+             "Sky.pak": ["s.(Texture).bin", "sky.(Texture).bin"],
+             "Sky.HiRes.pak": ["sky.(Texture).hi.bin"]}
+    codes = vote_pak_codes(db, names)
+    assert codes[25] == "Sky.pak" and codes[26] == "Sky.HiRes.pak"
+
+
 def test_orientation_enum_is_the_clients():
     # Valeurs relevées sur DummyWorldZed (WORLD_Z), StellaSmoke (BILLBOARD), Z_AXIS des fatalités.
     assert vis.ORIENTATION[3] == "WORLD_Z" and vis.ORIENTATION[6] == "Z_AXIS" and vis.ORIENTATION[7] == "BILLBOARD"

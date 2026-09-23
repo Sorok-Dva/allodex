@@ -316,10 +316,40 @@ def list_paks(packs_dir: Path) -> dict[str, list[str]]:
 
 
 def vote_pak_codes(db: PackDB, names: dict[str, list[str]], sample: int = 400) -> dict[int, str]:
-    """Code de pak → nom du pak, par vote : pour chaque ressource à fichier binaire, les paks
-    dont l'entrée au rang indiqué finit par `(<Type>).bin` gagnent une voix pour son code."""
+    """Code de pak → nom du pak, par vote.
+
+    1. **Textures** (preuve forte) : une texture porte deux références, `.bin` et `.hi.bin`. Un
+       pak n'obtient la voix d'une texture que si l'entrée au rang indiqué, suffixée `.hi`, se
+       trouve aussi au rang de la seconde référence dans un autre pak — ce qui départage les
+       paks de textures, où n'importe quel rang tombe sur une texture (`World_Sky_Textures`
+       perdait sinon contre `Spells_FX_Textures`, bien plus grand) ;
+    2. **autres types** : les paks dont l'entrée au rang indiqué finit par `(<Type>).bin`
+       gagnent une voix pour son code ; utilisé seulement pour les codes sans preuve forte.
+    """
     votes: dict[int, collections.Counter] = collections.defaultdict(collections.Counter)
     by_code: dict[int, list[tuple[str, int]]] = collections.defaultdict(list)
+    strong: dict[int, collections.Counter] = collections.defaultdict(collections.Counter)
+    hi_index: dict[tuple[str, int], str] = {}
+    for pak, listing in names.items():
+        for rank, name in enumerate(listing):
+            if name.endswith(".hi.bin"):
+                hi_index[(name, rank)] = pak
+    pairs_seen: dict[int, int] = collections.Counter()
+    for kind in ("Texture", "IndexedTexture"):
+        field = BINARY_REF.get(kind)
+        for off in db.resources(kind):
+            code, rank = db.u32(off + field), db.u32(off + field + 8)
+            hcode, hrank = db.u32(off + TEXTURE_HIRES_REF), db.u32(off + TEXTURE_HIRES_REF + 8)
+            if pairs_seen[code] >= sample or not hrank and not hcode:
+                continue
+            pairs_seen[code] += 1
+            for pak, listing in names.items():
+                if rank >= len(listing) or not listing[rank].endswith(".bin"):
+                    continue
+                hi_pak = hi_index.get((listing[rank][:-4] + ".hi.bin", hrank))
+                if hi_pak is not None:
+                    strong[code][pak] += 1
+                    strong[hcode][hi_pak] += 1
     for type_name, field in BINARY_REF.items():
         suffix = f"({type_name}).bin"
         for off in db.resources(type_name):
@@ -332,18 +362,27 @@ def vote_pak_codes(db: PackDB, names: dict[str, list[str]], sample: int = 400) -
             if hits:
                 votes[code][pak] = hits
     out: dict[int, str] = {}
+    for code, counter in strong.items():
+        (pak, hits), = counter.most_common(1)
+        out[code] = pak
     for code, counter in votes.items():
+        if code in out:
+            continue
         (pak, hits), = counter.most_common(1)
         if hits * 2 >= len(by_code[code]):  # majorité stricte des références échantillonnées
             out[code] = pak
     return out
 
 
+# Version de l'algorithme de vote : invalide les tables mises en cache par une version antérieure.
+PAK_VOTE_VERSION = 2
+
+
 def open_catalog(db: PackDB, client_root: Path, cache_dir: Path | None = None) -> PakCatalog:
     packs_dir = Path(client_root) / "data" / "Packs"
     names = list_paks(packs_dir)
     cache_dir = Path(cache_dir or default_cache_dir())
-    digest = hashlib.sha1(json.dumps({k: len(v) for k, v in sorted(names.items())}).encode()).hexdigest()[:12]
+    digest = hashlib.sha1(json.dumps({"v": PAK_VOTE_VERSION, **{k: len(v) for k, v in sorted(names.items())}}).encode()).hexdigest()[:12]
     cache = cache_dir / f"pakcodes-{digest}.json"
     if cache.is_file():
         codes = {int(k): v for k, v in json.loads(cache.read_text()).items()}
