@@ -437,6 +437,141 @@ ARGB) ne correspond pas non plus au voile pâle de la capture. Reste approximati
 horizontal des défilements, les rotations squelettiques (≈ 0,15°, arbres quasi immobiles), et
 un ciel plus sombre que dans le client (luminance 107 contre 143 en haut à gauche).
 
+## Fatalités
+
+La page `/fatalities` (désactivée en production) rejoue les 26 fatalités du jeu — 10 de classe,
+16 de la boutique — sur les seize personnages jouables, dans un coin des Prés bénis.
+
+**Source : le dernier client** (RU 17.x, `/mnt/h/MyGames/AllodsRU`). Il ne livre plus aucun
+`.xdb` : tout ce que l'arbre serveur 7.0 décrit en XML est compilé dans `Bin/pack.bin`
+(pak `BaseLocall_x64.pak`, 75 Mo → 703 Mo décompressés). `tools/allods_packdb.py` en relit la
+structure (entête, table des 1498 types `NDb::…`, image mémoire des objets, table de
+relocations qui dit seule où pointent les champs pointeurs et les vecteurs, chemins des
+ressources racines) et reconstitue par vote la table « code de pak → pak » des références
+binaires ; `tools/allods_visdb.py` décode les ressources utiles (Geometry, Texture,
+VisObjectTemplate, ParticleAnimation, scripts `VisAction`, `SlonRoot`), chaque décalage étant
+vérifié sur les ressources communes avec l'arbre 7.0 (tests `tools/tests/test_fatalities.py`,
+dont trois sur les vraies données). Ce basculement a débloqué les fatalités de boutique : toutes
+ont désormais leurs métadonnées complètes (fini « decoded without its metadata »), et les
+associations animation ↔ effet ne sont plus devinées sur les noms de fichiers.
+
+**Chaîne de données.** `Interface/System/SlonSettings.(SlonRoot)` → vecteur `fatalities`
+(26 × `type, offenderDeathScript, casterFxScript, fadeStartTime, fadeDuration, sparkDelay`).
+Le `offenderDeathScript` est l'arbre de `VisAction` joué sur la victime ; `tools/fatality_script.py`
+l'aplatit, pour chaque personnage, en chronologie : animations de la victime (indices de
+l'énumération `Animations`, prolongée au-delà de 1402 par les propriétés d'animation du client :
+1591 `deathFatality`, 1594 `deathFatalityPhoenix`, 1609 `deathFatalityTree`…) avec leur vitesse,
+changements d'échelle (×1,3 en classe) et de transparence, objets d'effet posés
+(`CreatureIndependentFxAction` : décalage, échelle, durée de vie) ou accrochés à un locator
+(`CreatureEffectsAction`), secousses de caméra. Chaque objet est un `VisObjectTemplate` :
+géométrie skinnée et son animation (vitesse, boucle), composants accrochés, système de particules,
+son (événement FMOD dont l'onde porte le même nom dans `SFX/Spells/Fatality*.bsb`).
+
+    python3 tools/extract_fatalities.py              # tout (≈ 3 min)
+    python3 tools/extract_fatalities.py --only-fx phoenix --no-characters
+
+**Règles établies sur les données** (chacune testée) :
+
+- `VisActionList` joue en séquence ou simultanément ; un `playWhile` délai borne la liste, et
+  comme `stopWhileWhenElementsEnded` vaut vrai la liste s'arrête aussi quand ses éléments sont
+  finis (durée = le plus court des deux) ; `PredicateCreatureVisCharacterAction` choisit les
+  variantes par race (Lotus, Avatar) ;
+- une boucle sans borne (`Stun` de l'Avatar, d'Avril 2024) s'arrête au fondu final de la victime ;
+  une animation courte jouée par-dessus une boucle lui rend la main ;
+- énumérations propres au client : `orientationMode` 3 WORLD_Z, 6 Z_AXIS, 7 BILLBOARD ;
+  `Texture.type` 3 = RGBA non compressé (B G R A) ;
+- les règles des scènes de menu valent ici : piste figée = copie appauvrie du bind (écartée),
+  angles fixes repris du bind, `skinIndex −1` non skinné, sommets à inverse de bind identité dans
+  le repère de l'articulation (`bind_pose_positions`), V = 0 en bas, `BLEND_EFFECT_ADD` additif
+  seulement si `transparent` ;
+- un élément de géométrie sans texture n'est pas dessiné (formes d'émission Maya de l'Occultiste,
+  emplacements d'armure vides des personnages) ;
+- particules **précalculées** (`tools/allods_particles.py`) : par émetteur, liste de particules
+  (naissance, durée de vie) à cinq canaux clés — position, taille, rotation, couleur, image de
+  l'atlas `Client/Render/ParticleAtlas` ; les 79 fichiers utilisés sont décodés et réencodés à
+  l'identique, allégés des clés redondantes (tolérance nommée) ;
+- sons : événement ↔ onde par nom, casse et soulignés ignorés (`FatalityUniversal` →
+  `fatality_universal`).
+
+**Personnages** (`tools/allods_characters.py`, module réutilisable — future page de création de
+personnage). Tout vient du client 17.0 : le constructeur visuel compilé (`VisCharacterTemplate`,
+`CharacterVariations`, `VisualItem`, `TexturePatch`, `IndexedTexture`) est décodé, chaque décalage
+vérifié sur les `.xdb` 7.0 des mêmes ressources (test sur `HadaganFemale`). Le personnage est celui
+que le client montre sans équipement :
+
+- géosets : tous ceux de la géométrie, moins ceux que cache la tenue par défaut (`hiddenGeosets`,
+  par sexe + unisexe), plus ceux que montrent les `armorShapes` de la variation par défaut
+  (`face_0`, `hair_0`, `facial_0`, ailes, lumières des Aèdes…) ; sans texture, pas dessiné ;
+- **peau cuite** : peau de base (`mainBakedTexture`), teinte de peau multipliée sous le masque
+  (alpha de l'`IndexedTexture` : exclut yeux et dents), puis les calques dans l'ordre du client —
+  visage, pilosité, tatouages, cuir chevelu, **sous-vêtements** (`braTexturePatches`,
+  `pantsTexturePatches`) ; rectangles en fraction de la texture, V compté depuis le bas ;
+- couleur des cheveux multipliée sur les `hairColoredGeosets` (matériau `extras.tint`) ;
+- API : `find_character_template`, `read_character_template`, `resolve_appearance(template,
+  géosets, textures, variation=None, items=())`, `bake_skin(...)` — une autre variation (visage,
+  coiffure, couleurs de `Variations`) ou des objets portés s'y passent tels quels.
+
+Clips : `Idle01` et les animations demandées par les scripts (victime **et** tueur), clés
+redondantes retirées (1 mm, 2·10⁻⁴ de quaternion) et rotations en entiers 16 bits
+(`KHR_mesh_quantization`). Les gibelins n'ont pas trois des animations de sort demandées par
+certaines fatalités de boutique (le client ne les livre pas pour eux).
+
+**Tueur** (`casterFxScript`) : `Fatality_Cast` accroché à son `Slot_BodyFX` et un **rayon**
+(`CreatureChannelDirectAction` : gabarit `Fatality_Channel` modelé sur `fxLength` = 10 m le long de
+−Y, étiré entre ses extrémités — racine + 1 m chez le tueur et chez la victime —, fondus 0,2 s /
+0,1 s) ; le Phénix ajoute ses deux animations (`speed` 1,5) et un second rayon. Le script du client
+n'a pas de fin propre : il s'éteint avec la victime. Les ailes (`CreatureRunVisActionResource`, sous
+drapeaux `FatalityWings*` achetés en boutique) ne sont pas jouées. Mise en scène (constantes du
+lecteur) : le tueur se tient à 5 m, à 55° de l'avant de la victime côté −X, tourné vers elle ; il
+se choisit dans le panneau (défaut : même sexe, première race de l'autre faction, URL `k=`).
+
+**Décor** (`scene/scene.glb`) : sol aux textures de terrain des Prés bénis, bouleaux, pins,
+rochers et buissons de la zone à leur pose de bind, ciel `Sky01_Day*` du client (fond, soleil,
+nuages) ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi. La disposition
+est une mise en scène (manifeste, `scene.props`), aucune carte n'est lue.
+
+**Table des paks** (`tools/allods_packdb.vote_pak_codes`) : le vote « l'entrée au rang indiqué
+finit par `(Texture).bin` » ne départage pas deux paks de textures (n'importe quel rang y tombe
+sur une texture) ; `World_Sky_Textures` perdait contre `Spells_FX_Textures`, bien plus grand, et le
+ciel était texturé de bruits d'effets au hasard. Les textures votent désormais par **paire** : le
+nom trouvé au rang du `.bin`, suffixé `.hi`, doit se trouver au rang de la référence haute
+résolution d'un autre pak (170 codes corrigés, dont tous les `*.HiRes`). Plusieurs ressources
+`Texture` pouvant nommer le même `.bin` avec des dimensions différentes (`Rays12White` 256² et 128²),
+le décodage essaie chacune puis les dimensions déduites des mipmaps, et garde celle dont les
+niveaux ont la taille exacte : plus aucune texture illisible.
+
+**Lecteur** (`src/components/scene/FatalityViewer/`) : temps piloté à la main (pause, vitesse,
+recherche), chaque image recalculée d'après la chronologie (`timeline.ts`) ; gabarits clonés à leur
+instant, fondus d'entrée/sortie des `VisObjectTemplate`, composants retardés/arrêtés
+(`DelayComponent`, `StopVisObjectComponents`), défilement UV, orientation Z_AXIS et BILLBOARD face
+caméra, particules en quads instanciés (`particles.ts`), sons calés sur la chronologie.
+
+- **Géométrie douce** (`softGeometry.ts`) : les matériaux d'effet dont la texture d'environnement
+  est un `SoftGeometryGrain*` (≈ 300 éléments) la lisent à la normale vue de la caméra
+  (`n.xy · ½ + ½`) et en multiplient leur alpha : les colonnes et halos cylindriques s'estompent sur
+  la tranche (la colonne de l'Occultiste n'est plus un drap blanc à bords durs) ;
+- **éclairage** : le jeu éclaire en `texture × (ambiante + soleil · N·L)`, couleurs à 1 = 0x80 ;
+  le Lambert de three.js divise par π, compensé (`LIGHT_SCALE`) — les personnages ne sont plus
+  sombres ;
+- **caméra** (`cameraCollision.ts`) : jamais sous le terrain (rayon vertical sur les maillages de
+  sol, marge 0,4 m, plancher strict 0,15 m) ; rapprochée devant un obstacle entre la cible et elle
+  (rayon cible → caméra sur le décor opaque, feuillages découpés traversables) ; correction lissée
+  (rapide pour rentrer, lente pour ressortir) sans toucher au rayon d'orbite ni au zoom.
+
+Constantes propres au lecteur, nommées : `TRANSPARENCY_FADE_SECONDS` (vitesse de base de
+`CreatureSetTransparencyAction`, non publiée), cadrage de la caméra, place du tueur, seuil de
+découpe des feuillages.
+
+**Manques.** Teintes (`CreatureColorAction`, `ProceduralEffect`) et secousses de caméra relevées
+mais non appliquées. Particules : `WorldSpaceEmitter` et `Z_BOX` traités comme locales / face
+caméra. Pas de bloom : les empilements additifs (Prêtre) saturent au blanc. Les gibelins jouables
+sont un trio dans le jeu (placement codé dans le client, absent des données) : un seul est montré.
+Aucune capture du jeu pour comparer les fatalités image par image. La durée affichée est celle
+du script (dernier gabarit éteint) : certaines fatalités (Occultiste, Crâne 2024) finissent par
+plusieurs secondes vides, comme leurs gabarits le demandent.
+Poids : 62 Mo de personnages, 32 Mo d’effets, 28 Mo de textures partagées, 11 Mo de particules,
+7 Mo de sons (54 ondes, toutes trouvées).
+
 ## Déploiement (production)
 
 Le site public (`allodex.eu`, `allodex.online`, `allodex.allods-developers.eu`) est servi

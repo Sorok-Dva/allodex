@@ -1,3 +1,6 @@
+import type { FatalityObject, FatalityTimeline } from '@/components/scene/FatalityViewer/timeline';
+import type { FatalityEnvironment } from '@/components/scene/FatalityViewer/FatalityViewer';
+import type { ParticleAtlasMeta } from '@/components/scene/FatalityViewer/particles';
 const BASE = '/game';
 type Size = { w: number; h: number };
 type SpriteSlice = [top: number, right: number, bottom: number, left: number];
@@ -77,14 +80,17 @@ export type ArchiveEntry = {
 
 /**
  * Index des fatalités (`public/game/fatalities/fatalities.json`, écrit par
- * `tools/extract_fatalities.py`). Chaque personnage est un `.glb` portant toutes ses
- * animations `DeathFatality*` ; chaque fatalité nomme l'animation jouée par la cible
- * (`victim`) et, si l'effet a pu être exporté, son `.glb` (`fx`).
+ * `tools/extract_fatalities.py` depuis le dernier client). Chaque personnage est un `.glb`
+ * portant son animation d'attente et toutes celles que les scripts de fatalité demandent ;
+ * chaque fatalité porte ses gabarits d'effet (`objects`, nœuds `vot:<nom>` de son `.glb`) et,
+ * par personnage, la chronologie aplatie de son script (`timelines`).
  */
 export type FatalityCharacter = {
   id: string;
   race: string;
   sex: 'male' | 'female';
+  /** Nom du modèle (`KaniaMale`) : racine du `.glb` et préfixe de ses articulations. */
+  model: string;
   glb: string;
   scale: number;
   /** Hauteur du personnage en unités du jeu, échelle comprise (cadrage de la caméra). */
@@ -92,22 +98,30 @@ export type FatalityCharacter = {
   animations: string[];
   durations: Record<string, number>;
 };
-export type FatalityFxObject = { name: string; approx: boolean; animations: string[]; duration: number };
 export type FatalityEntry = {
   id: string;
+  /** Valeur de `FatalityType` dans le client (1-10 classes, 11-26 boutique). */
+  type?: number;
   kind: 'class' | 'shop';
   label: { fr: string; en: string };
-  victim: string;
   fx?: string;
-  fxObjects?: FatalityFxObject[];
-  /** Effet décodé sans xdb (stride et texture devinés) : rendu approximatif. */
-  approx?: boolean;
+  fadeStart?: number;
+  fadeDuration?: number;
+  objects?: Record<string, FatalityObject>;
+  timelines?: Record<string, FatalityTimeline>;
   note?: { fr: string; en: string };
+};
+export type FatalityScene = {
+  glb: string;
+  label?: { fr: string; en: string };
+  environment?: FatalityEnvironment;
 };
 export type FatalitiesIndex = {
   races: Record<string, { fr: string; en: string; faction: string }>;
   characters: FatalityCharacter[];
   fatalities: FatalityEntry[];
+  scene?: FatalityScene;
+  particleAtlas?: ParticleAtlasMeta;
 };
 
 let manifest: Record<string, Size> | null = null;

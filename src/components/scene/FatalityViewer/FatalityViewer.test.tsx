@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
 import { createRef } from 'react';
 import * as THREE from 'three';
-import { FatalityViewer, applyTime, setupPlayable, toViewerMaterial, type FatalityViewerHandle } from './FatalityViewer';
+import { FatalityViewer, toViewerMaterial, type FatalityViewerHandle } from './FatalityViewer';
+import type { FatalityTimeline } from './timeline';
 import type { LoadedScene, SceneLoader } from '@/components/scene/MenuScene';
 
 /** Un glTF minimal : un triangle et un ou deux clips d'une seconde. */
@@ -29,6 +30,12 @@ function fakeRenderer() {
     dispose: vi.fn(),
   };
 }
+
+/** Chronologie minimale : le clip d'une seconde puis sa pose tenue, fondu final à 1,5-2 s. */
+const TIMELINE: FatalityTimeline = {
+  end: 1, victim: [{ t: 0, end: 1, anim: 'DeathFatalityWarrior', speed: 1, mode: 'CLAMP' }],
+  scale: [], alpha: [], spawns: [], attached: [],
+};
 
 let renderer: ReturnType<typeof fakeRenderer>;
 let loader: { load: ReturnType<typeof vi.fn> };
@@ -57,18 +64,6 @@ describe('toViewerMaterial', () => {
   });
 });
 
-describe('setupPlayable / applyTime', () => {
-  it('retient la durée la plus longue et borne le temps de chaque clip', () => {
-    const gltf = fakeGltf(['a', 'b']);
-    const playable = setupPlayable(gltf.scene, gltf.animations)!;
-    expect(playable.duration).toBe(2);
-    applyTime([playable], 1.5);
-    expect(playable.actions[0].time).toBeCloseTo(1, 3);      // clip d'une seconde : dernière image tenue
-    expect(playable.actions[1].time).toBeCloseTo(1.5, 3);
-    expect(setupPlayable(gltf.scene, [])).toBeNull();
-  });
-});
-
 describe('FatalityViewer', () => {
   async function mount(fxUrl: string | null = '/game/fatalities/fx/warrior.glb') {
     const ref = createRef<FatalityViewerHandle>();
@@ -78,8 +73,12 @@ describe('FatalityViewer', () => {
       <FatalityViewer
         ref={ref}
         characterUrl="/game/fatalities/characters/aed-female.glb"
+        model="AedFemale"
         fxUrl={fxUrl}
-        clip="DeathFatalityWarrior"
+        timeline={TIMELINE}
+        objects={{}}
+        fadeStart={1.5}
+        fadeDuration={0.5}
         height={2}
         playing
         loop={false}
@@ -102,7 +101,7 @@ describe('FatalityViewer', () => {
     expect(urls).toEqual(['/game/fatalities/characters/aed-female.glb', '/game/fatalities/fx/warrior.glb']);
   });
 
-  it('joue le clip demandé, rapporte la progression et s’arrête en fin de clip hors boucle', async () => {
+  it('joue la chronologie, rapporte la progression et s’arrête à la fin hors boucle', async () => {
     const { onProgress, onEnded } = await mount(null);
     await act(async () => { loader.load.mock.calls[0][1](fakeGltf(['DeathFatality', 'DeathFatalityWarrior'])); });
     expect(raf).not.toBeNull();
