@@ -63,6 +63,13 @@
    },
    "version": "11.0"
   },
+  "citadel": {
+   "title": {
+    "fr": "La Citadelle de Nihaz",
+    "en": "Nihaz's Citadel"
+   },
+   "version": "12.0"
+  },
   "suslanger": {
    "title": {
     "fr": "Suslanger",
@@ -826,6 +833,58 @@
     "event": "Awakening/not_by_plan"
    },
    "chronology": "Groupe « Awakening » du registre (11.0)."
+  },
+  {
+   "id": "ao12-prologue04",
+   "arc": "citadel",
+   "version": "12.0",
+   "faction": "common",
+   "order": 990,
+   "event": "AO12_Prologue04_Cutscene",
+   "title": {
+    "fr": "Le monde caché",
+    "en": "The hidden world"
+   },
+   "chronology": "Cinématique moteur de la quête « AO12_Prologue04 » (prologue 12.0, carte AO12_PrologueInst, la Citadelle de Nihaz) : Véronika y trouve dans les souvenirs gardés par Nihaz « le monde qu’il cherchait à cacher », d’où partent les arcs 12.0 et 13.0 (Eden, la Toute-Mère) ; placée avant les vidéos de Suslanger (12.0). Recréée en 3D, voir engine_scenes.",
+   "bonus": false,
+   "duration": 82.0,
+   "files": {
+    "poster": "engine/ao12-prologue04/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ao12-prologue04/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/ao12-prologue04/fr.vtt",
+     "lines": 10
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/ao12-prologue04/en.vtt",
+     "lines": 10
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/ao12-prologue04/ru.vtt",
+     "lines": 10
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 10,
+    "timing": "estimated",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
   },
   {
    "id": "suslanger-new-chieftain",
