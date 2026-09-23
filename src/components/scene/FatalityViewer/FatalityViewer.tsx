@@ -448,6 +448,10 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
           // Les modèles regardent −Y : on les tourne vers la victime (origine).
           holder.rotation.z = Math.atan2(-holder.position.x, holder.position.y);
           world.add(holder);
+          // Posé sur le terrain réel (le décor n'est pas plat à 17 m de la victime).
+          world.updateMatrixWorld(true);
+          const at = holder.getWorldPosition(new THREE.Vector3());
+          holder.position.z = collider.groundHeight(at.x, at.y) ?? 0;
           const bodies = await bodiesOf(killer, attackerModel, attackerDress, holder);
           if (!alive) return;
           attacker = { root: holder, bodies };
