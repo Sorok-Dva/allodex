@@ -35,6 +35,7 @@ Usage : python3 tools/extract_engine_cutscene.py [--only ao12-prologue04] [--no-
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import math
 import os
@@ -267,19 +268,89 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
 REGION_SIZE = 256.0
 
 
+LIGHTMAP_FILES = ("_lightmap.bin", "_lightmapDown.bin")    # couche 0 (haut), couche 1 (sol du dessous)
+LIGHTMAP_ATLAS_MAX = 4096
+LIGHTMAP_TEXELS = 512
+LIGHTMAP_MARGIN = 2       # texels de bordure de chaque côté : 508 texels couvrent les 256 m de la région
+
+
+def lightmap_uv(points: np.ndarray, cell: tuple[int, int], grid: int) -> np.ndarray:
+    """Coordonnées dans l'atlas des `lightmap` (origine en haut à gauche) de sommets en mètres
+    locaux à la région. Le `<région>_lightmap.bin` (512²) a une **bordure de deux texels** : les
+    508 du milieu couvrent les 256 m (0,504 m chacun), bords de la région au milieu des texels 1-2
+    et 509-510, qui recopient à l'identique ceux de la voisine (colonnes 509-510 de A = 1-2 de la
+    région suivante en x, lignes 1-2 = 509-510 de la suivante en y, écart moyen 0,00 sur `Ferris4`
+    et `Inst_ZoneContested12_Start`, 55 et 102 bords). Axe Y retourné (corrélations sur `Isa` et
+    `Ferris4` ; sans le retournement elles tombent à 0). La lecture reste à deux texels du bord de
+    la case : pas de fuite de la case voisine de l'atlas."""
+    span = (LIGHTMAP_TEXELS - 2 * LIGHTMAP_MARGIN) / LIGHTMAP_TEXELS
+    edge = LIGHTMAP_MARGIN / LIGHTMAP_TEXELS
+    u = edge + span * np.clip(points[:, 0] / REGION_SIZE, 0.0, 1.0)
+    v = edge + span * np.clip(1.0 - points[:, 1] / REGION_SIZE, 0.0, 1.0)
+    return np.stack([(cell[0] + u) / grid, (cell[1] + v) / grid], axis=1).astype(np.float32)
+
+
+class LightmapAtlas:
+    """Lumière cuite du sol, une case par (région, couche) : **R** = visibilité du ciel (255 = ciel
+    dégagé ; corrélation 0,59 avec un facteur de vue du ciel du seul relief sur `Isa` 3_6), **G** =
+    visibilité du soleil de la cuisson, ombres portées comprises (0,73 avec les ombres du relief pour
+    le soleil de la zone, lacet 225° et hauteur 45°), **B** = lumières ponctuelles *sans* `N·L`
+    (0,83 et 0,91 sur `Ferris4` 4_4 et 5_4, pente 0,82 à 0,92). `_lightmapDown.bin` éclaire la couche
+    du dessous (`Isa` 7_6 : elle couvre exactement les sous-carreaux de niveau 1, 10 m plus bas). Une
+    carte sans cuisson (fichier absent ou nul) n'a pas de case : ses sommets prennent `(1, 1, 0)`."""
+
+    def __init__(self, textures: TexturePool):
+        self.textures = textures
+        self.images: list[np.ndarray] = []
+        self.slots: dict[tuple[str, int], int | None] = {}
+
+    def slot(self, path: str, level: int) -> int | None:
+        key = (path, level)
+        if key not in self.slots:
+            name = path.replace("_MapRegion.xdb", LIGHTMAP_FILES[min(level, 1)])
+            img = self.textures.image(name, 512)
+            rgb = np.asarray(img.convert("RGB").resize((LIGHTMAP_TEXELS,) * 2)) if img is not None else None
+            self.slots[key] = None if rgb is None or not rgb.any() else len(self.images)
+            if self.slots[key] is not None:
+                self.images.append(rgb)
+        return self.slots[key]
+
+    @property
+    def grid(self) -> int:
+        return max(1, math.ceil(math.sqrt(len(self.images))))
+
+    def cell(self, slot: int) -> tuple[int, int]:
+        return slot % self.grid, slot // self.grid
+
+    def png(self) -> bytes | None:
+        if not self.images:
+            return None
+        grid = self.grid
+        size = min(512, LIGHTMAP_ATLAS_MAX // grid)
+        atlas = Image.new("RGB", (grid * size, grid * size))
+        for k, rgb in enumerate(self.images):
+            cx, cy = self.cell(k)
+            atlas.paste(Image.fromarray(rgb).resize((size, size), Image.BILINEAR), (cx * size, cy * size))
+        out = io.BytesIO()
+        atlas.save(out, "PNG", optimize=True)
+        return out.getvalue()
+
+
 def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tuple[list[float] | None, float]],
-                  report: list[str]) -> tuple[bytes | None, np.ndarray]:
+                  report: list[str], lightmap_out: Path | None = None) -> tuple[bytes | None, np.ndarray]:
     """Sol des scènes (`terrain.glb` de la carte) : sous-carreaux de 8 m du `terrainDump` des
     régions (niveau de détail fin), ceux dont le centre tombe dans une zone de scène (+ 16 m). Chaque
     sommet porte les calques de ses deux passes au plus (`_LAYERS0/1`, indices dans la liste des
     calques de la carte, `extras.terrainLayers` : texture et taille de répétition) et leurs poids lus
-    dans le `SplatMap` (`_WEIGHTS0/1`) ; le lecteur les mélange. Rend aussi les triangles du sol, pour
-    poser les acteurs."""
+    dans le `SplatMap` (`_WEIGHTS0/1`) ; le lecteur les mélange. La lumière cuite des
+    `lightmap` des régions est rangée dans un atlas (`lightmap_out`, `extras.terrainLightmap`), lue
+    par `_LIGHTUV`. Rend aussi les triangles du sol, pour poser les acteurs."""
     from tools.allods_scenes import region_origin
     from tools.allods_terrain import pass_weights, region_patches, region_splat, terrain_layers
     palette: dict[str, int] = {}
     tilings: list[float] = []
-    pos, nor, lay0, wei0, lay1, wei1, idx, solids = [], [], [], [], [], [], [], []
+    pos, nor, lay0, wei0, lay1, wei1, idx, solids, lmuv = [], [], [], [], [], [], [], [], []
+    lightmaps = LightmapAtlas(textures)
     base = count = 0
     for path, region in sorted(mp.paths.items()):
         if not path.endswith("_MapRegion.xdb"):
@@ -321,6 +392,8 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
                 ids_w.append((np.zeros((n, 3), np.float32), np.zeros((n, 3), np.float32)))
             pts = patch.points + np.array([ox, oy, 0.0])
             pos.append(pts.astype(np.float32))
+            lm_slot = lightmaps.slot(path, patch.level)
+            lmuv.append((patch.points, lm_slot))
             nor.append(patch.normals.astype(np.float32))
             (l0, w0), (l1, w1) = ids_w
             lay0.append(l0); wei0.append(w0); lay1.append(l1); wei1.append(w1)
@@ -332,17 +405,28 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
         return None, np.zeros((0, 3, 3))
     ex = Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/")
     names = sorted(palette, key=palette.get)
+    # Sans case : coordonnée négative, que le lecteur prend pour « pas de cuisson ».
+    uvs = [lightmap_uv(p, lightmaps.cell(k), lightmaps.grid) if k is not None else np.full((len(p), 2), -1.0, np.float32)
+           for p, k in lmuv]
+    atlas_png = lightmaps.png()
+    if lightmap_out is not None:
+        if atlas_png:
+            lightmap_out.write_bytes(atlas_png)
+        else:
+            lightmap_out.unlink(missing_ok=True)
     layer_meta = [{"texture": textures.uri(name, DECOR_TEXTURE_MAX, "textures/") if name else None,
                    "tiling": round(tilings[k], 3), "name": Path(name).name if name else None} for k, name in enumerate(names)]
     acc = lambda a, kind="VEC3": ex.gltf.add_accessor(np.concatenate(a), kind, "f32", target=34962)  # noqa: E731
     primitive = {"attributes": {"POSITION": ex.gltf.add_accessor(np.concatenate(pos), "VEC3", "f32", target=34962, minmax=True),
                                 "NORMAL": acc(nor), "_LAYERS0": acc(lay0), "_WEIGHTS0": acc(wei0),
-                                "_LAYERS1": acc(lay1), "_WEIGHTS1": acc(wei1)},
+                                "_LAYERS1": acc(lay1), "_WEIGHTS1": acc(wei1), "_LIGHTUV": acc(uvs, "VEC2")},
                  "indices": ex.gltf.add_accessor(np.concatenate(idx).reshape(-1), "SCALAR", "u32", target=34963), "mode": 4}
     ex.gltf.json["meshes"].append({"name": "terrain", "primitives": [primitive]})
     root = ex.gltf.add_node({"name": "terrain", "mesh": len(ex.gltf.json["meshes"]) - 1,
-                             "extras": {"terrain": True, "terrainLayers": layer_meta}})
-    report.append(f"sol : {count} sous-carreaux de 8 m, {len(names)} calques mélangés")
+                             "extras": {"terrain": True, "terrainLayers": layer_meta,
+                                        "terrainLightmap": lightmap_out.name if atlas_png and lightmap_out else None}})
+    report.append(f"sol : {count} sous-carreaux de 8 m, {len(names)} calques mélangés, "
+                  f"{len(lightmaps.images)} lightmap(s) de région")
     report += ex.notes
     return ex.finish([root]), np.concatenate(solids) if solids else np.zeros((0, 3, 3))
 
@@ -1382,7 +1466,7 @@ def build_map(map_name: str, specs: list[dict], plans: dict[str, dict], db: Pack
     areas = [scene_area(s, plans[s["id"]]) for s in specs]
     decor = build_decor(mp, cat, bins, textures, particles, map_name, areas, report)
     (map_dir / "decor.glb").write_bytes(decor["glb"])
-    terrain_glb, ground = build_terrain(mp, cat, bins, textures, areas, report)
+    terrain_glb, ground = build_terrain(mp, cat, bins, textures, areas, report, map_dir / "terrain-light.png")
     decor["terrain"] = terrain_glb is not None
     if terrain_glb:
         (map_dir / "terrain.glb").write_bytes(terrain_glb)
