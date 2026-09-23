@@ -39,6 +39,7 @@ Messages en anglais, au format gitmoji `<gitmoji> <type>(<scope>): <message>` (e
 - `/talents` : arbres de talents de chaque classe de la 1.1 à la 17.0 dans la fenêtre TalentBuilder du jeu, calculateur de build (deux builds) partageable par lien (voir « Talents »).
 - `/lorebook` : lore officiel du jeu en anglais (FR/RU en option), atlas et récits communautaires crédités, recherche et liens croisés (voir « Lorebook »).
 - `/fatalities` (développement seulement) : les 26 fatalités rejouées avec modèles, effets et sons du client 17.0 (voir « Fatalités »).
+- `/stats` : tableau de bord d'audience (pages vues, visiteurs en direct par page, provenances…), protégé par mot de passe (voir « Référencement et audience »).
 - Non fait : comptes, addon d'export, import de progression, icônes réelles de tous les succès.
 
 ## Musiques
@@ -1437,6 +1438,59 @@ présent dans un texte russe à sa traduction ; les écarts restants sont des mo
 Crédit affiché : *Allods atlas and community lore material compiled by Makar Terentiev
 (DarkyAndSparky), https://github.com/DarkyAndSparky/atlas-ao*.
 
+## Référencement et audience (`server/`)
+
+Un petit backend Node (`server/`, Hono + SQLite via better-sqlite3) complète le site statique.
+Il servira aussi les fonctions à venir (comptes, avatars) : ses migrations vivent dans
+`server/src/db.ts`.
+
+**Référencement.** `src/seo/meta.ts` décrit chaque page (titre, description, image Open Graph,
+FR/EN) ; module pur partagé par le client et le serveur. Les robots des réseaux sociaux
+n'exécutant pas le JavaScript, c'est le serveur qui écrit les balises dans `index.html`, entre
+les marqueurs `<!--seo-->…<!--/seo-->` : titre, description, `canonical`, Open Graph et
+Twitter, `hreflang`, JSON-LD (`WebSite` + recherche, fil d'Ariane, `Article` pour le Lorebook).
+Au build, le bloc reçoit les balises de l'accueil : si le backend est arrêté, le site reste en
+ligne avec celles-ci. Côté client, `PageHead` les met à jour à chaque navigation.
+
+- Langue : `?lang=fr|en` pour l'interface (sans paramètre : `x-default`, langue du navigateur),
+  `?text=fr|ru` pour le texte du Lorebook (anglais par défaut). Chaque variante est une URL
+  distincte du plan du site, avec ses alternatives `hreflang`.
+- Lorebook : le serveur lit `dist/game/lorebook/` au démarrage (≈ 15 400 entrées) et tire
+  titre et extrait de chaque entrée de son texte ; une entrée inconnue répond 404. Les
+  dialogues isolés et la recherche sont en `noindex`.
+- `/robots.txt`, `/sitemap.xml` (index) et `/sitemaps/*.xml` (pages, puis une section du
+  Lorebook par fichier) sont générés par le serveur.
+- Images Open Graph (1200 × 630) : `public/og/<page>.jpg`, capturées sur le site par
+  `node tools/capture_og.mjs --base http://localhost:<port>` (Vite lancé à part).
+- Domaine canonique : `https://allodex.eu` (`SITE_URL` dans `src/seo/meta.ts`, variable
+  `SITE_URL` du serveur). Les deux autres noms devraient rediriger en 301 vers lui.
+
+**Mesure d'audience**, sans cookie ni service tiers (conditions de la CNIL pour une mesure
+exemptée de consentement, décrites dans les CGU) : `src/analytics/tracker.ts` envoie une vue
+à chaque changement de chemin, un ping toutes les 20 s tant que l'onglet est visible (présence
+en direct, durée de lecture) et une fin de vue au départ (`navigator.sendBeacon` vers
+`POST /api/collect`). Le visiteur est un condensat (sel du jour + IP + navigateur) dont le sel
+est effacé chaque jour ; l'IP n'est jamais stockée ; la session est un identifiant aléatoire
+de l'onglet (`sessionStorage`). Robots écartés, pages vues purgées après 13 mois. Contrat de
+l'API : `src/analytics/api.ts`.
+
+**Tableau de bord** : `/stats` (mot de passe `ADMIN_PASSWORD`, cookie signé de 30 jours ;
+20 échecs par heure bloquent la connexion). Visiteurs, pages vues, sessions, durée, rebond et
+leur évolution, courbe par heure ou par jour, pages les plus vues, rubriques, pages d'arrivée,
+provenances, appareils, navigateurs, systèmes, langues, et le direct page par page (flux SSE
+`GET /api/admin/live`, toutes les 2 s). Un clic sur une page filtre tout le tableau.
+En développement, `/stats?mock` affiche des données fictives sans backend.
+
+**En local :**
+
+    cd server && npm install && cp .env.example .env    # renseigner ADMIN_PASSWORD
+    npm run dev                                         # port 8787 ; Vite relaie /api
+    npm test
+
+Le traceur n'envoie rien en développement, sauf avec `VITE_TRACK=1 npm run dev` à la racine.
+Pour essayer le build complet sans nginx : `SERVE_STATIC=1 npm start` dans `server/`, puis
+http://localhost:8787.
+
 ## Déploiement (production)
 
 Le site public (`allodex.eu`, `allodex.online`, `allodex.allods-developers.eu`) est servi
@@ -1453,8 +1507,18 @@ sondes de dev (`import.meta.env.DEV`) actives et les entrées désactivées en p
     git diff --name-status <ref-serveur> main            # contrôler la liste
     rsync -az --files-from=<liste> ./ <utilisateur>@<serveur>:/srv/node/allodex/
 
-    # 2. reconstruire sur place (≈ 5 min : la copie de public/game pèse 2 Gio)
-    ssh <utilisateur>@<serveur> 'cd /srv/node/allodex && npm run build'
+    # 2. reconstruire sur place (≈ 5 min : la copie de public/game pèse 2 Gio).
+    #    NODE_ENV=production explicite : un NODE_ENV hérité du shell produirait un bundle de dev.
+    ssh <utilisateur>@<serveur> 'cd /srv/node/allodex && NODE_ENV=production npm run build'
+
+    # 3. backend : dépendances, puis redémarrage (relit l'index du Lorebook)
+    ssh <utilisateur>@<serveur> 'cd /srv/node/allodex/server && npm ci --omit=dev && pm2 restart allodex-api'
+
+**Première mise en place du backend** : `cd server && npm ci --omit=dev`, créer `server/.env`
+(`ADMIN_PASSWORD` long et unique ; voir `.env.example`), `pm2 start deploy/ecosystem.config.cjs
+&& pm2 save`, puis fusionner `server/deploy/nginx.conf.example` dans le vhost (proxy de `/api/`,
+de `/robots.txt` et des plans du site, pages via le serveur avec repli sur `index.html`) et
+`nginx -t && systemctl reload nginx`. La base SQLite vit dans `server/data/` (à sauvegarder).
 
 nginx sert `dist/` avec repli à page unique (`try_files $uri $uri/ /index.html`), cache d'un
 an sur `/assets/` (noms hachés), de trente jours sur `/game/` et `/fonts/`, et `no-cache` sur
@@ -1463,8 +1527,8 @@ an sur `/assets/` (noms hachés), de trente jours sur `/game/` et `/fonts/`, et 
 (**jamais** dans `sites-enabled/`, qui est inclus par joker : un `.bak` y est chargé et casse
 la configuration pour cause de `listen` en double).
 
-Rien à mettre dans un `.env` : l'application est une page statique, `vite build` fige
-`import.meta.env.PROD` à la construction et le serveur n'exécute aucun code Node.
+Le front n'a pas de `.env` : `vite build` fige `import.meta.env.PROD` à la construction. Seul
+le backend en a un (`server/.env`, non versionné).
 
 **Attention au dépôt du serveur.** `/srv/node/allodex` est un clone de `origin`, mais le
 déploiement y copie des fichiers directement : son arbre de travail est donc en avance sur
