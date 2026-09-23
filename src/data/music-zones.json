@@ -24,7 +24,7 @@
     { "id": "eden", "title": { "fr": "Eden", "en": "Eden" }, "mapPatterns": ["^Eden$"], "groups": ["Eden"], "pattern": null },
     { "id": "jigran", "title": { "fr": "Jigran", "en": "Jigran" }, "mapPatterns": ["^Jigran$"], "groups": ["Jigran"], "pattern": null },
     { "id": "xadagan", "title": { "fr": "Xadagan", "en": "Xadagan" }, "mapPatterns": ["^Xadagan$"], "groups": ["Kadagan", "Xadagan"], "pattern": null },
-    { "id": "kvator", "title": { "fr": "Kvator", "en": "Kvator" }, "mapPatterns": ["^Kvator$"], "groups": ["Kvator"], "pattern": null }
+    { "id": "kvator", "title": { "fr": "Quator", "en": "Quator" }, "mapPatterns": ["^Kvator$"], "groups": ["Kvator"], "pattern": null }
   ],
   "fallback": { "id": "other", "title": { "fr": "Autres zones", "en": "Other zones" } }
 }

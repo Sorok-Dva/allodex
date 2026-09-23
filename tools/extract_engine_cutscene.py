@@ -89,7 +89,7 @@ ROTATION_TOLERANCE = 2e-4
 MAX_KEY_GAP = 48
 
 # Axe avant des modèles (personnages et créatures) dans leur repère : −Y (la queue du dragon et la
-# traîne de Véronika s'étendent vers +Y ; vérifié sur les captures du pilote). Lacet pour regarder
+# traîne de Klavdia s'étendent vers +Y ; vérifié sur les captures du pilote). Lacet pour regarder
 # un point : atan2(dy, dx) + π/2.
 MODEL_FORWARD = -math.pi / 2
 VERTEX_LIGHT_MODEL = os.environ.get("ALLODEX_VERTEX_LIGHT", "point")
