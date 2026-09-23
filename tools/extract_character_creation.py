@@ -40,7 +40,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from tools import allods_chargen as ac  # noqa: E402
-from tools.allods_packdb import PackDB, PakCatalog, open_catalog, open_pack, vote_pak_codes  # noqa: E402
+from tools.allods_packdb import PackDB, PakCatalog, open_catalog, open_pack, packs_path, vote_pak_codes  # noqa: E402
 from tools.allods_visdb import read_geometry, read_visobject  # noqa: E402
 from tools.chargen_gltf import (  # noqa: E402
     BinSource, Exporter, TexturePool, load_animation, load_geometry,
@@ -112,8 +112,8 @@ def french_texts(fr_client: Path) -> dict | None:
     """Textes français, relus dans le client FR (MY.GAMES Europe) par clé et non par identifiant :
     son `pack.bin` est d'une autre construction (format 15/16, `tools/packbin.py`), mêmes
     structures. Clés : textes de l'addon, noms système des races, classes, combinaisons et factions."""
-    pak = fr_client / "data" / "Packs" / "BaseLocfra_x64.pak"
-    texts = fr_client / "data" / "Packs" / "Texts_x64.pak"
+    pak = packs_path(fr_client / "data" / "Packs" / "BaseLocfra_x64.pak")
+    texts = packs_path(fr_client / "data" / "Packs" / "Texts_x64.pak")
     if not pak.is_file() or not texts.is_file():
         return None
     from tools.allods_packdb import default_cache_dir
@@ -180,7 +180,7 @@ def with_fr(value: dict | None, fr: str | None) -> dict | None:
 
 
 def open_locs(client: Path) -> dict[str, LocTable]:
-    z = zipfile.ZipFile(client / "data" / "Packs" / "Texts_x64.pak")
+    z = zipfile.ZipFile(packs_path(client / "data" / "Packs" / "Texts_x64.pak"))
     out = {}
     for lang, entry in (("ru", "Bin/pack.rus.loc"), ("en", "Bin/pack.eng_eu.loc")):
         out[lang] = LocTable(inflate(z.read(entry)))
@@ -462,7 +462,7 @@ def class_key(sysname: str) -> str:
 def run(out: Path, client: Path, only: list[str] | None, models: bool, scenes: bool, ui: bool) -> dict:
     db = open_pack(client)
     cat = open_catalog(db, client)
-    packs = client / "data" / "Packs"
+    packs = packs_path(client / "data" / "Packs")
     bins = BinSource([], [str(packs / p) for p in sorted(cat.names)])
     textures = TexturePool(db, cat, bins, out)
     ctx = Ctx(db, cat, bins, textures, out, open_locs(client))

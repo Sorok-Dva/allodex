@@ -38,7 +38,7 @@ from pathlib import Path
 import numpy as np
 
 from tools import allods_chargen as ac
-from tools.allods_packdb import PackDB, PakCatalog, default_cache_dir, vote_pak_codes
+from tools.allods_packdb import PackDB, PakCatalog, default_cache_dir, packs_path, vote_pak_codes
 from tools.allods_visdb import read_visobject
 from tools.chargen_gltf import Exporter, TexturePool, load_animation, load_geometry
 
@@ -67,7 +67,7 @@ ZL_SKY = 0x150
 
 
 def open_map(client: Path, cache_dir: Path | None = None) -> PackDB:
-    pak = Path(client) / "data" / "Packs" / "BaseLocall_x64.pak"
+    pak = packs_path(Path(client) / "data" / "Packs" / "BaseLocall_x64.pak")
     cache_dir = Path(cache_dir or default_cache_dir())
     stat = pak.stat()
     key = hashlib.sha1(f"{pak}:{MAP_ENTRY}:{stat.st_size}:{int(stat.st_mtime)}".encode()).hexdigest()[:12]
