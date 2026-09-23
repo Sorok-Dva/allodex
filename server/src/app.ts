@@ -14,6 +14,7 @@ import { createVisitorHasher } from './analytics/visitor.ts';
 import { createLoreIndex } from './seo/lore.ts';
 import { createPageRenderer } from './seo/pages.ts';
 import { createSitemaps } from './seo/sitemap.ts';
+import { createBuildValidator, createTalentRecorder, createTalentStats } from './talents/builds.ts';
 
 const MAX_BODY = 8 * 1024;
 const LIVE_INTERVAL = 2000;
@@ -37,10 +38,14 @@ const isHttps = (c: Context) => c.req.header('x-forwarded-proto') === 'https' ||
 export async function createApp(config: Config, db: DB, now: () => number = Date.now) {
   const app = new Hono();
   const live = new Live();
-  const collect = createCollector(db, live, createVisitorHasher(db), config.ownHosts);
+  const visitorOf = createVisitorHasher(db);
+  const collect = createCollector(db, live, visitorOf, config.ownHosts);
   const stats = createStats(db);
+  const recordBuild = createTalentRecorder(db, visitorOf, createBuildValidator(config.distDir));
+  const talentStats = createTalentStats(db);
   const auth = await createAuth(db, config.adminPassword, config.sessionSecret);
   const collectLimit = createRateLimiter(240);
+  const talentLimit = createRateLimiter(60);
   const loginLimit = createRateLimiter(8);
   // Mot de passe unique : plafond d'échecs toutes IP confondues, contre une attaque répartie.
   const failedLogins: number[] = [];
@@ -63,6 +68,19 @@ export async function createApp(config: Config, db: DB, now: () => number = Date
     const results = [];
     for (const ev of events) results.push(await collect(ev, ctx));
     return c.body(null, results.includes('invalid') && !results.includes('ok') ? 400 : 204);
+  });
+
+  // --- calculateur de talents : builds composés, partagés, ouverts ---------------------------------
+
+  app.post('/api/talents/events', async c => {
+    const ip = clientIp(c);
+    if (!talentLimit(ip, now())) return c.body(null, 429);
+    const text = await c.req.text();
+    if (text.length > MAX_BODY) return c.body(null, 413);
+    let payload: unknown;
+    try { payload = JSON.parse(text); } catch { return c.body(null, 400); }
+    const result = await recordBuild(payload, { ip, ua: c.req.header('user-agent') ?? '', now: now() });
+    return c.body(null, result === 'invalid' ? 400 : 204);
   });
 
   // --- administration ------------------------------------------------------------------------------
@@ -104,6 +122,11 @@ export async function createApp(config: Config, db: DB, now: () => number = Date
     const rawPath = c.req.query('path');
     const path = rawPath ? measuredPath(rawPath) : null;
     return c.json(await stats(range, path, now()));
+  });
+
+  app.get('/api/admin/talents', async c => {
+    const range = (RANGES as readonly string[]).includes(c.req.query('range') ?? '') ? c.req.query('range') as Range : '7d';
+    return c.json(await talentStats(range, now()));
   });
 
   app.get('/api/admin/live', c => streamSSE(c, async stream => {

@@ -3,6 +3,7 @@ import { config } from './config.ts';
 import { openDb } from './db.ts';
 import { createApp } from './app.ts';
 import { purgeOld } from './analytics/stats.ts';
+import { purgeOldTalentEvents } from './talents/builds.ts';
 
 if (!config.databaseUrl) {
   console.error('[allodex] DATABASE_URL manquant (voir server/.env.example)');
@@ -14,6 +15,8 @@ const { app, lore } = await createApp(config, db);
 
 const purge = () => purgeOld(db, config.retentionDays, Date.now())
   .then(removed => { if (removed) console.log(`[allodex] ${removed} pages vues de plus de ${config.retentionDays} jours supprimées`); })
+  .then(() => purgeOldTalentEvents(db, config.retentionDays, Date.now()))
+  .then(removed => { if (removed) console.log(`[allodex] ${removed} événements de builds de plus de ${config.retentionDays} jours supprimés`); })
   .catch(err => console.error('[allodex] purge impossible :', err));
 void purge();
 const timer = setInterval(purge, 6 * 3_600_000);

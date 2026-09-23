@@ -1,10 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useRoute } from '@/lib/router';
 import { useI18n } from '@/lib/i18n';
-import { PING_INTERVAL, beacon, createTracker } from './tracker';
-
-// En développement, rien n'est envoyé sauf avec VITE_TRACK=1 (backend lancé dans server/).
-const ENABLED = import.meta.env.PROD || import.meta.env.VITE_TRACK === '1';
+import { PING_INTERVAL, TRACKING_ENABLED as ENABLED, beacon, createTracker } from './tracker';
 
 /** Mesure d'audience : une vue par chemin, présence en direct et durée de visibilité. */
 export function PageTracker() {

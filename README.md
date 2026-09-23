@@ -1547,11 +1547,25 @@ est effacé chaque jour ; l'IP n'est jamais stockée ; la session est un identif
 de l'onglet (`sessionStorage`). Robots écartés, pages vues purgées après 13 mois. Contrat de
 l'API : `src/analytics/api.ts`.
 
+**Registre des builds de talents** (`server/src/talents/builds.ts`, tables `talent_builds` et
+`talent_build_events`) : le calculateur (`src/data/talents.track.ts`) envoie à
+`POST /api/talents/events` chaque build composé (quand l'édition se pose 6 s, au partage ou à la
+fermeture de la page — pas les étapes intermédiaires), chaque lien copié et chaque ouverture d'un
+build venu d'un lien. Le serveur vérifie le build contre `dist/game/talents/` avec les règles du
+calculateur, puis l'écrit une fois par contenu : l'identifiant est un condensat de la version, de
+la classe et des codes `b`/`b2`, si bien que le même build retombe toujours sur la même ligne. Les
+compteurs (`generations`, `shares`, `views`) comptent un visiteur une fois par jour et par build ;
+l'auteur qui rouvre son build le jour même n'ajoute pas de vue. La colonne `player_id` attend la
+future table des joueurs (« build de X »). Les événements sont purgés après 13 mois, les builds
+et leurs compteurs restent.
+
 **Tableau de bord** : `/stats` (mot de passe `ADMIN_PASSWORD`, cookie signé de 30 jours ;
 20 échecs par heure bloquent la connexion). Visiteurs, pages vues, sessions, durée, rebond et
 leur évolution, courbe par heure ou par jour, pages les plus vues, rubriques, pages d'arrivée,
 provenances, appareils, navigateurs, systèmes, langues, et le direct page par page (flux SSE
-`GET /api/admin/live`, toutes les 2 s). Un clic sur une page filtre tout le tableau.
+`GET /api/admin/live`, toutes les 2 s). Un clic sur une page filtre tout le tableau. En bas,
+le calculateur de talents (`GET /api/admin/talents`) : builds composés, générations, partages et
+vues sur la période et depuis le début, classement par classe et builds les plus vus.
 En développement, `/stats?mock` affiche des données fictives sans backend.
 
 **En local :**
