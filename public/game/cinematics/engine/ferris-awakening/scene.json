@@ -53,7 +53,7 @@
  "actors": [
   {
    "id": "ferris4-architect-friend-mob",
-   "glb": "actors/ferris4-architect-friend-mob.glb",
+   "glb": "../shared/actors/mob-5d8d550.glb",
    "name": {
     "ru": "Ваятель",
     "en": "Sculptor"

@@ -600,7 +600,7 @@
  "actors": [
   {
    "id": "rysina",
-   "glb": "actors/rysina.glb",
+   "glb": "../shared/actors/mob-56721a8.glb",
    "name": {
     "ru": "Елизавета Рысина",
     "en": "Elizaveta Rysina"
@@ -693,15 +693,20 @@
    "geometry": "Creatures/Rysina/Rysina.(Geometry).bin",
    "height": 1.916,
    "animations": {
+    "ChannelCastOmni": 0.9667,
     "EmoteSpeech": 5.3333,
     "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
+    "ReadySpellDirected": 1.3333,
+    "Special": 12.0,
+    "SpellCastDirected": 1.3333,
+    "SpellCastOmni": 1.3333,
     "Walk": 1.6333
    }
   },
   {
    "id": "diarder",
-   "glb": "actors/diarder.glb",
+   "glb": "../shared/actors/mob-56747f0.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -776,14 +781,20 @@
    "geometry": "Creatures/Mirianna/Mirianna.(Geometry).bin",
    "height": 2.34,
    "animations": {
+    "EmoteSpeech": 5.3333,
     "Idle": 4.0,
     "Idle01": 3.0,
+    "Idle02": 4.1,
+    "Ready": 2.6667,
+    "ReadySpellDirected": 2.6667,
+    "SpellCastDirected": 1.3333,
+    "SpellCastOmni": 1.5,
     "Walk": 1.0
    }
   },
   {
    "id": "colossus",
-   "glb": "actors/colossus.glb",
+   "glb": "../shared/actors/mob-8c7ef98.glb",
    "name": {
     "ru": "Колосс",
     "en": "Colossus"
@@ -875,7 +886,7 @@
   },
   {
    "id": "colossus-2",
-   "glb": "actors/colossus.glb",
+   "glb": "../shared/actors/mob-8c7ef98.glb",
    "name": {
     "ru": "Колосс",
     "en": "Colossus"
@@ -936,7 +947,7 @@
   },
   {
    "id": "rysina-2",
-   "glb": "actors/rysina.glb",
+   "glb": "../shared/actors/mob-56721a8.glb",
    "name": {
     "ru": "Елизавета Рысина",
     "en": "Elizaveta Rysina"
@@ -980,15 +991,20 @@
    "geometry": "Creatures/Rysina/Rysina.(Geometry).bin",
    "height": 1.916,
    "animations": {
+    "ChannelCastOmni": 0.9667,
     "EmoteSpeech": 5.3333,
     "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
+    "ReadySpellDirected": 1.3333,
+    "Special": 12.0,
+    "SpellCastDirected": 1.3333,
+    "SpellCastOmni": 1.3333,
     "Walk": 1.6333
    }
   },
   {
    "id": "diarder-2",
-   "glb": "actors/diarder.glb",
+   "glb": "../shared/actors/mob-56747f0.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -1032,8 +1048,14 @@
    "geometry": "Creatures/Mirianna/Mirianna.(Geometry).bin",
    "height": 2.34,
    "animations": {
+    "EmoteSpeech": 5.3333,
     "Idle": 4.0,
     "Idle01": 3.0,
+    "Idle02": 4.1,
+    "Ready": 2.6667,
+    "ReadySpellDirected": 2.6667,
+    "SpellCastDirected": 1.3333,
+    "SpellCastOmni": 1.5,
     "Walk": 1.0
    }
   }
@@ -1286,52 +1308,35 @@
   "spawns": []
  },
  "objects": {
-  "FerrisRaid_Core_Details_LiftRoom1": {
+  "ZC10_ManaTrain_Rail_UpStraight": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
    "loop": false
   },
-  "FerrisRaid_Core_Portal": {
+  "HG8_Platform_03_Half": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
    "loop": false
   },
-  "FerrisRaid_Core": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false,
-   "components": [
-    {
-     "vot": "FerrisRaid_Core_Details_LiftRoom1",
-     "locator": "Slot_Special02"
-    },
-    {
-     "vot": "FerrisRaid_Core_Portal",
-     "locator": "Slot_Special01"
-    }
-   ]
-  },
-  "HG8_Wall_01": {
+  "HG8_Gate_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
    "loop": false
   },
-  "HG8_Rock_01": {
+  "HG8_Platform_01_UnRailed_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
    "loop": false
   },
-  "HG8_Corner": {
+  "HG8_CaveRock_Wall_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
@@ -1345,6 +1350,13 @@
    "duration": 0.0,
    "loop": false
   },
+  "HG8_Rock_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
   "HG8_Rock_06": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -1352,7 +1364,536 @@
    "duration": 0.0,
    "loop": false
   },
-  "HG8_CaveRock_Corner_01": {
+  "HG8_Wall_Top": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Support": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_Ferris_Akacia_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 10.0,
+   "loop": true
+  },
+  "ZC10_Ferris_Props_Tubes05": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_Bestiary_Wall": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_AkaciaBush_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.6667,
+   "loop": true
+  },
+  "AC5_Glow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Ferris4/particles/AC5_Glow.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 151,
+    "loopFrame": 121,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.5078,
+       0.4531,
+       0.2891
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 3.3,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Lamp": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "AC5_Glow",
+     "locator": ""
+    }
+   ]
+  },
+  "ZC10_FWC_Flag": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 10.0,
+   "loop": true
+  },
+  "Corpse_Modificant_Male": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_ManaTrain_Pillar_Segment_Double": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_CaveRock_Ceiling_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ForestVolumetricLight03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Ferris4/particles/ForestVolumetricLight03.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 871,
+    "loopFrame": 841,
+    "frames": [
+     1
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Cable_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_GatesArc": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_ManaTrain_Rail_LeftTurn": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Platform_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Ramp": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Platform_03_Corner": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Tank_01_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Ferris4/particles/HG8_Tank_01_FX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 91,
+    "loopFrame": 61,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.5469,
+       0.4141,
+       0.1484
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.5469,
+       0.4141,
+       0.1484
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.5469,
+       0.4141,
+       0.1484
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.5469,
+       0.4141,
+       0.1484
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Tank_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "HG8_Tank_01_FX",
+     "locator": ""
+    }
+   ]
+  },
+  "HG8_Wall_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Tank_02_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Ferris4/particles/HG8_Tank_02_FX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 91,
+    "loopFrame": 61,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.4844,
+       0.2344
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.4844,
+       0.2344
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.4844,
+       0.2344
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.4844,
+       0.2344
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.4844,
+       0.2344
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Tank_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "HG8_Tank_02_FX",
+     "locator": ""
+    }
+   ]
+  },
+  "Ferris_Small_Barrel": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_House_Small_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 8.0,
+   "loop": true
+  },
+  "ZC10_House_Big_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 8.0,
+   "loop": true
+  },
+  "HG8_Corner": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_ManaTrain_Rail_DownStraight": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_CaveRock_Wall_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
@@ -1366,63 +1907,14 @@
    "duration": 0.0,
    "loop": false
   },
-  "FerisLab_Room_Books03": {
+  "HG8_CaveRock_Wall_03": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
    "loop": false
   },
-  "Hadagan_ArmorStand_02": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "Hadagan_ArmorStand_01": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "Place_C_Hadagan_SetBoxes_04": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "Place_C_Hadagan_SetBoxes_03": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "Ferris_Small_Barrel": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "Place_D_Hadagan_Hydrant": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "ZC10_MechMelee_Corrupted_Dead_Hand_Legs": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "FerrisRaid_InnerPortal": {
+  "HG8_CaveRock_Ceiling_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
@@ -1542,6 +2034,512 @@
     }
    ]
   },
+  "HG8_Rock_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_Ferris_Akacia_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 10.0,
+   "loop": true
+  },
+  "FerisLab_InstRightWing_Stilazh04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerisLab_InstRightWing_Stilazh03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerisLab_InstRightWing_Cage": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Cable_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Hadagan_Street_Latern_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Projector_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Ferris4/particles/HG8_Projector_FX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 91,
+    "loopFrame": 61,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.2734,
+       0.2344,
+       0.1875
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.2,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Wall_Projector": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "HG8_Projector_FX",
+     "locator": ""
+    }
+   ]
+  },
+  "ForestVolumetricLight01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Ferris4/particles/ForestVolumetricLight01.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 871,
+    "loopFrame": 841,
+    "frames": [
+     1
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_CaveRock_Corner_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_Crane_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_Bestiary_Wall_End": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_MechMelee_Corrupted_Dead_Hand_Legs": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_MechMelee_Corrupted_Dead": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_AkaciaMedium": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 20.0,
+   "loop": true
+  },
+  "FerisLab_InstRightWing_Stilazh02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Ferris_Cage_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Truss_Angled_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Truss_Vertical_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Hadagan_Hatch_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_F_Hadagan_SetBox_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_C_Hadagan_SetBoxes_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_C_Hadagan_SetBoxes_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_C_Hadagan_SetBoxes_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_C_Hadagan_SetBoxes_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_C_Hadagan_SetTorpedo_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_D_Hadagan_Hydrant": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_D_Hadagan_Monument_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_D_Hadagan_SetBox_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_D_Hadagan_SetBox_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_D_Hadagan_SetBox_05": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "AC5_Glow#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Ferris4/particles/AC5_Glow.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 151,
+    "loopFrame": 121,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.5078,
+       0.4531,
+       0.2891
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 3.3,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_L_Hadagan_Lamp_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "AC5_Glow#2",
+     "locator": ""
+    }
+   ]
+  },
+  "AC5_Glow#3": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Ferris4/particles/AC5_Glow.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 151,
+    "loopFrame": 121,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.5078,
+       0.4531,
+       0.2891
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 3.3,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_L_Hadagan_Lamp_05": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "AC5_Glow#3",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Hadagan_ResurrectPlaceFerris": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Corpse_Modificant_Female_Burnt": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Corpse_Modificant_Male_Burnt": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisRaid_InnerPortal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "InstLeague1_AI_2X2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerisLab_Obj_Speaker": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisRaid_Core_Details_LiftRoom1": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisRaid_Core_Portal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisRaid_Core": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "FerrisRaid_Core_Details_LiftRoom1",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "FerrisRaid_Core_Portal",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "HG8_Platform_01_Corner": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_EngineerTurret": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerisLab_Room_Books03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Hadagan_ArmorStand_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Hadagan_ArmorStand_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
   "Red_Omni": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -1632,7 +2630,7 @@
     "loopFrame": 121,
     "frames": [
      0,
-     1
+     2
     ],
     "emitters": [
      {
@@ -1692,8 +2690,8 @@
     "endFrame": 241,
     "loopFrame": 121,
     "frames": [
-     2,
-     3
+     3,
+     4
     ],
     "emitters": [
      {
@@ -1945,28 +2943,7 @@
    "duration": 0.0,
    "loop": false
   },
-  "Corpse_Modificant_Male": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "InstLeague1_AI_2X2": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "ZC10_AkaciaMedium": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 20.0,
-   "loop": true
-  },
-  "ZC10_ManaTrain_Rail_LeftTurn": {
+  "ZC10_Mana_Tank": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
@@ -1980,358 +2957,6 @@
    "duration": 0.0,
    "loop": false
   },
-  "HG8_Tank_01_FX": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "particles": {
-    "file": "../maps/Ferris4/particles/HG8_Tank_01_FX.bin",
-    "speed": 1.0,
-    "loop": true,
-    "endFrame": 91,
-    "loopFrame": 61,
-    "frames": [
-     0
-    ],
-    "emitters": [
-     {
-      "additive": true,
-      "tint": [
-       0.5469,
-       0.4141,
-       0.1484
-      ],
-      "render": 0,
-      "pivot": [
-       0.0,
-       0.0
-      ],
-      "virtualOffset": 1.0,
-      "looping": false,
-      "worldSpace": false,
-      "flip": [
-       false,
-       false
-      ]
-     },
-     {
-      "additive": true,
-      "tint": [
-       0.5469,
-       0.4141,
-       0.1484
-      ],
-      "render": 0,
-      "pivot": [
-       0.0,
-       0.0
-      ],
-      "virtualOffset": 1.0,
-      "looping": false,
-      "worldSpace": false,
-      "flip": [
-       false,
-       false
-      ]
-     },
-     {
-      "additive": true,
-      "tint": [
-       0.5469,
-       0.4141,
-       0.1484
-      ],
-      "render": 0,
-      "pivot": [
-       0.0,
-       0.0
-      ],
-      "virtualOffset": 1.0,
-      "looping": false,
-      "worldSpace": false,
-      "flip": [
-       false,
-       false
-      ]
-     },
-     {
-      "additive": true,
-      "tint": [
-       0.5469,
-       0.4141,
-       0.1484
-      ],
-      "render": 0,
-      "pivot": [
-       0.0,
-       0.0
-      ],
-      "virtualOffset": 1.0,
-      "looping": false,
-      "worldSpace": false,
-      "flip": [
-       false,
-       false
-      ]
-     }
-    ]
-   },
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_Tank_01": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false,
-   "components": [
-    {
-     "vot": "HG8_Tank_01_FX",
-     "locator": ""
-    }
-   ]
-  },
-  "HG8_Platform_03_Corner": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_Tank_02_FX": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "particles": {
-    "file": "../maps/Ferris4/particles/HG8_Tank_02_FX.bin",
-    "speed": 1.0,
-    "loop": true,
-    "endFrame": 91,
-    "loopFrame": 61,
-    "frames": [
-     0
-    ],
-    "emitters": [
-     {
-      "additive": true,
-      "tint": [
-       0.6172,
-       0.4844,
-       0.2344
-      ],
-      "render": 0,
-      "pivot": [
-       0.0,
-       0.0
-      ],
-      "virtualOffset": 1.0,
-      "looping": false,
-      "worldSpace": false,
-      "flip": [
-       false,
-       false
-      ]
-     },
-     {
-      "additive": true,
-      "tint": [
-       0.6172,
-       0.4844,
-       0.2344
-      ],
-      "render": 0,
-      "pivot": [
-       0.0,
-       0.0
-      ],
-      "virtualOffset": 1.0,
-      "looping": false,
-      "worldSpace": false,
-      "flip": [
-       false,
-       false
-      ]
-     },
-     {
-      "additive": true,
-      "tint": [
-       0.6172,
-       0.4844,
-       0.2344
-      ],
-      "render": 0,
-      "pivot": [
-       0.0,
-       0.0
-      ],
-      "virtualOffset": 1.0,
-      "looping": false,
-      "worldSpace": false,
-      "flip": [
-       false,
-       false
-      ]
-     },
-     {
-      "additive": true,
-      "tint": [
-       0.6172,
-       0.4844,
-       0.2344
-      ],
-      "render": 0,
-      "pivot": [
-       0.0,
-       0.0
-      ],
-      "virtualOffset": 1.0,
-      "looping": false,
-      "worldSpace": false,
-      "flip": [
-       false,
-       false
-      ]
-     },
-     {
-      "additive": true,
-      "tint": [
-       0.6172,
-       0.4844,
-       0.2344
-      ],
-      "render": 0,
-      "pivot": [
-       0.0,
-       0.0
-      ],
-      "virtualOffset": 1.0,
-      "looping": false,
-      "worldSpace": false,
-      "flip": [
-       false,
-       false
-      ]
-     }
-    ]
-   },
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_Tank_02": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false,
-   "components": [
-    {
-     "vot": "HG8_Tank_02_FX",
-     "locator": ""
-    }
-   ]
-  },
-  "HG8_Platform_03": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_Support": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_Projector_FX": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "particles": {
-    "file": "../maps/Ferris4/particles/HG8_Projector_FX.bin",
-    "speed": 1.0,
-    "loop": true,
-    "endFrame": 91,
-    "loopFrame": 61,
-    "frames": [
-     0
-    ],
-    "emitters": [
-     {
-      "additive": true,
-      "tint": [
-       0.2734,
-       0.2344,
-       0.1875
-      ],
-      "render": 0,
-      "pivot": [
-       0.0,
-       0.0
-      ],
-      "virtualOffset": 1.2,
-      "looping": false,
-      "worldSpace": false,
-      "flip": [
-       false,
-       false
-      ]
-     }
-    ]
-   },
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_Wall_Projector": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false,
-   "components": [
-    {
-     "vot": "HG8_Projector_FX",
-     "locator": ""
-    }
-   ]
-  },
-  "HG8_Wall_Top": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_CaveRock_Wall_03": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_Truss_Vertical_01": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_CaveRock_Wall_01": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_Platform_01_Corner": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
   "HG8_Platform_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -2339,91 +2964,7 @@
    "duration": 0.0,
    "loop": false
   },
-  "HG8_CaveRock_Ceiling_02": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
   "HG8_Rock_03": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "ZC10_ManaTrain_Pillar_Segment_Double": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_Ramp": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_Platform_03_Half": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "HG8_Platform_01_UnRailed_02": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "Hadagan_ResurrectPlaceFerris": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "Hadagan_Street_Latern_02": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "ZC10_Ferris_Akacia_02": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 10.0,
-   "loop": true
-  },
-  "ZC10_AkaciaBush_02": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 6.6667,
-   "loop": true
-  },
-  "ZC10_Ferris_Akacia_01": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 10.0,
-   "loop": true
-  },
-  "HG8_Truss_Angled_01": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "ZC10_MechMelee_Corrupted_Dead": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
@@ -2469,6 +3010,12 @@
     64
    ],
    [
+    320,
+    0,
+    64,
+    64
+   ],
+   [
     0,
     0,
     128,
@@ -2480,6 +3027,13 @@
     "Client/Render/ParticleAtlas.(Texture).bin",
     1440,
     1152,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1824,
+    960,
     64,
     64
    ],

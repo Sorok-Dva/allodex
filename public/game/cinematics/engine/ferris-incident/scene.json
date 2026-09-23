@@ -186,7 +186,7 @@
    "n": 3,
    "start": 26.8,
    "duration": 10.0,
-   "speaker": "ferris",
+   "speaker": null,
    "voice": {
     "event": "Ferris4/Fireman02",
     "wave": "Fireman02",
@@ -208,7 +208,7 @@
  "actors": [
   {
    "id": "ferris",
-   "glb": "actors/ferris.glb",
+   "glb": "../shared/actors/mob-1b291fe0.glb",
    "name": {
     "ru": "Модификант",
     "en": "Modificant"
@@ -306,7 +306,7 @@
   },
   {
    "id": "ferris-2",
-   "glb": "actors/ferris.glb",
+   "glb": "../shared/actors/mob-1b291fe0.glb",
    "name": {
     "ru": "Модификант",
     "en": "Modificant"
@@ -368,7 +368,7 @@
   },
   {
    "id": "ferris-3",
-   "glb": "actors/ferris-3.glb",
+   "glb": "../shared/actors/mob-1b290aa0.glb",
    "name": {
     "ru": "Модификант",
     "en": "Modificant"
@@ -428,7 +428,7 @@
   },
   {
    "id": "ferris-4",
-   "glb": "actors/ferris.glb",
+   "glb": "../shared/actors/mob-1b291fe0.glb",
    "name": {
     "ru": "Модификант",
     "en": "Modificant"
@@ -490,7 +490,7 @@
   },
   {
    "id": "ferris-5",
-   "glb": "actors/ferris-3.glb",
+   "glb": "../shared/actors/mob-1b290aa0.glb",
    "name": {
     "ru": "Модификант",
     "en": "Modificant"
@@ -550,7 +550,7 @@
   },
   {
    "id": "ferris-6",
-   "glb": "actors/ferris.glb",
+   "glb": "../shared/actors/mob-1b291fe0.glb",
    "name": {
     "ru": "Модификант",
     "en": "Modificant"
@@ -612,7 +612,7 @@
   },
   {
    "id": "ferris-7",
-   "glb": "actors/ferris.glb",
+   "glb": "../shared/actors/mob-1b291fe0.glb",
    "name": {
     "ru": "Модификант",
     "en": "Modificant"
@@ -674,7 +674,7 @@
   },
   {
    "id": "ferris-8",
-   "glb": "actors/ferris-3.glb",
+   "glb": "../shared/actors/mob-1b290aa0.glb",
    "name": {
     "ru": "Модификант",
     "en": "Modificant"
@@ -734,7 +734,7 @@
   },
   {
    "id": "flamethrower",
-   "glb": "actors/flamethrower.glb",
+   "glb": "../shared/actors/mob-958f658.glb",
    "name": {
     "ru": "Дезинфектор",
     "en": "Desinfectant"
@@ -792,7 +792,7 @@
   },
   {
    "id": "flamethrower-2",
-   "glb": "actors/flamethrower.glb",
+   "glb": "../shared/actors/mob-958f658.glb",
    "name": {
     "ru": "Дезинфектор",
     "en": "Desinfectant"
