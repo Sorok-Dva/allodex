@@ -8,14 +8,12 @@ elles manquent.
 from __future__ import annotations
 
 from pathlib import Path
-from types import SimpleNamespace
 
-import numpy as np
 import pytest
 
 from tools import allods_chargen as ac
 from tools.allods_packdb import packs_path
-from tools.chargen_scene import INDEX_PAGE, _quat_ypr, fix_index_pages
+from tools.chargen_scene import _tokens, ambience_wave, chargen_sound_events
 from tools.chargen_ui import UiExtractor
 from tools.extract_character_creation import UI_CLASS_ORDER, UI_RACE_ORDER, class_key, with_fr
 
@@ -39,32 +37,25 @@ def test_state_of_texture_names():
     assert UiExtractor.state_of("RacePanel") == "normal"
 
 
-def _loaded(n_vertices: int, elements: list[tuple[int, int, int, int]], indices: np.ndarray):
-    els = [SimpleNamespace(vb0=vb0, vb1=vb1, ib0=ib0, ib1=ib1) for vb0, vb1, ib0, ib1 in elements]
-    return SimpleNamespace(vertices={"position": np.zeros((n_vertices, 3), np.float32)},
-                           geo=SimpleNamespace(doc=SimpleNamespace(elements=els)), indices=indices)
+def test_ambience_tokens_and_loop_match():
+    assert _tokens("SteppeWindy_AP") == ["steppe", "wind"]
+    assert _tokens("DeathRealm") == ["death", "realm"]
+    index = {"steppewindlp": [("SFX/Ambience/Ambience_Steppe.bsb", 1, "steppe_wind_lp")],
+             "steppewind01": [("SFX/Ambience/Ambience_Steppe.bsb", 2, "steppe_wind_01")],
+             "deathrealmambientlp": [("SFX/Music/Music_Zone.fsb", 23, "DeathRealmAmbient_lp")]}
+    assert ambience_wave("Ambience/X/SteppeWindy_AP", index)[2] == "steppe_wind_lp"
+    assert ambience_wave("Ambience/Zones/DeathRealm", index)[2] == "DeathRealmAmbient_lp"
+    assert ambience_wave("Ambience/Zones/AI36", index) is None          # pas d'invention
 
 
-def test_fix_index_pages_shifts_second_page():
-    # Modèle réduit de `Interface_Scene` (Kania) : 32 976 sommets en page 0, puis 208…7 154.
-    idx = np.array([0, 1, 32975, 208, 7153, 300], np.uint32)
-    loaded = _loaded(39922, [(0, 32976, 0, 3), (208, 7154, 3, 5), (208, 400, 5, 6)], idx)
-    assert fix_index_pages(loaded) == 1
-    assert loaded.indices.tolist() == [0, 1, 32975, 208 + INDEX_PAGE, 7153 + INDEX_PAGE, 300 + INDEX_PAGE]
-
-
-def test_fix_index_pages_ignores_small_overlaps_and_small_meshes():
-    idx = np.array([10, 20, 2818, 2900], np.uint32)
-    loaded = _loaded(40000, [(2917, 4942, 0, 2), (2818, 6550, 2, 4)], idx.copy())
-    assert fix_index_pages(loaded) == 0
-    assert loaded.indices.tolist() == idx.tolist()
-    small = _loaded(1000, [(500, 900, 0, 2), (0, 400, 2, 4)], idx.copy())
-    assert fix_index_pages(small) == 0
-
-
-def test_quat_ypr_is_a_z_rotation_for_yaw_only():
-    q = _quat_ypr(np.pi / 2, 0.0, 0.0)
-    assert q == pytest.approx([0.0, 0.0, np.sin(np.pi / 4), np.cos(np.pi / 4)])
+def test_chargen_sound_keys():
+    bank = "SFX/Interface/Chargen.bsb"
+    index = {"a": [(bank, 1, "ClassSelectMage")], "b": [(bank, 2, "FactionSelect")],
+             "c": [(bank, 3, "ChargenLigaElfMageMale")], "d": [(bank, 4, "ChargenImpOrcDruidMale")],
+             "e": [("SFX/Other.bsb", 1, "ClassSelectBard")]}
+    assert chargen_sound_events(index) == {"class:MAGE": "ClassSelectMage", "faction": "FactionSelect",
+                                           "voice:Elf/MAGE": "ChargenLigaElfMageMale",
+                                           "voice:Orc/DRUID": "ChargenImpOrcDruidMale"}
 
 
 def test_with_fr_and_class_key():
@@ -145,7 +136,45 @@ def test_addon_texts_and_ui_tree(pack, tmp_path):
     assert "ControlHairColors" in texts["Common"]
     ui = UiExtractor(db, packs_path(CLIENT / "data" / "Packs"), tmp_path)
     root = ui.widget(db.ptr(addon + 0x28))
-    names = [c["name"] for c in root["children"][0]["children"]]
-    assert names == ["Progress", "Factions", "RaceClass", "Customization"]
+    panels = {c["name"]: c for c in root["children"][0]["children"]}
+    assert list(panels) == ["Progress", "Factions", "RaceClass", "Customization"]
+    # Visibilité initiale : la progression et les panneaux montrés par les scripts partent cachés.
+    assert panels["Progress"].get("hidden") and panels["Customization"].get("hidden")
+    assert not panels["RaceClass"].get("hidden")
+    # Variantes de bouton par place : la plaque de classe choisie (variante 1) a seule un calque normal.
+    plate = next(c for c in panels["RaceClass"]["children"] if c["name"] == "Class")["children"][0]
+    button = next(c for c in plate["children"] if c["name"] == "Button")
+    assert "normal" not in button["variants"][0] and "highlight" in button["variants"][0]
+    assert "normal" in button["variants"][1]
+    # Libellé fixe « Пол » du panneau du sexe (identifiant de texte du `WidgetTextView`).
+    gender = next(c for c in panels["RaceClass"]["children"] if c["name"] == "GenderPanel")
+    assert next(c for c in gender["children"] if c["name"] == "Label").get("textId")
+    bottom = ui.wrap_bottom_line()
+    assert bottom["place"]["y"] == {"align": "high", "size": 67.0} and bottom["back"]["texture"] == "BottomLine"
     icons = ui.related_textures(ac.addon_texture_groups(db, addon)["ClassIcons"])
     assert {"Paladin", "Priest", "Druid"} <= set(icons)      # Paladin/Prêtre : pak localisé
+
+
+@client
+def test_elf_female_morph_presets_match_the_70_xdb(pack):
+    db, _ = pack
+    fem = next(e.template for e in ac.walk_root(db) if e.race == "Elf" and e.cls == "MAGE"
+               and ac.read_template(db, e.template).name == "ElfFemale")
+    morph = ac.read_morph(db, db.ptr(fem + ac.VCT_MORPH))
+    assert len(morph["presets"]) == 9 and len(morph["controls"]) == 15
+    # ElfFemaleMorphSettings.(ModelMorphSettings).xdb (7.0) : dernier préréglage, Height 0,88, Breast 0,85.
+    assert morph["presets"][-1]["0"] == pytest.approx(0.88) and morph["presets"][-1]["6"] == pytest.approx(0.85)
+    assert morph["controls"]["0"][0] == {"bone": "Global", "power": [1.0, 1.0, 1.0]}
+
+
+@client
+def test_menu_zone_light_and_ambience_grid(pack):
+    from tools.allods_packdb import open_map
+    from tools.chargen_scene import REGION_AMBIENCES, zone_light, zone_lights_at
+    db, _ = pack
+    mp = open_map(db, CLIENT, "MainMenu")
+    place = {s.name: s for s in ac.character_scenes(db)}["CharacterSelectElf"].character
+    light = zone_light(mp, zone_lights_at(mp, place))
+    assert light["ambient"] & 0xFFFFFF == 0x312E47 and light["fogEnd"] == 220.0
+    amb = zone_lights_at(mp, place, REGION_AMBIENCES, reach=2)
+    assert mp.string(amb + 0x58) == "Ambience/OutdoorAmbience/Zones/AI36"
