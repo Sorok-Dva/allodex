@@ -40,6 +40,8 @@ export type EngineActor = {
   appear?: number;
   /** Intervalles de présence (PNJ invoqués puis retirés) ; remplace `appear` quand il est donné. */
   presence?: [number, number][];
+  /** Animations posées par le déroulé (`CreatureAnimationAction`) : en boucle, ou une fois. */
+  actions?: ActorAction[];
   /** Lumière à sa position (ambiante + ponctuelles de la carte), unités du jeu (1 = 0x80). */
   light?: Vec3 | null;
 };
@@ -61,6 +63,7 @@ export type EngineLight = {
 };
 
 /** `tilt` : (roulis X, tangage Y) des objets inclinés, composés `Rz(yaw)·Ry·Rx` (Euler `ZYX`). */
+export type ActorAction = { t: number; until: number; clips: string[]; loop: boolean };
 export type DecorInstance = { vot: string; p: Vec3; yaw: number; tilt?: [number, number]; scale?: number; light?: [number, number]; ambient?: Vec3 };
 export type FxSpawn = { vot: string; t: number; until: number; p?: Vec3; yaw?: number; scale?: number; attach?: string; locator?: string };
 export type PostEffect =
@@ -139,8 +142,28 @@ export function voiceAt(lines: readonly EngineLine[], t: number): { index: numbe
  * ses clips à la suite (durées de l'acteur), sinon le clip de parole de l'acteur (scènes mises en
  * scène), sinon l'attente ; renvoie aussi le temps dans le clip.
  */
-export function actorClipAt(actor: Pick<EngineActor, 'id' | 'idle' | 'talk'> & { animations?: Record<string, number> },
+export function actorClipAt(actor: Pick<EngineActor, 'id' | 'idle' | 'talk'> & { animations?: Record<string, number>; actions?: ActorAction[] },
   lines: readonly EngineLine[], t: number): { clip: string; time: number } {
+  // Animation du déroulé en cours (la dernière posée l'emporte) ; une fois jouée, une mort reste
+  // sur sa dernière image, le reste rend la main.
+  const lengths = actor.animations;
+  for (const action of [...(actor.actions ?? [])].reverse()) {
+    if (t < action.t || t >= action.until || !lengths) continue;
+    const clips = action.clips.filter(c => (lengths[c] ?? 0) > 0);
+    const total = clips.reduce((sum, c) => sum + lengths[c], 0);
+    if (!clips.length || total <= 0) continue;
+    let local = t - action.t;
+    if (action.loop) local %= total;
+    else if (local >= total) {
+      const last = clips[clips.length - 1];
+      if (/death|die/i.test(last)) return { clip: last, time: lengths[last] - 1e-3 };
+      continue;
+    }
+    for (const clip of clips) {
+      if (local < lengths[clip]) return { clip, time: local };
+      local -= lengths[clip];
+    }
+  }
   for (const line of lines) {
     if (line.speaker !== actor.id || t < line.start) continue;
     const clips = (line.clips ?? []).filter(c => !actor.animations || c in actor.animations);

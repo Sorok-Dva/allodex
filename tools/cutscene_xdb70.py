@@ -246,6 +246,8 @@ class Simulator:
         if not locator or obj is None or not obj.get("href"):
             return
         mob = self.tree.resolve(base, obj.get("href"))
+        if not mob.name.endswith(".(MobWorld).xdb"):
+            return          # projectile ou stèle d'effet (`CutScene_Boom.(SteleResource)`) : pas un PNJ
         yaw = dest.find("yaw") if dest is not None else None
         entry = {"id": f"summon{len(self.tl.summons) + 1}", "mob": self.tree.rel(mob) if mob.is_file() else obj.get("href"),
                  "name": mob_name(self.tree, mob), "visual": mob_visual(self.tree, mob) if mob.is_file() else None,
@@ -416,7 +418,13 @@ def track_keys(src: list, t0: float, duration: float | None) -> list[dict]:
 
 
 def camera_keys(shots: list[dict]) -> dict:
-    """Plans enchaînés ; au plan suivant, coupe franche (clé tenue jusqu'à l'instant de la coupe)."""
+    """Plans enchaînés ; au plan suivant, coupe franche (clé tenue jusqu'à l'instant de la coupe).
+    Un plan aux points tous nuls rend la caméra au jeu (vue du joueur, inconnue ici) : il est
+    ignoré, le plan précédent tient (ou le suivant, s'il ouvre la scène)."""
+    def blank(track: list) -> bool:
+        return all(not any(p) for _, p in track)
+    start = shots[0]["t"] if shots else 0.0
+    shots = [s for s in shots if not (blank(s["points"]) and blank(s["targets"]))]
     points, targets = [], []
     for k, shot in enumerate(shots):
         end = shots[k + 1]["t"] if k + 1 < len(shots) else shot["t"] + (shot["duration"] or 0)
@@ -433,4 +441,7 @@ def camera_keys(shots: list[dict]) -> dict:
                 p = last["p"]
             if last["t"] < end - 2e-3:
                 out.append({"t": round(end - 1e-3, 3), "p": p})
+    for track in (points, targets):
+        if track and track[0]["t"] > start:
+            track.insert(0, {"t": round(start, 3), "p": track[0]["p"]})
     return {"points": points, "targets": targets}

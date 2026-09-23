@@ -87,6 +87,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
   const [scene, setScene] = useState<EngineScene | null>(null);
   const [subtitle, setSubtitle] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const devHook = useRef<unknown>(null);
   const st = useRef({
     time: 0,
     playing: false,
@@ -153,6 +154,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
     state.lang = subtitleLang;
     state.dirty = true;
     if (hidden) silence();
+    if (import.meta.env.DEV && !hidden && devHook.current) (window as Window & { __engineCutscene?: unknown }).__engineCutscene = devHook.current;
   }, [hidden, subtitleLang]);
 
   useEffect(() => {
@@ -483,7 +485,9 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       state.ready = 4;
       state.dirty = true;
       setLoading(false);
-      if (import.meta.env.DEV) (window as Window & { __engineCutscene?: unknown }).__engineCutscene = { THREE, view, world, camera, state, actors, renderer, decorInstances, spawns };
+      // Accès de débogage (captures sans écran) : celui du lecteur visible, pas du préchargé.
+      devHook.current = { THREE, view, world, camera, state, actors, renderer, decorInstances, spawns };
+      if (import.meta.env.DEV && !state.hidden) (window as Window & { __engineCutscene?: unknown }).__engineCutscene = devHook.current;
       frame = requestAnimationFrame(tick);
     };
     void setup();

@@ -170,3 +170,10 @@ def test_xdb70_summons_walk_to_locators_and_vanish(tmp_path):
     assert summon["moves"] == [{"t": 2.0, "locator": "B"}] and summon["walkSpeed"] == 3
     assert summon["visual"] == "Characters/Elf_female/V.(VisualMob).xdb" and summon["until"] == 10.0
     assert tl.maps == {"Ferris4"} and {"A", "B"} <= tl.scripts
+
+
+def test_xdb70_blank_shots_leave_the_previous_view():
+    shots = [{"t": 0.0, "duration": 5.0, "points": [(1, (0, 0, 0))], "targets": [(1, (0, 0, 0))]},
+             {"t": 5.0, "duration": 5.0, "points": [(1, (1, 2, 3))], "targets": [(1, (4, 5, 6))]}]
+    keys = cutscene_xdb70.camera_keys(shots)
+    assert keys["points"][0] == {"t": 0.0, "p": [1, 2, 3]} and keys["points"][1]["t"] == 5.0

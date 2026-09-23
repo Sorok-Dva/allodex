@@ -785,6 +785,10 @@ def find_mob_by_name(db: PackDB, cat, texts: Texts, name: str, model_hint: str) 
     return best
 
 
+# Mots des noms de `MobWorld` qui ne désignent pas le PNJ (`CutScene_BossLast`, `Cut_Scene_Boss`).
+GENERIC_TOKENS = {"cutscene", "cut", "scene", "cs", "mob", "npc"}
+
+
 def summon_actors(spec: dict, tl, spawns: dict, db: PackDB, cat, texts: Texts, report: list[str]) -> dict[str, dict]:
     """PNJ invoqués par le déroulé (`ImpactSummon`) → acteurs, un par nom : chaque invocation le
     (ré)apparaît sur son repère, `ImpactGoTo` le fait marcher (à la `walkSpeed` du `MobWorld`)
@@ -805,9 +809,15 @@ def summon_actors(spec: dict, tl, spawns: dict, db: PackDB, cat, texts: Texts, r
             if mob is None:
                 report.append(f"{spec['id']} : PNJ invoqué introuvable dans le 17.0 : {summon['name']}")
                 continue
-            stem = Path(summon["mob"] or "x").name.split(".")[0].split("_")[0].lower()
+            tokens = [t for t in Path(summon["mob"] or "x").name.split(".")[0].lower().split("_") if t not in GENERIC_TOKENS]
+            stem = tokens[0] if tokens else "summon"
             base = re.sub(r"[^a-z0-9]+", "-", stem).strip("-") or "summon"
-            actor = {"id": base if not twins else f"{base}-{len(twins) + 1}", "name": name, "mob_offset": mob,
+            used = {a["id"] for a in groups.values()}
+            ident, n = base, 1
+            while ident in used:
+                n += 1
+                ident = f"{base}-{n}"
+            actor = {"id": ident, "name": name, "mob_offset": mob,
                      "path": [], "presence": [], "move": "Walk", "voice_key": stem, "summons": [], "server": summon}
             groups[summon["id"]] = actor
         actor["summons"].append(summon["id"])
@@ -846,7 +856,8 @@ def voice_speaker(line: dict, summoned: dict[str, dict], spec: dict) -> str | No
     wanted = {v for k, v in aliases.items() if k in voice}
     for key, actor in summoned.items():
         present = any(a - 1e-3 <= line["t"] < b for a, b in actor["presence"])
-        if present and (actor["voice_key"] in voice or actor["voice_key"] in wanted):
+        names = {actor["voice_key"], (actor.get("name") or "").lower()}
+        if present and (actor["voice_key"] in voice or names & wanted):
             return key
     return None
 
@@ -890,8 +901,19 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
         plan_lines.append({"start": line["t"], "duration": line["delay_ms"] / 1000.0, "voice_event": line["voice"],
                            "speaker": speaker, "clips": [clip_name(a) for a in line["animations"]], "text": text,
                            "source": line["clientdata"]})
+    # Animations posées par buff sur un PNJ (`CreatureAnimationAction` : `LOOP`, sinon une fois).
+    for effect in tl.effects:
+        if effect["kind"] != "CreatureAnimationAction" or not effect.get("animations"):
+            continue
+        info = actors.get(effect["target"]) or next((a for a in summoned.values() if effect["target"] in a["summons"]), None)
+        if info is None:
+            continue
+        info.setdefault("actions", []).append({"t": effect["t"], "until": effect["until"],
+                                               "clips": [clip_name(a) for a in effect["animations"]],
+                                               "loop": effect.get("mode") == "LOOP"})
     for info in actors.values():
-        used = sorted({c for l in plan_lines if l["speaker"] == info["id"] for c in l["clips"]})
+        used = sorted({c for l in plan_lines if l["speaker"] == info["id"] for c in l["clips"]} |
+                      {c for a in info.get("actions", []) for c in a["clips"]})
         info.update({"animations": used, "clips_wanted": used})
     weather = [w for w in tl.weather if (w["until"] - w["t"]) >= 0.8 * tl.duration - tl.weather[0]["t"]] if tl.weather else []
     sounds = {"music": [], "ambience": []}
@@ -1082,6 +1104,7 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                                 "path": path, "scale": actor.get("scale", 1.0), "idle": idle,
                                 "talk": actor.get("talk"), "move": actor.get("move"), "appear": actor.get("appear", 0.0),
                                 **({"presence": actor["presence"]} if actor.get("presence") else {}),
+                                **({"actions": sorted(actor["actions"], key=lambda a: a["t"])} if actor.get("actions") else {}),
                                 "light": light_at(path[0]["p"], decor["pointLights"], light), **meta})
 
         fx_glb, fx_objects, fx_sounds, spawns = build_fx(spec.get("spawns", []), mp, cat, bins, textures, particles, report)
