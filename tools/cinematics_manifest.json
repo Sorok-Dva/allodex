@@ -64,6 +64,13 @@
    },
    "version": "11.0"
   },
+  "citadel": {
+   "title": {
+    "fr": "La Citadelle de Nihaz",
+    "en": "Nihaz's Citadel"
+   },
+   "version": "12.0"
+  },
   "suslanger": {
    "title": {
     "fr": "Suslanger",
@@ -1136,6 +1143,24 @@
      }
     ]
    },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ao12-prologue04",
+   "kind": "engine",
+   "source": "main",
+   "event": "AO12_Prologue04_Cutscene",
+   "arc": "citadel",
+   "version": "12.0",
+   "faction": "common",
+   "order": 990,
+   "title": {
+    "fr": "Le monde caché",
+    "en": "The hidden world"
+   },
+   "chronology": "Cinématique moteur de la quête « AO12_Prologue04 » (prologue 12.0, carte AO12_PrologueInst, la Citadelle de Nihaz) : Véronika y trouve dans les souvenirs gardés par Nihaz « le monde qu’il cherchait à cacher », d’où partent les arcs 12.0 et 13.0 (Eden, la Toute-Mère) ; placée avant les vidéos de Suslanger (12.0). Recréée en 3D, voir engine_scenes.",
    "audio": {
     "language": "ru"
    }
@@ -6007,5 +6032,166 @@
     "subtitled_lines": 0
    }
   ]
- }
+ },
+ "engine_scenes": [
+  {
+   "id": "ao12-prologue04",
+   "_note": "Pilote des cinématiques moteur. Tout vient du client 17.0 sauf `actors[].position/face` et `timing` : le client ne contient ni la position des PNJ (apparition par le serveur) ni l’instant des répliques (script serveur). Ces valeurs sont une mise en scène, justifiée ci-dessous.",
+   "map": "AO12_PrologueInst",
+   "buff": 507556,
+   "buff_note": "BuffResource 507556 → BuffVisScripts 507555 → CameraTrackAction : 6 points de caméra et 6 visées, identiques au .xdb 7.0 World/Quests/AO12/AO12_Prologue04/AO12_Prologue04_Cutscene.(BuffVisScripts).",
+   "lines": [
+    507557,
+    507580,
+    507576,
+    507579,
+    507569,
+    507570,
+    507577,
+    507573,
+    507581,
+    507582
+   ],
+   "lines_note": "ClientData dont la voix est Cutscenes/Eden2/Prologue04_Cutscene_1 … _10, dans l’ordre des numéros (ordre des textes du client).",
+   "fr_anchor": "Gort alors qu est ce qu on attend",
+   "voice_bank": "SFX/Voice/Voice_Eden06_rus.bsb",
+   "fov": 45,
+   "fov_note": "Champ vertical supposé (π/4, valeur classique de Direct3D) : le client ne l’expose pas.",
+   "timing": {
+    "groups": [
+     {
+      "segment": 0,
+      "lines": [
+       1,
+       2,
+       3,
+       4
+      ]
+     },
+     {
+      "segment": 2,
+      "lines": [
+       5,
+       6,
+       7
+      ]
+     },
+     {
+      "segment": 4,
+      "lines": [
+       8,
+       9,
+       10
+      ]
+     }
+    ],
+    "lead": 0.5,
+    "gap": 0.6,
+    "_note": "Groupes déduits de la trajectoire : le premier plan (39 s, lent travelling vers le Pointeur de Nihaz) porte les quatre répliques du groupe (27 s de sous-titres), le plan fixe sur Nihaz (21 s) ses trois répliques (21 s), le dernier travelling (15 s) les trois dernières (12 s). Dans un groupe, chaque réplique part à la fin de la voix précédente + gap."
+   },
+   "decor_center": [
+    175.0,
+    148.0
+   ],
+   "decor_radius": 200,
+   "actors": [
+    {
+     "id": "reniesta",
+     "mob": 498463,
+     "sex": "female",
+     "position": [
+      171.6,
+      145.4,
+      230
+     ],
+     "ground": true,
+     "face": [
+      174.9,
+      147.9
+     ],
+     "idle": "Idle01",
+     "talk": "EmoteSpeech",
+     "animations": [
+      "Idle01",
+      "EmoteSpeech"
+     ],
+     "speaker_prefixes": [
+      "Рениеста:"
+     ]
+    },
+    {
+     "id": "veronika",
+     "mob": 495589,
+     "position": [
+      170.2,
+      148.9,
+      230
+     ],
+     "ground": true,
+     "face": [
+      174.9,
+      147.9
+     ],
+     "idle": "Idle",
+     "talk": "EmoteSpeech",
+     "animations": [
+      "Idle",
+      "EmoteSpeech"
+     ],
+     "speaker_prefixes": [
+      "Вероника:"
+     ]
+    },
+    {
+     "id": "gort",
+     "mob": 507560,
+     "sex": "male",
+     "position": [
+      173.4,
+      142.6,
+      230
+     ],
+     "ground": true,
+     "face": [
+      174.9,
+      147.9
+     ],
+     "idle": "Idle01",
+     "talk": "EmoteSpeech",
+     "animations": [
+      "Idle01",
+      "EmoteSpeech"
+     ],
+     "speaker_prefixes": [
+      "Горт:"
+     ]
+    },
+    {
+     "id": "nihaz",
+     "mob": 507561,
+     "position": [
+      148.35,
+      135.07,
+      230
+     ],
+     "ground": true,
+     "face": [
+      171.6,
+      145.4
+     ],
+     "idle": "Idle",
+     "talk": "SpellCastOmni",
+     "animations": [
+      "Idle",
+      "SpellCastOmni"
+     ],
+     "speaker_prefixes": [
+      "Нихаз:"
+     ],
+     "appear": 39
+    }
+   ],
+   "staging_note": "Le groupe (Reniesta, Véronika, Gort) entoure le Pointeur de Nihaz, visé par la caméra pendant les 42 premières secondes ; Nihaz (modèle NihazDragonBoss, le seul visuel du MobWorld « Нихаз » 507561 rangé avec les données de la quête) se tient au point visé par le plan fixe de ses répliques (148,3 ; 135,1). Nihaz n’apparaît qu’à 39 s, quand la caméra quitte le Pointeur pour le point qu’il occupe (sinon il masquerait le premier plan, visé à travers ce point)."
+  }
+ ]
 }

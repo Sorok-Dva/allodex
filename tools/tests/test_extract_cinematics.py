@@ -248,3 +248,12 @@ def test_manifest_puts_the_boss_presentations_in_a_bonus_after_the_film(manifest
 def test_manifest_documents_every_placement(manifest):
     assert all(c["chronology"] for c in manifest["cinematics"])
     assert all(c["title"]["fr"] and c["title"]["en"] for c in manifest["cinematics"])
+
+
+def test_engine_chapters_have_an_extraction_spec(manifest):
+    specs = {s["id"]: s for s in manifest.get("engine_scenes", [])}
+    engine = [c for c in manifest["cinematics"] if c.get("kind") == "engine"]
+    assert engine and all(c["id"] in specs for c in engine)
+    for spec in specs.values():
+        numbered = sorted(n for g in spec["timing"]["groups"] for n in g["lines"])
+        assert numbered == list(range(1, len(spec["lines"]) + 1))

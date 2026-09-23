@@ -406,6 +406,11 @@ def run(manifest: dict, out_dir: Path, sync: dict, only: list[str] | None = None
     entries = []
     for spec in manifest["cinematics"]:
         cid = spec["id"]
+        if spec.get("kind") == "engine":
+            # chapitre recréé en 3D : écrit par tools/extract_engine_cutscene.py, gardé tel quel
+            if cid in previous:
+                entries.append(previous[cid])
+            continue
         if only and cid not in only:
             if cid in previous:
                 entries.append(previous[cid])
