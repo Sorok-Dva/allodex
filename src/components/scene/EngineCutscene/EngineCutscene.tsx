@@ -447,6 +447,11 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
           state.loops.push({ audio, volume: volume[kind] ?? (kind === 'music' ? 0.4 : 0.5), position: null, start: item.t, until: item.until, kind });
         }
       }
+      for (const item of data.sounds.sfx ?? []) {
+        const audio = audioFile(item.file);
+        audio.loop = false;
+        state.loops.push({ audio, volume: volume.sfx ?? 0.8, position: null, start: item.t, until: item.until, kind: 'sfx' });
+      }
 
       renderer = createRenderer
         ? createRenderer(canvas)
