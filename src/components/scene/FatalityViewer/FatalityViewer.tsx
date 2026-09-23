@@ -586,7 +586,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
         if (import.meta.env.DEV) console.warn('[FatalityViewer] chargement impossible', error);
         return;
       }
-      if (import.meta.env.DEV) (window as Window & { __fatalityViewer?: unknown }).__fatalityViewer = { scene, world, state: st, instances, victim, attacker, channels };
+      if (import.meta.env.DEV) (window as Window & { __fatalityViewer?: unknown }).__fatalityViewer = { THREE, scene, world, state: st, instances, victim, attacker, channels, renderer, camera, terrainExtras };
       document.addEventListener('visibilitychange', onVisibility);
       if (!document.hidden) start();
     };
