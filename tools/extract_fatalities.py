@@ -18,9 +18,9 @@ d'une fatalité (voir le README, § « Fatalités ») :
 
 Sorties (`public/game/fatalities/`) :
 
-* `characters/<id>.glb` — personnage sans équipement tel que le client le montre (apparence
-  par défaut et peau cuite : `tools/allods_characters.py`) avec les clips : `Idle01` et toutes les
-  animations que les scripts de la victime et du tueur demandent ;
+* `characters/<id>.glb` — squelette et clips d'un personnage (`Idle01` et toutes les animations
+  que les scripts de la victime et du tueur demandent), sans maillage : le lecteur les joue sur
+  les modèles habillés de la création de personnage (`public/game/character/`) ;
 * `fx/<id>.glb` — les gabarits d'objets d'une fatalité, un nœud `vot:<nom>` chacun, avec
   leur squelette, leur clip et leurs composants accrochés ; textures communes dans `textures/` ;
 * `sfx/<nom>.ogg|.mp3` — les ondes des fatalités ;
@@ -58,9 +58,7 @@ from PIL import Image
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from tools.allods_characters import (  # noqa: E402
-    bake_skin, find_character_template, read_character_template, resolve_appearance,
-)
+from tools.allods_characters import find_character_template, read_character_template  # noqa: E402
 from tools.allods_packdb import PackDB, PakCatalog, open_catalog, open_pack  # noqa: E402
 from tools.allods_visdb import (  # noqa: E402
     GeometryInfo, VisObject, animation_names, read_fatalities, read_geometry, read_texture,
@@ -116,27 +114,14 @@ def _href(node: ET.Element | None) -> str | None:
     return href.split("#")[0] if href else None
 
 
-def bake_size(base: Image.Image, patches, image_of) -> int:
-    """Côté de la peau cuite : celui de la peau de base, relevé si un calque est plus fin que
-    son rectangle ne le permet (sans dépasser `CHARACTER_TEXTURE_MAX`)."""
-    size = max(base.size)
-    for patch in patches:
-        img = image_of(patch.texture) if patch.texture else None
-        if img is None:
-            continue
-        x1, x2, y1, y2 = patch.rect
-        if x2 > x1:
-            size = max(size, round(img.width / (x2 - x1)))
-        if y2 > y1:
-            size = max(size, round(img.height / (y2 - y1)))
-    return min(1 << max(size - 1, 1).bit_length(), CHARACTER_TEXTURE_MAX)
-
-
 def build_character(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, textures: TexturePool,
                     wanted: set[str]) -> tuple[bytes, dict, list[str]]:
-    """Personnage jouable tel que le client le montre sans équipement : apparence par défaut
-    (`tools/allods_characters.py` : tenue par défaut, sous-vêtements, variation par défaut du
-    client), peau cuite avec ses calques, squelette et clips demandés."""
+    """**Animations** d'un personnage jouable : son squelette et les clips demandés (`Idle01`,
+    animations des scripts de la victime et du tueur), sans maillage. Le personnage lui-même,
+    habillé de la tenue de sa classe, vient des modèles de la création de personnage
+    (`public/game/character/models/<Gabarit>.glb`, `tools/extract_character_creation.py`) : même
+    squelette, mêmes noms d'articulations (`<Gabarit>/<Articulation>`), les clips s'y lient tels
+    quels. L'apparence du client reste décrite par `tools/allods_characters.py`."""
     exporter = Exporter(textures, CHARACTER_TEXTURE_MAX)
     off = find_character_template(db, cat, spec["model"], spec["dir"])
     if off is None:
@@ -148,39 +133,8 @@ def build_character(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, te
     loaded = load_geometry(db, cat, bins, vot.geometry) if vot.geometry is not None else None
     if loaded is None or loaded.skeleton is None:
         raise ValueError(f"géométrie ou squelette illisible : {spec['model']}")
-    geo_elements = loaded.geo.doc.elements
-    appearance = resolve_appearance(template, [e.name for e in geo_elements],
-                                    {e.name: e.material.texture for e in geo_elements if e.material.visible})
-    # Peau cuite : remplace la peau de base sur tous les géosets qui la portent.
-    override = dict(appearance.replacements)
-    skin = template.main_texture
-    base = textures.image(skin, 4096) if skin else None
-    baked_name = None
-    if base is not None:
-        image_of = lambda name: textures.image(name, 4096)  # noqa: E731
-        mask = textures.image(appearance.skin_mask, 4096) if appearance.skin_mask else None
-        baked = bake_skin(base, appearance, image_of, mask, bake_size(base, appearance.patches, image_of))
-        baked_name = f"characters/{spec['id']}-skin"
-        textures.add_image(baked_name, baked, CHARACTER_TEXTURE_MAX)
-    visible = set(appearance.visible)
-    elements = []
-    for element in geo_elements:
-        if element.name not in visible:
-            continue
-        if baked_name and element.name not in override and element.material.texture == skin:
-            override[element.name] = baked_name
-        elements.append(element)
-    exporter.tints = appearance.tints
-    mesh, skinned = exporter.emit_mesh(spec["model"], loaded.geo, loaded.vertices, loaded.indices,
-                                       elements, loaded.skeleton, override)
-    if mesh is None:
-        raise ValueError(f"aucun géoset visible : {spec['model']}")
     skeleton = loaded.skeleton
     joint_nodes = exporter.emit_skeleton(skeleton, spec["model"])
-    static_node = exporter.gltf.add_node({"name": f"{spec['model']}/Static"})
-    mesh_node = {"name": f"{spec['model']}_mesh", "mesh": mesh}
-    if skinned:
-        mesh_node["skin"] = exporter.skin(spec["model"], skeleton, joint_nodes, static_node)
     roots = [joint_nodes[i] for i in range(len(skeleton)) if not (0 <= skeleton.parents[i] < len(skeleton))]
     span = float(np.max(np.abs(loaded.vertices["position"])) * 4.0)
     durations: dict[str, float] = {}
@@ -191,13 +145,12 @@ def build_character(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, te
             exporter.notes.append(f"{spec['id']} : animation absente {anim}")
             continue
         durations[anim] = round(exporter.emit_clip(anim, skeleton, joint_nodes, animation), 4)
-    root = exporter.gltf.add_node({"name": spec["model"], "children": roots + [static_node, exporter.gltf.add_node(mesh_node)],
+    root = exporter.gltf.add_node({"name": spec["model"], "children": roots,
                                    **({"scale": [vot.scale] * 3} if abs(vot.scale - 1) > 1e-6 else {})})
     glb = exporter.finish([root])
     height = float(loaded.vertices["position"][:, 2].max() * vot.scale)
     meta = {"id": spec["id"], "race": spec["race"], "sex": spec["sex"], "model": spec["model"],
             "glb": f"characters/{spec['id']}.glb", "scale": vot.scale, "height": round(height, 3),
-            "geosets": [e.name for e in elements],
             "animations": sorted(durations), "durations": durations, "stats": exporter.stats}
     return glb, meta, exporter.notes
 
