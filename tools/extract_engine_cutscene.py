@@ -368,7 +368,7 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
         splats = region_splats(bins.get, path)
 
         def slot(layer_id: int) -> int:
-            name, tiling = layers[layer_id - 1] if 0 < layer_id <= len(layers) else (None, 30.0)
+            name, tiling = layers[layer_id] if layer_id < len(layers) else (None, 30.0)
             key = name or ""
             if key not in palette:
                 palette[key] = len(palette)
