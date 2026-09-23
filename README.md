@@ -462,30 +462,84 @@ son (événement FMOD dont l'onde porte le même nom dans `SFX/Spells/Fatality*.
 - sons : événement ↔ onde par nom, casse et soulignés ignorés (`FatalityUniversal` →
   `fatality_universal`).
 
-**Personnages.** Géométrie, squelette, peaux et coiffures du client RU ; géosets de la tenue par
-défaut lus dans les `.xdb` 7.0 (les `VisualItem` compilés ne sont pas encore décodés). Clips :
-`Idle01` et les 17 animations demandées par les scripts, clés redondantes retirées (1 mm,
-2·10⁻⁴ de quaternion) et rotations en entiers 16 bits (`KHR_mesh_quantization`) : 3 à 4,5 Mo par
-personnage au lieu de 8 à 26.
+**Personnages** (`tools/allods_characters.py`, module réutilisable — future page de création de
+personnage). Tout vient du client 17.0 : le constructeur visuel compilé (`VisCharacterTemplate`,
+`CharacterVariations`, `VisualItem`, `TexturePatch`, `IndexedTexture`) est décodé, chaque décalage
+vérifié sur les `.xdb` 7.0 des mêmes ressources (test sur `HadaganFemale`). Le personnage est celui
+que le client montre sans équipement :
+
+- géosets : tous ceux de la géométrie, moins ceux que cache la tenue par défaut (`hiddenGeosets`,
+  par sexe + unisexe), plus ceux que montrent les `armorShapes` de la variation par défaut
+  (`face_0`, `hair_0`, `facial_0`, ailes, lumières des Aèdes…) ; sans texture, pas dessiné ;
+- **peau cuite** : peau de base (`mainBakedTexture`), teinte de peau multipliée sous le masque
+  (alpha de l'`IndexedTexture` : exclut yeux et dents), puis les calques dans l'ordre du client —
+  visage, pilosité, tatouages, cuir chevelu, **sous-vêtements** (`braTexturePatches`,
+  `pantsTexturePatches`) ; rectangles en fraction de la texture, V compté depuis le bas ;
+- couleur des cheveux multipliée sur les `hairColoredGeosets` (matériau `extras.tint`) ;
+- API : `find_character_template`, `read_character_template`, `resolve_appearance(template,
+  géosets, textures, variation=None, items=())`, `bake_skin(...)` — une autre variation (visage,
+  coiffure, couleurs de `Variations`) ou des objets portés s'y passent tels quels.
+
+Clips : `Idle01` et les animations demandées par les scripts (victime **et** tueur), clés
+redondantes retirées (1 mm, 2·10⁻⁴ de quaternion) et rotations en entiers 16 bits
+(`KHR_mesh_quantization`). Les gibelins n'ont pas trois des animations de sort demandées par
+certaines fatalités de boutique (le client ne les livre pas pour eux).
+
+**Tueur** (`casterFxScript`) : `Fatality_Cast` accroché à son `Slot_BodyFX` et un **rayon**
+(`CreatureChannelDirectAction` : gabarit `Fatality_Channel` modelé sur `fxLength` = 10 m le long de
+−Y, étiré entre ses extrémités — racine + 1 m chez le tueur et chez la victime —, fondus 0,2 s /
+0,1 s) ; le Phénix ajoute ses deux animations (`speed` 1,5) et un second rayon. Le script du client
+n'a pas de fin propre : il s'éteint avec la victime. Les ailes (`CreatureRunVisActionResource`, sous
+drapeaux `FatalityWings*` achetés en boutique) ne sont pas jouées. Mise en scène (constantes du
+lecteur) : le tueur se tient à 5 m, à 55° de l'avant de la victime côté −X, tourné vers elle ; il
+se choisit dans le panneau (défaut : même sexe, première race de l'autre faction, URL `k=`).
 
 **Décor** (`scene/scene.glb`) : sol aux textures de terrain des Prés bénis, bouleaux, pins,
-rochers et buissons de la zone à leur pose de bind, dôme de ciel `Sky01_DayBackground` du client ;
-lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi. La disposition est une
-mise en scène (manifeste, `scene.props`), aucune carte n'est lue.
+rochers et buissons de la zone à leur pose de bind, ciel `Sky01_Day*` du client (fond, soleil,
+nuages) ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi. La disposition
+est une mise en scène (manifeste, `scene.props`), aucune carte n'est lue.
+
+**Table des paks** (`tools/allods_packdb.vote_pak_codes`) : le vote « l'entrée au rang indiqué
+finit par `(Texture).bin` » ne départage pas deux paks de textures (n'importe quel rang y tombe
+sur une texture) ; `World_Sky_Textures` perdait contre `Spells_FX_Textures`, bien plus grand, et le
+ciel était texturé de bruits d'effets au hasard. Les textures votent désormais par **paire** : le
+nom trouvé au rang du `.bin`, suffixé `.hi`, doit se trouver au rang de la référence haute
+résolution d'un autre pak (170 codes corrigés, dont tous les `*.HiRes`). Plusieurs ressources
+`Texture` pouvant nommer le même `.bin` avec des dimensions différentes (`Rays12White` 256² et 128²),
+le décodage essaie chacune puis les dimensions déduites des mipmaps, et garde celle dont les
+niveaux ont la taille exacte : plus aucune texture illisible.
 
 **Lecteur** (`src/components/scene/FatalityViewer/`) : temps piloté à la main (pause, vitesse,
 recherche), chaque image recalculée d'après la chronologie (`timeline.ts`) ; gabarits clonés à leur
-instant, fondus d'entrée/sortie des `VisObjectTemplate`, défilement UV, orientation Z_AXIS et
-BILLBOARD face caméra, particules en quads instanciés (`particles.ts`), sons calés sur la
-chronologie. Constantes propres au lecteur, nommées : `TRANSPARENCY_FADE_SECONDS` (vitesse de
-base de `CreatureSetTransparencyAction`, non publiée), cadrage de la caméra, seuil de découpe
-des feuillages.
+instant, fondus d'entrée/sortie des `VisObjectTemplate`, composants retardés/arrêtés
+(`DelayComponent`, `StopVisObjectComponents`), défilement UV, orientation Z_AXIS et BILLBOARD face
+caméra, particules en quads instanciés (`particles.ts`), sons calés sur la chronologie.
 
-**Manques.** `casterFxScript` (effets sur le tueur, rayon, ailes) non rejoué : pas de tueur en
-scène. Teintes (`CreatureColorAction`, `ProceduralEffect`) et secousses de caméra relevées mais
-non appliquées. Particules : `WorldSpaceEmitter` et `Z_BOX` traités comme locales / face caméra.
-Textures L8 du ciel ignorées. Deux ondes empruntées à d’autres banques non exportées (gel du Mage, lance de Smeyana).
-Poids : 60 Mo de personnages (169 Mo avant), 23 Mo d’effets, 24 Mo de textures partagées, 9,5 Mo de particules, 7 Mo de sons.
+- **Géométrie douce** (`softGeometry.ts`) : les matériaux d'effet dont la texture d'environnement
+  est un `SoftGeometryGrain*` (≈ 300 éléments) la lisent à la normale vue de la caméra
+  (`n.xy · ½ + ½`) et en multiplient leur alpha : les colonnes et halos cylindriques s'estompent sur
+  la tranche (la colonne de l'Occultiste n'est plus un drap blanc à bords durs) ;
+- **éclairage** : le jeu éclaire en `texture × (ambiante + soleil · N·L)`, couleurs à 1 = 0x80 ;
+  le Lambert de three.js divise par π, compensé (`LIGHT_SCALE`) — les personnages ne sont plus
+  sombres ;
+- **caméra** (`cameraCollision.ts`) : jamais sous le terrain (rayon vertical sur les maillages de
+  sol, marge 0,4 m, plancher strict 0,15 m) ; rapprochée devant un obstacle entre la cible et elle
+  (rayon cible → caméra sur le décor opaque, feuillages découpés traversables) ; correction lissée
+  (rapide pour rentrer, lente pour ressortir) sans toucher au rayon d'orbite ni au zoom.
+
+Constantes propres au lecteur, nommées : `TRANSPARENCY_FADE_SECONDS` (vitesse de base de
+`CreatureSetTransparencyAction`, non publiée), cadrage de la caméra, place du tueur, seuil de
+découpe des feuillages.
+
+**Manques.** Teintes (`CreatureColorAction`, `ProceduralEffect`) et secousses de caméra relevées
+mais non appliquées. Particules : `WorldSpaceEmitter` et `Z_BOX` traités comme locales / face
+caméra. Pas de bloom : les empilements additifs (Prêtre) saturent au blanc. Les gibelins jouables
+sont un trio dans le jeu (placement codé dans le client, absent des données) : un seul est montré.
+Aucune capture du jeu pour comparer les fatalités image par image. La durée affichée est celle
+du script (dernier gabarit éteint) : certaines fatalités (Occultiste, Crâne 2024) finissent par
+plusieurs secondes vides, comme leurs gabarits le demandent.
+Poids : 62 Mo de personnages, 32 Mo d’effets, 28 Mo de textures partagées, 11 Mo de particules,
+7 Mo de sons (54 ondes, toutes trouvées).
 
 ## Déploiement (production)
 
