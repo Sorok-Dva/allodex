@@ -270,15 +270,17 @@ REGION_SIZE = 256.0
 def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tuple[list[float] | None, float]],
                   report: list[str]) -> tuple[bytes | None, np.ndarray]:
     """Sol des scènes (`terrain.glb` de la carte) : sous-carreaux de 8 m du `terrainDump` des
-    régions (niveau de détail fin), ceux dont le centre tombe dans une zone de scène (+ 16 m),
-    groupés par calque — le premier calque du jeu de la première passe (les poids du `SplatMap`
-    ne sont pas élucidés) —, texture répétée à sa taille. Rend aussi les triangles du sol, pour
+    régions (niveau de détail fin), ceux dont le centre tombe dans une zone de scène (+ 16 m). Chaque
+    sommet porte les calques de ses deux passes au plus (`_LAYERS0/1`, indices dans la liste des
+    calques de la carte, `extras.terrainLayers` : texture et taille de répétition) et leurs poids lus
+    dans le `SplatMap` (`_WEIGHTS0/1`) ; le lecteur les mélange. Rend aussi les triangles du sol, pour
     poser les acteurs."""
     from tools.allods_scenes import region_origin
-    from tools.allods_terrain import region_patches, terrain_layers
-    groups: dict[str, list] = {}
-    solids = []
-    count = 0
+    from tools.allods_terrain import pass_weights, region_patches, region_splat, terrain_layers
+    palette: dict[str, int] = {}
+    tilings: list[float] = []
+    pos, nor, lay0, wei0, lay1, wei1, idx, solids = [], [], [], [], [], [], [], []
+    base = count = 0
     for path, region in sorted(mp.paths.items()):
         if not path.endswith("_MapRegion.xdb"):
             continue
@@ -292,40 +294,55 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
             continue
         layer_sets, patches = parsed
         layers = terrain_layers(mp, cat, mp.ptr(region + 0x98))
+        splat = region_splat(bins.get, path)
+
+        def slot(layer_id: int) -> int:
+            name, tiling = layers[layer_id - 1] if 0 < layer_id <= len(layers) else (None, 30.0)
+            key = name or ""
+            if key not in palette:
+                palette[key] = len(palette)
+                tilings.append(float(tiling))
+            return palette[key]
         for patch in patches:
             cx, cy = ox + 8 * patch.sx + 4, oy + 8 * patch.sy + 4
             if not any(c is None or math.hypot(cx - c[0], cy - c[1]) <= r + 16 for c, r in near):
                 continue
-            ids = layer_sets[patch.passes[0][1]] if patch.passes and patch.passes[0][1] < len(layer_sets) else ()
-            layer = layers[ids[0] - 1] if ids and 0 < ids[0] <= len(layers) else (None, 30.0)
+            n = len(patch.points)
+            ids_w = []
+            for first, set_index, bc, bd in patch.passes[:2]:
+                ids = list(layer_sets[set_index]) if set_index < len(layer_sets) else []
+                w = pass_weights(splat, patch, (bc, bd))
+                slots = [slot(i) for i in ids] + [0] * (3 - len(ids))
+                w[:, len(ids):] = 0.0
+                ids_w.append((np.tile(np.array(slots[:3], np.float32), (n, 1)), w.astype(np.float32)))
+            if not ids_w:
+                ids_w.append((np.zeros((n, 3), np.float32), np.tile(np.array([1, 0, 0], np.float32), (n, 1))))
+            while len(ids_w) < 2:
+                ids_w.append((np.zeros((n, 3), np.float32), np.zeros((n, 3), np.float32)))
             pts = patch.points + np.array([ox, oy, 0.0])
-            groups.setdefault(layer[0] or "", []).append((pts, patch.normals, patch.triangles, layer[1]))
+            pos.append(pts.astype(np.float32))
+            nor.append(patch.normals.astype(np.float32))
+            (l0, w0), (l1, w1) = ids_w
+            lay0.append(l0); wei0.append(w0); lay1.append(l1); wei1.append(w1)
+            idx.append((patch.triangles + base).astype(np.uint32))
             solids.append(pts[patch.triangles])
+            base += n
             count += 1
-    if not groups:
+    if not pos:
         return None, np.zeros((0, 3, 3))
     ex = Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/")
-    primitives = []
-    for name, parts in sorted(groups.items()):
-        pos, nor, uv, idx, base = [], [], [], [], 0
-        for pts, normals, tris, tiling in parts:
-            pos.append(pts.astype(np.float32))
-            nor.append(normals.astype(np.float32))
-            uv.append((pts[:, :2] / tiling).astype(np.float32))
-            idx.append((tris + base).astype(np.uint32))
-            base += len(pts)
-        P = np.concatenate(pos)
-        tex = ex.texture(name) if name else None
-        material = ex.gltf.add_material(f"terrain {Path(name).name if name else 'nu'}", tex, "OPAQUE", False, False)
-        ex.gltf.json["materials"][material].setdefault("extras", {}).update({"lit": True, "terrain": True})
-        primitives.append({"attributes": {"POSITION": ex.gltf.add_accessor(P, "VEC3", "f32", target=34962, minmax=True),
-                                          "NORMAL": ex.gltf.add_accessor(np.concatenate(nor), "VEC3", "f32", target=34962),
-                                          "TEXCOORD_0": ex.gltf.add_accessor(np.concatenate(uv), "VEC2", "f32", target=34962)},
-                           "indices": ex.gltf.add_accessor(np.concatenate(idx).reshape(-1), "SCALAR", "u32", target=34963),
-                           "mode": 4, "material": material})
-    ex.gltf.json["meshes"].append({"name": "terrain", "primitives": primitives})
-    root = ex.gltf.add_node({"name": "terrain", "mesh": len(ex.gltf.json["meshes"]) - 1, "extras": {"terrain": True}})
-    report.append(f"sol : {count} sous-carreaux de 8 m, {len(groups)} calques")
+    names = sorted(palette, key=palette.get)
+    layer_meta = [{"texture": textures.uri(name, DECOR_TEXTURE_MAX, "textures/") if name else None,
+                   "tiling": round(tilings[k], 3), "name": Path(name).name if name else None} for k, name in enumerate(names)]
+    acc = lambda a, kind="VEC3": ex.gltf.add_accessor(np.concatenate(a), kind, "f32", target=34962)  # noqa: E731
+    primitive = {"attributes": {"POSITION": ex.gltf.add_accessor(np.concatenate(pos), "VEC3", "f32", target=34962, minmax=True),
+                                "NORMAL": acc(nor), "_LAYERS0": acc(lay0), "_WEIGHTS0": acc(wei0),
+                                "_LAYERS1": acc(lay1), "_WEIGHTS1": acc(wei1)},
+                 "indices": ex.gltf.add_accessor(np.concatenate(idx).reshape(-1), "SCALAR", "u32", target=34963), "mode": 4}
+    ex.gltf.json["meshes"].append({"name": "terrain", "primitives": [primitive]})
+    root = ex.gltf.add_node({"name": "terrain", "mesh": len(ex.gltf.json["meshes"]) - 1,
+                             "extras": {"terrain": True, "terrainLayers": layer_meta}})
+    report.append(f"sol : {count} sous-carreaux de 8 m, {len(names)} calques mélangés")
     report += ex.notes
     return ex.finish([root]), np.concatenate(solids) if solids else np.zeros((0, 3, 3))
 

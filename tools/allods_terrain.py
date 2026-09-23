@@ -15,14 +15,18 @@ de 33 × 33, marge d'un mètre) :
 * sommet : 4 octets `(nx, ny, nz, g)` — normale (octets centrés sur 127,5) et `g` = indice dans la
   grille 9 × 9 du sous-carreau (`x = 8·sx + g // 9`, `y = 8·sy + g % 9`, en mètres) —, puis, après
   tous les sommets, une hauteur `f32` par sommet (maillage adaptatif : 66 des 81 points) ;
-* passe (6 o) : `u16` premier sommet dans la région, `u16` jeu de calques, `u8`, `u8` rang.
+* passe (6 o) : `u16` premier sommet dans la région, `u16` jeu de calques, `u8 c`, `u8 d` : le bloc de
+  8 × 8 texels du `SplatMap` qui porte ses poids (lignes `8c…8c+7`, colonnes `8d…8d+7`).
 
 Calques : `TerraLayers` de la région (`MapRegion +0x98`) : entrées de 376 o à partir de `+0x230`
 (texture, taille de répétition en mètres en `+0x08`) ; l'indice d'un jeu de calques est décalé
-d'un (le 0 du `.xdb` 7.0 est vide). Poids : `SplatMap_0` de la région (256², 16 bits) se lit en
-R5G6B5 de somme 1 pour deux tiers des texels, mais le lien texel ↔ sommet ↔ calque n'est pas établi
-(les sous-carreaux à un seul calque n'y tombent pas sur un canal plein) : non utilisé, le sol prend
-le premier calque de sa première passe.
+d'un (le 0 du `.xdb` 7.0 est vide). Poids : `SplatMap_0` de la région (256², R5G6B5) est un **atlas de
+blocs** de 8 × 8 texels, un par passe (`c`, `d`) : la ligne `i` du bloc est à `x = 8·sx + i·8/7`, la
+colonne `j` à `y = 8·sy + j·8/7` — les blocs de deux sous-carreaux voisins partagent leur bord à
+l'identique (écart moyen 0,0000 sur `Ferris4`, 229 paires). R, G, B sont les poids des trois calques
+du jeu de la passe dans l'ordre ; une passe unique somme à 1, deux passes (la seconde marquée par le
+4ᵉ octet de drapeaux du jeu) somment à 1 ensemble (≈ 0,65 + 0,35) ; un jeu à un seul calque pointe le
+bloc (0, 0), plein en R.
 """
 from __future__ import annotations
 
@@ -46,7 +50,7 @@ class Patch:
     normals: np.ndarray         # (n, 3)
     triangles: np.ndarray       # (m, 3) indices locaux
     coarse: np.ndarray          # (k, 3) niveau de détail grossier
-    passes: list[tuple[int, int]]   # (premier sommet, jeu de calques)
+    passes: list[tuple[int, int, int, int]]   # (premier sommet, jeu de calques, bloc c, bloc d)
     level: int = 0                  # couche (`FerrisRaid` : deux sols superposés dans une région)
 
 
@@ -81,7 +85,7 @@ def parse_terrain_dump(raw: bytes) -> tuple[list[tuple[int, ...]], list[Patch]]:
             normals /= np.maximum(np.linalg.norm(normals, axis=1, keepdims=True), 1e-9)
             fine = np.frombuffer(raw, np.uint8, f_n, f_at)
             coarse = np.frombuffer(raw, np.uint8, c_n, c_at)
-            passes = [struct.unpack_from("<HH", raw, p_at + 6 * j) for j in range(p_n)]
+            passes = [struct.unpack_from("<HHBB", raw, p_at + 6 * j) for j in range(p_n)]
             patches.append(Patch(sx, sy, points, normals, fine[: len(fine) // 3 * 3].reshape(-1, 3).astype(np.int64),
                                  coarse[: len(coarse) // 3 * 3].reshape(-1, 3).astype(np.int64), passes, level))
     return layer_sets, patches
@@ -120,3 +124,29 @@ def region_patches(get, map_name: str, region_path: str) -> tuple[list[tuple[int
     if not chunk or len(chunk) < 0x40:
         return None
     return parse_terrain_dump(chunk)
+
+
+def pass_weights(splat: np.ndarray | None, patch: Patch, block: tuple[int, int]) -> np.ndarray:
+    """Poids (n, 3) des trois calques d'une passe aux sommets du sous-carreau : lecture bilinéaire de
+    son bloc de 8 × 8 texels (texel `i` à `i·8/7` m du coin), sans bloc (pas de `SplatMap`) : (1, 0, 0)."""
+    n = len(patch.points)
+    if splat is None:
+        out = np.zeros((n, 3))
+        out[:, 0] = 1.0
+        return out
+    c, d = block
+    gx = np.clip(patch.points[:, 0] - 8 * patch.sx, 0, 8) * 7.0 / 8.0
+    gy = np.clip(patch.points[:, 1] - 8 * patch.sy, 0, 8) * 7.0 / 8.0
+    i0, j0 = np.floor(gx).astype(int).clip(0, 6), np.floor(gy).astype(int).clip(0, 6)
+    fx, fy = (gx - i0)[:, None], (gy - j0)[:, None]
+    rows, cols = 8 * c + i0, 8 * d + j0
+    w00, w10 = splat[rows, cols], splat[rows + 1, cols]
+    w01, w11 = splat[rows, cols + 1], splat[rows + 1, cols + 1]
+    return (w00 * (1 - fx) + w10 * fx) * (1 - fy) + (w01 * (1 - fx) + w11 * fx) * fy
+
+
+def region_splat(get, region_path: str) -> np.ndarray | None:
+    from tools.extract_menu_scene import read_chunks
+    raw = get(region_path.replace("_MapRegion.xdb", "_SplatMap_0.(Texture).bin"))
+    chunk = read_chunks(raw).get(0) if raw else None
+    return splat_weights(chunk) if chunk and len(chunk) >= 256 * 256 * 2 else None
