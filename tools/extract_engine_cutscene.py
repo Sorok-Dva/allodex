@@ -186,7 +186,7 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
                 spec: dict, report: list[str]) -> dict:
     """Décor : gabarits des objets posés (une fois chacun) dans `decor.glb`, instances dans
     `scene.json`, éclairage précalculé de chaque instance dans `decor-light.bin`."""
-    fx = FxBuild(Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR), mp, cat, bins, particles=particles, report=report)
+    fx = FxBuild(Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/"), mp, cat, bins, particles=particles, report=report)
     lightvrt = read_lightvrt(mp, spec["map"], lambda name, pak: bins.get(name))
     objects = read_regions(mp)
     center, radius = spec.get("decor_center"), spec.get("decor_radius", 1e9)
@@ -425,7 +425,7 @@ def spawn_template(db: PackDB, spawn: dict) -> int | None:
 
 def build_fx(spawns: list[dict], db: PackDB, cat, bins, textures: TexturePool, particles: ParticlePool,
              report: list[str]) -> tuple[bytes | None, dict, set[str], list[dict]]:
-    fx = FxBuild(Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR), db, cat, bins, particles=particles, report=report)
+    fx = FxBuild(Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/"), db, cat, bins, particles=particles, report=report)
     out = []
     for spawn in spawns:
         vot = spawn_template(db, spawn)
@@ -498,7 +498,10 @@ def find_wave(event: str, index: dict, prefer: str = "") -> tuple[str, int, str]
     return loops[0] if stem and loops else None
 
 
-def export_waves(events: set[str], bins, out_dir: Path, vgmstream: Path, report: list[str]) -> dict[str, dict]:
+def export_waves(events: set[str], bins, out_dir: Path, vgmstream: Path, report: list[str],
+                 music_seconds: float | None = None) -> dict[str, dict]:
+    """Ondes des événements, encodées en Ogg Vorbis et MP3 dans `sfx/`. La musique de zone est
+    coupée à la durée de la scène (`music_seconds`, fondu de sortie de 2 s) : le poids du site."""
     from tools.extract_audio import encode_outputs
     index = sound_index(bins, Path(os.environ.get("ALLODEX_CACHE") or Path.home() / ".cache" / "allodex"))
     found: dict[str, dict] = {}
@@ -519,6 +522,11 @@ def export_waves(events: set[str], bins, out_dir: Path, vgmstream: Path, report:
                 fsb.write_bytes(raw[raw.find(b"FSB5"):])
                 wav = Path(tmp) / "out.wav"
                 subprocess.run([str(vgmstream), "-i", "-s", str(sub), "-o", str(wav), str(fsb)], check=True, capture_output=True)
+                if music_seconds and event.startswith("Music/"):
+                    cut = Path(tmp) / "cut.wav"
+                    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav), "-t", f"{music_seconds:.2f}", "-af",
+                                    f"afade=t=out:st={max(0.0, music_seconds - 2):.2f}:d=2", str(cut)], check=True)
+                    wav = cut
                 target.mkdir(parents=True, exist_ok=True)
                 encode_outputs(wav, base, "sfx")
             duration = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of",
@@ -730,7 +738,7 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         audio = map_sounds(mp)
         audio.update({k: v for k, v in spec.get("audio", {}).items() if not k.startswith("_")})
         wanted = set(decor["sounds"]) | set(fx_sounds) | set(audio.get("music", [])) | set(audio.get("ambience", []))
-        waves = export_waves(wanted, bins, out, vgmstream, report) if voices or not (out / "scene.json").is_file() else \
+        waves = export_waves(wanted, bins, out, vgmstream, report, camera["duration"] + 1) if voices or not (out / "scene.json").is_file() else \
             json.loads((out / "scene.json").read_text(encoding="utf-8")).get("sounds", {}).get("waves", {})
         for objects in (decor["objects"], fx_objects):
             for info in objects.values():

@@ -9,3 +9,5 @@
   border-top-color: #e8c877; border-radius: 50%; animation: spin 900ms linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .loading { animation-duration: 3s; } }
+/* Voile des fondus au noir de la cinématique (`PostEffectVisAction`). */
+.veil { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }

@@ -1,10 +1,12 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import type { SubtitleLang } from '@/lib/cinematics';
-import { createUvScroll } from '@/components/scene/MenuScene/uvScroll';
-import { actorClipAt, argb, sampleKeys, subtitleAt, voiceAt, type EngineScene } from './timeline';
+import { loadParticleFile } from '@/components/scene/FatalityViewer/particles';
+import { spawnOpacity } from '@/components/scene/FatalityViewer/timeline';
+import { VotFactory, particleSystems, toViewerMaterial, updateInstance, type Tinted, type VotInstance } from '@/components/scene/vot/votInstances';
+import { actorClipAt, argb, falloff, pathAt, sampleKeys, subtitleAt, veilAt, voiceAt, type EngineScene } from './timeline';
 import s from './EngineCutscene.module.css';
 
 // Même parti pris que les scènes de menu et les fatalités : les textures du jeu sont des octets,
@@ -44,50 +46,36 @@ export type EngineCutsceneProps = {
 };
 
 const TIME_UPDATE_MS = 250;
+/** Couleurs du jeu : 0x80 = 1. */
+const GAME_UNIT = 255 / 128;
+/** Compense la division par π du Lambert de three.js : une lumière du jeu à 1 éclaire à 1 (fatalités). */
+const LIGHT_SCALE = Math.PI;
+/** Portée des boucles sonores du décor (m), volume linéaire jusqu'à zéro. */
+const SOUND_RANGE = 70;
+/** Écart toléré entre un son et la chronologie avant de le recaler (s). */
+const SOUND_DRIFT = 0.3;
 
-type Actor = { id: string; holder: THREE.Object3D; mixer: THREE.AnimationMixer; actions: Map<string, THREE.AnimationAction> };
+type Actor = { id: string; holder: THREE.Object3D; model: THREE.Object3D; mixer: THREE.AnimationMixer; actions: Map<string, THREE.AnimationAction> };
+type Loop = { audio: HTMLAudioElement; volume: number; position: THREE.Vector3 | null; start: number; until: number; kind: 'music' | 'ambience' | 'sfx' };
 
 /**
- * Matériau d'affichage d'une primitive exportée par `tools/extract_engine_cutscene.py` : décor sans
- * éclairage dynamique (sa lumière précalculée est dans les couleurs de sommets), acteurs éclairés
- * (`extras.lit`), matériaux additifs et découpes (`extras.cutout`) comme dans le jeu.
+ * Matériau d'un acteur : Lambert, texture × (lumière de la carte à sa place, en émission modulée
+ * par la texture) + soleil de la zone par N·L — la formule d'éclairage du jeu
+ * (`texture × (ambiante + soleil · N·L)`) avec les lumières ponctuelles de la carte.
  */
-function convertMaterial(source: THREE.Material, glow: THREE.Color | null): THREE.Material {
-  const src = source as THREE.MeshBasicMaterial;
-  const extras = (source.userData ?? {}) as { blend?: string; lit?: boolean; cutout?: boolean };
-  const additive = extras.blend === 'add';
-  const translucent = source.transparent || additive;
-  const common = {
-    name: source.name,
-    map: src.map ?? null,
-    color: 0xffffff,
-    opacity: source.opacity,
-    transparent: translucent,
-    alphaTest: extras.cutout ? 0.5 : 0,
-    side: THREE.DoubleSide,
-    vertexColors: src.vertexColors,
-    toneMapped: false,
-    fog: true,
-  };
-  let material: THREE.MeshBasicMaterial | THREE.MeshLambertMaterial;
-  if (extras.lit && !translucent) {
-    // Acteur : la lumière précalculée du décor alentour l'éclaire (émission modulée par sa texture),
-    // les lumières de la scène ne font que dessiner les volumes.
-    material = new THREE.MeshLambertMaterial(common);
-    if (glow && src.map) { material.emissive = glow; material.emissiveMap = src.map; }
-  } else {
-    material = new THREE.MeshBasicMaterial(common);
+function actorMaterial(source: THREE.Material, light: THREE.Color | null): THREE.Material {
+  const material = toViewerMaterial(source, true);
+  if (material instanceof THREE.MeshLambertMaterial && light) {
+    material.emissive = light;
+    material.emissiveMap = material.map;
   }
-  if (translucent) material.depthWrite = false;
-  if (additive) material.blending = THREE.AdditiveBlending;
-  if (material.map) material.map.colorSpace = THREE.NoColorSpace;
   return material;
 }
 
 /**
- * Cinématique moteur recréée en 3D : décor et acteurs du client, caméra de la cinématique, voix et
- * sous-titres officiels. Le temps est une horloge propre (pas le mixeur) : chaque image est
- * recalculée d'après la position, ce qui rend la recherche exacte.
+ * Cinématique moteur recréée en 3D : décor, ciel, effets et particules, acteurs, caméra de la
+ * cinématique, musique, ambiance, sons, voix et sous-titres. Le temps est une horloge propre : chaque
+ * image est recalculée d'après la position, ce qui rend la recherche exacte.
  */
 export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(function EngineCutscene(
   { sceneUrl, subtitleLang, hidden = false, className, onClick, onLoadedMetadata, onTimeUpdate, onEnded, onPlay, onPause,
@@ -95,6 +83,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
   ref,
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const veilRef = useRef<HTMLDivElement>(null);
   const [scene, setScene] = useState<EngineScene | null>(null);
   const [subtitle, setSubtitle] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -105,19 +94,22 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
     ready: 0,
     hidden,
     dirty: true,
+    seeked: false,
     lang: subtitleLang,
     voice: -1,
     audios: [] as HTMLAudioElement[],
+    loops: [] as Loop[],
     lastUpdate: 0,
   });
   const callbacks = useRef({ onLoadedMetadata, onTimeUpdate, onEnded, onPlay, onPause });
   callbacks.current = { onLoadedMetadata, onTimeUpdate, onEnded, onPlay, onPause };
   const sceneRef = useRef<EngineScene | null>(null);
 
-  const stopVoice = () => {
+  const silence = () => {
     const state = st.current;
     if (state.voice >= 0) state.audios[state.voice]?.pause();
     state.voice = -1;
+    for (const loop of state.loops) if (!loop.audio.paused) loop.audio.pause();
   };
 
   useImperativeHandle(ref, () => ({
@@ -127,13 +119,14 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       if (sceneRef.current && state.time >= sceneRef.current.duration) state.time = 0;
       state.playing = true;
       state.dirty = true;
+      state.seeked = true;
       callbacks.current.onPlay?.();
     },
     pause: () => {
       const state = st.current;
       if (!state.playing) return;
       state.playing = false;
-      stopVoice();
+      silence();
       callbacks.current.onPause?.();
     },
     get paused() { return !st.current.playing; },
@@ -141,15 +134,16 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
     set currentTime(value: number) {
       const state = st.current;
       state.time = Math.max(0, Math.min(value, sceneRef.current?.duration ?? value));
-      stopVoice();
+      silence();
       state.dirty = true;
+      state.seeked = true;
     },
     get duration() { return sceneRef.current?.duration ?? NaN; },
     get readyState() { return st.current.ready; },
     get muted() { return st.current.muted; },
     set muted(value: boolean) {
       st.current.muted = value;
-      if (value) stopVoice();
+      if (value) silence();
     },
   }), []);
 
@@ -158,7 +152,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
     state.hidden = hidden;
     state.lang = subtitleLang;
     state.dirty = true;
-    if (hidden) stopVoice();
+    if (hidden) silence();
   }, [hidden, subtitleLang]);
 
   useEffect(() => {
@@ -171,17 +165,21 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
     let renderer: THREE.WebGLRenderer | null = null;
     let observer: ResizeObserver | null = null;
     const base = sceneUrl.slice(0, sceneUrl.lastIndexOf('/') + 1);
-    const world = new THREE.Scene();
-    const root = new THREE.Group();
-    world.add(root);
+    const view = new THREE.Scene();
+    // Repère du jeu (main gauche, Z en haut) sous un miroir unique, comme les fatalités.
+    const world = new THREE.Group();
+    view.add(world);
     const camera = new THREE.PerspectiveCamera(45, 16 / 9, 0.5, 4000);
     camera.up.set(0, 0, 1);
     const actors: Actor[] = [];
+    const decorInstances: VotInstance[] = [];
+    const spawns: { inst: VotInstance; until: number }[] = [];
     const disposables: { dispose(): void }[] = [];
-    const scrolls: ReturnType<typeof createUvScroll>[] = [];
-    const scrollSpeed = (mesh: THREE.Mesh) => mesh.geometry.userData.uvScroll as [number, number] | undefined;
+    const factory = new VotFactory({ objects: {}, baseUrl: base, disposables, anisotropy: () => renderer?.capabilities?.getMaxAnisotropy?.() ?? 1 });
     let data: EngineScene | null = null;
+    let sky: THREE.Object3D | null = null;
     const target = new THREE.Vector3();
+    const scratch = new THREE.Vector3();
 
     const size = () => {
       const host = canvas.parentElement ?? canvas;
@@ -195,43 +193,69 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       renderer.setSize(width, height, false);
       state.dirty = true;
     };
+    const gamePoint = (p: readonly number[], out: THREE.Vector3) => world.localToWorld(out.set(p[0], p[1], p[2]));
 
-    const mirror = (p: readonly number[]) => (data?.mirror ? new THREE.Vector3(-p[0], p[1], p[2]) : new THREE.Vector3(p[0], p[1], p[2]));
-
-    const syncVoice = () => {
+    const syncAudio = () => {
       if (!data) return;
-      const want = state.playing && !state.muted && !state.hidden ? voiceAt(data.lines, state.time) : null;
-      if (!want) { if (state.voice >= 0) stopVoice(); return; }
-      if (want.index === state.voice) return;
-      stopVoice();
-      const audio = state.audios[want.index];
-      if (!audio) return;
-      audio.currentTime = want.offset;
-      const p = audio.play();
-      if (p && typeof p.catch === 'function') p.catch(() => {});
-      state.voice = want.index;
+      const active = state.playing && !state.muted && !state.hidden;
+      const want = active ? voiceAt(data.lines, state.time) : null;
+      if (!want) { if (state.voice >= 0) { state.audios[state.voice]?.pause(); state.voice = -1; } }
+      else if (want.index !== state.voice) {
+        if (state.voice >= 0) state.audios[state.voice]?.pause();
+        const audio = state.audios[want.index];
+        if (audio) {
+          audio.currentTime = want.offset;
+          audio.volume = data.sounds.volume?.voice ?? 1;
+          void audio.play()?.catch?.(() => {});
+          state.voice = want.index;
+        }
+      }
+      camera.getWorldPosition(scratch);
+      for (const loop of state.loops) {
+        const local = state.time - loop.start;
+        const inside = active && local >= 0 && state.time < loop.until;
+        let volume = loop.volume;
+        if (loop.position) volume *= falloff(loop.position.distanceTo(scratch), SOUND_RANGE);
+        if (!inside || volume <= 0.001) { if (!loop.audio.paused) loop.audio.pause(); continue; }
+        loop.audio.volume = Math.min(1, volume);
+        const length = loop.audio.duration || Infinity;
+        const at = loop.audio.loop && Number.isFinite(length) ? local % length : local;
+        if (!loop.audio.loop && at >= length) { if (!loop.audio.paused) loop.audio.pause(); continue; }
+        if (loop.audio.paused || state.seeked || Math.abs(loop.audio.currentTime - at) > SOUND_DRIFT && !loop.audio.loop) {
+          try { loop.audio.currentTime = at; } catch { /* pas encore chargé */ }
+          if (loop.audio.paused) void loop.audio.play()?.catch?.(() => {});
+        }
+      }
     };
 
     const apply = () => {
       if (!data) return;
       const t = state.time;
-      camera.position.copy(mirror(sampleKeys(data.camera.points, t)));
-      target.copy(mirror(sampleKeys(data.camera.targets, t)));
+      gamePoint(sampleKeys(data.camera.points, t), camera.position);
+      gamePoint(sampleKeys(data.camera.targets, t), target);
       if (camera.position.distanceToSquared(target) > 1e-6) camera.lookAt(target);
+      if (sky) { const eye = world.worldToLocal(camera.position.clone()); sky.position.set(eye.x, eye.y, 0); }
       for (const actor of actors) {
         const info = data.actors.find(a => a.id === actor.id);
         if (!info) continue;
-        const { clip, time } = actorClipAt(info, data.lines, t);
-        const action = actor.actions.get(clip) ?? actor.actions.get(info.idle);
-        if (!action) continue;
         actor.holder.visible = t >= (info.appear ?? 0);
+        const pose = pathAt(info.path, t);
+        actor.holder.position.set(...pose.p);
+        actor.holder.rotation.z = pose.yaw;
+        const talk = actorClipAt(info, data.lines, t);
+        const clip = pose.moving && info.move && actor.actions.has(info.move) ? { clip: info.move, time: t } : talk;
+        const action = actor.actions.get(clip.clip) ?? actor.actions.get(info.idle);
+        if (!action) continue;
         for (const other of actor.actions.values()) other.enabled = other === action;
         const length = action.getClip().duration || 1;
         action.play();
-        action.time = clip === info.idle ? time % length : Math.min(time, length - 1e-4);
+        action.time = clip.clip === info.idle || clip.clip === info.move ? clip.time % length : Math.min(clip.time, length - 1e-4);
         actor.mixer.update(0);
       }
-      for (const sc of scrolls) sc.update(t);
+      actors.forEach(a => a.holder.updateMatrixWorld(true));
+      for (const inst of decorInstances) updateInstance(inst, t, 1, camera);
+      for (const { inst } of spawns) updateInstance(inst, t - inst.start, spawnOpacity(t - inst.start, inst.lifeTime, inst.fadeIn, inst.fadeOut), camera);
+      if (veilRef.current) veilRef.current.style.opacity = String(veilAt(data.post ?? [], t));
       const text = subtitleAt(data, t, state.lang);
       setSubtitle(prev => (prev === text ? prev : text));
     };
@@ -247,7 +271,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         if (state.time >= data.duration) {
           state.time = data.duration;
           state.playing = false;
-          stopVoice();
+          silence();
           callbacks.current.onTimeUpdate?.(state.time);
           callbacks.current.onEnded?.();
         }
@@ -257,24 +281,14 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
           callbacks.current.onTimeUpdate?.(state.time);
         }
       }
-      syncVoice();
-      if (!state.dirty || state.hidden || !renderer) return;
-      apply();
-      renderer.render(world, camera);
-      state.dirty = false;
-    };
-
-    const convert = (object: THREE.Object3D, glow: THREE.Color | null = null) => {
-      object.traverse(node => {
-        const mesh = node as THREE.Mesh;
-        if (!mesh.isMesh) return;
-        mesh.frustumCulled = false;
-        const list = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        const converted = list.map(m => convertMaterial(m, glow));
-        for (const material of converted) disposables.push(material);
-        disposables.push(mesh.geometry);
-        mesh.material = Array.isArray(mesh.material) ? converted : converted[0];
-      });
+      if (!renderer || state.hidden) { syncAudio(); state.seeked = false; return; }
+      if (state.dirty) {
+        apply();
+        renderer.render(view, camera);
+        state.dirty = false;
+      }
+      syncAudio();
+      state.seeked = false;
     };
 
     const setup = async () => {
@@ -292,20 +306,26 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       state.ready = 1;
       callbacks.current.onLoadedMetadata?.();
       camera.fov = data.camera.fov || 45;
-      if (data.mirror) root.scale.set(-1, 1, 1);
+      if (data.mirror) world.scale.set(-1, 1, 1);
       const light = data.light;
       const fog = new THREE.Color(...argb(light.fog));
-      world.background = fog;
-      if (light.fogEnd) world.fog = new THREE.Fog(fog, light.fogStart ?? 0, light.fogEnd);
-      // Acteurs : ambiante de la zone ×2 et une lumière orientée de la couleur d'auto-illumination
-      // (celle des lumières ponctuelles du décor) venant du soleil de la zone. Choix du lecteur :
-      // le client éclaire ses personnages avec ses shaders, non lus.
-      world.add(new THREE.AmbientLight(new THREE.Color(...argb(light.ambient, 2)), 1));
-      const sun = new THREE.DirectionalLight(new THREE.Color(...argb(light.selfIllum)), 0.6);
-      const yaw = THREE.MathUtils.degToRad(light.sunYaw ?? 45);
-      const pitch = THREE.MathUtils.degToRad(light.sunPitch ?? 40);
-      sun.position.set(-Math.cos(yaw) * Math.cos(pitch), Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch)).multiplyScalar(100);
-      world.add(sun);
+      view.background = fog;
+      if (light.fogEnd) view.fog = new THREE.Fog(fog, light.fogStart ?? 0, light.fogEnd);
+      // Soleil de la zone (DiffuseColor, direction SunLightYaw/Pitch) : seul éclairage dynamique ;
+      // l'ambiante et les lumières ponctuelles sont dans les couleurs du décor et l'émission des acteurs.
+      const sun = new THREE.DirectionalLight(new THREE.Color(...argb(light.diffuse, GAME_UNIT)), LIGHT_SCALE);
+      const dir = light.sunDirection ?? [0.5, 0.5, 0.7];
+      gamePoint(dir, sun.position);
+      view.add(sun);
+
+      const volume = data.sounds.volume ?? {};
+      const audioFile = (file: string) => {
+        const audio = new Audio();
+        const ogg = typeof audio.canPlayType === 'function' && audio.canPlayType('audio/ogg');
+        audio.src = `${base}${file}.${ogg ? 'ogg' : 'mp3'}`;
+        audio.preload = 'auto';
+        return audio;
+      };
       state.audios = data.lines.map(line => {
         const audio = new Audio();
         if (line.voice) {
@@ -315,6 +335,16 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         }
         return audio;
       });
+      for (const file of data.sounds.music ?? []) {
+        const audio = audioFile(file);
+        audio.loop = true;
+        state.loops.push({ audio, volume: volume.music ?? 0.4, position: null, start: 0, until: Infinity, kind: 'music' });
+      }
+      for (const file of data.sounds.ambience ?? []) {
+        const audio = audioFile(file);
+        audio.loop = true;
+        state.loops.push({ audio, volume: volume.ambience ?? 0.5, position: null, start: 0, until: Infinity, kind: 'ambience' });
+      }
 
       renderer = createRenderer
         ? createRenderer(canvas)
@@ -326,36 +356,134 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       resize();
 
       const loader = new GLTFLoader();
-      const load = (url: string) => loader.loadAsync(base + url);
-      try {
-        const [decor, ...loaded] = await Promise.all([load(data.decor), ...data.actors.map(a => load(a.glb))]);
-        if (!alive) return;
-        convert(decor.scene);
-        root.add(decor.scene);
-        scrolls.push(createUvScroll(decor.scene, scrollSpeed));
-        data.actors.forEach((info, i) => {
-          const gltf = loaded[i];
-          const model = SkeletonUtils.clone(gltf.scene);
-          convert(model, info.light ? new THREE.Color(info.light[0] * 0.7, info.light[1] * 0.7, info.light[2] * 0.7) : null);
-          scrolls.push(createUvScroll(model, scrollSpeed));
-          const holder = new THREE.Group();
-          holder.position.set(...info.position);
-          holder.rotation.z = info.yaw;
-          holder.scale.setScalar(info.scale || 1);
-          holder.add(model);
-          root.add(holder);
-          const mixer = new THREE.AnimationMixer(model);
-          const actions = new Map(gltf.animations.map(clip => [clip.name, mixer.clipAction(clip)]));
-          actors.push({ id: info.id, holder, mixer, actions });
-        });
-      } catch (error) {
-        if (import.meta.env.DEV) console.warn('[EngineCutscene] modèles illisibles', error);
-      }
+      const load = (url: string | null) => (url ? loader.loadAsync(base + url).catch(error => {
+        if (import.meta.env.DEV) console.warn('[EngineCutscene] modèle illisible', url, error);
+        return null;
+      }) : Promise.resolve(null));
+      factory.objects = data.objects;
+      const systems = particleSystems(data.objects);
+      const [decor, fxGlb, lightBin, atlas, ...rest] = await Promise.all([
+        load(data.decor.glb),
+        load(data.fx.glb),
+        fetcher(base + data.decor.light).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null),
+        data.particleAtlas && systems.size && typeof DecompressionStream !== 'undefined'
+          ? new THREE.TextureLoader().loadAsync(base + data.particleAtlas.file).catch(() => null) : Promise.resolve(null),
+        ...[...systems].map(file => loadParticleFile(base + file).then(parsed => { factory.particleFiles.set(file, parsed); }).catch(() => null)),
+        ...data.actors.map(a => load(a.glb)),
+      ]);
       if (!alive) return;
+      if (atlas) {
+        atlas.flipY = false;
+        atlas.colorSpace = THREE.NoColorSpace;
+        atlas.needsUpdate = true;
+        factory.atlasTexture = atlas;
+        factory.particleAtlas = data.particleAtlas;
+        disposables.push(atlas);
+      }
+      const actorGltfs = rest.slice(systems.size) as (GLTF | null)[];
+      const prototypes = new Map<string, THREE.Object3D>();
+      const clips: THREE.AnimationClip[] = [];
+      for (const gltf of [decor, fxGlb]) {
+        if (!gltf) continue;
+        gltf.scene.traverse(node => { const vot = (node.userData as { vot?: string }).vot; if (vot && !prototypes.has(vot)) prototypes.set(vot, node); });
+        clips.push(...gltf.animations);
+      }
+      // Ciel : dôme qui suit la caméra, derrière tout, hors brouillard.
+      const skyProto = decor?.scene.getObjectByName('sky');
+      if (skyProto) {
+        const tinted: Tinted[] = [];
+        factory.prepare(skyProto, false, tinted, null);
+        skyProto.traverse(child => {
+          const mesh = child as THREE.Mesh;
+          if (!mesh.isMesh) return;
+          mesh.renderOrder = -10;
+          for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+            material.depthWrite = false;
+            (material as THREE.MeshBasicMaterial).fog = false;
+          }
+        });
+        world.add(skyProto);
+        sky = skyProto;
+      }
+      const baked = lightBin ? new Uint8Array(lightBin) : null;
+      const soundAt = (vot: string, p: THREE.Vector3 | null, start: number, until: number) => {
+        const sfx = data?.objects[vot]?.sfx;
+        if (!sfx) return;
+        const audio = audioFile(sfx);
+        audio.loop = until === Infinity || !!data?.objects[vot]?.loop;
+        state.loops.push({ audio, volume: volume.sfx ?? 0.8, position: p, start, until, kind: 'sfx' });
+      };
+      for (const item of data.decor.instances) {
+        const proto = prototypes.get(item.vot);
+        const info = data.objects[item.vot];
+        if (!proto || !info) continue;
+        const inst = factory.instantiate(proto, clips, 0, Infinity, 0, 0);
+        inst.root.position.set(...item.p);
+        inst.root.rotation.z = item.yaw;
+        inst.root.scale.setScalar((item.scale || 1) * (info.scale || 1));
+        // Éclairage précalculé de l'instance (octets à moitié : le matériau double) sur son maillage
+        // propre ; les autres maillages opaques (composants) prennent l'ambiante.
+        const own = inst.root.children.find(c => c.name === `${item.vot}_mesh`) as THREE.Mesh | undefined;
+        inst.root.traverse(node => {
+          const mesh = node as THREE.Mesh;
+          if (!mesh.isMesh) return;
+          const material = mesh.material as THREE.MeshBasicMaterial;
+          if (material.transparent || material.blending === THREE.AdditiveBlending) return;
+          if (mesh === own && item.light && baked) {
+            const [offset, count] = item.light;
+            const geometry = mesh.geometry.clone();
+            geometry.setAttribute('color', new THREE.BufferAttribute(baked.slice(offset * 4, (offset + count) * 4), 4, true));
+            mesh.geometry = geometry;
+            disposables.push(geometry);
+            material.color.setScalar(2);
+          } else {
+            const [r, g, b] = item.ambient ?? argb(data!.light.ambient, GAME_UNIT);
+            material.color.setRGB(r, g, b);
+          }
+        });
+        world.add(inst.root);
+        decorInstances.push(inst);
+        soundAt(item.vot, world.localToWorld(new THREE.Vector3(...item.p)), 0, Infinity);
+      }
+      data.actors.forEach((info, i) => {
+        const gltf = actorGltfs[i];
+        if (!gltf) return;
+        const model = SkeletonUtils.clone(gltf.scene);
+        const glow = info.light ? new THREE.Color(...info.light) : null;
+        model.traverse(node => {
+          const mesh = node as THREE.Mesh;
+          if (!mesh.isMesh) return;
+          mesh.frustumCulled = false;
+          const list = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          const converted = list.map(m => actorMaterial(m, glow));
+          disposables.push(...converted);
+          mesh.material = Array.isArray(mesh.material) ? converted : converted[0];
+        });
+        const holder = new THREE.Group();
+        holder.scale.setScalar(info.scale || 1);
+        holder.add(model);
+        world.add(holder);
+        const mixer = new THREE.AnimationMixer(model);
+        const actions = new Map(gltf.animations.map(clip => [clip.name, mixer.clipAction(clip)]));
+        actors.push({ id: info.id, holder, model, mixer, actions });
+      });
+      for (const spawn of data.fx.spawns) {
+        const proto = prototypes.get(spawn.vot);
+        const info = data.objects[spawn.vot];
+        if (!proto || !info) continue;
+        const inst = factory.instantiate(proto, clips, spawn.t, spawn.until - spawn.t, info.fadeIn, info.fadeOut);
+        const holder = spawn.attach ? actors.find(a => a.id === spawn.attach)?.holder : null;
+        if (spawn.p) inst.root.position.set(...spawn.p);
+        inst.root.rotation.z = spawn.yaw ?? 0;
+        inst.root.scale.setScalar((spawn.scale || 1) * (info.scale || 1));
+        (holder ?? world).add(inst.root);
+        spawns.push({ inst, until: spawn.until });
+        soundAt(spawn.vot, spawn.p ? world.localToWorld(new THREE.Vector3(...spawn.p)) : null, spawn.t, spawn.until);
+      }
       state.ready = 4;
       state.dirty = true;
       setLoading(false);
-      if (import.meta.env.DEV) (window as Window & { __engineCutscene?: unknown }).__engineCutscene = { world, camera, state, actors, renderer };
+      if (import.meta.env.DEV) (window as Window & { __engineCutscene?: unknown }).__engineCutscene = { view, world, camera, state, actors, renderer, decorInstances, spawns };
       frame = requestAnimationFrame(tick);
     };
     void setup();
@@ -365,11 +493,14 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       if (frame) cancelAnimationFrame(frame);
       observer?.disconnect();
       window.removeEventListener('resize', resize);
-      stopVoice();
-      for (const audio of state.audios) { audio.removeAttribute('src'); }
+      silence();
+      for (const audio of [...state.audios, ...state.loops.map(l => l.audio)]) audio.removeAttribute('src');
       state.audios = [];
-      for (const sc of scrolls) sc.dispose();
+      state.loops = [];
+      for (const actor of actors) actor.mixer.stopAllAction();
+      for (const inst of [...decorInstances, ...spawns.map(x => x.inst)]) inst.mixer.stopAllAction();
       for (const d of disposables) d.dispose();
+      view.traverse(object => { const mesh = object as THREE.Mesh; if (mesh.isMesh) mesh.geometry.dispose(); });
       renderer?.dispose();
       sceneRef.current = null;
     };
@@ -379,6 +510,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
   return (
     <div className={`${s.cutscene} ${className ?? ''}`} onClick={onClick} data-testid="engine-cutscene" data-loading={loading ? 'true' : 'false'}>
       <canvas ref={canvasRef} className={s.canvas} />
+      <div ref={veilRef} className={s.veil} aria-hidden="true" />
       {scene && loading && <div className={s.loading} aria-hidden="true" />}
       {subtitle && !hidden && <p className={s.subtitle}>{subtitle}</p>}
     </div>

@@ -269,6 +269,8 @@ class Exporter:
     generator: str = "allodex/extract_fatalities"
     # Cinématiques : les matériaux opaques sont éclairés par le lecteur (`extras.lit`).
     lit: bool = False
+    # Chemin des textures vu depuis le `.glb` (fatalités : `fx/`, `characters/` → `../textures/`).
+    texture_prefix: str = "../textures/"
 
     def __post_init__(self) -> None:
         # Teinte multiplicative par géoset (couleur des cheveux, couleur d'armure).
@@ -285,7 +287,7 @@ class Exporter:
         if not name:
             return None
         if name not in self.images:
-            uri = self.textures.uri(name, self.texture_max)
+            uri = self.textures.uri(name, self.texture_max, self.texture_prefix)
             if uri is None:
                 self.images[name] = None
                 self.notes.append(f"texture illisible : {name}")
@@ -303,7 +305,7 @@ class Exporter:
         tex = self.texture(mat.texture)
         tint = self.tints.get(element.name)
         env = getattr(mat, "env_texture", None)
-        soft = self.textures.uri(env, FX_TEXTURE_MAX) if env and mat.transparent and is_soft_geometry(env) else None
+        soft = self.textures.uri(env, FX_TEXTURE_MAX, self.texture_prefix) if env and mat.transparent and is_soft_geometry(env) else None
         key = (tex, additive, mat.transparent, round(mat.alpha, 4), mat.blend, tint, soft)
         if key not in self.materials:
             alpha_mode = "BLEND" if mat.transparent else "OPAQUE"

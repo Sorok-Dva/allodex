@@ -20,19 +20,23 @@ export type EngineLine = {
   text: Partial<Record<SubtitleLang, string>>;
 };
 
+export type PathKey = { t: number; p: Vec3; yaw?: number };
+
 export type EngineActor = {
   id: string;
   glb: string;
   name: { ru: string; en: string };
-  position: Vec3;
-  yaw: number;
+  /** Trajet (au moins une clé) : position, lacet ; interpolé linéairement, dernière clé tenue. */
+  path: PathKey[];
   scale: number;
   idle: string;
   talk: string | null;
+  /** Clip joué pendant un déplacement du trajet. */
+  move?: string | null;
   animations: Record<string, number>;
-  /** Instant d'apparition (s) ; absent = présent dès le début. */
+  /** Instant d'apparition (s). */
   appear?: number;
-  /** Lumière précalculée moyenne du décor autour de l'acteur (0..1), `null` si aucune. */
+  /** Lumière à sa position (ambiante + ponctuelles de la carte), unités du jeu (1 = 0x80). */
   light?: Vec3 | null;
 };
 
@@ -43,10 +47,16 @@ export type EngineLight = {
   fog?: number;
   fogStart?: number;
   fogEnd?: number;
+  pointLight?: number;
   selfIllum?: number;
   sunYaw?: number;
   sunPitch?: number;
+  sunDirection?: Vec3;
 };
+
+export type DecorInstance = { vot: string; p: Vec3; yaw: number; scale?: number; light?: [number, number]; ambient?: Vec3 };
+export type FxSpawn = { vot: string; t: number; until: number; p?: Vec3; yaw?: number; scale?: number; attach?: string; locator?: string };
+export type PostEffect = { t: number; kind: 'fadeIn' | 'fadeOut'; duration: number };
 
 export type EngineScene = {
   id: string;
@@ -54,10 +64,15 @@ export type EngineScene = {
   up: Vec3;
   mirror: boolean;
   camera: { points: CameraKey[]; targets: CameraKey[]; duration: number; fov: number };
-  decor: string;
-  actors: EngineActor[];
   lines: EngineLine[];
+  actors: EngineActor[];
+  decor: { glb: string; light: string; instances: DecorInstance[]; sky: { radius: number } | null };
+  fx: { glb: string | null; spawns: FxSpawn[] };
+  objects: Record<string, import('@/components/scene/FatalityViewer/timeline').FatalityObject>;
+  particleAtlas: import('@/components/scene/FatalityViewer/particles').ParticleAtlasMeta | null;
   light: EngineLight;
+  sounds: { music: string[]; ambience: string[]; volume?: Partial<Record<'music' | 'ambience' | 'sfx' | 'voice', number>> };
+  post: PostEffect[];
 };
 
 /**
@@ -127,4 +142,43 @@ export function actorClipAt(actor: Pick<EngineActor, 'id' | 'idle' | 'talk'>, li
 export function argb(value: number | undefined, gain = 1): Vec3 {
   const v = value ?? 0;
   return [Math.min(1, (((v >>> 16) & 255) / 255) * gain), Math.min(1, (((v >>> 8) & 255) / 255) * gain), Math.min(1, ((v & 255) / 255) * gain)];
+}
+
+/** Position et lacet d'un acteur à l'instant `t`, et s'il se déplace. */
+export function pathAt(path: readonly PathKey[], t: number): { p: Vec3; yaw: number; moving: boolean } {
+  const first = path[0];
+  if (!first) return { p: [0, 0, 0], yaw: 0, moving: false };
+  if (t <= first.t || path.length === 1) return { p: [...first.p], yaw: first.yaw ?? 0, moving: false };
+  for (let i = 0; i < path.length - 1; i++) {
+    const a = path[i];
+    const b = path[i + 1];
+    if (t < b.t) {
+      const span = b.t - a.t;
+      const u = span > 0 ? (t - a.t) / span : 1;
+      const moved = a.p.some((v, k) => Math.abs(v - b.p[k]) > 1e-3);
+      const ya = a.yaw ?? 0;
+      let yb = b.yaw ?? ya;
+      while (yb - ya > Math.PI) yb -= 2 * Math.PI;
+      while (yb - ya < -Math.PI) yb += 2 * Math.PI;
+      return { p: [a.p[0] + (b.p[0] - a.p[0]) * u, a.p[1] + (b.p[1] - a.p[1]) * u, a.p[2] + (b.p[2] - a.p[2]) * u], yaw: ya + (yb - ya) * u, moving: moved };
+    }
+  }
+  const last = path[path.length - 1];
+  return { p: [...last.p], yaw: last.yaw ?? 0, moving: false };
+}
+
+/** Opacité du voile noir des fondus (`PostEffectVisAction` : Black_Long, Black_Instant). */
+export function veilAt(post: readonly PostEffect[], t: number): number {
+  let veil = 0;
+  for (const fx of post) {
+    const local = t - fx.t;
+    if (fx.kind === 'fadeIn' && local < fx.duration) veil = Math.max(veil, local < 0 ? 1 : 1 - local / fx.duration);
+    if (fx.kind === 'fadeOut' && local >= 0) veil = Math.max(veil, fx.duration > 0 ? Math.min(1, local / fx.duration) : 1);
+  }
+  return veil;
+}
+
+/** Volume d'une source ponctuelle entendue à `distance` m (linéaire jusqu'à `range`). */
+export function falloff(distance: number, range = 60): number {
+  return Math.max(0, 1 - distance / range);
 }
