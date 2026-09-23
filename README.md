@@ -172,78 +172,100 @@ Sorties : `public/game/cinematics/<id>/{video.webm, video.mp4, poster.jpg, fr.vt
 ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le reste de
 `public/game/` (≈ 380 Mo : 193 Mo de MP4, 186 Mo de WebM, moins d'1 Mo d'affiches et de pistes ; environ 25 min 30 s de film par faction).
 
-### Cinématiques moteur recréées en 3D (pilote)
+### Cinématiques moteur recréées en 3D
 
-Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Le
-chapitre 12.0 « Le monde caché » (`ao12-prologue04`, quête `AO12_Prologue04`, carte
-`AO12_PrologueInst`, la Citadelle de Nihaz) en est une, **recréée dans three.js** avec les
-données du dernier client et jouée dans le film comme un chapitre vidéo (même barre, mêmes
-raccourcis, sous-titres FR/EN/RU, voix russes).
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Six
+sont **recréées dans three.js** avec les données du dernier client et jouées dans le film
+comme des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix russes) :
 
-    python3 tools/extract_engine_cutscene.py                 # tout le pilote
-    python3 tools/extract_engine_cutscene.py --no-voices     # garde les voix déjà extraites
-    python3 tools/inventory_engine_cutscenes.py --client-only   # relevé du 17.0 (4 s)
+| Chapitre | Source du déroulé | Carte | Durée |
+|---|---|---|---|
+| Ferris 6.0 · « Rétrospective » (`ferris-retrospective`, quête `Ferris_4_secret1`) | serveur 7.0 | `Ferris4` (laboratoire) | 82 s |
+| Ferris 6.0 · « Le portail de Ferris » (`ferris-portal`, `FR4Intro`) | serveur 7.0 | `Ferris4` | 94 s |
+| Ferris 6.0 · « Les serviteurs de l’Ordre » (`ferris-order`) | serveur 7.0 | `FerrisRaid` | 51 s |
+| Ferris 6.0 · « Le Locus » (`ferris-locus`) | serveur 7.0 | `FerrisRaid` | 162 s |
+| Ferris 6.0 · « La chute du Locus » (`ferris-locus-fall`) | serveur 7.0 | `FerrisRaid` | 122 s |
+| Citadelle de Nihaz 12.0 · « Le monde caché » (`ao12-prologue04`, pilote) | manifeste | `AO12_PrologueInst` | 82 s |
 
-**Inventaire** (`engine_cutscenes` du manifeste). Deux relevés : celui de l'arbre serveur 7.0
-croisé avec le 17.0 (141 scènes, `scenes`) et celui du **17.0 seul** (`client_17`) :
-555 trajets de caméra (`CameraTrackAction`), dont 375 dans des scripts de buff de
-cinématique, 69 dans des `ClientData`, 7 dans des actions de créature ; 73 de ces buffs ont,
-rangées à côté d'eux, des répliques sous-titrées et doublées (67 avec des voix
-`Cutscenes/*`) — les meilleurs candidats ; 36 `GameViewScene`, 37 `GameViewScript` et 60
-`ShowSceneAction` (figurants des instances de départ, fantômes, combats : pas de dialogue) ;
-662 ressources de sous-titres. Le rattachement réplique ↔ buff se fait par proximité
-d'identifiants (`pack.bin` range les ressources dossier par dossier) : approché, signalé.
+    python3 tools/extract_engine_cutscene.py                      # toutes les scènes
+    python3 tools/extract_engine_cutscene.py --only ferris-locus  # une scène
+    python3 tools/extract_engine_cutscene.py --no-voices          # garde voix et sons extraits
+    python3 tools/inventory_engine_cutscenes.py --client-only     # relevé du 17.0 (4 s)
 
-**Ce qui vient du client 17.0** (lecteurs `tools/allods_bins17.py`, `tools/allods_vis17.py`) :
+**Inventaire** (`engine_cutscenes` du manifeste) : arbre serveur 7.0 croisé avec le 17.0
+(141 scènes) et 17.0 seul : 555 trajets de caméra (`CameraTrackAction`), dont 375 dans des
+scripts de buff de cinématique ; 73 buffs ont, rangées à côté d'eux, des répliques
+sous-titrées et doublées ; 36 `GameViewScene`, 37 `GameViewScript`, 60 `ShowSceneAction` ;
+662 ressources de sous-titres.
 
-- *caméra* : `BuffResource 507556` → `BuffVisScripts` → `CameraTrackAction`, six points de
-  caméra et six visées avec leur durée, identiques au `.xdb` 7.0 ; la durée d'un point est le
-  temps pour rejoindre le suivant (82 s au total) ;
-- *répliques* : dix `ClientData` (voix `Cutscenes/Eden2/Prologue04_Cutscene_1…10`) : sous-titre
-  (indice de texte + durée), voix, animation du locuteur (`emoteSpeech`) ; FR du client 16.0 ;
-  voix de `SFX/Voice/Voice_Eden06_rus.bsb` (sous-pistes nommées comme les événements) ;
-- *décor* : base propre à la carte `Bin/Maps_AO12_PrologueInst.bin` (même format que
-  `pack.bin` ; ses pointeurs de genre 1 visent `pack.bin`) : 4 régions, 193 objets posés
-  (27 géométries — le quartier général de Nihaz, le Pointeur, portails, colonne d'éclairs —,
-  164 lumières ponctuelles, 1 particule) ; **éclairage précalculé** `…_lightvrt.bin` (un
-  sommet par sommet de géométrie, vérifié sur les 27) ; éclairage de zone `ZoneLights`
-  (ambiante, brouillard, auto-illumination ; champs rangés par ordre alphabétique, recoupés
-  sur `AC5_base` 7.0) ;
-- *acteurs* : `MobWorld` → `VisualMob` → gabarit : Gort-Kostolom (Kania, cuir), Reniesta
-  (Kania, robe violette, bâton), Klavdia (modèle `Creatures/Veronika`), Nihaz (dragon
-  `NihazDragonBoss`, seul visuel du `MobWorld` « Нихаз » rangé avec la quête) ; habillage
-  comme le client : tenue par défaut, variations (visage, coiffure), objets portés
-  (géosets montrés/cachés, objets accrochés aux articulations `Slot_*`, élément « L »/« R »
-  choisi par le nom de la forme, texture de remplacement), **atlas de peau** composé des
-  patchs de texture des objets (rectangles UV, sous-vêtements d'abord) ; animations `Idle`,
-  `Idle01`, `EmoteSpeech`, `SpellCastOmni`.
+**Deux sources de déroulé.** Le client ne sait ni quand ni par qui une réplique est dite :
+c'est le serveur qui enchaîne les buffs.
 
-**Ce que le client ne contient pas** (décidé par le serveur) et que le manifeste fournit,
-justifié (`engine_scenes`) : la **place des acteurs** (le groupe autour du Pointeur, visé
-par les 42 premières secondes ; Nihaz au point visé par le plan fixe de ses répliques, visible
-à partir de 39 s) et l'**instant des répliques** (trois groupes calés sur trois tronçons de la
-trajectoire : 4 répliques dans le premier plan de 39 s, 3 dans le plan fixe de 21 s, 3 dans le
-dernier de 15 s ; dans un groupe, à la fin de la voix précédente + 0,6 s). Choix du lecteur,
-nommés : champ vertical 45° ; couleur des sommets du décor = ambiante × 2 + octet 2 du
-`lightvrt` × auto-illumination × 2 (le shader du client n'est pas lu, les octets 0-1 restent
-à comprendre) ; acteurs éclairés par la lumière précalculée moyenne du décor autour d'eux.
-L'affiche (`poster.jpg`) est une capture du lecteur à 46 s.
+- *Scènes de 7.0 et d'avant* (`"source": "xdb70"`, `tools/cutscene_xdb70.py`) : la chaîne de
+  buffs est **rejouée depuis l'arbre serveur 7.0** — durée des buffs, `EffectOnBuffTimeout`,
+  `EffectsDeferred`/`ImpactsDeferred`, `Switch`, `BuffAttacher`/`BuffDetacher` (un buff racine à
+  durée dont le `Switch` retire la chaîne borne la scène) ; plans de caméra, fondus
+  (`PostEffectVisAction`), temps (`WeatherCreatureVisAction` : ciel, lumière, brouillard,
+  désaturation), musique et ambiance (`Sound2DAction`) ; répliques (`ImpactClientData[Params]`)
+  avec leur locuteur ; PNJ placés (`ServerObjects` : `scriptID`, `center`, `yaw`) ou **invoqués**
+  (`ImpactSummon` sur un repère `gameMechanics.map.Locator`, `ImpactGoTo` à la `walkSpeed` du
+  `MobWorld`, `Disintegrate`) ; animations posées par buff (`CreatureAnimationAction`, `LOOP`
+  ou une fois). Le résultat est rapporté au 17.0 : texte par la voix, PNJ par leur nom russe
+  (départagé par le dossier de la `VisualMob` 7.0), voix par le nom d'événement.
+- *Scènes d'après 7.0* (`"source"` absent : le pilote) : caméra et répliques du 17.0, place
+  des acteurs et instant des répliques donnés par le manifeste, justifiés.
 
-**Manques du pilote** : particules et effets posés par le serveur (le dernier travelling
-vise un point vide, (90 ; 148 ; 210), sans doute un effet de vision) ; ciel (`SkyMesh`, fond =
-couleur du brouillard) ; lumières ponctuelles temps réel ; objets animés du décor figés à leur
-pose de bind ; le joueur, présent dans le jeu, absent ici ; interpolation de caméra linéaire.
-Poids : 13 Mo (décor 2 Mo, acteurs 4 Mo, textures 5,5 Mo, voix 1 Mo).
+**Règles établies sur les données** (tests dans `tools/tests/test_engine_cutscene.py`) :
 
-**Code repris** : `tools/packbin.py` est une copie telle quelle de la branche des talents
-(commit 1ad668d) ; les décalages de `Geometry`, `Texture`, `VisObjectTemplate` et
-l'assemblage glTF (`Glb`) viennent de la branche des fatalités (`allods_visdb.py`,
-`extract_fatalities.py`, commit 5615126), recopiés et adaptés (doublon à réunir quand les
-deux branches seront fusionnées).
+- durées des points de caméra : des **poids** étalés sur la durée du buff (la dernière ne
+  compte pas) — seule lecture où `Cutscene_01` (12, 10 dans 12 s) et `Cutscene_03` (95, 10
+  dans 10,5 s) couvrent leur buff ; sans durée de buff (pilote), des secondes. Un plan aux
+  points nuls rend la vue au jeu : ignoré, le plan précédent tient ;
+- `vertexBufferOffset` (élément de géométrie, `+0xAC`) : sommet de base des indices 16 bits.
+  L'ignorer déchirait `FerrisRaid_Core` (87 009 sommets) en un rocher de 350 m qui cachait le
+  laboratoire ; la valeur exacte remplace l'heuristique de pages de la création de personnage
+  (même résultat sur 24 grandes géométries sur 27, corrige les 3 autres, dont `MountChopper`) ;
+- rotation des objets posés `(0, tangage Y, roulis X, lacet Z)`, composée
+  `Rz·Ry·Rx` : corrélation 1,000 avec l'éclairage précalculé des rochers inclinés de
+  `Ferris4` (0,5 au mieux en lacet seul) ;
+- octet 2 du `lightvrt` = `255 · Σ intensité · (1 − d/rayon)^atténuation · max(0, N·L)`, avec
+  pivot et **rayon multipliés par l'échelle de l'objet** et des intensités négatives
+  (lumières « d'ombre » à −100) : corrélation 1,000 sur le pilote et sur `Ferris4` ;
+- locuteur d'une réplique posée sur le joueur : le PNJ invoqué présent dont le nom de modèle
+  figure dans l'événement de voix (`FR_PreRaidRysina01` → `Rysina_CutScene`), le manifeste
+  nommant les autres (`speakers` : le Ваятель est un Колосс, `Arch` le Cœur du Locus) ;
+- voix rangées par groupe : `FerrisRaid602/FR_PreRaidRysina01` → onde `Rysina01` de
+  `Voice_FerrisRaid602Pre_rus.bsb` (groupe dans le nom de banque, reste du nom pour départager) ;
+- PNJ uniques (`Creatures/Rysina`, `Creatures/Mirianna` pour Marianne di Arder) : texture de
+  géosets en relocation de genre 2, non résolue dans `pack.bin` → texture du dossier nommée
+  comme la géométrie (`Rysina.(Texture).bin`).
+
+**Rendu** : décor non éclairé, couleur de sommet = ambiante + soleil (`N·S`) + octet 2 ×
+`PointLightColor` ; acteurs Lambert, émission = lumière locale ; soleil `DiffuseColor` ×
+π (`LIGHT_SCALE` des fatalités) ; brouillard ; ciel `SkyMesh` (tous ses calques, suit la
+caméra) ; particules et effets posés (`votInstances.ts`, commun avec les fatalités) ;
+musique, ambiance et sons d'objets (atténués linéairement), voix ; voile noir des fondus,
+désaturation des visions. Lecteur : `src/components/scene/EngineCutscene/`.
+
+**Code commun** : `allods_packdb.py` (table des paks exacte, identifiants, bases de carte
+liées), `allods_visdb.py`, `allods_characters.py` (habillage, corrigé : couleur de peau
+`0x1B0`, un géoset caché par un objet l'emporte sur un géoset montré), `allods_gltf.py`,
+`allods_fx.py`, `allods_scenes.py`, et côté lecteur `votInstances.ts`, partagés avec les
+fatalités et la création de personnage.
+
+**Manques** : le terrain (`terrainDump.bin`, non décodé : scènes d'extérieur sans sol hors
+objets) ; le fichier d'événements FMOD `.bev` (sons appariés par nom : quelques ambiances
+introuvables, `Ferris4_Outdoor`, `Ferris_Winter1`) ; les effets de sort posés par projectile ou
+stèle (`CutScene_Boom`, `Portal_CutScene_Visual_Summon`) et ce que montre « Оглянитесь ! »
+(ciel vide ici) ; décor du 17.0 qui a changé depuis la 7.0 — cristaux du portail où se tient
+la caméra de 20 à 37 s (`ferris-portal`), dessous de plateforme à l'ouverture de
+`ferris-locus-fall` et à la fin de `ferris-locus` ; octets 0-1 du `lightvrt` ; le joueur,
+absent ; décor partagé entre `ferris-locus` et `ferris-locus-fall` mais exporté deux fois
+(29 Mo chacun, 132 Mo pour les six scènes).
 
 ### Ce qui manque
 
-- **Cinématiques moteur** : une seule est recréée (pilote, voir ci-dessous). Liste dans
+- **Cinématiques moteur** : six sont recréées (voir plus haut). Liste dans
   `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
   (7_0Events), extraites ici.
 - **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et
