@@ -95,8 +95,8 @@ export type SceneMeta = {
   glb: string;
   objects: number;
   clips: number;
-  character: { yaw: number; scale: number };
-  camera: { position: [number, number, number]; yaw: number; pitch: number; height: number; fov: number };
+  character: { yaw: number; scale: number; position?: [number, number, number] };
+  camera: { position: [number, number, number]; yaw: number; pitch: number; height: number; fov: number; placeOffset?: [number, number, number] };
   light?: {
     ambient: string; sun: string; point: string; specular: string;
     sunPitch: number; sunYaw: number; sunDirection: [number, number, number];

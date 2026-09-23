@@ -90,8 +90,10 @@ export class CharacterRig {
   }
 
   joint(name: string): THREE.Object3D | null {
+    // GLTFLoader retire les « / » des noms de nœuds : `ElfMale/Head` devient `ElfMaleHead`.
+    const wanted = new Set([name, `${this.template}${name}`, `${this.template}/${name}`]);
     let found: THREE.Object3D | null = null;
-    this.model.traverse(o => { if (!found && (o.name === name || o.name.endsWith(`/${name}`))) found = o; });
+    this.model.traverse(o => { if (!found && wanted.has(o.name)) found = o; });
     return found;
   }
 

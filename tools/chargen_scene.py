@@ -50,6 +50,7 @@ REGION_ZONE_LIGHTS = 0x160
 REGION_AMBIENCES = 0xE0
 TASSEL_EVENT = 0x58        # Sound2DTassel : événement FMOD de l'ambiance
 STATIC_VISOBJECT = 0x30
+PEDESTAL_TOP = 0.28          # dessus de l'estrade de `Chargen_Aed` (sommets à moins de 3 m de l'axe)
 SCENE_RADIUS = 40.0        # rayon (m) autour du personnage : le décor et ses voisins immédiats
 SCENE_TEXTURE_MAX = 512
 
@@ -199,6 +200,12 @@ class SceneExporter:
                 self.notes.append(f"géométrie illisible : {vo.name}")
             else:
                 fix_index_pages(loaded)
+                # Quelques sommets non définis (NaN) dans le décor des orques : ramenés à 0, sans
+                # quoi le JSON du glTF (min/max des accesseurs) serait invalide.
+                for key, arr in loaded.vertices.items():
+                    if arr.dtype.kind == "f" and not np.isfinite(arr).all():
+                        self.notes.append(f"sommets non finis ramenés à 0 : {vo.name} ({key})")
+                        loaded.vertices[key] = np.nan_to_num(arr, nan=0.0, posinf=0.0, neginf=0.0)
                 elements = [e for e in loaded.geo.doc.elements if e.material.visible and e.material.texture
                             and self.ex.texture(e.material.texture) is not None]
                 skeleton = loaded.skeleton if loaded.skeleton is not None and len(loaded.skeleton) else None
@@ -268,6 +275,23 @@ def region_objects(m: PackDB) -> list[dict]:
     return out
 
 
+def scene_origin(m: PackDB, db: PackDB, mcat: PakCatalog, cat: PakCatalog, objects: list[dict],
+                 place: np.ndarray, radius: float = 10.0) -> tuple[float, float, float] | None:
+    """Position de l'objet de décor de création le plus proche (horizontalement) de la place."""
+    best = None
+    for obj in objects:
+        d = math.hypot(obj["pos"][0] - place[0], obj["pos"][1] - place[1])
+        if d > radius or (best is not None and d >= best[0]):
+            continue
+        dbx, catx = (m, mcat) if obj["db"] == "map" else (db, cat)
+        vot = dbx.ptr(obj["static"] + STATIC_VISOBJECT)
+        geo = dbx.ptr(vot + 0xC0) if vot is not None else None
+        name = catx.name(dbx.binary_ref(geo)) if geo is not None else None
+        if name and name.startswith("World/MainMenu/Chargen_"):
+            best = (d, obj["pos"])
+    return best[1] if best else None
+
+
 def zone_lights_at(m: PackDB, pos: tuple[float, float, float], grid: int = REGION_ZONE_LIGHTS) -> int | None:
     """Objet de la grille 16 × 16 d'une région (lumières en `+0x160`, ambiances sonores en
     `+0xE0`) sous une position de la carte."""
@@ -301,12 +325,19 @@ def export_scenes(ctx, races: list[str], race_scene: dict[str, str]) -> dict:
         if place is None:
             ctx.notes.append(f"décor : place absente pour {race}")
             continue
+        # Origine : le décor de la race (objet de carte dont la géométrie est sous
+        # `World/MainMenu/Chargen_*`), son estrade étant à l'origine de sa géométrie ; le
+        # personnage s'y tient. La caméra garde son décalage par rapport à la place du
+        # personnage. (Pour sept races la place et le décor coïncident à 0,3 m près ; celle des
+        # aèdes est 32 m au-dessus de son décor, la place de sélection n'étant pas l'estrade.)
         P = np.array(place.character)
+        decor = scene_origin(m, ctx.db, mcat, ctx.cat, objects, P)
+        origin = np.array(decor) if decor is not None else P
         sx = SceneExporter({"map": (m, mcat), "pack": (ctx.db, ctx.cat)}, pool, ctx.bins)
         roots = []
         used = 0
         for obj in objects:
-            d = math.hypot(obj["pos"][0] - P[0], obj["pos"][1] - P[1])
+            d = math.hypot(obj["pos"][0] - origin[0], obj["pos"][1] - origin[1])
             if d > SCENE_RADIUS:
                 continue
             db = m if obj["db"] == "map" else ctx.db
@@ -317,14 +348,21 @@ def export_scenes(ctx, races: list[str], race_scene: dict[str, str]) -> dict:
             used += 1
             roll, pitch, yaw = obj["rot"]
             holder = {"name": f"object#{used}", "children": [node],
-                      "translation": [float(v) for v in (np.array(obj["pos"]) - P)],
+                      "translation": [float(v) for v in (np.array(obj["pos"]) - origin)],
                       "rotation": _quat_ypr(yaw, pitch, roll)}
             if abs(obj["scale"] - 1) > 1e-6 and obj["scale"] > 0:
                 holder["scale"] = [float(obj["scale"])] * 3
             roots.append(sx.ex.gltf.add_node(holder))
+        offset = P - origin
+        # Le personnage se tient sur l'estrade : à sa place quand elle est sur le décor (sept
+        # races, 0,2 à 0,4 m au-dessus de l'origine = dessus de l'estrade), sinon au centre de
+        # l'estrade (aèdes : dessus mesuré à 0,28 m dans `Chargen_Aed`).
+        stand = offset if np.linalg.norm(offset) < 2.0 else np.array([0.0, 0.0, PEDESTAL_TOP])
         meta: dict = {"glb": f"scenes/{race}.glb", "objects": used, "clips": sx.clips,
-                      "character": {"yaw": round(place.character_yaw, 3), "scale": round(place.character_scale, 3)},
+                      "character": {"yaw": round(place.character_yaw, 3), "scale": round(place.character_scale, 3),
+                                    "position": [round(float(v), 3) for v in stand]},
                       "camera": {"position": [round(float(v), 4) for v in (np.array(place.camera) - P)],
+                                 "placeOffset": [round(float(v), 3) for v in (P - origin)],
                                  "yaw": round(place.camera_yaw, 3), "pitch": round(place.camera_pitch, 3),
                                  "height": round(place.camera_height, 3), "fov": round(place.fov, 4)},
                       "source": {"scene": place.name, "map": place.map, "position": [round(float(v), 3) for v in P]}}

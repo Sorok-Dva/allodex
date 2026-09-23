@@ -38,7 +38,7 @@ export type ChargenViewerHandle = {
 const COMPANION_OFFSETS: Record<Exclude<ChargenFocus, 'primary'>, [number, number]> = {
   secondary: [-0.75, 0.45],
   tertiary: [0.75, 0.45],
-  pet: [1.1, 0.2],
+  pet: [1.3, 0.8],
 };
 /** Lacet ajouté au modèle pour qu'il fasse face à la caméra de la place (le modèle regarde -Y). */
 const MODEL_FACING = 0;
@@ -111,7 +111,12 @@ export const ChargenViewer = forwardRef<ChargenViewerHandle, ChargenViewerProps>
       const h = canvas.clientHeight || 1;
       renderer.setSize(w, h, false);
       const meta = propsRef.current.data.scenes?.[propsRef.current.descriptor.race];
-      if (meta) placeCamera(s0.camera, cameraFor(meta.camera), w / h);
+      if (!meta) return;
+      // Personnage debout sur l'estrade ; la caméra garde son décalage par rapport à lui.
+      const [sx, sy, sz] = meta.character.position ?? [0, 0, 0];
+      s0.characters.position.set(sx, sy, sz);
+      const c = cameraFor(meta.camera);
+      placeCamera(s0.camera, { ...c, position: [c.position[0] + sx, c.position[1] + sy, c.position[2] + sz] }, w / h);
     };
     const cameraFor = (c: NonNullable<ChargenData['scenes']>[string]['camera']) => {
       const p = propsRef.current;
@@ -230,10 +235,9 @@ export const ChargenViewer = forwardRef<ChargenViewerHandle, ChargenViewerProps>
         const items = want.key === 'primary' || !want.pet ? growth?.items ?? [] : [];
         const look = resolveLook(p.data, want.template, tpl, want.sex, want.appearance, want.pet ? [] : items,
           { equipment: want.pet ? null : p.equipment, helmet: p.helmet }, rig.textured);
-        // Effets de la tenue de création (`growths[].fx` : lueurs accrochées à un locator).
-        if (want.key === 'primary' && growth) {
-          for (const fx of growth.fx) if (fx.model) look.attachments.push({ model: fx.model, locator: fx.locator, template: want.template });
-        }
+        // Les effets de la tenue de création (`growths[].fx`, plantes du Pacificateur, lueurs) sont
+        // des objets animés (croissance) : exportés à leur pose de repos, ils couvriraient le
+        // personnage. Gardés dans les données, pas encore rejoués.
         void rig.apply(look);
       };
       if (slot.rig && slot.rig.template === want.template) {
