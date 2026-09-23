@@ -99,12 +99,26 @@ def buff_scripts(db: PackDB, buff: int) -> int | None:
     return db.ptr(buff + BUFF_VIS_SCRIPTS)
 
 
+def find_camera_action(db: PackDB, off: int | None, depth: int = 0) -> int | None:
+    """Première `CameraTrackAction` d'une action, en descendant dans les listes (`VisActionList`)."""
+    if off is None or depth > 6:
+        return None
+    if db.vtype(off) == "CameraTrackAction":
+        return off
+    for loc, kind, target in db.relocs(off, off + 0x100):
+        children = [db.ptr(loc)] if kind == 0 else db.pointers(loc) if kind == 3 else []
+        for child in children:
+            if child is not None and db.vtype(child):
+                found = find_camera_action(db, child, depth + 1)
+                if found is not None:
+                    return found
+    return None
+
+
 def buff_camera_track(db: PackDB, buff: int) -> CameraTrack | None:
     scripts = buff_scripts(db, buff)
-    action = db.ptr(scripts + VIS_SCRIPTS_ACTION) if scripts is not None else None
-    if action is None or db.vtype(action) != "CameraTrackAction":
-        return None
-    return read_camera_track(db, action)
+    action = find_camera_action(db, db.ptr(scripts + VIS_SCRIPTS_ACTION) if scripts is not None else None)
+    return read_camera_track(db, action) if action is not None else None
 
 
 @dataclass

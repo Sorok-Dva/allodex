@@ -223,3 +223,26 @@ def test_packs_path_falls_back_to_the_real_packs_folder(tmp_path):
     (tmp_path / "data" / "Packs.adc-real").mkdir(parents=True)
     (tmp_path / "data" / "Packs.adc-real" / "x.pak").write_bytes(b"")
     assert packs_path(tmp_path / "data" / "Packs" / "x.pak") == tmp_path / "data" / "Packs.adc-real" / "x.pak"
+
+
+def test_gameview_placement_reads_double_xy_float_yaw_double_z():
+    from tools.extract_engine_cutscene import _placement
+    raw = struct.pack("<2dfxxxxd", 10967.005283, 11125.761637, 1.57, 49.066845)
+
+    class Db:
+        data = 0
+
+        def __init__(self, raw):
+            self.raw = raw
+
+        def f32(self, off):
+            return struct.unpack_from("<f", self.raw, off)[0]
+    pos, yaw = _placement(Db(raw), 0)
+    assert pos == [10967.0053, 11125.7616, 49.0668] and abs(yaw - 1.57) < 1e-6
+
+
+def test_animation_file_falls_back_to_the_base_model():
+    from tools.extract_engine_cutscene import animation_file
+    bins = SimpleNamespace(_pak_index=lambda: {"Characters/Kania_male/Animations/KaniaMale.Special08.(SkeletalAnimation).bin": 0})
+    name = animation_file(bins, "Characters/Kania_male/KaniaMale_CutScene.(Geometry).bin", "Special08")
+    assert name == "Characters/Kania_male/Animations/KaniaMale.Special08.(SkeletalAnimation).bin"

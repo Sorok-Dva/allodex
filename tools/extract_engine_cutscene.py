@@ -416,10 +416,15 @@ def animation_file(bins, geometry_binary: str, anim: str) -> str | None:
     """`X/Y.(Geometry).bin` + `Idle` → `X/Animations/Y.Idle.(SkeletalAnimation).bin` (sans égard à la casse)."""
     folder, stem = geometry_binary.rsplit("/", 1)
     stem = stem.split(".(")[0]
-    want = f"{folder}/Animations/{stem}.{anim}.(SkeletalAnimation).bin".lower()
-    for name in bins._pak_index():
-        if name.lower() == want:
-            return name
+    # Variante de modèle (`KaniaMale_CutScene`) sans l'animation : celle du modèle de base
+    # (`KaniaMale.Special08`, même squelette), comme le Luka de CutScene_EngineerDeathKania.
+    stems = [stem] + ([stem.split("_")[0]] if "_" in stem else [])
+    index = {name.lower(): name for name in bins._pak_index()} if not hasattr(bins, "_lower_index") else bins._lower_index
+    bins._lower_index = index
+    for candidate in stems:
+        hit = index.get(f"{folder}/Animations/{candidate}.{anim}.(SkeletalAnimation).bin".lower())
+        if hit:
+            return hit
     return None
 
 
@@ -429,9 +434,10 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
     par `allods_characters` avec la variation et les objets de sa `VisualMob`."""
     if mob is not None and getattr(db, "parent", None) is not None:
         mob |= EXTERN   # ressource de pack.bin vue depuis la base de carte
-    if mob is None:
+    if mob is None and actor.get("visual") is None:
         raise ValueError(f"{actor['id']} : MobWorld {actor['mob']} introuvable")
-    visual = mob_visual(db, mob)
+    # Acteur d'une `GameViewScene` : sa `VisualMob` est donnée directement (pas de `MobWorld`).
+    visual = actor["visual"] if actor.get("visual") is not None else mob_visual(db, mob)
     tpl_off = visual_template(db, visual) if visual is not None else None
     if tpl_off is None:
         raise ValueError(f"{actor['id']} : gabarit visuel introuvable")
@@ -492,8 +498,9 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
     skeleton = loaded.skeleton
     joints = ex.emit_skeleton(skeleton, actor["id"])
     static_node = ex.gltf.add_node({"name": f"{actor['id']}/Static"})
-    mesh_node = {"name": f"{actor['id']}_mesh", "mesh": mesh}
-    if skinned:
+    # Modèle sans rien à dessiner (`Dummy` d'une GameViewScene) : squelette seul, pas de peau.
+    mesh_node = {"name": f"{actor['id']}_mesh", "mesh": mesh} if mesh is not None else {"name": f"{actor['id']}_mesh"}
+    if skinned and mesh is not None:
         mesh_node["skin"] = ex.skin(actor["id"], skeleton, joints, static_node)
     for locator, scene, shape_name in attachments:
         if locator not in skeleton.names:
@@ -527,7 +534,7 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
                              **({"scale": [scale] * 3} if abs(scale - 1) > 1e-6 else {})})
     report += [f"{actor['id']} : {n}" for n in ex.notes]
     meta = {"geometry": loaded.geo.binary, "height": round(float(loaded.vertices["position"][:, 2].max() * scale), 3),
-            "animations": durations, "name_index": mob_name_index(db, mob)}
+            "animations": durations, "name_index": mob_name_index(db, mob) if mob is not None else None}
     return ex.finish([root]), meta
 
 
@@ -1075,6 +1082,93 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
                         "spawns": sorted({sp["file"] for sp in spawns.values()})}}
 
 
+def actor_model_key(actor: dict) -> int:
+    return actor["visual"] if actor.get("visual") is not None else actor["mob_offset"]
+
+
+# `GameViewScene` (17.0) : place et placement de caméra en doubles x, y, puis f32 lacet, puis double z.
+GVS_CAMERA = 0x38
+GVS_MOBS = 0xA0
+GVS_MOB_STRIDE = 192
+GVS_MOB_VISUAL = 0xB0
+GVS_MOB_OFFSET = 0x70
+GVS_MOB_SCRIPT = 0x80
+GVS_MAP = 0xE8
+GVS_PLACE = 0xF0
+SHOW_SCENE = 0x50
+SHOW_SCRIPT = 0x58
+GVSCRIPT_ACTIONS = 0x48
+GVACTION_CREATURE = 0xA0
+GVACTION_ACTION = 0xB8
+
+
+def _placement(db: PackDB, off: int) -> tuple[list[float], float]:
+    x, y = struct.unpack_from("<2d", db.raw, db.data + off)
+    z, = struct.unpack_from("<d", db.raw, db.data + off + 0x18)
+    return [round(x, 4), round(y, 4), round(z, 4)], db.f32(off + 0x10)
+
+
+def plan_gameview(spec: dict, db: PackDB, texts: Texts, anim_names: dict, report: list[str]) -> dict:
+    """Scène entièrement du client (`GameViewScene` + `GameViewScript` d'un `ShowSceneAction`) : PNJ
+    posés à la place de la scène (leur animation de cinématique porte leur déplacement), chacun jouant
+    l'animation que le script lui donne, caméra au `cameraPlacement` de la scène."""
+    import numpy as np
+    from tools.allods_visdb import ANIM_LIST, ANIM_MODE
+    scene = db.ids[int(spec["scene"])]
+    place, place_yaw = _placement(db, scene + GVS_PLACE)
+    cam, cam_yaw = _placement(db, scene + GVS_CAMERA)
+    map_res = db.ptr(scene + GVS_MAP)
+    map_path = next((p for p, o in db.paths.items() if o == map_res), "")
+    map_name = spec.get("map") or (map_path.split("/")[1] if map_path.startswith("Maps/") else "")
+    script = db.ids[int(spec["script"])] if spec.get("script") else None
+    if script is None:
+        hits = np.where((db.rtgt == scene) & (db.rkind == 0))[0]
+        for i in hits:
+            loc = int(db.rloc[i])
+            j = int(np.searchsorted(db.vt_loc, loc, side="right")) - 1
+            owner = int(db.vt_loc[j])
+            if db.vtype(owner) == "ShowSceneAction" and loc - owner == SHOW_SCENE:
+                script = db.ptr(owner + SHOW_SCRIPT)
+                break
+    clips: dict[int, list[str]] = {}
+    for action in (db.pointers(script + GVSCRIPT_ACTIONS) if script is not None else []):
+        creature = db.string(action + GVACTION_CREATURE)
+        anim = db.ptr(action + GVACTION_ACTION)
+        if not creature or not creature.isdigit() or anim is None or db.vtype(anim) != "CreatureAnimationAction":
+            continue
+        v = db.vec(anim + ANIM_LIST)
+        names = [anim_names.get(db.u32(v[0] + 4 * k), "") for k in range(v[1] // 4)] if v else []
+        clips[int(creature)] = [clip_name(n) for n in names if n]
+    actors = []
+    c, s_ = math.cos(place_yaw), math.sin(place_yaw)
+    for k, e in enumerate(db.elements(scene + GVS_MOBS, GVS_MOB_STRIDE), 1):
+        visual = db.ptr(e + GVS_MOB_VISUAL)
+        if visual is None:
+            continue
+        ox, oy, oz = db.floats(e + GVS_MOB_OFFSET, 3)
+        p = [place[0] + ox * c - oy * s_, place[1] + ox * s_ + oy * c, place[2] + oz]
+        wanted = clips.get(k, [])
+        actors.append({"id": f"{spec.get('actor_prefix', 'mob')}{k}", "mob_offset": None, "visual": visual,
+                       "path": [{"t": 0, "p": [round(v, 4) for v in p], "yaw": round(place_yaw, 5)}],
+                       "animations": wanted, "clips_wanted": wanted, "idle": wanted[0] if wanted else None,
+                       "actions": [{"t": 0.0, "until": 1e6, "clips": wanted, "loop": False}] if wanted else [],
+                       "name": spec.get("names", {}).get(str(k), {})})
+    # Le `cameraPlacement` pose le spectateur (l'avatar) : caméra à hauteur d'yeux au-dessus, du côté
+    # opposé à son regard (vue à la troisième personne du jeu), regard selon son lacet.
+    eye = float(spec.get("eye_height", 2.0))
+    back = float(spec.get("camera_back", 0.0))
+    direction = [math.cos(cam_yaw), math.sin(cam_yaw), 0.0]
+    cam = [round(cam[0] - back * direction[0], 4), round(cam[1] - back * direction[1], 4), round(cam[2] + eye, 4)]
+    target = [round(cam[i] + 20 * direction[i], 4) for i in range(3)]
+    camera = {"points": [{"t": 0, "p": cam}], "targets": [{"t": 0, "p": target}], "duration": float(spec.get("duration", 0))}
+    report.append(f"{spec['id']} : GameViewScene {spec['scene']} sur {map_name}, {len(actors)} PNJ, "
+                  f"{sum(1 for a in actors if a['animations'])} animés")
+    return {"map": map_name, "camera": camera, "lines": [], "actors": actors, "weather": None,
+            "sounds": {"music": [], "ambience": []}, "post": spec.get("post", []),
+            "decor_center": [cam[0], cam[1]], "timing": "client", "duration_from_clips": not spec.get("duration"),
+            "sources": {"scene": spec["scene"], "script": spec.get("script")}}
+
+
 def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim_names: dict, report: list[str]) -> dict:
     """Plan d'une scène sans déroulé serveur connu (après 7.0) : ressources du 17.0 nommées par le
     manifeste, mise en scène et minutage du manifeste."""
@@ -1089,6 +1183,12 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
         cl = read_client_line(db, cd)
         if anchor is None and spec.get("fr_anchor") and texts.fr is not None and cl.text_index is not None:
             anchor = cl.text_index - texts.fr.find("fr", spec["fr_anchor"])
+        if anchor is None and not spec.get("fr_anchor") and texts.fr is not None and cl.text_index is not None and cl.voice:
+            # Ancrage par une réplique doublée : sa voix donne son indice FR, le décalage vaut pour les
+            # répliques non doublées voisines (vérifié par la durée d'affichage).
+            texts.load_fr_voices()
+            if cl.voice in texts.fr_voice:
+                anchor = cl.text_index - texts.fr_voice[cl.voice][0]
         text = texts.line(cl.text_index, cl.voice, cl.delay_ms, anchor)
         speaker = next((a["id"] for a in spec["actors"] if any(text.get("ru", "").startswith(p) for p in a.get("speaker_prefixes", []))), None)
         actor = next((a for a in spec["actors"] if a["id"] == speaker), None)
@@ -1232,8 +1332,10 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     # il couvre donc leurs zones à toutes, même quand une seule est réextraite (`--only`).
     plans: dict[str, dict] = {}
     for spec in manifest["engine_scenes"]:
-        plans[spec["id"]] = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report) \
-            if spec.get("source") == "xdb70" else plan_manual(spec, db, texts, lines17, anim_names, report)
+        source = spec.get("source")
+        plans[spec["id"]] = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report) if source == "xdb70" \
+            else plan_gameview(spec, db, texts, anim_names, report) if source == "gameview" \
+            else plan_manual(spec, db, texts, lines17, anim_names, report)
     # Une scène sans chapitre dans le film (en attente) ne s'extrait que demandée (`--only`).
     chapters = {c["id"] for c in manifest["cinematics"]}
     selected = [s for s in manifest["engine_scenes"] if (s["id"] in only if only else s["id"] in chapters)]
@@ -1249,7 +1351,7 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     clips_of: dict[int, set[str]] = {}
     for s_id in {s["id"] for s in manifest["engine_scenes"] if s["id"] in chapters} | {s["id"] for s in selected}:
         for actor in plans[s_id]["actors"]:
-            clips_of.setdefault(actor["mob_offset"], set()).update(
+            clips_of.setdefault(actor_model_key(actor), set()).update(
                 set(actor.get("animations", [])) | {actor.get("idle") or "Idle", "Idle01", "Idle"} |
                 set(actor.get("clips_wanted", [])) | ({actor["move"]} if actor.get("move") else set()))
     built: dict = {}
@@ -1290,13 +1392,14 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         actors_meta = []
         shutil.rmtree(out / "actors", ignore_errors=True)
         for actor in plan["actors"]:
-            key = f"mob-{actor['mob_offset']:x}"      # un fichier par `MobWorld` du 17.0, quel que soit son rôle
+            key = f"mob-{actor['mob_offset']:x}" if actor.get("visual") is None else f"vis-{actor['visual']:x}"
             spec_actor = {"id": actor["id"], "file": key, "mob": None, "sex": actor.get("sex"),
-                          "animations": sorted(clips_of[actor["mob_offset"]])}
+                          "animations": sorted(clips_of[actor_model_key(actor)])}
             glb = f"../shared/actors/{key}.glb"
             if key in built:            # PNJ déjà exporté (double, ou autre scène du même passage)
                 meta = json.loads(json.dumps(built[key]))
             else:
+                spec_actor["visual"] = actor.get("visual")
                 data, meta = build_actor_offset(spec_actor, actor["mob_offset"], db, pack_cat, bins, shared_tex, report)
                 (shared / "actors").mkdir(parents=True, exist_ok=True)
                 (shared / "actors" / f"{key}.glb").write_bytes(data)
@@ -1315,14 +1418,20 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                     entry["yaw"] = key["yaw"]
                 path.append(entry)
             name_idx = meta.pop("name_index")
+            name = {"ru": clean_text(texts.main.texts["ru"][name_idx]), "en": clean_text(texts.main.texts["en"][name_idx])} \
+                if name_idx is not None else actor.get("name", {})
             actors_meta.append({"id": actor["id"], "glb": glb,
-                                "name": {"ru": clean_text(texts.main.texts["ru"][name_idx]), "en": clean_text(texts.main.texts["en"][name_idx])},
+                                "name": name,
                                 "path": path, "scale": actor.get("scale", 1.0), "idle": idle,
                                 "talk": actor.get("talk"), "move": actor.get("move"), "appear": actor.get("appear", 0.0),
                                 **({"presence": actor["presence"]} if actor.get("presence") else {}),
                                 **({"actions": sorted(actor["actions"], key=lambda a: a["t"])} if actor.get("actions") else {}),
                                 "light": light_at(path[0]["p"], decor["pointLights"], light), **meta})
 
+        if plan.get("duration_from_clips"):
+            # Scène du client : elle dure le temps de la plus longue animation jouée.
+            camera["duration"] = round(max([sum(a["animations"].get(c, 0) for c in (act["clips"] if act else []))
+                                            for a in actors_meta for act in (a.get("actions") or [None])] + [1.0]), 3)
         fx_glb, fx_objects, fx_sounds, spawns = ctx["fx"][spec["id"]]
         spawns = json.loads(json.dumps(spawns))
         for spawn in spawns:
@@ -1427,9 +1536,8 @@ def update_index(manifest: dict, out_root: Path, entries: list[dict]) -> None:
     path = out_root / "cinematics.json"
     index = json.loads(path.read_text(encoding="utf-8"))
     by_id = {c["id"]: c for c in manifest["cinematics"]}
-    engine_ids = {e["id"] for e in manifest["engine_scenes"]}
     # Chapitres moteur retirés du film (scène en attente) : ôtés de l'index.
-    index["cinematics"] = [c for c in index["cinematics"] if not (c.get("engine") and c["id"] in engine_ids and c["id"] not in by_id)]
+    index["cinematics"] = [c for c in index["cinematics"] if not (c.get("engine") and c["id"] not in by_id)]
     for e in entries:
         spec = by_id.get(e["spec"]["id"])
         if spec is None:
