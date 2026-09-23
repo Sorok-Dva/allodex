@@ -1318,8 +1318,17 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
         if mob is None:
             report.append(f"{spec['id']} : PNJ introuvable dans le 17.0 : {sp['name']} ({script})")
             continue
+        start = spec.get("start_at", {}).get(script)
+        if start:
+            # PNJ déplacé avant le déroulé (par une zone voisine, justifié par le manifeste) : il part
+            # du dernier repère de cette marche.
+            loc = x70.find_spawns(root, map_name, {start["locator"]}).get(start["locator"])
+            if loc is not None:
+                sp = {**sp, "p": loc["p"], "yaw": start.get("yaw", sp["yaw"])}
         actors[script] = {"id": re.sub(r"[^a-z0-9]+", "-", script.lower()).strip("-"), "mob_offset": mob,
                           "path": [{"t": 0, "p": sp["p"], "yaw": round(sp["yaw"], 5)}], "server": sp}
+        if script in tl.kills:
+            actors[script]["actions"] = [{"t": tl.kills[script], "until": 1e6, "clips": ["Death"], "loop": False}]
         moves = tl.moves.get(script)
         if moves:
             walk = x70.walk_speed(Path(root) / sp["mob"])
@@ -1577,7 +1586,8 @@ def gameview_cast(db: PackDB, scene: int, script: int | None, t0: float, until: 
             actor.pop("actions")
     # effets posés à la place qu'occupe le PNJ à cet instant
     for spawn in spawns:
-        actor = next(a for a in actors if a["id"] == spawn.pop("at_actor"))
+        who = spawn.pop("at_actor")
+        actor = next(a for a in actors if a["id"] == who)
         key = max((k for k in actor["path"] if k["t"] <= spawn["t"] + 1e-6), key=lambda k: k["t"], default=actor["path"][0])
         spawn["p"] = key["p"]
     return {"actors": actors, "spawns": spawns, "end": round(last, 3), "place": place}

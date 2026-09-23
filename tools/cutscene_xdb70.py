@@ -100,6 +100,8 @@ class Timeline:
     # scriptID → [{t, locator, run}] ; retirés (`Disintegrate`) : scriptID → t
     moves: dict[str, list[dict]] = field(default_factory=dict)
     gone: dict[str, float] = field(default_factory=dict)
+    # PNJ tués par le déroulé (`ImpactKill`) : scriptID → t
+    kills: dict[str, float] = field(default_factory=dict)
     # Messages de PNJ (`ImpactMobChat` → `TextMessage`) : {t, speaker, ru, message}
     chats: list[dict] = field(default_factory=list)
 
@@ -278,6 +280,8 @@ class Simulator:
             elif locator and target != "player":
                 self.tl.moves.setdefault(target, []).append({"t": round(t, 3), "locator": locator, "run": False})
                 self.tl.scripts.update({locator, target})
+        elif kind == "ImpactKill" and target not in ("player",):
+            self.tl.kills.setdefault(target, round(t, 3))
         elif kind == "Disintegrate":
             summon = self.summon_by_id(target)
             if summon is not None and summon.get("until") is None:

@@ -284,3 +284,90 @@ def test_lightmap_uv_skips_the_two_texel_border_and_flips_y():
     uv = lightmap_uv(pts, (1, 0), 2) * 2 * 512          # en texels de l'atlas (deux cases de 512)
     # x = 0 au bord des texels 1-2 de la case (512 + 2), x = 256 à celui des texels 509-510 ; y retourné
     assert np.allclose(uv[0], [514, 510]) and np.allclose(uv[1], [1022, 2]) and np.allclose(uv[2], [768, 256])
+
+
+def test_find_wave_takes_the_first_recorded_variant():
+    index = {"15amanda04v2patch403": [("SFX/Voice/Voice_IL1_3D_rus.bsb", 40, "15_amanda_04_v2_patch403")],
+             "15amanda04v1patch403": [("SFX/Voice/Voice_IL1_3D_rus.bsb", 39, "15_amanda_04_v1_patch403")],
+             "18amanda07patch403": [("SFX/Voice/Voice_IL1_3D_rus.bsb", 48, "18_Amanda_07_patch403")]}
+    assert find_wave("IL1/15_Amanda_04", index, "SFX/Voice/")[2] == "15_amanda_04_v1_patch403"
+    assert find_wave("IL1/18_Amanda_07", index, "SFX/Voice/")[1] == 48
+    assert find_wave("IL1/15_Amanda_0", index) is None
+
+
+def _league_tree(tmp_path):
+    """Quête qui pose l'état 1 d'une stèle de scène (1 s) puis l'état 2 (61 s), fait courir et parler
+    son donneur, tue un PNJ, et n'emprunte que la branche `impactsIf` d'un `ImpactIfTarget`."""
+    (tmp_path / "Maps" / "M" / "000_000").mkdir(parents=True)
+    (tmp_path / "Dev").mkdir()
+    (tmp_path / "Dev" / "S.(SteleResource).xdb").write_text(
+        '<SteleResource><visScripts href="S.(DeviceVisScripts).xdb" /></SteleResource>')
+    (tmp_path / "Dev" / "S.(DeviceVisScripts).xdb").write_text("""<DeviceVisScripts><states>
+      <Item><action type="ShowSceneAction"><scene href="/Maps/M/Fight.xdb" /><script href="Fight.(GameViewScript).xdb" /></action></Item>
+      <Item><action type="ShowSceneAction"><scene href="/Maps/M/NoScene.xdb" /></action></Item></states></DeviceVisScripts>""")
+    (tmp_path / "Maps" / "M" / "Fight.xdb").write_text(
+        "<GameViewScene><place><x>10</x><y>20</y><z>3</z></place><mobs><Item><scriptID>A</scriptID></Item></mobs></GameViewScene>")
+    (tmp_path / "Maps" / "M" / "000_000" / "0_0_ServerObjects.xdb").write_text("""<PatchObjects><objects>
+      <Item><scriptID>Dev1</scriptID><place><center x="1" y="2" z="3" /><yaw>0</yaw></place><object href="/Dev/S.(SteleResource).xdb" /></Item>
+      <Item type="gameMechanics.map.Locator"><scriptID>Far</scriptID><position x="10" y="0" z="0" /><yaw>0</yaw></Item>
+    </objects></PatchObjects>""")
+    (tmp_path / "Line.(ClientData).xdb").write_text(
+        '<ClientData><customData type="InterfaceAction"><sysId>ENUM_SHOW_BUBBLE</sysId><text href="Line.txt" /></customData></ClientData>')
+    (tmp_path / "Line.txt").write_bytes("Портал открыт!".encode("utf-16"))
+    (tmp_path / "M.(TextMessage).xdb").write_text('<TextMessage><Text href="Line.txt" /></TextMessage>')
+    (tmp_path / "China.(TextMessage).xdb").write_text('<TextMessage><Text href="Line.txt" /></TextMessage>')
+
+    def spawn(s, body):
+        return (f'<Item type="x.ImpactsToSingleSpawn"><spawn><scriptID>{s}</scriptID><map href="/Maps/M/MapResource.xdb" />'
+                f'</spawn><impacts>{body}</impacts></Item>')
+    state = '<Item type="x.ImpactSetVisualState"><visualState>{}</visualState></Item>'
+    (tmp_path / "Q.xdb").write_text(f"""<QuestResource><startImpacts>
+      <Item type="x.ImpactsDeferred"><delay>1000</delay><impacts>{spawn('Dev1', state.format(1) +
+        '<Item type="x.DeviceImpactsDeferred"><delay>60000</delay><impacts>' + state.format(2) + '</impacts></Item>')}</impacts></Item>
+      <Item type="x.ImpactsToInterlocutor"><impacts>
+        <Item type="x.GoThroughPath"><runningMode>true</runningMode><path><Item><scriptID>Far</scriptID></Item></path></Item>
+        <Item type="x.ImpactsDeferred"><delay>2000</delay><impacts>
+          <Item type="x.ImpactClientDataParams"><data href="Line.(ClientData).xdb" /></Item></impacts></Item></impacts></Item>
+      <Item type="x.ImpactIfTarget"><impactsIf><Item type="x.ImpactMobChat"><msg href="M.(TextMessage).xdb" /></Item></impactsIf>
+        <impactsElse><Item type="x.ImpactMobChat"><msg href="China.(TextMessage).xdb" /></Item></impactsElse></Item>
+      <Item type="x.ImpactsDeferred"><delay>3000</delay><impacts>{spawn('Mage', '<Item type="x.ImpactKill" />')}</impacts></Item>
+    </startImpacts></QuestResource>""")
+
+
+def test_xdb70_quest_impacts_play_device_scenes_moves_and_bubbles(tmp_path):
+    _league_tree(tmp_path)
+    tl = cutscene_xdb70.simulate(tmp_path, "Q.xdb", impacts="startImpacts")
+    assert tl.devices == [{"t": 1.0, "device": "Dev1", "state": 1}, {"t": 61.0, "device": "Dev1", "state": 2}]
+    assert tl.moves == {"interlocutor": [{"t": 0.0, "locator": "Far", "run": True}]}
+    assert tl.kills == {"Mage": 3.0}
+    (line,) = tl.lines
+    assert line["bubble"] == "Портал открыт!" and line["t"] == 2.0 and line["speaker"] == "interlocutor"
+    assert [c["message"] for c in tl.chats] == ["M.(TextMessage).xdb"]       # `impactsIf` seulement
+    scenes = cutscene_xdb70.device_scenes(tmp_path, "M", tl.devices)
+    # état visuel n → `states[n - 1]` : la scène à 1 s, retirée (`NoScene`) à 61 s
+    assert [(s["t"], s["until"], s["scene"]) for s in scenes] == [(1.0, 61.0, "Maps/M/Fight.xdb"),
+                                                                 (61.0, None, "Maps/M/NoScene.xdb")]
+    assert cutscene_xdb70.read_game_scene(tmp_path, "Maps/M/Fight.xdb") == {"place": [10.0, 20.0, 3.0], "mobs": ["A"]}
+
+
+def test_merge_bubbles_gives_a_voice_its_bubble_and_drops_twin_chats():
+    from tools.extract_engine_cutscene import merge_bubbles
+    base = {"ru": "", "animations": [], "delay_ms": 0}
+    lines = [{**base, "t": 12.0, "speaker": "elf", "voice": "IL1/15_Amanda_04", "clientdata": "15_Elf01"},
+             {**base, "t": 12.0, "speaker": "elf", "voice": None, "bubble": "Портал открыт!", "clientdata": "15_Elf01_Bubble"},
+             {**base, "t": 5.0, "speaker": "elf", "voice": "World/Zones/IL1/CameraShake", "clientdata": "Shake"}]
+    chats = [{"t": 12.0, "speaker": "elf", "ru": "Портал открыт!", "message": "Elf.(TextMessage)"},
+             {"t": 20.0, "speaker": "elf", "ru": "Прыгай!", "message": "Jump.(TextMessage)"}]
+    out = merge_bubbles(sorted(lines, key=lambda l: l["t"]), chats)
+    assert [(l["t"], l["voice"], l.get("bubble")) for l in out] == [
+        (5.0, "World/Zones/IL1/CameraShake", None), (12.0, "IL1/15_Amanda_04", "Портал открыт!"), (20.0, None, "Прыгай!")]
+
+
+def test_walk_placed_waits_for_the_previous_walk_and_runs_faster():
+    from tools.extract_engine_cutscene import RUN_SPEED, walk_placed
+    path = [{"t": 0, "p": [0.0, 0.0, 0.0], "yaw": 0.0}]
+    spawns = {"A": {"p": [0.0, 13.0, 0.0]}, "B": {"p": [2.0, 13.0, 0.0]}}
+    moves = [{"t": 1.0, "locator": "A", "run": True}, {"t": 1.0, "locator": "B", "run": False}]
+    end = walk_placed(path, moves, spawns, 2.0, {"id": "x"}, [])
+    assert path[1] == {"t": 1.0, "p": [0.0, 0.0, 0.0], "yaw": 0.0}
+    assert path[2]["t"] == round(1 + 13 / RUN_SPEED, 3) and end == round(1 + 13 / RUN_SPEED + 1.0, 3)
