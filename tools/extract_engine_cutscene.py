@@ -252,6 +252,72 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
             "pointLights": point_lights(mp, objects)}
 
 
+REGION_SIZE = 256.0
+
+
+def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tuple[list[float] | None, float]],
+                  report: list[str]) -> tuple[bytes | None, np.ndarray]:
+    """Sol des scènes (`terrain.glb` de la carte) : sous-carreaux de 8 m du `terrainDump` des
+    régions (niveau de détail fin), ceux dont le centre tombe dans une zone de scène (+ 16 m),
+    groupés par calque — le premier calque du jeu de la première passe (les poids du `SplatMap`
+    ne sont pas élucidés) —, texture répétée à sa taille. Rend aussi les triangles du sol, pour
+    poser les acteurs."""
+    from tools.allods_scenes import region_origin
+    from tools.allods_terrain import region_patches, terrain_layers
+    groups: dict[str, list] = {}
+    solids = []
+    count = 0
+    for path, region in sorted(mp.paths.items()):
+        if not path.endswith("_MapRegion.xdb"):
+            continue
+        ox, oy = region_origin(path)
+        near = [(c, r) for c, r in areas if c is None or
+                (ox - r - 16 <= c[0] <= ox + REGION_SIZE + r + 16 and oy - r - 16 <= c[1] <= oy + REGION_SIZE + r + 16)]
+        if not near:
+            continue
+        parsed = region_patches(bins.get, "", path)
+        if parsed is None:
+            continue
+        layer_sets, patches = parsed
+        layers = terrain_layers(mp, cat, mp.ptr(region + 0x98))
+        for patch in patches:
+            cx, cy = ox + 8 * patch.sx + 4, oy + 8 * patch.sy + 4
+            if not any(c is None or math.hypot(cx - c[0], cy - c[1]) <= r + 16 for c, r in near):
+                continue
+            ids = layer_sets[patch.passes[0][1]] if patch.passes and patch.passes[0][1] < len(layer_sets) else ()
+            layer = layers[ids[0] - 1] if ids and 0 < ids[0] <= len(layers) else (None, 30.0)
+            pts = patch.points + np.array([ox, oy, 0.0])
+            groups.setdefault(layer[0] or "", []).append((pts, patch.normals, patch.triangles, layer[1]))
+            solids.append(pts[patch.triangles])
+            count += 1
+    if not groups:
+        return None, np.zeros((0, 3, 3))
+    ex = Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/")
+    primitives = []
+    for name, parts in sorted(groups.items()):
+        pos, nor, uv, idx, base = [], [], [], [], 0
+        for pts, normals, tris, tiling in parts:
+            pos.append(pts.astype(np.float32))
+            nor.append(normals.astype(np.float32))
+            uv.append((pts[:, :2] / tiling).astype(np.float32))
+            idx.append((tris + base).astype(np.uint32))
+            base += len(pts)
+        P = np.concatenate(pos)
+        tex = ex.texture(name) if name else None
+        material = ex.gltf.add_material(f"terrain {Path(name).name if name else 'nu'}", tex, "OPAQUE", False, False)
+        ex.gltf.json["materials"][material].setdefault("extras", {}).update({"lit": True, "terrain": True})
+        primitives.append({"attributes": {"POSITION": ex.gltf.add_accessor(P, "VEC3", "f32", target=34962, minmax=True),
+                                          "NORMAL": ex.gltf.add_accessor(np.concatenate(nor), "VEC3", "f32", target=34962),
+                                          "TEXCOORD_0": ex.gltf.add_accessor(np.concatenate(uv), "VEC2", "f32", target=34962)},
+                           "indices": ex.gltf.add_accessor(np.concatenate(idx).reshape(-1), "SCALAR", "u32", target=34963),
+                           "mode": 4, "material": material})
+    ex.gltf.json["meshes"].append({"name": "terrain", "primitives": primitives})
+    root = ex.gltf.add_node({"name": "terrain", "mesh": len(ex.gltf.json["meshes"]) - 1, "extras": {"terrain": True}})
+    report.append(f"sol : {count} sous-carreaux de 8 m, {len(groups)} calques")
+    report += ex.notes
+    return ex.finish([root]), np.concatenate(solids) if solids else np.zeros((0, 3, 3))
+
+
 def light_decor(decor: dict, light: dict, center: list[float] | None, radius: float) -> tuple[list[dict], bytes]:
     """Instances d'une scène (dans son cercle) et leur éclairage de sommets (`decor-light.bin`) :
     ambiante + soleil (`N·S`) + octet 2 du `lightvrt`, avec la lumière de la scène."""
@@ -1087,8 +1153,16 @@ def build_map(map_name: str, specs: list[dict], plans: dict[str, dict], db: Pack
     map_dir.mkdir(parents=True, exist_ok=True)
     textures = TexturePool(mp, cat, bins, map_dir, jpeg=True)
     particles = ParticlePool(mp, cat, bins, map_dir)
-    decor = build_decor(mp, cat, bins, textures, particles, map_name, [scene_area(s, plans[s["id"]]) for s in specs], report)
+    areas = [scene_area(s, plans[s["id"]]) for s in specs]
+    decor = build_decor(mp, cat, bins, textures, particles, map_name, areas, report)
     (map_dir / "decor.glb").write_bytes(decor["glb"])
+    terrain_glb, ground = build_terrain(mp, cat, bins, textures, areas, report)
+    decor["terrain"] = terrain_glb is not None
+    if terrain_glb:
+        (map_dir / "terrain.glb").write_bytes(terrain_glb)
+        decor["solids"] = np.concatenate([decor["solids"], ground]) if len(decor["solids"]) else ground
+    else:
+        (map_dir / "terrain.glb").unlink(missing_ok=True)
     prefix = map_prefix(map_name) + "textures/"
     lights, fx, sky = {}, {}, {}
     for spec in specs:
@@ -1264,7 +1338,8 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
             "id": spec["id"], "map": plan["map"], "up": [0, 0, 1], "mirror": True, "duration": camera["duration"],
             "timing": plan["timing"], "camera": camera, "lines": scene_lines, "actors": actors_meta,
             "decor": {"glb": prefix + "decor.glb", "light": "decor-light.bin", "instances": instances, "sky": sky,
-                      "skyGlb": "sky.glb" if sky_glb else None},
+                      "skyGlb": "sky.glb" if sky_glb else None,
+                      "terrainGlb": prefix + "terrain.glb" if decor.get("terrain") else None},
             "fx": {"glb": "fx.glb" if fx_glb else None, "spawns": spawns},
             "objects": objects, "particleAtlas": atlas,
             "light": {**zone, "sunDirection": [round(float(v), 4) for v in sun_direction(light)]},
