@@ -12,6 +12,8 @@ import { SpeakerToggle } from '@/components/controls/SpeakerToggle';
 import { FullscreenToggle } from '@/components/controls/FullscreenToggle';
 import { Duration, formatDuration } from '@/screens/ChroniclesScreen/ThemePlayer';
 import type { FatalityViewerHandle } from '@/components/scene/FatalityViewer';
+import type { ChargenData } from '@/data/character/chargen.types';
+import { DEFAULT_TIER, TIERS, TIER_TEXTS, attackerClass, classesOf, dressFor, fatalityClass } from './outfits';
 import s from './FatalitiesScreen.module.css';
 
 // `three` n'est chargé que sur cet écran (et les Chroniques), jamais à l'accueil.
@@ -29,16 +31,21 @@ export function victimSummary(character: FatalityCharacter, fatality: FatalityEn
   return names.length ? names.join(' → ') : null;
 }
 
+/** Racine des fichiers de la création de personnage (modèles habillés, `chargen.json`). */
+export const CHARGEN_BASE = '/game/character/';
+
 /**
  * Tueur par défaut : le personnage du même sexe de la première race de l'autre faction (un
- * Kanien tombe sous les coups d'un Xadaganien, et inversement).
+ * Kanien tombe sous les coups d'un Xadaganien, et inversement) ; parmi elles, de préférence une
+ * race qui peut prendre la classe de la fatalité (`canCast`).
  */
 export function defaultAttacker(characters: FatalityCharacter[], races: Record<string, { faction: string }>,
-  victim: FatalityCharacter | undefined): FatalityCharacter | undefined {
+  victim: FatalityCharacter | undefined, canCast: (race: string) => boolean = () => true): FatalityCharacter | undefined {
   if (!victim) return undefined;
   const faction = races[victim.race]?.faction;
   const foes = characters.filter(c => races[c.race]?.faction && races[c.race]?.faction !== faction);
-  return foes.find(c => c.sex === victim.sex) ?? foes[0] ?? victim;
+  const casters = foes.filter(c => canCast(c.race));
+  return casters.find(c => c.sex === victim.sex) ?? foes.find(c => c.sex === victim.sex) ?? foes[0] ?? victim;
 }
 
 /**
@@ -58,14 +65,34 @@ export function FatalitiesScreen() {
   useEffect(() => { document.title = `Allodex — ${t('fatalities.title')}`; }, [t]);
   useEffect(() => { playSfx('medals-open'); }, [playSfx]);
 
+  // Tenues de classe : données de la création de personnage (chargées à part, 2 Mo).
+  const [chargen, setChargen] = useState<ChargenData | null>(null);
+  useEffect(() => {
+    let alive = true;
+    fetch(`${CHARGEN_BASE}chargen.json`).then(r => (r.ok ? r.json() as Promise<ChargenData> : null)).then(d => { if (alive) setChargen(d); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
   const character = characters.find(c => c.id === query.get('c')) ?? characters[0];
   const fatality = fatalities.find(f => f.id === query.get('f')) ?? fatalities[0];
-  const attacker = characters.find(c => c.id === query.get('k')) ?? defaultAttacker(characters, index?.races ?? {}, character);
-  const select = useCallback((next: { c?: string; f?: string; k?: string }) => {
+  const castClass = fatalityClass(chargen, fatality);
+  const attacker = characters.find(c => c.id === query.get('k'))
+    ?? defaultAttacker(characters, index?.races ?? {}, character, race => !castClass || classesOf(chargen, race).includes(castClass));
+  const victimClasses = character ? classesOf(chargen, character.race) : [];
+  const victimClass = victimClasses.find(c => c === query.get('cl')) ?? victimClasses[0] ?? null;
+  const tierParam = Number(query.get('t'));
+  const tier = (TIERS as readonly number[]).includes(tierParam) && query.get('t') !== null ? tierParam : DEFAULT_TIER;
+  const killerClass = attacker ? attackerClass(chargen, attacker.race, fatality) : null;
+  const victimDress = useMemo(() => dressFor(chargen, CHARGEN_BASE, character, victimClass, tier), [chargen, character, victimClass, tier]);
+  const attackerDress = useMemo(() => dressFor(chargen, CHARGEN_BASE, attacker, killerClass, tier), [chargen, attacker, killerClass, tier]);
+  const select = useCallback((next: { c?: string; f?: string; k?: string; cl?: string; t?: number }) => {
     const params = new URLSearchParams(window.location.search);
-    if (next.c) params.set('c', next.c);
+    if (next.c) { params.set('c', next.c); params.delete('cl'); }
     if (next.f) params.set('f', next.f);
     if (next.k) params.set('k', next.k);
+    if (next.cl) params.set('cl', next.cl);
+    if (next.t !== undefined) params.set('t', String(next.t));
     navigate(`/fatalities?${params.toString()}`, { replace: true });
   }, []);
 
@@ -81,6 +108,11 @@ export function FatalitiesScreen() {
     value: c.id,
     label: `${pick(index?.races[c.race], lang) ?? c.race} (${t(c.sex === 'male' ? 'fatalities.male' : 'fatalities.female')})`,
   })), [characters, index, lang, t]);
+  const classOptions = useMemo(() => victimClasses.map(c => ({ value: c, label: pick(chargen?.classes[c]?.name ?? undefined, lang) ?? c })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [victimClasses.join(','), chargen, lang]);
+  const tierOptions = useMemo(() => TIERS.map(k => ({ value: String(k), label: pick(chargen?.texts[TIER_TEXTS[k]] ?? undefined, lang) ?? TIER_TEXTS[k] })),
+    [chargen, lang]);
   const pickCharacter = (race: string, sex: string) => {
     const found = characters.find(c => c.race === race && c.sex === sex) ?? characters.find(c => c.race === race);
     if (found) { playSfx('ui-click'); select({ c: found.id }); }
@@ -99,7 +131,7 @@ export function FatalitiesScreen() {
   const fxUrl = fatality?.fx ? fatalityFile(fatality.fx) : null;
   const sceneUrl = index?.scene ? fatalityFile(index.scene.glb) : null;
   useEffect(() => { setPlaying(true); setProgress({ time: 0, duration: 0 }); }, [character?.id, fatality?.id]);
-  useEffect(() => { setReady(false); }, [character?.id, attacker?.id, fxUrl]);
+  useEffect(() => { setReady(false); }, [character?.id, attacker?.id, fxUrl, victimClass, tier]);
 
   const togglePlay = useCallback(() => {
     playSfx('ui-click');
@@ -175,6 +207,8 @@ export function FatalitiesScreen() {
             model={character.model}
             attackerUrl={attacker ? fatalityFile(attacker.glb) : null}
             attackerModel={attacker?.model ?? ''}
+            victimDress={victimDress}
+            attackerDress={attackerDress}
             fxUrl={fxUrl}
             timeline={timeline}
             objects={fatality.objects ?? {}}
@@ -228,6 +262,18 @@ export function FatalitiesScreen() {
             <span className={s.fieldLabel}>{t('fatalities.sex')}</span>
             <GameDropdown value={character.sex} options={sexes} onChange={sex => pickCharacter(character.race, sex)} label={t('fatalities.sex')} className={s.dropdown} />
           </div>
+          {victimClass && (
+            <div className={s.field}>
+              <span className={s.fieldLabel}>{t('fatalities.class')}</span>
+              <GameDropdown value={victimClass} options={classOptions} onChange={cl => { playSfx('ui-click'); select({ cl }); }} label={t('fatalities.class')} className={s.dropdown} />
+            </div>
+          )}
+          {chargen && (
+            <div className={s.field}>
+              <span className={s.fieldLabel}>{t('fatalities.outfit')}</span>
+              <GameDropdown value={String(tier)} options={tierOptions} onChange={v => { playSfx('ui-click'); select({ t: Number(v) }); }} label={t('fatalities.outfit')} className={s.dropdown} />
+            </div>
+          )}
           {attacker && (
             <div className={s.field}>
               <span className={s.fieldLabel}>{t('fatalities.attacker')}</span>

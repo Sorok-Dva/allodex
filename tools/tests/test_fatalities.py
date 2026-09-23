@@ -451,3 +451,23 @@ def test_resolve_appearance_lets_an_item_hide_a_shown_geoset():
 def test_skin_colors_are_read_after_the_shoulder_stone_colors():
     from tools.allods_characters import VAR_SHOULDER_STONE_COLORS, VAR_SKIN_COLORS
     assert (VAR_SHOULDER_STONE_COLORS, VAR_SKIN_COLORS) == (0x170, 0x1B0)
+
+
+@client
+def test_real_color_and_shake_actions(real):
+    db, _ = real
+    fatalities = {f.type: f for f in vis.read_fatalities(db)}
+
+    def find(node, kind):
+        if not node:
+            return []
+        own = [node] if node.get("type") == kind else []
+        return own + [x for c in node.get("elements", []) for x in find(c, kind)] + find(node.get("playWhile"), kind)
+
+    # Guerrier (type 9) : la victime brunit en rouge sombre en 6,7 s.
+    warrior = find(fatalities[9].offender, "CreatureColorAction")
+    assert [(hex(a["color"]), a["blend"], a["timeOn"]) for a in warrior] == [("0xff480000", "DEFAULT", 6.7)]
+    # Arbre 2025 (type 25) : mode OVERLAY ; Universelle 2022 (type 17) : secousses à courbe.
+    assert find(fatalities[25].offender, "CreatureColorAction")[0]["blend"] == "OVERLAY"
+    shake = find(fatalities[17].offender, "ShakeAction")[0]
+    assert shake["amplitude"] == 5.0 and shake["radius"] == [20.0, 50.0] and len(shake["curve"]) == 183

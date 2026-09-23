@@ -740,10 +740,20 @@ que le client montre sans équipement :
   géosets, textures, variation=None, items=())`, `bake_skin(...)` — une autre variation (visage,
   coiffure, couleurs de `Variations`) ou des objets portés s'y passent tels quels.
 
-Clips : `Idle01` et les animations demandées par les scripts (victime **et** tueur), clés
-redondantes retirées (1 mm, 2·10⁻⁴ de quaternion) et rotations en entiers 16 bits
-(`KHR_mesh_quantization`). Les gibelins n'ont pas trois des animations de sort demandées par
-certaines fatalités de boutique (le client ne les livre pas pour eux).
+**Personnages habillés.** Victime et tueur portent la **tenue de leur classe** : les modèles de la
+création de personnage (`public/game/character/models/<Gabarit>.glb`, tous les géosets) et ses
+tenues des trois niveaux (`growths` de `chargen.json` : départ, intermédiaire, supérieur), résolues
+à l'exécution comme sur l'écran de création (`resolveLook`, `CharacterRig` : géosets, peau cuite
+avec les pièces de tenue, armes et casques accrochés) — `FatalityViewer/dress.ts`. Panneau :
+**Classe** de la victime (classes de sa race) et **Tenue** (niveau supérieur par défaut, URL `cl=`
+et `t=`) ; le tueur prend la classe de la fatalité quand sa race le permet (sinon la première de
+sa race), et le tueur par défaut est choisi parmi les races qui peuvent la prendre.
+`characters/<id>.glb` ne porte plus que le **squelette et les clips** (`Idle01` et les animations
+des scripts, victime et tueur) : même squelette, mêmes noms d'articulations que les modèles de la
+création, les clips s'y lient tels quels. Les gibelins jouables sont un **trio** : trois corps au
+même habit, jouant la même animation — **placement inventé**, repris de l'écran de création
+(compagnons à ±0,75 m sur le côté, 0,45 m en arrière : le client le code sans le publier). Il leur
+manque trois animations de sort demandées par certaines fatalités de boutique.
 
 **Tueur** (`casterFxScript`) : `Fatality_Cast` accroché à son `Slot_BodyFX` et un **rayon**
 (`CreatureChannelDirectAction` : gabarit `Fatality_Channel` modelé sur `fxLength` = 10 m le long de
@@ -751,13 +761,16 @@ certaines fatalités de boutique (le client ne les livre pas pour eux).
 0,1 s) ; le Phénix ajoute ses deux animations (`speed` 1,5) et un second rayon. Le script du client
 n'a pas de fin propre : il s'éteint avec la victime. Les ailes (`CreatureRunVisActionResource`, sous
 drapeaux `FatalityWings*` achetés en boutique) ne sont pas jouées. Mise en scène (constantes du
-lecteur) : le tueur se tient à 5 m, à 55° de l'avant de la victime côté −X, tourné vers elle ; il
+lecteur) : le tueur se tient à **17 m** (distance de sort, 15 à 20 m, validée), à 55° de l'avant de la victime côté −X, posé sur le terrain et tourné vers elle ; le rayon s'étire donc à 1,7 fois sa longueur modelée, fondus inchangés ; le cadrage initial se place face au segment victime → tueur pour voir les deux, puis l'orbite est libre ; il
 se choisit dans le panneau (défaut : même sexe, première race de l'autre faction, URL `k=`).
 
-**Décor** (`scene/scene.glb`) : sol aux textures de terrain des Prés bénis, bouleaux, pins,
-rochers et buissons de la zone à leur pose de bind, ciel `Sky01_Day*` du client (fond, soleil,
-nuages) ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi. La disposition
-est une mise en scène (manifeste, `scene.props`), aucune carte n'est lue.
+**Décor** (`scene/scene.glb`) : **sol réel** de la carte `Kania` (`tools/allods_terrain.py` :
+`terrainDump` du client 17.0, hauteurs vérifiées sur 7.0), un pré des Prés bénis (13 988, 6 140)
+choisi pour ses calques d'herbe et son relief doux (5 m sur 120 m) — niveau de détail fin jusqu'à
+90 m, grossier jusqu'à 300 m ; chaque sous-carreau prend le premier calque de sa première passe (le
+mélange du `SplatMap` n'est pas élucidé), terre battue redessinée au centre ; bouleaux, pins,
+rochers et buissons de la zone posés sur ce sol (disposition mise en scène, `scene.props`) ; ciel
+`Sky01_Day*` ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi.
 
 **Table des paks** (`tools/allods_packdb.vote_pak_codes`) : le vote « l'entrée au rang indiqué
 finit par `(Texture).bin` » ne départage pas deux paks de textures (n'importe quel rang y tombe
@@ -791,15 +804,18 @@ Constantes propres au lecteur, nommées : `TRANSPARENCY_FADE_SECONDS` (vitesse d
 `CreatureSetTransparencyAction`, non publiée), cadrage de la caméra, place du tueur, seuil de
 découpe des feuillages.
 
-**Manques.** Teintes (`CreatureColorAction`, `ProceduralEffect`) et secousses de caméra relevées
-mais non appliquées. Particules : `WorldSpaceEmitter` et `Z_BOX` traités comme locales / face
-caméra. Pas de bloom : les empilements additifs (Prêtre) saturent au blanc. Les gibelins jouables
-sont un trio dans le jeu (placement codé dans le client, absent des données) : un seul est montré.
-Aucune capture du jeu pour comparer les fatalités image par image. La durée affichée est celle
-du script (dernier gabarit éteint) : certaines fatalités (Occultiste, Crâne 2024) finissent par
-plusieurs secondes vides, comme leurs gabarits le demandent.
-Poids : 62 Mo de personnages, 32 Mo d’effets, 28 Mo de textures partagées, 11 Mo de particules,
-7 Mo de sons (54 ondes, toutes trouvées).
+**Teintes et secousses** (appliquées) : `CreatureColorAction` (couleur ARGB, mode, priorité,
+`timeOn`) teinte la victime — la plus prioritaire, atteinte depuis le blanc en `timeOn` s (brûlé
+rouge sombre du Guerrier, carbonisé de l'Ingénieur, pétrifié vert d'Avril 2024…) ; modes
+`DEFAULT`/`MUL` multipliés, `ADD` ajouté, `OVERLAY` approché. `ShakeAction` : courbe
+`cameraTranslate` des `AnimatedParameters` (61 clés, 30 i/s, `fps` vaut 0 dans le client) × amplitude,
+amortie entre `minRadius` et `maxRadius` (Universelles 2022 et 2023) ; `timeScale` non interprété.
+
+**Manques.** `ProceduralEffect` (effet `Empty`) ignoré. Particules : `WorldSpaceEmitter` et `Z_BOX`
+traités comme locales / face caméra. Pas de bloom : la géométrie douce a ramené le Prêtre d'un
+blanc plein à des effets lisibles, un bloom le resaturerait. Effets des tenues de création
+(`growths.fx`) non joués. Aucune capture du jeu pour comparer (à venir). La durée affichée est celle
+du script : certaines fatalités (Occultiste, Crâne 2024) finissent par plusieurs secondes vides.
 
 ## Création de personnage (développement)
 

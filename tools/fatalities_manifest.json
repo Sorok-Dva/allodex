@@ -395,7 +395,7 @@
     }
   ],
   "scene": {
-    "_note": "Décor : un coin des Prés bénis (Kania). Textures de terrain et ornements tirés du client (World/Kvatoh/BlessedMeadows) ; ciel = SkyMesh du client dont la première partie est Kvatoh_Day (ciel de jour de Kvatoh, la région des Prés bénis) ; lumière = ZoneLights 7.0 BlessedMeadowsDefault à midi (le ZoneLights compilé du client n'est pas décodé). La disposition des ornements est une mise en scène (aucune carte n'est lue).",
+    "_note": "Décor : un coin des Prés bénis (Kania). Textures de terrain et ornements tirés du client (World/Kvatoh/BlessedMeadows) ; ciel = SkyMesh du client dont la première partie est Kvatoh_Day (ciel de jour de Kvatoh, la région des Prés bénis) ; lumière = ZoneLights 7.0 BlessedMeadowsDefault à midi (le ZoneLights compilé du client n'est pas décodé). Le sol est celui de la carte Kania (scene.terrain) ; la disposition des ornements est une mise en scène, posée sur ce sol.",
     "label": {
       "fr": "Prés bénis (Kania)",
       "en": "Blessed Meadows (Kania)"
@@ -603,6 +603,30 @@
         "yaw": 40,
         "scale": 1.0
       }
+    ],
+    "terrain": {
+      "_note": "Sol réel : terrainDump de la carte Kania (17.0) autour d'un pré plat des Prés bénis, choisi pour ses calques d'herbe (BM_Grass_Dark) et son relief doux (5 m sur 120 m) ; le centre est l'origine de la scène.",
+      "map": "Kania",
+      "center": [
+        13988,
+        6140
+      ],
+      "radius": 300
+    }
+  },
+  "staging": {
+    "_note": "Mise en scène (sans donnée du client), recopiée dans les constantes du lecteur (FatalityViewer.tsx : ATTACKER_DISTANCE, ATTACKER_BEARING ; dress.ts : TRIO_OFFSETS). Tueur à ~17 m de la victime (distance de sort, 15 à 20 m, validée par l'utilisateur), à 55° de l'avant de la victime côté −X du jeu, tourné vers elle. Trio des gibelins : placement inventé, celui de l'écran de création.",
+    "attackerDistance": 17,
+    "attackerBearingDegrees": -55,
+    "gibberlingTrio": [
+      [
+        -0.75,
+        0.45
+      ],
+      [
+        0.75,
+        0.45
+      ]
     ]
   }
 }

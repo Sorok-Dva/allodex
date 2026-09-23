@@ -7,11 +7,13 @@ import {
   VotFactory, faceCamera, particleSystems, toViewerMaterial, updateInstance, type Tinted, type VotInstance,
 } from '@/components/scene/vot/votInstances';
 import {
-  objectClipTime, spawnOpacity, stepAt, timelineDuration, timelineSounds, victimClipTime, victimOpacityAt, victimScaleAt,
-  victimStepAt, type ChannelEvent, type ChannelPoint, type FatalityObject, type FatalityTimeline,
+  objectClipTime, shakeOffsetAt, spawnOpacity, stepAt, victimTintAt, timelineDuration, timelineSounds, victimClipTime, victimOpacityAt, victimScaleAt,
+  victimStepAt, type ChannelEvent, type VictimStep, type ChannelPoint, type FatalityObject, type FatalityTimeline,
 } from './timeline';
 import { CameraCollider, decorColliders } from './cameraCollision';
 import { loadParticleFile, type ParticleAtlasMeta } from './particles';
+import { bindClips, dressedBodies, tintedOf, type Body, type FatalityDress } from './dress';
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import s from './FatalityViewer.module.css';
 
 // Même parti pris que les scènes de menu : les textures du jeu sont des octets, pas des
@@ -27,6 +29,10 @@ export type FatalityViewerProps = {
   attackerUrl?: string | null;
   /** Nom du modèle du tueur dans son `.glb` (préfixe de ses articulations). */
   attackerModel?: string;
+  /** Habit de la victime (modèle de la création de personnage, tenue de classe) ; sinon le `.glb`. */
+  victimDress?: FatalityDress | null;
+  /** Habit du tueur. */
+  attackerDress?: FatalityDress | null;
   /** `.glb` des gabarits d'objets de la fatalité (nœuds `vot:<nom>`), ou `null`. */
   fxUrl: string | null;
   /** Chronologie de la fatalité pour ce personnage (`tools/extract_fatalities.py`). */
@@ -73,17 +79,20 @@ export type FatalityEnvironment = {
 /**
  * Place du tueur : à `ATTACKER_DISTANCE` m de la victime, décalé de `ATTACKER_BEARING` depuis
  * l'avant de la victime (côté −X du jeu, à droite de la caméra), tourné vers elle. Mise en
- * scène : le client pose le tueur où il se trouvait au coup fatal. Le côté +X est pris par
- * certains effets modelés à l'écart de la victime (l'écureuil de 2024).
+ * scène validée : le client pose le tueur où il se trouvait au coup fatal, à distance de sort
+ * (15 à 20 m). Le côté +X est pris par certains effets modelés à l'écart de la victime
+ * (l'écureuil de 2024).
  */
-const ATTACKER_DISTANCE = 5;
+export const ATTACKER_DISTANCE = 17;
 const ATTACKER_BEARING = THREE.MathUtils.degToRad(-55);
 /**
  * Axe le long duquel les rayons (`CreatureChannelDirectAction`) sont modelés : l'avant des
  * modèles du jeu, −Y (`Fatality_Channel` s'étend de 0 à −8,6 m à sa pose de bind).
  */
-/** Part du chemin victime → tueur dont glisse la cible du cadrage initial. */
+/** Part du chemin victime → tueur où se pose la cible du cadrage initial (victime au premier plan). */
 const ATTACKER_FOCUS = 0.3;
+/** Marge du cadrage initial autour du segment victime → tueur (fraction de sa longueur). */
+const ATTACKER_FRAME_MARGIN = 1.5;
 const CHANNEL_AXIS = new THREE.Vector3(0, -1, 0);
 /** Compense la division par π du Lambert de three.js : une lumière du jeu à 1 éclaire à 1. */
 const LIGHT_SCALE = Math.PI;
@@ -118,7 +127,7 @@ export { faceCamera, toViewerMaterial };
  * les sons partent avec leur objet. Le temps est piloté à la main : pause, vitesse, recherche.
  */
 export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerProps>(function FatalityViewer(
-  { characterUrl, model, attackerUrl = null, attackerModel = '', fxUrl, timeline, objects, fadeStart, fadeDuration, sceneUrl = null, environment = null, height,
+  { characterUrl, model, attackerUrl = null, attackerModel = '', victimDress = null, attackerDress = null, fxUrl, timeline, objects, fadeStart, fadeDuration, sceneUrl = null, environment = null, height,
     playing, loop, speed, showFx, soundUrl = null, assetUrl, particleAtlas = null, volume = 1, className, onProgress, onEnded, onReady, createLoader, createRenderer },
   ref,
 ) {
@@ -151,7 +160,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     resetView: () => {
       const st = state.current;
       if (!st.camera || !st.controls) return;
-      frameCamera(st.camera, st.controls, height, !!attackerUrl);
+      frameCamera(st.camera, st.controls, height, !!attackerUrl, st.camera.aspect);
       st.dirty = true;
     },
   }), [height, attackerUrl]);
@@ -221,10 +230,9 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     };
 
     // --- victime
-    let victim: { root: THREE.Object3D; mixer: THREE.AnimationMixer; actions: Map<string, THREE.AnimationAction>;
-      durations: Map<string, number>; tinted: Tinted[]; baseScale: THREE.Vector3 } | null = null;
+    let victim: Body[] = [];
     const instances: VotInstance[] = [];
-    let attacker: { root: THREE.Object3D; mixer: THREE.AnimationMixer; actions: Map<string, THREE.AnimationAction> } | null = null;
+    let attacker: { root: THREE.Object3D; bodies: Body[] } | null = null;
     const channels: { inst: VotInstance; event: ChannelEvent }[] = [];
     const sounds: { t: number; audio: HTMLAudioElement; duration: number }[] = [];
 
@@ -269,42 +277,54 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       root.scale.set(1, event.length > 0 ? distance / event.length : 1, 1);
     };
 
+    /** Couleurs d'origine des matériaux teints (la teinte les multiplie, sans les perdre). */
+    const baseColors = new Map<THREE.Material, THREE.Color>();
+    const applyTint = (body: Body, tint: ReturnType<typeof victimTintAt>) => {
+      for (const { material } of body.tinted) {
+        const m = material as THREE.Material & { color?: THREE.Color; emissive?: THREE.Color };
+        if (!m.color) continue;
+        let base = baseColors.get(m);
+        if (!base) { base = m.color.clone(); baseColors.set(m, base); }
+        m.color.setRGB(base.r * tint.mul[0], base.g * tint.mul[1], base.b * tint.mul[2]);
+        m.emissive?.setRGB(tint.add[0], tint.add[1], tint.add[2]);
+      }
+    };
+    const shake = new THREE.Vector3();
+
     const applyTime = (t: number) => {
-      if (victim && timeline) {
-        const step = victimStepAt(timeline, t);
-        const idle = [...victim.actions.keys()].find(name => /^idle/i.test(name));
-        const active = step?.anim && victim.actions.has(step.anim) ? step.anim : idle;
-        for (const [name, action] of victim.actions) {
+      const pose = (body: Body, step: VictimStep | null) => {
+        const idle = [...body.actions.keys()].find(name => /^idle/i.test(name));
+        const active = step?.anim && body.actions.has(step.anim) ? step.anim : idle;
+        for (const [name, action] of body.actions) {
           const on = name === active;
           action.enabled = on;
           action.setEffectiveWeight(on ? 1 : 0);
           if (!on) continue;
-          const duration = victim.durations.get(name) ?? action.getClip().duration;
+          const duration = body.durations.get(name) ?? action.getClip().duration;
           action.time = step && name === step.anim ? victimClipTime(step, t, duration) : objectClipTime(t, duration, true);
         }
-        victim.mixer.update(0);
-        victim.root.scale.copy(victim.baseScale).multiplyScalar(victimScaleAt(timeline, t));
+        body.mixer.update(0);
+      };
+      if (victim.length && timeline) {
+        const step = victimStepAt(timeline, t);
+        const scale = victimScaleAt(timeline, t);
         const opacity = victimOpacityAt(timeline, t, fadeStart, fadeDuration);
-        victim.root.visible = opacity > 0.001;
-        for (const { material, base, transparent } of victim.tinted) {
-          material.opacity = base * opacity;
-          const want = transparent || opacity < 0.999;
-          if (material.transparent !== want) { material.transparent = want; material.needsUpdate = true; }
+        const tint = victimTintAt(timeline, t);
+        for (const body of victim) {
+          pose(body, step);
+          applyTint(body, tint);
+          body.modelRoot.scale.copy(body.baseScale).multiplyScalar(scale);
+          body.holder.visible = opacity > 0.001;
+          for (const { material, base, transparent } of body.tinted) {
+            material.opacity = base * opacity;
+            const want = transparent || opacity < 0.999;
+            if (material.transparent !== want) { material.transparent = want; material.needsUpdate = true; }
+          }
         }
       }
       if (attacker) {
         const step = stepAt(timeline?.caster?.anims ?? [], t);
-        const idle = [...attacker.actions.keys()].find(name => /^idle/i.test(name));
-        const active = step?.anim && attacker.actions.has(step.anim) ? step.anim : idle;
-        for (const [name, action] of attacker.actions) {
-          const on = name === active;
-          action.enabled = on;
-          action.setEffectiveWeight(on ? 1 : 0);
-          if (!on) continue;
-          const duration = action.getClip().duration;
-          action.time = step && name === step.anim ? victimClipTime(step, t, duration) : objectClipTime(t, duration, true);
-        }
-        attacker.mixer.update(0);
+        for (const body of attacker.bodies) pose(body, step);
       }
       for (const { inst, event } of channels) stretchChannel(inst.root, event);
       for (const inst of instances) {
@@ -348,12 +368,17 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       orbit.copy(camera.position);
       const settling = st.controls ? collider.resolve(st.controls.target, orbit, delta, camera.position) : false;
       if (!camera.position.equals(orbit) && st.controls) camera.lookAt(st.controls.target);
+      // Secousses du script (`ShakeAction`) : décalage rendu seulement (repère du jeu → miroir X).
+      const [sx, sy, sz] = timeline ? shakeOffsetAt(timeline, st.time, camera.position.length()) : [0, 0, 0];
+      shake.set(-sx, sy, sz);
+      const shaking = shake.lengthSq() > 0;
+      if (shaking) camera.position.add(shake);
       shown.copy(camera.position);
       if (skyNode?.parent) {
         const eye = skyNode.parent.worldToLocal(camera.position.clone());
         skyNode.position.set(eye.x, eye.y, 0);
       }
-      if (!st.dirty && !moved && !settling && !instances.some(i => i.billboards.length && i.root.visible)) return;
+      if (!st.dirty && !moved && !settling && !shaking && !instances.some(i => i.billboards.length && i.root.visible)) return;
       applyTime(st.time);
       syncSounds(st.time, st.playing && st.speed > 0);
       st.seeked = false;
@@ -381,13 +406,13 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       controls.enableDamping = true;
       controls.dampingFactor = 0.08;
       controls.minDistance = Math.max(height, 1) * 0.6;
-      controls.maxDistance = Math.max(height, 1) * 16;
+      controls.maxDistance = Math.max(Math.max(height, 1) * 16, attackerUrl ? ATTACKER_DISTANCE * 2.5 : 0);
       controls.maxPolarAngle = Math.PI * 0.53;
       st.controls = controls;
-      frameCamera(camera, controls, height, !!attackerUrl);
       window.addEventListener('resize', resize);
       if (typeof ResizeObserver !== 'undefined') { observer = new ResizeObserver(resize); observer.observe(canvas.parentElement ?? canvas); }
       resize();
+      frameCamera(camera, controls, height, !!attackerUrl, camera.aspect);
 
       try {
         const [character, fx, decor, killer] = await Promise.all([
@@ -418,42 +443,40 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
           const { ground, obstacles } = decorColliders(decor.scene);
           collider.setColliders(ground, obstacles);
         }
-        const tinted: Tinted[] = [];
-        prepare(character.scene, true, tinted, null);
-        world.add(character.scene);
-        const mixer = new THREE.AnimationMixer(character.scene);
-        const actions = new Map<string, THREE.AnimationAction>();
-        const durations = new Map<string, number>();
-        for (const clip of character.animations) {
-          const action = mixer.clipAction(clip);
-          action.play();
-          action.paused = true;
-          actions.set(clip.name, action);
-          durations.set(clip.name, clip.duration);
-        }
-        const modelRoot = character.scene.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(model)) ?? character.scene;
-        victim = { root: modelRoot, mixer, actions, durations, tinted, baseScale: modelRoot.scale.clone() };
-        victimAnchor = { root: character.scene, model };
+        /** Corps d'un personnage : habillé (création de personnage) si possible, sinon le `.glb` des fatalités. */
+        const bodiesOf = async (source: LoadedScene, name: string, dress: FatalityDress | null, holder: THREE.Object3D): Promise<Body[]> => {
+          if (dress) {
+            const dressed = await dressedBodies(dress, name, source.animations, url => load(url) as Promise<GLTF>, holder).catch(warnLoad);
+            if (dressed) return dressed;
+          }
+          prepare(source.scene, true, [], null);
+          holder.add(source.scene);
+          const modelRoot = source.scene.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(name)) ?? source.scene;
+          return [{ holder: source.scene, model: source.scene, modelRoot, ...bindClips(source.scene, source.animations),
+            tinted: tintedOf(source.scene), baseScale: modelRoot.scale.clone() }];
+        };
+        const victimHolder = new THREE.Group();
+        world.add(victimHolder);
+        victim = await bodiesOf(character, model, victimDress, victimHolder);
+        if (!alive) return;
+        victimAnchor = { root: victim[0].model, model };
+        const modelRoot = victim[0].modelRoot;
 
         // Tueur : face à la victime, à distance ; il joue son attente (ou les animations de son script).
         if (killer) {
-          prepare(killer.scene, true, [], null);
           const holder = new THREE.Group();
           holder.position.set(ATTACKER_DISTANCE * Math.sin(ATTACKER_BEARING), -ATTACKER_DISTANCE * Math.cos(ATTACKER_BEARING), 0);
           // Les modèles regardent −Y : on les tourne vers la victime (origine).
           holder.rotation.z = Math.atan2(-holder.position.x, holder.position.y);
-          holder.add(killer.scene);
           world.add(holder);
-          const kMixer = new THREE.AnimationMixer(killer.scene);
-          const kActions = new Map<string, THREE.AnimationAction>();
-          for (const clip of killer.animations) {
-            const action = kMixer.clipAction(clip);
-            action.play();
-            action.paused = true;
-            kActions.set(clip.name, action);
-          }
-          attacker = { root: holder, mixer: kMixer, actions: kActions };
-          attackerAnchor = { root: killer.scene, model: attackerModel };
+          // Posé sur le terrain réel (le décor n'est pas plat à 17 m de la victime).
+          world.updateMatrixWorld(true);
+          const at = holder.getWorldPosition(new THREE.Vector3());
+          holder.position.z = collider.groundHeight(at.x, at.y) ?? 0;
+          const bodies = await bodiesOf(killer, attackerModel, attackerDress, holder);
+          if (!alive) return;
+          attacker = { root: holder, bodies };
+          attackerAnchor = { root: bodies[0].model, model: attackerModel };
         }
 
         // Particules : fichiers des gabarits utilisés, puis l'atlas commun de leurs images.
@@ -496,20 +519,21 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
             if (!p || !info) continue;
             const until = item.until ?? Infinity;
             const inst = instantiate(p, fx.animations, item.t, until - item.t, item.fadeIn || info.fadeIn, item.fadeOut || info.fadeOut);
-            const holder = (item.locator && character.scene.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(`${model}/${item.locator}`))) || modelRoot;
+            const holder = (item.locator && victim[0].model.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(`${model}/${item.locator}`))) || modelRoot;
             const [x, y, z] = item.offset ?? [0, 0, 0];
             inst.root.position.set(x, y, z);
             inst.root.scale.setScalar((item.scale || 1) * (info.scale || 1));
             holder.add(inst.root);
             instances.push(inst);
           }
-          if (killer && timeline.caster) {
+          if (attacker && timeline.caster) {
+            const killerModel = attacker.bodies[0].model;
             for (const item of timeline.caster.attached) {
               const p = proto(item.vot);
               const info = objects[item.vot];
               if (!p || !info) continue;
               const inst = instantiate(p, fx.animations, item.t, (item.until ?? Infinity) - item.t, item.fadeIn || info.fadeIn, item.fadeOut || info.fadeOut);
-              const holder = (item.locator && killer.scene.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(`${attackerModel}/${item.locator}`))) || killer.scene;
+              const holder = (item.locator && killerModel.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(`${attackerModel}/${item.locator}`))) || killerModel;
               const [x, y, z] = item.offset ?? [0, 0, 0];
               inst.root.position.set(x, y, z);
               inst.root.scale.setScalar((item.scale || 1) * (info.scale || 1));
@@ -559,8 +583,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       document.removeEventListener('visibilitychange', onVisibility);
       st.controls?.dispose();
       st.controls = null;
-      victim?.mixer.stopAllAction();
-      attacker?.mixer.stopAllAction();
+      for (const body of [...victim, ...(attacker?.bodies ?? [])]) body.mixer.stopAllAction();
       for (const inst of instances) inst.mixer.stopAllAction();
       st.duration = 0;
       st.time = 0;
@@ -573,22 +596,42 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     // La scène se reconstruit quand le personnage, la fatalité ou le décor changent ; les
     // réglages de lecture passent par l'effet précédent.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [characterUrl, attackerUrl, fxUrl, sceneUrl, timeline, createLoader, createRenderer]);
+  }, [characterUrl, attackerUrl, fxUrl, sceneUrl, timeline, createLoader, createRenderer, dressKey(victimDress), dressKey(attackerDress)]);
 
   return <canvas ref={canvasRef} className={`${s.canvas} ${className ?? ''}`} data-testid="fatality-viewer" aria-hidden="true" />;
 });
 
+/** Clé d'un habit : le lecteur se reconstruit quand elle change. */
+function dressKey(dress: FatalityDress | null): string {
+  return dress ? `${dress.template}:${dress.tier}:${dress.trio ? 3 : 1}:${dress.items.map(i => i.item).join(',')}` : '';
+}
+
 /**
- * Cadrage initial : face à la victime (côté −Y du jeu), légère plongée. Avec un tueur, la cible
- * glisse de `ATTACKER_FOCUS` vers lui pour que les deux tiennent dans l'image (`withAttacker`).
+ * Cadrage initial : face à la victime (côté −Y du jeu), légère plongée. Avec un tueur, la
+ * caméra se place face au segment victime → tueur, assez loin pour les voir tous deux
+ * (`ATTACKER_FRAME_MARGIN`), la cible posée à `ATTACKER_FOCUS` du chemin ; l'orbite reste libre.
  */
-export function frameCamera(camera: THREE.PerspectiveCamera, controls: OrbitControls, height: number, withAttacker = false): void {
+export function frameCamera(camera: THREE.PerspectiveCamera, controls: OrbitControls, height: number, withAttacker = false,
+  aspect = camera.aspect || 16 / 9): void {
   const h = Math.max(height, 1);
-  // Repère de la scène (miroir X du repère du jeu).
-  const shift = withAttacker ? -ATTACKER_DISTANCE * Math.sin(ATTACKER_BEARING) * ATTACKER_FOCUS : 0;
-  // Les effets montent à 3-6 hauteurs de personnage et s'étalent sur ~8 m : cadre large.
-  controls.target.set(shift, 0, h * FRAME_TARGET);
-  camera.position.set(shift + h * FRAME_SIDE, -h * FRAME_BACK, h * FRAME_UP);
+  if (!withAttacker) {
+    // Les effets montent à 3-6 hauteurs de personnage et s'étalent sur ~8 m : cadre large.
+    controls.target.set(0, 0, h * FRAME_TARGET);
+    camera.position.set(h * FRAME_SIDE, -h * FRAME_BACK, h * FRAME_UP);
+  } else {
+    // Repère de la scène (miroir X du repère du jeu).
+    const ax = -ATTACKER_DISTANCE * Math.sin(ATTACKER_BEARING);
+    const ay = -ATTACKER_DISTANCE * Math.cos(ATTACKER_BEARING);
+    const line = new THREE.Vector2(ax, ay).normalize();
+    // Perpendiculaire côté −Y (devant la victime).
+    const side = new THREE.Vector2(-line.y, line.x);
+    if (side.y > 0) side.negate();
+    const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
+    const halfWidth = Math.atan(Math.tan(halfFov) * Math.max(aspect, 0.5));
+    const distance = Math.max((ATTACKER_DISTANCE * ATTACKER_FRAME_MARGIN / 2) / Math.tan(halfWidth), h * FRAME_BACK);
+    controls.target.set(ax * ATTACKER_FOCUS, ay * ATTACKER_FOCUS, h * FRAME_TARGET);
+    camera.position.set(controls.target.x + side.x * distance, controls.target.y + side.y * distance, h * FRAME_TARGET + distance * 0.28);
+  }
   camera.lookAt(controls.target);
   controls.update();
 }
