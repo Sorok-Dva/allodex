@@ -19,27 +19,26 @@ export function tintedUrl(url: string, argb: string, additive = false): Promise<
         const ctx = c.getContext('2d');
         if (!ctx) { resolve(url); return; }
         ctx.drawImage(img, 0, 0);
+        const px = ctx.getImageData(0, 0, c.width, c.height);
+        const p = px.data;
         if (needsTint(argb)) {
-          ctx.globalCompositeOperation = 'multiply';
-          ctx.fillStyle = `#${argb.slice(2)}`;
-          ctx.fillRect(0, 0, c.width, c.height);
-          ctx.globalCompositeOperation = 'destination-in';
-          ctx.drawImage(img, 0, 0);
-          ctx.globalCompositeOperation = 'source-over';
+          // Teinte au pixel (le composite `multiply` du canevas mélange la couleur pure aux pixels
+          // semi-transparents : les fonds de groupe des races sortaient en aplats vifs).
+          const n = parseInt(argb.slice(2), 16);
+          const tr = ((n >> 16) & 255) / 255, tg = ((n >> 8) & 255) / 255, tb = (n & 255) / 255;
+          for (let i = 0; i < p.length; i += 4) { p[i] *= tr; p[i + 1] *= tg; p[i + 2] *= tb; }
         }
         if (additive) {
           // Mélange additif rendu en alpha : l'interface est un groupe isolé (mise à l'échelle),
           // `mix-blend-mode` n'y verrait pas la scène. Alpha = composante la plus forte, couleur
           // redressée : le noir devient transparent, les lueurs gardent leur éclat.
-          const px = ctx.getImageData(0, 0, c.width, c.height);
-          const p = px.data;
           for (let i = 0; i < p.length; i += 4) {
             const a = Math.max(p[i], p[i + 1], p[i + 2]) * (p[i + 3] / 255);
             if (a > 0) { const k = 255 / Math.max(p[i], p[i + 1], p[i + 2]); p[i] *= k; p[i + 1] *= k; p[i + 2] *= k; }
             p[i + 3] = a;
           }
-          ctx.putImageData(px, 0, 0);
         }
+        ctx.putImageData(px, 0, 0);
         resolve(c.toDataURL());
       };
       img.onerror = () => resolve(url);

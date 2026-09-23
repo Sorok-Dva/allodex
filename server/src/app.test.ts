@@ -2,15 +2,17 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import type { LiveSnapshot, StatsResponse } from '../../src/analytics/api.ts';
+import type { LiveSnapshot, StatsResponse, TalentStatsResponse } from '../../src/analytics/api.ts';
+import { eq } from 'drizzle-orm';
 import { openDb, type DB } from './db.ts';
-import { kv, pageviews } from './schema.ts';
+import { kv, pageviews, talentBuildEvents, talentBuilds } from './schema.ts';
 import { createApp } from './app.ts';
 import type { Config } from './config.ts';
 import { measuredPath, referrerOf } from './analytics/collect.ts';
 import { dayKey, dayStart, daysBetween } from './analytics/time.ts';
 import { rangeBounds } from './analytics/stats.ts';
 import { describe as describeBody, plain } from './seo/lore.ts';
+import { buildId } from './talents/builds.ts';
 
 const CHROME = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36';
 const IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
@@ -29,6 +31,15 @@ for (const lang of ['en', 'fr', 'ru']) {
 }
 write('game/lorebook/list/en/characters.json', { groups: [], rows: [['r425694', 0, 0, 0, '"Butcher"', 'Clone']] });
 write('game/lorebook/text/en/atlas-0.json', { 'a-a003': { t: [], s: 'Story allod', f: [['climate', 'Temperate'], ['size', 'Medium island']] } });
+// Talents : une version, une classe au livre d'une couche (un sort à trois rangs), sans grille.
+write('game/talents/index.json', { versions: [{ id: '17.0', label: '17.0', client: '', languages: ['en'], format: 'v2', points: { book: 82, field: 77 },
+  classes: [{ code: 'WARRIOR', slug: 'warrior', name: { en: 'Warrior' }, talents: 1, layers: 1, fields: 0, systems: [], missingNames: 0 }] }] });
+write('game/talents/ui/talent_builder.json', { layout: { rankCost: [1, 2, 3] } });
+write('game/talents/17.0/warrior.json', {
+  version: '17.0', code: 'WARRIOR', ref: '#1', name: { en: 'Warrior' }, languages: ['en'], format: 'v2', fields: [],
+  book: { ref: '#2', layers: [{ points: 0, cells: [{ type: 'TalentSpell', talent: 's1' }, null, null, null] }] },
+  talents: { s1: { kind: 'spell', ref: 's1', name: {}, ranks: [{ ref: 'a' }, { ref: 'b' }, { ref: 'c' }] } },
+});
 write('game/lorebook/text/en/characters-0.json', { r425694: { t: [['bio', '## Butcher\n\nA **clone** built by the System of Total Annihilation.', 0]] } });
 
 // Base MySQL jetable, vidée avant chaque test. Par défaut, le conteneur de développement :
@@ -60,6 +71,8 @@ let server: Awaited<ReturnType<typeof createApp>>;
 beforeEach(async () => {
   await db.delete(pageviews);
   await db.delete(kv);
+  await db.delete(talentBuildEvents);
+  await db.delete(talentBuilds);
   clock = Date.UTC(2026, 8, 23, 10, 0, 0);
   server = await createApp(baseConfig, db, () => clock);
 });
@@ -139,6 +152,58 @@ describe('collecte', () => {
     // `_` est un joker de LIKE : `/lorebook_` ne doit pas englober `/lorebookx/y`.
     expect((await stats('range=24h&path=/lorebook_')).totals.views).toBe(0);
     expect((await stats('range=24h&path=/')).totals.views).toBe(1);
+  });
+});
+
+describe('builds de talents', () => {
+  const event = (body: object, ua = CHROME, ip = '203.0.113.7') =>
+    request('/api/talents/events', { method: 'POST', body: JSON.stringify(body), headers: { 'user-agent': ua, 'x-forwarded-for': ip, 'content-type': 'text/plain' } });
+  async function talentStats(range = '24h') {
+    const cookie = await login();
+    const res = await request(`/api/admin/talents?range=${range}`, { headers: { cookie } });
+    expect(res.status).toBe(200);
+    return res.json() as Promise<TalentStatsResponse>;
+  }
+
+  it('enregistre les builds composés, partagés et vus, une fois par visiteur et par jour', async () => {
+    const build = { v: '17.0', c: 'warrior', b: '1.2' };
+    expect((await event({ kind: 'generate', ...build })).status).toBe(204);
+    await event({ kind: 'generate', ...build });
+    await event({ kind: 'share', ...build });
+    // L'auteur qui rouvre son build le jour même n'ajoute pas de vue ; les autres, si.
+    await event({ kind: 'view', ...build });
+    await event({ kind: 'view', ...build }, IPHONE, '198.51.100.2');
+    await event({ kind: 'view', ...build }, IPHONE, '198.51.100.2');
+    await event({ kind: 'view', ...build }, CHROME, '198.51.100.3');
+    await event({ kind: 'generate', v: '17.0', c: 'warrior', b: '1.3', b2: '1.2' });
+
+    const [row] = await db.select().from(talentBuilds).where(eq(talentBuilds.id, buildId('17.0', 'warrior', '1.2', null)));
+    expect(row).toMatchObject({ version: '17.0', cls: 'warrior', b: '1.2', b2: null, generations: 1, shares: 1, views: 2, playerId: null });
+
+    const s = await talentStats();
+    expect(s.totals).toEqual({ builds: 2, generations: 2, shares: 1, views: 2 });
+    expect(s.allTime).toEqual({ builds: 2, generations: 2, shares: 1, views: 2 });
+    expect(s.classes).toEqual([{ version: '17.0', cls: 'warrior', builds: 2, generations: 2, shares: 1, views: 2 }]);
+    expect(s.top[0]).toMatchObject({ b: '1.2', period: { generations: 1, shares: 1, views: 2 }, total: { views: 2 } });
+    expect(s.top).toHaveLength(2);
+
+    // Le lendemain, le même visiteur compte de nouveau ; la période de 24 h n'a plus que ce jour-là.
+    clock += 24 * 3_600_000;
+    await event({ kind: 'view', ...build }, IPHONE, '198.51.100.2');
+    expect((await talentStats()).totals).toEqual({ builds: 0, generations: 0, shares: 0, views: 1 });
+    expect((await talentStats('7d')).allTime.views).toBe(3);
+  });
+
+  it('refuse les builds invalides et ignore les robots', async () => {
+    expect((await event({ kind: 'generate', v: '17.0', c: 'warrior', b: '1.4' })).status).toBe(400);   // rang > 3
+    expect((await event({ kind: 'generate', v: '17.0', c: 'warrior', b: '1.0' })).status).toBe(400);   // sous le rang de départ
+    expect((await event({ kind: 'generate', v: '17.0', c: 'mage', b: '1.2' })).status).toBe(400);
+    expect((await event({ kind: 'generate', v: '../..', c: 'warrior', b: '1.2' })).status).toBe(400);
+    expect((await event({ kind: 'generate', v: '17.0', c: 'warrior' })).status).toBe(400);
+    expect((await event({ kind: 'like', v: '17.0', c: 'warrior', b: '1.2' })).status).toBe(400);
+    expect((await event({ kind: 'generate', v: '17.0', c: 'warrior', b: '1.2' }, 'Mozilla/5.0 (compatible; Googlebot/2.1)')).status).toBe(204);
+    expect(await db.select().from(talentBuilds)).toHaveLength(0);
+    expect((await request('/api/admin/talents')).status).toBe(401);
   });
 });
 

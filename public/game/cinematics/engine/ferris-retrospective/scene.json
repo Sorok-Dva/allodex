@@ -5421,6 +5421,9 @@
   "specular": 4149952,
   "sunPitch": 45.0,
   "sunYaw": 180.0,
+  "waterSpecular": 2443600,
+  "waterGradientStart": 4278387983,
+  "waterGradientEnd": 4278257678,
   "desaturation": 0.9,
   "sunDirection": [
    -0.7071,

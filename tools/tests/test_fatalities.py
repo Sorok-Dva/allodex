@@ -341,6 +341,26 @@ def test_real_geometry_matches_server_xdb(real):
 
 
 @client
+def test_real_animation_bounds_and_loop_match_server_xdb(real):
+    """Boîte de l'animation (`SKA_AABB`, cadrage du lecteur) et drapeau `looped` (fin des
+    gabarits dont le clip ne boucle pas) relus sur les `.xdb` 7.0."""
+    from xml.etree import ElementTree as ET
+    db, cat = real
+    stems = {"FatalityBard", "Fatality_Channel", "FatalityDruid_Explosion", "FatalityBardMuseLight"}
+    seen = set()
+    for off in db.resources("VisObjectTemplate"):
+        vot = vis.read_visobject(db, cat, off)
+        if vot.name not in stems or vot.name in seen:
+            continue
+        seen.add(vot.name)
+        root = ET.fromstring((SERVER / f"Spells/FX/Spells/Fatality/{vot.name}.(SkeletalAnimation).xdb").read_text())
+        expected = [float(root.find(f"aabb/{k}").get(a)) for k in ("center", "extents") for a in "xyz"]
+        assert np.allclose(vis.animation_bounds(db, vot.animation, vot.geometry), expected, atol=2e-3)
+        assert bool(db.u8(vot.animation + 0x108)) == (root.findtext("looped") == "true")
+    assert seen == stems
+
+
+@client
 def test_real_fatalities_are_the_26_types(real):
     db, _ = real
     fatalities = vis.read_fatalities(db)

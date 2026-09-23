@@ -136,6 +136,8 @@ export type FatalityObject = {
   sound?: string;
   sfx?: string;
   particles?: import('./particles').ParticleSystemMeta;
+  /** Boîte de l'animation du gabarit dans le client (toutes images) : centre et demi-étendues. */
+  bounds?: [number, number, number, number, number, number];
   /** Composants accrochés ; `start`/`stop` : fenêtre des `DelayComponent`/`StopVisObjectComponents`. */
   components?: { vot: string; locator: string; start?: number; stop?: number }[];
 };

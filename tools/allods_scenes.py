@@ -293,6 +293,9 @@ def read_zone_light(db: PackDB) -> dict:
             "fogStart": round(db.f32(e + 0x44), 3), "pointLight": db.u32(e + 0x48),
             "selfIllum": db.u32(e + 0x4C), "specular": db.u32(e + 0x54),
             "sunPitch": round(db.f32(e + 0x5C), 3), "sunYaw": round(db.f32(e + 0x60), 3),
+            # Eau (recoupé sur `Ferris4_Base` 7.0) : `SpecularWaterColor`, `WaterGradientStart/End`.
+            "waterSpecular": db.u32(e + 0x58), "waterGradientStart": db.u32(e + 0x74),
+            "waterGradientEnd": db.u32(e + 0x70),
             "sky": sky, "skyGeometry": db.ptr(sky + SKY_GEOMETRY) if sky is not None else None}
 
 
