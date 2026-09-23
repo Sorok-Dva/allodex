@@ -36,6 +36,9 @@ Messages en anglais, au format gitmoji `<gitmoji> <type>(<scope>): <message>` (e
 - `/music` : catalogue musical FR/RU, accessible par le bouton gramophone, avec lecture par catégorie.
 - `/character` (développement seulement) : création de personnage du client 17.0 (voir « Création de personnage »).
 - `/cinematics` : toutes les cinématiques du jeu en film complet par faction, avec sous-titres officiels FR/EN/RU (voir « Cinématiques » ci-dessous).
+- `/talents` : arbres de talents de chaque classe de la 1.1 à la 17.0 dans la fenêtre TalentBuilder du jeu, calculateur de build (deux builds) partageable par lien (voir « Talents »).
+- `/lorebook` : lore officiel du jeu en anglais (FR/RU en option), atlas et récits communautaires crédités, recherche et liens croisés (voir « Lorebook »).
+- `/fatalities` (développement seulement) : les 26 fatalités rejouées avec modèles, effets et sons du client 17.0 (voir « Fatalités »).
 - Non fait : comptes, addon d'export, import de progression, icônes réelles de tous les succès.
 
 ## Musiques
