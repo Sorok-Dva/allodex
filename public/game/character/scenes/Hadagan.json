@@ -1,0 +1,64 @@
+{
+ "glb": "scenes/Hadagan.glb",
+ "objects": 1,
+ "clips": 35,
+ "character": {
+  "yaw": 0.0,
+  "scale": 1.2,
+  "position": [
+   -0.004,
+   -0.021,
+   0.28
+  ]
+ },
+ "camera": {
+  "position": [
+   0.107,
+   -5.231,
+   1.0674
+  ],
+  "placeOffset": [
+   -0.004,
+   -0.021,
+   0.28
+  ],
+  "yaw": 92.0,
+  "pitch": -3.0,
+  "height": -0.2,
+  "fov": 1.36
+ },
+ "source": {
+  "scene": "CharacterSelectHadagan",
+  "map": "Maps/MainMenu/",
+  "position": [
+   627.927,
+   815.574,
+   26.18
+  ]
+ },
+ "light": {
+  "ambient": "#5a5e74",
+  "sun": "#6a8c95",
+  "point": "#8a6a39",
+  "specular": "#4f4f4f",
+  "sunPitch": 45.0,
+  "sunYaw": 135.0,
+  "sunDirection": [
+   -0.5,
+   0.5,
+   0.7071
+  ],
+  "fog": {
+   "color": "#455165",
+   "near": 0.0,
+   "far": 400.0
+  }
+ },
+ "ambience": "Ambience/OutdoorAmbience/AmbiencePresets/SteppeWindy_AP",
+ "bytes": 3927516,
+ "stats": {
+  "triangles": 78024,
+  "animations": 35,
+  "objects": 0
+ }
+}

@@ -1,0 +1,63 @@
+{
+ "glb": "scenes/Undead.glb",
+ "objects": 1,
+ "clips": 3,
+ "character": {
+  "yaw": 90.0,
+  "scale": 1.1,
+  "position": [
+   0.13,
+   0.029,
+   0.278
+  ]
+ },
+ "camera": {
+  "position": [
+   5.171,
+   -0.348,
+   1.253
+  ],
+  "placeOffset": [
+   0.13,
+   0.029,
+   0.278
+  ],
+  "yaw": 175.0,
+  "pitch": 1.0,
+  "height": -0.2,
+  "fov": 1.36
+ },
+ "source": {
+  "scene": "CharacterSelectUndead",
+  "map": "Maps/MainMenu/",
+  "position": [
+   413.985,
+   638.788,
+   32.287
+  ]
+ },
+ "light": {
+  "ambient": "#43423a",
+  "sun": "#87ab96",
+  "point": "#7d6444",
+  "specular": "#000000",
+  "sunPitch": 45.0,
+  "sunYaw": 205.0,
+  "sunDirection": [
+   -0.6409,
+   -0.2988,
+   0.7071
+  ],
+  "fog": {
+   "color": "#1f4854",
+   "near": -30.0,
+   "far": 500.0
+  }
+ },
+ "bytes": 1308680,
+ "stats": {
+  "triangles": 24231,
+  "animations": 3,
+  "objects": 0
+ }
+}

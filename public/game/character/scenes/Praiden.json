@@ -1,0 +1,63 @@
+{
+ "glb": "scenes/Praiden.glb",
+ "objects": 1,
+ "clips": 6,
+ "character": {
+  "yaw": -148.0,
+  "scale": 1.6,
+  "position": [
+   -0.009,
+   0.019,
+   0.272
+  ]
+ },
+ "camera": {
+  "position": [
+   -4.241,
+   6.843,
+   1.6121
+  ],
+  "placeOffset": [
+   -0.009,
+   0.019,
+   0.272
+  ],
+  "yaw": -60.0,
+  "pitch": -4.0,
+  "height": -0.1,
+  "fov": 1.36
+ },
+ "source": {
+  "scene": "CharacterSelectPraiden",
+  "map": "Maps/MainMenu/",
+  "position": [
+   856.922,
+   447.816,
+   23.294
+  ]
+ },
+ "light": {
+  "ambient": "#4e5c59",
+  "sun": "#6f8a80",
+  "point": "#80514d",
+  "specular": "#000000",
+  "sunPitch": 45.0,
+  "sunYaw": 250.0,
+  "sunDirection": [
+   -0.2418,
+   -0.6645,
+   0.7071
+  ],
+  "fog": {
+   "color": "#1b4469",
+   "near": 0.0,
+   "far": 500.0
+  }
+ },
+ "bytes": 3088520,
+ "stats": {
+  "triangles": 61043,
+  "animations": 6,
+  "objects": 0
+ }
+}

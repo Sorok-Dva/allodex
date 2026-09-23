@@ -1,0 +1,63 @@
+{
+ "glb": "scenes/Elf.glb",
+ "objects": 1,
+ "clips": 9,
+ "character": {
+  "yaw": -178.0,
+  "scale": 1.1,
+  "position": [
+   0.0,
+   -0.037,
+   0.313
+  ]
+ },
+ "camera": {
+  "position": [
+   -1.144,
+   4.993,
+   0.9732
+  ],
+  "placeOffset": [
+   0.0,
+   -0.037,
+   0.313
+  ],
+  "yaw": -77.0,
+  "pitch": -3.0,
+  "height": 0.0,
+  "fov": 1.36
+ },
+ "source": {
+  "scene": "CharacterSelectElf",
+  "map": "Maps/MainMenu/",
+  "position": [
+   579.652,
+   471.052,
+   20.028
+  ]
+ },
+ "light": {
+  "ambient": "#312e47",
+  "sun": "#536dbb",
+  "point": "#4a386b",
+  "specular": "#000000",
+  "sunPitch": 45.0,
+  "sunYaw": 225.0,
+  "sunDirection": [
+   -0.5,
+   -0.5,
+   0.7071
+  ],
+  "fog": {
+   "color": "#1a172f",
+   "near": 0.0,
+   "far": 220.0
+  }
+ },
+ "bytes": 1952156,
+ "stats": {
+  "triangles": 39492,
+  "animations": 9,
+  "objects": 0
+ }
+}
