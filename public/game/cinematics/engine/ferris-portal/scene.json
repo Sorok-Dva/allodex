@@ -1,0 +1,2751 @@
+{
+ "id": "ferris-portal",
+ "map": "Ferris4",
+ "up": [
+  0,
+  0,
+  1
+ ],
+ "mirror": true,
+ "duration": 94.0,
+ "timing": "server",
+ "camera": {
+  "points": [
+   {
+    "t": 0.0,
+    "p": [
+     1466.0,
+     1383.0,
+     0.0
+    ]
+   },
+   {
+    "t": 8.999,
+    "p": [
+     1484.0,
+     1363.0,
+     1.0
+    ]
+   },
+   {
+    "t": 9.0,
+    "p": [
+     1512.0,
+     1393.0,
+     6.0
+    ]
+   },
+   {
+    "t": 19.999,
+    "p": [
+     1512.0,
+     1393.0,
+     6.0
+    ]
+   },
+   {
+    "t": 20.0,
+    "p": [
+     1466.0,
+     1383.0,
+     0.0
+    ]
+   },
+   {
+    "t": 36.999,
+    "p": [
+     1466.0,
+     1383.0,
+     0.0
+    ]
+   },
+   {
+    "t": 37.0,
+    "p": [
+     1502.0,
+     1399.0,
+     14.0
+    ]
+   },
+   {
+    "t": 48.999,
+    "p": [
+     1487.0,
+     1391.0,
+     7.0
+    ]
+   },
+   {
+    "t": 49.0,
+    "p": [
+     1480.0,
+     1363.0,
+     -3.0
+    ]
+   },
+   {
+    "t": 53.999,
+    "p": [
+     1479.0,
+     1364.0,
+     -3.0
+    ]
+   },
+   {
+    "t": 54.0,
+    "p": [
+     1488.0,
+     1369.0,
+     -3.0
+    ]
+   },
+   {
+    "t": 67.999,
+    "p": [
+     1486.0,
+     1371.0,
+     -3.0
+    ]
+   },
+   {
+    "t": 68.0,
+    "p": [
+     1473.0,
+     1357.0,
+     -1.0
+    ]
+   },
+   {
+    "t": 71.176,
+    "p": [
+     1483.0,
+     1360.0,
+     0.0
+    ]
+   },
+   {
+    "t": 76.999,
+    "p": [
+     1487.0,
+     1372.0,
+     -1.0
+    ]
+   },
+   {
+    "t": 77.0,
+    "p": [
+     1470.0,
+     1375.0,
+     0.0
+    ]
+   },
+   {
+    "t": 78.999,
+    "p": [
+     1474.0,
+     1378.0,
+     0.0
+    ]
+   },
+   {
+    "t": 79.0,
+    "p": [
+     1473.0,
+     1357.0,
+     -1.0
+    ]
+   },
+   {
+    "t": 81.118,
+    "p": [
+     1483.0,
+     1360.0,
+     0.0
+    ]
+   },
+   {
+    "t": 84.999,
+    "p": [
+     1487.0,
+     1372.0,
+     -1.0
+    ]
+   },
+   {
+    "t": 85.0,
+    "p": [
+     1470.0,
+     1375.0,
+     0.0
+    ]
+   },
+   {
+    "t": 90.999,
+    "p": [
+     1474.0,
+     1378.0,
+     0.0
+    ]
+   }
+  ],
+  "targets": [
+   {
+    "t": 0.0,
+    "p": [
+     1460.0,
+     1390.0,
+     -3.0
+    ]
+   },
+   {
+    "t": 8.999,
+    "p": [
+     1460.0,
+     1390.0,
+     4.0
+    ]
+   },
+   {
+    "t": 9.0,
+    "p": [
+     1518.0,
+     1379.0,
+     2.0
+    ]
+   },
+   {
+    "t": 19.999,
+    "p": [
+     1507.0,
+     1381.0,
+     1.0
+    ]
+   },
+   {
+    "t": 20.0,
+    "p": [
+     1461.0,
+     1337.0,
+     5.0
+    ]
+   },
+   {
+    "t": 36.999,
+    "p": [
+     1464.0,
+     1345.0,
+     1.0
+    ]
+   },
+   {
+    "t": 37.0,
+    "p": [
+     1487.0,
+     1367.0,
+     -2.0
+    ]
+   },
+   {
+    "t": 48.999,
+    "p": [
+     1487.0,
+     1367.0,
+     -2.0
+    ]
+   },
+   {
+    "t": 49.0,
+    "p": [
+     1488.0,
+     1368.0,
+     -3.0
+    ]
+   },
+   {
+    "t": 53.999,
+    "p": [
+     1488.0,
+     1368.0,
+     -3.0
+    ]
+   },
+   {
+    "t": 54.0,
+    "p": [
+     1482.0,
+     1363.0,
+     -3.0
+    ]
+   },
+   {
+    "t": 67.999,
+    "p": [
+     1482.0,
+     1363.0,
+     -3.0
+    ]
+   },
+   {
+    "t": 68.0,
+    "p": [
+     1472.0,
+     1376.0,
+     0.0
+    ]
+   },
+   {
+    "t": 76.999,
+    "p": [
+     1472.0,
+     1376.0,
+     0.0
+    ]
+   },
+   {
+    "t": 77.0,
+    "p": [
+     1476.0,
+     1372.0,
+     -1.0
+    ]
+   },
+   {
+    "t": 78.999,
+    "p": [
+     1476.0,
+     1372.0,
+     -1.0
+    ]
+   },
+   {
+    "t": 79.0,
+    "p": [
+     1472.0,
+     1376.0,
+     0.0
+    ]
+   },
+   {
+    "t": 84.999,
+    "p": [
+     1472.0,
+     1376.0,
+     0.0
+    ]
+   },
+   {
+    "t": 85.0,
+    "p": [
+     1476.0,
+     1372.0,
+     0.0
+    ]
+   },
+   {
+    "t": 90.999,
+    "p": [
+     1476.0,
+     1372.0,
+     0.0
+    ]
+   }
+  ],
+  "duration": 94.0,
+  "fov": 45
+ },
+ "lines": [
+  {
+   "n": 1,
+   "start": 12.0,
+   "duration": 7.0,
+   "speaker": "rysina",
+   "voice": {
+    "event": "FerrisRaid602/FR_PreRaidRysina01",
+    "wave": "Rysina01",
+    "bank": "SFX/Voice/Voice_FerrisRaid602Pre_rus.bsb",
+    "ogg": "voice/01.ogg",
+    "mp3": "voice/01.mp3",
+    "duration": 4.583
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Я вот думаю... Почему бы нам просто не взорвать этот портал к демонам?",
+    "en": "So I'm thinking... Why don't we just blow this portal up?",
+    "fr": "Alors, je me demande... Pourquoi ne ferions-nous pas exploser ce portail ?"
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Ferris_Portal_Sub1.(ClientData).xdb"
+  },
+  {
+   "n": 2,
+   "start": 17.0,
+   "duration": 7.0,
+   "speaker": "rysina",
+   "voice": {
+    "event": "FerrisRaid602/FR_PreRaidRysina02",
+    "wave": "Rysina02",
+    "bank": "SFX/Voice/Voice_FerrisRaid602Pre_rus.bsb",
+    "ogg": "voice/02.ogg",
+    "mp3": "voice/02.mp3",
+    "duration": 2.227
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Зачем нам непременно туда лезть?",
+    "en": "Why do we have to go there at all?",
+    "fr": "Pourquoi devons-nous aller là-bas ?"
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Ferris_Portal_Sub2.(ClientData).xdb"
+  },
+  {
+   "n": 3,
+   "start": 22.0,
+   "duration": 7.0,
+   "speaker": "diarder",
+   "voice": {
+    "event": "FerrisRaid602/FR_PreRaidMarianna01",
+    "wave": "Marianna01",
+    "bank": "SFX/Voice/Voice_FerrisRaid602Pre_rus.bsb",
+    "ogg": "voice/03.ogg",
+    "mp3": "voice/03.mp3",
+    "duration": 6.256
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Если бы всё было так просто... Архитекторы рано или поздно найдут другую лазейку.",
+    "en": "If everything was so simple... One day, the Architects will find a way back.",
+    "fr": "Si tout était si simple... Un jour, les Architectes trouveront un moyen de revenir."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Ferris_Portal_Sub3.(ClientData).xdb"
+  },
+  {
+   "n": 4,
+   "start": 28.0,
+   "duration": 7.0,
+   "speaker": "colossus",
+   "voice": {
+    "event": "FerrisRaid602/FR_PreRaidVayatel01",
+    "wave": "Vayatel01",
+    "bank": "SFX/Voice/Voice_FerrisRaid602Pre_rus.bsb",
+    "ogg": "voice/04.ogg",
+    "mp3": "voice/04.mp3",
+    "duration": 8.507
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Архитекторы не ищут лазеек. Они сами прокладывают Путь.",
+    "en": "The Architects don't look for a way. They lay the Passage themselves.",
+    "fr": "Les Architectes ne cherchent pas un chemin. Ils ont construit le Passage eux-mêmes."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Ferris_Portal_Sub4.(ClientData).xdb"
+  },
+  {
+   "n": 5,
+   "start": 37.0,
+   "duration": 7.0,
+   "speaker": "rysina",
+   "voice": {
+    "event": "FerrisRaid602/FR_PreRaidRysina03",
+    "wave": "Rysina03",
+    "bank": "SFX/Voice/Voice_FerrisRaid602Pre_rus.bsb",
+    "ogg": "voice/05.ogg",
+    "mp3": "voice/05.mp3",
+    "duration": 8.3
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Да-да, мы уже вдоволь наслушались, какие вы всемогущие. Вот только своими глазами этого пока не видели.",
+    "en": "Yes, yes, we've heard enough of your almightiness. But we still haven't seen it with our own eyes.",
+    "fr": "Oui, oui, j'en ai entendu assez sur votre toute-puissance. Mais nous ne l'avons toujours pas constatée de nos propres yeux."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Ferris_Portal_Sub5.(ClientData).xdb"
+  },
+  {
+   "n": 6,
+   "start": 49.0,
+   "duration": 17.0,
+   "speaker": "rysina",
+   "voice": {
+    "event": "FerrisRaid602/FR_PreRaidRysina04",
+    "wave": "Rysina04",
+    "bank": "SFX/Voice/Voice_FerrisRaid602Pre_rus.bsb",
+    "ogg": "voice/06.ogg",
+    "mp3": "voice/06.mp3",
+    "duration": 4.819
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "И вообще, где гарантия, что этот портал - не билет в один конец?",
+    "en": "And how do we know that this portal is not a one way ticket?",
+    "fr": "Et comment savons-nous que ce portail n'est pas à sens unique ?"
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Ferris_Portal_Sub6.(ClientData).xdb"
+  },
+  {
+   "n": 7,
+   "start": 54.0,
+   "duration": 17.0,
+   "speaker": "colossus",
+   "voice": {
+    "event": "FerrisRaid602/FR_PreRaidVayatel02",
+    "wave": "Vayatel02",
+    "bank": "SFX/Voice/Voice_FerrisRaid602Pre_rus.bsb",
+    "ogg": "voice/07.ogg",
+    "mp3": "voice/07.mp3",
+    "duration": 6.006
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Ваши метафоры пока недоступны для моего понимания.",
+    "en": "Your metaphors are yet beyond my understanding.",
+    "fr": "Vos métaphores dépassent mon entendement."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Ferris_Portal_Sub7.(ClientData).xdb"
+  },
+  {
+   "n": 8,
+   "start": 60.0,
+   "duration": 17.0,
+   "speaker": "colossus",
+   "voice": {
+    "event": "FerrisRaid602/FR_PreRaidVayatel03",
+    "wave": "Vayatel03",
+    "bank": "SFX/Voice/Voice_FerrisRaid602Pre_rus.bsb",
+    "ogg": "voice/08.ogg",
+    "mp3": "voice/08.mp3",
+    "duration": 9.007
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "У вас нет никаких гарантий. Но это ваш единственный шанс на победу.",
+    "en": "You can't guarantee anything. But this is your only chance to win.",
+    "fr": "Vous ne pouvez rien garantir. Mais c'est votre unique chance de gagner."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Ferris_Portal_Sub8.(ClientData).xdb"
+  },
+  {
+   "n": 9,
+   "start": 68.0,
+   "duration": 17.0,
+   "speaker": "colossus",
+   "voice": {
+    "event": "FerrisRaid602/FR_PreRaidVayatel04",
+    "wave": "Vayatel04",
+    "bank": "SFX/Voice/Voice_FerrisRaid602Pre_rus.bsb",
+    "ogg": "voice/09.ogg",
+    "mp3": "voice/09.mp3",
+    "duration": 8.007
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Времени не осталось. Вы должны отправляться прямо сейчас.",
+    "en": "There's no time left. You have to go now.",
+    "fr": "Il ne reste plus de temps. Vous devez y aller."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Ferris_Portal_Sub9.(ClientData).xdb"
+  },
+  {
+   "n": 10,
+   "start": 79.0,
+   "duration": 17.0,
+   "speaker": "diarder-2",
+   "voice": {
+    "event": "FerrisRaid602/FR_PreRaidMarianna02",
+    "wave": "Marianna02",
+    "bank": "SFX/Voice/Voice_FerrisRaid602Pre_rus.bsb",
+    "ogg": "voice/10.ogg",
+    "mp3": "voice/10.mp3",
+    "duration": 3.756
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Защитим Сарнаут! Свет да сохранит нас!",
+    "en": "We will protect Sarnaut! May the Light guard us!",
+    "fr": "Nous protégerions Sarnaut ! Puisse la Lumière nous protéger !"
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Ferris_Portal_Sub10.(ClientData).xdb"
+  },
+  {
+   "n": 11,
+   "start": 85.0,
+   "duration": 17.0,
+   "speaker": "colossus-2",
+   "voice": {
+    "event": "FerrisRaid602/FR_PreRaidVayatel05",
+    "wave": "Vayatel05",
+    "bank": "SFX/Voice/Voice_FerrisRaid602Pre_rus.bsb",
+    "ogg": "voice/11.ogg",
+    "mp3": "voice/11.mp3",
+    "duration": 7.506
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Сражайтесь, сколько сможете. Это не имеет смысла.",
+    "en": "Fight as long as you can. This doesn't matter.",
+    "fr": "Combattez aussi longtemps que vous le pouvez. Ceci n'a aucune importance."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Ferris_Portal_Sub11.(ClientData).xdb"
+  }
+ ],
+ "actors": [
+  {
+   "id": "rysina",
+   "glb": "actors/rysina.glb",
+   "name": {
+    "ru": "Елизавета Рысина",
+    "en": "Elizaveta Rysina"
+   },
+   "path": [
+    {
+     "t": 9.0,
+     "p": [
+      1531.492,
+      1380.072,
+      -0.0224
+     ],
+     "yaw": 4.6351
+    },
+    {
+     "t": 17.017,
+     "p": [
+      1507.514,
+      1381.93,
+      -0.0194
+     ],
+     "yaw": 4.6351
+    },
+    {
+     "t": 36.999,
+     "p": [
+      1507.514,
+      1381.93,
+      -0.0194
+     ],
+     "yaw": 4.6351
+    },
+    {
+     "t": 37.0,
+     "p": [
+      1507.514,
+      1381.93,
+      -0.0194
+     ],
+     "yaw": -0.9854
+    },
+    {
+     "t": 48.649,
+     "p": [
+      1488.096,
+      1369.0573,
+      -5.1516
+     ],
+     "yaw": -0.9854
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     9.0,
+     29.0
+    ],
+    [
+     37.0,
+     77.0
+    ]
+   ],
+   "light": [
+    0.7891,
+    0.6328,
+    0.5391
+   ],
+   "geometry": "Creatures/Rysina/Rysina.(Geometry).bin",
+   "height": 1.916,
+   "animations": {
+    "Idle": 2.6333,
+    "Walk": 1.6333
+   }
+  },
+  {
+   "id": "diarder",
+   "glb": "actors/diarder.glb",
+   "name": {
+    "ru": "Марианна ди Ардер",
+    "en": "Marianne de Ardeur"
+   },
+   "path": [
+    {
+     "t": 20.0,
+     "p": [
+      1466.951,
+      1317.9626,
+      -0.0224
+     ],
+     "yaw": 3.1663
+    },
+    {
+     "t": 33.944,
+     "p": [
+      1466.261,
+      1345.8421,
+      -0.0232
+     ],
+     "yaw": 3.1663
+    },
+    {
+     "t": 36.999,
+     "p": [
+      1466.261,
+      1345.8421,
+      -0.0232
+     ],
+     "yaw": 3.1663
+    },
+    {
+     "t": 37.0,
+     "p": [
+      1466.261,
+      1345.8421,
+      -0.0232
+     ],
+     "yaw": 2.4136
+    },
+    {
+     "t": 48.986,
+     "p": [
+      1482.211,
+      1363.7369,
+      -5.1406
+     ],
+     "yaw": 2.4136
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     20.0,
+     37.0
+    ],
+    [
+     37.0,
+     77.0
+    ]
+   ],
+   "light": [
+    0.7891,
+    0.6328,
+    0.5391
+   ],
+   "geometry": "Creatures/Mirianna/Mirianna.(Geometry).bin",
+   "height": 2.34,
+   "animations": {
+    "Idle": 4.0,
+    "Idle01": 3.0,
+    "Walk": 1.0
+   }
+  },
+  {
+   "id": "colossus",
+   "glb": "actors/colossus.glb",
+   "name": {
+    "ru": "Колосс",
+    "en": "Colossus"
+   },
+   "path": [
+    {
+     "t": 20.0,
+     "p": [
+      1460.851,
+      1317.8545,
+      -0.0224
+     ],
+     "yaw": 3.0901
+    },
+    {
+     "t": 33.996,
+     "p": [
+      1462.291,
+      1345.8101,
+      -0.0173
+     ],
+     "yaw": 3.0901
+    },
+    {
+     "t": 53.999,
+     "p": [
+      1462.291,
+      1345.8101,
+      -0.0173
+     ],
+     "yaw": 3.0901
+    },
+    {
+     "t": 54.0,
+     "p": [
+      1462.291,
+      1345.8101,
+      -0.0173
+     ],
+     "yaw": 2.2061
+    },
+    {
+     "t": 66.142,
+     "p": [
+      1481.836,
+      1360.2211,
+      -5.1518
+     ],
+     "yaw": 2.2061
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     20.0,
+     37.0
+    ],
+    [
+     54.0,
+     74.0
+    ]
+   ],
+   "light": [
+    0.7891,
+    0.6328,
+    0.5391
+   ],
+   "geometry": "Creatures/Colossus/Colossus.(Geometry).bin",
+   "height": 6.331,
+   "animations": {
+    "Idle": 6.6667,
+    "Walk": 6.6333
+   }
+  },
+  {
+   "id": "colossus-2",
+   "glb": "actors/colossus.glb",
+   "name": {
+    "ru": "Колосс",
+    "en": "Colossus"
+   },
+   "path": [
+    {
+     "t": 68.0,
+     "p": [
+      1482.211,
+      1363.7369,
+      -5.1406
+     ],
+     "yaw": 3.7413
+    },
+    {
+     "t": 73.098,
+     "p": [
+      1476.457,
+      1372.1536,
+      -4.9295
+     ],
+     "yaw": 3.7413
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     68.0,
+     93.0
+    ]
+   ],
+   "light": [
+    0.7891,
+    0.6328,
+    0.5391
+   ],
+   "geometry": "Creatures/Colossus/Colossus.(Geometry).bin",
+   "height": 6.331,
+   "animations": {
+    "Idle": 6.6667,
+    "Walk": 6.6333
+   }
+  },
+  {
+   "id": "rysina-2",
+   "glb": "actors/rysina.glb",
+   "name": {
+    "ru": "Елизавета Рысина",
+    "en": "Elizaveta Rysina"
+   },
+   "path": [
+    {
+     "t": 74.0,
+     "p": [
+      1488.096,
+      1369.0573,
+      -5.1516
+     ],
+     "yaw": 4.1396
+    },
+    {
+     "t": 86.713,
+     "p": [
+      1466.727,
+      1382.837,
+      -4.622
+     ],
+     "yaw": 4.1396
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     74.0,
+     89.0
+    ]
+   ],
+   "light": [
+    0.7891,
+    0.6328,
+    0.5391
+   ],
+   "geometry": "Creatures/Rysina/Rysina.(Geometry).bin",
+   "height": 1.916,
+   "animations": {
+    "Idle": 2.6333,
+    "Walk": 1.6333
+   }
+  },
+  {
+   "id": "diarder-2",
+   "glb": "actors/diarder.glb",
+   "name": {
+    "ru": "Марианна ди Ардер",
+    "en": "Marianne de Ardeur"
+   },
+   "path": [
+    {
+     "t": 74.0,
+     "p": [
+      1481.836,
+      1360.2211,
+      -5.1518
+     ],
+     "yaw": 3.7306
+    },
+    {
+     "t": 87.599,
+     "p": [
+      1466.727,
+      1382.837,
+      -4.622
+     ],
+     "yaw": 3.7306
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     74.0,
+     89.0
+    ]
+   ],
+   "light": [
+    0.7891,
+    0.6328,
+    0.5391
+   ],
+   "geometry": "Creatures/Mirianna/Mirianna.(Geometry).bin",
+   "height": 2.34,
+   "animations": {
+    "Idle": 4.0,
+    "Idle01": 3.0,
+    "Walk": 1.0
+   }
+  }
+ ],
+ "decor": {
+  "glb": "decor.glb",
+  "light": "decor-light.bin",
+  "instances": [
+   {
+    "vot": "FerrisRaid_CoreBottom",
+    "p": [
+     1464.037,
+     1377.7726,
+     -0.0224
+    ],
+    "yaw": 1.5708,
+    "light": [
+     0,
+     75114
+    ]
+   },
+   {
+    "vot": "ZC10_MechGunslinger_Corrupted_Dead",
+    "p": [
+     1534.788,
+     1370.4602,
+     15.5783
+    ],
+    "yaw": 0.94023,
+    "light": [
+     75114,
+     5014
+    ]
+   },
+   {
+    "vot": "FerisLab_Obj_Comp_01",
+    "p": [
+     1457.711,
+     1328.273,
+     0.0
+    ],
+    "yaw": 6.23474,
+    "light": [
+     80128,
+     323
+    ]
+   },
+   {
+    "vot": "Corpse_Modificant_Male",
+    "p": [
+     1532.609,
+     1381.282,
+     15.5783
+    ],
+    "yaw": 0.0,
+    "light": [
+     80451,
+     2112
+    ]
+   },
+   {
+    "vot": "Corpse_Modificant_Male",
+    "p": [
+     1531.056,
+     1366.5011,
+     15.5783
+    ],
+    "yaw": 4.58908,
+    "light": [
+     82563,
+     2112
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     1480.41,
+     1299.9953,
+     -0.0224
+    ],
+    "yaw": 6.26709,
+    "scale": 0.35,
+    "light": [
+     84675,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     1463.731,
+     1316.0494,
+     -0.0224
+    ],
+    "yaw": 4.67305,
+    "scale": 0.35,
+    "light": [
+     84699,
+     24
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1624.1242,
+     1334.1908,
+     10.9488
+    ],
+    "yaw": 5.87739,
+    "tilt": [
+     1.04704,
+     6.25851
+    ],
+    "scale": 1.01467,
+    "light": [
+     84723,
+     450
+    ]
+   },
+   {
+    "vot": "FerisLab_Obj_Comp_01",
+    "p": [
+     1548.3491,
+     1323.9588,
+     15.5783
+    ],
+    "yaw": 1.61946,
+    "light": [
+     85173,
+     323
+    ]
+   },
+   {
+    "vot": "FerisLab_Obj_Comp_01",
+    "p": [
+     1548.1202,
+     1362.8051,
+     15.5783
+    ],
+    "yaw": 1.61946,
+    "light": [
+     85496,
+     323
+    ]
+   },
+   {
+    "vot": "FerisLab_Obj_Comp_01",
+    "p": [
+     1547.9982,
+     1314.7941,
+     15.5783
+    ],
+    "yaw": 4.70349,
+    "light": [
+     85819,
+     323
+    ]
+   },
+   {
+    "vot": "FerisLab_Obj_Comp_01",
+    "p": [
+     1548.3448,
+     1353.7202,
+     15.5783
+    ],
+    "yaw": 4.70349,
+    "light": [
+     86142,
+     323
+    ]
+   },
+   {
+    "vot": "Corpse_Modificant_Female",
+    "p": [
+     1553.5655,
+     1388.649,
+     15.6901
+    ],
+    "yaw": 1.87613,
+    "light": [
+     86465,
+     1785
+    ]
+   },
+   {
+    "vot": "Corpse_Modificant_Male",
+    "p": [
+     1550.0048,
+     1389.83,
+     15.6929
+    ],
+    "yaw": 4.41027,
+    "light": [
+     88250,
+     2112
+    ]
+   },
+   {
+    "vot": "ZC10_MechGunslinger_Corrupted_Dead",
+    "p": [
+     1553.4418,
+     1371.1297,
+     15.5783
+    ],
+    "yaw": 5.13002,
+    "light": [
+     90362,
+     5014
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     1541.7629,
+     1361.2866,
+     15.5559
+    ],
+    "yaw": 1.5708,
+    "scale": 0.35,
+    "light": [
+     95376,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     1541.9772,
+     1322.5119,
+     15.5559
+    ],
+    "yaw": 1.5708,
+    "scale": 0.35,
+    "light": [
+     95400,
+     24
+    ]
+   }
+  ],
+  "sky": {
+   "radius": 1317.77,
+   "parts": 14
+  }
+ },
+ "fx": {
+  "glb": null,
+  "spawns": []
+ },
+ "objects": {
+  "Red_Omni": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 0.5999999642372131,
+   "particles": {
+    "file": "particles/Red_Omni.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 301,
+    "loopFrame": 121,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.2266,
+       0.75,
+       0.2656
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.6,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Blue_Omni": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/Blue_Omni.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 301,
+    "loopFrame": 121,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.2969,
+       0.6328,
+       0.7109
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.4,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisCore_Gun": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/FerrisCore_Gun.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 121,
+    "frames": [
+     0,
+     1
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.9922,
+       1.9922,
+       1.9922
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.5,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.0078,
+       0.4453,
+       0.6406
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.2,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisCore_Portal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "spells/FX/Mobs/ArchitectFX/FerrisCore_Portal_idle",
+   "particles": {
+    "file": "particles/FerrisCore_Portal.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 121,
+    "frames": [
+     2,
+     3
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.0078,
+       0.2656,
+       0.4062
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       0.0391,
+       1.8125,
+       1.9531
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.5,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.0,
+       0.2266,
+       0.2812
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisCore_GunAll": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "FerrisCore_Gun",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "FerrisCore_Gun",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "FerrisCore_Gun",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "FerrisCore_Portal",
+     "locator": ""
+    }
+   ]
+  },
+  "FerrisRaid_CoreBottom": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special04"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special05"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special06"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special07"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special08"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special09"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special10"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special11"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special12"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special13"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special14"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special15"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special16"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special17"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special18"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special19"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special20"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special21"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special22"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special23"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special24"
+    },
+    {
+     "vot": "Blue_Omni",
+     "locator": "Slot_Special25"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special26"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special27"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special28"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special29"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special30"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special31"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special32"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special33"
+    },
+    {
+     "vot": "FerrisCore_GunAll",
+     "locator": "Slot_Special34"
+    }
+   ]
+  },
+  "ZC10_MechGunslinger_Corrupted_Dead": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerisLab_Obj_Comp_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Corpse_Modificant_Male": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "InstLeague1_AI_2X2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_CaveRock_Wall_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Corpse_Modificant_Female": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  }
+ },
+ "particleAtlas": {
+  "file": "particles/atlas.png",
+  "width": 1024,
+  "height": 128,
+  "rects": [
+   [
+    128,
+    0,
+    64,
+    64
+   ],
+   [
+    192,
+    0,
+    64,
+    64
+   ],
+   [
+    256,
+    0,
+    64,
+    64
+   ],
+   [
+    0,
+    0,
+    128,
+    128
+   ]
+  ],
+  "sources": [
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1440,
+    1152,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1728,
+    256,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    768,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    896,
+    896,
+    128,
+    128
+   ]
+  ]
+ },
+ "light": {
+  "ambient": 4284830021,
+  "ambientFactor": 0.5,
+  "diffuse": 2017208627,
+  "fog": 4279312175,
+  "fogEnd": 210.0,
+  "fogStart": 20.0,
+  "pointLight": 4294967295,
+  "selfIllum": 12362130,
+  "specular": 9259293,
+  "sunPitch": 35.0,
+  "sunYaw": 215.0,
+  "sunDirection": [
+   -0.671,
+   -0.4698,
+   0.5736
+  ]
+ },
+ "pointLights": [
+  {
+   "p": [
+    1227.189,
+    974.776,
+    -12.279
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1259.467,
+    1008.293,
+    -44.144
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1267.146,
+    955.959,
+    -39.683
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1245.333,
+    957.035,
+    -39.577
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1168.984,
+    1152.778,
+    -13.583
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1139.779,
+    1059.964,
+    1.126
+   ],
+   "intensity": 1.0,
+   "radius": 93.167,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1166.392,
+    1106.487,
+    10.805
+   ],
+   "intensity": 1.0,
+   "radius": 67.023,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1249.696,
+    1100.051,
+    -34.988
+   ],
+   "intensity": 1.0,
+   "radius": 80.445,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1249.194,
+    1029.469,
+    -35.955
+   ],
+   "intensity": 1.0,
+   "radius": 71.876,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1262.706,
+    1026.674,
+    -42.158
+   ],
+   "intensity": 1.0,
+   "radius": 80.594,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1189.802,
+    1048.309,
+    -14.896
+   ],
+   "intensity": 1.0,
+   "radius": 54.08,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1186.961,
+    1159.879,
+    -13.048
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1197.223,
+    1176.262,
+    -13.226
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1194.988,
+    1195.341,
+    -13.778
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1262.214,
+    1172.245,
+    -25.648
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1240.069,
+    1109.388,
+    -41.852
+   ],
+   "intensity": -100.0,
+   "radius": 6.371,
+   "attenuation": 0.0
+  },
+  {
+   "p": [
+    1257.243,
+    1045.387,
+    -44.47
+   ],
+   "intensity": -100.0,
+   "radius": 12.885,
+   "attenuation": 0.0
+  },
+  {
+   "p": [
+    1269.536,
+    1101.564,
+    -39.869
+   ],
+   "intensity": -100.0,
+   "radius": 8.702,
+   "attenuation": 0.0
+  },
+  {
+   "p": [
+    1236.8,
+    1044.042,
+    -35.463
+   ],
+   "intensity": 1.0,
+   "radius": 30.837,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1274.234,
+    1059.311,
+    -45.523
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1247.672,
+    1094.009,
+    -41.245
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1265.36,
+    1136.496,
+    -41.853
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1501.343,
+    975.791,
+    -20.505
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1522.854,
+    975.737,
+    -15.487
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1462.856,
+    965.425,
+    -5.128
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1355.577,
+    986.831,
+    4.624
+   ],
+   "intensity": 1.0,
+   "radius": 41.968,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1336.136,
+    1017.418,
+    -8.477
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1366.647,
+    991.738,
+    4.942
+   ],
+   "intensity": 1.0,
+   "radius": 41.968,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1349.525,
+    997.281,
+    4.592
+   ],
+   "intensity": 1.0,
+   "radius": 41.968,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1356.723,
+    990.044,
+    -19.332
+   ],
+   "intensity": 1.0,
+   "radius": 41.968,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1487.867,
+    912.754,
+    -9.842
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1398.579,
+    986.264,
+    -8.262
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1366.863,
+    924.264,
+    -9.792
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1283.703,
+    955.456,
+    -8.983
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1488.594,
+    916.6,
+    14.131
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1437.751,
+    931.2,
+    -8.482
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1531.676,
+    957.873,
+    -13.701
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1529.456,
+    944.348,
+    -13.831
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1526.764,
+    995.797,
+    -4.199
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1535.677,
+    1005.798,
+    -3.762
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1516.484,
+    1004.575,
+    -4.136
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1285.588,
+    986.647,
+    -37.839
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1282.118,
+    978.862,
+    -38.499
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1346.275,
+    964.657,
+    -30.925
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1375.748,
+    961.718,
+    -29.916
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1324.332,
+    983.626,
+    -30.746
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1392.733,
+    947.908,
+    -8.298
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1314.98,
+    961.687,
+    -30.79
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1418.16,
+    969.767,
+    -26.741
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1455.753,
+    957.546,
+    -22.48
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1410.653,
+    952.404,
+    -27.604
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1332.055,
+    1003.3,
+    -30.801
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1296.944,
+    1018.844,
+    -30.801
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1292.921,
+    1168.77,
+    -34.656
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1291.914,
+    1184.774,
+    -34.696
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1298.58,
+    1093.156,
+    -8.279
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1593.927,
+    953.232,
+    -4.117
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1593.948,
+    972.556,
+    -3.874
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1579.014,
+    1014.934,
+    -22.13
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1542.083,
+    1022.293,
+    16.163
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1545.473,
+    955.578,
+    -13.679
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1630.006,
+    1002.45,
+    -4.318
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1634.591,
+    1021.007,
+    -4.261
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1637.138,
+    984.488,
+    -4.056
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1549.476,
+    977.121,
+    -27.747
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1588.533,
+    975.589,
+    -23.957
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1588.223,
+    951.49,
+    -23.655
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1570.661,
+    1049.629,
+    -16.262
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1574.972,
+    1121.061,
+    -10.386
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1596.793,
+    1120.561,
+    -10.417
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1597.288,
+    1142.204,
+    -10.07
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1575.819,
+    1143.048,
+    -10.168
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1544.943,
+    1168.123,
+    -19.319
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1594.34,
+    1172.952,
+    -19.264
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1649.638,
+    1033.384,
+    -4.339
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1638.7,
+    1115.034,
+    -2.669
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1638.269,
+    1128.438,
+    -2.543
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1652.306,
+    1115.24,
+    -2.574
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1651.842,
+    1129.122,
+    -2.491
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1590.3,
+    1104.227,
+    -7.35
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1590.781,
+    1090.327,
+    -7.242
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1577.189,
+    1090.108,
+    -7.284
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1576.72,
+    1103.515,
+    -7.268
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1551.651,
+    1030.372,
+    16.055
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1548.072,
+    1030.991,
+    -8.105
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1609.705,
+    1185.883,
+    21.419
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1619.072,
+    1194.96,
+    21.094
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1600.852,
+    1195.034,
+    20.881
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1604.871,
+    1194.97,
+    -2.905
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1660.548,
+    1106.491,
+    20.754
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1543.392,
+    1184.975,
+    -11.691
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1565.472,
+    1186.531,
+    -11.972
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1666.081,
+    1071.702,
+    5.92
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1586.702,
+    1037.506,
+    -27.724
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  }
+ ],
+ "sounds": {
+  "music": [
+   {
+    "file": "sfx/UmoirAwry_I_adaptive",
+    "t": 0.0,
+    "until": 94.0
+   }
+  ],
+  "ambience": [],
+  "events": {
+   "music": [],
+   "ambience": [
+    "Ambience/OutdoorAmbience/Zones/Ferris4/Ferris4_Outdoor"
+   ]
+  },
+  "waves": {
+   "Music/ZonesMusic/UmoirAwry_I_adaptive": {
+    "file": "sfx/UmoirAwry_I_adaptive",
+    "wave": "UmoirAwry_I_adaptive",
+    "bank": "SFX/Music/Music_Zone.fsb",
+    "duration": 95.0
+   }
+  },
+  "volume": {}
+ },
+ "post": [],
+ "sources": {
+  "timeline": "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_Main.(BuffResource).xdb",
+  "buffs": [
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_Main.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_1.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_1_RysinaAnimation.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_2.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_1_DiarderAnimation.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_1_ColossusAnimation.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_3.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_2_RysinaAnimation.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_2_DiarderAnimation.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_4ID.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_5ID.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_2_ColossusAnimationID.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_6ID.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_3_ColossusAnimationID.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_3.5_ColossusAnimationID.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_EndingID.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_EndingID.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_7ID.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_8ID.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_9ID.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Cooldown_FR4Intro.(BuffResource).xdb"
+  ],
+  "spawns": [
+   "Maps/Ferris4/000_000/5_5_ServerObjects.xdb"
+  ]
+ }
+}

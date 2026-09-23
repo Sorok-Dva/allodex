@@ -1189,6 +1189,24 @@
    "audio": {
     "language": "ru"
    }
+  },
+  {
+   "id": "ferris-portal",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid FR4Intro",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 160,
+   "title": {
+    "fr": "Le portail de Ferris",
+    "en": "The Ferris Portal"
+   },
+   "chronology": "Cinématique moteur d’entrée du raid de Ferris (« FR4Intro », 6.0) : devant le portail, Élisabeth Rysina, Marianne di Arder et le Ваятель (un Colosse) envoient les héros dans le cœur de Ferris ; après la rétrospective du laboratoire, avant l’Invasion (7.0).",
+   "audio": {
+    "language": "ru"
+   }
   }
  ],
  "excluded": [
@@ -22648,6 +22666,17 @@
    "source": "xdb70",
    "first_buff": "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_fade_start.(BuffResource).xdb",
    "_note": "Déroulé serveur relu dans l’arbre 7.0 (buffs Cutscene_fade_start → Cutscene_01 … Cutscene07 → Cutscene_fade_end), rapporté au client 17.0 : caméras, répliques et locuteurs, PNJ et leur place (5_4_ServerObjects), ciel et lumière de la vision, musique et ambiance."
+  },
+  {
+   "id": "ferris-portal",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/Ferris_Cutscene_Main.(BuffResource).xdb",
+   "map": "Ferris4",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder"
+   },
+   "_note": "Déroulé serveur 7.0 (Ferris_Cutscene_Main → Ferris_Cutscene … _9ID) ; PNJ invoqués sur les repères de 5_5_ServerObjects ; répliques posées sur le joueur attribuées par le nom de la voix (FR_PreRaidRysina → Rysina ; Vayatel → le Colosse, Marianna → di Arder)."
   }
  ]
 }

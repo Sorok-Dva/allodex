@@ -250,6 +250,58 @@
    }
   },
   {
+   "id": "ferris-portal",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 160,
+   "event": "FerrisRaid FR4Intro",
+   "title": {
+    "fr": "Le portail de Ferris",
+    "en": "The Ferris Portal"
+   },
+   "chronology": "Cinématique moteur d’entrée du raid de Ferris (« FR4Intro », 6.0) : devant le portail, Élisabeth Rysina, Marianne di Arder et le Ваятель (un Colosse) envoient les héros dans le cœur de Ferris ; après la rétrospective du laboratoire, avant l’Invasion (7.0).",
+   "bonus": false,
+   "duration": 94.0,
+   "files": {
+    "poster": "engine/ferris-portal/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-portal/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/ferris-portal/fr.vtt",
+     "lines": 11
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/ferris-portal/en.vtt",
+     "lines": 11
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/ferris-portal/ru.vtt",
+     "lines": 11
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 11,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "invasion-plague",
    "title": {
     "fr": "La peste",
