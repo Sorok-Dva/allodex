@@ -45,12 +45,14 @@ def test_schedule_lines_opens_each_group_on_its_camera_segment():
 
 
 def test_vertex_light_is_ambient_plus_sun_plus_baked_point_lights():
-    light = {"ambient": 0xFF404040, "diffuse": 0xFF800000, "pointLight": 0xFF008000, "sunYaw": 0, "sunPitch": 90}
-    raw = np.array([[0, 128, 0, 0], [0, 128, 255, 0]], np.uint8)
-    up = np.array([[0, 0, 1.0], [0, 0, -1.0]])
+    light = {"ambient": 0xFF404040, "ambientFactor": 0.5, "diffuse": 0xFF800000, "pointLight": 0xFF008000,
+             "sunYaw": 0, "sunPitch": 90}
+    raw = np.array([[255, 255, 0, 0], [255, 255, 255, 0], [0, 128, 0, 0]], np.uint8)
+    up = np.array([[0, 0, 1.0], [0, 0, -1.0], [0, 0, 1.0]])
     out = vertex_light(raw, light, up)
-    assert np.allclose(out[0], [0.5 + 1.0, 0.5, 0.5])        # ambiante + soleil (normale vers le haut)
-    assert np.allclose(out[1], [0.5, 0.5 + 1.0, 0.5])        # ambiante + ponctuelles (octet 2 = 255)
+    assert np.allclose(out[0], [0.5 + 1.0, 0.5, 0.5])        # ciel dégagé + soleil au soleil
+    assert np.allclose(out[1], [0.5, 0.5 + 1.0, 0.5])        # ciel dégagé + ponctuelles (octet 2 = 255)
+    assert np.allclose(out[2], [0.25, 0.25, 0.25])           # ciel caché, à l'ombre : moitié de l'ambiante
     assert encode_light(np.array([[2.0, 1.0, 0.0]])).tolist() == [[255, 128, 0, 255]]
 
 
@@ -246,3 +248,31 @@ def test_animation_file_falls_back_to_the_base_model():
     bins = SimpleNamespace(_pak_index=lambda: {"Characters/Kania_male/Animations/KaniaMale.Special08.(SkeletalAnimation).bin": 0})
     name = animation_file(bins, "Characters/Kania_male/KaniaMale_CutScene.(Geometry).bin", "Special08")
     assert name == "Characters/Kania_male/Animations/KaniaMale.Special08.(SkeletalAnimation).bin"
+
+
+def test_camera_moves_cut_each_group_at_the_next_one():
+    from tools.extract_engine_cutscene import CAMMOVE_STRIDE, camera_moves
+
+    class Db:
+        """Deux groupes (délais 2 et 4 s), le premier de deux mouvements de 3 s."""
+        data = 0
+
+        def __init__(self):
+            self.raw = bytearray(4096)
+            self.groups = [100, 148]
+            self.moves = {100: [1000, 1000 + CAMMOVE_STRIDE], 148: [2000]}
+            for g, delay in zip(self.groups, (2.0, 4.0)):
+                struct.pack_into("<f", self.raw, g + 4, delay)
+            for i, m in enumerate([1000, 1000 + CAMMOVE_STRIDE, 2000]):
+                struct.pack_into("<2d", self.raw, m + 0x18, 10.0 * i, 1.0)
+                struct.pack_into("<d", self.raw, m + 0x30, 5.0)
+                struct.pack_into("<f", self.raw, m + 0x6C, 3.0)
+
+        def elements(self, loc, stride):
+            return self.groups if loc == 0x48 else self.moves[loc - 8]
+
+        def f32(self, off):
+            return struct.unpack_from("<f", self.raw, off)[0]
+    keys = camera_moves(Db(), 0)
+    assert [k["t"] for k in keys] == [2.0, 3.999, 4.0]
+    assert keys[1]["p"] == [10.0, 1.0, 5.0] and keys[2]["p"] == [20.0, 1.0, 5.0]

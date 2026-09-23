@@ -104,18 +104,29 @@ def sun_direction(light: dict) -> np.ndarray:
 def vertex_light(raw: np.ndarray, light: dict, normals: np.ndarray | None = None) -> np.ndarray:
     """Lumière d'un sommet du décor (unités du jeu, 1 = 0x80), depuis son `lightvrt`.
 
-    Établi sur les données : l'**octet 2** est l'éclairage précalculé des lumières ponctuelles de
-    la carte, `255 · Σ intensité · (1 − d / rayon)^atténuation · max(0, N·L)` borné à 255 — la
-    formule redonne l'octet à 1,000 de corrélation sur les objets du pilote (164 `LightComponent`,
-    `pivot`, `intensity`, `radius`, `attenuationPower`) ; leur couleur est la `PointLightColor` de
-    la zone. Les octets 0 et 1 (quantifiés sur 3 et 4 bits) ne sont pas élucidés : le soleil est
-    donc appliqué sans ombre portée, `DiffuseColor · max(0, N·S)`. Total : ambiante + soleil +
-    ponctuelles, comme le jeu éclaire ses personnages (`texture × (ambiante + soleil · N·L)`)."""
+    Établi sur les données :
+
+    * **octet 2** : lumières ponctuelles de la carte, `255 · Σ intensité · (1 − d / rayon)^atténuation ·
+      max(0, N·L)` (corrélation 1,000 sur le pilote et `Ferris4`) ; couleur `PointLightColor` ;
+    * **octet 1** (`128 + 127 · v`, 4 bits) : visibilité du ciel `v`, part de l'hémisphère supérieur
+      dégagée — corrélation 0,81 sur le pilote (tirs de rayons sur le décor), 0,73 sur `Isa` (feuillages
+      comptés opaques), pente 106 et ordonnée 138 pour 127 et 128 attendus ;
+    * **octet 0** (3 bits) : visibilité du soleil (ombre portée) — corrélation 0,81 sur le pilote pour
+      un soleil à 45° de hauteur ; le soleil de la cuisson est celui de la zone du lieu (`Isa` : lacet
+      225°, pas celui de la première zone de la carte), d'où un écart possible avec `sunDirection`.
+
+    Total : `AmbientColor · (f + (1 − f) · v) + DiffuseColor · max(0, N·S) · ombre + ponctuelles`, avec
+    `f` = `AmbientFactor` (0,5 partout) pris comme la part d'ambiante qui reste à l'ombre du ciel —
+    choix du lecteur, le shader du jeu n'étant pas lu."""
     point = raw[:, 2:3] / 255.0 * _rgb(light.get("pointLight", 0xFFFFFFFF))
+    sky = np.clip((raw[:, 1:2].astype(np.float64) - 128.0) / 127.0, 0.0, 1.0)
+    shadow = raw[:, 0:1].astype(np.float64) / 255.0
+    factor = float(light.get("ambientFactor", 0.5) or 0.0)
+    ambient = _rgb(light.get("ambient")) * (factor + (1.0 - factor) * sky)
     sun = 0.0
     if normals is not None and len(normals) == len(raw):
-        sun = np.clip(normals @ sun_direction(light), 0, None)[:, None] * _rgb(light.get("diffuse"))
-    return _rgb(light.get("ambient")) + sun + point
+        sun = np.clip(normals @ sun_direction(light), 0, None)[:, None] * _rgb(light.get("diffuse")) * shadow
+    return ambient + sun + point
 
 
 def encode_light(values: np.ndarray) -> np.ndarray:
@@ -259,15 +270,17 @@ REGION_SIZE = 256.0
 def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tuple[list[float] | None, float]],
                   report: list[str]) -> tuple[bytes | None, np.ndarray]:
     """Sol des scènes (`terrain.glb` de la carte) : sous-carreaux de 8 m du `terrainDump` des
-    régions (niveau de détail fin), ceux dont le centre tombe dans une zone de scène (+ 16 m),
-    groupés par calque — le premier calque du jeu de la première passe (les poids du `SplatMap`
-    ne sont pas élucidés) —, texture répétée à sa taille. Rend aussi les triangles du sol, pour
+    régions (niveau de détail fin), ceux dont le centre tombe dans une zone de scène (+ 16 m). Chaque
+    sommet porte les calques de ses deux passes au plus (`_LAYERS0/1`, indices dans la liste des
+    calques de la carte, `extras.terrainLayers` : texture et taille de répétition) et leurs poids lus
+    dans le `SplatMap` (`_WEIGHTS0/1`) ; le lecteur les mélange. Rend aussi les triangles du sol, pour
     poser les acteurs."""
     from tools.allods_scenes import region_origin
-    from tools.allods_terrain import region_patches, terrain_layers
-    groups: dict[str, list] = {}
-    solids = []
-    count = 0
+    from tools.allods_terrain import pass_weights, region_patches, region_splat, terrain_layers
+    palette: dict[str, int] = {}
+    tilings: list[float] = []
+    pos, nor, lay0, wei0, lay1, wei1, idx, solids = [], [], [], [], [], [], [], []
+    base = count = 0
     for path, region in sorted(mp.paths.items()):
         if not path.endswith("_MapRegion.xdb"):
             continue
@@ -281,40 +294,55 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
             continue
         layer_sets, patches = parsed
         layers = terrain_layers(mp, cat, mp.ptr(region + 0x98))
+        splat = region_splat(bins.get, path)
+
+        def slot(layer_id: int) -> int:
+            name, tiling = layers[layer_id - 1] if 0 < layer_id <= len(layers) else (None, 30.0)
+            key = name or ""
+            if key not in palette:
+                palette[key] = len(palette)
+                tilings.append(float(tiling))
+            return palette[key]
         for patch in patches:
             cx, cy = ox + 8 * patch.sx + 4, oy + 8 * patch.sy + 4
             if not any(c is None or math.hypot(cx - c[0], cy - c[1]) <= r + 16 for c, r in near):
                 continue
-            ids = layer_sets[patch.passes[0][1]] if patch.passes and patch.passes[0][1] < len(layer_sets) else ()
-            layer = layers[ids[0] - 1] if ids and 0 < ids[0] <= len(layers) else (None, 30.0)
+            n = len(patch.points)
+            ids_w = []
+            for first, set_index, bc, bd in patch.passes[:2]:
+                ids = list(layer_sets[set_index]) if set_index < len(layer_sets) else []
+                w = pass_weights(splat, patch, (bc, bd))
+                slots = [slot(i) for i in ids] + [0] * (3 - len(ids))
+                w[:, len(ids):] = 0.0
+                ids_w.append((np.tile(np.array(slots[:3], np.float32), (n, 1)), w.astype(np.float32)))
+            if not ids_w:
+                ids_w.append((np.zeros((n, 3), np.float32), np.tile(np.array([1, 0, 0], np.float32), (n, 1))))
+            while len(ids_w) < 2:
+                ids_w.append((np.zeros((n, 3), np.float32), np.zeros((n, 3), np.float32)))
             pts = patch.points + np.array([ox, oy, 0.0])
-            groups.setdefault(layer[0] or "", []).append((pts, patch.normals, patch.triangles, layer[1]))
+            pos.append(pts.astype(np.float32))
+            nor.append(patch.normals.astype(np.float32))
+            (l0, w0), (l1, w1) = ids_w
+            lay0.append(l0); wei0.append(w0); lay1.append(l1); wei1.append(w1)
+            idx.append((patch.triangles + base).astype(np.uint32))
             solids.append(pts[patch.triangles])
+            base += n
             count += 1
-    if not groups:
+    if not pos:
         return None, np.zeros((0, 3, 3))
     ex = Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/")
-    primitives = []
-    for name, parts in sorted(groups.items()):
-        pos, nor, uv, idx, base = [], [], [], [], 0
-        for pts, normals, tris, tiling in parts:
-            pos.append(pts.astype(np.float32))
-            nor.append(normals.astype(np.float32))
-            uv.append((pts[:, :2] / tiling).astype(np.float32))
-            idx.append((tris + base).astype(np.uint32))
-            base += len(pts)
-        P = np.concatenate(pos)
-        tex = ex.texture(name) if name else None
-        material = ex.gltf.add_material(f"terrain {Path(name).name if name else 'nu'}", tex, "OPAQUE", False, False)
-        ex.gltf.json["materials"][material].setdefault("extras", {}).update({"lit": True, "terrain": True})
-        primitives.append({"attributes": {"POSITION": ex.gltf.add_accessor(P, "VEC3", "f32", target=34962, minmax=True),
-                                          "NORMAL": ex.gltf.add_accessor(np.concatenate(nor), "VEC3", "f32", target=34962),
-                                          "TEXCOORD_0": ex.gltf.add_accessor(np.concatenate(uv), "VEC2", "f32", target=34962)},
-                           "indices": ex.gltf.add_accessor(np.concatenate(idx).reshape(-1), "SCALAR", "u32", target=34963),
-                           "mode": 4, "material": material})
-    ex.gltf.json["meshes"].append({"name": "terrain", "primitives": primitives})
-    root = ex.gltf.add_node({"name": "terrain", "mesh": len(ex.gltf.json["meshes"]) - 1, "extras": {"terrain": True}})
-    report.append(f"sol : {count} sous-carreaux de 8 m, {len(groups)} calques")
+    names = sorted(palette, key=palette.get)
+    layer_meta = [{"texture": textures.uri(name, DECOR_TEXTURE_MAX, "textures/") if name else None,
+                   "tiling": round(tilings[k], 3), "name": Path(name).name if name else None} for k, name in enumerate(names)]
+    acc = lambda a, kind="VEC3": ex.gltf.add_accessor(np.concatenate(a), kind, "f32", target=34962)  # noqa: E731
+    primitive = {"attributes": {"POSITION": ex.gltf.add_accessor(np.concatenate(pos), "VEC3", "f32", target=34962, minmax=True),
+                                "NORMAL": acc(nor), "_LAYERS0": acc(lay0), "_WEIGHTS0": acc(wei0),
+                                "_LAYERS1": acc(lay1), "_WEIGHTS1": acc(wei1)},
+                 "indices": ex.gltf.add_accessor(np.concatenate(idx).reshape(-1), "SCALAR", "u32", target=34963), "mode": 4}
+    ex.gltf.json["meshes"].append({"name": "terrain", "primitives": [primitive]})
+    root = ex.gltf.add_node({"name": "terrain", "mesh": len(ex.gltf.json["meshes"]) - 1,
+                             "extras": {"terrain": True, "terrainLayers": layer_meta}})
+    report.append(f"sol : {count} sous-carreaux de 8 m, {len(names)} calques mélangés")
     report += ex.notes
     return ex.finish([root]), np.concatenate(solids) if solids else np.zeros((0, 3, 3))
 
@@ -1108,6 +1136,55 @@ def _placement(db: PackDB, off: int) -> tuple[list[float], float]:
     return [round(x, 4), round(y, 4), round(z, 4)], db.f32(off + 0x10)
 
 
+CAMMOVES_GROUPS = 0x48
+CAMMOVE_GROUP_STRIDE = 48
+CAMMOVE_GROUP_DELAY = 0x04
+CAMMOVE_GROUP_MOVES = 0x08
+CAMMOVE_STRIDE = 120
+CAMMOVE_PITCH = 0x10
+CAMMOVE_XY = 0x18          # doubles x, y ; f32 lacet en +0x28, roulis en +0x2C ; double z en +0x30
+CAMMOVE_TIME = 0x6C
+CAMMOVE_TIME_START = 0x70
+
+
+def find_action(db: PackDB, off: int | None, kind: str, depth: int = 0) -> int | None:
+    if off is None or depth > 8:
+        return None
+    if db.vtype(off) == kind:
+        return off
+    for loc, rk, target in db.relocs(off, off + 0x120):
+        for child in ([db.ptr(loc)] if rk == 0 else db.pointers(loc) if rk == 3 else []):
+            if child is not None and db.vtype(child):
+                found = find_action(db, child, kind, depth + 1)
+                if found is not None:
+                    return found
+    return None
+
+
+def camera_moves(db: PackDB, action: int) -> list[dict]:
+    """`CameraMovesAction` : groupes de mouvements (48 o : `+0x04` délai de départ, `+0x08` mouvements),
+    mouvement (120 o : pose de départ en doubles x, y, z et f32 lacet, tangage, roulis ; `+0x6C`
+    durée vers la pose suivante, `+0x70` `timeStart`) — recoupé au millième sur le `.xdb` 7.0 de
+    `ShipExplosion_Script`. Rend les poses datées (s) ; un groupe coupe le précédent."""
+    groups = db.elements(action + CAMMOVES_GROUPS, CAMMOVE_GROUP_STRIDE)
+    keys = []
+    for k, g in enumerate(groups):
+        t = db.f32(g + CAMMOVE_GROUP_DELAY)
+        end = db.f32(groups[k + 1] + CAMMOVE_GROUP_DELAY) if k + 1 < len(groups) else None
+        for m in db.elements(g + CAMMOVE_GROUP_MOVES, CAMMOVE_STRIDE):
+            x, y = struct.unpack_from("<2d", db.raw, db.data + m + CAMMOVE_XY)
+            z, = struct.unpack_from("<d", db.raw, db.data + m + CAMMOVE_XY + 0x18)
+            if end is not None and t >= end - 1e-3:
+                # pose d'arrivée atteinte à l'instant de la coupe
+                keys.append({"t": round(end - 1e-3, 3), "p": [round(x, 4), round(y, 4), round(z, 4)],
+                             "yaw": db.f32(m + CAMMOVE_XY + 0x10), "pitch": db.f32(m + CAMMOVE_PITCH)})
+                break
+            keys.append({"t": round(t, 3), "p": [round(x, 4), round(y, 4), round(z, 4)],
+                         "yaw": db.f32(m + CAMMOVE_XY + 0x10), "pitch": db.f32(m + CAMMOVE_PITCH)})
+            t += db.f32(m + CAMMOVE_TIME) or 1.0
+    return keys
+
+
 def plan_gameview(spec: dict, db: PackDB, texts: Texts, anim_names: dict, report: list[str]) -> dict:
     """Scène entièrement du client (`GameViewScene` + `GameViewScript` d'un `ShowSceneAction`) : PNJ
     posés à la place de la scène (leur animation de cinématique porte leur déplacement), chacun jouant
@@ -1161,6 +1238,22 @@ def plan_gameview(spec: dict, db: PackDB, texts: Texts, anim_names: dict, report
     cam = [round(cam[0] - back * direction[0], 4), round(cam[1] - back * direction[1], 4), round(cam[2] + eye, 4)]
     target = [round(cam[i] + 20 * direction[i], 4) for i in range(3)]
     camera = {"points": [{"t": 0, "p": cam}], "targets": [{"t": 0, "p": target}], "duration": float(spec.get("duration", 0))}
+    moves_action = find_action(db, script, "CameraMovesAction") if script is not None else None
+    if moves_action is not None:
+        # Caméra animée du script : poses datées, visée à 20 m selon lacet et tangage (même
+        # convention que le `cameraPlacement`).
+        points, targets = [], []
+        for key in camera_moves(db, moves_action):
+            cp, sp = math.cos(key["pitch"]), math.sin(key["pitch"])
+            yaw = key["yaw"] + float(spec.get("yaw_offset", 0.0))
+            d = [math.cos(yaw) * cp, math.sin(yaw) * cp, sp]
+            points.append({"t": key["t"], "p": key["p"]})
+            targets.append({"t": key["t"], "p": [round(key["p"][i] + 20 * d[i], 4) for i in range(3)]})
+        if points:
+            if points[0]["t"] > 0:
+                points.insert(0, {"t": 0, "p": points[0]["p"]})
+                targets.insert(0, {"t": 0, "p": targets[0]["p"]})
+            camera = {"points": points, "targets": targets, "duration": float(spec.get("duration", 0))}
     report.append(f"{spec['id']} : GameViewScene {spec['scene']} sur {map_name}, {len(actors)} PNJ, "
                   f"{sum(1 for a in actors if a['animations'])} animés")
     return {"map": map_name, "camera": camera, "lines": [], "actors": actors, "weather": None,

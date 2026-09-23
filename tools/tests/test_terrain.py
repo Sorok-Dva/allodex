@@ -46,7 +46,7 @@ def test_parse_terrain_dump_places_grid_vertices_with_float_heights():
     (patch,) = patches
     assert (patch.sx, patch.sy, patch.level) == (2, 3, 1)
     assert patch.points.tolist() == [[16, 24, 1], [16, 32, 2], [24, 32, 3]]
-    assert patch.triangles.tolist() == [[0, 2, 1]] and patch.passes == [(0, 0)]
+    assert patch.triangles.tolist() == [[0, 2, 1]] and patch.passes == [(0, 0, 0, 0)]
     assert np.allclose(patch.normals[0], [0, 0, 1], atol=0.01)
 
 
@@ -54,3 +54,15 @@ def test_splat_weights_decode_r5g6b5():
     raw = np.full(256 * 256, 0xF800, "<u2").tobytes()
     w = splat_weights(raw)
     assert w.shape == (256, 256, 3) and np.allclose(w[0, 0], [1, 0, 0])
+
+
+def test_pass_weights_read_the_8x8_block_with_shared_edges():
+    from tools.allods_terrain import Patch, pass_weights
+    splat = np.zeros((256, 256, 3))
+    splat[8:16, 16:24, 0] = np.linspace(0, 1, 8)[:, None]      # bloc (c=1, d=2) : R croît avec la ligne
+    splat[8:16, 16:24, 1] = 1 - splat[8:16, 16:24, 0]
+    patch = Patch(3, 5, np.array([[24.0, 40.0, 0.0], [32.0, 40.0, 0.0], [28.0, 44.0, 0.0]]), np.zeros((3, 3)),
+                  np.zeros((0, 3), int), np.zeros((0, 3), int), [])
+    w = pass_weights(splat, patch, (1, 2))
+    assert np.allclose(w[:, 0], [0.0, 1.0, 0.5]) and np.allclose(w.sum(1), 1.0)
+    assert np.allclose(pass_weights(None, patch, (0, 0)), [[1, 0, 0]] * 3)
