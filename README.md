@@ -615,9 +615,9 @@ d'Allods Online » (Node.js + SQLite : carte interactive, catalogue wiki, édite
 - **Licence** : MIT, mais **pour le code du site seulement**. Le fichier `LICENSE` exclut
   explicitement le contenu du jeu et les **données de l'atlas** (`server/seed-data.json`,
   `uploads/`, `atlas.db`) ; le site se présente comme un projet de fans « собранные энтузиастами ».
-  **Aucune licence n'est donc accordée sur les données ni sur les textes : leur reprise sur la page
-  demande l'autorisation de l'auteur.** En l'état, l'outil ne recopie rien : noms d'allods et
-  numéros de ligne servent à l'appariement, les fichiers sont référencés par chemin.
+  Aucune licence n'est accordée sur les données ni sur les textes : **l'autorisation de l'auteur a
+  été obtenue** (septembre 2026) pour reprendre l'atlas et les récits sur la page Lorebook, avec le
+  crédit ci-dessous.
 
 L'attribution est enregistrée dans `tools/lore_manifest.json` (`credit`), reportée en tête de
 `community.json` et d'`atlas.json`, et par fichier (`credit`, `source`). Ligne de crédit prête pour
@@ -629,10 +629,72 @@ la future page :
 ### Droits
 
 Les textes du client appartiennent à l'éditeur (Astrum / My.Games) — comme les autres assets de
-`public/game/`. L'atlas et l'« Энциклопедия Сарнаута » sont des travaux de fans : aucun texte,
-aucune carte, aucune donnée propre (climat, taille, détenteur, catégorie) n'est repris. Toute reprise
-sur la page demandera **l'accord des auteurs et le crédit ci-dessus** ; même règle pour les récits de
-fans et les chronologies. Les images du corpus ne sont pas utilisables (droits inconnus).
+`public/game/`. L'atlas et les récits de Makar Terentiev sont repris avec son accord et le crédit
+ci-dessus. Les autres travaux de fans ou de tiers du corpus (« Энциклопедия Сарнаута », billet de
+blog, artbook) ne sont pas repris ; les images du corpus ne sont pas utilisables (droits inconnus).
+
+### Page Lorebook (`/lorebook`)
+
+Entrée « Lorebook » de l'accueil (icône du grimoire). Interface en français ou en anglais (i18n du
+site) ; **contenu en anglais par défaut**, avec un sélecteur **EN / FR / RU** des textes
+(`?text=fr` pour partager, choix mémorisé). Un texte sans anglais officiel s'affiche en français,
+sinon en russe, avec le badge rouge « Not yet translated — French text » ; un texte `ru_revised`
+porte le badge discret « English may predate a Russian revision ». Décor du journal de quêtes du jeu
+(cadres `QuestLog/MainFrameLeft|Right`), plaque de titre `WindowHeader/TiledHeader`, onglets aux
+boutons de l'hôtel des ventes, lecture sur le parchemin du courrier (`MailBox/BackgroundMessage`) ;
+colonne de lecture de 72 caractères, une seule page à la fois sur mobile.
+
+    python3 tools/build_lorebook.py     # ≈ 15 s, écrit public/game/lorebook/ depuis public/game/lore/
+
+| Section | Contenu | Entrées |
+|---|---|---:|
+| Timeline | chronologie de Sarnaut (communautaire, 3 ères), 45 événements, 1 403 scènes et narrations par région | 1 451 |
+| Atlas | les 318 allods de l'atlas de Makar Terentiev (données, descriptions), 13 notes d'atlas, 111 régions, 1 298 lieux du jeu | 1 740 |
+| Library | 11 livres et séries (pages dans l'ordre), 10 récits communautaires, 143 documents, 507 lettres, 447 descriptions d'ambiance | 1 118 |
+| Characters | 3 640 PNJ nommés (homonymes fusionnés) avec leurs dialogues, 403 factions/races/classes, 10 517 autres dialogues | 14 560 |
+| World Secrets | 50 secrets, leurs étapes et les quêtes de chaque étape | 50 |
+| Quests | 6 962 quêtes par région | 6 962 |
+
+**URL stables** : `/lorebook/<section>/<id>` (`r<rid>` pour les textes du jeu, `a-…` allods,
+`z-…` régions, `s-…` séries, `c-…` textes communautaires), `/lorebook/<section>?group=…`,
+`/lorebook/search?q=…`. **Liens croisés** : quête → secret, PNJ et région ; PNJ → quêtes, région
+et répliques ; région → lieux, quêtes et PNJ ; allod → lieu du jeu ; étape de secret → quêtes ; et
+dans les textes, chaque nom propre connu (PNJ, lieu, allod, secret, faction : 3 875 noms en anglais)
+devient un lien vers son entrée. Les liens réplique → PNJ (3 156), réplique → quête (1 801) et
+quête → PNJ (1 606) viennent des **références entre ressources** de `pack.bin` (table de
+relocation, `public/game/lore/links.json`).
+
+**Recherche** (noms, titres, textes, dans la langue du contenu) : index inversé précalculé,
+fragmenté par les deux premiers caractères du mot (760 fragments par langue) ; une requête ne
+charge que le fragment de ses mots puis les blocs du répertoire (64 entrées) des 30 premiers
+résultats, titres en tête. **Chargement à la demande** : `meta.json` (7 Ko) à l'accueil, la liste
+de la section ouverte (`list/<langue>/`, 2 Ko à 870 Ko ; 250 Ko gzip pour les personnages), le bloc
+de l'entrée (~90 Ko) et, s'il manque un texte, le même bloc dans la langue de repli ; les listes
+sont **virtualisées** (seules les lignes visibles existent dans le DOM). Poids total sur disque :
+78 Mo (textes 48, index 18, répertoire 7, listes 5), dont rien n'est chargé d'un bloc.
+
+**Matériel communautaire** (repris avec l'accord de Makar Terentiev) : badge vert « Community »,
+encadré « Community text, translated by Allodex », ligne de crédit et source sur chaque entrée,
+crédit en pied de page. Traductions faites par Allodex (fidèles, noms anglais officiels du
+glossaire et des textes parallèles du client), dans `tools/lorebook/` :
+
+- `community/` : la chronologie et dix récits — « Memories of Catherina », « Zayan. The Burden of
+  Millennia », « The Exile's Path », « The Shadow of the Void over Sarnaut », « Mauni the Dancer and
+  the Harsh Winter », « Report on the Arisen Community of Xadagan », « Sarang Kido's Report to the
+  Scientific Council », « A Spark in the Ashes of Illusions », « A Letter from Skrakan's Archive »,
+  « Dreams of the Great Tree » (≈ 36 600 mots russes) ; le russe original reste lisible en mode RU ;
+- `atlas/allods.json` : la table des 318 allods (203 noms officiels, 115 traduits ou translittérés,
+  marqués « Unofficial name ») ; `atlas/descriptions.json` : sections 1 et 2 de l'atlas (îles des
+  jeux classiques, îles mentionnées, allods du scénario) ; `atlas/astral-islands-*.json` : les
+  quatre documents des îles astrales (AO 2.0+ parties 1 à 3, BETA) (≈ 28 000 mots russes).
+
+Reste à traduire : les sections 3 à 7 de `ATLAS ALLODS.docx` (≈ 12 000 mots, en partie redondantes
+avec les documents des îles astrales), `sec list.txt` (liste de 2 400 mots) et deux notes courtes
+(« Созвездия », `boses.txt`). Non repris : le billet de blog tiers « Край мира с форума АО »,
+l'artbook de Fardreamer et l'« Энциклопедия Сарнаута » (droits de tiers).
+
+Crédit affiché : *Allods atlas and community lore material compiled by Makar Terentiev
+(DarkyAndSparky), https://github.com/DarkyAndSparky/atlas-ao*.
 
 ## Déploiement (production)
 
