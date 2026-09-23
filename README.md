@@ -174,18 +174,33 @@ ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le rest
 
 ### Cinématiques moteur recréées en 3D
 
-Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Six
-sont **recréées dans three.js** avec les données du dernier client et jouées dans le film
-comme des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix russes) :
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Onze
+sont **recréées dans three.js** avec les données du dernier client et jouées dans le film comme
+des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix russes) :
 
 | Chapitre | Source du déroulé | Carte | Durée |
 |---|---|---|---|
 | Ferris 6.0 · « Rétrospective » (`ferris-retrospective`, quête `Ferris_4_secret1`) | serveur 7.0 | `Ferris4` (laboratoire) | 82 s |
+| Ferris 6.0 · « Incident n° 42 » (`ferris-incident`, `Ferris_4_secret2`) | serveur 7.0 | `Ferris4` (base, couche inst2) | 42 s |
+| Ferris 6.0 · « Un dialogue parfait » (`ferris-awakening`, `Ferris_4_6_1`) | serveur 7.0 | `Ferris4` | 13 s |
 | Ferris 6.0 · « Le portail de Ferris » (`ferris-portal`, `FR4Intro`) | serveur 7.0 | `Ferris4` | 94 s |
+| Ferris 6.0 · « La profanation du Fractal » (`ferris-fractal`, `Portal_Start`) | serveur 7.0 | `FerrisRaid` | 64 s |
+| Ferris 6.0 · « Pas de retour » (`ferris-no-way-back`, `Portal_Ending_Main`) | serveur 7.0 | `FerrisRaid` | 44 s |
+| Ferris 6.0 · « La force de l’Ordre » (`ferris-power-of-order`, `Swarm_Ending_Main`) | serveur 7.0 | `FerrisRaid` | 54 s |
 | Ferris 6.0 · « Les serviteurs de l’Ordre » (`ferris-order`) | serveur 7.0 | `FerrisRaid` | 51 s |
 | Ferris 6.0 · « Le Locus » (`ferris-locus`) | serveur 7.0 | `FerrisRaid` | 162 s |
 | Ferris 6.0 · « La chute du Locus » (`ferris-locus-fall`) | serveur 7.0 | `FerrisRaid` | 122 s |
 | Citadelle de Nihaz 12.0 · « Le monde caché » (`ao12-prologue04`, pilote) | manifeste | `AO12_PrologueInst` | 82 s |
+
+En attente, hors du film : `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
+éclairée par le seul éclairage de zone du 17.0 (violet sombre, sans lumière ponctuelle), est presque
+noire, et l'ouverture de la sphère (drapeau visuel) n'est pas reproduite.
+
+**Dossiers** : chaque carte a son dossier commun `engine/maps/<carte>/` — décor (`decor.glb`, les
+objets des zones de toutes ses scènes), sol (`terrain.glb`), textures, particules et leur atlas ;
+chaque scène garde les siens : éclairage de sommets (`decor-light.bin`, qui dépend du temps de la
+scène), ciel (`sky.glb`), effets, acteurs, voix, sons, sous-titres. Si `data/Packs` du client est un
+lien illisible depuis WSL, les outils lisent `data/Packs.adc-real`.
 
     python3 tools/extract_engine_cutscene.py                      # toutes les scènes
     python3 tools/extract_engine_cutscene.py --only ferris-locus  # une scène
@@ -211,7 +226,9 @@ c'est le serveur qui enchaîne les buffs.
   (`ImpactSummon` sur un repère `gameMechanics.map.Locator`, `ImpactGoTo` à la `walkSpeed` du
   `MobWorld`, `Disintegrate`) ; animations posées par buff (`CreatureAnimationAction`, `LOOP`
   ou une fois). Le résultat est rapporté au 17.0 : texte par la voix, PNJ par leur nom russe
-  (départagé par le dossier de la `VisualMob` 7.0), voix par le nom d'événement.
+  (départagé par le dossier de la `VisualMob` 7.0), voix par le nom d'événement. Aussi : PNJ des
+  tables d'apparition posées sur la carte (`ImpactFindSpawnTable` → `SpawnLocus` des `ServerObjects`,
+  couches `inst*` comprises) et leurs chemins (`GoThroughPath`).
 - *Scènes d'après 7.0* (`"source"` absent : le pilote) : caméra et répliques du 17.0, place
   des acteurs et instant des répliques donnés par le manifeste, justifiés.
 
@@ -240,6 +257,20 @@ c'est le serveur qui enchaîne les buffs.
   géosets en relocation de genre 2, non résolue dans `pack.bin` → texture du dossier nommée
   comme la géométrie (`Rysina.(Texture).bin`).
 
+- **sol** (`tools/allods_terrain.py`) : `terrainDump.bin` = maillage adaptatif par sous-carreau de
+  8 m — sommets de 4 octets (normale, indice dans la grille 9 × 9), puis une hauteur `f32` par
+  sommet, triangles `u8`, jeux de trois calques ; hauteurs identiques **au centimètre** à la carte
+  de hauteurs de l'arbre serveur 7.0 (`terrain.bin`, carreaux 8 × 8 sur 33 × 33). Plusieurs couches
+  superposées par région (`FerrisRaid`). Calques : `TerraLayers` (texture, répétition en mètres) ;
+  le sol prend le premier calque de sa première passe (poids du `SplatMap` non élucidés) ;
+- décor opaque rendu **d'une seule face**, comme le jeu : l'ouverture de `ferris-locus-fall`, caméra
+  sous la plateforme du Locus, montre alors le Cœur au-dessus ; les cristaux du portail
+  (`ferris-portal`, 20 à 37 s) restent : le même objet `FerrisRaid_CoreBottom` est à la même place en
+  7.0 et en 17.0, rien n'autorise à déplacer la caméra ;
+- éclairage de zone : liste de `ZoneLights` (`+0x168`), ou éclairage unique en ligne (`+0x48`, cartes
+  d'intérieur comme `Ferris_indoor`) ; nuages de ciel « alpha » dont la texture n'a pas d'alpha
+  rendus additifs.
+
 **Rendu** : décor non éclairé, couleur de sommet = ambiante + soleil (`N·S`) + octet 2 ×
 `PointLightColor` ; acteurs Lambert, émission = lumière locale ; soleil `DiffuseColor` ×
 π (`LIGHT_SCALE` des fatalités) ; brouillard ; ciel `SkyMesh` (tous ses calques, suit la
@@ -253,19 +284,16 @@ liées), `allods_visdb.py`, `allods_characters.py` (habillage, corrigé : couleu
 `allods_fx.py`, `allods_scenes.py`, et côté lecteur `votInstances.ts`, partagés avec les
 fatalités et la création de personnage.
 
-**Manques** : le terrain (`terrainDump.bin`, non décodé : scènes d'extérieur sans sol hors
-objets) ; le fichier d'événements FMOD `.bev` (sons appariés par nom : quelques ambiances
-introuvables, `Ferris4_Outdoor`, `Ferris_Winter1`) ; les effets de sort posés par projectile ou
-stèle (`CutScene_Boom`, `Portal_CutScene_Visual_Summon`) et ce que montre « Оглянитесь ! »
-(ciel vide ici) ; décor du 17.0 qui a changé depuis la 7.0 — cristaux du portail où se tient
-la caméra de 20 à 37 s (`ferris-portal`), dessous de plateforme à l'ouverture de
-`ferris-locus-fall` et à la fin de `ferris-locus` ; octets 0-1 du `lightvrt` ; le joueur,
-absent ; décor partagé entre `ferris-locus` et `ferris-locus-fall` mais exporté deux fois
-(29 Mo chacun, 132 Mo pour les six scènes).
+**Manques** : poids des calques du sol (`SplatMap`) ; octets 0-1 du `lightvrt` (quantifiés sur 3 et
+4 bits : pleins dans les intérieurs sans lumière, peut-être un éclairage indirect) ; le fichier
+d'événements FMOD `.bev` (sons appariés par nom : quelques ambiances introuvables) ; les effets de
+sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce que montre
+« Оглянитесь ! » ; les drapeaux visuels (`CreatureSetFlagVisAction`) ; les scènes faites de
+`GameViewScene` (`Swarm_CutScene`) ; le joueur, absent.
 
 ### Ce qui manque
 
-- **Cinématiques moteur** : six sont recréées (voir plus haut). Liste dans
+- **Cinématiques moteur** : onze sont recréées (voir plus haut). Liste dans
   `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
   (7_0Events), extraites ici.
 - **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et

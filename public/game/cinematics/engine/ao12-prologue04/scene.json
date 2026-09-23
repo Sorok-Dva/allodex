@@ -491,7 +491,7 @@
   }
  ],
  "decor": {
-  "glb": "decor.glb",
+  "glb": "../maps/AO12_PrologueInst/decor.glb",
   "light": "decor-light.bin",
   "instances": [
    {
@@ -875,7 +875,9 @@
   "sky": {
    "radius": 835.38,
    "parts": 1
-  }
+  },
+  "skyGlb": "sky.glb",
+  "oneSided": true
  },
  "fx": {
   "glb": "fx.glb",
@@ -915,7 +917,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/Nihaz_HQ_Column_FX.bin",
+    "file": "../maps/AO12_PrologueInst/particles/Nihaz_HQ_Column_FX.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 301,
@@ -974,7 +976,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/Nihaz_HQ_Column_FX_02.bin",
+    "file": "../maps/AO12_PrologueInst/particles/Nihaz_HQ_Column_FX_02.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 301,
@@ -1033,7 +1035,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/Nihaz_HQ_Column_FX_01.bin",
+    "file": "../maps/AO12_PrologueInst/particles/Nihaz_HQ_Column_FX_01.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 301,
@@ -1166,7 +1168,7 @@
    "fadeOut": 0.3,
    "scale": 1.0,
    "particles": {
-    "file": "particles/AC5_Nihaz_Pointer_Lower_FX.bin",
+    "file": "../maps/AO12_PrologueInst/particles/AC5_Nihaz_Pointer_Lower_FX.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 60,
@@ -1273,7 +1275,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/AC5_Nihaz_Pointer_Top_FX.bin",
+    "file": "../maps/AO12_PrologueInst/particles/AC5_Nihaz_Pointer_Top_FX.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 30,
@@ -1351,7 +1353,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/Nihaz_FlyPart_PortalOff02.bin",
+    "file": "../maps/AO12_PrologueInst/particles/Nihaz_FlyPart_PortalOff02.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 321,
@@ -1463,7 +1465,7 @@
    "scale": 1.0,
    "sound": "World/Zones/AC7/AC7_Nihaz_Camp_Lightning",
    "particles": {
-    "file": "particles/AC7_Nihaz_Camp_Lightning.bin",
+    "file": "../maps/AO12_PrologueInst/particles/AC7_Nihaz_Camp_Lightning.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 166,
@@ -1579,7 +1581,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/Nihaz_Raid11_Generator_Crystal.bin",
+    "file": "../maps/AO12_PrologueInst/particles/Nihaz_Raid11_Generator_Crystal.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 481,
@@ -1685,7 +1687,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/Nihaz_Raid11_Generator_Top_01.bin",
+    "file": "../maps/AO12_PrologueInst/particles/Nihaz_Raid11_Generator_Top_01.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 241,
@@ -1865,7 +1867,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/Elf_Big_House_CrystalGlow.bin",
+    "file": "../maps/AO12_PrologueInst/particles/Elf_Big_House_CrystalGlow.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 31,
@@ -1905,7 +1907,7 @@
    "scale": 2.0,
    "sound": "spells/FX/Spells/ArchitectorFX/PowerShieldBearer",
    "particles": {
-    "file": "particles/RysinaShield_Main.bin",
+    "file": "../maps/AO12_PrologueInst/particles/RysinaShield_Main.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 61,
@@ -1992,7 +1994,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/Nihaz_HQ_Hologram.bin",
+    "file": "../maps/AO12_PrologueInst/particles/Nihaz_HQ_Hologram.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 300,
@@ -2073,7 +2075,7 @@
   }
  },
  "particleAtlas": {
-  "file": "particles/atlas.png",
+  "file": "../maps/AO12_PrologueInst/particles/atlas.png",
   "width": 1024,
   "height": 256,
   "rects": [

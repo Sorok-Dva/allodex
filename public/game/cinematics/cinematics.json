@@ -250,6 +250,91 @@
    }
   },
   {
+   "id": "ferris-incident",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 152,
+   "event": "Ferris_4_secret2",
+   "title": {
+    "fr": "Incident n° 42",
+    "en": "Incident No. 42"
+   },
+   "chronology": "Cinématique moteur de la quête secrète « Ferris_4_secret2 » (« Происшествие №42 », Ferris, 6.0) : second souvenir du journal de l’« Objet » — les modifiés déferlent sur la base hadagane, les désinfecteurs ouvrent le feu et l’on ferme les portes.",
+   "bonus": false,
+   "duration": 42.3,
+   "files": {
+    "poster": "engine/ferris-incident/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-incident/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/ferris-incident/fr.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/ferris-incident/en.vtt",
+     "lines": 3
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/ferris-incident/ru.vtt",
+     "lines": 3
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 3,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-awakening",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 155,
+   "event": "Ferris_4_6_1",
+   "title": {
+    "fr": "Un dialogue parfait",
+    "en": "A Perfect Dialogue"
+   },
+   "chronology": "Cinématique moteur de la quête « Ferris_4_6_1 » (« Совершенный диалог », Ferris, 6.0) : l’Architecte ami s’éveille ; avant le raid de Ferris.",
+   "bonus": false,
+   "duration": 13.0,
+   "files": {
+    "poster": "engine/ferris-awakening/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-awakening/scene.json"
+   },
+   "tracks": [],
+   "subtitles": {
+    "status": "official",
+    "lines": 0,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "ferris-portal",
    "arc": "ferris",
    "version": "6.0",
@@ -292,6 +377,162 @@
    "subtitles": {
     "status": "official",
     "lines": 11,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-fractal",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 162,
+   "event": "FerrisRaid Portal_Start",
+   "title": {
+    "fr": "La profanation du Fractal",
+    "en": "The Desecrated Fractal"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« Portal_Start », 6.0) : devant le portail, Marianne di Arder prépare le sceau quand l’Architecte parle et envoie sa créature ; le portail ne se fermera pas tant qu’elle vivra.",
+   "bonus": false,
+   "duration": 63.5,
+   "files": {
+    "poster": "engine/ferris-fractal/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-fractal/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/ferris-fractal/fr.vtt",
+     "lines": 10
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/ferris-fractal/en.vtt",
+     "lines": 10
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/ferris-fractal/ru.vtt",
+     "lines": 10
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 10,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-no-way-back",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 164,
+   "event": "FerrisRaid Portal_Ending_Main",
+   "title": {
+    "fr": "Pas de retour",
+    "en": "No Way Back"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« Portal_Ending_Main », 6.0) : l’Architecte promet la transformation de tous ; le portail franchi, Rysina et Marianne découvrent un lieu étrange qui pulse d’énergie.",
+   "bonus": false,
+   "duration": 44.0,
+   "files": {
+    "poster": "engine/ferris-no-way-back/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-no-way-back/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/ferris-no-way-back/fr.vtt",
+     "lines": 6
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/ferris-no-way-back/en.vtt",
+     "lines": 6
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/ferris-no-way-back/ru.vtt",
+     "lines": 6
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 6,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-power-of-order",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 166,
+   "event": "FerrisRaid Swarm_Ending_Main",
+   "title": {
+    "fr": "La force de l’Ordre",
+    "en": "The Power of Order"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« Swarm_Ending_Main », 6.0) : après l’essaim, l’Architecte fait la démonstration de la force de l’Ordre ; Marianne tente d’ouvrir un nouveau portail.",
+   "bonus": false,
+   "duration": 54.0,
+   "files": {
+    "poster": "engine/ferris-power-of-order/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-power-of-order/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/ferris-power-of-order/fr.vtt",
+     "lines": 7
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/ferris-power-of-order/en.vtt",
+     "lines": 7
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/ferris-power-of-order/ru.vtt",
+     "lines": 7
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 7,
     "timing": "server",
     "audio": {
      "language": "ru"
