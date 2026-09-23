@@ -807,6 +807,7 @@ class Texts:
             report.append(f"textes FR illisibles : {exc}")
             self.fr = None
         self.fr_voice: dict[str, tuple[int, int]] = {}
+        self.fr_voice_all: dict[str, list[int]] = {}
         self.fr_root = Path(fr_spec["root"])
 
     def load_fr_voices(self) -> None:
@@ -830,8 +831,12 @@ class Texts:
                 continue
             if cl.voice and cl.text_index is not None:
                 self.fr_voice.setdefault(cl.voice, (cl.text_index, cl.delay_ms))
+                self.fr_voice_all.setdefault(cl.voice, []).append(cl.text_index)
 
-    def line(self, idx: int | None, voice: str | None, delay_ms: int, anchor_delta: int | None) -> dict:
+    def line(self, idx: int | None, voice: str | None, delay_ms: int, anchor_delta: int | None,
+             same_voice: list[int] | None = None) -> dict:
+        """`same_voice` : indices de texte du 17.0 des répliques qui partagent cette voix ; la réplique
+        française est alors celle de même rang parmi celles de la voix dans le client FR."""
         text: dict[str, str] = {}
         if idx is not None:
             text["ru"] = clean_text(self.main.texts["ru"][idx])
@@ -841,7 +846,10 @@ class Texts:
         if self.fr is not None:
             self.load_fr_voices()
             j = None
-            if voice and voice in self.fr_voice:
+            fr_all = sorted(set(self.fr_voice_all.get(voice or "", [])))
+            if same_voice and idx in same_voice and len(fr_all) == len(same_voice):
+                j = fr_all[sorted(same_voice).index(idx)]
+            elif voice and voice in self.fr_voice:
                 j = self.fr_voice[voice][0]
             elif anchor_delta is not None and idx is not None and self.fr.subtitles.get(idx - anchor_delta) == delay_ms:
                 j = idx - anchor_delta
@@ -871,9 +879,14 @@ class ClientLines:
             if cl.text_index is not None and cl.text_index < len(texts.main.texts["ru"]):
                 self.by_text.setdefault(norm_key(texts.main.texts["ru"][cl.text_index]), []).append(off)
 
+    def same_voice(self, voice: str | None) -> list[int]:
+        return sorted({self.lines[o].text_index for o in self.by_voice.get(voice or "", []) if self.lines[o].text_index is not None})
+
     def find(self, voice: str | None, ru: str) -> object | None:
         from tools.extract_cinematics import norm_key
-        for key, table in ((voice, self.by_voice), (norm_key(ru) if ru else None, self.by_text)):
+        # Le texte russe d'abord : deux répliques du 7.0 partagent parfois une même voix
+        # (`CS_FR_SwarmArch01` pour « Адаптация… » et « Не нужно сопротивляться… »).
+        for key, table in ((norm_key(ru) if ru else None, self.by_text), (voice, self.by_voice)):
             if key and key in table:
                 return self.lines[table[key][0]]
         return None
@@ -973,12 +986,19 @@ def voice_speaker(line: dict, summoned: dict[str, dict], spec: dict) -> str | No
     voice = (line.get("voice") or "").lower()
     aliases = {k.lower(): v.lower() for k, v in spec.get("speakers", {}).items()}
     wanted = {v for k, v in aliases.items() if k in voice}
+    # Le nom du locuteur vient en fin d'événement (`CS_FR_SwarmRysina03` : Rysina, pas l'essaim) :
+    # parmi les acteurs présents cités, celui dont le nom (ou l'alias) apparaît le plus à droite.
+    best, best_at = None, -1
     for key, actor in summoned.items():
-        present = any(a - 1e-3 <= line["t"] < b for a, b in actor["presence"])
+        if not any(a - 1e-3 <= line["t"] < b for a, b in actor["presence"]):
+            continue
         names = {actor["voice_key"], (actor.get("name") or "").lower()}
-        if present and (actor["voice_key"] in voice or names & wanted):
-            return key
-    return None
+        keys = [actor["voice_key"]] + [k for k, v in aliases.items() if v in names]
+        # le nom doit clore l'événement (suivi seulement de chiffres) : `swarm` de `SwarmRysina03` ne compte pas
+        at = max((m.start() for k in keys if k for m in [re.search(re.escape(k) + r"\d*$", voice)] if m), default=-1)
+        if at >= 0 and at > best_at:
+            best, best_at = key, at
+    return best
 
 
 def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: ClientLines, anim_names: dict,
@@ -1017,7 +1037,7 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
             line["speaker"] = voice_speaker(line, summoned, spec) or "player"
         cl = lines17.find(line["voice"], line["ru"])
         idx = cl.text_index if cl is not None else None
-        text = texts.line(idx, line["voice"], line["delay_ms"], None)
+        text = texts.line(idx, line["voice"], line["delay_ms"], None, lines17.same_voice(line["voice"]))
         if "ru" not in text and line["ru"]:
             text["ru"] = line["ru"]
         speaker = actors.get(line["speaker"], {}).get("id") or \

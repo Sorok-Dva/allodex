@@ -1281,6 +1281,24 @@
    }
   },
   {
+   "id": "ferris-swarm",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid Swarm_CutScene",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 165,
+   "title": {
+    "fr": "L’essaim",
+    "en": "The Swarm"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« Swarm_CutScene », 6.0) : un essaim d’Architectes surgit, Rysina dresse son bouclier mental ; il faudra atteindre le Cœur de l’essaim.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "ferris-power-of-order",
    "kind": "engine",
    "source": "main",
@@ -22866,6 +22884,18 @@
     "Arch": "Сердце Локуса"
    },
    "_note": "Déroulé serveur 7.0 (Portal_Ending_Main et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix."
+  },
+  {
+   "id": "ferris-swarm",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_CutScene.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Архитектор"
+   },
+   "_note": "Déroulé serveur 7.0 (Swarm_CutScene → _1part … _6part, EffectInstantiating) ; PNJ invoqués (essaim d’Architectes) sur les repères de FerrisRaid. La GameViewScene Swarm_CutScene du dossier GlobalObjects n’est pas lancée par cette chaîne. Aucun sol dans les données (7.0 comme 17.0) sous les repères de la scène : seuls des marqueurs invisibles (InstLeague1_AI_2X2) et des collisions ; les héros se tiennent au-dessus de la mer de nuages du ciel."
   },
   {
    "id": "ferris-power-of-order",
