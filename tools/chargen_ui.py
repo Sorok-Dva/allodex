@@ -10,7 +10,7 @@ fusionnée) et porté sur `tools/allods_packdb.py`. Décalages des champs `clien
 * `WidgetButton` : balise de texte `+0x120`, variantes `+0x1C0` (pas 0x188), chacune portant les
   calques de ses états ; l'état (normal, survolé, appuyé, désactivé…) se lit dans le nom de la
   texture (`ButtonAcceptPressedHighlighted`) ;
-* `WidgetLayer*` : couleur ARGB `+0x28`, `UISingleTexture` → `UITexture` ;
+* `WidgetLayer*` : mélange `+0x24` (0 alpha, 2 additif), couleur ARGB `+0x28`, `UISingleTexture` → `UITexture` ;
 * `UITexture` : indice du pak (bloc 6 du `pack.bin`) `+0x40`, rang dans le pak `+0x48`, hauteur
   `+0x78`, hauteur utile `+0x88`, largeur utile `+0x8C`, format `+0x90`, largeur `+0x94`.
 """
@@ -34,6 +34,7 @@ B_TEXTTAG = 0x120
 B_VARIANTS = 0x1C0
 B_VARIANT_STRIDE = 0x188
 L_COLOR = 0x28
+L_BLEND = 0x24     # 0 alpha ; 2 additif (lueurs de survol des factions, noir = transparent)
 ALIGN = ["low", "high", "center", "both", "lowAbs"]
 STATES = ("PressedHighlighted", "Highlighted", "Pressed", "Disabled", "Selected", "Normal", "Highlight",
           "Current", "Expects", "Finished", "Over")
@@ -127,6 +128,9 @@ class UiExtractor:
         if not ty or not ty.startswith("WidgetLayer"):
             return None
         out: dict = {"type": ty.replace("WidgetLayer", ""), "color": f"{self.db.u32(a + L_COLOR):08x}"}
+        blend = self.db.u32(a + L_BLEND)
+        if blend:
+            out["blend"] = blend
         for _, t in self.ptrs(a, a + 0x60):
             tex = self.single(t)
             if tex:

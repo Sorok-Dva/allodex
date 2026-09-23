@@ -82,6 +82,31 @@ def open_map(client: Path, cache_dir: Path | None = None) -> PackDB:
     return PackDB(mmap.mmap(handle.fileno(), 0, access=mmap.ACCESS_READ))
 
 
+def map_pak_codes(m: PackDB, names: dict[str, list[str]]) -> dict[int, str]:
+    """Table « code → pak » propre à la base de la carte (ses codes ne sont pas ceux de
+    `pack.bin`). Pour chaque code, le pak retenu est celui où le plus grand nombre de références
+    tombent sur un fichier du bon type (`(<Type>).bin`) ; à égalité, le vote par paires de
+    textures de `vote_pak_codes` départage (paks de textures, où tout rang tombe sur une texture)."""
+    import collections
+    from tools.allods_packdb import BINARY_REF
+    strong = vote_pak_codes(m, names)
+    score: dict[int, collections.Counter] = collections.defaultdict(collections.Counter)
+    for type_name, field in BINARY_REF.items():
+        suffix = f"({type_name}).bin"
+        for off in m.resources(type_name):
+            code, rank = m.u32(off + field), m.u32(off + field + 8)
+            for pak, listing in names.items():
+                if rank < len(listing) and listing[rank].endswith(suffix):
+                    score[code][pak] += 1
+    out: dict[int, str] = {}
+    for code in set(score) | set(strong):
+        counter = score.get(code, collections.Counter())
+        best = max(counter.values(), default=0)
+        tied = [p for p, v in counter.items() if v == best]
+        out[code] = strong[code] if code in strong and (strong[code] in tied or not tied) else (tied[0] if tied else strong[code])
+    return out
+
+
 def _rgb(value: int) -> str:
     return f"#{value & 0xFFFFFF:06x}"
 
@@ -116,6 +141,31 @@ def _quat_ypr(yaw: float, pitch: float, roll: float) -> list[float]:
     return [float(x) for x in r]
 
 
+INDEX_PAGE = 32768
+
+
+def fix_index_pages(loaded) -> int:
+    """Géométries de plus de 32 768 sommets (décors de création) : les indices 16 bits sont
+    relatifs à une « page » de 32 768 sommets. Les éléments sont rangés dans l'ordre des sommets ;
+    quand leur plage de sommets (`vb0`) repart loin en arrière, on passe à la page suivante — la
+    dernière page finit exactement au dernier sommet (`Interface_Scene` de Kania : 32 976 puis
+    208…7 154 = 39 922 sommets). Renvoie le nombre de pages décalées."""
+    n = len(loaded.vertices["position"])
+    if n <= INDEX_PAGE:
+        return 0
+    page, top = 0, 0
+    for e in loaded.geo.doc.elements:
+        if e.vb1 <= e.vb0:
+            continue
+        if e.vb0 < top - INDEX_PAGE // 2:
+            page += 1
+            top = 0
+        top = max(top, e.vb1)
+        if page and e.vb1 + page * INDEX_PAGE <= n:
+            loaded.indices[e.ib0:e.ib1] += page * INDEX_PAGE
+    return page
+
+
 class SceneExporter:
     def __init__(self, dbs: dict[str, tuple[PackDB, PakCatalog]], pool: TexturePool, bins) -> None:
         self.dbs = dbs
@@ -138,10 +188,15 @@ class SceneExporter:
         joint_nodes: list[int] = []
         names: list[str] = []
         if vo.geometry is not None:
-            loaded = load_geometry(db, cat, self.bins, vo.geometry)
+            try:
+                loaded = load_geometry(db, cat, self.bins, vo.geometry)
+            except (MemoryError, ValueError, IndexError) as error:
+                loaded = None
+                self.notes.append(f"géométrie illisible : {vo.name} ({cat.name(db.binary_ref(vo.geometry))}, {type(error).__name__})")
             if loaded is None:
                 self.notes.append(f"géométrie illisible : {vo.name}")
             else:
+                fix_index_pages(loaded)
                 elements = [e for e in loaded.geo.doc.elements if e.material.visible and e.material.texture
                             and self.ex.texture(e.material.texture) is not None]
                 skeleton = loaded.skeleton if loaded.skeleton is not None and len(loaded.skeleton) else None
@@ -230,8 +285,8 @@ def zone_lights_at(m: PackDB, pos: tuple[float, float, float]) -> int | None:
 def export_scenes(ctx, races: list[str], race_scene: dict[str, str]) -> dict:
     client = Path(ctx.cat.packs_dir).parent.parent
     m = open_map(client)
-    codes = vote_pak_codes(m, ctx.cat.names)
-    mcat = PakCatalog(ctx.cat.packs_dir, ctx.cat.names, {**ctx.cat.codes, **codes})
+    # Les codes de pak de la base de carte lui sont propres : aucune reprise de ceux de pack.bin.
+    mcat = PakCatalog(ctx.cat.packs_dir, ctx.cat.names, map_pak_codes(m, ctx.cat.names))
     pool = TexturePool(m, mcat, ctx.bins, ctx.out)
     objects = region_objects(m)
     places = {s.name: s for s in ac.character_scenes(ctx.db)}

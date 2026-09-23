@@ -113,6 +113,8 @@ VI_HIDDEN = {"female": 0x138, "male": 0x158, "unisex": 0x178}
 VI_HIDDEN_LOCATORS = {"female": 0x1A0, "male": 0x1C0, "unisex": 0x1E0}
 VI_DRESS_SLOT = 0xD8
 VI_PATCHES = 0x258
+VI_BRA_PATCHES = 0x90
+VI_PANTS_PATCHES = 0x228
 VI_UNDERWEAR = 0x260           # 0 SHOW_ALL … 3 HIDE_ALL
 SHAPE_STRIDE = 96
 SHAPE_VISOBJECT = 0x08
@@ -294,7 +296,12 @@ def read_visual_item(db: PackDB, off: int) -> VisualItem:
         s = _strings(db, off + rel)
         if s:
             vi.hidden_locators[key] = s
-    vi.patches = read_patches(db, db.ptr(off + VI_PATCHES))
+    # Calques dans l'ordre du client : sous-vêtement du haut, du bas, puis calques propres
+    # (`braTexturePatches`, `pantsTexturePatches`, `texturePatches` : décalages de
+    # `tools/allods_characters.py`, module des fatalités).
+    for rel in (VI_BRA_PATCHES, VI_PANTS_PATCHES, VI_PATCHES):
+        for key, lst in read_patches(db, db.ptr(off + rel)).items():
+            vi.patches.setdefault(key, []).extend(lst)
     vi.underwear = db.u32(off + VI_UNDERWEAR)
     vi.dress_slot = db.u32(off + VI_DRESS_SLOT)
     return vi
