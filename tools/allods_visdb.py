@@ -88,6 +88,26 @@ TEX_TYPE = 0x90
 TEX_WIDTH = 0x94
 TEXTURE_TYPES = {0: "DXT1", 1: "DXT3", 2: "DXT5", 3: "RGBA"}
 
+# --- SkeletalAnimation ------------------------------------------------------------------------
+
+# Boîte de l'animation entière (centre, demi-étendues), puis celle de sa dernière image : vérifiées
+# sur les `.xdb` 7.0 de `FatalityBard`, `Fatality_Channel`, `FatalityDruid_Explosion`.
+SKA_AABB = 0x24
+SKA_AABB_LAST_FRAME = 0x3C
+
+
+def animation_bounds(db: PackDB, animation: int | None, geometry: int | None) -> list[float] | None:
+    """Étendue d'un gabarit dans son repère : boîte de son animation (toutes images), à défaut
+    celle de sa géométrie ; `[cx, cy, cz, ex, ey, ez]` (centre, demi-étendues)."""
+    for base, rel in ((animation, SKA_AABB), (geometry, GEO_AABB)):
+        if base is None:
+            continue
+        values = [float(v) for v in db.floats(base + rel, 6)]
+        if all(abs(v) < 1e4 for v in values) and any(abs(v) > 1e-6 for v in values[3:]):
+            return [round(v, 3) for v in values]
+    return None
+
+
 # --- VisObjectTemplate ------------------------------------------------------------------------
 
 VOT_DEFAULT_STATE = 0x28
