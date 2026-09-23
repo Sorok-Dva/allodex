@@ -356,6 +356,13 @@ def build_sky(mp: PackDB, cat, bins, textures: TexturePool, light: dict, texture
         if loaded is None:
             continue
         elements = [e for e in loaded.geo.doc.elements if e.material.visible and e.material.texture]
+        for e in elements:
+            # Nuages de ciel « alpha » dont la texture n'a pas d'alpha (`Sky03_UpperCloud`, DXT1) :
+            # fond noir, donc rendus additifs (sinon des cartes noires barrent le ciel de Ferris4).
+            textures.uri(e.material.texture, DECOR_TEXTURE_MAX, texture_prefix)
+            if e.material.transparent and e.material.blend == "BLEND_EFFECT_ALPHA" and \
+                    not textures.has_alpha.get(e.material.texture, True):
+                e.material.blend = "BLEND_EFFECT_ADD"
         mesh, _ = ex.emit_mesh("sky", loaded.geo, loaded.vertices, loaded.indices, elements, None)
         if mesh is not None:
             node = {"mesh": mesh}
@@ -1000,6 +1007,11 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
     plan_lines = []
     for line in tl.lines:
         if not line["ru"] and not line["voice"]:
+            # `ClientData` d'animation seule (`Modif1_go`) : une action jouée une fois par le PNJ visé.
+            info = actors.get(line["speaker"]) or next((a for a in summoned.values() if line["speaker"] in a["summons"]), None)
+            if info is not None and line["animations"]:
+                info.setdefault("actions", []).append({"t": line["t"], "until": line["t"] + 30.0,
+                                                       "clips": [clip_name(a) for a in line["animations"]], "loop": False})
             continue
         if line["speaker"] == "player":
             line["speaker"] = voice_speaker(line, summoned, spec) or "player"

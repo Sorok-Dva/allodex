@@ -1191,6 +1191,42 @@
    }
   },
   {
+   "id": "ferris-incident",
+   "kind": "engine",
+   "source": "main",
+   "event": "Ferris_4_secret2",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 152,
+   "title": {
+    "fr": "Incident n° 42",
+    "en": "Incident No. 42"
+   },
+   "chronology": "Cinématique moteur de la quête secrète « Ferris_4_secret2 » (« Происшествие №42 », Ferris, 6.0) : second souvenir du journal de l’« Objet » — les modifiés déferlent sur la base hadagane, les désinfecteurs ouvrent le feu et l’on ferme les portes.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-awakening",
+   "kind": "engine",
+   "source": "main",
+   "event": "Ferris_4_6_1",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 155,
+   "title": {
+    "fr": "Un dialogue parfait",
+    "en": "A Perfect Dialogue"
+   },
+   "chronology": "Cinématique moteur de la quête « Ferris_4_6_1 » (« Совершенный диалог », Ferris, 6.0) : l’Architecte ami s’éveille ; avant le raid de Ferris.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "ferris-portal",
    "kind": "engine",
    "source": "main",
@@ -22727,6 +22763,20 @@
    "source": "xdb70",
    "first_buff": "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_fade_start.(BuffResource).xdb",
    "_note": "Déroulé serveur relu dans l’arbre 7.0 (buffs Cutscene_fade_start → Cutscene_01 … Cutscene07 → Cutscene_fade_end), rapporté au client 17.0 : caméras, répliques et locuteurs, PNJ et leur place (5_4_ServerObjects), ciel et lumière de la vision, musique et ambiance."
+  },
+  {
+   "id": "ferris-incident",
+   "source": "xdb70",
+   "first_buff": "World/Quests/Ferris4/Ferris_4_secret2/Cut_scene_start.(BuffResource).xdb",
+   "map": "Ferris4",
+   "_note": "Déroulé serveur 7.0 (Cut_scene_start → Cut_scene_01, _02, _0301 → Cutscene_fade_end) ; PNJ des tables d’apparition posées sur la couche inst2 de Ferris4 (SpawnLocus), qui suivent leurs chemins (GoThroughPath). Les jets des lance-flammes (sorts) ne sont pas reproduits."
+  },
+  {
+   "id": "ferris-awakening",
+   "source": "xdb70",
+   "first_buff": "World/Quests/Ferris4/Ferris_4_6_1/Ferris_4_6_1_Cutscene.(BuffResource).xdb",
+   "map": "Ferris4",
+   "_note": "Déroulé serveur 7.0 : un plan de 13 s sur l’Architecte ami (Ferris4_Architect_Friend_Mob), animations special puis sleepUp."
   },
   {
    "id": "ferris-portal",
