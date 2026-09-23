@@ -167,6 +167,9 @@ class Simulator:
         elif kind == "Switch":
             for impact in node.findall("impactsOn/Item"):
                 self.impact(base, impact, t, target)
+        elif kind == "EffectInstantiating":
+            for sub in node.findall("effects/Item"):
+                self.effect(base, sub, t, duration, target)
         elif kind in ("EffectOnBuffApply", "EffectInstant"):
             for impact in node.findall("impacts/Item"):
                 self.impact(base, impact, t, target)

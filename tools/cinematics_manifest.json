@@ -91,6 +91,13 @@
     "en": "The All-Mother"
    },
    "version": "13.0"
+  },
+  "isa": {
+   "title": {
+    "fr": "Isa",
+    "en": "Isa"
+   },
+   "version": "14.0"
   }
  },
  "sources": {
@@ -317,6 +324,24 @@
     ]
    },
    "note": "Version HD de la cinématique moteur ShipExplosion : le client en avait deux variantes (Kania / Hadagan) mais n’a qu’une vidéo et un seul événement ; le visuel et les sous-titres sont ceux de la variante Ligue (Ship_explosion_L).",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "invasion-engineer-kania",
+   "kind": "engine",
+   "source": "main",
+   "event": "CutScene_EngineerDeathKania",
+   "arc": "invasion",
+   "version": "7.0",
+   "faction": "league",
+   "order": 225,
+   "title": {
+    "fr": "La mort de l’ingénieur",
+    "en": "The Engineer’s Death"
+   },
+   "chronology": "Scène moteur de l’instance de départ de l’Invasion (Inst_ZoneContested12_Start, 7.0, version de la Ligue) : l’ingénieur Luka tombe sous les coups de trois assassins colosses ; entre le navire astral et la métamorphose.",
    "audio": {
     "language": "ru"
    }
@@ -1276,6 +1301,24 @@
     "en": "No Way Back"
    },
    "chronology": "Cinématique moteur du raid de Ferris (« Portal_Ending_Main », 6.0) : l’Architecte promet la transformation de tous ; le portail franchi, Rysina et Marianne découvrent un lieu étrange qui pulse d’énergie.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-swarm",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid Swarm_CutScene",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 165,
+   "title": {
+    "fr": "L’essaim",
+    "en": "The Swarm"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« Swarm_CutScene », 6.0) : un essaim d’Architectes surgit, Rysina dresse son bouclier mental ; il faudra atteindre le Cœur de l’essaim.",
    "audio": {
     "language": "ru"
    }
@@ -22868,6 +22911,18 @@
    "_note": "Déroulé serveur 7.0 (Portal_Ending_Main et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix."
   },
   {
+   "id": "ferris-swarm",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_CutScene.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Архитектор"
+   },
+   "_note": "Déroulé serveur 7.0 (Swarm_CutScene → _1part … _6part, EffectInstantiating) ; PNJ invoqués (essaim d’Architectes) sur les repères de FerrisRaid. La GameViewScene Swarm_CutScene du dossier GlobalObjects n’est pas lancée par cette chaîne. Aucun sol dans les données (7.0 comme 17.0) sous les repères de la scène : seuls des marqueurs invisibles (InstLeague1_AI_2X2) et des collisions ; les héros se tiennent au-dessus de la mer de nuages du ciel."
+  },
+  {
    "id": "ferris-power-of-order",
    "source": "xdb70",
    "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_Ending_Main.(BuffResource).xdb",
@@ -22914,6 +22969,115 @@
     "Arch": "Сердце Локуса"
    },
    "_note": "Déroulé serveur 7.0 du raid de Ferris ; PNJ invoqués sur les repères de la carte FerrisRaid ; locuteurs par le nom de la voix (Vayatel → le Colosse, Marianna → di Arder, Arch → le Cœur du Locus)."
+  },
+  {
+   "id": "isa-freya",
+   "map": "Isa",
+   "buff": 521226,
+   "buff_note": "BuffResource 521226 → BuffVisScripts 521225 → CameraTrackAction : 4 points (7 s, 0,1 s, 6 s, 6 s) et 3 visées, 19 s.",
+   "lines": [
+    521219,
+    521207,
+    521210,
+    521203
+   ],
+   "lines_note": "Répliques rangées avec le buff (même dossier, identifiants 521203–521219) : les deux doublées (voix Isa_Ship_7_FinalScene_Subtitle_1 puis _2 : Hauk, puis Trand) ouvrent l’échange ; « C’est la Freya ! » et « Notre arrière-grand-père… a trouvé Isa ! », non doublées, le closent. Rattachement : dossier et numéros des voix ; aucune ressource du client ne relie les ClientData au buff (script serveur).",
+   "fov": 45,
+   "timing": {
+    "groups": [
+     {
+      "segment": 0,
+      "lines": [
+       1,
+       2,
+       3,
+       4
+      ]
+     }
+    ],
+    "lead": 0.5,
+    "gap": 0.4,
+    "_note": "Les quatre répliques (18 s d’affichage) tiennent dans les 19 s du plan : elles s’enchaînent dès l’ouverture."
+   },
+   "decor_center": [
+    13335,
+    12490
+   ],
+   "decor_radius": 160,
+   "actors": [
+    {
+     "id": "hauk",
+     "mob": 521238,
+     "position": [
+      13337.5,
+      12492.0,
+      130
+     ],
+     "ground": true,
+     "face": [
+      13330.0,
+      12474.0
+     ],
+     "idle": "Idle",
+     "talk": "EmoteSpeech",
+     "animations": [
+      "Idle",
+      "EmoteSpeech"
+     ],
+     "speaker_prefixes": [
+      "Хаук:"
+     ]
+    },
+    {
+     "id": "trand",
+     "mob": 521384,
+     "position": [
+      13334.0,
+      12494.0,
+      130
+     ],
+     "ground": true,
+     "face": [
+      13330.0,
+      12474.0
+     ],
+     "idle": "Idle",
+     "talk": "EmoteSpeech",
+     "animations": [
+      "Idle",
+      "EmoteSpeech"
+     ],
+     "speaker_prefixes": [
+      "Транд:"
+     ]
+    }
+   ],
+   "staging_note": "Mise en scène (le serveur place les PNJ) : les deux frères au pied de la pente, entre la caméra et ce qu’elle vise, tournés vers la visée finale (13330 ; 12474) ; posés sur le sol du terrain. Modèles : les MobWorld Hauk 521238 (même dossier que le buff) et Trand 521384 (le plus proche).",
+   "post": [
+    {
+     "t": 0,
+     "kind": "fadeIn",
+     "duration": 1.0
+    },
+    {
+     "t": 18.0,
+     "kind": "fadeOut",
+     "duration": 1.0
+    }
+   ],
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
+   },
+   "_note": "En attente, hors du film : le sujet du plan, le navire astral « Freya », n’est pas dans le décor du client (posé par le serveur) ; la caméra ne montre que des sapins."
+  },
+  {
+   "id": "invasion-engineer-kania",
+   "source": "gameview",
+   "scene": 438509,
+   "_note": "GameViewScene 438509 (CutScene_EngineerDeathKania, Inst_ZoneContested12_Start) jouée par le ShowSceneAction de la stèle 438512 : trois assassins colosses (special03, 04, 05) et Luka (special08) à la place de la scène, caméra au cameraPlacement. Caméra : le cameraPlacement (drapeau use) pose le spectateur ; caméra à 2 m au-dessus, regard selon son lacet (vue de joueur). La version hadagane (CutScene_EngineerDeathHadagan du 7.0) n’existe plus dans le 17.0 : la GameViewScene 443968, voisine, est l’explosion du navire, déjà dans le film en vidéo."
   }
  ]
 }

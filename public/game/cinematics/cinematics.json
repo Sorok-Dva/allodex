@@ -90,6 +90,13 @@
     "en": "The All-Mother"
    },
    "version": "13.0"
+  },
+  "isa": {
+   "title": {
+    "fr": "Isa",
+    "en": "Isa"
+   },
+   "version": "14.0"
   }
  },
  "cinematics": [
@@ -491,6 +498,58 @@
    }
   },
   {
+   "id": "ferris-swarm",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 165,
+   "event": "FerrisRaid Swarm_CutScene",
+   "title": {
+    "fr": "L’essaim",
+    "en": "The Swarm"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« Swarm_CutScene », 6.0) : un essaim d’Architectes surgit, Rysina dresse son bouclier mental ; il faudra atteindre le Cœur de l’essaim.",
+   "bonus": false,
+   "duration": 71.5,
+   "files": {
+    "poster": "engine/ferris-swarm/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-swarm/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/ferris-swarm/fr.vtt",
+     "lines": 10
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/ferris-swarm/en.vtt",
+     "lines": 10
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/ferris-swarm/ru.vtt",
+     "lines": 10
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 10,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "ferris-power-of-order",
    "arc": "ferris",
    "version": "6.0",
@@ -837,6 +896,39 @@
    },
    "chronology": "Registre vidéo du client (groupe « Invasion ») : événements listés dans cet ordre, qui est aussi celui de l’histoire (la bannière de la victoire clôt la série). Zone disputée ZC12, jouée par les deux factions.",
    "note": "Version HD de la cinématique moteur ShipExplosion : le client en avait deux variantes (Kania / Hadagan) mais n’a qu’une vidéo et un seul événement ; le visuel et les sous-titres sont ceux de la variante Ligue (Ship_explosion_L)."
+  },
+  {
+   "id": "invasion-engineer-kania",
+   "arc": "invasion",
+   "version": "7.0",
+   "faction": "league",
+   "order": 225,
+   "event": "CutScene_EngineerDeathKania",
+   "title": {
+    "fr": "La mort de l’ingénieur",
+    "en": "The Engineer’s Death"
+   },
+   "chronology": "Scène moteur de l’instance de départ de l’Invasion (Inst_ZoneContested12_Start, 7.0, version de la Ligue) : l’ingénieur Luka tombe sous les coups de trois assassins colosses ; entre le navire astral et la métamorphose.",
+   "bonus": false,
+   "duration": 13.433,
+   "files": {
+    "poster": "engine/invasion-engineer-kania/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/invasion-engineer-kania/scene.json"
+   },
+   "tracks": [],
+   "subtitles": {
+    "status": "official",
+    "lines": 0,
+    "timing": "client",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
   },
   {
    "id": "invasion-kursk-1",

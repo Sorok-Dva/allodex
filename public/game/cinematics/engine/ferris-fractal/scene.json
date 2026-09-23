@@ -442,9 +442,9 @@
    "clips": [],
    "animations": [],
    "text": {
-    "ru": "Наслаждайтесь своим преимуществом. Оно продлится недолго.",
-    "en": "Enjoy your advantage. It will not last.",
-    "fr": "Profitez de votre avantage. Il ne durera pas."
+    "ru": "Вы нарушили цельность Фрактала. Осквернили Путь.",
+    "en": "You have disrupted the wholeness of the Fractal. You have desecrated the Passage.",
+    "fr": "Vous avez rompu l'intégralité de la Fractale. Vous avez désacralisé le Passage."
    },
    "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Portal_Sub6.(ClientData).xdb"
   },
@@ -464,9 +464,9 @@
    "clips": [],
    "animations": [],
    "text": {
-    "ru": "Вы все будете преобразованы. Скоро...",
-    "en": "You all will be transmuted. Soon...",
-    "fr": "Vous allez tous être transmutés. Bientôt..."
+    "ru": "Лишние эмоции, лишняя суета, лишняя жизнь... Хаосу нет пути в наш мир.",
+    "en": "Needless emotions, needless haste, needless life... The chaos cannot enter our world.",
+    "fr": "Des émotions inutiles, une précipitation inutile, une vie inutile... Le chaos ne peut pas entrer dans notre monde."
    },
    "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Portal_Sub7.(ClientData).xdb"
   }
@@ -474,7 +474,7 @@
  "actors": [
   {
    "id": "rysina",
-   "glb": "actors/rysina.glb",
+   "glb": "../shared/actors/mob-56721a8.glb",
    "name": {
     "ru": "Елизавета Рысина",
     "en": "Elizaveta Rysina"
@@ -527,15 +527,20 @@
    "geometry": "Creatures/Rysina/Rysina.(Geometry).bin",
    "height": 1.916,
    "animations": {
+    "ChannelCastOmni": 0.9667,
     "EmoteSpeech": 5.3333,
+    "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
+    "ReadySpellDirected": 1.3333,
+    "Special": 12.0,
+    "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.3333,
     "Walk": 1.6333
    }
   },
   {
    "id": "diarder",
-   "glb": "actors/diarder.glb",
+   "glb": "../shared/actors/mob-56747f0.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -606,9 +611,13 @@
    "geometry": "Creatures/Mirianna/Mirianna.(Geometry).bin",
    "height": 2.34,
    "animations": {
+    "EmoteSpeech": 5.3333,
     "Idle": 4.0,
     "Idle01": 3.0,
+    "Idle02": 4.1,
+    "Ready": 2.6667,
     "ReadySpellDirected": 2.6667,
+    "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.5,
     "Walk": 1.0
    }
@@ -1759,6 +1768,34 @@
     }
    ]
   },
+  "Architect_Console": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_Small_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_Small_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ArchitectDoor_Impost": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
   "Architect_Arena_FX": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -1779,20 +1816,6 @@
     }
    ]
   },
-  "Architect_Console": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "ArchitectDoor_Impost": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
   "Architect_Rock_04#3": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -1808,20 +1831,6 @@
    "loop": false
   },
   "Architect_World_MagicStone": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "Architect_Rock_Small_01": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "Architect_Rock_Small_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
