@@ -614,6 +614,65 @@ def parse_relocs(raw: bytes, index: PackIndex, search: int = 1 << 20, probe: int
     return Relocs(base[order], tag[keep][order], pairs[keep, 1].astype(np.int64)[order])
 
 
+def resource_edges(index: PackIndex, relocs: Relocs) -> np.ndarray:
+    """Références entre ressources `(source, cible)` (rids, uniques, sans boucle) : pointeurs
+    d'étiquette 0 dont la cible est le début d'une ressource."""
+    ref = relocs.tag == 0
+    src, tgt = relocs.base[ref], relocs.target[ref]
+    si = np.searchsorted(index.offsets, src, side="right") - 1
+    ti = np.minimum(np.searchsorted(index.offsets, tgt), len(index.offsets) - 1)
+    ok = (si >= 0) & (index.offsets[ti] == tgt)
+    edges = np.unique(np.stack([index.rids[si[ok]], index.rids[ti[ok]]], 1), axis=0)
+    return edges[edges[:, 0] != edges[:, 1]]
+
+
+def lore_links(edges: np.ndarray, category: dict[int, str], depth: int = 3, cap: int = 400) -> dict[str, dict]:
+    """Liens entre entrées du lore déduits des références de `pack.bin` :
+
+    * `dialogue_character` / `dialogue_quest` : en remontant les références (qui pointe vers la
+      réplique, puis vers ce référent… jusqu'à `depth` niveaux), le seul PNJ nommé, la seule quête ;
+    * `quest_characters` : PNJ nommés que la quête référence directement (au plus 6)."""
+    if not len(edges):
+        return {"dialogue_character": {}, "dialogue_quest": {}, "quest_characters": {}}
+    by_tgt = edges[np.argsort(edges[:, 1], kind="stable")]
+    by_src = edges[np.argsort(edges[:, 0], kind="stable")]
+
+    def parents(r: int) -> np.ndarray:
+        a, b = np.searchsorted(by_tgt[:, 1], [r, r + 1])
+        return by_tgt[a:b, 0]
+
+    def children(r: int) -> np.ndarray:
+        a, b = np.searchsorted(by_src[:, 0], [r, r + 1])
+        return by_src[a:b, 1]
+
+    out = {"dialogue_character": {}, "dialogue_quest": {}, "quest_characters": {}}
+    for rid, cat in category.items():
+        if cat == "dialogues":
+            seen, frontier = {rid}, [rid]
+            found = {"characters": set(), "quests": set()}
+            for _ in range(depth):
+                nxt = []
+                for x in frontier:
+                    for p in parents(x).tolist():
+                        if p not in seen:
+                            seen.add(p)
+                            nxt.append(p)
+                            if category.get(p) in found:
+                                found[category[p]].add(p)
+                if found["characters"] or found["quests"] or len(nxt) > cap:
+                    break
+                frontier = nxt
+            if len(found["characters"]) == 1:
+                out["dialogue_character"][f"r{rid}"] = f"r{next(iter(found['characters']))}"
+            if len(found["quests"]) == 1:
+                out["dialogue_quest"][f"r{rid}"] = f"r{next(iter(found['quests']))}"
+        elif cat == "quests":
+            chars = sorted({c for c in children(rid).tolist() if category.get(c) == "characters"})
+            if 0 < len(chars) <= 6:
+                out["quest_characters"][f"r{rid}"] = [f"r{c}" for c in chars]
+    return out
+
+
 # --- Тайны мира (secrets du monde) ------------------------------------------------------------------
 
 # Ressource `WorldSecrets` (Mechanics/GameRoot/WorldSecrets.xdb, resourceId stable) : un tableau
@@ -940,6 +999,7 @@ class Extractor:
         if ws is None and WORLD_SECRETS_ID in self.pack.key_offset:
             ws = {o: r for r, o in self.pack.rid_offset.items()}.get(self.pack.key_offset[WORLD_SECRETS_ID])
         secrets = find_secrets(self.pack_raw, self.pack, relocs, ws, L.owner, len(self.ru))
+        self.edges = resource_edges(self.pack, relocs)
         self.log(f"  secrets du monde : {len(secrets)} secrets, {sum(len(s['components']) for s in secrets)} étapes "
                  f"({len(relocs.base)} pointeurs relogés)")
         if ws is not None and not secrets:
@@ -1374,6 +1434,10 @@ class Extractor:
             atlas = {"credit": credit, "credit_source": credit_source(atlas.get("source", ""), CLASSES[3], self.m.get("credit") or {}),
                      **atlas}
         files["atlas"] = self.write("atlas.json", atlas)
+        category = {int(e["id"][1:]): cat for cat, entries in cats.items() for e in entries if e["id"].startswith("r")}
+        links = lore_links(getattr(self, "edges", np.zeros((0, 2), np.int64)), category)
+        self.log("  liens : " + ", ".join(f"{k} {len(v)}" for k, v in links.items()))
+        files["links"] = self.write("links.json", links)
         n = len(self.ru)
         nonempty = [t for t in range(n) if self.ru[t].strip()]
         en_ok = sum(1 for t in nonempty if en_status(self.en[t], self.en[t]) != "missing")
@@ -1392,6 +1456,8 @@ class Extractor:
                       "anchors of equal offset",
                 "secrets": "WorldSecrets resource of pack.bin, arrays and references resolved through its relocation "
                            "table; components[].quests = ids of the quests (r<rid>, see quests.json)",
+                "links": "links.json: dialogue → named NPC / quest (walking up the resource references, unique "
+                         "match only) and quest → named NPCs it references directly",
             },
             "provenance": {"in-game": "shipped in the official client; en_status tells whether an official English exists",
                            "official": "official out-of-game text (announcements, dev posts, story FAQ)",
