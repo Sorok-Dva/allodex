@@ -810,7 +810,9 @@ manque trois animations de sort demandées par certaines fatalités de boutique.
 (`CreatureChannelDirectAction` : gabarit `Fatality_Channel` modelé sur `fxLength` = 10 m le long de
 −Y, étiré entre ses extrémités — racine + 1 m chez le tueur et chez la victime —, fondus 0,2 s /
 0,1 s) ; le Phénix ajoute ses deux animations (`speed` 1,5) et un second rayon. Le script du client
-n'a pas de fin propre : il s'éteint avec la victime. Les ailes (`CreatureRunVisActionResource`, sous
+n'a pas de fin propre : il s'éteint avec la victime ; le rayon, lui, meurt avec son clip (4 s à
+`speed` 1,3 = 3,08 s, non bouclé), quand l'étincelle `Soul_Spark` qu'il porte (`Slot_Special01`, de
+−9,4 m à 0) atteint le tueur, avec son `fadeOutMS` (0,5 s). Les ailes (`CreatureRunVisActionResource`, sous
 drapeaux `FatalityWings*` achetés en boutique) ne sont pas jouées. Mise en scène (constantes du
 lecteur) : le tueur se tient à **17 m** (distance de sort, 15 à 20 m, validée), à 55° de l'avant de la victime côté −X, posé sur le terrain et tourné vers elle ; le rayon s'étire donc à 1,7 fois sa longueur modelée, fondus inchangés ; le cadrage initial se place face au segment victime → tueur pour voir les deux, puis l'orbite est libre ; il
 se choisit dans le panneau (défaut : même sexe, première race de l'autre faction, URL `k=`).
@@ -838,6 +840,18 @@ recherche), chaque image recalculée d'après la chronologie (`timeline.ts`) ; g
 instant, fondus d'entrée/sortie des `VisObjectTemplate`, composants retardés/arrêtés
 (`DelayComponent`, `StopVisObjectComponents`), défilement UV, orientation Z_AXIS et BILLBOARD face
 caméra, particules en quads instanciés (`particles.ts`), sons calés sur la chronologie.
+
+- **Vie propre de chaque gabarit** (`VotPart`, `votInstances.ts`, option `lifetimes`) : la racine
+  et chaque composant accroché ont leur fenêtre — apparition au retard du `DelayComponent` avec son
+  `fadeInMS`, fin à l'arrêt (`StopVisObjectComponents`) ou **au bout de son clip s'il ne boucle pas**
+  (`SkeletalAnimation.looped` faux), avec son `fadeOutMS` ; un composant s'éteint avec son parent.
+  Preuve sur le Barde : `FatalityBardMuseLight` (clip de 1,5 s posé à 7,87 s, `fadeOutMS` 800) n'est
+  visé par aucun arrêt (celui de 7,85 s le précède) et son parent meurt sans fondu à 11,6 s : ce
+  fondu n'a de sens que si l'objet s'éteint seul à la fin de son clip ; de même le rayon et son
+  étincelle (ci-dessus). Avant, la dernière pose était tenue jusqu'à la fin de vie de l'instance :
+  67 gabarits figés dans 25 fatalités (Muse de lumière et neuf `FatalityBard_Lines` du Barde, dôme
+  `FatalityDruid_Explosion01` du Tribaliste, chauves-souris de l'Invocateur, rayon partout…). Les
+  cinématiques moteur gardent l'ancien comportement (règle non vérifiée sur leur décor) ;
 
 - **Géométrie douce** (`softGeometry.ts`) : les matériaux d'effet dont la texture d'environnement
   est un `SoftGeometryGrain*` (≈ 300 éléments) la lisent à la normale vue de la caméra

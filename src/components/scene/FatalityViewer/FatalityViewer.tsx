@@ -236,7 +236,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     const channels: { inst: VotInstance; event: ChannelEvent }[] = [];
     const sounds: { t: number; audio: HTMLAudioElement; duration: number }[] = [];
 
-    const factory = new VotFactory({ objects, baseUrl: fxUrl, disposables, anisotropy: () => renderer?.capabilities?.getMaxAnisotropy?.() ?? 1 });
+    const factory = new VotFactory({ objects, baseUrl: fxUrl, disposables, anisotropy: () => renderer?.capabilities?.getMaxAnisotropy?.() ?? 1, lifetimes: true });
     const prepare = (root: THREE.Object3D, lit: boolean, tinted: Tinted[], scrolling: null) => factory.prepare(root, lit, tinted, scrolling);
     let skyNode: THREE.Object3D | null = null;
     const instantiate = (proto: THREE.Object3D, clips: THREE.AnimationClip[], start: number, lifeTime: number,
