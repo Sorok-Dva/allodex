@@ -613,5 +613,20 @@
       ],
       "radius": 300
     }
+  },
+  "staging": {
+    "_note": "Mise en scène (sans donnée du client), recopiée dans les constantes du lecteur (FatalityViewer.tsx : ATTACKER_DISTANCE, ATTACKER_BEARING ; dress.ts : TRIO_OFFSETS). Tueur à ~17 m de la victime (distance de sort, 15 à 20 m, validée par l'utilisateur), à 55° de l'avant de la victime côté −X du jeu, tourné vers elle. Trio des gibelins : placement inventé, celui de l'écran de création.",
+    "attackerDistance": 17,
+    "attackerBearingDegrees": -55,
+    "gibberlingTrio": [
+      [
+        -0.75,
+        0.45
+      ],
+      [
+        0.75,
+        0.45
+      ]
+    ]
   }
 }
