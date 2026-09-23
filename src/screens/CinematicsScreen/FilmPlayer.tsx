@@ -4,6 +4,7 @@ import { pick, useI18n } from '@/lib/i18n';
 import { nineSlice } from '@/lib/nineSlice';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { FullscreenToggle } from '@/components/controls/FullscreenToggle';
+import { EngineCutscene, type MediaLike } from '@/components/scene/EngineCutscene';
 import {
   bonusStart, chapterAt, chaptersOf, cinematicFile, filmDuration, filmTime, formatDuration, groupByArc, nextIndex,
   subtitleLangs, trackFor, type Cinematic, type CinematicArc, type Faction, type SubtitleLang,
@@ -59,8 +60,9 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
   // Liste des chapitres ouverte d'emblée sauf sur petit écran, où elle recouvrirait la vidéo.
   const [panelOpen, setPanelOpen] = useState(() => typeof window === 'undefined' || window.innerWidth > 760);
   const [card, setCard] = useState(0);
-  const video0 = useRef<HTMLVideoElement>(null);
-  const video1 = useRef<HTMLVideoElement>(null);
+  // Lecteurs : balise <video>, ou cinématique moteur recréée en 3D (même interface de lecture).
+  const video0 = useRef<MediaLike>(null);
+  const video1 = useRef<MediaLike>(null);
   const videos = useMemo(() => [video0, video1] as const, []);
   const pendingSeek = useRef<number | null>(null);
   const playerRef = useRef<HTMLDivElement>(null);
@@ -75,7 +77,7 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
   const firstBonus = useMemo(() => bonusStart(film), [film]);
   const inBonus = firstBonus !== null && current >= firstBonus;
 
-  const play = useCallback((video: HTMLVideoElement | null) => {
+  const play = useCallback((video: MediaLike | null) => {
     if (!video) return;
     const p = video.play?.();
     if (p && typeof p.catch === 'function') p.catch(() => setPaused(true));
@@ -126,7 +128,7 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
   useEffect(() => {
     videos.forEach((ref, k) => { if (ref.current) ref.current.muted = k !== active; });
     for (const ref of videos) {
-      const tracks = ref.current?.textTracks;
+      const tracks = (ref.current as HTMLVideoElement | null)?.textTracks;
       if (!tracks) continue;
       for (let i = 0; i < tracks.length; i++) {
         tracks[i].mode = subLang && tracks[i].language === subLang ? 'showing' : 'disabled';
@@ -253,12 +255,34 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
           const index = slots[k];
           const c = index === null ? null : film[index];
           const visible = k === active;
+          if (c?.engine) {
+            return (
+              <EngineCutscene
+                key={`${k}-${c.id}`}
+                ref={videos[k]}
+                className={`${s.video} ${visible ? s.visible : s.hidden}`}
+                sceneUrl={cinematicFile(c.engine.scene)}
+                subtitleLang={subLang}
+                hidden={!visible}
+                onClick={visible ? togglePlay : undefined}
+                onLoadedMetadata={visible ? () => {
+                  const media = videos[k].current;
+                  if (media && pendingSeek.current !== null) { media.currentTime = pendingSeek.current; pendingSeek.current = null; }
+                  if (media && !ended) play(media);
+                } : undefined}
+                onTimeUpdate={visible ? setTime : undefined}
+                onEnded={visible ? onEnded : undefined}
+                onPlay={visible ? () => setPaused(false) : undefined}
+                onPause={visible ? () => setPaused(true) : undefined}
+              />
+            );
+          }
           return (
             <video
               key={k}
-              ref={videos[k]}
+              ref={videos[k] as React.RefObject<HTMLVideoElement>}
               className={`${s.video} ${visible ? s.visible : s.hidden}`}
-              src={c?.files ? cinematicFile(c.files[format]) : undefined}
+              src={c?.files?.[format] ? cinematicFile(c.files[format]!) : undefined}
               poster={c?.files ? cinematicFile(c.files.poster) : undefined}
               preload={visible ? 'auto' : c ? 'auto' : 'none'}
               muted={!visible}

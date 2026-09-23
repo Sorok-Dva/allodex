@@ -25,7 +25,9 @@ export type Cinematic = {
   /** Durée en secondes. */
   duration: number;
   /** `null` = vidéo non extraite (client absent au moment de l'extraction). */
-  files: { webm: string; mp4: string; poster: string } | null;
+  files: { webm?: string; mp4?: string; poster: string } | null;
+  /** Cinématique moteur recréée en 3D (`tools/extract_engine_cutscene.py`) : pas de vidéo. */
+  engine?: { scene: string };
   tracks: CinematicTrack[];
   /** Langue des voix incrustées ; `null` = musique et effets seulement. */
   audio: { language: SubtitleLang | null };
@@ -33,7 +35,7 @@ export type Cinematic = {
     status: 'official' | 'none';
     lines: number;
     /** `client` : durée du jeu depuis 0 ; `measured` : départs mesurés sur la voix. */
-    timing: 'client' | 'measured' | 'sequential' | null;
+    timing: 'client' | 'measured' | 'sequential' | 'estimated' | null;
   };
   source: { client: string; pak: string; entry: string; event: string };
   chronology: string;
