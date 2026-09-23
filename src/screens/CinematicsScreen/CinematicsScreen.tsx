@@ -51,11 +51,6 @@ export function CinematicsScreen({ loader = loadCinematics }: { loader?: () => P
     return () => { alive = false; };
   }, [loader]);
 
-  useEffect(() => {
-    const previous = document.title;
-    document.title = `Allodex — ${t('cinematics.title')}`;
-    return () => { document.title = previous; };
-  }, [t]);
 
   // Le film a sa propre bande son : la musique du site se tait pendant la lecture.
   useEffect(() => {
