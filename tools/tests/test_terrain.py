@@ -46,7 +46,7 @@ def test_parse_terrain_dump_places_grid_vertices_with_float_heights():
     (patch,) = patches
     assert (patch.sx, patch.sy, patch.level) == (2, 3, 1)
     assert patch.points.tolist() == [[16, 24, 1], [16, 32, 2], [24, 32, 3]]
-    assert patch.triangles.tolist() == [[0, 2, 1]] and patch.passes == [(0, 0)]
+    assert patch.triangles.tolist() == [[0, 2, 1]] and patch.passes == [(0, 0, 0, 0)]
     assert np.allclose(patch.normals[0], [0, 0, 1], atol=0.01)
 
 
