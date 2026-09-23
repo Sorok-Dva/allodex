@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { afterAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { LiveSnapshot, StatsResponse } from '../../src/analytics/api.ts';
 import { openDb, type DB } from './db.ts';
+import { kv, pageviews } from './schema.ts';
 import { createApp } from './app.ts';
 import type { Config } from './config.ts';
 import { measuredPath, referrerOf } from './analytics/collect.ts';
@@ -29,21 +30,38 @@ for (const lang of ['en', 'fr', 'ru']) {
 write('game/lorebook/list/en/characters.json', { groups: [], rows: [['r425694', 0, 0, 0, '"Butcher"', 'Clone']] });
 write('game/lorebook/text/en/atlas-0.json', { 'a-a003': { t: [], s: 'Story allod', f: [['climate', 'Temperate'], ['size', 'Medium island']] } });
 write('game/lorebook/text/en/characters-0.json', { r425694: { t: [['bio', '## Butcher\n\nA **clone** built by the System of Total Annihilation.', 0]] } });
-afterAll(() => fs.rmSync(dist, { recursive: true, force: true }));
+
+// Base MySQL jetable, vidée avant chaque test. Par défaut, le conteneur de développement :
+//   docker run -d --name allodex-mysql-test -p 127.0.0.1:33406:3306 -e MYSQL_ROOT_PASSWORD=allodex \
+//     -e MYSQL_DATABASE=allodex_test --tmpfs /var/lib/mysql mysql:8.4
+const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL ?? 'mysql://root:allodex@127.0.0.1:33406/allodex_test';
+let db: DB;
+let closeDb: () => Promise<void>;
+beforeAll(async () => {
+  try {
+    ({ db, close: closeDb } = await openDb(TEST_DATABASE_URL));
+  } catch (err) {
+    throw new Error(`Base de test injoignable (${TEST_DATABASE_URL}) : voir la commande docker en tête de app.test.ts\n${err}`);
+  }
+});
+afterAll(async () => {
+  await closeDb?.();
+  fs.rmSync(dist, { recursive: true, force: true });
+});
 
 const baseConfig: Config = {
-  port: 0, host: '127.0.0.1', siteUrl: 'https://allodex.eu', dbPath: ':memory:', distDir: dist,
+  port: 0, host: '127.0.0.1', siteUrl: 'https://allodex.eu', databaseUrl: TEST_DATABASE_URL, distDir: dist,
   adminPassword: 'secret', sessionSecret: 'test', serveStatic: false, ownHosts: ['allodex.eu', 'localhost'], retentionDays: 395,
 };
 
-let db: DB;
 let clock: number;
-let server: ReturnType<typeof createApp>;
+let server: Awaited<ReturnType<typeof createApp>>;
 
-beforeEach(() => {
-  db = openDb(':memory:');
+beforeEach(async () => {
+  await db.delete(pageviews);
+  await db.delete(kv);
   clock = Date.UTC(2026, 8, 23, 10, 0, 0);
-  server = createApp(baseConfig, db, () => clock);
+  server = await createApp(baseConfig, db, () => clock);
 });
 
 const request = (url: string, init: RequestInit = {}) => server.app.request(`http://localhost${url}`, init);
@@ -171,7 +189,7 @@ describe('administration', () => {
   });
 
   it("désactive l'administration sans mot de passe configuré", async () => {
-    const open = createApp({ ...baseConfig, adminPassword: '' }, openDb(':memory:'), () => clock);
+    const open = await createApp({ ...baseConfig, adminPassword: '' }, db, () => clock);
     const res = await open.app.request('http://localhost/api/admin/login', { method: 'POST', body: JSON.stringify({ password: '' }) });
     expect(res.status).toBe(503);
     expect((await open.app.request('http://localhost/api/admin/stats')).status).toBe(401);

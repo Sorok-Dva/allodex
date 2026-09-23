@@ -1,6 +1,8 @@
 import type { CollectEvent } from '../../../src/analytics/api.ts';
 import { normalizePath } from '../../../src/seo/meta.ts';
+import { and, eq, isNull, lt, or } from 'drizzle-orm';
 import type { DB } from '../db.ts';
+import { pageviews } from '../schema.ts';
 import type { Live } from './live.ts';
 import { browser, device, isBot, os } from './ua.ts';
 import { dayKey, hourStart } from './time.ts';
@@ -41,14 +43,8 @@ export function referrerOf(raw: unknown, ownHosts: readonly string[]): string | 
   }
 }
 
-export function createCollector(db: DB, live: Live, visitorOf: (ip: string, ua: string, ts: number) => string, ownHosts: readonly string[]) {
-  const insert = db.prepare(`INSERT OR IGNORE INTO pageviews
-    (id, ts, day, hour, session, visitor, path, section, entry, referrer, lang, device, browser, os)
-    VALUES (@id, @ts, @day, @hour, @session, @visitor, @path, @section, @entry, @referrer, @lang, @device, @browser, @os)`);
-  const known = db.prepare('SELECT 1 FROM pageviews WHERE session = ? LIMIT 1').pluck();
-  const setDuration = db.prepare('UPDATE pageviews SET duration = ? WHERE id = ? AND session = ? AND (duration IS NULL OR duration < ?)');
-
-  return function collect(raw: unknown, ctx: CollectContext): CollectResult {
+export function createCollector(db: DB, live: Live, visitorOf: (ip: string, ua: string, ts: number) => Promise<string>, ownHosts: readonly string[]) {
+  return async function collect(raw: unknown, ctx: CollectContext): Promise<CollectResult> {
     if (isBot(ctx.ua)) return 'ignored';
     if (!raw || typeof raw !== 'object') return 'invalid';
     const ev = raw as Partial<CollectEvent>;
@@ -58,19 +54,22 @@ export function createCollector(db: DB, live: Live, visitorOf: (ip: string, ua: 
     if (!path) return 'invalid';
     if (path === '/stats') return 'ignored';
 
-    const visitor = visitorOf(ctx.ip, ctx.ua, ctx.now);
+    const visitor = await visitorOf(ctx.ip, ctx.ua, ctx.now);
     if (ev.type === 'view') {
-      const entry = !known.get(ev.session);
-      insert.run({
+      const known = await db.select({ id: pageviews.id }).from(pageviews).where(eq(pageviews.session, ev.session)).limit(1);
+      const entry = known.length === 0;
+      await db.insert(pageviews).ignore().values({
         id: ev.view, ts: ctx.now, day: dayKey(ctx.now), hour: hourStart(ctx.now), session: ev.session, visitor, path,
-        section: sectionOf(path), entry: entry ? 1 : 0, referrer: entry ? referrerOf(ev.referrer, ownHosts) : null,
+        section: sectionOf(path).slice(0, 128), entry, referrer: entry ? referrerOf(ev.referrer, ownHosts) : null,
         lang: ev.lang === 'fr' || ev.lang === 'en' ? ev.lang : null,
         device: device(ctx.ua, typeof ev.width === 'number' ? ev.width : undefined), browser: browser(ctx.ua), os: os(ctx.ua),
       });
     }
     if (typeof ev.duration === 'number' && Number.isFinite(ev.duration) && ev.duration >= 0) {
       const ms = Math.min(Math.round(ev.duration), MAX_DURATION);
-      setDuration.run(ms, ev.view, ev.session, ms);
+      await db.update(pageviews).set({ duration: ms }).where(and(
+        eq(pageviews.id, ev.view), eq(pageviews.session, ev.session), or(isNull(pageviews.duration), lt(pageviews.duration, ms)),
+      ));
     }
     if (ev.type === 'leave') live.leave(ev.session, ev.view);
     else live.touch(ev.session, { visitor, path, view: ev.view, seen: ctx.now });

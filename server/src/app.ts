@@ -34,12 +34,12 @@ function clientIp(c: Context): string {
 
 const isHttps = (c: Context) => c.req.header('x-forwarded-proto') === 'https' || new URL(c.req.url).protocol === 'https:';
 
-export function createApp(config: Config, db: DB, now: () => number = Date.now) {
+export async function createApp(config: Config, db: DB, now: () => number = Date.now) {
   const app = new Hono();
   const live = new Live();
   const collect = createCollector(db, live, createVisitorHasher(db), config.ownHosts);
   const stats = createStats(db);
-  const auth = createAuth(db, config.adminPassword, config.sessionSecret);
+  const auth = await createAuth(db, config.adminPassword, config.sessionSecret);
   const collectLimit = createRateLimiter(240);
   const loginLimit = createRateLimiter(8);
   // Mot de passe unique : plafond d'échecs toutes IP confondues, contre une attaque répartie.
@@ -60,7 +60,8 @@ export function createApp(config: Config, db: DB, now: () => number = Date.now) 
     try { payload = JSON.parse(text); } catch { return c.body(null, 400); }
     const ctx = { ip, ua: c.req.header('user-agent') ?? '', now: now() };
     const events = Array.isArray(payload) ? payload.slice(0, 10) : [payload];
-    const results = events.map(ev => collect(ev, ctx));
+    const results = [];
+    for (const ev of events) results.push(await collect(ev, ctx));
     return c.body(null, results.includes('invalid') && !results.includes('ok') ? 400 : 204);
   });
 
@@ -98,11 +99,11 @@ export function createApp(config: Config, db: DB, now: () => number = Date.now) 
 
   app.get('/api/admin/me', c => c.body(null, 204));
 
-  app.get('/api/admin/stats', c => {
+  app.get('/api/admin/stats', async c => {
     const range = (RANGES as readonly string[]).includes(c.req.query('range') ?? '') ? c.req.query('range') as Range : '7d';
     const rawPath = c.req.query('path');
     const path = rawPath ? measuredPath(rawPath) : null;
-    return c.json(stats(range, path, now()));
+    return c.json(await stats(range, path, now()));
   });
 
   app.get('/api/admin/live', c => streamSSE(c, async stream => {

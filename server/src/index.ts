@@ -4,14 +4,18 @@ import { openDb } from './db.ts';
 import { createApp } from './app.ts';
 import { purgeOld } from './analytics/stats.ts';
 
-const db = openDb(config.dbPath);
-const { app, lore } = createApp(config, db);
+if (!config.databaseUrl) {
+  console.error('[allodex] DATABASE_URL manquant (voir server/.env.example)');
+  process.exit(1);
+}
 
-const purge = () => {
-  const removed = purgeOld(db, config.retentionDays, Date.now());
-  if (removed) console.log(`[allodex] ${removed} pages vues de plus de ${config.retentionDays} jours supprimées`);
-};
-purge();
+const { db, close } = await openDb(config.databaseUrl);
+const { app, lore } = await createApp(config, db);
+
+const purge = () => purgeOld(db, config.retentionDays, Date.now())
+  .then(removed => { if (removed) console.log(`[allodex] ${removed} pages vues de plus de ${config.retentionDays} jours supprimées`); })
+  .catch(err => console.error('[allodex] purge impossible :', err));
+void purge();
 const timer = setInterval(purge, 6 * 3_600_000);
 
 const server = serve({ fetch: app.fetch, port: config.port, hostname: config.host }, info => {
@@ -21,10 +25,7 @@ const server = serve({ fetch: app.fetch, port: config.port, hostname: config.hos
 
 function stop() {
   clearInterval(timer);
-  server.close(() => {
-    db.close();
-    process.exit(0);
-  });
+  server.close(() => { void close().finally(() => process.exit(0)); });
   // Les flux du direct gardent des connexions ouvertes : ne pas attendre indéfiniment.
   setTimeout(() => process.exit(0), 3000).unref();
 }

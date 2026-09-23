@@ -1440,9 +1440,11 @@ Crédit affiché : *Allods atlas and community lore material compiled by Makar T
 
 ## Référencement et audience (`server/`)
 
-Un petit backend Node (`server/`, Hono + SQLite via better-sqlite3) complète le site statique.
-Il servira aussi les fonctions à venir (comptes, avatars) : ses migrations vivent dans
-`server/src/db.ts`.
+Un petit backend Node (`server/`, Hono) complète le site statique, avec une base **MySQL**
+(5.7+ ou MariaDB 10.3+) via l'ORM **Drizzle**. Il servira aussi les fonctions à venir (comptes,
+avatars). Le schéma est dans `server/src/schema.ts` ; après une modification,
+`npm run db:generate` (dans `server/`) écrit la migration SQL suivante dans `server/drizzle/`,
+appliquée automatiquement au démarrage. Ne jamais modifier une migration déjà publiée.
 
 **Référencement.** `src/seo/meta.ts` décrit chaque page (titre, description, image Open Graph,
 FR/EN) ; module pur partagé par le client et le serveur. Les robots des réseaux sociaux
@@ -1483,8 +1485,14 @@ En développement, `/stats?mock` affiche des données fictives sans backend.
 
 **En local :**
 
-    cd server && npm install && cp .env.example .env    # renseigner ADMIN_PASSWORD
+    cd server && npm install && cp .env.example .env    # DATABASE_URL, ADMIN_PASSWORD
     npm run dev                                         # port 8787 ; Vite relaie /api
+
+Les tests du serveur tournent sur une vraie base MySQL, jetable (vidée à chaque test) ; par
+défaut `mysql://root:allodex@127.0.0.1:33406/allodex_test`, sinon `TEST_DATABASE_URL` :
+
+    docker run -d --name allodex-mysql-test -p 127.0.0.1:33406:3306 -e MYSQL_ROOT_PASSWORD=allodex \
+      -e MYSQL_DATABASE=allodex_test --tmpfs /var/lib/mysql mysql:8.4
     npm test
 
 Le traceur n'envoie rien en développement, sauf avec `VITE_TRACK=1 npm run dev` à la racine.
@@ -1514,11 +1522,19 @@ sondes de dev (`import.meta.env.DEV`) actives et les entrées désactivées en p
     # 3. backend : dépendances, puis redémarrage (relit l'index du Lorebook)
     ssh <utilisateur>@<serveur> 'cd /srv/node/allodex/server && npm ci --omit=dev && pm2 restart allodex-api'
 
-**Première mise en place du backend** : `cd server && npm ci --omit=dev`, créer `server/.env`
-(`ADMIN_PASSWORD` long et unique ; voir `.env.example`), `pm2 start deploy/ecosystem.config.cjs
+**Première mise en place du backend** : créer la base et son utilisateur MySQL,
+
+    CREATE DATABASE allodex CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    CREATE USER 'allodex'@'localhost' IDENTIFIED BY '<mot de passe>';
+    GRANT ALL PRIVILEGES ON allodex.* TO 'allodex'@'localhost';   -- les migrations créent et modifient les tables
+
+puis `cd server && npm ci --omit=dev`, créer `server/.env` (`DATABASE_URL`, `ADMIN_PASSWORD`
+long et unique ; voir `.env.example`), `pm2 start deploy/ecosystem.config.cjs
 && pm2 save`, puis fusionner `server/deploy/nginx.conf.example` dans le vhost (proxy de `/api/`,
 de `/robots.txt` et des plans du site, pages via le serveur avec repli sur `index.html`) et
-`nginx -t && systemctl reload nginx`. La base SQLite vit dans `server/data/` (à sauvegarder).
+`nginx -t && systemctl reload nginx`. Penser à inclure la base `allodex` dans les sauvegardes MySQL.
+Le vhost modèle redirige aussi `allodex.online` et `allodex.allods-developers.eu` vers
+`https://allodex.eu` (domaine principal).
 
 nginx sert `dist/` avec repli à page unique (`try_files $uri $uri/ /index.html`), cache d'un
 an sur `/assets/` (noms hachés), de trente jours sur `/game/` et `/fonts/`, et `no-cache` sur

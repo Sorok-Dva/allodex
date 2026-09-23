@@ -1,5 +1,5 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
-import { kvGet, kvSet, type DB } from './db.ts';
+import { kvInit, type DB } from './db.ts';
 
 export const ADMIN_COOKIE = 'allodex_admin';
 export const SESSION_TTL = 30 * 24 * 3_600_000;
@@ -11,12 +11,8 @@ const sha = (s: string) => createHash('sha256').update(s).digest();
  * signée (HMAC) : rien à stocker côté serveur. Changer `SESSION_SECRET` déconnecte tout le monde.
  * À remplacer par de vrais comptes quand la création d'avatar en aura besoin.
  */
-export function createAuth(db: DB, password: string, configuredSecret: string) {
-  let secret = configuredSecret || kvGet(db, 'session_secret');
-  if (!secret) {
-    secret = randomBytes(32).toString('hex');
-    kvSet(db, 'session_secret', secret);
-  }
+export async function createAuth(db: DB, password: string, configuredSecret: string) {
+  const secret = configuredSecret || await kvInit(db, 'session_secret', randomBytes(32).toString('hex'));
   // Le mot de passe entre dans la clé : le changer invalide les sessions ouvertes.
   const sign = (payload: string) => createHmac('sha256', `${secret}|${password}`).update(payload).digest('base64url');
 
@@ -40,4 +36,4 @@ export function createAuth(db: DB, password: string, configuredSecret: string) {
   };
 }
 
-export type Auth = ReturnType<typeof createAuth>;
+export type Auth = Awaited<ReturnType<typeof createAuth>>;

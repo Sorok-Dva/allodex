@@ -12,7 +12,8 @@ export const config = {
   port: Number(env.PORT ?? 8787),
   host: env.HOST ?? '127.0.0.1',
   siteUrl: (env.SITE_URL ?? SITE_URL).replace(/\/+$/, ''),
-  dbPath: path.resolve(serverDir, env.DB_PATH ?? 'data/allodex.db'),
+  /** `mysql://utilisateur:motdepasse@hôte:3306/base` */
+  databaseUrl: env.DATABASE_URL ?? '',
   distDir: path.resolve(serverDir, env.DIST_DIR ?? '../dist'),
   adminPassword: env.ADMIN_PASSWORD ?? '',
   sessionSecret: env.SESSION_SECRET ?? '',
