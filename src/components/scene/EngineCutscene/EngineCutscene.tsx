@@ -58,6 +58,84 @@ const SOUND_DRIFT = 0.3;
 type Actor = { id: string; holder: THREE.Object3D; model: THREE.Object3D; mixer: THREE.AnimationMixer; actions: Map<string, THREE.AnimationAction> };
 type Loop = { audio: HTMLAudioElement; volume: number; position: THREE.Vector3 | null; start: number; until: number; kind: 'music' | 'ambience' | 'sfx' };
 
+const TERRAIN_SIZE = 512;
+const TERRAIN_MAX_LAYERS = 32;
+
+/** Charge les calques du sol dans un tableau de textures (512², répétées, mipmaps). */
+async function terrainMaterial(meta: { texture: string | null; tiling: number }[], glbUrl: URL,
+  light: EngineScene['light']): Promise<THREE.ShaderMaterial> {
+  const count = Math.max(1, Math.min(meta.length, TERRAIN_MAX_LAYERS));
+  const data = new Uint8Array(TERRAIN_SIZE * TERRAIN_SIZE * 4 * count).fill(128);
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = TERRAIN_SIZE;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  await Promise.all(meta.slice(0, count).map(async (layer, k) => {
+    if (!layer.texture || !ctx) return;
+    try {
+      const image = await new THREE.ImageLoader().loadAsync(new URL(layer.texture, glbUrl).href);
+      ctx.clearRect(0, 0, TERRAIN_SIZE, TERRAIN_SIZE);
+      ctx.drawImage(image, 0, 0, TERRAIN_SIZE, TERRAIN_SIZE);
+      data.set(ctx.getImageData(0, 0, TERRAIN_SIZE, TERRAIN_SIZE).data, k * TERRAIN_SIZE * TERRAIN_SIZE * 4);
+    } catch { /* calque illisible : gris neutre */ }
+  }));
+  const layers = new THREE.DataArrayTexture(data, TERRAIN_SIZE, TERRAIN_SIZE, count);
+  layers.wrapS = layers.wrapT = THREE.RepeatWrapping;
+  layers.minFilter = THREE.LinearMipmapLinearFilter;
+  layers.magFilter = THREE.LinearFilter;
+  layers.generateMipmaps = true;
+  layers.colorSpace = THREE.NoColorSpace;
+  layers.flipY = false;
+  layers.needsUpdate = true;
+  const tiling = new Array(TERRAIN_MAX_LAYERS).fill(30);
+  meta.slice(0, count).forEach((layer, k) => { tiling[k] = layer.tiling || 30; });
+  const dir = light.sunDirection ?? [0.5, 0.5, 0.7];
+  const material = new THREE.ShaderMaterial({
+    glslVersion: THREE.GLSL3,
+    fog: true,
+    side: THREE.DoubleSide,
+    uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, {
+      layers: { value: null }, tiling: { value: tiling },
+      ambient: { value: new THREE.Color(...argb(light.ambient, GAME_UNIT)) },
+      sunColor: { value: new THREE.Color(...argb(light.diffuse, GAME_UNIT)) },
+      sunDir: { value: new THREE.Vector3(dir[0], dir[1], dir[2]).normalize() },
+    }]),
+    vertexShader: `
+      in vec3 _layers0; in vec3 _weights0; in vec3 _layers1; in vec3 _weights1;
+      out vec3 vL0; out vec3 vW0; out vec3 vL1; out vec3 vW1; out vec2 vXY; out vec3 vN;
+      #include <fog_pars_vertex>
+      void main() {
+        vL0 = _layers0; vW0 = _weights0; vL1 = _layers1; vW1 = _weights1;
+        vXY = position.xy; vN = normal;
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mvPosition;
+        #include <fog_vertex>
+      }`,
+    fragmentShader: `
+      precision highp sampler2DArray;
+      layout(location = 0) out vec4 terrainColor;
+      #define gl_FragColor terrainColor
+      uniform sampler2DArray layers; uniform float tiling[${TERRAIN_MAX_LAYERS}];
+      uniform vec3 ambient; uniform vec3 sunColor; uniform vec3 sunDir;
+      in vec3 vL0; in vec3 vW0; in vec3 vL1; in vec3 vW1; in vec2 vXY; in vec3 vN;
+      #include <fog_pars_fragment>
+      vec3 tap(float id, float w) {
+        if (w <= 0.002) return vec3(0.0);
+        int i = int(id + 0.5);
+        return w * texture(layers, vec3(vXY / tiling[i], float(i))).rgb;
+      }
+      void main() {
+        vec3 albedo = tap(vL0.x, vW0.x) + tap(vL0.y, vW0.y) + tap(vL0.z, vW0.z)
+                    + tap(vL1.x, vW1.x) + tap(vL1.y, vW1.y) + tap(vL1.z, vW1.z);
+        float ndl = max(dot(normalize(vN), sunDir), 0.0);
+        gl_FragColor = vec4(albedo * (ambient + sunColor * ndl), 1.0);
+        #include <fog_fragment>
+      }`,
+  });
+  material.uniforms.layers.value = layers;
+  material.addEventListener('dispose', () => layers.dispose());
+  return material;
+}
+
 /**
  * Matériau d'un acteur : Lambert, texture × (lumière de la carte à sa place, en émission modulée
  * par la texture) + soleil de la zone par N·L — la formule d'éclairage du jeu
@@ -409,18 +487,18 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         world.add(skyProto);
         sky = skyProto;
       }
-      // Sol : texture × (ambiante de la zone + soleil · N·L), comme les acteurs ; les deux faces
-      // (le miroir du monde retourne l'ordre des sommets).
-      if (terrainGlb) {
-        const ambient = new THREE.Color(...argb(data.light.ambient, GAME_UNIT));
+      // Sol : calques du terrain mélangés par sommet (poids du SplatMap, deux passes de trois calques),
+      // éclairés comme les acteurs : texture × (ambiante de la zone + soleil · N·L), brouillard.
+      if (terrainGlb && data.decor.terrainGlb) {
+        const terrainUrl = new URL(base + data.decor.terrainGlb, window.location.href);
+        const terrainNode = terrainGlb.scene.getObjectByName('terrain');
+        const meta = (terrainNode?.userData as { terrainLayers?: { texture: string | null; tiling: number }[] })?.terrainLayers ?? [];
+        const material = await terrainMaterial(meta, terrainUrl, data.light);
+        if (!alive) return;
+        disposables.push(material);
         terrainGlb.scene.traverse(node => {
           const mesh = node as THREE.Mesh;
           if (!mesh.isMesh) return;
-          const source = mesh.material as THREE.MeshStandardMaterial;
-          if (source.map) source.map.colorSpace = THREE.NoColorSpace;
-          const material = new THREE.MeshLambertMaterial({ map: source.map ?? null, emissive: ambient, emissiveMap: source.map ?? null,
-            side: THREE.DoubleSide });
-          disposables.push(material);
           mesh.material = material;
           mesh.frustumCulled = false;
         });

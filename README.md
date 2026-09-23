@@ -174,7 +174,7 @@ ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le rest
 
 ### Cinématiques moteur recréées en 3D
 
-Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Onze
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Treize
 sont **recréées dans three.js** avec les données du dernier client et jouées dans le film comme
 des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix russes) :
 
@@ -186,20 +186,43 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Ferris 6.0 · « Le portail de Ferris » (`ferris-portal`, `FR4Intro`) | serveur 7.0 | `Ferris4` | 94 s |
 | Ferris 6.0 · « La profanation du Fractal » (`ferris-fractal`, `Portal_Start`) | serveur 7.0 | `FerrisRaid` | 64 s |
 | Ferris 6.0 · « Pas de retour » (`ferris-no-way-back`, `Portal_Ending_Main`) | serveur 7.0 | `FerrisRaid` | 44 s |
+| Ferris 6.0 · « L’essaim » (`ferris-swarm`, `Swarm_CutScene`) | serveur 7.0 | `FerrisRaid` | 72 s |
 | Ferris 6.0 · « La force de l’Ordre » (`ferris-power-of-order`, `Swarm_Ending_Main`) | serveur 7.0 | `FerrisRaid` | 54 s |
 | Ferris 6.0 · « Les serviteurs de l’Ordre » (`ferris-order`) | serveur 7.0 | `FerrisRaid` | 51 s |
 | Ferris 6.0 · « Le Locus » (`ferris-locus`) | serveur 7.0 | `FerrisRaid` | 162 s |
 | Ferris 6.0 · « La chute du Locus » (`ferris-locus-fall`) | serveur 7.0 | `FerrisRaid` | 122 s |
+| Invasion 7.0 · « La mort de l’ingénieur » (`invasion-engineer-kania`, Ligue) | client (`GameViewScene`) | `Inst_ZoneContested12_Start` | 13 s |
 | Citadelle de Nihaz 12.0 · « Le monde caché » (`ao12-prologue04`, pilote) | manifeste | `AO12_PrologueInst` | 82 s |
 
-En attente, hors du film : `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
+En attente, hors du film : `isa-freya` (Isa 14.0 : le navire « Freya », sujet du plan, est posé par le
+serveur et n'est pas dans le décor du client) et `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
 éclairée par le seul éclairage de zone du 17.0 (violet sombre, sans lumière ponctuelle), est presque
 noire, et l'ouverture de la sphère (drapeau visuel) n'est pas reproduite.
+
+**Troisième source : les scènes du client** (`"source": "gameview"`) : une `GameViewScene` (place et
+placement de caméra en doubles x, y, f32 lacet, double z ; PNJ par `VisualMob`) jouée par le
+`GameViewScript` d'un `ShowSceneAction` : chaque créature joue l'animation que le script lui donne,
+son animation de cinématique portant son déplacement ; caméra au placement du spectateur, à 2 m
+au-dessus (vue de joueur, choix documenté). Caméra animée `CameraMovesAction` lue : groupes de 48 o
+(`+0x04` délai, `+0x08` mouvements), mouvements de 120 o (pose en doubles x, y, z, f32 lacet, tangage,
+roulis ; `+0x6C` durée) — recoupés au millième sur le `.xdb` 7.0 ; un groupe coupe le précédent. Le
+sens du lacet n'est pas établi : la seule scène du 17.0 qui l'emploie (l'explosion du navire, déjà
+dans le film en vidéo) montre un navire posé par une stèle (`DeviceVisActionChangeModel`) que le
+client ne place pas, sans lequel les plans ne se vérifient pas (option `yaw_offset` du manifeste).
+
+**Scènes d'après 7.0, constat** : le client 17.0 ne relie aucune réplique à son buff de caméra (aucune
+ressource ne cite ces `ClientData` ; c'est le script serveur) et ne pose ni les PNJ ni les objets de
+quête. Kanaan/Nayan et le sanatorium « Снежинка » sont des présentations de zone (survols de 16 à
+32 s, une narration par lieu ; au sanatorium, la voix est un paramètre fictif, `CS_FR_PortalArch03`) ;
+le mariage de Quator (ch. 5) est une caméra d'ambiance de 240 s sur un événement serveur (huit
+répliques, dont l'attaque de Svetlana, sans ordre établi) ; Eden2 ne porte qu'une réplique.
 
 **Dossiers** : chaque carte a son dossier commun `engine/maps/<carte>/` — décor (`decor.glb`, les
 objets des zones de toutes ses scènes), sol (`terrain.glb`), textures, particules et leur atlas ;
 chaque scène garde les siens : éclairage de sommets (`decor-light.bin`, qui dépend du temps de la
-scène), ciel (`sky.glb`), effets, acteurs, voix, sons, sous-titres. Si `data/Packs` du client est un
+scène), ciel (`sky.glb`), effets, voix, sons, sous-titres. Les acteurs sont communs à tout le film :
+un modèle par `MobWorld` (ou `VisualMob`) dans `engine/shared/actors/`, avec toutes les animations que
+les scènes lui demandent (110 Mo pour les treize scènes). Si `data/Packs` du client est un
 lien illisible depuis WSL, les outils lisent `data/Packs.adc-real`.
 
     python3 tools/extract_engine_cutscene.py                      # toutes les scènes
@@ -284,8 +307,20 @@ liées), `allods_visdb.py`, `allods_characters.py` (habillage, corrigé : couleu
 `allods_fx.py`, `allods_scenes.py`, et côté lecteur `votInstances.ts`, partagés avec les
 fatalités et la création de personnage.
 
-**Manques** : poids des calques du sol (`SplatMap`) ; octets 0-1 du `lightvrt` (quantifiés sur 3 et
-4 bits : pleins dans les intérieurs sans lumière, peut-être un éclairage indirect) ; le fichier
+**Éclairage des sommets du décor** (`lightvrt`, 4 octets par sommet) : octet 0 = visibilité du soleil
+(ombre portée ; corrélation 0,81 avec des tirs de rayons sur le pilote, au soleil de la cuisson),
+octet 1 = visibilité du ciel (`128 + 127 · v` ; 0,81 sur le pilote, 0,73 sur `Isa`), octet 2 = lumières
+ponctuelles (1,000). Lumière = `AmbientColor · (f + (1 − f) · v) + DiffuseColor · max(0, N·S) · ombre +
+ponctuelles`, `f` = `AmbientFactor`. Le soleil de la cuisson est celui de la zone du lieu (`Isa` : 225°),
+pas toujours celui de la première zone de la carte.
+
+**Sol mélangé** : `SplatMap_0` = atlas de blocs de 8 × 8 texels, un par passe de sous-carreau (octets
+`c`, `d` de la passe) ; texel `i` à `i·8/7` m du coin, bords partagés à l'identique entre voisins ;
+R, G, B = poids des trois calques de la passe (deux passes somment à 1). Le lecteur mélange jusqu'à six
+calques par sommet dans un tableau de textures (`terrainMaterial`).
+
+**Manques** : `ferris-sarcophagus` reste sombre même lu en entier (zone violette, aucune lumière
+ponctuelle ; octets 0-1 pleins) ; le fichier
 d'événements FMOD `.bev` (sons appariés par nom : quelques ambiances introuvables) ; les effets de
 sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce que montre
 « Оглянитесь ! » ; les drapeaux visuels (`CreatureSetFlagVisAction`) ; les scènes faites de
@@ -293,7 +328,7 @@ sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce
 
 ### Ce qui manque
 
-- **Cinématiques moteur** : onze sont recréées (voir plus haut). Liste dans
+- **Cinématiques moteur** : treize sont recréées (voir plus haut). Liste dans
   `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
   (7_0Events), extraites ici.
 - **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et

@@ -40,6 +40,7 @@ import math
 import os
 import re
 import shutil
+import struct
 import subprocess
 import sys
 import tempfile
@@ -103,18 +104,29 @@ def sun_direction(light: dict) -> np.ndarray:
 def vertex_light(raw: np.ndarray, light: dict, normals: np.ndarray | None = None) -> np.ndarray:
     """Lumière d'un sommet du décor (unités du jeu, 1 = 0x80), depuis son `lightvrt`.
 
-    Établi sur les données : l'**octet 2** est l'éclairage précalculé des lumières ponctuelles de
-    la carte, `255 · Σ intensité · (1 − d / rayon)^atténuation · max(0, N·L)` borné à 255 — la
-    formule redonne l'octet à 1,000 de corrélation sur les objets du pilote (164 `LightComponent`,
-    `pivot`, `intensity`, `radius`, `attenuationPower`) ; leur couleur est la `PointLightColor` de
-    la zone. Les octets 0 et 1 (quantifiés sur 3 et 4 bits) ne sont pas élucidés : le soleil est
-    donc appliqué sans ombre portée, `DiffuseColor · max(0, N·S)`. Total : ambiante + soleil +
-    ponctuelles, comme le jeu éclaire ses personnages (`texture × (ambiante + soleil · N·L)`)."""
+    Établi sur les données :
+
+    * **octet 2** : lumières ponctuelles de la carte, `255 · Σ intensité · (1 − d / rayon)^atténuation ·
+      max(0, N·L)` (corrélation 1,000 sur le pilote et `Ferris4`) ; couleur `PointLightColor` ;
+    * **octet 1** (`128 + 127 · v`, 4 bits) : visibilité du ciel `v`, part de l'hémisphère supérieur
+      dégagée — corrélation 0,81 sur le pilote (tirs de rayons sur le décor), 0,73 sur `Isa` (feuillages
+      comptés opaques), pente 106 et ordonnée 138 pour 127 et 128 attendus ;
+    * **octet 0** (3 bits) : visibilité du soleil (ombre portée) — corrélation 0,81 sur le pilote pour
+      un soleil à 45° de hauteur ; le soleil de la cuisson est celui de la zone du lieu (`Isa` : lacet
+      225°, pas celui de la première zone de la carte), d'où un écart possible avec `sunDirection`.
+
+    Total : `AmbientColor · (f + (1 − f) · v) + DiffuseColor · max(0, N·S) · ombre + ponctuelles`, avec
+    `f` = `AmbientFactor` (0,5 partout) pris comme la part d'ambiante qui reste à l'ombre du ciel —
+    choix du lecteur, le shader du jeu n'étant pas lu."""
     point = raw[:, 2:3] / 255.0 * _rgb(light.get("pointLight", 0xFFFFFFFF))
+    sky = np.clip((raw[:, 1:2].astype(np.float64) - 128.0) / 127.0, 0.0, 1.0)
+    shadow = raw[:, 0:1].astype(np.float64) / 255.0
+    factor = float(light.get("ambientFactor", 0.5) or 0.0)
+    ambient = _rgb(light.get("ambient")) * (factor + (1.0 - factor) * sky)
     sun = 0.0
     if normals is not None and len(normals) == len(raw):
-        sun = np.clip(normals @ sun_direction(light), 0, None)[:, None] * _rgb(light.get("diffuse"))
-    return _rgb(light.get("ambient")) + sun + point
+        sun = np.clip(normals @ sun_direction(light), 0, None)[:, None] * _rgb(light.get("diffuse")) * shadow
+    return ambient + sun + point
 
 
 def encode_light(values: np.ndarray) -> np.ndarray:
@@ -258,15 +270,17 @@ REGION_SIZE = 256.0
 def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tuple[list[float] | None, float]],
                   report: list[str]) -> tuple[bytes | None, np.ndarray]:
     """Sol des scènes (`terrain.glb` de la carte) : sous-carreaux de 8 m du `terrainDump` des
-    régions (niveau de détail fin), ceux dont le centre tombe dans une zone de scène (+ 16 m),
-    groupés par calque — le premier calque du jeu de la première passe (les poids du `SplatMap`
-    ne sont pas élucidés) —, texture répétée à sa taille. Rend aussi les triangles du sol, pour
+    régions (niveau de détail fin), ceux dont le centre tombe dans une zone de scène (+ 16 m). Chaque
+    sommet porte les calques de ses deux passes au plus (`_LAYERS0/1`, indices dans la liste des
+    calques de la carte, `extras.terrainLayers` : texture et taille de répétition) et leurs poids lus
+    dans le `SplatMap` (`_WEIGHTS0/1`) ; le lecteur les mélange. Rend aussi les triangles du sol, pour
     poser les acteurs."""
     from tools.allods_scenes import region_origin
-    from tools.allods_terrain import region_patches, terrain_layers
-    groups: dict[str, list] = {}
-    solids = []
-    count = 0
+    from tools.allods_terrain import pass_weights, region_patches, region_splat, terrain_layers
+    palette: dict[str, int] = {}
+    tilings: list[float] = []
+    pos, nor, lay0, wei0, lay1, wei1, idx, solids = [], [], [], [], [], [], [], []
+    base = count = 0
     for path, region in sorted(mp.paths.items()):
         if not path.endswith("_MapRegion.xdb"):
             continue
@@ -280,40 +294,55 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
             continue
         layer_sets, patches = parsed
         layers = terrain_layers(mp, cat, mp.ptr(region + 0x98))
+        splat = region_splat(bins.get, path)
+
+        def slot(layer_id: int) -> int:
+            name, tiling = layers[layer_id - 1] if 0 < layer_id <= len(layers) else (None, 30.0)
+            key = name or ""
+            if key not in palette:
+                palette[key] = len(palette)
+                tilings.append(float(tiling))
+            return palette[key]
         for patch in patches:
             cx, cy = ox + 8 * patch.sx + 4, oy + 8 * patch.sy + 4
             if not any(c is None or math.hypot(cx - c[0], cy - c[1]) <= r + 16 for c, r in near):
                 continue
-            ids = layer_sets[patch.passes[0][1]] if patch.passes and patch.passes[0][1] < len(layer_sets) else ()
-            layer = layers[ids[0] - 1] if ids and 0 < ids[0] <= len(layers) else (None, 30.0)
+            n = len(patch.points)
+            ids_w = []
+            for first, set_index, bc, bd in patch.passes[:2]:
+                ids = list(layer_sets[set_index]) if set_index < len(layer_sets) else []
+                w = pass_weights(splat, patch, (bc, bd))
+                slots = [slot(i) for i in ids] + [0] * (3 - len(ids))
+                w[:, len(ids):] = 0.0
+                ids_w.append((np.tile(np.array(slots[:3], np.float32), (n, 1)), w.astype(np.float32)))
+            if not ids_w:
+                ids_w.append((np.zeros((n, 3), np.float32), np.tile(np.array([1, 0, 0], np.float32), (n, 1))))
+            while len(ids_w) < 2:
+                ids_w.append((np.zeros((n, 3), np.float32), np.zeros((n, 3), np.float32)))
             pts = patch.points + np.array([ox, oy, 0.0])
-            groups.setdefault(layer[0] or "", []).append((pts, patch.normals, patch.triangles, layer[1]))
+            pos.append(pts.astype(np.float32))
+            nor.append(patch.normals.astype(np.float32))
+            (l0, w0), (l1, w1) = ids_w
+            lay0.append(l0); wei0.append(w0); lay1.append(l1); wei1.append(w1)
+            idx.append((patch.triangles + base).astype(np.uint32))
             solids.append(pts[patch.triangles])
+            base += n
             count += 1
-    if not groups:
+    if not pos:
         return None, np.zeros((0, 3, 3))
     ex = Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/")
-    primitives = []
-    for name, parts in sorted(groups.items()):
-        pos, nor, uv, idx, base = [], [], [], [], 0
-        for pts, normals, tris, tiling in parts:
-            pos.append(pts.astype(np.float32))
-            nor.append(normals.astype(np.float32))
-            uv.append((pts[:, :2] / tiling).astype(np.float32))
-            idx.append((tris + base).astype(np.uint32))
-            base += len(pts)
-        P = np.concatenate(pos)
-        tex = ex.texture(name) if name else None
-        material = ex.gltf.add_material(f"terrain {Path(name).name if name else 'nu'}", tex, "OPAQUE", False, False)
-        ex.gltf.json["materials"][material].setdefault("extras", {}).update({"lit": True, "terrain": True})
-        primitives.append({"attributes": {"POSITION": ex.gltf.add_accessor(P, "VEC3", "f32", target=34962, minmax=True),
-                                          "NORMAL": ex.gltf.add_accessor(np.concatenate(nor), "VEC3", "f32", target=34962),
-                                          "TEXCOORD_0": ex.gltf.add_accessor(np.concatenate(uv), "VEC2", "f32", target=34962)},
-                           "indices": ex.gltf.add_accessor(np.concatenate(idx).reshape(-1), "SCALAR", "u32", target=34963),
-                           "mode": 4, "material": material})
-    ex.gltf.json["meshes"].append({"name": "terrain", "primitives": primitives})
-    root = ex.gltf.add_node({"name": "terrain", "mesh": len(ex.gltf.json["meshes"]) - 1, "extras": {"terrain": True}})
-    report.append(f"sol : {count} sous-carreaux de 8 m, {len(groups)} calques")
+    names = sorted(palette, key=palette.get)
+    layer_meta = [{"texture": textures.uri(name, DECOR_TEXTURE_MAX, "textures/") if name else None,
+                   "tiling": round(tilings[k], 3), "name": Path(name).name if name else None} for k, name in enumerate(names)]
+    acc = lambda a, kind="VEC3": ex.gltf.add_accessor(np.concatenate(a), kind, "f32", target=34962)  # noqa: E731
+    primitive = {"attributes": {"POSITION": ex.gltf.add_accessor(np.concatenate(pos), "VEC3", "f32", target=34962, minmax=True),
+                                "NORMAL": acc(nor), "_LAYERS0": acc(lay0), "_WEIGHTS0": acc(wei0),
+                                "_LAYERS1": acc(lay1), "_WEIGHTS1": acc(wei1)},
+                 "indices": ex.gltf.add_accessor(np.concatenate(idx).reshape(-1), "SCALAR", "u32", target=34963), "mode": 4}
+    ex.gltf.json["meshes"].append({"name": "terrain", "primitives": [primitive]})
+    root = ex.gltf.add_node({"name": "terrain", "mesh": len(ex.gltf.json["meshes"]) - 1,
+                             "extras": {"terrain": True, "terrainLayers": layer_meta}})
+    report.append(f"sol : {count} sous-carreaux de 8 m, {len(names)} calques mélangés")
     report += ex.notes
     return ex.finish([root]), np.concatenate(solids) if solids else np.zeros((0, 3, 3))
 
@@ -415,10 +444,15 @@ def animation_file(bins, geometry_binary: str, anim: str) -> str | None:
     """`X/Y.(Geometry).bin` + `Idle` → `X/Animations/Y.Idle.(SkeletalAnimation).bin` (sans égard à la casse)."""
     folder, stem = geometry_binary.rsplit("/", 1)
     stem = stem.split(".(")[0]
-    want = f"{folder}/Animations/{stem}.{anim}.(SkeletalAnimation).bin".lower()
-    for name in bins._pak_index():
-        if name.lower() == want:
-            return name
+    # Variante de modèle (`KaniaMale_CutScene`) sans l'animation : celle du modèle de base
+    # (`KaniaMale.Special08`, même squelette), comme le Luka de CutScene_EngineerDeathKania.
+    stems = [stem] + ([stem.split("_")[0]] if "_" in stem else [])
+    index = {name.lower(): name for name in bins._pak_index()} if not hasattr(bins, "_lower_index") else bins._lower_index
+    bins._lower_index = index
+    for candidate in stems:
+        hit = index.get(f"{folder}/Animations/{candidate}.{anim}.(SkeletalAnimation).bin".lower())
+        if hit:
+            return hit
     return None
 
 
@@ -428,9 +462,10 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
     par `allods_characters` avec la variation et les objets de sa `VisualMob`."""
     if mob is not None and getattr(db, "parent", None) is not None:
         mob |= EXTERN   # ressource de pack.bin vue depuis la base de carte
-    if mob is None:
+    if mob is None and actor.get("visual") is None:
         raise ValueError(f"{actor['id']} : MobWorld {actor['mob']} introuvable")
-    visual = mob_visual(db, mob)
+    # Acteur d'une `GameViewScene` : sa `VisualMob` est donnée directement (pas de `MobWorld`).
+    visual = actor["visual"] if actor.get("visual") is not None else mob_visual(db, mob)
     tpl_off = visual_template(db, visual) if visual is not None else None
     if tpl_off is None:
         raise ValueError(f"{actor['id']} : gabarit visuel introuvable")
@@ -470,7 +505,7 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
         if base is not None:
             image_of = lambda name: textures.image(name, 2048)  # noqa: E731
             mask = textures.image(appearance.skin_mask, 2048) if appearance.skin_mask else None
-            baked_name = f"actors/{actor['id']}-skin"
+            baked_name = f"actors/{actor.get('file', actor['id'])}-skin"
             textures.add_image(baked_name, bake_skin(base, appearance, image_of, mask, min(max(base.size), ACTOR_TEXTURE_MAX)),
                                ACTOR_TEXTURE_MAX)
             for e in geo_elements:
@@ -491,8 +526,9 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
     skeleton = loaded.skeleton
     joints = ex.emit_skeleton(skeleton, actor["id"])
     static_node = ex.gltf.add_node({"name": f"{actor['id']}/Static"})
-    mesh_node = {"name": f"{actor['id']}_mesh", "mesh": mesh}
-    if skinned:
+    # Modèle sans rien à dessiner (`Dummy` d'une GameViewScene) : squelette seul, pas de peau.
+    mesh_node = {"name": f"{actor['id']}_mesh", "mesh": mesh} if mesh is not None else {"name": f"{actor['id']}_mesh"}
+    if skinned and mesh is not None:
         mesh_node["skin"] = ex.skin(actor["id"], skeleton, joints, static_node)
     for locator, scene, shape_name in attachments:
         if locator not in skeleton.names:
@@ -526,7 +562,7 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
                              **({"scale": [scale] * 3} if abs(scale - 1) > 1e-6 else {})})
     report += [f"{actor['id']} : {n}" for n in ex.notes]
     meta = {"geometry": loaded.geo.binary, "height": round(float(loaded.vertices["position"][:, 2].max() * scale), 3),
-            "animations": durations, "name_index": mob_name_index(db, mob)}
+            "animations": durations, "name_index": mob_name_index(db, mob) if mob is not None else None}
     return ex.finish([root]), meta
 
 
@@ -807,6 +843,7 @@ class Texts:
             report.append(f"textes FR illisibles : {exc}")
             self.fr = None
         self.fr_voice: dict[str, tuple[int, int]] = {}
+        self.fr_voice_all: dict[str, list[int]] = {}
         self.fr_root = Path(fr_spec["root"])
 
     def load_fr_voices(self) -> None:
@@ -830,8 +867,12 @@ class Texts:
                 continue
             if cl.voice and cl.text_index is not None:
                 self.fr_voice.setdefault(cl.voice, (cl.text_index, cl.delay_ms))
+                self.fr_voice_all.setdefault(cl.voice, []).append(cl.text_index)
 
-    def line(self, idx: int | None, voice: str | None, delay_ms: int, anchor_delta: int | None) -> dict:
+    def line(self, idx: int | None, voice: str | None, delay_ms: int, anchor_delta: int | None,
+             same_voice: list[int] | None = None) -> dict:
+        """`same_voice` : indices de texte du 17.0 des répliques qui partagent cette voix ; la réplique
+        française est alors celle de même rang parmi celles de la voix dans le client FR."""
         text: dict[str, str] = {}
         if idx is not None:
             text["ru"] = clean_text(self.main.texts["ru"][idx])
@@ -841,7 +882,10 @@ class Texts:
         if self.fr is not None:
             self.load_fr_voices()
             j = None
-            if voice and voice in self.fr_voice:
+            fr_all = sorted(set(self.fr_voice_all.get(voice or "", [])))
+            if same_voice and idx in same_voice and len(fr_all) == len(same_voice):
+                j = fr_all[sorted(same_voice).index(idx)]
+            elif voice and voice in self.fr_voice:
                 j = self.fr_voice[voice][0]
             elif anchor_delta is not None and idx is not None and self.fr.subtitles.get(idx - anchor_delta) == delay_ms:
                 j = idx - anchor_delta
@@ -871,9 +915,14 @@ class ClientLines:
             if cl.text_index is not None and cl.text_index < len(texts.main.texts["ru"]):
                 self.by_text.setdefault(norm_key(texts.main.texts["ru"][cl.text_index]), []).append(off)
 
+    def same_voice(self, voice: str | None) -> list[int]:
+        return sorted({self.lines[o].text_index for o in self.by_voice.get(voice or "", []) if self.lines[o].text_index is not None})
+
     def find(self, voice: str | None, ru: str) -> object | None:
         from tools.extract_cinematics import norm_key
-        for key, table in ((voice, self.by_voice), (norm_key(ru) if ru else None, self.by_text)):
+        # Le texte russe d'abord : deux répliques du 7.0 partagent parfois une même voix
+        # (`CS_FR_SwarmArch01` pour « Адаптация… » et « Не нужно сопротивляться… »).
+        for key, table in ((norm_key(ru) if ru else None, self.by_text), (voice, self.by_voice)):
             if key and key in table:
                 return self.lines[table[key][0]]
         return None
@@ -973,12 +1022,19 @@ def voice_speaker(line: dict, summoned: dict[str, dict], spec: dict) -> str | No
     voice = (line.get("voice") or "").lower()
     aliases = {k.lower(): v.lower() for k, v in spec.get("speakers", {}).items()}
     wanted = {v for k, v in aliases.items() if k in voice}
+    # Le nom du locuteur vient en fin d'événement (`CS_FR_SwarmRysina03` : Rysina, pas l'essaim) :
+    # parmi les acteurs présents cités, celui dont le nom (ou l'alias) apparaît le plus à droite.
+    best, best_at = None, -1
     for key, actor in summoned.items():
-        present = any(a - 1e-3 <= line["t"] < b for a, b in actor["presence"])
+        if not any(a - 1e-3 <= line["t"] < b for a, b in actor["presence"]):
+            continue
         names = {actor["voice_key"], (actor.get("name") or "").lower()}
-        if present and (actor["voice_key"] in voice or names & wanted):
-            return key
-    return None
+        keys = [actor["voice_key"]] + [k for k, v in aliases.items() if v in names]
+        # le nom doit clore l'événement (suivi seulement de chiffres) : `swarm` de `SwarmRysina03` ne compte pas
+        at = max((m.start() for k in keys if k for m in [re.search(re.escape(k) + r"\d*$", voice)] if m), default=-1)
+        if at >= 0 and at > best_at:
+            best, best_at = key, at
+    return best
 
 
 def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: ClientLines, anim_names: dict,
@@ -1017,7 +1073,7 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
             line["speaker"] = voice_speaker(line, summoned, spec) or "player"
         cl = lines17.find(line["voice"], line["ru"])
         idx = cl.text_index if cl is not None else None
-        text = texts.line(idx, line["voice"], line["delay_ms"], None)
+        text = texts.line(idx, line["voice"], line["delay_ms"], None, lines17.same_voice(line["voice"]))
         if "ru" not in text and line["ru"]:
             text["ru"] = line["ru"]
         speaker = actors.get(line["speaker"], {}).get("id") or \
@@ -1054,6 +1110,158 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
                         "spawns": sorted({sp["file"] for sp in spawns.values()})}}
 
 
+def actor_model_key(actor: dict) -> int:
+    return actor["visual"] if actor.get("visual") is not None else actor["mob_offset"]
+
+
+# `GameViewScene` (17.0) : place et placement de caméra en doubles x, y, puis f32 lacet, puis double z.
+GVS_CAMERA = 0x38
+GVS_MOBS = 0xA0
+GVS_MOB_STRIDE = 192
+GVS_MOB_VISUAL = 0xB0
+GVS_MOB_OFFSET = 0x70
+GVS_MOB_SCRIPT = 0x80
+GVS_MAP = 0xE8
+GVS_PLACE = 0xF0
+SHOW_SCENE = 0x50
+SHOW_SCRIPT = 0x58
+GVSCRIPT_ACTIONS = 0x48
+GVACTION_CREATURE = 0xA0
+GVACTION_ACTION = 0xB8
+
+
+def _placement(db: PackDB, off: int) -> tuple[list[float], float]:
+    x, y = struct.unpack_from("<2d", db.raw, db.data + off)
+    z, = struct.unpack_from("<d", db.raw, db.data + off + 0x18)
+    return [round(x, 4), round(y, 4), round(z, 4)], db.f32(off + 0x10)
+
+
+CAMMOVES_GROUPS = 0x48
+CAMMOVE_GROUP_STRIDE = 48
+CAMMOVE_GROUP_DELAY = 0x04
+CAMMOVE_GROUP_MOVES = 0x08
+CAMMOVE_STRIDE = 120
+CAMMOVE_PITCH = 0x10
+CAMMOVE_XY = 0x18          # doubles x, y ; f32 lacet en +0x28, roulis en +0x2C ; double z en +0x30
+CAMMOVE_TIME = 0x6C
+CAMMOVE_TIME_START = 0x70
+
+
+def find_action(db: PackDB, off: int | None, kind: str, depth: int = 0) -> int | None:
+    if off is None or depth > 8:
+        return None
+    if db.vtype(off) == kind:
+        return off
+    for loc, rk, target in db.relocs(off, off + 0x120):
+        for child in ([db.ptr(loc)] if rk == 0 else db.pointers(loc) if rk == 3 else []):
+            if child is not None and db.vtype(child):
+                found = find_action(db, child, kind, depth + 1)
+                if found is not None:
+                    return found
+    return None
+
+
+def camera_moves(db: PackDB, action: int) -> list[dict]:
+    """`CameraMovesAction` : groupes de mouvements (48 o : `+0x04` délai de départ, `+0x08` mouvements),
+    mouvement (120 o : pose de départ en doubles x, y, z et f32 lacet, tangage, roulis ; `+0x6C`
+    durée vers la pose suivante, `+0x70` `timeStart`) — recoupé au millième sur le `.xdb` 7.0 de
+    `ShipExplosion_Script`. Rend les poses datées (s) ; un groupe coupe le précédent."""
+    groups = db.elements(action + CAMMOVES_GROUPS, CAMMOVE_GROUP_STRIDE)
+    keys = []
+    for k, g in enumerate(groups):
+        t = db.f32(g + CAMMOVE_GROUP_DELAY)
+        end = db.f32(groups[k + 1] + CAMMOVE_GROUP_DELAY) if k + 1 < len(groups) else None
+        for m in db.elements(g + CAMMOVE_GROUP_MOVES, CAMMOVE_STRIDE):
+            x, y = struct.unpack_from("<2d", db.raw, db.data + m + CAMMOVE_XY)
+            z, = struct.unpack_from("<d", db.raw, db.data + m + CAMMOVE_XY + 0x18)
+            if end is not None and t >= end - 1e-3:
+                # pose d'arrivée atteinte à l'instant de la coupe
+                keys.append({"t": round(end - 1e-3, 3), "p": [round(x, 4), round(y, 4), round(z, 4)],
+                             "yaw": db.f32(m + CAMMOVE_XY + 0x10), "pitch": db.f32(m + CAMMOVE_PITCH)})
+                break
+            keys.append({"t": round(t, 3), "p": [round(x, 4), round(y, 4), round(z, 4)],
+                         "yaw": db.f32(m + CAMMOVE_XY + 0x10), "pitch": db.f32(m + CAMMOVE_PITCH)})
+            t += db.f32(m + CAMMOVE_TIME) or 1.0
+    return keys
+
+
+def plan_gameview(spec: dict, db: PackDB, texts: Texts, anim_names: dict, report: list[str]) -> dict:
+    """Scène entièrement du client (`GameViewScene` + `GameViewScript` d'un `ShowSceneAction`) : PNJ
+    posés à la place de la scène (leur animation de cinématique porte leur déplacement), chacun jouant
+    l'animation que le script lui donne, caméra au `cameraPlacement` de la scène."""
+    import numpy as np
+    from tools.allods_visdb import ANIM_LIST, ANIM_MODE
+    scene = db.ids[int(spec["scene"])]
+    place, place_yaw = _placement(db, scene + GVS_PLACE)
+    cam, cam_yaw = _placement(db, scene + GVS_CAMERA)
+    map_res = db.ptr(scene + GVS_MAP)
+    map_path = next((p for p, o in db.paths.items() if o == map_res), "")
+    map_name = spec.get("map") or (map_path.split("/")[1] if map_path.startswith("Maps/") else "")
+    script = db.ids[int(spec["script"])] if spec.get("script") else None
+    if script is None:
+        hits = np.where((db.rtgt == scene) & (db.rkind == 0))[0]
+        for i in hits:
+            loc = int(db.rloc[i])
+            j = int(np.searchsorted(db.vt_loc, loc, side="right")) - 1
+            owner = int(db.vt_loc[j])
+            if db.vtype(owner) == "ShowSceneAction" and loc - owner == SHOW_SCENE:
+                script = db.ptr(owner + SHOW_SCRIPT)
+                break
+    clips: dict[int, list[str]] = {}
+    for action in (db.pointers(script + GVSCRIPT_ACTIONS) if script is not None else []):
+        creature = db.string(action + GVACTION_CREATURE)
+        anim = db.ptr(action + GVACTION_ACTION)
+        if not creature or not creature.isdigit() or anim is None or db.vtype(anim) != "CreatureAnimationAction":
+            continue
+        v = db.vec(anim + ANIM_LIST)
+        names = [anim_names.get(db.u32(v[0] + 4 * k), "") for k in range(v[1] // 4)] if v else []
+        clips[int(creature)] = [clip_name(n) for n in names if n]
+    actors = []
+    c, s_ = math.cos(place_yaw), math.sin(place_yaw)
+    for k, e in enumerate(db.elements(scene + GVS_MOBS, GVS_MOB_STRIDE), 1):
+        visual = db.ptr(e + GVS_MOB_VISUAL)
+        if visual is None:
+            continue
+        ox, oy, oz = db.floats(e + GVS_MOB_OFFSET, 3)
+        p = [place[0] + ox * c - oy * s_, place[1] + ox * s_ + oy * c, place[2] + oz]
+        wanted = clips.get(k, [])
+        actors.append({"id": f"{spec.get('actor_prefix', 'mob')}{k}", "mob_offset": None, "visual": visual,
+                       "path": [{"t": 0, "p": [round(v, 4) for v in p], "yaw": round(place_yaw, 5)}],
+                       "animations": wanted, "clips_wanted": wanted, "idle": wanted[0] if wanted else None,
+                       "actions": [{"t": 0.0, "until": 1e6, "clips": wanted, "loop": False}] if wanted else [],
+                       "name": spec.get("names", {}).get(str(k), {})})
+    # Le `cameraPlacement` pose le spectateur (l'avatar) : caméra à hauteur d'yeux au-dessus, du côté
+    # opposé à son regard (vue à la troisième personne du jeu), regard selon son lacet.
+    eye = float(spec.get("eye_height", 2.0))
+    back = float(spec.get("camera_back", 0.0))
+    direction = [math.cos(cam_yaw), math.sin(cam_yaw), 0.0]
+    cam = [round(cam[0] - back * direction[0], 4), round(cam[1] - back * direction[1], 4), round(cam[2] + eye, 4)]
+    target = [round(cam[i] + 20 * direction[i], 4) for i in range(3)]
+    camera = {"points": [{"t": 0, "p": cam}], "targets": [{"t": 0, "p": target}], "duration": float(spec.get("duration", 0))}
+    moves_action = find_action(db, script, "CameraMovesAction") if script is not None else None
+    if moves_action is not None:
+        # Caméra animée du script : poses datées, visée à 20 m selon lacet et tangage (même
+        # convention que le `cameraPlacement`).
+        points, targets = [], []
+        for key in camera_moves(db, moves_action):
+            cp, sp = math.cos(key["pitch"]), math.sin(key["pitch"])
+            yaw = key["yaw"] + float(spec.get("yaw_offset", 0.0))
+            d = [math.cos(yaw) * cp, math.sin(yaw) * cp, sp]
+            points.append({"t": key["t"], "p": key["p"]})
+            targets.append({"t": key["t"], "p": [round(key["p"][i] + 20 * d[i], 4) for i in range(3)]})
+        if points:
+            if points[0]["t"] > 0:
+                points.insert(0, {"t": 0, "p": points[0]["p"]})
+                targets.insert(0, {"t": 0, "p": targets[0]["p"]})
+            camera = {"points": points, "targets": targets, "duration": float(spec.get("duration", 0))}
+    report.append(f"{spec['id']} : GameViewScene {spec['scene']} sur {map_name}, {len(actors)} PNJ, "
+                  f"{sum(1 for a in actors if a['animations'])} animés")
+    return {"map": map_name, "camera": camera, "lines": [], "actors": actors, "weather": None,
+            "sounds": {"music": [], "ambience": []}, "post": spec.get("post", []),
+            "decor_center": [cam[0], cam[1]], "timing": "client", "duration_from_clips": not spec.get("duration"),
+            "sources": {"scene": spec["scene"], "script": spec.get("script")}}
+
+
 def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim_names: dict, report: list[str]) -> dict:
     """Plan d'une scène sans déroulé serveur connu (après 7.0) : ressources du 17.0 nommées par le
     manifeste, mise en scène et minutage du manifeste."""
@@ -1068,6 +1276,12 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
         cl = read_client_line(db, cd)
         if anchor is None and spec.get("fr_anchor") and texts.fr is not None and cl.text_index is not None:
             anchor = cl.text_index - texts.fr.find("fr", spec["fr_anchor"])
+        if anchor is None and not spec.get("fr_anchor") and texts.fr is not None and cl.text_index is not None and cl.voice:
+            # Ancrage par une réplique doublée : sa voix donne son indice FR, le décalage vaut pour les
+            # répliques non doublées voisines (vérifié par la durée d'affichage).
+            texts.load_fr_voices()
+            if cl.voice in texts.fr_voice:
+                anchor = cl.text_index - texts.fr_voice[cl.voice][0]
         text = texts.line(cl.text_index, cl.voice, cl.delay_ms, anchor)
         speaker = next((a["id"] for a in spec["actors"] if any(text.get("ru", "").startswith(p) for p in a.get("speaker_prefixes", []))), None)
         actor = next((a for a in spec["actors"] if a["id"] == speaker), None)
@@ -1211,8 +1425,10 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     # il couvre donc leurs zones à toutes, même quand une seule est réextraite (`--only`).
     plans: dict[str, dict] = {}
     for spec in manifest["engine_scenes"]:
-        plans[spec["id"]] = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report) \
-            if spec.get("source") == "xdb70" else plan_manual(spec, db, texts, lines17, anim_names, report)
+        source = spec.get("source")
+        plans[spec["id"]] = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report) if source == "xdb70" \
+            else plan_gameview(spec, db, texts, anim_names, report) if source == "gameview" \
+            else plan_manual(spec, db, texts, lines17, anim_names, report)
     # Une scène sans chapitre dans le film (en attente) ne s'extrait que demandée (`--only`).
     chapters = {c["id"] for c in manifest["cinematics"]}
     selected = [s for s in manifest["engine_scenes"] if (s["id"] in only if only else s["id"] in chapters)]
@@ -1221,16 +1437,27 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     for map_name in sorted(wanted_maps):
         on_map = [s for s in manifest["engine_scenes"] if plans[s["id"]]["map"] == map_name and (s["id"] in chapters or s in selected)]
         maps[map_name] = build_map(map_name, on_map, plans, db, client, bins, root, out_root, report)
+    # Acteurs communs : un modèle par PNJ (et par jeu d'animations réuni sur toutes les scènes du
+    # film), dans `engine/shared/actors/`, textures dans `engine/shared/textures/`.
+    shared = out_root / "engine" / "shared"
+    shared_tex = TexturePool(db, pack_cat, bins, shared, jpeg=True)
+    clips_of: dict[int, set[str]] = {}
+    for s_id in {s["id"] for s in manifest["engine_scenes"] if s["id"] in chapters} | {s["id"] for s in selected}:
+        for actor in plans[s_id]["actors"]:
+            clips_of.setdefault(actor_model_key(actor), set()).update(
+                set(actor.get("animations", [])) | {actor.get("idle") or "Idle", "Idle01", "Idle"} |
+                set(actor.get("clips_wanted", [])) | ({actor["move"]} if actor.get("move") else set()))
+    built: dict = {}
     for spec in selected:
         plan = plans[spec["id"]]
         ctx = maps[plan["map"]]
         mp, cat, prefix = ctx["mp"], ctx["cat"], map_prefix(plan["map"])
         out = out_root / "engine" / spec["id"]
         out.mkdir(parents=True, exist_ok=True)
-        for stale in ("textures", "particles", "decor.glb"):   # décor et particules : dossier de la carte
+        for stale in ("textures", "particles", "decor.glb", "actors"):   # dossiers de la carte et communs
             path = out / stale
             shutil.rmtree(path, ignore_errors=True) if path.is_dir() else path.unlink(missing_ok=True)
-        textures = TexturePool(mp, cat, bins, out, jpeg=True)          # textures des acteurs
+        textures = shared_tex
         light = ctx["lights"][spec["id"]]
         camera = plan["camera"]
         camera["fov"] = spec.get("fov", 45)
@@ -1256,25 +1483,20 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                 line["start"] = t
 
         actors_meta = []
-        built: dict = {}
         shutil.rmtree(out / "actors", ignore_errors=True)
-        # Animations voulues par modèle : les doubles d'un même PNJ partagent un seul fichier.
-        clips_of: dict[int, set[str]] = {}
         for actor in plan["actors"]:
-            clips_of.setdefault(actor["mob_offset"], set()).update(
-                set(actor.get("animations", [])) | {actor.get("idle") or "Idle", "Idle01", "Idle"} |
-                set(actor.get("clips_wanted", [])) | ({actor["move"]} if actor.get("move") else set()))
-        for actor in plan["actors"]:
-            spec_actor = {"id": actor["id"], "mob": None, "sex": actor.get("sex"), "animations": sorted(clips_of[actor["mob_offset"]])}
-            glb = f"actors/{actor['id']}.glb"
-            twin = built.get((actor["mob_offset"], tuple(spec_actor["animations"])))
-            if twin is not None:          # même PNJ en double (deux invocations à la fois) : même modèle
-                glb, meta = twin[0], json.loads(json.dumps(twin[1]))
+            key = f"mob-{actor['mob_offset']:x}" if actor.get("visual") is None else f"vis-{actor['visual']:x}"
+            spec_actor = {"id": actor["id"], "file": key, "mob": None, "sex": actor.get("sex"),
+                          "animations": sorted(clips_of[actor_model_key(actor)])}
+            glb = f"../shared/actors/{key}.glb"
+            if key in built:            # PNJ déjà exporté (double, ou autre scène du même passage)
+                meta = json.loads(json.dumps(built[key]))
             else:
-                data, meta = build_actor_offset(spec_actor, actor["mob_offset"], mp, cat, bins, textures, report)
-                (out / "actors").mkdir(exist_ok=True)
-                (out / "actors" / f"{actor['id']}.glb").write_bytes(data)
-                built[(actor["mob_offset"], tuple(spec_actor["animations"]))] = (glb, json.loads(json.dumps(meta)))
+                spec_actor["visual"] = actor.get("visual")
+                data, meta = build_actor_offset(spec_actor, actor["mob_offset"], db, pack_cat, bins, shared_tex, report)
+                (shared / "actors").mkdir(parents=True, exist_ok=True)
+                (shared / "actors" / f"{key}.glb").write_bytes(data)
+                built[key] = json.loads(json.dumps(meta))
             idle = actor.get("idle") or next((c for c in ("Idle01", "Idle") if c in meta["animations"]), None)
             ground = bool(actor.get("ground"))
             path = []
@@ -1289,14 +1511,20 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                     entry["yaw"] = key["yaw"]
                 path.append(entry)
             name_idx = meta.pop("name_index")
+            name = {"ru": clean_text(texts.main.texts["ru"][name_idx]), "en": clean_text(texts.main.texts["en"][name_idx])} \
+                if name_idx is not None else actor.get("name", {})
             actors_meta.append({"id": actor["id"], "glb": glb,
-                                "name": {"ru": clean_text(texts.main.texts["ru"][name_idx]), "en": clean_text(texts.main.texts["en"][name_idx])},
+                                "name": name,
                                 "path": path, "scale": actor.get("scale", 1.0), "idle": idle,
                                 "talk": actor.get("talk"), "move": actor.get("move"), "appear": actor.get("appear", 0.0),
                                 **({"presence": actor["presence"]} if actor.get("presence") else {}),
                                 **({"actions": sorted(actor["actions"], key=lambda a: a["t"])} if actor.get("actions") else {}),
                                 "light": light_at(path[0]["p"], decor["pointLights"], light), **meta})
 
+        if plan.get("duration_from_clips"):
+            # Scène du client : elle dure le temps de la plus longue animation jouée.
+            camera["duration"] = round(max([sum(a["animations"].get(c, 0) for c in (act["clips"] if act else []))
+                                            for a in actors_meta for act in (a.get("actions") or [None])] + [1.0]), 3)
         fx_glb, fx_objects, fx_sounds, spawns = ctx["fx"][spec["id"]]
         spawns = json.loads(json.dumps(spawns))
         for spawn in spawns:
@@ -1371,7 +1599,29 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         entries.append({"spec": spec, "duration": camera["duration"], "tracks": tracks, "lines": len(scene_lines),
                         "timing": plan["timing"]})
     update_index(manifest, out_root, entries)
+    prune_shared_actors(out_root / "engine")
     return report
+
+
+def prune_shared_actors(engine: Path) -> None:
+    """Retire les modèles communs qu'aucune scène ne cite plus."""
+    used = set()
+    for scene in engine.glob("*/scene.json"):
+        for actor in json.loads(scene.read_text(encoding="utf-8")).get("actors", []):
+            used.add(Path(actor["glb"]).name)
+    images = set()
+    for glb in (engine / "shared" / "actors").glob("*.glb"):
+        if glb.name not in used:
+            glb.unlink()
+            continue
+        raw = glb.read_bytes()
+        size = struct.unpack_from("<I", raw, 12)[0]
+        for image in json.loads(raw[20:20 + size]).get("images", []):
+            if "uri" in image:
+                images.add(Path(image["uri"]).name)
+    for texture in (engine / "shared" / "textures").glob("*"):
+        if texture.name not in images:
+            texture.unlink()
 
 
 def update_index(manifest: dict, out_root: Path, entries: list[dict]) -> None:
@@ -1379,9 +1629,8 @@ def update_index(manifest: dict, out_root: Path, entries: list[dict]) -> None:
     path = out_root / "cinematics.json"
     index = json.loads(path.read_text(encoding="utf-8"))
     by_id = {c["id"]: c for c in manifest["cinematics"]}
-    engine_ids = {e["id"] for e in manifest["engine_scenes"]}
     # Chapitres moteur retirés du film (scène en attente) : ôtés de l'index.
-    index["cinematics"] = [c for c in index["cinematics"] if not (c.get("engine") and c["id"] in engine_ids and c["id"] not in by_id)]
+    index["cinematics"] = [c for c in index["cinematics"] if not (c.get("engine") and c["id"] not in by_id)]
     for e in entries:
         spec = by_id.get(e["spec"]["id"])
         if spec is None:

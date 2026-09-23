@@ -174,7 +174,7 @@
    "n": 1,
    "start": 0.0,
    "duration": 17.0,
-   "speaker": "portal",
+   "speaker": null,
    "voice": {
     "event": "Cutscenes/Ferris4/CS_FR_PortalArch02",
     "wave": "CS_FR_PortalArch02",
@@ -196,7 +196,7 @@
    "n": 2,
    "start": 6.0,
    "duration": 17.0,
-   "speaker": "portal",
+   "speaker": null,
    "voice": {
     "event": "Cutscenes/Ferris4/CS_FR_PortalArch03",
     "wave": "CS_FR_PortalArch03",
@@ -218,7 +218,7 @@
    "n": 3,
    "start": 16.0,
    "duration": 17.0,
-   "speaker": "portal",
+   "speaker": "diarder",
    "voice": {
     "event": "Cutscenes/Ferris4/CS_FR_PortalMarianna06",
     "wave": "CS_FR_PortalMarianna06",
@@ -240,7 +240,7 @@
    "n": 4,
    "start": 22.0,
    "duration": 17.0,
-   "speaker": "portal",
+   "speaker": "rysina",
    "voice": {
     "event": "Cutscenes/Ferris4/CS_FR_PortalRysina03",
     "wave": "CS_FR_PortalRysina03",
@@ -306,7 +306,7 @@
  "actors": [
   {
    "id": "portal",
-   "glb": "actors/portal.glb",
+   "glb": "../shared/actors/mob-95b70e8.glb",
    "name": {
     "ru": "Жнец",
     "en": "Reaper"
@@ -374,7 +374,7 @@
   },
   {
    "id": "diarder",
-   "glb": "actors/diarder.glb",
+   "glb": "../shared/actors/mob-56747f0.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -431,13 +431,16 @@
     "Idle": 4.0,
     "Idle01": 3.0,
     "Idle02": 4.1,
+    "Ready": 2.6667,
+    "ReadySpellDirected": 2.6667,
     "SpellCastDirected": 1.3333,
+    "SpellCastOmni": 1.5,
     "Walk": 1.0
    }
   },
   {
    "id": "rysina",
-   "glb": "actors/rysina.glb",
+   "glb": "../shared/actors/mob-56721a8.glb",
    "name": {
     "ru": "Елизавета Рысина",
     "en": "Elizaveta Rysina"
@@ -533,16 +536,20 @@
    "geometry": "Creatures/Rysina/Rysina.(Geometry).bin",
    "height": 1.916,
    "animations": {
+    "ChannelCastOmni": 0.9667,
     "EmoteSpeech": 5.3333,
     "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
+    "ReadySpellDirected": 1.3333,
+    "Special": 12.0,
+    "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.3333,
     "Walk": 1.6333
    }
   },
   {
    "id": "diarder-2",
-   "glb": "actors/diarder.glb",
+   "glb": "../shared/actors/mob-56747f0.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -626,7 +633,10 @@
     "Idle": 4.0,
     "Idle01": 3.0,
     "Idle02": 4.1,
+    "Ready": 2.6667,
+    "ReadySpellDirected": 2.6667,
     "SpellCastDirected": 1.3333,
+    "SpellCastOmni": 1.5,
     "Walk": 1.0
    }
   }
@@ -1730,6 +1740,34 @@
     }
    ]
   },
+  "Architect_Console": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_Small_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_Small_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ArchitectDoor_Impost": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
   "Architect_Arena_FX": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -1750,20 +1788,6 @@
     }
    ]
   },
-  "Architect_Console": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "ArchitectDoor_Impost": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
   "Architect_Rock_04#3": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -1779,20 +1803,6 @@
    "loop": false
   },
   "Architect_World_MagicStone": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "Architect_Rock_Small_01": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
-  "Architect_Rock_Small_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
