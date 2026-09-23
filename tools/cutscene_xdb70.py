@@ -204,6 +204,22 @@ class Simulator:
                 self.impact(base, sub, t + delay, target)
         elif kind == "ImpactSummon":
             self.summon(base, node, t)
+        elif kind == "ImpactFindSpawnTable":
+            table = self.spawn_table(base, node)
+            for sub in node.findall("impacts/Item"):
+                self.impact(base, sub, t, table or target)
+        elif kind == "GoThroughPath":
+            summon = self.summon_by_id(target)
+            for step in node.findall("path/Item"):
+                locator = step.findtext("scriptID")
+                mp = step.find("map")
+                if mp is not None and mp.get("href"):
+                    m = re.search(r"/Maps/([^/]+)/", mp.get("href"))
+                    if m:
+                        self.tl.maps.add(m.group(1))
+                if summon is not None and locator:
+                    summon["moves"].append({"t": round(t, 3), "locator": locator})
+                    self.tl.scripts.add(locator)
         elif kind == "ImpactGoTo":
             summon = self.summon_by_id(target)
             locator = self.locator(node.find("destination"))
@@ -238,6 +254,28 @@ class Simulator:
 
     def summon_by_id(self, target: str) -> dict | None:
         return next((s for s in self.tl.summons if s["id"] == target), None)
+
+    def spawn_table(self, base: Path, node: ET.Element) -> str | None:
+        """PNJ d'une table d'apparition posée sur la carte (`SpawnLocus`) : un acteur présent dès le
+        début, à la place de la table ; les impacts qui suivent le visent."""
+        ref = node.find("spawnResource")
+        if ref is None or not ref.get("href"):
+            return None
+        table = self.tree.resolve(base, ref.get("href"))
+        ident = "table:" + self.tree.rel(table) if table.is_file() else None
+        if ident is None:
+            return None
+        if self.summon_by_id(ident) is None:
+            doc = _read(table)
+            obj = doc.find("singles/Item/object") if doc is not None else None
+            mob = self.tree.resolve(table, obj.get("href")) if obj is not None and obj.get("href") else None
+            if mob is None or not mob.is_file():
+                return None
+            self.tl.summons.append({"id": ident, "mob": self.tree.rel(mob), "name": mob_name(self.tree, mob),
+                                    "visual": mob_visual(self.tree, mob), "locator": ident, "walkSpeed": walk_speed(mob),
+                                    "yaw": None, "t": 0.0, "until": None, "moves": []})
+            self.tl.scripts.add(ident)
+        return ident
 
     def summon(self, base: Path, node: ET.Element, t: float) -> None:
         dest = node.find("destination")
@@ -373,7 +411,7 @@ def find_spawns(root: Path, map_name: str, scripts: set[str]) -> dict[str, dict]
     folder = tree.root / "Maps" / map_name
     for path in sorted(folder.glob("*/*ServerObjects.xdb")):
         raw = path.read_bytes()
-        if not any(s.encode() in raw for s in scripts):
+        if not any(s.split("/")[-1].encode() in raw for s in scripts):
             continue
         doc = _read(path)
         if doc is None:
@@ -381,6 +419,16 @@ def find_spawns(root: Path, map_name: str, scripts: set[str]) -> dict[str, dict]
         ox, oy = region_origin(tree.rel(path))
         for item in doc.iter("Item"):
             script = item.findtext("scriptID")
+            table = item.find("spawnTable")
+            if table is not None and table.get("href"):       # `SpawnLocus` : table d'apparition posée
+                script = "table:" + tree.rel(tree.resolve(path, table.get("href")))
+                place = item.find("places/Item")
+                center = place.find("center") if place is not None else None
+                if script in scripts and script not in out and center is not None:
+                    out[script] = {"p": [float(center.get("x", 0)) + ox, float(center.get("y", 0)) + oy,
+                                         float(center.get("z", 0))], "yaw": _f(place, "yaw"), "mob": None,
+                                   "name": "", "visual": None, "file": tree.rel(path)}
+                continue
             if script not in scripts or script in out:
                 continue
             place = item.find("place")

@@ -313,9 +313,30 @@ class PackDB:
         return self.u32(off + field), self.u32(off + field + 8)
 
 
+def packs_path(path: Path) -> Path:
+    """`…/data/Packs/…` du client, ou `…/data/Packs.adc-real/…` quand `Packs` est un lien illisible
+    depuis WSL (jonction Windows posée à côté du vrai dossier, renommé `Packs.adc-real`)."""
+    path = Path(path)
+    try:
+        if path.exists():
+            return path
+    except OSError:
+        pass
+    parts = path.parts
+    if "Packs" in parts:
+        k = len(parts) - 1 - parts[::-1].index("Packs")
+        alt = Path(*parts[:k], "Packs.adc-real", *parts[k + 1:])
+        try:
+            if alt.exists():
+                return alt
+        except OSError:
+            pass
+    return path
+
+
 def open_pack(client_root: Path, cache_dir: Path | None = None) -> PackDB:
     """Ouvre `pack.bin` du client, décompressé une fois dans le cache puis projeté en mémoire."""
-    pak = Path(client_root) / "data" / "Packs" / PACK_PAK
+    pak = packs_path(Path(client_root) / "data" / "Packs" / PACK_PAK)
     cache_dir = Path(cache_dir or default_cache_dir())
     stat = pak.stat()
     key = hashlib.sha1(f"{pak}:{stat.st_size}:{int(stat.st_mtime)}".encode()).hexdigest()[:12]
@@ -404,7 +425,7 @@ class LinkedDB(PackDB):
 
 def open_map(pack: PackDB, client_root: Path, map_name: str) -> LinkedDB:
     """Base de la carte `map_name` (`BaseLocall_x64.pak` → `Bin/Maps_<carte>.bin`), liée à `pack`."""
-    with zipfile.ZipFile(Path(client_root) / "data" / "Packs" / PACK_PAK) as zf:
+    with zipfile.ZipFile(packs_path(Path(client_root) / "data" / "Packs" / PACK_PAK)) as zf:
         data = zf.read(f"Bin/Maps_{map_name}.bin")
     try:
         data = zlib.decompress(data)
@@ -517,7 +538,7 @@ PAK_VOTE_VERSION = 2
 def open_catalog(db: PackDB, client_root: Path, cache_dir: Path | None = None) -> PakCatalog:
     """Catalogue des paks : codes lus dans le bloc 6 de la base (et de sa base parente pour une
     carte), sinon votés (anciennes bases, données de test)."""
-    packs_dir = Path(client_root) / "data" / "Packs"
+    packs_dir = packs_path(Path(client_root) / "data" / "Packs")
     if db.pak_names:
         root = db.parent if isinstance(db, LinkedDB) else db
         codes = dict(enumerate(root.pak_names)) if root.pak_names else {}

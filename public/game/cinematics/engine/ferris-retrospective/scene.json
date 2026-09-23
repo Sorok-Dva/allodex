@@ -554,12 +554,12 @@
     1.3778,
     1.706
    ],
-   "geometry": "Characters/Hadagan_female/HadaganFemale.(Geometry).bin",
-   "height": 1.767,
+   "geometry": "Characters/Hadagan_male/HadaganMale.(Geometry).bin",
+   "height": 1.857,
    "animations": {
-    "EmoteSpeech": 5.3333,
-    "Idle": 5.3,
-    "Idle01": 4.2333
+    "EmoteSpeech": 5.3,
+    "Idle": 3.9667,
+    "Idle01": 4.0
    }
   },
   {
@@ -646,7 +646,7 @@
   }
  ],
  "decor": {
-  "glb": "decor.glb",
+  "glb": "../maps/Ferris4/decor.glb",
   "light": "decor-light.bin",
   "instances": [
    {
@@ -3635,7 +3635,9 @@
   "sky": {
    "radius": 1472.39,
    "parts": 5
-  }
+  },
+  "skyGlb": "sky.glb",
+  "oneSided": true
  },
  "fx": {
   "glb": null,
@@ -3790,7 +3792,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/HG8_Terminal_01_FX.bin",
+    "file": "../maps/Ferris4/particles/HG8_Terminal_01_FX.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 91,
@@ -3899,6 +3901,416 @@
    ],
    "sfx": "sfx/HG8_Terminal_01"
   },
+  "Red_Omni": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 0.5999999642372131,
+   "particles": {
+    "file": "../maps/Ferris4/particles/Red_Omni.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 301,
+    "loopFrame": 121,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.2266,
+       0.75,
+       0.2656
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.6,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Blue_Omni": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Ferris4/particles/Blue_Omni.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 301,
+    "loopFrame": 121,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.2969,
+       0.6328,
+       0.7109
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.4,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisCore_Gun": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Ferris4/particles/FerrisCore_Gun.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 121,
+    "frames": [
+     0,
+     1
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.9922,
+       1.9922,
+       1.9922
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.5,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.0078,
+       0.4453,
+       0.6406
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.2,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisCore_Portal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "spells/FX/Mobs/ArchitectFX/FerrisCore_Portal_idle",
+   "particles": {
+    "file": "../maps/Ferris4/particles/FerrisCore_Portal.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 121,
+    "frames": [
+     2,
+     3
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.0078,
+       0.2656,
+       0.4062
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       0.0391,
+       1.8125,
+       1.9531
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.5,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.0,
+       0.2266,
+       0.2812
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisCore_GunAll": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "FerrisCore_Gun",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "FerrisCore_Gun",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "FerrisCore_Gun",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "FerrisCore_Portal",
+     "locator": ""
+    }
+   ]
+  },
+  "FerrisRaid_CoreBottom": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special04"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special05"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special06"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special07"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special08"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special09"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special10"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special11"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special12"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special13"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special14"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special15"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special16"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special17"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special18"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special19"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special20"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special21"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special22"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special23"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special24"
+    },
+    {
+     "vot": "Blue_Omni",
+     "locator": "Slot_Special25"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special26"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special27"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special28"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special29"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special30"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special31"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special32"
+    },
+    {
+     "vot": "Red_Omni",
+     "locator": "Slot_Special33"
+    },
+    {
+     "vot": "FerrisCore_GunAll",
+     "locator": "Slot_Special34"
+    }
+   ]
+  },
+  "ZC10_MechGunslinger_Corrupted_Dead": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerisLab_Obj_Comp_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Corpse_Modificant_Male": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
   "InstLeague1_AI_2X2": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -3932,7 +4344,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/HG8_Tank_01_FX.bin",
+    "file": "../maps/Ferris4/particles/HG8_Tank_01_FX.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 91,
@@ -4051,7 +4463,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/HG8_Tank_02_FX.bin",
+    "file": "../maps/Ferris4/particles/HG8_Tank_02_FX.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 91,
@@ -4197,7 +4609,7 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "particles": {
-    "file": "particles/HG8_Projector_FX.bin",
+    "file": "../maps/Ferris4/particles/HG8_Projector_FX.bin",
     "speed": 1.0,
     "loop": true,
     "endFrame": 91,
@@ -4328,13 +4740,6 @@
    "duration": 0.0,
    "loop": false
   },
-  "ZC10_MechGunslinger_Corrupted_Dead": {
-   "fadeIn": 0.0,
-   "fadeOut": 0.0,
-   "scale": 1.0,
-   "duration": 0.0,
-   "loop": false
-  },
   "Hadagan_ResurrectPlaceFerris": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -4391,7 +4796,7 @@
    "duration": 0.0,
    "loop": false
   },
-  "FerisLab_Obj_Comp_01": {
+  "Corpse_Modificant_Female": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
@@ -4400,15 +4805,33 @@
   }
  },
  "particleAtlas": {
-  "file": "particles/atlas.png",
+  "file": "../maps/Ferris4/particles/atlas.png",
   "width": 1024,
-  "height": 64,
+  "height": 128,
   "rects": [
    [
-    0,
+    128,
     0,
     64,
     64
+   ],
+   [
+    192,
+    0,
+    64,
+    64
+   ],
+   [
+    256,
+    0,
+    64,
+    64
+   ],
+   [
+    0,
+    0,
+    128,
+    128
    ]
   ],
   "sources": [
@@ -4418,6 +4841,27 @@
     1152,
     64,
     64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1728,
+    256,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    768,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    896,
+    896,
+    128,
+    128
    ]
   ]
  },

@@ -167,9 +167,10 @@ class TextSet:
 
 
 def load_textset(root: Path, spec: dict) -> TextSet:
-    with zipfile.ZipFile(root / spec["texts_pak"]) as z:
+    from tools.allods_packdb import packs_path
+    with zipfile.ZipFile(packs_path(root / spec["texts_pak"])) as z:
         texts = {lang: unpack_loc(z.read(entry)) for lang, entry in spec["locs"].items()}
-    with zipfile.ZipFile(root / spec["bin_pak"]) as z:
+    with zipfile.ZipFile(packs_path(root / spec["bin_pak"])) as z:
         blob = zlib.decompress(z.read("Bin/pack.bin"))
     count = min(len(v) for v in texts.values())
     return TextSet(texts, scan_subtitles(blob, count))

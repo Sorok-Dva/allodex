@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from tools.allods_packdb import packs_path
 from tools.extract_audio import (
     extract_pak_entry_bytes,
     fsb_payload_from_bytes,
@@ -255,7 +256,7 @@ REAL_VGMSTREAM = Path(
 
 
 @pytest.mark.skipif(
-    not (REAL_CLIENT / "data" / "Packs" / "SFX_Music.Mini.pak").exists() or not REAL_VGMSTREAM.exists(),
+    not packs_path(REAL_CLIENT / "data" / "Packs" / "SFX_Music.Mini.pak").exists() or not REAL_VGMSTREAM.exists(),
     reason="client Allods réel ou vgmstream-cli absents de cette machine",
 )
 def test_run_against_real_client_extracts_menu_track(tmp_path):

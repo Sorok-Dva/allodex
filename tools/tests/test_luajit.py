@@ -2,11 +2,13 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 import struct
 
 import pytest
 
 from tools import luajit
+from tools.allods_packdb import packs_path
 from tools.extract_talents import LUA_PAK, builder_layout
 
 
@@ -75,7 +77,7 @@ def test_refuse_autre_format():
         luajit.parse(b"\x1bLua")
 
 
-PACKS = "/mnt/h/MyGames/AllodsRU/data/Packs"
+PACKS = str(packs_path(Path("/mnt/h/MyGames/AllodsRU/data/Packs")))
 
 
 @pytest.mark.skipif(not os.path.exists(os.path.join(PACKS, LUA_PAK)), reason="client 17.0 absent")

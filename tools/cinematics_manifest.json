@@ -1191,6 +1191,42 @@
    }
   },
   {
+   "id": "ferris-incident",
+   "kind": "engine",
+   "source": "main",
+   "event": "Ferris_4_secret2",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 152,
+   "title": {
+    "fr": "Incident n° 42",
+    "en": "Incident No. 42"
+   },
+   "chronology": "Cinématique moteur de la quête secrète « Ferris_4_secret2 » (« Происшествие №42 », Ferris, 6.0) : second souvenir du journal de l’« Objet » — les modifiés déferlent sur la base hadagane, les désinfecteurs ouvrent le feu et l’on ferme les portes.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-awakening",
+   "kind": "engine",
+   "source": "main",
+   "event": "Ferris_4_6_1",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 155,
+   "title": {
+    "fr": "Un dialogue parfait",
+    "en": "A Perfect Dialogue"
+   },
+   "chronology": "Cinématique moteur de la quête « Ferris_4_6_1 » (« Совершенный диалог », Ferris, 6.0) : l’Architecte ami s’éveille ; avant le raid de Ferris.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "ferris-portal",
    "kind": "engine",
    "source": "main",
@@ -1204,6 +1240,60 @@
     "en": "The Ferris Portal"
    },
    "chronology": "Cinématique moteur d’entrée du raid de Ferris (« FR4Intro », 6.0) : devant le portail, Élisabeth Rysina, Marianne di Arder et le Ваятель (un Colosse) envoient les héros dans le cœur de Ferris ; après la rétrospective du laboratoire, avant l’Invasion (7.0).",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-fractal",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid Portal_Start",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 162,
+   "title": {
+    "fr": "La profanation du Fractal",
+    "en": "The Desecrated Fractal"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« Portal_Start », 6.0) : devant le portail, Marianne di Arder prépare le sceau quand l’Architecte parle et envoie sa créature ; le portail ne se fermera pas tant qu’elle vivra.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-no-way-back",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid Portal_Ending_Main",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 164,
+   "title": {
+    "fr": "Pas de retour",
+    "en": "No Way Back"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« Portal_Ending_Main », 6.0) : l’Architecte promet la transformation de tous ; le portail franchi, Rysina et Marianne découvrent un lieu étrange qui pulse d’énergie.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-power-of-order",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid Swarm_Ending_Main",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 166,
+   "title": {
+    "fr": "La force de l’Ordre",
+    "en": "The Power of Order"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« Swarm_Ending_Main », 6.0) : après l’essaim, l’Architecte fait la démonstration de la force de l’Ordre ; Marianne tente d’ouvrir un nouveau portail.",
    "audio": {
     "language": "ru"
    }
@@ -22716,10 +22806,31 @@
    }
   },
   {
+   "id": "ferris-sarcophagus",
+   "source": "xdb70",
+   "first_buff": "Items/InteractiveObjects/Ferris_indoor/Ferris_4_start/Ferris_4_start_elf_cutscenes.(BuffResource).xdb",
+   "map": "Ferris_indoor",
+   "_note": "Déroulé serveur 7.0 (Ferris_4_start_elf_cutscenes → Cutscene_01 … Cutscene_04 → Cutscene_fade_end, musique Ferris4_Cutscene3) ; carte Ferris_indoor (le déroulé ne la nomme pas : c’est celle dont la salle de recherche, FerisLab_ArchitectResearchRoom, est sous la caméra). L’ouverture de la sphère (CreatureSetFlagVisAction, drapeau visuel Ferris_4_start_02) n’est pas reproduite. En attente, hors du film : la salle, éclairée par le seul éclairage de zone du 17.0 (violet sombre, sans lumière ponctuelle ; les octets 0-1 du lightvrt ne sont pas élucidés), est presque noire, et l’ouverture de la sphère manque."
+  },
+  {
    "id": "ferris-retrospective",
    "source": "xdb70",
    "first_buff": "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_fade_start.(BuffResource).xdb",
    "_note": "Déroulé serveur relu dans l’arbre 7.0 (buffs Cutscene_fade_start → Cutscene_01 … Cutscene07 → Cutscene_fade_end), rapporté au client 17.0 : caméras, répliques et locuteurs, PNJ et leur place (5_4_ServerObjects), ciel et lumière de la vision, musique et ambiance."
+  },
+  {
+   "id": "ferris-incident",
+   "source": "xdb70",
+   "first_buff": "World/Quests/Ferris4/Ferris_4_secret2/Cut_scene_start.(BuffResource).xdb",
+   "map": "Ferris4",
+   "_note": "Déroulé serveur 7.0 (Cut_scene_start → Cut_scene_01, _02, _0301 → Cutscene_fade_end) ; PNJ des tables d’apparition posées sur la couche inst2 de Ferris4 (SpawnLocus), qui suivent leurs chemins (GoThroughPath). Les jets des lance-flammes (sorts) ne sont pas reproduits."
+  },
+  {
+   "id": "ferris-awakening",
+   "source": "xdb70",
+   "first_buff": "World/Quests/Ferris4/Ferris_4_6_1/Ferris_4_6_1_Cutscene.(BuffResource).xdb",
+   "map": "Ferris4",
+   "_note": "Déroulé serveur 7.0 : un plan de 13 s sur l’Architecte ami (Ferris4_Architect_Friend_Mob), animations special puis sleepUp."
   },
   {
    "id": "ferris-portal",
@@ -22731,6 +22842,42 @@
     "Marianna": "diarder"
    },
    "_note": "Déroulé serveur 7.0 (Ferris_Cutscene_Main → Ferris_Cutscene … _9ID) ; PNJ invoqués sur les repères de 5_5_ServerObjects ; répliques posées sur le joueur attribuées par le nom de la voix (FR_PreRaidRysina → Rysina ; Vayatel → le Colosse, Marianna → di Arder)."
+  },
+  {
+   "id": "ferris-fractal",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/Portal_Start.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Сердце Локуса"
+   },
+   "_note": "Déroulé serveur 7.0 (Portal_Start et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix."
+  },
+  {
+   "id": "ferris-no-way-back",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/Portal_Ending_Main.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Сердце Локуса"
+   },
+   "_note": "Déroulé serveur 7.0 (Portal_Ending_Main et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix."
+  },
+  {
+   "id": "ferris-power-of-order",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_Ending_Main.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Сердце Локуса"
+   },
+   "_note": "Déroulé serveur 7.0 (Swarm_Ending_Main et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix."
   },
   {
    "id": "ferris-order",
