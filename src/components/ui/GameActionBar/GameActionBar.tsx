@@ -8,11 +8,15 @@ export type ActionItem = {
   base: string;
   spriteBase?: string;
   image?: string;
+  /** Image hors textures du jeu (URL directe), à la place de `image`. */
+  src?: string;
   icon?: string;
   label: string;
   hint?: string;
   disabled?: boolean;
   onClick?: () => void;
+  /** Lien externe, ouvert dans un nouvel onglet (au lieu de `onClick`). */
+  href?: string;
 };
 
 type Props = { items: ActionItem[]; className?: string; onItemInteract?: (id: string) => void };
@@ -24,7 +28,7 @@ type Props = { items: ActionItem[]; className?: string; onItemInteract?: (id: st
 export function GameActionBar({ items, className, onItemInteract }: Props) {
   const [hover, setHover] = useState<{ id: string; anchor: DOMRect } | null>(null);
   const [pressedId, setPressedId] = useState<string | null>(null);
-  const slots = useRef<Record<string, HTMLButtonElement | null>>({});
+  const slots = useRef<Record<string, HTMLElement | null>>({});
 
   const hovered = hover ? items.find(item => item.id === hover.id) : undefined;
 
@@ -42,29 +46,28 @@ export function GameActionBar({ items, className, onItemInteract }: Props) {
   return (
     <div className={`${s.bar} ${className ?? ''}`}>
       {items.map(item => {
-        const isDisabled = item.disabled || !item.onClick;
+        const isDisabled = item.disabled || (!item.onClick && !item.href);
         const isHover = hover?.id === item.id;
         const isPressed = pressedId === item.id;
-        return (
-          <button
-            key={item.id}
-            type="button"
-            ref={el => { slots.current[item.id] = el; }}
-            className={`${s.slot} ${isDisabled ? s.disabled : ''}`}
-            aria-label={item.label}
-            aria-disabled={isDisabled || undefined}
-            onClick={() => { if (isDisabled) return; onItemInteract?.(item.id); item.onClick?.(); }}
-            onMouseEnter={() => show(item.id)}
-            onMouseLeave={() => hide(item.id)}
-            onFocus={() => show(item.id)}
-            onBlur={() => hide(item.id)}
-            onMouseDown={() => setPressedId(item.id)}
-            onMouseUp={() => setPressedId(null)}
-          >
+        const image = item.src ?? (item.image ? tex(item.image) : null);
+        const common = {
+          ref: (el: HTMLElement | null) => { slots.current[item.id] = el; },
+          className: `${s.slot} ${isDisabled ? s.disabled : ''}`,
+          'aria-label': item.label,
+          'aria-disabled': isDisabled || undefined,
+          onMouseEnter: () => show(item.id),
+          onMouseLeave: () => hide(item.id),
+          onFocus: () => show(item.id),
+          onBlur: () => hide(item.id),
+          onMouseDown: () => setPressedId(item.id),
+          onMouseUp: () => setPressedId(null),
+        };
+        const layers = (
+          <>
             <span
               className={s.base}
               data-testid={`action-base-${item.id}`}
-              style={{ backgroundImage: `url(${item.image ? tex(item.image) : item.spriteBase ? sprite(`${item.spriteBase}-${isPressed ? 'pressed' : 'normal'}`) : tex(`${item.base}${isPressed ? 'Pressed' : 'Normal'}`)})`, transform: item.image && isPressed ? 'translateY(1px)' : undefined }}
+              style={{ backgroundImage: `url(${image ?? (item.spriteBase ? sprite(`${item.spriteBase}-${isPressed ? 'pressed' : 'normal'}`) : tex(`${item.base}${isPressed ? 'Pressed' : 'Normal'}`))})`, transform: image && isPressed ? 'translateY(1px)' : undefined }}
             />
             {item.icon && <img className={s.icon} src={tex(item.icon)} alt="" />}
             <span
@@ -72,6 +75,18 @@ export function GameActionBar({ items, className, onItemInteract }: Props) {
               data-testid={`action-highlight-${item.id}`}
               style={{ backgroundImage: `url(${tex(`${item.base}Highlight`)})`, opacity: isHover ? 1 : 0 }}
             />
+          </>
+        );
+        if (item.href && !isDisabled) {
+          return (
+            <a key={item.id} {...common} href={item.href} target="_blank" rel="noopener noreferrer" onClick={() => onItemInteract?.(item.id)}>
+              {layers}
+            </a>
+          );
+        }
+        return (
+          <button key={item.id} type="button" {...common} onClick={() => { if (isDisabled) return; onItemInteract?.(item.id); item.onClick?.(); }}>
+            {layers}
           </button>
         );
       })}
