@@ -347,6 +347,8 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
     par `_LIGHTUV`. Rend aussi les triangles du sol, pour poser les acteurs."""
     from tools.allods_scenes import region_origin
     from tools.allods_terrain import pass_weights, region_patches, region_splats, terrain_layers
+    from tools.allods_terrain_extras import ExtrasBuilder
+    extras = ExtrasBuilder(mp, cat, textures, lambda name, size: textures.uri(name, size, "textures/"))
     palette: dict[str, int] = {}
     tilings: list[float] = []
     pos, nor, lay0, wei0, lay1, wei1, idx, solids, lmuv = [], [], [], [], [], [], [], [], []
@@ -366,6 +368,9 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
         layer_sets, patches = parsed
         layers = terrain_layers(mp, cat, mp.ptr(region + 0x98))
         splats = region_splats(bins.get, path)
+        extras.add_region(bins.get, path, mp.ptr(region + 0x98), (ox, oy), patches,
+                          lambda x, y: any(c is None or math.hypot(x - c[0], y - c[1]) <= r + 16 for c, r in near),
+                          light_slot=lambda: lightmaps.slot(path, 0))
 
         def slot(layer_id: int) -> int:
             name, tiling = layers[layer_id] if layer_id < len(layers) else (None, 30.0)
@@ -426,9 +431,11 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
                              "extras": {"terrain": True, "terrainLayers": layer_meta,
                                         "terrainLightmap": lightmap_out.name if atlas_png and lightmap_out else None}})
     report.append(f"sol : {count} sous-carreaux de 8 m, {len(names)} calques mélangés, "
-                  f"{len(lightmaps.images)} lightmap(s) de région")
+                  f"{len(lightmaps.images)} lightmap(s) de région, {extras.tufts} touffes d'herbe "
+                  f"({len(extras.kinds)} sortes), {extras.water_elements // 64} carrés d'eau")
     report += ex.notes
-    return ex.finish([root]), np.concatenate(solids) if solids else np.zeros((0, 3, 3))
+    more = extras.emit(ex, lambda p, k: lightmap_uv(p, lightmaps.cell(k), lightmaps.grid))
+    return ex.finish([root, *more]), np.concatenate(solids) if solids else np.zeros((0, 3, 3))
 
 
 def light_decor(decor: dict, light: dict, center: list[float] | None, radius: float) -> tuple[list[dict], bytes]:
@@ -1703,7 +1710,9 @@ def weather_light(weather: dict, base: dict) -> dict:
         except (TypeError, ValueError):
             return None
     for key, tag in (("ambient", "AmbientColor"), ("diffuse", "DiffuseColor"), ("fog", "FogColor"),
-                     ("pointLight", "PointLightColor"), ("selfIllum", "SelfIllumColor"), ("specular", "SpecularColor")):
+                     ("pointLight", "PointLightColor"), ("selfIllum", "SelfIllumColor"), ("specular", "SpecularColor"),
+                     ("waterSpecular", "SpecularWaterColor"), ("waterGradientStart", "WaterGradientStart"),
+                     ("waterGradientEnd", "WaterGradientEnd")):
         v = num(tag)
         if v is not None:
             light[key] = int(v) & 0xFFFFFFFF

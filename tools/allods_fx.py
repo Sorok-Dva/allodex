@@ -21,7 +21,7 @@ from PIL import Image
 
 from tools.allods_gltf import Exporter, TexturePool, load_animation, load_geometry
 from tools.allods_packdb import PackDB, PakCatalog
-from tools.allods_visdb import read_visobject
+from tools.allods_visdb import animation_bounds, read_visobject
 from tools.extract_menu_scene import BinSource, read_chunks
 
 
@@ -105,6 +105,10 @@ class FxBuild:
                 children.append(ex.gltf.add_node(mesh_node))
         info["duration"] = round(duration, 4)
         info["loop"] = loop
+        # Étendue du gabarit (boîte de son animation dans le client) : cadrage du lecteur.
+        bounds = animation_bounds(self.db, vot.animation, vot.geometry) if loaded is not None else None
+        if bounds is not None:
+            info["bounds"] = bounds
         attached = []
         for comp in vot.components:
             if comp.visobject is None:

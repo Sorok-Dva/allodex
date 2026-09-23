@@ -60,6 +60,10 @@ export type EngineLight = {
   sunDirection?: Vec3;
   /** Désaturation de l'image (0 à 1) d'un changement de temps (`WeatherCreatureVisAction`). */
   desaturation?: number;
+  /** Eau de la zone (ARGB) : `SpecularWaterColor`, `WaterGradientStart`, `WaterGradientEnd`. */
+  waterSpecular?: number;
+  waterGradientStart?: number;
+  waterGradientEnd?: number;
 };
 
 /** `tilt` : (roulis X, tangage Y) des objets inclinés, composés `Rz(yaw)·Ry·Rx` (Euler `ZYX`). */

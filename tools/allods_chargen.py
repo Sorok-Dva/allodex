@@ -86,6 +86,7 @@ VCT_GENDER = 0xB8              # 1 homme, 2 femme
 VCT_HAIR_COLORED = 0xC0        # vecteur de chaînes : géosets teints par la couleur de cheveux
 VCT_NAME = 0xE8                # `helmGeoset`, identique au nom du modèle (« ElfFemale »)
 VCT_BAKED = 0x120              # Texture cuite (peau + patchs)
+VCT_MORPH = 0x148              # ModelMorphSettings* (corpulence : échelles d'os)
 VCT_SPECIAL_HAIR_PATCH = 0x208  # {pad, rectangle x1 x2 y1 y2, Texture*} (32 o)
 VCT_UI_SCENE = 0x234           # cameraAnchor xyz, bodyCoeff, additionalAway, faceAnchor xyz, scale
 VCT_UI_SELECTION_SCALE = 0x258
@@ -372,6 +373,39 @@ def read_template(db: PackDB, off: int) -> Template:
          "preMissionAdditionalAway": round(float(ui[4]), 4),
          "preMissionFaceCameraAnchor": [round(float(v), 4) for v in ui[5:8]], "scale": round(float(ui[8]), 4)},
         db.ptr(off + VCT_VARIATIONS))
+
+
+# --- corpulence (`ModelMorphSettings`) --------------------------------------------------------------
+#
+# Décodé sur `ElfFemaleMorphSettings` (le `.xdb` 7.0 du serveur donne les noms) : `controls` (+0x28,
+# pas 0x38) — os touchés (+0x08, pas 0x30 : nom +0x08, puissance xyz +0x20), indice de la commande
+# (+0x28 : Height, Head, NeckThickness, NeckLength, Shoulders, Torso, Breast, Waist, Basin, Hands,
+# Forearms, Palm, Hips, Shins, Feet), maximum +0x2C ; `presets` (+0x68, pas 0x30) — valeurs
+# (+0x10, pas 0x18 : indice de commande +0x0C, valeur +0x10 ; les commandes absentes valent 1).
+# Le jeu met à l'échelle chaque os touché de `valeur ** puissance` sur chaque axe local : c'est la
+# commande « Corpulence » (`morphPresets`) de l'écran d'apparence.
+
+MORPH_CONTROLS = 0x28
+MORPH_PRESETS = 0x68
+MORPH_CONTROL_NAMES = ["Height", "Head", "NeckThickness", "NeckLength", "Shoulders", "Torso", "Breast", "Waist",
+                       "Basin", "Hands", "Forearms", "Palm", "Hips", "Shins", "Feet"]
+
+
+def read_morph(db: PackDB, settings: int | None) -> dict | None:
+    """{controls: [[{bone, power}] par commande], presets: [{indice: valeur}]}, ou None."""
+    if settings is None or db.vtype(settings) != "ModelMorphSettings":
+        return None
+    controls: dict[int, list[dict]] = {}
+    for e in db.elements(settings + MORPH_CONTROLS, 0x38):
+        bones = [{"bone": db.string(b + 0x08), "power": [round(float(v), 4) for v in db.floats(b + 0x20, 3)]}
+                 for b in db.elements(e + 0x08, 0x30)]
+        controls[db.u32(e + 0x28)] = [b for b in bones if b["bone"] and any(b["power"])]
+    presets = []
+    for e in db.elements(settings + MORPH_PRESETS, 0x30):
+        presets.append({str(db.u32(v + 0x0C)): round(float(db.f32(v + 0x10)), 4) for v in db.elements(e + 0x10, 0x18)})
+    if not presets:
+        return None
+    return {"controls": {str(k): v for k, v in sorted(controls.items()) if v}, "presets": presets}
 
 
 def indexed_texture_binary(db: PackDB, cat: PakCatalog, off: int) -> str | None:

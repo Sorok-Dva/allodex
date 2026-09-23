@@ -14,5 +14,5 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true
   },
-  "include": ["src", "drizzle.config.ts", "../src/seo/meta.ts", "../src/analytics/api.ts"]
+  "include": ["src", "drizzle.config.ts", "../src/seo/meta.ts", "../src/analytics/api.ts", "../src/data/talents.build.ts"]
 }

@@ -74,7 +74,24 @@ export function CharacterCreationScreen({ store: storeProp }: { store?: Characte
       if (!alive) return;
       setData(d);
       setLayout(l);
-      setDescriptor(newDescriptor(d, d.raceOrder[0]));
+      let first = newDescriptor(d, d.raceOrder[0]);
+      // Développement : `?race=Elf&class=MAGE&sex=female&step=race` ouvre une étape donnée
+      // (captures comparées aux écrans du jeu).
+      if (import.meta.env.DEV) {
+        const q = new URLSearchParams(window.location.search);
+        const race = q.get('race');
+        if (race && d.races[race]) {
+          first = newDescriptor(d, race);
+          setFaction(d.races[race].faction === 'League' || d.races[race].faction === 'Empire' ? d.races[race].faction : null);
+        }
+        const cls = q.get('class');
+        if (cls) first = withSelection(d, first, { class: cls });
+        const sex = q.get('sex');
+        if (sex === 'male' || sex === 'female') first = withSelection(d, first, { sex });
+        const at = q.get('step');
+        if (at === 'race' || at === 'custom') setStep(at);
+      }
+      setDescriptor(first);
     }).catch(() => { if (alive) setError('missing'); });
     return () => { alive = false; };
   }, []);
@@ -99,7 +116,17 @@ export function CharacterCreationScreen({ store: storeProp }: { store?: Characte
   const vh = h / scale;
   const d = descriptor;
 
+  // Sons de l'interface du jeu (sélection de faction et de classe, réplique de la combinaison).
+  const play = (key: string, delay = 0) => {
+    const file = data.sounds?.[key];
+    if (!file || muted) return;
+    const audio = new Audio();
+    audio.src = `${CHARGEN_BASE}${file}.${audio.canPlayType?.('audio/ogg') ? 'ogg' : 'mp3'}`;
+    audio.volume = 0.8;
+    window.setTimeout(() => { void audio.play().catch(() => undefined); }, delay);
+  };
   const onFaction = (id: string) => {
+    play('faction');
     setFaction(id);
     const first = data.factions.find(f => f.id === id)?.races[0];
     if (first && data.races[d.race]?.faction !== id) setDescriptor(newDescriptor(data, first));
@@ -204,6 +231,7 @@ export function CharacterCreationScreen({ store: storeProp }: { store?: Characte
             equipment={equipment}
             helmet={helmet}
             focus={place}
+            muted={muted}
             className={step === 'faction' ? s.hidden : s.viewer}
             onError={message => console.error('chargen viewer:', message)}
           />
@@ -215,7 +243,7 @@ export function CharacterCreationScreen({ store: storeProp }: { store?: Characte
           faction={faction} equipment={equipment} helmet={helmet} place={place} width={vw} height={vh}
           onFaction={onFaction}
           onRace={race => { setDescriptor(prev => (prev ? withSelection(data, prev, { race }) : prev)); setFaction(data.races[race]?.faction === 'League' || data.races[race]?.faction === 'Empire' ? data.races[race].faction : faction); }}
-          onClass={cls => update(prev => withSelection(data, prev, { class: cls }))}
+          onClass={cls => { play(`class:${cls}`); play(`voice:${d.race}/${cls}`, 450); update(prev => withSelection(data, prev, { class: cls })); }}
           onSex={onSex}
           onEquipment={level => setEquipment(level)}
           onToggleHelmet={() => setHelmet(v => !v)}

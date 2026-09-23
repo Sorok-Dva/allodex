@@ -30,6 +30,8 @@ export type ItemShape = {
   /** Modèle accroché (`attach/…glb`) et son locator (articulation du squelette). */
   model?: string;
   locator?: string;
+  /** Effets du gabarit accroché (`fx/…glb` : particules, composants — boule de feu du mage). */
+  fx?: string;
   texture?: string;
   color?: string;
 };
@@ -48,7 +50,8 @@ export type Growth = {
   start: string | null;
   loop: string | null;
   items: { slot: string; item: string }[];
-  fx: { locator: string; scale: number; model: string | null }[];
+  /** Effets de la tenue de création (`fx/…glb`), rejoués avec l'animation de création. */
+  fx: { locator: string; scale: number; fx: string | null }[];
 };
 
 export type ChargenCombo = {
@@ -70,8 +73,13 @@ export type Variations = {
   additionals?: string[];
   shoulderStones?: string[];
   shoulderStoneColors?: string[];
+  /** Préréglages de corpulence (`ModelMorphSettings.presets`) : {indice de commande: valeur}. */
+  morphPresets?: Record<string, number>[];
   default?: Partial<Record<AppearanceKey, number>>;
 };
+
+/** Os touchés par une commande de corpulence : échelle locale `valeur ** puissance` par axe. */
+export type MorphBone = { bone: string; power: [number, number, number] };
 
 export type ChargenTemplate = {
   gender: Sex | 'none';
@@ -88,20 +96,46 @@ export type ChargenTemplate = {
   defaultDress?: string | null;
   underwear?: string | null;
   variations?: Variations;
+  /** Commandes de corpulence (indice → os), voir `tools/allods_chargen.py` (`read_morph`). */
+  morph?: Record<string, MorphBone[]>;
   races?: string[];
 };
 
+/** Résumé d'un décor de race dans `chargen.json` ; le détail est dans `scenes/<Race>.json`. */
 export type SceneMeta = {
-  glb: string;
-  objects: number;
-  clips: number;
-  character: { yaw: number; scale: number; position?: [number, number, number] };
-  camera: { position: [number, number, number]; yaw: number; pitch: number; height: number; fov: number; placeOffset?: [number, number, number] };
-  light?: {
-    ambient: string; sun: string; point: string; specular: string;
-    sunPitch: number; sunYaw: number; sunDirection: [number, number, number];
-    fog: { color: string; near: number; far: number };
+  file: string;
+  character: SceneCharacter;
+  camera: SceneCamera;
+  instances?: number;
+};
+
+export type SceneCharacter = {
+  yaw: number;
+  scale: number;
+  /** Place sur l'estrade, relative à l'origine du décor. */
+  position?: [number, number, number];
+  /** Lumière à la place (ambiante + ponctuelles de la carte), unités du jeu (1 = 0x80). */
+  light?: [number, number, number] | null;
+};
+
+/** Caméra de `UICharacterScenes` : position relative au personnage, lacet et tangage (degrés, tangage positif vers le bas), champ horizontal (rad). */
+export type SceneCamera = { position: [number, number, number]; yaw: number; pitch: number; height: number; fov: number };
+
+/** `scenes/<Race>.json` : décor de la chaîne des cinématiques moteur, places de la création. */
+export type ChargenSceneFile = {
+  origin: [number, number, number];
+  character: SceneCharacter;
+  camera: SceneCamera;
+  decor: {
+    glb: string; light: string;
+    instances: import('@/components/scene/EngineCutscene/timeline').DecorInstance[];
+    sky: { radius: number } | null; skyGlb?: string | null; terrainGlb?: string | null;
   };
+  objects: Record<string, import('@/components/scene/FatalityViewer/timeline').FatalityObject>;
+  particleAtlas: import('@/components/scene/FatalityViewer/particles').ParticleAtlasMeta | null;
+  light: import('@/components/scene/EngineCutscene/timeline').EngineLight;
+  sounds?: { ambience: string[] };
+  source?: { scene: string; map: string; position: [number, number, number] };
 };
 
 export type NameRule = { pattern: string; min: number; max: number };
@@ -124,12 +158,17 @@ export type ChargenData = {
   items: Record<string, ChargenItem>;
   slots: string[];
   scenes?: Record<string, SceneMeta>;
+  /** Métadonnées des gabarits d'effets (`fx/`) et atlas de leurs particules. */
+  fx?: { objects: Record<string, import('@/components/scene/FatalityViewer/timeline').FatalityObject>;
+    particleAtlas: import('@/components/scene/FatalityViewer/particles').ParticleAtlasMeta | null };
+  /** Sons de l'interface (`Chargen.bsb`) : `faction`, `class:<CLASSE>`, `voice:<Race>/<CLASSE>` → fichier sans extension. */
+  sounds?: Record<string, string>;
   notes?: string[];
 };
 
 /** Commandes d'apparence de l'écran (`ScriptCustomization` : `controlOrder`). */
 export type AppearanceKey = 'faces' | 'facials' | 'hairs' | 'hairColors' | 'skins' | 'skinColors' | 'additionals'
-  | 'shoulderStones' | 'shoulderStoneColors';
+  | 'shoulderStones' | 'shoulderStoneColors' | 'morphPresets';
 
 /** Arbre de widgets de l'addon `CharacterGenerator` (`ui/layout.json`). */
 export type Axis = { align: 'low' | 'high' | 'center' | 'both' | 'lowAbs' | number; pos?: number; high?: number; size?: number };
@@ -139,7 +178,13 @@ export type UiWidget = {
   name: string | null;
   place: { x: Axis; y: Axis };
   priority: number;
+  /** Caché au départ (octet de visibilité du widget) : les scripts le montrent selon l'étape. */
+  hidden?: boolean;
   back?: UiLayer;
+  /** Calques suivants du widget (perle de l'orbe d'apparence, reflet du bandeau). */
+  layers?: UiLayer[];
+  /** Texte fixe d'un `WidgetTextView` (« Sexe »), balisage du jeu. */
+  text?: GameText;
   textTag?: string;
   variants?: Record<string, UiLayer>[];
   children?: UiWidget[];
@@ -147,5 +192,7 @@ export type UiWidget = {
 export type UiLayout = {
   root: UiWidget;
   related: Record<string, Record<string, string>>;
+  /** Bandeau bas des écrans du menu (addon `Main`), sous les boutons du bas. */
+  bottomLine?: UiWidget | null;
   textures: Record<string, { path: string; file: string; width: number; height: number }>;
 };

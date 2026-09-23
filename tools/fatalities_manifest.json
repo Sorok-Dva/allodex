@@ -218,7 +218,7 @@
       "id": "psionic",
       "kind": "class",
       "label": {
-        "fr": "Psioniste",
+        "fr": "Psionique",
         "en": "Psionicist"
       }
     },
@@ -245,7 +245,7 @@
       "id": "druid",
       "kind": "class",
       "label": {
-        "fr": "Gardien",
+        "fr": "Tribaliste",
         "en": "Warden"
       }
     },

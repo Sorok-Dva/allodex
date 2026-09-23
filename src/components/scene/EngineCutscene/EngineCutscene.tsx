@@ -6,6 +6,7 @@ import type { SubtitleLang } from '@/lib/cinematics';
 import { loadParticleFile } from '@/components/scene/FatalityViewer/particles';
 import { spawnOpacity } from '@/components/scene/FatalityViewer/timeline';
 import { VotFactory, particleSystems, toViewerMaterial, updateInstance, type Tinted, type VotInstance } from '@/components/scene/vot/votInstances';
+import { buildTerrainExtras, type TerrainExtras } from '@/components/scene/vot/terrainExtras';
 import { actorClipAt, argb, falloff, pathAt, presentAt, sampleKeys, subtitleAt, veilAt, voiceAt, type EngineScene } from './timeline';
 import s from './EngineCutscene.module.css';
 
@@ -280,6 +281,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
     const factory = new VotFactory({ objects: {}, baseUrl: base, disposables, anisotropy: () => renderer?.capabilities?.getMaxAnisotropy?.() ?? 1 });
     let data: EngineScene | null = null;
     let sky: THREE.Object3D | null = null;
+    let terrainExtras: TerrainExtras | null = null;
     const target = new THREE.Vector3();
     const scratch = new THREE.Vector3();
 
@@ -386,6 +388,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       if (!renderer || state.hidden) { syncAudio(); state.seeked = false; return; }
       if (state.dirty) {
         apply();
+        terrainExtras?.update(renderer, view, camera, state.time);
         renderer.render(view, camera);
         state.dirty = false;
       }
@@ -524,12 +527,21 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         const material = await terrainMaterial(extras?.terrainLayers ?? [], extras?.terrainLightmap ?? null, terrainUrl, data.light);
         if (!alive) return;
         disposables.push(material);
-        terrainGlb.scene.traverse(node => {
+        terrainNode?.traverse(node => {
           const mesh = node as THREE.Mesh;
           if (!mesh.isMesh) return;
           mesh.material = material;
           mesh.frustumCulled = false;
         });
+        // Herbe et eau du sol (`terrainDump`), éclairées comme lui.
+        const u = material.uniforms;
+        terrainExtras = await buildTerrainExtras(terrainGlb.scene, terrainUrl, {
+          ambient: u.ambient.value, sun: u.sunColor.value, point: u.pointColor.value, sunDir: u.sunDir.value,
+          ambientFactor: u.ambientFactor.value, lightmap: u.lightmap.value,
+          waterGradientStart: light.waterGradientStart, waterGradientEnd: light.waterGradientEnd, waterSpecular: light.waterSpecular,
+        });
+        if (!alive) { terrainExtras?.dispose(); return; }
+        if (terrainExtras) disposables.push(terrainExtras);
         world.add(terrainGlb.scene);
       }
       const baked = lightBin ? new Uint8Array(lightBin) : null;
@@ -614,7 +626,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       state.dirty = true;
       setLoading(false);
       // Accès de débogage (captures sans écran) : celui du lecteur visible, pas du préchargé.
-      devHook.current = { THREE, view, world, camera, state, actors, renderer, decorInstances, spawns };
+      devHook.current = { THREE, view, world, camera, state, actors, renderer, decorInstances, spawns, terrainExtras };
       if (import.meta.env.DEV && !state.hidden) (window as Window & { __engineCutscene?: unknown }).__engineCutscene = devHook.current;
       frame = requestAnimationFrame(tick);
     };
