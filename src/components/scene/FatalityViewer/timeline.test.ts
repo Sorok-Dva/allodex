@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  objectClipTime, spawnOpacity, stepAt, timelineDuration, timelineSounds, victimClipTime, victimOpacityAt, victimScaleAt,
+  objectClipTime, shakeOffsetAt, spawnOpacity, stepAt, timelineDuration, victimTintAt, timelineSounds, victimClipTime, victimOpacityAt, victimScaleAt,
   victimStepAt, type FatalityTimeline,
 } from './timeline';
 import { parseParticles, particleFrame, sampleChannel, maxAlive } from './particles';
@@ -105,5 +105,30 @@ describe('particules', () => {
   it('boucle sur l’image de fin quand le système boucle', () => {
     expect(particleFrame(1, { speed: 1, loop: false, endFrame: 20 })).toBe(30);
     expect(particleFrame(1, { speed: 1, loop: true, endFrame: 20 })).toBe(10);
+  });
+});
+
+describe('teintes et secousses', () => {
+  const base: FatalityTimeline = { end: 10, victim: [], scale: [], alpha: [], spawns: [], attached: [] };
+  it('la teinte la plus prioritaire est atteinte en timeOn depuis le blanc', () => {
+    const tl = { ...base, tints: [
+      { t: 0, color: 0xffffffff, blend: 'DEFAULT', priority: 0, timeOn: 0.3 },
+      { t: 1, color: 0xff000000, blend: 'DEFAULT', priority: 1, timeOn: 10 },
+    ] };
+    expect(victimTintAt(tl, 0.5).mul).toEqual([1, 1, 1]);
+    expect(victimTintAt(tl, 6).mul[0]).toBeCloseTo(0.5, 5);
+    expect(victimTintAt(tl, 20).mul).toEqual([0, 0, 0]);
+    const add = victimTintAt({ ...base, tints: [{ t: 0, color: 0xff55ffdd, blend: 'MUL', priority: 0, timeOn: 0 }] }, 1);
+    expect(add.mul[1]).toBeCloseTo(1, 5);
+    const glow = victimTintAt({ ...base, tints: [{ t: 0, color: 0xffff0000, blend: 'ADD', priority: 0, timeOn: 0 }] }, 1);
+    expect(glow.add).toEqual([1, 0, 0]);
+  });
+
+  it('la secousse suit sa courbe, amortie par la distance', () => {
+    const tl = { ...base, shakes: [{ t: 2, amplitude: 5, radius: [20, 50] as [number, number], curve: [0, 0, 0, 0.1, 0, 0, 0, 0, 0] }] };
+    expect(shakeOffsetAt(tl, 1.9, 10)).toEqual([0, 0, 0]);
+    expect(shakeOffsetAt(tl, 2 + 1 / 30, 10)[0]).toBeCloseTo(0.5, 5);
+    expect(shakeOffsetAt(tl, 2 + 1 / 30, 35)[0]).toBeCloseTo(0.25, 5);
+    expect(shakeOffsetAt(tl, 2 + 1 / 30, 60)[0]).toBe(0);
   });
 });

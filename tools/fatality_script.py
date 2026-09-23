@@ -41,7 +41,7 @@ class Timeline:
     attached: list[dict] = field(default_factory=list)     # objets accrochés : {t, vot, locator, scale, fadeIn, fadeOut, offset}
     shakes: list[dict] = field(default_factory=list)       # {t, params}
     channels: list[dict] = field(default_factory=list)     # rayons : {t, until, vot, fadeIn, fadeOut, length, start, end}
-    tints: list[dict] = field(default_factory=list)        # {t, type}
+    tints: list[dict] = field(default_factory=list)        # {t, color, blend, priority, timeOn}
     ignored: list[str] = field(default_factory=list)
     end: float = 0.0
 
@@ -144,10 +144,19 @@ def run(node: dict | None, t0: float, ctx: Context, limit: float | None = None) 
                                 "velocity": node.get("velocity", 0.0), "start": node.get("start"), "end": node.get("end")})
         return t0
     if kind == "ShakeAction":
-        tl.shakes.append({"t": round(t0, 4), "params": node.get("params")})
+        shake = {"t": round(t0, 4)}
+        for key in ("amplitude", "radius", "timeScale", "curve"):
+            if node.get(key) is not None:
+                shake[key] = node[key]
+        tl.shakes.append(shake)
         return t0
-    if kind in ("CreatureColorAction", "ProceduralEffectVisAction"):
-        tl.tints.append({"t": round(t0, 4), "type": kind})
+    if kind == "CreatureColorAction":
+        # Teinte de la créature : couleur ARGB atteinte en `timeOn` s, la plus prioritaire l'emporte.
+        tl.tints.append({"t": round(t0, 4), "color": node.get("color", 0xFFFFFFFF), "blend": node.get("blend", "DEFAULT"),
+                         "priority": node.get("priority", 0), "timeOn": node.get("timeOn", 0.0)})
+        return t0
+    if kind == "ProceduralEffectVisAction":
+        tl.ignored.append(kind)
         return t0
     tl.ignored.append(str(kind))
     return t0

@@ -161,6 +161,21 @@ POINT_LOCATOR = 0x38
 POINT_LOCATOR_NAME = 0x40
 SHAKE_PARAMS = 0x48
 SHAKE_FIELDS = 0x20            # 8 flottants bruts de CameraShakeParameters
+# CameraShakeParameters : amplitudeScale, animation (AnimatedParameters), maxRadius, minRadius,
+# timeScale (relevés sur les 5 secousses des fatalités : 5 ou 8, 50/20 ou 90/60 m, 8 ou 3).
+SHAKE_AMPLITUDE = 0x24
+SHAKE_ANIMATION = 0x28
+SHAKE_MAX_RADIUS = 0x30
+SHAKE_MIN_RADIUS = 0x34
+SHAKE_TIME_SCALE = 0x38
+ANIMATED_CAMERA = 0x68         # AnimatedParameters.cameraTranslate (vec3[], une clé par image)
+# CreatureColorAction : blendMode, colorFactor, colorValue (ARGB), priority, timeOff, timeOn.
+COLOR_BLEND = 0x44
+COLOR_VALUE = 0x58
+COLOR_PRIORITY = 0x5C
+COLOR_TIME_OFF = 0x60
+COLOR_TIME_ON = 0x64
+COLOR_BLENDS = {0: "DEFAULT", 1: "MUL", 2: "ADD", 3: "NORMAL", 4: "DARKEN", 5: "SCREEN", 6: "OVERLAY"}
 
 FX_LOCATORS = ["Global", "Head", "Chest", "Slot_Hand_L", "Slot_Hand_R", "Slot_Shoulder_L",
                "Slot_Shoulder_R", "Slot_FX", "Slot_TopFX", "Slot_Mouth", "Slot_Global",
@@ -521,6 +536,20 @@ def read_action(db: PackDB, off: int | None, depth: int = 0) -> dict | None:
         params = db.ptr(off + SHAKE_PARAMS)
         if params is not None:
             node["params"] = [round(float(v), 4) for v in db.floats(params + SHAKE_FIELDS, 8)]
+            node["amplitude"] = round(db.f32(params + SHAKE_AMPLITUDE), 4)
+            node["radius"] = [round(db.f32(params + SHAKE_MIN_RADIUS), 3), round(db.f32(params + SHAKE_MAX_RADIUS), 3)]
+            node["timeScale"] = round(db.f32(params + SHAKE_TIME_SCALE), 4)
+            anim = db.ptr(params + SHAKE_ANIMATION)
+            v = db.vec(anim + ANIMATED_CAMERA) if anim is not None else None
+            if v is not None:
+                raw = np.frombuffer(db.bytes(v[0], v[1] - v[1] % 12), "<f4")
+                node["curve"] = [round(float(x), 4) for x in raw]
+    elif kind == "CreatureColorAction":
+        node["color"] = db.u32(off + COLOR_VALUE)
+        node["blend"] = COLOR_BLENDS.get(db.u32(off + COLOR_BLEND), "DEFAULT")
+        node["priority"] = db.i32(off + COLOR_PRIORITY)
+        node["timeOn"] = round(db.f32(off + COLOR_TIME_ON), 4)
+        node["timeOff"] = round(db.f32(off + COLOR_TIME_OFF), 4)
     return node
 
 

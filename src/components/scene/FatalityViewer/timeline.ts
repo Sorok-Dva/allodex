@@ -55,6 +55,14 @@ export type ChannelEvent = {
 };
 /** Script du tueur (`casterFxScript`) : ses animations, ses effets accrochés, ses rayons. */
 export type CasterTimeline = { anims: VictimStep[]; attached: AttachEvent[]; channels: ChannelEvent[] };
+/** Teinte de la créature (`CreatureColorAction`) : ARGB atteint en `timeOn` s ; mode du client. */
+export type TintEvent = { t: number; color: number; blend: string; priority: number; timeOn: number };
+/**
+ * Secousse de caméra (`ShakeAction`) : décalages de la caméra image par image (`curve`, x y z,
+ * `cameraTranslate` des `AnimatedParameters`), multipliés par `amplitude` ; pleine jusqu'à
+ * `radius[0]` m de la victime, nulle au-delà de `radius[1]`.
+ */
+export type ShakeEvent = { t: number; amplitude?: number; radius?: [number, number]; timeScale?: number; curve?: number[] };
 export type FatalityTimeline = {
   end: number;
   victim: VictimStep[];
@@ -63,8 +71,61 @@ export type FatalityTimeline = {
   spawns: SpawnEvent[];
   attached: AttachEvent[];
   caster?: CasterTimeline;
+  tints?: TintEvent[];
+  shakes?: ShakeEvent[];
   ignored?: string[];
 };
+
+/** Résultat de `victimTintAt` : multiplicateur et ajout de couleur (0 à 1 par canal). */
+export type Tint = { mul: [number, number, number]; add: [number, number, number] };
+
+/**
+ * Teinte de la victime à `t` : parmi les `CreatureColorAction` déjà jouées, la plus prioritaire
+ * (à égalité, la dernière) ; sa couleur est atteinte en `timeOn` s depuis le blanc, pondérée par
+ * son alpha. `DEFAULT`/`MUL`/`DARKEN`/`NORMAL` multiplient, `ADD`/`SCREEN` ajoutent,
+ * `OVERLAY` multiplie par deux fois la couleur (clair éclaircit, sombre assombrit) —
+ * approximations des modes du client, dont le rendu exact n'est pas publié.
+ */
+export function victimTintAt(timeline: FatalityTimeline, t: number): Tint {
+  const out: Tint = { mul: [1, 1, 1], add: [0, 0, 0] };
+  let chosen: TintEvent | null = null;
+  for (const event of timeline.tints ?? []) {
+    if (event.t > t) continue;
+    if (!chosen || event.priority >= chosen.priority) chosen = event;
+  }
+  if (!chosen) return out;
+  const v = chosen.color >>> 0;
+  const alpha = ((v >>> 24) & 255) / 255;
+  const rgb = [((v >>> 16) & 255) / 255, ((v >>> 8) & 255) / 255, (v & 255) / 255];
+  const k = alpha * (chosen.timeOn > 0 ? Math.min(1, (t - chosen.t) / chosen.timeOn) : 1);
+  for (let i = 0; i < 3; i += 1) {
+    if (chosen.blend === 'ADD' || chosen.blend === 'SCREEN') out.add[i] = rgb[i] * k;
+    else if (chosen.blend === 'OVERLAY') out.mul[i] = 1 + (2 * rgb[i] - 1) * k;
+    else out.mul[i] = 1 + (rgb[i] - 1) * k;
+  }
+  return out;
+}
+
+/** Cadence des courbes de secousse (`AnimatedParameters.fps` vaut 0 dans le client : 30 par défaut). */
+export const SHAKE_FPS = 30;
+
+/** Décalage de la caméra (repère du jeu) dû aux secousses actives à `t`, à `distance` m de la victime. */
+export function shakeOffsetAt(timeline: FatalityTimeline, t: number, distance: number): [number, number, number] {
+  const out: [number, number, number] = [0, 0, 0];
+  for (const shake of timeline.shakes ?? []) {
+    const curve = shake.curve ?? [];
+    const frames = Math.floor(curve.length / 3);
+    const f = (t - shake.t) * SHAKE_FPS;
+    if (f < 0 || f >= frames - 1 || frames < 2) continue;
+    const [near, far] = shake.radius ?? [Infinity, Infinity];
+    const fall = distance <= near ? 1 : distance >= far ? 0 : 1 - (distance - near) / Math.max(far - near, 1e-3);
+    const i = Math.floor(f);
+    const w = f - i;
+    const a = (shake.amplitude ?? 1) * fall;
+    for (let c = 0; c < 3; c += 1) out[c] += (curve[3 * i + c] * (1 - w) + curve[3 * i + 3 + c] * w) * a;
+  }
+  return out;
+}
 export type FatalityObject = {
   fadeIn: number;
   fadeOut: number;
