@@ -5,7 +5,7 @@ const BASE = '/game/lorebook';
 const cache = new Map<string, Promise<unknown>>();
 
 export type LoreMeta = {
-  sections: Record<SectionId, { count: number; chunks: number; groups: { id: string; count: number }[] }>;
+  sections: Record<SectionId, { count: number; chunks: number; hidden?: boolean; groups: { id: string; count: number }[] }>;
   credit: { line: string; short?: string; url?: string; author?: string };
   translated_by: string;
   entries: number;
@@ -38,6 +38,7 @@ export const loadChunk = (lang: ContentLang, section: SectionId, chunk: number) 
 export const loadShard = (lang: ContentLang, key: string) => maybe<Shard>(`search/${lang}/${key}.json`);
 export const loadDir = (lang: ContentLang, block: number) => get<DirRow[]>(`dir/${lang}/${block}.json`);
 export const loadNames = (lang: ContentLang) => get<Record<string, string>>(`names/${lang}.json`);
+export const loadHiddenIndex = (section: SectionId) => get<{ first: number[] }>(`list/${section}-index.json`);
 
 /** Réservé aux tests. */
 export function clearLoreCache() {

@@ -31,7 +31,8 @@ def make_lore(tmp_path):
                                       "path": "Characters/Kania_female/Instances/Kania/Smeyana.xdb",
                                       "fields": {"name": rec(1100, "Catherina"), "title": rec(1101, "Princess")}}])
     write(root / "dialogues.json", [{"id": "r30", "type": "Cue", "fields": {"name": rec(1200, "Who are you?"),
-                                                                             "text": rec(1201, "I am Catherina of Kania.")}}])
+                                                                             "text": rec(1201, "I am Catherina of Kania.")}},
+                                    {"id": "r31", "type": "Cue", "fields": {"text": rec(1202, "The wolves are coming back.")}}])
     write(root / "places.json", [{"id": "r40", "type": "ZoneResource", "path": "Maps/Kania/Kania.(ZoneResource).xdb",
                                   "fields": {"name": rec(1300, "Kania")}}])
     write(root / "secrets.json", [{"id": "r50", "type": "WorldSecret", "order": 0,
@@ -41,9 +42,9 @@ def make_lore(tmp_path):
     write(root / "ru" / "all.json", {"1000": "Волчья угроза", "1001": "Убить волков.", "1002": "Слушай, герой.",
                                      "1100": "Смеяна", "1101": "Княжна", "1200": "Кто ты?", "1201": "Я Смеяна.",
                                      "1300": "Кания", "1400": "Древняя магия джунов", "1401": "Тайна раскрыта.",
-                                     "1402": "Начните у Селены."})
+                                     "1402": "Начните у Селены.", "1202": "Волки возвращаются."})
     write(root / "fr" / "all.json", {"1001": "Tuez les loups.", "1100": "Catherina", "1402": "Commencez chez Séléné."})
-    write(root / "links.json", {"dialogue_character": {"r30": "r20"}, "dialogue_quest": {},
+    write(root / "links.json", {"dialogue_character": {"r30": "r20"}, "dialogue_quest": {"r31": "r10"},
                                 "quest_characters": {"r10": ["r20"]}})
     write(root / "community.json", {"credit": {"line": "Atlas: M. T.", "short": "M. T.", "url": "https://example.org"},
                                     "files": []})
@@ -156,3 +157,22 @@ def test_lore_links_walk_up_references_to_a_single_npc():
     assert links["dialogue_character"] == {"r30": "r20"}
     assert links["quest_characters"] == {"r10": ["r20"]}
     assert lore.lore_links(np.zeros((0, 2), np.int64), {}) == {"dialogue_character": {}, "dialogue_quest": {}, "quest_characters": {}}
+
+
+def test_unattached_dialogues_leave_the_characters_list(tmp_path):
+    out, report = build(tmp_path)
+    assert report["sections"]["dialogues"] == 1 and report["sections"]["characters"] == 1
+    assert [r[0] for r in load(out, "list/en/characters.json")["rows"]] == ["r20"]
+    assert not (out / "list" / "en" / "dialogues.json").exists()
+    index = load(out, "list/dialogues-index.json")
+    assert index == {"first": [31]} and load(out, "meta.json")["sections"]["dialogues"]["hidden"] is True
+    body = load(out, "text/en/dialogues-0.json")["r31"]
+    assert body["n"] == "The wolves are coming back." and body["l"]["quests"] == [["quests/r10", "Wolf Threat"]]
+    # toujours trouvable par la recherche
+    shard = load(out, f"search/en/{lb.shard_key('coming')}.json")
+    ids, acc = [], 0
+    for part in shard["coming"].split("|")[0].split(","):
+        acc += int(part, 36)
+        ids.append(acc)
+    rows = [load(out, f"dir/en/{g // 64}.json")[g % 64][:2] for g in ids]
+    assert ["dialogues", "r31"] in rows

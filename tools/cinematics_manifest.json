@@ -1160,7 +1160,7 @@
     "fr": "Le monde caché",
     "en": "The hidden world"
    },
-   "chronology": "Cinématique moteur de la quête « AO12_Prologue04 » (prologue 12.0, carte AO12_PrologueInst, la Citadelle de Nihaz) : Véronika y trouve dans les souvenirs gardés par Nihaz « le monde qu’il cherchait à cacher », d’où partent les arcs 12.0 et 13.0 (Eden, la Toute-Mère) ; placée avant les vidéos de Suslanger (12.0). Recréée en 3D, voir engine_scenes.",
+   "chronology": "Cinématique moteur de la quête « AO12_Prologue04 » (prologue 12.0, carte AO12_PrologueInst, la Citadelle de Nihaz) : Klavdia y trouve dans les souvenirs gardés par Nihaz « le monde qu’il cherchait à cacher », d’où partent les arcs 12.0 et 13.0 (Eden, la Toute-Mère) ; placée avant les vidéos de Suslanger (12.0). Recréée en 3D, voir engine_scenes.",
    "audio": {
     "language": "ru"
    }
@@ -22531,7 +22531,7 @@
      "appear": 39
     }
    ],
-   "staging_note": "Le groupe (Reniesta, Véronika, Gort) entoure le Pointeur de Nihaz, visé par la caméra pendant les 42 premières secondes ; Nihaz (modèle NihazDragonBoss, le seul visuel du MobWorld « Нихаз » 507561 rangé avec les données de la quête) se tient au point visé par le plan fixe de ses répliques (148,3 ; 135,1). Nihaz n’apparaît qu’à 39 s, quand la caméra quitte le Pointeur pour le point qu’il occupe (sinon il masquerait le premier plan, visé à travers ce point)."
+   "staging_note": "Le groupe (Reniesta, Klavdia, Gort) entoure le Pointeur de Nihaz, visé par la caméra pendant les 42 premières secondes ; Nihaz (modèle NihazDragonBoss, le seul visuel du MobWorld « Нихаз » 507561 rangé avec les données de la quête) se tient au point visé par le plan fixe de ses répliques (148,3 ; 135,1). Nihaz n’apparaît qu’à 39 s, quand la caméra quitte le Pointeur pour le point qu’il occupe (sinon il masquerait le premier plan, visé à travers ce point)."
   }
  ]
 }

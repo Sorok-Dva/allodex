@@ -1467,7 +1467,7 @@ class Extractor:
                           "missing": "no official English: to translate"},
             "eras": {"legacy": "resource and text present in the server tree (content up to ~ZC14)",
                      "legacy-revised": "resource present in the server tree, at least one text rewritten since",
-                     "recent": "resource added after the server tree (Eden, Jigran, Kadagan, Kvator, Isa, Suslanger, Airin…)"},
+                     "recent": "resource added after the server tree (Eden, Jigran, Xadagan, Quator, Isa, Suslanger, Airin…)"},
             "flags": {"ru_revised": "Russian rewritten after the server tree: the official English may translate the old version"},
             "classifier": self.linked.evaluation,
             "glossary": {"authoritative": True,

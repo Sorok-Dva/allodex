@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  decodeIds, decodePostings, linkNames, listRows, lorePath, neededFallbacks, normalize, paragraphs, parseLoreRoute,
+  chunkForId, decodeIds, decodePostings, linkNames, listRows, lorePath, neededFallbacks, normalize, paragraphs, parseLoreRoute,
   parseMarkdown, queryTokens, refPath, resolveBody, searchIndex, shardKey, visibleRange,
   type Body, type ListData, type Shard,
 } from './lorebook.logic';
@@ -25,6 +25,17 @@ describe('routes', () => {
     }
     expect(refPath('characters/r20')).toBe('/lorebook/characters/r20');
     expect(refPath('nope/r20')).toBe('/lorebook');
+    expect(parseLoreRoute('/lorebook/dialogues/r31', q(''))).toEqual({ view: 'entry', section: 'dialogues', id: 'r31' });
+  });
+
+  it('retrouve le bloc d’une entrée cachée par dichotomie sur le premier rid des blocs', () => {
+    const firsts = [5, 100, 2000];
+    expect(chunkForId('r5', firsts)).toBe(0);
+    expect(chunkForId('r99', firsts)).toBe(0);
+    expect(chunkForId('r100', firsts)).toBe(1);
+    expect(chunkForId('r999999', firsts)).toBe(2);
+    expect(chunkForId('r4', firsts)).toBe(-1);
+    expect(chunkForId('c-x', firsts)).toBe(-1);
   });
 });
 
