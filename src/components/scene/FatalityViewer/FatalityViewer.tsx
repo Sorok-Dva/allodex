@@ -75,6 +75,10 @@ export type FatalityEnvironment = {
   /** Direction d'où vient le soleil, repère du jeu. */
   sunDirection?: [number, number, number];
   fog?: { color: [number, number, number]; near: number; far: number } | null;
+  /** Eau de la zone (ARGB) : `SpecularWaterColor`, `WaterGradientStart`, `WaterGradientEnd`. */
+  waterSpecular?: number;
+  waterGradientStart?: number;
+  waterGradientEnd?: number;
 };
 
 /**
@@ -453,6 +457,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
               ambient: env?.ambient ? new THREE.Color(...env.ambient) : ambientColor.clone(),
               sun: env?.sun ? new THREE.Color(...env.sun) : new THREE.Color(0, 0, 0),
               point: new THREE.Color(0, 0, 0), sunDir: new THREE.Vector3(...sunDir), ambientFactor: 1, lightmap: null,
+              waterGradientStart: env?.waterGradientStart, waterGradientEnd: env?.waterGradientEnd, waterSpecular: env?.waterSpecular,
             });
             if (!alive) { terrainExtras?.dispose(); return; }
             if (terrainExtras) disposables.push(terrainExtras);

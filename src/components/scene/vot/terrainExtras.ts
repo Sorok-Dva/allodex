@@ -220,7 +220,8 @@ function waterMaterial(meta: WaterMeta, tex: { bump: THREE.Texture | null; fresn
       void main() {
         vec3 n = (texture(bump, vUv1).xyz + texture(bump, vUv2).xyz + texture(bump, vUv3).xyz) * vec3(0.66, 0.66, 0.33)
                - vec3(1.0, 1.0, 0.0);
-        vec2 dist = n.x * vDx.xy - n.y * vDy.xy;
+        // Décalage du client (UV Direct3D, y vers le bas) : n.x·∂clip/∂x − n.y·∂clip/∂y, y retourné ici.
+        vec2 dist = (n.x * vDx.xy - n.y * vDy.xy) * vec2(1.0, -1.0);
         vec2 screen = gl_FragCoord.xy / viewport;
         vec3 refraction = texture(refr, screen - 0.1 * dist).rgb;
         vec3 reflection = hasRefl == 1 ? texture(refl, vRefl.xy / vRefl.w + dist).rgb : vec3(0.0);

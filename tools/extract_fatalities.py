@@ -212,6 +212,10 @@ def zone_light(server_root: Path, path: str, time: float) -> dict | None:
         "sunDirection": [round(math.cos(pitch) * math.cos(yaw), 4), round(math.cos(pitch) * math.sin(yaw), 4),
                          round(math.sin(pitch), 4)],
         "fog": {"color": _rgb(color("FogColor")), "near": num("FogStart", 100), "far": num("FogEnd", 500)},
+        # Eau (ARGB, alpha compris : le shader `StaticWater` s'en sert pour mêler reflet et dégradé).
+        **{key: int(float(chosen.findtext(tag) or "0")) & 0xFFFFFFFF for key, tag in (
+            ("waterSpecular", "SpecularWaterColor"), ("waterGradientStart", "WaterGradientStart"),
+            ("waterGradientEnd", "WaterGradientEnd"))},
     }
 
 
@@ -497,7 +501,8 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
     db = open_pack(client)
     cat = open_catalog(db, client)
     packs = packs_path(client / "data" / "Packs")
-    bins = BinSource([], [str(packs / p) for p in sorted(cat.names)])
+    # `Maps.*.pak` : atlas d'herbe des cartes (`Maps/<carte>/layers.(Texture)`), hors du catalogue.
+    bins = BinSource([], [str(packs / p) for p in sorted(cat.names)] + [str(packs / "Maps.*.pak")])
     textures = TexturePool(db, cat, bins, out_dir)
     particles = ParticlePool(db, cat, bins, out_dir)
     schema = {int(k): v for k, v in manifest.get("animation_enum", {}).items()}
