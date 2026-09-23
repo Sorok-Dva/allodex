@@ -133,7 +133,15 @@ def read_client_line(db: PackDB, off: int) -> ClientLine:
     """Réplique d'un `ClientData` : sous-titre (texte + durée), voix, animations du locuteur."""
     lst = db.ptr(off + CLIENT_DATA_LIST)
     line = ClientLine(None, 0, None, [])
-    for element in (db.pointers(lst + LIST_ELEMENTS) if lst is not None else []):
+    # `customData` : une liste (`CustomClientDataList`), ou un seul élément posé directement (un
+    # `ClientData` sur quatre : voix seule `IL1/15_Amanda_04`, sous-titre seul…).
+    if lst is None:
+        elements = []
+    elif db.vtype(lst) in ("CreatureVisActionData", "UISubtitleShow"):
+        elements = [lst]
+    else:
+        elements = db.pointers(lst + LIST_ELEMENTS)
+    for element in elements:
         kind = db.vtype(element)
         if kind == "UISubtitleShow":
             items = db.elements(element + SUBTITLE_ITEMS, SUBTITLE_STRIDE)
