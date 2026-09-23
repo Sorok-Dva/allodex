@@ -991,8 +991,14 @@ Règles (`src/data/talents.build.ts`), reprises de `ClassBuild`/`ClassState` :
     glisser) que l'outil n'a pas contournée : leurs totaux par version restent à relever à la main.
     `alloder.pro/calc-en` (`/c/data/en.config.json` : 91 / 80 en f2p, 86 / 76 en p2p) et
     `allods-sunshine.com/calc` (80 / 79) donnent les totaux des serveurs actuels, sans version :
-    non repris, faute de pouvoir les rattacher à une version du site. Le premier retire aussi un
+    non repris tels quels (les 91 / 80 de la 16.0 viennent de l'utilisateur). Le premier retire aussi un
     point par sort de départ, comme le script du jeu.
+  - 16.0 : **91** points de talent (livre) et **80** rubis (grilles), valeur en jeu donnée par
+    l'utilisateur. La fenêtre 16.0 (`ContextTalents`) n'affiche que les points libres, sans
+    total ; ces valeurs sont retenues comme totaux **nets** des 3 points offerts (même convention
+    que le compteur 17.0 `libres/(total − 3)` : un build 16.0 complet affiche 0/91 et 0/80). C'est
+    aussi la convention du calculateur `alloder.pro`, dont la configuration f2p porte exactement
+    91/80 et qui retire 1 point par sort de départ et ne compte pas la case centrale.
   - Autres versions : pas de total, les compteurs affichent les points dépensés sans plafond
     (note en pied de fenêtre). Coût d'une case de grille (1) et des rangs (1, 2, 3) appliqués à
     toutes les versions.

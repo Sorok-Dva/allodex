@@ -210,6 +210,19 @@ describe('liens sort ↔ rubis', () => {
   });
 });
 
+describe('plafonds de l’index (manifeste)', () => {
+  const idx = Object.values(import.meta.glob<TalentsIndex>('../../public/game/talents/index.json', { eager: true, import: 'default' }))[0];
+  it.skipIf(!idx)('16.0 : 91/80, 17.0 : 82/77 (nets des 3 points offerts), autres sans plafond', () => {
+    const pts = Object.fromEntries(idx.versions.map(v => [v.id, v.points ? [v.points.book, v.points.field] : null]));
+    expect(pts['16.0']).toEqual([91, 80]);
+    expect(pts['17.0']).toEqual([82, 77]);
+    expect(Object.entries(pts).filter(([id, p]) => p && id !== '16.0' && id !== '17.0')).toEqual([]);
+    const v16 = idx.versions.find(v => v.id === '16.0')!;
+    expect(v16.points?.source).toMatch(/16\.0/);
+    expect(rulesFor(v16.points)).toMatchObject({ bookPoints: 91, fieldPoints: 80, bookStartRank: true });
+  });
+});
+
 describe('lien partagé', () => {
   const index: TalentsIndex = {
     versions: [

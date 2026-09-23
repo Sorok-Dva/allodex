@@ -1565,7 +1565,12 @@
      ],
      "missingNames": 0
     }
-   ]
+   ],
+   "points": {
+    "book": 91,
+    "field": 80,
+    "source": "Utilisateur, valeur en jeu 16.0 (91 points de talent, 80 rubis au niveau maximal). Totaux nets des 3 points offerts, comme le compteur 17.0 (libres/(total − 3)) ; même convention et mêmes valeurs que le calculateur alloder.pro (config f2p 91/80, qui retire 1 point par sort de départ et ne compte pas la case centrale)."
+   }
   },
   {
    "id": "17.0",
