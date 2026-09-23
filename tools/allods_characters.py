@@ -176,6 +176,9 @@ class Variations:
     hair_colors: list[int]
     skin_colors: list[int]
     default: Variation
+    # `mainTextures` : peaux de base au choix ; la première sert quand le gabarit n'a pas de
+    # `mainBakedTexture` (PNJ uniques : `Creatures/Mirianna`, peau `ElfFemaleSkin00`).
+    main_textures: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -259,7 +262,8 @@ def read_variations(db: PackDB, cat: PakCatalog, off: int) -> Variations:
     return Variations(faces=db.pointers(off + VAR_FACES), facials=db.pointers(off + VAR_FACIAL),
                       hairs=db.pointers(off + VAR_HAIR), additionals=db.pointers(off + VAR_ADDITIONAL),
                       hair_colors=_ints(db, off + VAR_HAIR_COLORS), skin_colors=_ints(db, off + VAR_SKIN_COLORS),
-                      default=read_variation(db, cat, off + VAR_DEFAULT))
+                      default=read_variation(db, cat, off + VAR_DEFAULT),
+                      main_textures=[n for n in (_texture_name(db, cat, t) for t in db.pointers(off + VAR_MAIN_TEXTURES)) if n])
 
 
 def find_character_template(db: PackDB, cat: PakCatalog, model: str, folder: str) -> int | None:

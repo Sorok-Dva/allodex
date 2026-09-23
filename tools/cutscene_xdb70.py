@@ -12,13 +12,18 @@ mécanique, ce qui donne, pour les scènes de 7.0 et d'avant, le **déroulé exa
   (fondu : `UserPostEffect` `fadeInTimeMSec`/`fadeOutTimeMSec`), `WeatherCreatureVisAction` (ciel,
   lumière, brouillard, désaturation), `Sound2DAction` (ambiance, musique) ;
 * placement des PNJ : `Maps/<carte>/<bloc>/<i>_<j>_*ServerObjects.xdb` (`SingleSpawnResource` :
-  `scriptID`, `center` local à la région, `yaw`, `MobWorld`).
+  `scriptID`, `center` local à la région, `yaw`, `MobWorld`) ;
+* PNJ invoqués pour la scène (`ImpactSummon` : `MobWorld`, `DestinationLocator` → `scriptID` d'un
+  repère des mêmes `ServerObjects`, `yaw` en degrés) ; leurs `impacts` les visent (buffs, répliques),
+  `ImpactGoTo` les fait marcher jusqu'à un autre repère, `Disintegrate` les retire ;
+  `ImpactClientData` (réplique posée sur le joueur) et `ImpactsDeferred` (`delay` en ms).
 
 Le module ne rend que des chemins `.xdb` et des valeurs ; `tools/extract_engine_cutscene.py` les
 rapporte aux ressources du client 17.0 (voix, textes, modèles) et vérifie les plans de caméra.
 """
 from __future__ import annotations
 
+import math
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -87,6 +92,8 @@ class Timeline:
     buffs: list[dict] = field(default_factory=list)
     scripts: set[str] = field(default_factory=set)
     maps: set[str] = field(default_factory=set)
+    # PNJ invoqués : {id, mob, name, locator, yaw (rad), t, until, moves: [{t, locator}]}
+    summons: list[dict] = field(default_factory=list)
 
 
 def read_client_data(tree: Tree, path: Path) -> dict:
@@ -191,7 +198,23 @@ class Simulator:
                     self.tl.maps.add(m.group(1))
             for sub in node.findall("impacts/Item"):
                 self.impact(base, sub, t, script or target)
-        elif kind == "ImpactClientDataParams":
+        elif kind == "ImpactsDeferred":
+            delay = _f(node, "delay") / 1000.0
+            for sub in node.findall("impacts/Item"):
+                self.impact(base, sub, t + delay, target)
+        elif kind == "ImpactSummon":
+            self.summon(base, node, t)
+        elif kind == "ImpactGoTo":
+            summon = self.summon_by_id(target)
+            locator = self.locator(node.find("destination"))
+            if summon is not None and locator:
+                summon["moves"].append({"t": round(t, 3), "locator": locator})
+                self.tl.scripts.add(locator)
+        elif kind == "Disintegrate":
+            summon = self.summon_by_id(target)
+            if summon is not None and summon.get("until") is None:
+                summon["until"] = round(t, 3)
+        elif kind in ("ImpactClientDataParams", "ImpactClientData"):
             data = node.find("data")
             if data is not None and data.get("href"):
                 path = self.tree.resolve(base, data.get("href"))
@@ -199,8 +222,40 @@ class Simulator:
                 if line["ru"] or line["voice"] or line["animations"]:
                     line.update({"t": round(t, 3), "speaker": target})
                     self.tl.lines.append(line)
-                    if target != "player":
+                    if target != "player" and not target.startswith("summon"):
                         self.tl.scripts.add(target)
+
+    def locator(self, dest: ET.Element | None) -> str | None:
+        if dest is None:
+            return None
+        loc = dest.find("locator")
+        mp = loc.find("map") if loc is not None else None
+        if mp is not None and mp.get("href"):
+            m = re.search(r"/Maps/([^/]+)/", mp.get("href"))
+            if m:
+                self.tl.maps.add(m.group(1))
+        return loc.findtext("scriptID") if loc is not None else None
+
+    def summon_by_id(self, target: str) -> dict | None:
+        return next((s for s in self.tl.summons if s["id"] == target), None)
+
+    def summon(self, base: Path, node: ET.Element, t: float) -> None:
+        dest = node.find("destination")
+        locator = self.locator(dest)
+        obj = node.find("object")
+        if not locator or obj is None or not obj.get("href"):
+            return
+        mob = self.tree.resolve(base, obj.get("href"))
+        yaw = dest.find("yaw") if dest is not None else None
+        entry = {"id": f"summon{len(self.tl.summons) + 1}", "mob": self.tree.rel(mob) if mob.is_file() else obj.get("href"),
+                 "name": mob_name(self.tree, mob), "visual": mob_visual(self.tree, mob) if mob.is_file() else None,
+                 "locator": locator, "walkSpeed": walk_speed(mob),
+                 "yaw": math.radians(_f(yaw, "value")) if yaw is not None else None,
+                 "t": round(t, 3), "until": None, "moves": []}
+        self.tl.summons.append(entry)
+        self.tl.scripts.add(locator)
+        for sub in node.findall("impacts/Item"):
+            self.impact(base, sub, t, entry["id"])
 
     def vis(self, path: Path, t: float, duration: float, target: str, buff: dict) -> None:
         doc = _read(path)
@@ -250,12 +305,24 @@ def simulate(root: Path, first_buff: str, horizon: float = 600.0) -> Timeline:
     tree = Tree(Path(root))
     sim = Simulator(tree, horizon)
     sim.attach(tree.root / first_buff, 0.0)
+    root_doc = _read(tree.root / first_buff)
+    if root_doc is not None and _f(root_doc, "duration") and root_doc.find(".//impactsOff") is not None:
+        # Buff racine à durée dont le `Switch` retire toute la chaîne à la fin : la scène s'arrête là.
+        sim.tl.duration = min(sim.tl.duration, _f(root_doc, "duration") / 1000.0)
     for entry in sim.open.values():
         entry.setdefault("until", round(sim.tl.duration, 3))
+    for summon in sim.tl.summons:
+        summon["moves"].sort(key=lambda m: m["t"])
     for bucket in (sim.tl.weather, sim.tl.sounds, sim.tl.effects, sim.tl.post):
         for item in bucket:
             if item.get("until") is None:
                 item["until"] = round(sim.tl.duration, 3)
+    end = sim.tl.duration
+    sim.tl.lines = [line for line in sim.tl.lines if line["t"] < end]
+    sim.tl.shots = [shot for shot in sim.tl.shots if shot["t"] < end]
+    for summon in sim.tl.summons:
+        if summon["until"] is None or summon["until"] > end:
+            summon["until"] = round(end, 3)
     sim.tl.lines.sort(key=lambda l: l["t"])
     sim.tl.shots.sort(key=lambda s: s["t"])
     return sim.tl
@@ -267,6 +334,34 @@ def region_origin(path: str) -> tuple[float, float]:
         return 0.0, 0.0
     bx, by, i, j = (int(g) for g in m.groups())
     return (bx + i) * REGION_SIZE, (by + j) * REGION_SIZE
+
+
+def walk_speed(mob: Path) -> float:
+    """`walkSpeed` d'un `MobWorld` (m/s ; 2 quand il n'est pas donné, valeur la plus courante)."""
+    doc = _read(mob)
+    return _f(doc, "walkSpeed", 2.0) if doc is not None else 2.0
+
+
+def mob_visual(tree: Tree, mob: Path) -> str | None:
+    """Chemin de la `VisualMob` d'un `MobWorld` 7.0 (`Characters/Elf_female/VisualMob/…`) : le dossier
+    du modèle, qui départage les PNJ homonymes du 17.0."""
+    doc = _read(mob)
+    vis = doc.find("visMob") if doc is not None else None
+    if vis is None or not vis.get("href"):
+        return None
+    return tree.rel(tree.resolve(mob, vis.get("href")))
+
+
+def mob_name(tree: Tree, mob: Path) -> str:
+    """Nom russe d'un `MobWorld` 7.0 (`.Name.txt` voisin, sinon son `name`)."""
+    name_file = mob.with_name(mob.name.replace(".(MobWorld).xdb", ".(MobWorld).Name.txt"))
+    name = clean(_text(name_file)) if name_file.is_file() else ""
+    if not name:
+        doc_mob = _read(mob)
+        href = doc_mob.find("name") if doc_mob is not None else None
+        if href is not None and href.get("href"):
+            name = clean(_text(tree.resolve(mob, href.get("href"))))
+    return name
 
 
 def find_spawns(root: Path, map_name: str, scripts: set[str]) -> dict[str, dict]:
@@ -288,20 +383,19 @@ def find_spawns(root: Path, map_name: str, scripts: set[str]) -> dict[str, dict]
                 continue
             place = item.find("place")
             center = place.find("center") if place is not None else None
+            if center is None:                   # `gameMechanics.map.Locator` : position, yaw
+                center, place = item.find("position"), item
             obj = item.find("object")
-            if center is None or obj is None:
+            if center is None:
                 continue
-            mob = tree.resolve(path, obj.get("href", ""))
-            name_file = mob.with_name(mob.name.replace(".(MobWorld).xdb", ".(MobWorld).Name.txt"))
-            name = clean(_text(name_file)) if name_file.is_file() else ""
-            if not name:
-                doc_mob = _read(mob)
-                href = doc_mob.find("name") if doc_mob is not None else None
-                if href is not None and href.get("href"):
-                    name = clean(_text(tree.resolve(mob, href.get("href"))))
+            # Repère nu (`MapLocator`, cible d'une invocation ou d'une marche) : pas de `MobWorld`.
+            mob = tree.resolve(path, obj.get("href", "")) if obj is not None and obj.get("href") else None
             out[script] = {"p": [float(center.get("x", 0)) + ox, float(center.get("y", 0)) + oy, float(center.get("z", 0))],
-                           "yaw": _f(place, "yaw"), "mob": tree.rel(mob) if mob.is_file() else obj.get("href"),
-                           "name": name, "file": tree.rel(path)}
+                           "yaw": _f(place, "yaw"),
+                           "mob": (tree.rel(mob) if mob.is_file() else obj.get("href")) if mob is not None else None,
+                           "name": mob_name(tree, mob) if mob is not None and mob.is_file() else "",
+                           "visual": mob_visual(tree, mob) if mob is not None and mob.is_file() else None,
+                           "file": tree.rel(path)}
     return out
 
 

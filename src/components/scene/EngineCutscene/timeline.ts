@@ -38,6 +38,8 @@ export type EngineActor = {
   animations: Record<string, number>;
   /** Instant d'apparition (s). */
   appear?: number;
+  /** Intervalles de présence (PNJ invoqués puis retirés) ; remplace `appear` quand il est donné. */
+  presence?: [number, number][];
   /** Lumière à sa position (ambiante + ponctuelles de la carte), unités du jeu (1 = 0x80). */
   light?: Vec3 | null;
 };
@@ -186,6 +188,12 @@ export function pathAt(path: readonly PathKey[], t: number): { p: Vec3; yaw: num
   }
   const last = path[path.length - 1];
   return { p: [...last.p], yaw: last.yaw ?? 0, moving: false };
+}
+
+/** L'acteur est-il en scène à `t` (`presence`, sinon dès `appear`) ? */
+export function presentAt(actor: { appear?: number; presence?: [number, number][] }, t: number): boolean {
+  if (actor.presence?.length) return actor.presence.some(([a, b]) => t >= a && t < b);
+  return t >= (actor.appear ?? 0);
 }
 
 /** Opacité du voile noir des fondus (`PostEffectVisAction` : Black_Long, Black_Instant). */

@@ -326,14 +326,28 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
     geo_elements = loaded.geo.doc.elements
     override: dict[str, str] = {}
     attachments: list[tuple[str, int, str]] = []
-    if template.default_dress is not None:
+    # Géosets dont la texture est une relocation de genre 2 (non résolue dans pack.bin : PNJ uniques
+    # `Creatures/Rysina`, `Creatures/Mirianna`) : la texture du dossier nommée comme la géométrie,
+    # présente dans les paks (`Creatures/Rysina/Rysina.(Texture).bin`).
+    stem = (loaded.geo.binary or "").replace(".(Geometry).bin", "")
+    fallback = f"{stem}.(Texture).bin" if stem else None
+    if fallback and any(e.material.visible and not e.material.texture for e in geo_elements) and bins.get(fallback):
+        for e in geo_elements:
+            if e.material.visible and not e.material.texture:
+                e.material.texture = fallback
+        report.append(f"{actor['id']} : texture de géométrie par le nom : {fallback}")
+    untextured = any(e.material.visible and not e.material.texture for e in geo_elements)
+    if template.default_dress is not None or (template.variations is not None and untextured):
+        # Personnage, ou PNJ unique habillé comme un personnage (`Creatures/Mirianna` : géosets
+        # sans texture, peau et tenue données par la `VisualMob`).
         variation = read_variation(db, cat, visual + VM_VARIATION)
         items = [read_visual_item(db, cat, off) for off in visual_dress(db, visual)]
+        skin = template.main_texture or (template.variations.main_textures[0]
+                                         if template.variations and template.variations.main_textures else None)
         appearance = resolve_appearance(template, [e.name for e in geo_elements],
-                                        {e.name: e.material.texture for e in geo_elements if e.material.visible},
+                                        {e.name: e.material.texture or skin for e in geo_elements if e.material.visible},
                                         variation=variation, items=items)
         override = dict(appearance.replacements)
-        skin = template.main_texture
         base = textures.image(skin, 2048) if skin else None
         if base is not None:
             image_of = lambda name: textures.image(name, 2048)  # noqa: E731
@@ -342,12 +356,12 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
             textures.add_image(baked_name, bake_skin(base, appearance, image_of, mask, min(max(base.size), ACTOR_TEXTURE_MAX)),
                                ACTOR_TEXTURE_MAX)
             for e in geo_elements:
-                if e.name not in override and e.material.texture == skin:
+                if e.name not in override and (e.material.texture == skin or not e.material.texture):
                     override[e.name] = baked_name
         visible = set(appearance.visible)
         elements = [e for e in geo_elements if e.name in visible]
         ex.tints = appearance.tints
-        for item in [template.default_dress] + variation.items() + items:
+        for item in [i for i in [template.default_dress] if i is not None] + variation.items() + items:
             for shape in item.shapes_for(template.gender):
                 if shape.scene is not None and shape.locator:
                     attachments.append((shape.locator, shape.scene, shape.shape))
@@ -494,6 +508,30 @@ def sound_index(bins, cache: Path) -> dict[str, list[tuple[str, int, str]]]:
     return index
 
 
+def grouped_wave(event: str, index: dict, prefer: str = "") -> tuple[str, int, str] | None:
+    """Onde d'une voix rangée par groupe : `FerrisRaid602/FR_PreRaidRysina01` → onde `Rysina01` de
+    la banque `Voice_FerrisRaid602Pre_rus` (le groupe dans le nom de banque, la fin de l'événement
+    comme nom d'onde, et le reste du nom — `Pre` — pour départager `…Pre`, `…Portal`, `…General`)."""
+    parts = event.split("/")
+    if len(parts) < 2:
+        return None
+    group, tail = _key(parts[0]), _key(parts[-1])
+    best, best_score = None, 0
+    for k in range(len(tail) - 4, 0, -1):
+        key, rest = tail[k:], tail[:k]
+        for bank, sub, name in index.get(key, []):
+            bank_key = _key(bank.split("/")[-1])
+            if group not in bank_key:
+                continue
+            extra = bank_key.replace(group, " ")
+            overlap = max((n for n in range(len(rest), 2, -1) for i in range(len(rest) - n + 1) if rest[i:i + n] in extra),
+                          default=0)
+            score = len(key) * 100 + overlap * 10 + int(bool(prefer) and prefer in bank) * 5 + int("rus" in bank_key)
+            if score > best_score:
+                best, best_score = (bank, sub, name), score
+    return best
+
+
 def find_wave(event: str, index: dict, prefer: str = "") -> tuple[str, int, str] | None:
     """Onde d'un événement FMOD par son nom (dernier segment) : nom identique, sinon suivi de
     `_lp` (boucle), `_nm` ou d'un numéro (première variante). Le fichier d'événements `.bev`
@@ -504,6 +542,9 @@ def find_wave(event: str, index: dict, prefer: str = "") -> tuple[str, int, str]
         if hits:
             hits = sorted(hits, key=lambda h: (prefer not in h[0], h[0]))
             return hits[0]
+    grouped = grouped_wave(event, index, prefer)
+    if grouped is not None:
+        return grouped
     # préréglage d'ambiance (`Demonic_AP`) : la boucle de fond de même préfixe (`demonic_drone_lp`)
     stem = re.sub(r"ap$", "", tail)
     loops = sorted((h for k, hs in index.items() if k.startswith(stem) and k.endswith("lp") for h in hs),
@@ -744,6 +785,72 @@ def find_mob_by_name(db: PackDB, cat, texts: Texts, name: str, model_hint: str) 
     return best
 
 
+def summon_actors(spec: dict, tl, spawns: dict, db: PackDB, cat, texts: Texts, report: list[str]) -> dict[str, dict]:
+    """PNJ invoqués par le déroulé (`ImpactSummon`) → acteurs, un par nom : chaque invocation le
+    (ré)apparaît sur son repère, `ImpactGoTo` le fait marcher (à la `walkSpeed` du `MobWorld`)
+    jusqu'au repère visé, `Disintegrate` le retire (`presence`)."""
+    groups: dict[str, dict] = {}
+    for summon in tl.summons:
+        loc = spawns.get(summon["locator"])
+        if loc is None:
+            report.append(f"{spec['id']} : repère introuvable : {summon['locator']}")
+            continue
+        name = summon["name"] or summon["mob"]
+        # Un même PNJ réinvoqué reprend son acteur une fois le précédent retiré ; deux présents à la
+        # fois (le jeu en montre alors deux) font deux acteurs.
+        twins = [a for a in groups.values() if a["name"] == name]
+        actor = next((a for a in twins if a["presence"][-1][1] <= summon["t"] + 1e-3), None)
+        if actor is None:
+            mob = find_mob_by_name(db, cat, texts, summon["name"], summon.get("visual") or summon["mob"] or "")
+            if mob is None:
+                report.append(f"{spec['id']} : PNJ invoqué introuvable dans le 17.0 : {summon['name']}")
+                continue
+            stem = Path(summon["mob"] or "x").name.split(".")[0].split("_")[0].lower()
+            base = re.sub(r"[^a-z0-9]+", "-", stem).strip("-") or "summon"
+            actor = {"id": base if not twins else f"{base}-{len(twins) + 1}", "name": name, "mob_offset": mob,
+                     "path": [], "presence": [], "move": "Walk", "voice_key": stem, "summons": [], "server": summon}
+            groups[summon["id"]] = actor
+        actor["summons"].append(summon["id"])
+        path = actor["path"]
+        pos = [round(v, 4) for v in loc["p"]]
+        yaw = summon["yaw"] if summon["yaw"] is not None else loc["yaw"]
+        if path and path[-1]["t"] < summon["t"] - 2e-3:
+            path.append({"t": round(summon["t"] - 1e-3, 3), "p": path[-1]["p"], "yaw": path[-1]["yaw"]})
+        path.append({"t": summon["t"], "p": pos, "yaw": round(yaw, 5)})
+        t, here = summon["t"], np.array(pos, float)
+        for move in summon["moves"]:
+            dest = spawns.get(move["locator"])
+            if dest is None:
+                report.append(f"{spec['id']} : repère introuvable : {move['locator']}")
+                continue
+            there = np.array(dest["p"], float)
+            start = max(move["t"], t)
+            heading = face_yaw(list(here), list(there))
+            if start - t > 2e-3:
+                path.append({"t": round(start, 3), "p": path[-1]["p"], "yaw": path[-1]["yaw"]})
+            else:
+                path[-1]["yaw"] = heading
+            t = start + float(np.linalg.norm(there[:2] - here[:2])) / max(summon["walkSpeed"], 0.1)
+            path.append({"t": round(t, 3), "p": [round(float(v), 4) for v in there], "yaw": heading})
+            here = there
+        actor["presence"].append([summon["t"], summon["until"]])
+    return groups
+
+
+def voice_speaker(line: dict, summoned: dict[str, dict], spec: dict) -> str | None:
+    """Locuteur d'une réplique posée sur le joueur : l'acteur invoqué présent dont le nom de modèle
+    (`Rysina_CutScene`) figure dans l'événement de voix (`FR_PreRaidRysina01`) ; le manifeste
+    donne les autres (`speakers` : `{"Vayatel": "colossus"}` — le Ваятель est un Колосс)."""
+    voice = (line.get("voice") or "").lower()
+    aliases = {k.lower(): v.lower() for k, v in spec.get("speakers", {}).items()}
+    wanted = {v for k, v in aliases.items() if k in voice}
+    for key, actor in summoned.items():
+        present = any(a - 1e-3 <= line["t"] < b for a, b in actor["presence"])
+        if present and (actor["voice_key"] in voice or actor["voice_key"] in wanted):
+            return key
+    return None
+
+
 def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: ClientLines, anim_names: dict,
                report: list[str]) -> dict:
     """Plan d'une scène de 7.0 ou d'avant : déroulé serveur de l'arbre 7.0 (`tools/cutscene_xdb70.py`)
@@ -756,22 +863,30 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
     camera["duration"] = round(tl.duration, 3)
     actors: dict[str, dict] = {}
     for script, sp in spawns.items():
-        mob = find_mob_by_name(db, cat, texts, sp["name"], sp["mob"] or "")
+        if sp["mob"] is None:            # repère nu : place d'une invocation ou but d'une marche
+            continue
+        mob = find_mob_by_name(db, cat, texts, sp["name"], sp.get("visual") or sp["mob"] or "")
         if mob is None:
             report.append(f"{spec['id']} : PNJ introuvable dans le 17.0 : {sp['name']} ({script})")
             continue
         actors[script] = {"id": re.sub(r"[^a-z0-9]+", "-", script.lower()).strip("-"), "mob_offset": mob,
                           "path": [{"t": 0, "p": sp["p"], "yaw": round(sp["yaw"], 5)}], "server": sp}
+    summoned = summon_actors(spec, tl, spawns, db, cat, texts, report)
+    for key, info in summoned.items():
+        actors[key] = info
     plan_lines = []
     for line in tl.lines:
         if not line["ru"] and not line["voice"]:
             continue
+        if line["speaker"] == "player":
+            line["speaker"] = voice_speaker(line, summoned, spec) or "player"
         cl = lines17.find(line["voice"], line["ru"])
         idx = cl.text_index if cl is not None else None
         text = texts.line(idx, line["voice"], line["delay_ms"], None)
         if "ru" not in text and line["ru"]:
             text["ru"] = line["ru"]
-        speaker = actors.get(line["speaker"], {}).get("id")
+        speaker = actors.get(line["speaker"], {}).get("id") or \
+            next((a["id"] for a in summoned.values() if line["speaker"] in a["summons"]), None)
         plan_lines.append({"start": line["t"], "duration": line["delay_ms"] / 1000.0, "voice_event": line["voice"],
                            "speaker": speaker, "clips": [clip_name(a) for a in line["animations"]], "text": text,
                            "source": line["clientdata"]})
@@ -933,12 +1048,21 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                 line["start"] = t
 
         actors_meta = []
+        built: dict = {}
+        shutil.rmtree(out / "actors", ignore_errors=True)
         for actor in plan["actors"]:
             spec_actor = {"id": actor["id"], "mob": None, "sex": actor.get("sex"), "animations": sorted(
-                set(actor.get("animations", [])) | {actor.get("idle") or "Idle", "Idle01", "Idle"} | set(actor.get("clips_wanted", [])))}
-            data, meta = build_actor_offset(spec_actor, actor["mob_offset"], mp, cat, bins, textures, report)
-            (out / "actors").mkdir(exist_ok=True)
-            (out / "actors" / f"{actor['id']}.glb").write_bytes(data)
+                set(actor.get("animations", [])) | {actor.get("idle") or "Idle", "Idle01", "Idle"} | set(actor.get("clips_wanted", [])) |
+                ({actor["move"]} if actor.get("move") else set()))}
+            glb = f"actors/{actor['id']}.glb"
+            twin = built.get((actor["mob_offset"], tuple(spec_actor["animations"])))
+            if twin is not None:          # même PNJ en double (deux invocations à la fois) : même modèle
+                glb, meta = twin[0], json.loads(json.dumps(twin[1]))
+            else:
+                data, meta = build_actor_offset(spec_actor, actor["mob_offset"], mp, cat, bins, textures, report)
+                (out / "actors").mkdir(exist_ok=True)
+                (out / "actors" / f"{actor['id']}.glb").write_bytes(data)
+                built[(actor["mob_offset"], tuple(spec_actor["animations"]))] = (glb, json.loads(json.dumps(meta)))
             idle = actor.get("idle") or next((c for c in ("Idle01", "Idle") if c in meta["animations"]), None)
             ground = bool(actor.get("ground"))
             path = []
@@ -953,10 +1077,11 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                     entry["yaw"] = key["yaw"]
                 path.append(entry)
             name_idx = meta.pop("name_index")
-            actors_meta.append({"id": actor["id"], "glb": f"actors/{actor['id']}.glb",
+            actors_meta.append({"id": actor["id"], "glb": glb,
                                 "name": {"ru": clean_text(texts.main.texts["ru"][name_idx]), "en": clean_text(texts.main.texts["en"][name_idx])},
                                 "path": path, "scale": actor.get("scale", 1.0), "idle": idle,
                                 "talk": actor.get("talk"), "move": actor.get("move"), "appear": actor.get("appear", 0.0),
+                                **({"presence": actor["presence"]} if actor.get("presence") else {}),
                                 "light": light_at(path[0]["p"], decor["pointLights"], light), **meta})
 
         fx_glb, fx_objects, fx_sounds, spawns = build_fx(spec.get("spawns", []), mp, cat, bins, textures, particles, report)

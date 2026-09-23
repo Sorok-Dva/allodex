@@ -6,7 +6,7 @@ import type { SubtitleLang } from '@/lib/cinematics';
 import { loadParticleFile } from '@/components/scene/FatalityViewer/particles';
 import { spawnOpacity } from '@/components/scene/FatalityViewer/timeline';
 import { VotFactory, particleSystems, toViewerMaterial, updateInstance, type Tinted, type VotInstance } from '@/components/scene/vot/votInstances';
-import { actorClipAt, argb, falloff, pathAt, sampleKeys, subtitleAt, veilAt, voiceAt, type EngineScene } from './timeline';
+import { actorClipAt, argb, falloff, pathAt, presentAt, sampleKeys, subtitleAt, veilAt, voiceAt, type EngineScene } from './timeline';
 import s from './EngineCutscene.module.css';
 
 // Même parti pris que les scènes de menu et les fatalités : les textures du jeu sont des octets,
@@ -238,7 +238,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       for (const actor of actors) {
         const info = data.actors.find(a => a.id === actor.id);
         if (!info) continue;
-        actor.holder.visible = t >= (info.appear ?? 0);
+        actor.holder.visible = presentAt(info, t);
         const pose = pathAt(info.path, t);
         actor.holder.position.set(...pose.p);
         actor.holder.rotation.z = pose.yaw;

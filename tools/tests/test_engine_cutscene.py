@@ -125,3 +125,48 @@ def test_fsb5_stream_names_reads_the_name_table():
 def test_face_yaw_turns_the_minus_y_forward_axis_to_the_target():
     assert math.isclose(face_yaw([0, 0, 0], [1, 0]), math.pi / 2, abs_tol=1e-4)
     assert MODEL_FORWARD == -math.pi / 2
+
+
+def test_grouped_wave_uses_the_bank_named_after_the_event_group():
+    from tools.extract_engine_cutscene import grouped_wave
+    index = {"rysina01": [("SFX/Voice/Voice_FerrisRaid602Portal_rus.bsb", 4, "Rysina01"),
+                          ("SFX/Voice/Voice_FerrisRaid602Pre_rus.bsb", 3, "Rysina01")]}
+    assert grouped_wave("FerrisRaid602/FR_PreRaidRysina01", index)[0].endswith("602Pre_rus.bsb")
+    assert grouped_wave("FerrisRaid602/FR_PortalRysina01", index)[0].endswith("602Portal_rus.bsb")
+    assert grouped_wave("Other/Rysina01", index) is None
+
+
+def test_voice_speaker_matches_present_summons_and_aliases():
+    from tools.extract_engine_cutscene import voice_speaker
+    summoned = {"summon1": {"voice_key": "rysina", "presence": [[9, 29]]},
+                "summon3": {"voice_key": "colossus", "presence": [[20, 37]]}}
+    spec = {"speakers": {"Vayatel": "colossus"}}
+    assert voice_speaker({"voice": "FerrisRaid602/FR_PreRaidRysina01", "t": 12}, summoned, spec) == "summon1"
+    assert voice_speaker({"voice": "FerrisRaid602/FR_PreRaidVayatel01", "t": 28}, summoned, spec) == "summon3"
+    assert voice_speaker({"voice": "FerrisRaid602/FR_PreRaidRysina03", "t": 40}, summoned, spec) is None
+
+
+def test_xdb70_summons_walk_to_locators_and_vanish(tmp_path):
+    (tmp_path / "Mobs").mkdir()
+    (tmp_path / "Mobs" / "Rysina_CutScene.(MobWorld).xdb").write_text(
+        "<MobWorld><walkSpeed>3</walkSpeed><visMob href=\"/Characters/Elf_female/V.(VisualMob).xdb\" /></MobWorld>")
+    locator = lambda s: f"<locator><scriptID>{s}</scriptID><map href=\"/Maps/Ferris4/MapResource.xdb\" /></locator>"  # noqa: E731
+    (tmp_path / "Start.(BuffResource).xdb").write_text(f"""<BuffResource><duration>10000</duration><effects>
+      <Item type="gameMechanics.elements.effects.Switch"><impactsOn>
+        <Item type="gameMechanics.elements.impacts.ImpactSummon">
+          <destination type="x.DestinationLocator">{locator('A')}<yaw type="x.AngleDegrees"><value>90</value></yaw></destination>
+          <impacts><Item type="gameMechanics.elements.impacts.ImpactsDeferred"><delay>2000</delay><impacts>
+            <Item type="gameMechanics.elements.impacts.ImpactGoTo"><destination type="x.DestinationLocator">{locator('B')}</destination></Item>
+          </impacts></Item></impacts>
+          <object href="/Mobs/Rysina_CutScene.(MobWorld).xdb" />
+        </Item></impactsOn></Item>
+      <Item type="gameMechanics.elements.effects.EffectOnBuffTimeout"><impacts>
+        <Item type="gameMechanics.elements.impacts.ImpactClientData"><data href="Line.(ClientData).xdb" /></Item>
+      </impacts></Item>
+    </effects></BuffResource>""")
+    tl = cutscene_xdb70.simulate(tmp_path, "Start.(BuffResource).xdb")
+    (summon,) = tl.summons
+    assert summon["locator"] == "A" and math.isclose(summon["yaw"], math.pi / 2)
+    assert summon["moves"] == [{"t": 2.0, "locator": "B"}] and summon["walkSpeed"] == 3
+    assert summon["visual"] == "Characters/Elf_female/V.(VisualMob).xdb" and summon["until"] == 10.0
+    assert tl.maps == {"Ferris4"} and {"A", "B"} <= tl.scripts
