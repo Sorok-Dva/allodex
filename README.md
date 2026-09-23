@@ -35,6 +35,7 @@ Messages en anglais, au format gitmoji `<gitmoji> <type>(<scope>): <message>` (e
 - `/chronicles` : archive des écrans de lancement, version par version, avec leur thème musical (voir « Chroniques » ci-dessous).
 - `/music` : catalogue musical FR/RU, accessible par le bouton gramophone, avec lecture par catégorie.
 - `/character` (développement seulement) : création de personnage du client 17.0 (voir « Création de personnage »).
+- `/cinematics` : toutes les cinématiques du jeu en film complet par faction, avec sous-titres officiels FR/EN/RU (voir « Cinématiques » ci-dessous).
 - Non fait : comptes, addon d'export, import de progression, icônes réelles de tous les succès.
 
 ## Musiques
@@ -80,6 +81,180 @@ déclarée dans `tools/assets_manifest.json` (`remote_textures`) et télécharg�
 l'extraction dans `public/game/textures/Official/media_player.png`. Elle est ensuite
 servie localement ; `--force` la retélécharge. Le cadre conserve ses dimensions
 natives sur ordinateur et est réduit sur les petits écrans.
+
+## Cinématiques
+
+`/cinematics` (alias `/cinematiques`, bouton « clap » de l'accueil) joue toutes les
+cinématiques précalculées du jeu en **film complet par faction** : on choisit la Ligue ou
+l'Empire sur les bannières de l'écran de choix de faction du client
+(`Interface/Ingame/ChoiceFaction`), puis les cinématiques de la faction et les communes
+s'enchaînent dans l'ordre chronologique, avec un carton de titre à chaque chapitre, la
+liste des chapitres (vignettes, navigation), une barre de progression sur la durée du
+film (repères de chapitres) et les sous-titres officiels en `<track>` WebVTT (FR, EN, RU
+ou aucun). Deux lecteurs se relaient : pendant qu'un chapitre joue, l'autre, caché et
+muet, précharge le suivant, d'où un passage sans attente. `?faction=league|empire` ouvre
+directement un film. Clavier : espace (lecture/pause), Maj+←/→ (chapitre), F (plein écran),
+Échap (quitte le plein écran, sinon retour au choix de faction).
+
+**Plein écran** : bouton, touche F ou double-clic sur l'image. C'est le conteneur du lecteur
+qui passe en plein écran (API Fullscreen), pas la balise `<video>` : nos sous-titres restent
+affichés, à la même taille qu'en fenêtre. Commandes, chapitres et curseur s'effacent après
+2,5 s sans mouvement et reviennent au moindre geste ; tant qu'ils sont visibles, l'image
+remonte au-dessus de la barre pour garder les sous-titres lisibles. Sans API Fullscreen sur
+un `div` (iOS Safari), le lecteur passe en mode CSS fixe plein cadre.
+
+**Bonus** : les douze présentations de boss (9.0) ne coupent plus le récit. Elles forment
+une section « Bonus » après la fin du film (`bonus: true` dans le manifeste) : le film
+s'arrête sur l'écran de fin, qui propose « Voir le bonus » ; pendant le bonus, « Passer le
+bonus » mène à la fin. La bannière de faction indique la durée du film sans le bonus.
+
+    python3 tools/extract_cinematics.py                 # extraction (idempotente)
+    python3 tools/extract_cinematics.py --only zc13-forum --force
+    python3 tools/extract_cinematics.py --measure-sync --skip-video   # re-mesure du minutage (GPU conseillé)
+
+### Sources
+
+- **Dernier client (17.0.01.64, `/mnt/h/MyGames/AllodsRU`), source par défaut** :
+  `data/Packs/Video.pak` (46 entrées), `Texts_x64.pak` (`pack.rus.loc`, `pack.eng_eu.loc`),
+  `BaseLocall_x64.pak` (`Bin/pack.bin`, base de données compilée du client).
+- **Client FR 16.0.01.78.2 (`/mnt/h/MyGames/Allods Online FR (FR)`)** : sous-titres
+  français officiels (`Texts_x64.pak` → `Bin/pack.loc`, `BaseLocfra_x64.pak` → `Bin/pack.bin`).
+- **Client « Warp » 11.0.00.37 (`~/allods-clients/11.0`)** : les quatre vidéos de l'histoire
+  10.0 (Vychegrad), **retirées du jeu** (absentes des clients 15.0, 16.0 et 17.0).
+- Comparaison seulement : clients 7.0 (ADC, Divinity), 8.0, 9.0, 15.0, 16.0 : mêmes vidéos,
+  octet pour octet (CRC identiques), que le 17.0 pour tout ce qu'ils ont en commun. Les clients 1.x → 6.x
+  n'ont aucune vidéo (pas de `Video.pak`) ; l'arbre serveur 7.0 (xdb) a servi à repérer les
+  cinématiques moteur et le mécanisme des sous-titres.
+
+### Méthode
+
+- **Inventaire** : le `pack.bin` du client contient un registre vidéo (groupe → événement →
+  fichier : `Invasion/plague → Video/7_0Events/Invasion/Beregovoy_HD.ogv`, …). Il liste
+  toutes les vidéos du `Video.pak` ; le manifeste (`tools/cinematics_manifest.json`) en
+  reprend chaque entrée non-menu, avec l'événement, la faction, la clé d'ordre et la
+  justification de sa place (`chronology`). Les titres sont éditoriaux : le jeu ne nomme
+  pas ses vidéos.
+- **Vidéo** : Theora 1280×720 (Nihaz : 1920×1080) + Vorbis stéréo, transcodés en WebM
+  (VP9 CRF 40 + Opus 96 k) et MP4 (H.264 CRF 29 + AAC 128 k), 720p au plus, et une affiche.
+- **Audio** : la piste est **incrustée** dans l'`.ogv` et identique dans tous les clients
+  (FR compris) : voix **russes** quand il y a des dialogues (23 vidéos), musique et effets
+  seulement pour les 11 autres. Les paks `SFX_Voice_*` du 17.0 ne contiennent que les
+  répliques de Kvator ; les voix des scènes moteur des quêtes sont dans `BaseLocall_x64.pak`
+  (`SFX/Voice/*.bsb`, 226 banques russes), rien pour les vidéos.
+- **Sous-titres** : ils ne sont pas dans la vidéo. Le client les affiche par l'add-on
+  `Subtitles` (événement `EVENT_SHOW_SUBTITLES`) depuis des ressources `UISubtitleShow`
+  (`subtitles[] = {delayMs, text}` ; `delayMs` = durée d'affichage). Compilées dans
+  `pack.bin`, elles y laissent un bloc reconnaissable (voir `scan_subtitles`) : index du
+  texte dans les `pack.*.loc` + durée. Le manifeste désigne chaque réplique par le début de
+  son texte russe ; RU et EN viennent du 17.0 (même index), FR du client FR 16.0 (décalage
+  d'index constant dans une ressource, contrôlé par l'égalité des durées : 100 % des lignes
+  retrouvées). Une ligne anglaise restée en russe dans le client est omise de la piste EN.
+- **Minutage** : l'ordre et la durée viennent des données ; **l'instant de départ, non** —
+  il est fixé par le script de la scène, que je n'ai pas décodé dans le `pack.bin`. Les
+  départs sont donc **mesurés** sur la voix (faster-whisper large-v3, deux passes, amorcé
+  par le texte officiel, seul l'horodatage des mots est gardé) et rangés dans
+  `tools/cinematics_sync.json`, contrôlé contre une transcription indépendante (la
+  première réplique du prologue de la Ligue, mal retrouvée, y a été remise à `null`) ; une
+  réplique introuvable (`null`) est placée à la suite de la précédente, ou juste avant la
+  première réplique mesurée quand elle ouvre la vidéo. Les présentations de boss
+  (une seule ligne couvrant toute la vidéo) partent de 0 sans mesure (`timing: client`).
+- **Chronologie** : film = prologue de la faction (groupe `FactionsIntro`, 16.0), puis les
+  arcs dans l'ordre des versions (Invasion 7.0 → raid 7.2 → Kyros 8.0 → Talos 8.1 → Nihaz
+  8.2 → Vychegrad 10.0 → Éveil 11.0 → Suslanger 12.0 → Toute-Mère 13.0), puis le bonus
+  (donjons 9.0) ;
+  dans un arc, l'ordre du registre, sauf ZC13 où les dialogues placent le Forum avant la
+  tombe d'Aellona (voir `chronology` de chaque entrée).
+
+Sorties : `public/game/cinematics/<id>/{video.webm, video.mp4, poster.jpg, fr.vtt, en.vtt,
+ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le reste de
+`public/game/` (≈ 380 Mo : 193 Mo de MP4, 186 Mo de WebM, moins d'1 Mo d'affiches et de pistes ; environ 25 min 30 s de film par faction).
+
+### Cinématiques moteur recréées en 3D (pilote)
+
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Le
+chapitre 12.0 « Le monde caché » (`ao12-prologue04`, quête `AO12_Prologue04`, carte
+`AO12_PrologueInst`, la Citadelle de Nihaz) en est une, **recréée dans three.js** avec les
+données du dernier client et jouée dans le film comme un chapitre vidéo (même barre, mêmes
+raccourcis, sous-titres FR/EN/RU, voix russes).
+
+    python3 tools/extract_engine_cutscene.py                 # tout le pilote
+    python3 tools/extract_engine_cutscene.py --no-voices     # garde les voix déjà extraites
+    python3 tools/inventory_engine_cutscenes.py --client-only   # relevé du 17.0 (4 s)
+
+**Inventaire** (`engine_cutscenes` du manifeste). Deux relevés : celui de l'arbre serveur 7.0
+croisé avec le 17.0 (141 scènes, `scenes`) et celui du **17.0 seul** (`client_17`) :
+555 trajets de caméra (`CameraTrackAction`), dont 375 dans des scripts de buff de
+cinématique, 69 dans des `ClientData`, 7 dans des actions de créature ; 73 de ces buffs ont,
+rangées à côté d'eux, des répliques sous-titrées et doublées (67 avec des voix
+`Cutscenes/*`) — les meilleurs candidats ; 36 `GameViewScene`, 37 `GameViewScript` et 60
+`ShowSceneAction` (figurants des instances de départ, fantômes, combats : pas de dialogue) ;
+662 ressources de sous-titres. Le rattachement réplique ↔ buff se fait par proximité
+d'identifiants (`pack.bin` range les ressources dossier par dossier) : approché, signalé.
+
+**Ce qui vient du client 17.0** (lecteurs `tools/allods_bins17.py`, `tools/allods_vis17.py`) :
+
+- *caméra* : `BuffResource 507556` → `BuffVisScripts` → `CameraTrackAction`, six points de
+  caméra et six visées avec leur durée, identiques au `.xdb` 7.0 ; la durée d'un point est le
+  temps pour rejoindre le suivant (82 s au total) ;
+- *répliques* : dix `ClientData` (voix `Cutscenes/Eden2/Prologue04_Cutscene_1…10`) : sous-titre
+  (indice de texte + durée), voix, animation du locuteur (`emoteSpeech`) ; FR du client 16.0 ;
+  voix de `SFX/Voice/Voice_Eden06_rus.bsb` (sous-pistes nommées comme les événements) ;
+- *décor* : base propre à la carte `Bin/Maps_AO12_PrologueInst.bin` (même format que
+  `pack.bin` ; ses pointeurs de genre 1 visent `pack.bin`) : 4 régions, 193 objets posés
+  (27 géométries — le quartier général de Nihaz, le Pointeur, portails, colonne d'éclairs —,
+  164 lumières ponctuelles, 1 particule) ; **éclairage précalculé** `…_lightvrt.bin` (un
+  sommet par sommet de géométrie, vérifié sur les 27) ; éclairage de zone `ZoneLights`
+  (ambiante, brouillard, auto-illumination ; champs rangés par ordre alphabétique, recoupés
+  sur `AC5_base` 7.0) ;
+- *acteurs* : `MobWorld` → `VisualMob` → gabarit : Gort-Kostolom (Kania, cuir), Reniesta
+  (Kania, robe violette, bâton), Véronika (modèle `Creatures/Veronika`), Nihaz (dragon
+  `NihazDragonBoss`, seul visuel du `MobWorld` « Нихаз » rangé avec la quête) ; habillage
+  comme le client : tenue par défaut, variations (visage, coiffure), objets portés
+  (géosets montrés/cachés, objets accrochés aux articulations `Slot_*`, élément « L »/« R »
+  choisi par le nom de la forme, texture de remplacement), **atlas de peau** composé des
+  patchs de texture des objets (rectangles UV, sous-vêtements d'abord) ; animations `Idle`,
+  `Idle01`, `EmoteSpeech`, `SpellCastOmni`.
+
+**Ce que le client ne contient pas** (décidé par le serveur) et que le manifeste fournit,
+justifié (`engine_scenes`) : la **place des acteurs** (le groupe autour du Pointeur, visé
+par les 42 premières secondes ; Nihaz au point visé par le plan fixe de ses répliques, visible
+à partir de 39 s) et l'**instant des répliques** (trois groupes calés sur trois tronçons de la
+trajectoire : 4 répliques dans le premier plan de 39 s, 3 dans le plan fixe de 21 s, 3 dans le
+dernier de 15 s ; dans un groupe, à la fin de la voix précédente + 0,6 s). Choix du lecteur,
+nommés : champ vertical 45° ; couleur des sommets du décor = ambiante × 2 + octet 2 du
+`lightvrt` × auto-illumination × 2 (le shader du client n'est pas lu, les octets 0-1 restent
+à comprendre) ; acteurs éclairés par la lumière précalculée moyenne du décor autour d'eux.
+L'affiche (`poster.jpg`) est une capture du lecteur à 46 s.
+
+**Manques du pilote** : particules et effets posés par le serveur (le dernier travelling
+vise un point vide, (90 ; 148 ; 210), sans doute un effet de vision) ; ciel (`SkyMesh`, fond =
+couleur du brouillard) ; lumières ponctuelles temps réel ; objets animés du décor figés à leur
+pose de bind ; le joueur, présent dans le jeu, absent ici ; interpolation de caméra linéaire.
+Poids : 13 Mo (décor 2 Mo, acteurs 4 Mo, textures 5,5 Mo, voix 1 Mo).
+
+**Code repris** : `tools/packbin.py` est une copie telle quelle de la branche des talents
+(commit 1ad668d) ; les décalages de `Geometry`, `Texture`, `VisObjectTemplate` et
+l'assemblage glTF (`Glb`) viennent de la branche des fatalités (`allods_visdb.py`,
+`extract_fatalities.py`, commit 5615126), recopiés et adaptés (doublon à réunir quand les
+deux branches seront fusionnées).
+
+### Ce qui manque
+
+- **Cinématiques moteur** : une seule est recréée (pilote, voir ci-dessous). Liste dans
+  `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
+  (7_0Events), extraites ici.
+- **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et
+  « Pas prévu au plan » (11.0). « Le héros de Sarnaut » a 12 répliques officielles mais
+  leur texte diffère parfois de ce qui est dit (« Он сделал нас богатыми » écrit, « Он
+  нашёл богатство в пустыне » prononcé) : 4 ne sont pas retrouvées dans la voix et sont
+  placées à la suite de la précédente.
+- Anomalie des données conservée : dans le Forum, la réplique « Regardez-vous ! Vous
+  tremblez ! » a `delayMs` = 85 000 (sans doute 8 500) ; sa fin est coupée au départ de la
+  réplique suivante.
+- **Minutage exact** : les instants du jeu restent à trouver dans les scripts compilés ;
+  le minutage mesuré peut décaler une réplique d'une ou deux secondes.
+- Vidéos de menu (Intro/MainMenu 9.0 → 17.0) exclues : déjà dans les Chroniques ; clip de
+  test `Raid7_2Events/TestClip.ogv` (1 s, client 8.0 seulement) exclu.
 
 ## Audio du site
 

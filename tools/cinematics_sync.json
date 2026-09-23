@@ -1,0 +1,108 @@
+{
+ "_note": "Instants d'apparition (secondes) des répliques officielles, mesurés sur la voix russe de chaque vidéo par reconnaissance vocale (tools/extract_cinematics.py --measure-sync) : ce ne sont pas des données du jeu, qui ne donnent que l'ordre et la durée des lignes. null = réplique introuvable dans la voix, placée à la suite de la précédente.",
+ "allmother-final": [
+  24.82,
+  31.42,
+  36.14,
+  38.56,
+  42.18,
+  46.32,
+  53.54,
+  60.96,
+  65.76,
+  73.06,
+  80.76,
+  85.64,
+  94.36,
+  97.48,
+  106.22
+ ],
+ "empire-intro": [
+  3.9,
+  16.9,
+  22.1,
+  27.28,
+  40.87,
+  48.26,
+  61.28
+ ],
+ "invasion-astral-ship": [
+  31.42,
+  33.8,
+  44.18,
+  54.34
+ ],
+ "invasion-bridge": [
+  null,
+  19.24,
+  22.54,
+  24.1,
+  28.76
+ ],
+ "league-intro": [
+  null,
+  10.8,
+  15.78,
+  23.7,
+  30.86,
+  33.92,
+  37.82,
+  41.3,
+  46.0,
+  49.0,
+  53.12,
+  56.1,
+  57.66
+ ],
+ "suslanger-new-chieftain": [
+  0.0,
+  8.6,
+  16.36,
+  21.48,
+  27.08,
+  31.9,
+  37.7,
+  63.76,
+  68.96,
+  74.63
+ ],
+ "suslanger-sarnaut-hero": [
+  1.6,
+  7.88,
+  14.0,
+  null,
+  null,
+  27.84,
+  33.44,
+  null,
+  53.92,
+  60.44,
+  null,
+  68.34
+ ],
+ "zc13-ellona-grave": [
+  19.22,
+  21.34
+ ],
+ "zc13-forum": [
+  3.2,
+  15.02,
+  17.8,
+  23.1,
+  35.18,
+  37.24,
+  40.84,
+  51.86,
+  56.32,
+  65.28,
+  72.74,
+  81.84,
+  85.22,
+  91.86,
+  95.5,
+  100.36,
+  106.86,
+  117.78,
+  124.68
+ ]
+}

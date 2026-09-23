@@ -1,0 +1,463 @@
+{
+ "id": "ao12-prologue04",
+ "map": "AO12_PrologueInst",
+ "up": [
+  0,
+  0,
+  1
+ ],
+ "mirror": true,
+ "duration": 82.0,
+ "camera": {
+  "points": [
+   {
+    "t": 0.0,
+    "p": [
+     126.9714,
+     112.1189,
+     216.1559
+    ]
+   },
+   {
+    "t": 39.0,
+    "p": [
+     116.3089,
+     127.7446,
+     215.1043
+    ]
+   },
+   {
+    "t": 42.0,
+    "p": [
+     180.6975,
+     94.2719,
+     221.2153
+    ]
+   },
+   {
+    "t": 63.0,
+    "p": [
+     180.6975,
+     94.2719,
+     221.2153
+    ]
+   },
+   {
+    "t": 65.0,
+    "p": [
+     147.2627,
+     147.5849,
+     214.6257
+    ]
+   },
+   {
+    "t": 80.0,
+    "p": [
+     90.089,
+     147.5787,
+     210.2968
+    ]
+   }
+  ],
+  "targets": [
+   {
+    "t": 0.0,
+    "p": [
+     174.918,
+     147.874,
+     195.891
+    ]
+   },
+   {
+    "t": 39.0,
+    "p": [
+     174.918,
+     147.874,
+     195.891
+    ]
+   },
+   {
+    "t": 42.0,
+    "p": [
+     148.3477,
+     135.0666,
+     203.8945
+    ]
+   },
+   {
+    "t": 63.0,
+    "p": [
+     148.3477,
+     135.0666,
+     203.8945
+    ]
+   },
+   {
+    "t": 65.0,
+    "p": [
+     90.089,
+     147.5787,
+     210.2968
+    ]
+   },
+   {
+    "t": 80.0,
+    "p": [
+     90.089,
+     147.5787,
+     210.2968
+    ]
+   }
+  ],
+  "duration": 82.0,
+  "fov": 45
+ },
+ "decor": "decor.glb",
+ "actors": [
+  {
+   "id": "reniesta",
+   "glb": "actors/reniesta.glb",
+   "name": {
+    "ru": "Рениеста",
+    "en": "Reniesta"
+   },
+   "position": [
+    171.6,
+    145.4,
+    193.996
+   ],
+   "yaw": 2.2191,
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": "EmoteSpeech",
+   "appear": 0.0,
+   "light": [
+    0.567,
+    0.275,
+    0.116
+   ],
+   "geometry": "Characters/Kania_female/KaniaFemale.(Geometry).bin",
+   "template_scale": 0.0,
+   "visobject_scale": 1.0,
+   "height": 1.835,
+   "animations": {
+    "Idle01": 3.3333,
+    "EmoteSpeech": 5.9667
+   },
+   "stats": {
+    "triangles": 3574,
+    "meshes": 2,
+    "animations": 2
+   }
+  },
+  {
+   "id": "veronika",
+   "glb": "actors/veronika.glb",
+   "name": {
+    "ru": "Вероника Гипатская",
+    "en": "Klavdia Kalugina"
+   },
+   "position": [
+    170.2,
+    148.9,
+    193.765
+   ],
+   "yaw": 1.3612,
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": "EmoteSpeech",
+   "appear": 0.0,
+   "light": [
+    0.564,
+    0.274,
+    0.116
+   ],
+   "geometry": "Creatures/Veronika/Veronika.(Geometry).bin",
+   "template_scale": 1.0014,
+   "visobject_scale": 1.0,
+   "height": 1.871,
+   "animations": {
+    "Idle": 3.0,
+    "EmoteSpeech": 6.0
+   },
+   "stats": {
+    "triangles": 8685,
+    "meshes": 1,
+    "animations": 2
+   }
+  },
+  {
+   "id": "gort",
+   "glb": "actors/gort.glb",
+   "name": {
+    "ru": "Горт-Костолом",
+    "en": "Gorislav Averchenko"
+   },
+   "position": [
+    173.4,
+    142.6,
+    193.765
+   ],
+   "yaw": 2.8658,
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": "EmoteSpeech",
+   "appear": 0.0,
+   "light": [
+    0.564,
+    0.273,
+    0.116
+   ],
+   "geometry": "Characters/Kania_male/KaniaMale.(Geometry).bin",
+   "template_scale": 0.0,
+   "visobject_scale": 1.0,
+   "height": 1.867,
+   "animations": {
+    "Idle01": 3.0,
+    "EmoteSpeech": 5.3
+   },
+   "stats": {
+    "triangles": 3008,
+    "meshes": 6,
+    "animations": 2
+   }
+  },
+  {
+   "id": "nihaz",
+   "glb": "actors/nihaz.glb",
+   "name": {
+    "ru": "Нихаз",
+    "en": "Nihaz"
+   },
+   "position": [
+    148.35,
+    135.07,
+    192.283
+   ],
+   "yaw": 1.9889,
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": "SpellCastOmni",
+   "appear": 39,
+   "light": [
+    0.49,
+    0.261,
+    0.113
+   ],
+   "geometry": "Creatures/NihazDragonBoss/NihazDragonBoss.(Geometry).bin",
+   "template_scale": 9.2918,
+   "visobject_scale": 1.0,
+   "height": 11.693,
+   "animations": {
+    "Idle": 5.3,
+    "SpellCastOmni": 2.0
+   },
+   "stats": {
+    "triangles": 12026,
+    "meshes": 1,
+    "animations": 2
+   }
+  }
+ ],
+ "lines": [
+  {
+   "n": 1,
+   "start": 0.5,
+   "duration": 5.0,
+   "speaker": "gort",
+   "voice": {
+    "event": "Cutscenes/Eden2/Prologue04_Cutscene_1",
+    "ogg": "voice/01.ogg",
+    "mp3": "voice/01.mp3",
+    "duration": 1.781
+   },
+   "animations": [
+    "emoteSpeech"
+   ],
+   "text": {
+    "ru": "Горт: Ну и чего мы тут ждем?",
+    "en": "Gort: So what are we waiting for?",
+    "fr": "Gort : alors, qu'est-ce qu'on attend ?"
+   }
+  },
+  {
+   "n": 2,
+   "start": 2.881,
+   "duration": 7.0,
+   "speaker": "reniesta",
+   "voice": {
+    "event": "Cutscenes/Eden2/Prologue04_Cutscene_2",
+    "ogg": "voice/02.ogg",
+    "mp3": "voice/02.mp3",
+    "duration": 7.888
+   },
+   "animations": [],
+   "text": {
+    "ru": "Рениеста: Я чувствую, как информация проходит сквозь меня, но не могу ничего осознать… Что происходит, Вероника?!",
+    "en": "Reniesta: I feel the information pass through me, but I cannot understand anything... What's going on, Klavdia?!",
+    "fr": "Reniesta : Je sens les informations me traverser, mais je ne comprends rien... Que se passe-t-il, Klavdia ?"
+   }
+  },
+  {
+   "n": 3,
+   "start": 11.369,
+   "duration": 7.0,
+   "speaker": "veronika",
+   "voice": {
+    "event": "Cutscenes/Eden2/Prologue04_Cutscene_3",
+    "ogg": "voice/03.ogg",
+    "mp3": "voice/03.mp3",
+    "duration": 8.132
+   },
+   "animations": [
+    "emoteSpeech"
+   ],
+   "text": {
+    "ru": "Вероника: Все так, как должно быть. Эта форма знаний не создана для восприятия слабыми умами. Зато я все прекрасно понимаю.",
+    "en": "Klavdia: Everything is as it should be. This form of knowledge is not designed to be perceived by weak minds. But I understand everything perfectly.",
+    "fr": "Klavdia : Tout est en ordre. Cette forme de savoir n'est pas faite pour être perçue par les esprits faibles. Mais je comprends tout à la perfection."
+   }
+  },
+  {
+   "n": 4,
+   "start": 20.101,
+   "duration": 8.0,
+   "speaker": "veronika",
+   "voice": {
+    "event": "Cutscenes/Eden2/Prologue04_Cutscene_4",
+    "ogg": "voice/04.ogg",
+    "mp3": "voice/04.mp3",
+    "duration": 9.518
+   },
+   "animations": [
+    "emoteSpeech"
+   ],
+   "text": {
+    "ru": "Вероника: Это то, что мы искали. Мир, расположение которого Нихаз стремился скрыть. Мир, который он хочет поработить. Мир…",
+    "en": "Klavdia: This is what we were looking for. The world that Nihaz was trying to hide. The world he wants to conquer. The world...",
+    "fr": "Klavdia : C'est ce que nous cherchions. Le monde que Nihaz essayait de cacher. Le monde qu'il veut conquérir. Le monde..."
+   }
+  },
+  {
+   "n": 5,
+   "start": 42.5,
+   "duration": 7.0,
+   "speaker": "nihaz",
+   "voice": {
+    "event": "Cutscenes/Eden2/Prologue04_Cutscene_5",
+    "ogg": "voice/05.ogg",
+    "mp3": "voice/05.mp3",
+    "duration": 9.225
+   },
+   "animations": [],
+   "text": {
+    "ru": "Нихаз: …Твоей матери. Стоило ли ждать от тебя такой сентиментальности?.. В этой Цитадели полно других тайн…",
+    "en": "Nihaz: ...of your mother. I shouldn't have expected you to be sentimental... There are other secrets in this Citadel...",
+    "fr": "Nihaz : ... de votre mère. Je ne m'attendais pas à vous voir faire preuve de sentiment... Il y a d'autres secrets dans cette Citadelle..."
+   }
+  },
+  {
+   "n": 6,
+   "start": 52.325,
+   "duration": 7.0,
+   "speaker": "veronika",
+   "voice": {
+    "event": "Cutscenes/Eden2/Prologue04_Cutscene_6",
+    "ogg": "voice/06.ogg",
+    "mp3": "voice/06.mp3",
+    "duration": 4.696
+   },
+   "animations": [],
+   "text": {
+    "ru": "Вероника: Я знаю, что я ищу. И в последнюю очередь нуждаюсь в твоих советах.",
+    "en": "Klavdia: I know what I'm looking for. I don't need your advice.",
+    "fr": "Klavdia : Je sais ce que je cherche. Je n'ai pas besoin de vos conseils."
+   }
+  },
+  {
+   "n": 7,
+   "start": 57.621,
+   "duration": 7.0,
+   "speaker": "nihaz",
+   "voice": {
+    "event": "Cutscenes/Eden2/Prologue04_Cutscene_7",
+    "ogg": "voice/07.ogg",
+    "mp3": "voice/07.mp3",
+    "duration": 5.64
+   },
+   "animations": [],
+   "text": {
+    "ru": "Нихаз: Не сомневаюсь. Вам очень повезло, что я занят этим вторжением.",
+    "en": "Nihaz: I don't doubt it. You are very fortunate that I'm busy with this invasion.",
+    "fr": "Nihaz : Je n'en doute pas. Vous avez de la chance que je sois occupé par cette invasion."
+   }
+  },
+  {
+   "n": 8,
+   "start": 65.5,
+   "duration": 3.0,
+   "speaker": "nihaz",
+   "voice": {
+    "event": "Cutscenes/Eden2/Prologue04_Cutscene_8",
+    "ogg": "voice/08.ogg",
+    "mp3": "voice/08.mp3",
+    "duration": 2.859
+   },
+   "animations": [],
+   "text": {
+    "ru": "Нихаз: Погоди-ка… Это не ты.",
+    "en": "Nihaz: Wait a second... That's not you.",
+    "fr": "Nihaz : Attendez une seconde... Ce n'est pas vous."
+   }
+  },
+  {
+   "n": 9,
+   "start": 68.959,
+   "duration": 5.0,
+   "speaker": "nihaz",
+   "voice": {
+    "event": "Cutscenes/Eden2/Prologue04_Cutscene_9",
+    "ogg": "voice/09.ogg",
+    "mp3": "voice/09.mp3",
+    "duration": 2.569
+   },
+   "animations": [],
+   "text": {
+    "ru": "Нихаз: Она впустила тебя в свои воспоминания?..",
+    "en": "Nihaz: She let you into her memories...?",
+    "fr": "Nihaz : Elle vous a laissée entrer dans ses souvenirs ?"
+   }
+  },
+  {
+   "n": 10,
+   "start": 72.128,
+   "duration": 4.0,
+   "speaker": "nihaz",
+   "voice": {
+    "event": "Cutscenes/Eden2/Prologue04_Cutscene_10",
+    "ogg": "voice/10.ogg",
+    "mp3": "voice/10.mp3",
+    "duration": 2.439
+   },
+   "animations": [],
+   "text": {
+    "ru": "Нихаз: Как… Интересно.",
+    "en": "Nihaz: How... curious.",
+    "fr": "Nihaz : Comme... c'est étrange."
+   }
+  }
+ ],
+ "light": {
+  "ambient": 4280160779,
+  "ambientFactor": 0.5,
+  "diffuse": 4278848015,
+  "fog": 4280815111,
+  "fogEnd": 850.0,
+  "fogStart": 80.0,
+  "pointLight": 4294967295,
+  "selfIllum": 4291314447,
+  "sunPitch": 40.0,
+  "sunYaw": 45.0
+ },
+ "sources": {}
+}

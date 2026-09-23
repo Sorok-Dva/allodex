@@ -376,9 +376,29 @@
    "w": 64,
    "h": 64
   },
+  "Interface/Icons/Special/Notifications/RepostVideo": {
+   "w": 64,
+   "h": 64
+  },
   "Interface/Icons/Special/VeteranRewards/VeteranRankMaster": {
    "w": 57,
    "h": 64
+  },
+  "Interface/Ingame/ChoiceFaction/Textures/ChoiceFactionBackEmpire": {
+   "w": 320,
+   "h": 528
+  },
+  "Interface/Ingame/ChoiceFaction/Textures/ChoiceFactionBackLeague": {
+   "w": 320,
+   "h": 528
+  },
+  "Interface/Ingame/ChoiceFaction/Textures/Empire": {
+   "w": 118,
+   "h": 100
+  },
+  "Interface/Ingame/ChoiceFaction/Textures/League": {
+   "w": 136,
+   "h": 100
   },
   "Interface/Ingame/ContextActionbar2/ActionBar": {
    "w": 930,
@@ -1183,6 +1203,30 @@
   "Official/media_player": {
    "w": 64,
    "h": 64
+  },
+  "Interface/Ingame/ContextAuction/AuctionFrame": {
+   "w": 456,
+   "h": 788
+  },
+  "Interface/Ingame/Contextructor/CornerCross/CornerCrossHighlight": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/Contextructor/CornerCross/CornerCrossNormal": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/Contextructor/CornerCross/CornerCrossPressed": {
+   "w": 32,
+   "h": 32
+  },
+  "Interface/Ingame/Contextructor/CornerCross/GoldenCorner": {
+   "w": 52,
+   "h": 40
+  },
+  "Interface/Ingame/Contextructor/WindowHeader/TiledHeader": {
+   "w": 224,
+   "h": 45
   }
  }
 }

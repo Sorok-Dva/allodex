@@ -19,14 +19,22 @@
     "Interface/Ingame/ContextActionbar2/",
     "Interface/Common/Elements/Editline/",
     "Interface/Ingame/Contextructor/CornerQuestion/",
-    "Interface/Icons/Actions/"
+    "Interface/Icons/Actions/",
+    "Interface/Ingame/ChoiceFaction/Textures/"
   ],
   "texture_files": [
     "Interface/Icons/Special/Emotions/PlayedTrumpet.(UITexture).bin",
     "Interface/Icons/Equipment/Helm/Armor_Light_Helmet.(UITexture).bin",
     "Interface/Icons/Special/VeteranRewards/VeteranRankMaster.(UITexture).bin",
     "Interface/Icons/Misc/Event/GoldMedal.(UITexture).bin",
-    "Interface/Icons/Special/Currency/DiamondMedal.(UITexture).bin"
+    "Interface/Icons/Special/Currency/DiamondMedal.(UITexture).bin",
+    "Interface/Icons/Special/Notifications/RepostVideo.(UITexture).bin",
+    "Interface/Ingame/ContextAuction/AuctionFrame.(UITexture).bin",
+    "Interface/Ingame/Contextructor/WindowHeader/TiledHeader.(UITexture).bin",
+    "Interface/Ingame/Contextructor/CornerCross/GoldenCorner.(UITexture).bin",
+    "Interface/Ingame/Contextructor/CornerCross/CornerCrossNormal.(UITexture).bin",
+    "Interface/Ingame/Contextructor/CornerCross/CornerCrossPressed.(UITexture).bin",
+    "Interface/Ingame/Contextructor/CornerCross/CornerCrossHighlight.(UITexture).bin"
   ],
   "dims_overrides": {},
   "no_trim": [],
