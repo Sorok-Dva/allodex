@@ -27,8 +27,8 @@ from tools import extract_menu_scene as _ems
 from tools.allods_packdb import PackDB, PakCatalog
 from tools.allods_visdb import GeometryInfo, read_geometry, read_texture
 from tools.extract_menu_scene import (  # noqa: F401
-    BLOCK_BYTES, FOURCC, BinSource, GltfBuilder, Skeleton, SkeletalAnimation, decode_vertex_buffer,
-    parse_skeletal_animation, parse_skeleton, read_chunks, rest_local, rest_world_matrices,
+    BLOCK_BYTES, FOURCC, BinSource, GltfBuilder, Skeleton, SkeletalAnimation, apply_vertex_offsets,
+    decode_vertex_buffer, parse_skeletal_animation, parse_skeleton, read_chunks, rest_local, rest_world_matrices,
     skin_attributes, validate_glb,
 )
 from tools.scenes.v5_0 import restore_fixed_rotations
@@ -519,6 +519,7 @@ def load_geometry(db: PackDB, cat: PakCatalog, bins: BinSource, off: int) -> Loa
         return None
     vertices = decode_vertex_buffer(vb, layout, len(vb) // layout.stride)
     indices = np.frombuffer(ib, "<u2").astype(np.uint32)
+    apply_vertex_offsets(indices, geo.doc.elements)
     skeleton = None
     if geo.doc.skeleton_id is not None and geo.doc.skeleton_id in chunks:
         try:

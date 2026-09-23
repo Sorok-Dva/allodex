@@ -236,6 +236,23 @@ class ElementSpec:
     # `skinIndex` du xdb : -1 = élément peint, non skinné (ses sommets pointent pourtant
     # sur l'articulation 0 dans le tampon) ; 0 = suit le squelette.
     skin_index: int = 0
+    # `vertexBufferOffset` : sommet de base des indices 16 bits de l'élément (géométries de plus de
+    # 65 536 sommets : 0, 32 768, 65 536…).
+    vertex_offset: int = 0
+
+
+def apply_vertex_offsets(indices: np.ndarray, elements) -> int:
+    """Indices 16 bits relatifs au `vertexBufferOffset` de chaque élément (`FerrisRaid_Core` :
+    87 009 sommets, éléments à 0, 32 768 et 65 536) → indices absolus. Renvoie le nombre de plages
+    décalées."""
+    done: set[tuple[int, int]] = set()
+    for e in elements:
+        key = (e.ib0, e.ib1)
+        if not e.vertex_offset or key in done or e.ib1 <= e.ib0:
+            continue
+        done.add(key)
+        indices[e.ib0:e.ib1] += e.vertex_offset
+    return len(done)
 
 
 @dataclass
@@ -333,6 +350,7 @@ def parse_geometry_xdb(text: str) -> GeometryDoc:
             vb1=int(float(lod.findtext("vertexBufferEnd") or "0")),
             material=mat,
             skin_index=int(float(item.findtext("skinIndex") or "0")),
+            vertex_offset=int(float(item.findtext("vertexBufferOffset") or "0")),
         ))
     return doc
 
@@ -1026,6 +1044,7 @@ class SceneBuilder:
             return None
         vertices = decode_vertex_buffer(vb, layout, count)
         indices = np.frombuffer(ib[:doc.index_buffer_size or len(ib)], "<u2").astype(np.uint32)
+        apply_vertex_offsets(indices, doc.elements)
         skeleton = None
         if doc.skeleton_id is not None and doc.skeleton_id in chunks:
             try:

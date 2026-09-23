@@ -55,6 +55,7 @@ EL_BOOLS = 0x6C                # scrollAlpha, scrollRGB, ignoreDiffuseAlpha, tra
 EL_MATERIAL_NAME = 0x78
 EL_NAME = 0x90
 EL_SKIN_INDEX = 0xA8
+EL_VERTEX_OFFSET = 0xAC          # vertexBufferOffset : sommet de base des indices de l'élément
 EL_PARAMS = 0x58               # MaterialParams (polymorphe)
 PARAMS_ENV_TEXTURE = 0x48      # CommonMaterialParams.envReflectionTexture
 
@@ -269,7 +270,8 @@ def read_geometry(db: PackDB, cat: PakCatalog, off: int) -> GeometryInfo:
             mat.env_texture = cat.name(db.binary_ref(env)) if env is not None else None
         doc.elements.append(ElementSpec(name=db.string(el + EL_NAME) or "?", ib0=ib0, ib1=ib1,
                                         vb0=vb0, vb1=vb1, material=mat,
-                                        skin_index=db.i32(el + EL_SKIN_INDEX)))
+                                        skin_index=db.i32(el + EL_SKIN_INDEX),
+                                        vertex_offset=db.u32(el + EL_VERTEX_OFFSET)))
     return GeometryInfo(off, cat.name(db.binary_ref(off)), doc,
                         ORIENTATION.get(db.u32(off + GEO_ORIENTATION), "COMMON"),
                         SORT_MODE.get(db.u32(off + GEO_SORT_MODE), "OFFSETS"), textures)

@@ -154,8 +154,8 @@ def fix_index_pages(loaded) -> int:
     dernière page finit exactement au dernier sommet (`Interface_Scene` de Kania : 32 976 puis
     208…7 154 = 39 922 sommets). Renvoie le nombre de pages décalées."""
     n = len(loaded.vertices["position"])
-    if n <= INDEX_PAGE:
-        return 0
+    if n <= INDEX_PAGE or any(getattr(e, "vertex_offset", 0) for e in loaded.geo.doc.elements):
+        return 0   # décalages exacts (`vertexBufferOffset`) déjà appliqués au chargement
     page, top = 0, 0
     for e in loaded.geo.doc.elements:
         if e.vb1 <= e.vb0:
