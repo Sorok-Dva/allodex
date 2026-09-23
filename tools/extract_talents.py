@@ -321,6 +321,7 @@ class Talent:
     ranks: list = field(default_factory=list)
     missing: list = field(default_factory=list)
     links: list = field(default_factory=list)
+    icon_src: str | None = None
 
 
 class Extractor:
@@ -354,6 +355,7 @@ class Extractor:
         self._keys: dict[str, int] = {}
         self._text_slots: dict[str, dict[str, int]] = {}
         self._value_slots: dict[tuple[int, int], int] = {}
+        self.last_icon_src: str | None = None
 
     # outils -------------------------------------------------------------------------------
     def type_at(self, a: int | None) -> str | None:
@@ -530,6 +532,9 @@ class Extractor:
 
     # icônes -------------------------------------------------------------------------------
     def icon_of(self, a: int, b: int) -> str | None:
+        """Icône de l'objet ; `last_icon_src` garde le fichier source (chemin `.bin` ou entrée du
+        pak) pour la vérification contre l'arbre serveur."""
+        self.last_icon_src = None
         for _, t in self.ptrs(a, b):
             if self.type_at(t) == "UISingleTexture":
                 return self.texture_icon(t)
@@ -544,11 +549,13 @@ class Extractor:
             if not path:
                 return None
             binpath = re.sub(r"\.xdb$", ".bin", path)
+            self.last_icon_src = binpath
             return self.icons.add(f"{self.spec['id']}:{binpath}", lambda: self.paks.get(binpath), self.texture_dims_v1(tex))
         loc = self.texture_location(tex)
         if loc is None:
             return None
         pak, entry, dims = loc
+        self.last_icon_src = pak_entry_name(pak, entry) or f"{os.path.basename(pak)}#{entry}"
         # Clé = chemin complet du pak : un même nom (`Interface.Mini.pak`) désigne des fichiers
         # différents d'un client à l'autre. Avec le seul nom, le 16.0 et le 17.0 reprenaient les
         # icônes du 15.0 au même rang (bon titre, mauvaise image).
@@ -725,6 +732,7 @@ class Extractor:
             t.ref_texts = txt["_paths"]  # type: ignore[attr-defined]
         h = self.head(base)
         t.icon = self.icon_of(*h)
+        t.icon_src = self.last_icon_src
         for r in ranks:
             hr = self.head(r)
             rank: dict = {"ref": self.ref_of(r)}
@@ -1287,6 +1295,8 @@ def talent_json(t: Talent) -> dict:
         d["description"] = t.description
     if t.icon:
         d["icon"] = t.icon
+    if t.icon_src:
+        d["iconSrc"] = t.icon_src
     d["ranks"] = t.ranks
     if t.links:
         d["links"] = t.links
