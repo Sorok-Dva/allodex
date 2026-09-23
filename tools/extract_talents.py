@@ -549,7 +549,10 @@ class Extractor:
         if loc is None:
             return None
         pak, entry, dims = loc
-        return self.icons.add(f"{os.path.basename(pak)}#{entry}", lambda: read_pak_entry(pak, entry), dims)
+        # Clé = chemin complet du pak : un même nom (`Interface.Mini.pak`) désigne des fichiers
+        # différents d'un client à l'autre. Avec le seul nom, le 16.0 et le 17.0 reprenaient les
+        # icônes du 15.0 au même rang (bon titre, mauvaise image).
+        return self.icons.add(f"{pak}#{entry}", lambda: read_pak_entry(pak, entry), dims)
 
     def texture_dims_v1(self, tex: int) -> dict | None:
         """Zone utile d'une `UITexture` 32 bits (`realHeight`, `realWidth`), repérée par le
