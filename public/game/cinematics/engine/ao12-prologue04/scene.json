@@ -112,153 +112,6 @@
   "duration": 82.0,
   "fov": 45
  },
- "decor": "decor.glb",
- "actors": [
-  {
-   "id": "reniesta",
-   "glb": "actors/reniesta.glb",
-   "name": {
-    "ru": "Рениеста",
-    "en": "Reniesta"
-   },
-   "position": [
-    171.6,
-    145.4,
-    193.996
-   ],
-   "yaw": 2.2191,
-   "scale": 1.0,
-   "idle": "Idle01",
-   "talk": "EmoteSpeech",
-   "appear": 0.0,
-   "light": [
-    0.567,
-    0.275,
-    0.116
-   ],
-   "geometry": "Characters/Kania_female/KaniaFemale.(Geometry).bin",
-   "template_scale": 0.0,
-   "visobject_scale": 1.0,
-   "height": 1.835,
-   "animations": {
-    "Idle01": 3.3333,
-    "EmoteSpeech": 5.9667
-   },
-   "stats": {
-    "triangles": 3574,
-    "meshes": 2,
-    "animations": 2
-   }
-  },
-  {
-   "id": "veronika",
-   "glb": "actors/veronika.glb",
-   "name": {
-    "ru": "Вероника Гипатская",
-    "en": "Klavdia Kalugina"
-   },
-   "position": [
-    170.2,
-    148.9,
-    193.765
-   ],
-   "yaw": 1.3612,
-   "scale": 1.0,
-   "idle": "Idle",
-   "talk": "EmoteSpeech",
-   "appear": 0.0,
-   "light": [
-    0.564,
-    0.274,
-    0.116
-   ],
-   "geometry": "Creatures/Veronika/Veronika.(Geometry).bin",
-   "template_scale": 1.0014,
-   "visobject_scale": 1.0,
-   "height": 1.871,
-   "animations": {
-    "Idle": 3.0,
-    "EmoteSpeech": 6.0
-   },
-   "stats": {
-    "triangles": 8685,
-    "meshes": 1,
-    "animations": 2
-   }
-  },
-  {
-   "id": "gort",
-   "glb": "actors/gort.glb",
-   "name": {
-    "ru": "Горт-Костолом",
-    "en": "Gorislav Averchenko"
-   },
-   "position": [
-    173.4,
-    142.6,
-    193.765
-   ],
-   "yaw": 2.8658,
-   "scale": 1.0,
-   "idle": "Idle01",
-   "talk": "EmoteSpeech",
-   "appear": 0.0,
-   "light": [
-    0.564,
-    0.273,
-    0.116
-   ],
-   "geometry": "Characters/Kania_male/KaniaMale.(Geometry).bin",
-   "template_scale": 0.0,
-   "visobject_scale": 1.0,
-   "height": 1.867,
-   "animations": {
-    "Idle01": 3.0,
-    "EmoteSpeech": 5.3
-   },
-   "stats": {
-    "triangles": 3008,
-    "meshes": 6,
-    "animations": 2
-   }
-  },
-  {
-   "id": "nihaz",
-   "glb": "actors/nihaz.glb",
-   "name": {
-    "ru": "Нихаз",
-    "en": "Nihaz"
-   },
-   "position": [
-    148.35,
-    135.07,
-    192.283
-   ],
-   "yaw": 1.9889,
-   "scale": 1.0,
-   "idle": "Idle",
-   "talk": "SpellCastOmni",
-   "appear": 39,
-   "light": [
-    0.49,
-    0.261,
-    0.113
-   ],
-   "geometry": "Creatures/NihazDragonBoss/NihazDragonBoss.(Geometry).bin",
-   "template_scale": 9.2918,
-   "visobject_scale": 1.0,
-   "height": 11.693,
-   "animations": {
-    "Idle": 5.3,
-    "SpellCastOmni": 2.0
-   },
-   "stats": {
-    "triangles": 12026,
-    "meshes": 1,
-    "animations": 2
-   }
-  }
- ],
  "lines": [
   {
    "n": 1,
@@ -447,6 +300,2004 @@
    }
   }
  ],
+ "actors": [
+  {
+   "id": "reniesta",
+   "glb": "actors/reniesta.glb",
+   "name": {
+    "ru": "Рениеста",
+    "en": "Reniesta"
+   },
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      171.6,
+      145.4,
+      193.9958
+     ],
+     "yaw": 2.2191
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": "EmoteSpeech",
+   "move": null,
+   "appear": 0.0,
+   "light": [
+    1.0677,
+    0.9739,
+    0.9192
+   ],
+   "geometry": "Characters/Kania_female/KaniaFemale.(Geometry).bin",
+   "height": 1.835,
+   "animations": {
+    "Idle01": 3.3333,
+    "EmoteSpeech": 5.9667
+   }
+  },
+  {
+   "id": "veronika",
+   "glb": "actors/veronika.glb",
+   "name": {
+    "ru": "Вероника Гипатская",
+    "en": "Klavdia Kalugina"
+   },
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      170.2,
+      148.9,
+      193.7654
+     ],
+     "yaw": 1.3612
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": "EmoteSpeech",
+   "move": null,
+   "appear": 0.0,
+   "light": [
+    1.1666,
+    1.0729,
+    1.0182
+   ],
+   "geometry": "Creatures/Veronika/Veronika.(Geometry).bin",
+   "height": 1.871,
+   "animations": {
+    "Idle": 3.0,
+    "EmoteSpeech": 6.0
+   }
+  },
+  {
+   "id": "gort",
+   "glb": "actors/gort.glb",
+   "name": {
+    "ru": "Горт-Костолом",
+    "en": "Gorislav Averchenko"
+   },
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      173.4,
+      142.6,
+      193.7654
+     ],
+     "yaw": 2.8658
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": "EmoteSpeech",
+   "move": null,
+   "appear": 0.0,
+   "light": [
+    1.1994,
+    1.1056,
+    1.051
+   ],
+   "geometry": "Characters/Kania_male/KaniaMale.(Geometry).bin",
+   "height": 1.867,
+   "animations": {
+    "Idle01": 3.0,
+    "EmoteSpeech": 5.3
+   }
+  },
+  {
+   "id": "nihaz",
+   "glb": "actors/nihaz.glb",
+   "name": {
+    "ru": "Нихаз",
+    "en": "Nihaz"
+   },
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      148.35,
+      135.07,
+      192.283
+     ],
+     "yaw": 1.9889
+    },
+    {
+     "t": 63,
+     "p": [
+      148.35,
+      135.07,
+      192.283
+     ],
+     "yaw": 1.9889
+    },
+    {
+     "t": 65.5,
+     "p": [
+      80.0,
+      147.58,
+      201.0
+     ],
+     "yaw": 1.5708
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": "SpellCastOmni",
+   "move": "Run",
+   "appear": 39,
+   "light": [
+    0.7964,
+    0.7027,
+    0.648
+   ],
+   "geometry": "Creatures/NihazDragonBoss/NihazDragonBoss.(Geometry).bin",
+   "height": 11.693,
+   "animations": {
+    "Idle": 5.3,
+    "Run": 1.9667,
+    "SpellCastOmni": 2.0
+   }
+  }
+ ],
+ "decor": {
+  "glb": "decor.glb",
+  "light": "decor-light.bin",
+  "instances": [
+   {
+    "vot": "Nihaz_HQ",
+    "p": [
+     174.983,
+     147.643,
+     144.078
+    ],
+    "yaw": 0.0,
+    "light": [
+     0,
+     27233
+    ]
+   },
+   {
+    "vot": "AC5_Nihaz_Pointer",
+    "p": [
+     174.918,
+     147.874,
+     195.891
+    ],
+    "yaw": 0.0,
+    "light": [
+     27233,
+     1041
+    ]
+   },
+   {
+    "vot": "Nihaz_FlyPart_PortalOff02",
+    "p": [
+     174.918,
+     147.874,
+     205.791
+    ],
+    "yaw": 0.0
+   },
+   {
+    "vot": "AC7_Nihaz_Camp_Lightning",
+    "p": [
+     175.16,
+     147.483,
+     191.547
+    ],
+    "yaw": 0.0,
+    "light": [
+     28274,
+     322
+    ]
+   },
+   {
+    "vot": "AC5_Nihaz_Pointer_Lower_FX",
+    "p": [
+     174.918,
+     147.874,
+     197.531
+    ],
+    "yaw": 0.0,
+    "light": [
+     28596,
+     669
+    ]
+   },
+   {
+    "vot": "AC5_Nihaz_NPC_Portal",
+    "p": [
+     108.301,
+     32.4221,
+     182.623
+    ],
+    "yaw": 5.71799,
+    "light": [
+     29265,
+     755
+    ]
+   },
+   {
+    "vot": "AC5_Nihaz_NPC_Portal",
+    "p": [
+     241.37,
+     32.0421,
+     182.623
+    ],
+    "yaw": 0.4593,
+    "light": [
+     30020,
+     755
+    ]
+   },
+   {
+    "vot": "AC6_NihazCamp_Obj",
+    "p": [
+     62.0122,
+     161.69,
+     182.533
+    ],
+    "yaw": 1.03934,
+    "scale": 0.7898,
+    "light": [
+     30775,
+     190
+    ]
+   },
+   {
+    "vot": "AC6_NihazCamp_Obj",
+    "p": [
+     61.8917,
+     134.281,
+     182.533
+    ],
+    "yaw": 2.08146,
+    "scale": 0.7898,
+    "light": [
+     30965,
+     190
+    ]
+   },
+   {
+    "vot": "AC7_Nihaz_Camp_Lightning",
+    "p": [
+     175.199,
+     147.879,
+     128.855
+    ],
+    "yaw": 0.0,
+    "light": [
+     31155,
+     322
+    ]
+   },
+   {
+    "vot": "AC6_NihazCamp_Obj",
+    "p": [
+     128.901,
+     40.254,
+     185.189
+    ],
+    "yaw": 3.13097,
+    "scale": 0.7898,
+    "light": [
+     31477,
+     190
+    ]
+   },
+   {
+    "vot": "AC6_NihazCamp_Obj",
+    "p": [
+     105.111,
+     53.885,
+     185.164
+    ],
+    "yaw": 2.08879,
+    "scale": 0.7898,
+    "light": [
+     31667,
+     190
+    ]
+   },
+   {
+    "vot": "AC6_NihazCamp_Obj",
+    "p": [
+     244.751,
+     54.1943,
+     185.104
+    ],
+    "yaw": 4.17585,
+    "scale": 0.7898,
+    "light": [
+     31857,
+     190
+    ]
+   },
+   {
+    "vot": "AC6_NihazCamp_Obj",
+    "p": [
+     220.452,
+     40.426,
+     185.104
+    ],
+    "yaw": 3.12886,
+    "scale": 0.7898,
+    "light": [
+     32047,
+     190
+    ]
+   },
+   {
+    "vot": "AC6_NihazCamp_Obj",
+    "p": [
+     220.492,
+     254.95,
+     185.21
+    ],
+    "yaw": 0.00442,
+    "scale": 0.7898,
+    "light": [
+     32237,
+     190
+    ]
+   },
+   {
+    "vot": "AC6_NihazCamp_Obj",
+    "p": [
+     244.206,
+     242.074,
+     185.21
+    ],
+    "yaw": 5.24839,
+    "scale": 0.7898,
+    "light": [
+     32427,
+     190
+    ]
+   },
+   {
+    "vot": "AC6_NihazCamp_Obj",
+    "p": [
+     104.575,
+     239.934,
+     184.609
+    ],
+    "yaw": 1.04656,
+    "scale": 0.7898,
+    "light": [
+     32617,
+     190
+    ]
+   },
+   {
+    "vot": "AC6_NihazCamp_Obj",
+    "p": [
+     129.107,
+     254.475,
+     184.609
+    ],
+    "yaw": 6.28293,
+    "scale": 0.7898,
+    "light": [
+     32807,
+     190
+    ]
+   },
+   {
+    "vot": "Nihaz_Raid11_Generator",
+    "p": [
+     210.787,
+     85.5866,
+     129.673
+    ],
+    "yaw": 5.22558,
+    "scale": 0.47965,
+    "light": [
+     32997,
+     381
+    ]
+   },
+   {
+    "vot": "Nihaz_Raid11_Plunger",
+    "p": [
+     103.933,
+     147.646,
+     129.678
+    ],
+    "yaw": 0.0,
+    "scale": 0.72888,
+    "light": [
+     33378,
+     1373
+    ]
+   },
+   {
+    "vot": "Nihaz_Raid11_Generator",
+    "p": [
+     139.099,
+     85.3326,
+     129.673
+    ],
+    "yaw": 4.18607,
+    "scale": 0.47965,
+    "light": [
+     34751,
+     381
+    ]
+   },
+   {
+    "vot": "Nihaz_Raid11_Generator",
+    "p": [
+     139.047,
+     210.106,
+     129.673
+    ],
+    "yaw": 5.22558,
+    "scale": 0.47965,
+    "light": [
+     35132,
+     381
+    ]
+   },
+   {
+    "vot": "Nihaz_Raid11_Generator",
+    "p": [
+     210.871,
+     210.109,
+     129.673
+    ],
+    "yaw": 4.19943,
+    "scale": 0.47965,
+    "light": [
+     35513,
+     381
+    ]
+   },
+   {
+    "vot": "AC5_Nihaz_NPC_Portal",
+    "p": [
+     241.445,
+     262.3375,
+     182.623
+    ],
+    "yaw": 2.54677,
+    "light": [
+     35894,
+     755
+    ]
+   },
+   {
+    "vot": "AC5_Nihaz_NPC_Portal",
+    "p": [
+     108.559,
+     262.8917,
+     182.623
+    ],
+    "yaw": 3.64841,
+    "light": [
+     36649,
+     755
+    ]
+   },
+   {
+    "vot": "AC5_Nihaz_NPC_Portal",
+    "p": [
+     307.8163,
+     147.436,
+     182.623
+    ],
+    "yaw": 1.51079,
+    "light": [
+     37404,
+     755
+    ]
+   },
+   {
+    "vot": "AC6_NihazCamp_Obj",
+    "p": [
+     290.3529,
+     162.634,
+     185.065
+    ],
+    "yaw": 5.23405,
+    "scale": 0.7898,
+    "light": [
+     38159,
+     190
+    ]
+   },
+   {
+    "vot": "AC6_NihazCamp_Obj",
+    "p": [
+     291.3005,
+     135.049,
+     185.299
+    ],
+    "yaw": 4.1711,
+    "scale": 0.7898,
+    "light": [
+     38349,
+     190
+    ]
+   }
+  ],
+  "sky": {
+   "radius": 835.38
+  }
+ },
+ "fx": {
+  "glb": "fx.glb",
+  "spawns": [
+   {
+    "p": [
+     148.35,
+     135.07,
+     192.283
+    ],
+    "t": 38,
+    "until": 46,
+    "vot": "Nihaz_FlyPart_PortaOn02"
+   },
+   {
+    "attach": "reniesta",
+    "t": 42,
+    "until": 63,
+    "vot": "RysinaShield_Main"
+   },
+   {
+    "p": [
+     174.92,
+     147.87,
+     196.0
+    ],
+    "t": 0,
+    "until": 82,
+    "scale": 1,
+    "vot": "Nihaz_HQ_Hologram"
+   }
+  ]
+ },
+ "objects": {
+  "Nihaz_HQ_Column_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/Nihaz_HQ_Column_FX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 301,
+    "loopFrame": 301,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Nihaz_HQ_Column_FX_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/Nihaz_HQ_Column_FX_02.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 301,
+    "loopFrame": 301,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Nihaz_HQ_Column_FX_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/Nihaz_HQ_Column_FX_01.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 301,
+    "loopFrame": 301,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Nihaz_HQ_Column_All_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Nihaz_HQ_Column_FX",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Nihaz_HQ_Column_FX_02",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Nihaz_HQ_Column_FX_01",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Nihaz_HQ_Column_FX_01",
+     "locator": "Slot_Special05"
+    },
+    {
+     "vot": "Nihaz_HQ_Column_FX_01",
+     "locator": "Slot_Special07"
+    },
+    {
+     "vot": "Nihaz_HQ_Column_FX_02",
+     "locator": "Slot_Special08"
+    },
+    {
+     "vot": "Nihaz_HQ_Column_FX",
+     "locator": "Slot_Special09"
+    },
+    {
+     "vot": "Nihaz_HQ_Column_FX",
+     "locator": "Slot_Special11"
+    }
+   ]
+  },
+  "Nihaz_HQ": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Nihaz_HQ_Column_All_FX",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Nihaz_HQ_Column_All_FX",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Nihaz_HQ_Column_All_FX",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Nihaz_HQ_Column_All_FX",
+     "locator": "Slot_Special04"
+    },
+    {
+     "vot": "Nihaz_HQ_Column_All_FX",
+     "locator": "Slot_Special05"
+    },
+    {
+     "vot": "Nihaz_HQ_Column_All_FX",
+     "locator": "Slot_Special06"
+    }
+   ]
+  },
+  "AC5_Nihaz_Pointer_Lower_FX": {
+   "fadeIn": 0.3,
+   "fadeOut": 0.3,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/AC5_Nihaz_Pointer_Lower_FX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 60,
+    "loopFrame": 60,
+    "frames": [
+     1
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.3,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.3,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.3,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "AC5_Nihaz_Pointer_Runs_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "Z_AXIS",
+   "duration": 8.6667,
+   "loop": true
+  },
+  "AC5_Nihaz_Pointer_Top_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/AC5_Nihaz_Pointer_Top_FX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 30,
+    "loopFrame": 30,
+    "frames": [
+     1
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": -2.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "AC5_Nihaz_Pointer_Runs_01",
+     "locator": "Slot_Special01",
+     "start": 1.0
+    },
+    {
+     "vot": "AC5_Nihaz_Pointer_Runs_01",
+     "locator": "Slot_Special02",
+     "start": 2.0
+    },
+    {
+     "vot": "AC5_Nihaz_Pointer_Runs_01",
+     "locator": "Slot_Special03",
+     "start": 3.0
+    },
+    {
+     "vot": "AC5_Nihaz_Pointer_Runs_01",
+     "locator": "Slot_Special04",
+     "start": 4.0
+    }
+   ]
+  },
+  "AC5_Nihaz_Pointer": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 11.6667,
+   "loop": true,
+   "components": [
+    {
+     "vot": "AC5_Nihaz_Pointer_Lower_FX",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "AC5_Nihaz_Pointer_Top_FX",
+     "locator": "Slot_Special02"
+    }
+   ]
+  },
+  "Nihaz_FlyPart_PortalOff02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/Nihaz_FlyPart_PortalOff02.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 321,
+    "loopFrame": 201,
+    "frames": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.6953,
+       1.3125,
+       0.2969
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6484,
+       0.4219,
+       0.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 14.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "AC7_Nihaz_Camp_Lightning": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "World/Zones/AC7/AC7_Nihaz_Camp_Lightning",
+   "particles": {
+    "file": "particles/AC7_Nihaz_Camp_Lightning.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 166,
+    "loopFrame": 91,
+    "frames": [
+     1,
+     15,
+     16
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 2,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.2812,
+       0.1094,
+       0.0312
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 5.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false,
+   "sfx": "sfx/AC7_Nihaz_Camp_Lightning_lp"
+  },
+  "AC5_Nihaz_NPC_Portal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 13.3333,
+   "loop": true
+  },
+  "AC6_NihazCamp_Obj": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Nihaz_Raid11_Generator_Crystal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/Nihaz_Raid11_Generator_Crystal.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 481,
+    "loopFrame": 241,
+    "frames": [
+     1
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.7812,
+       0.3594,
+       0.1016
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": -1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.7656,
+       0.5547,
+       0.1172
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": -1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.7734,
+       0.3594,
+       0.1094
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": -1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.625,
+       0.5078,
+       0.2578
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": -1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Nihaz_Raid11_Generator_Ring": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Nihaz_Raid11_Generator_Top_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/Nihaz_Raid11_Generator_Top_01.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 121,
+    "frames": [
+     1
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.5312,
+       0.2969,
+       0.0469
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.5312,
+       0.2969,
+       0.0469
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.5312,
+       0.2969,
+       0.0469
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.5312,
+       0.2969,
+       0.0469
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Nihaz_Raid11_Generator_Top": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 12.6667,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Nihaz_Raid11_Generator_Crystal",
+     "locator": "jointCrystal"
+    },
+    {
+     "vot": "Nihaz_Raid11_Generator_Ring",
+     "locator": "Slot_Special09"
+    },
+    {
+     "vot": "Nihaz_Raid11_Generator_Top_01",
+     "locator": "Slot_Special09"
+    }
+   ]
+  },
+  "Nihaz_Raid11_Generator_D": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Nihaz_Raid11_Generator": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Nihaz_Raid11_Generator_Top",
+     "locator": ""
+    },
+    {
+     "vot": "Nihaz_Raid11_Generator_D",
+     "locator": ""
+    }
+   ]
+  },
+  "Nihaz_Raid11_Plunger#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 5.3333,
+   "loop": true
+  },
+  "Nihaz_Raid11_Plunger": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 10.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Nihaz_Raid11_Plunger#2",
+     "locator": "jointPlunger"
+    }
+   ]
+  },
+  "Nihaz_FlyPart_PortaOn02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "BILLBOARD",
+   "duration": 0.0,
+   "loop": false
+  },
+  "RysinaShield_Center": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "Z_AXIS",
+   "duration": 0.0,
+   "loop": false
+  },
+  "Elf_Big_House_CrystalGlow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/Elf_Big_House_CrystalGlow.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 31,
+    "loopFrame": 31,
+    "frames": [
+     1
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.2188,
+       0.1641,
+       0.6328
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": -1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "RysinaShield_Main": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 2.0,
+   "sound": "spells/FX/Spells/ArchitectorFX/PowerShieldBearer",
+   "particles": {
+    "file": "particles/RysinaShield_Main.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 61,
+    "loopFrame": 31,
+    "frames": [
+     -1
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.1797,
+       0.1094,
+       0.5859
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "RysinaShield_Center",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Elf_Big_House_CrystalGlow",
+     "locator": "Slot_Special01"
+    }
+   ],
+   "sfx": "sfx/PowerShieldBearer"
+  },
+  "Nihaz_HQ_Hologram_Part_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "Z_AXIS",
+   "duration": 10.0,
+   "loop": true
+  },
+  "Nihaz_HQ_Hologram_Sphere": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "BILLBOARD",
+   "duration": 3.0,
+   "loop": true
+  },
+  "Nihaz_HQ_Hologram_Part_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "Z_AXIS",
+   "duration": 10.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Nihaz_HQ_Hologram_Sphere",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Nihaz_HQ_Hologram_Circle": {
+   "fadeIn": 1.0,
+   "fadeOut": 0.1,
+   "scale": 1.0,
+   "duration": 3.0,
+   "loop": true
+  },
+  "Nihaz_HQ_Hologram": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/Nihaz_HQ_Hologram.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 300,
+    "loopFrame": 300,
+    "frames": [
+     17,
+     18
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 9.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Nihaz_HQ_Hologram_Part_01",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Nihaz_HQ_Hologram_Part_02",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Nihaz_HQ_Hologram_Circle",
+     "locator": "Slot_Special03",
+     "start": 1.0
+    },
+    {
+     "vot": "Nihaz_HQ_Hologram_Circle",
+     "locator": "Slot_Special04"
+    },
+    {
+     "vot": "Nihaz_HQ_Hologram_Circle",
+     "locator": "Slot_Special05",
+     "start": 1.0
+    }
+   ]
+  }
+ },
+ "particleAtlas": {
+  "file": "particles/atlas.png",
+  "width": 1024,
+  "height": 256,
+  "rects": [
+   [
+    128,
+    0,
+    64,
+    64
+   ],
+   [
+    192,
+    0,
+    64,
+    64
+   ],
+   [
+    256,
+    0,
+    64,
+    64
+   ],
+   [
+    192,
+    128,
+    32,
+    32
+   ],
+   [
+    0,
+    0,
+    128,
+    128
+   ],
+   [
+    320,
+    0,
+    64,
+    64
+   ],
+   [
+    384,
+    0,
+    64,
+    64
+   ],
+   [
+    448,
+    0,
+    64,
+    64
+   ],
+   [
+    512,
+    0,
+    64,
+    64
+   ],
+   [
+    576,
+    0,
+    64,
+    64
+   ],
+   [
+    640,
+    0,
+    64,
+    64
+   ],
+   [
+    704,
+    0,
+    64,
+    64
+   ],
+   [
+    768,
+    0,
+    64,
+    64
+   ],
+   [
+    832,
+    0,
+    64,
+    64
+   ],
+   [
+    896,
+    0,
+    64,
+    64
+   ],
+   [
+    960,
+    0,
+    64,
+    64
+   ],
+   [
+    0,
+    128,
+    64,
+    64
+   ],
+   [
+    64,
+    128,
+    64,
+    64
+   ],
+   [
+    128,
+    128,
+    64,
+    64
+   ]
+  ],
+  "sources": [
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    768,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1440,
+    1152,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    384,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1920,
+    608,
+    32,
+    32
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    896,
+    1280,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1568,
+    1216,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1664,
+    1664,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1412,
+    1472,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1856,
+    1984,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1664,
+    768,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1728,
+    1984,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1568,
+    1024,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1792,
+    1920,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    1984,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1728,
+    128,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    0,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1792,
+    192,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1536,
+    320,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1568,
+    1152,
+    64,
+    64
+   ]
+  ]
+ },
  "light": {
   "ambient": 4280160779,
   "ambientFactor": 0.5,
@@ -456,8 +2307,1717 @@
   "fogStart": 80.0,
   "pointLight": 4294967295,
   "selfIllum": 4291314447,
+  "specular": 4291311119,
   "sunPitch": 40.0,
-  "sunYaw": 45.0
+  "sunYaw": 45.0,
+  "sunDirection": [
+   0.5417,
+   0.5417,
+   0.6428
+  ]
  },
- "sources": {}
+ "pointLights": [
+  {
+   "p": [
+    194.462,
+    136.992,
+    193.238
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    175.236,
+    125.412,
+    193.238
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    155.355,
+    135.866,
+    193.238
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    171.296,
+    202.391,
+    145.183
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    167.794,
+    212.415,
+    145.183
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    176.853,
+    216.714,
+    145.183
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    182.277,
+    206.731,
+    145.183
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    158.815,
+    175.164,
+    132.88
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    143.332,
+    147.988,
+    133.29
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    159.292,
+    120.037,
+    133.594
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    229.293,
+    171.723,
+    144.819
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    225.79,
+    181.747,
+    144.819
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    234.849,
+    186.046,
+    144.819
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    240.273,
+    176.063,
+    144.819
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    229.395,
+    107.338,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    225.892,
+    117.362,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    234.951,
+    121.661,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    240.375,
+    111.678,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    171.675,
+    74.464,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    168.173,
+    84.488,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    177.231,
+    88.787,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    182.656,
+    78.804,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    115.598,
+    108.203,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    112.095,
+    118.226,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    121.154,
+    122.526,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    126.578,
+    112.543,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    115.522,
+    173.037,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    112.02,
+    183.061,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    121.078,
+    187.36,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    126.503,
+    177.377,
+    145.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    191.128,
+    120.518,
+    133.214
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    206.921,
+    147.481,
+    133.216
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    191.05,
+    175.329,
+    133.419
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    179.151,
+    145.44,
+    136.076
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    169.806,
+    144.829,
+    135.746
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    175.243,
+    152.527,
+    135.936
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    223.659,
+    175.916,
+    133.513
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    224.481,
+    119.441,
+    131.911
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    175.57,
+    90.656,
+    132.898
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    125.529,
+    119.014,
+    133.343
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    125.817,
+    175.918,
+    132.866
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    175.181,
+    204.735,
+    133.51
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    228.263,
+    147.857,
+    151.333
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    202.25,
+    100.521,
+    151.054
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    148.605,
+    100.535,
+    150.682
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    122.418,
+    146.483,
+    151.121
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    147.639,
+    193.978,
+    150.48
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    200.944,
+    193.992,
+    150.262
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    252.552,
+    147.232,
+    132.914
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    211.145,
+    90.181,
+    144.103
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    207.684,
+    82.145,
+    144.103
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    214.057,
+    82.145,
+    144.103
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    209.166,
+    88.995,
+    133.731
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    212.971,
+    81.973,
+    133.998
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    105.489,
+    142.699,
+    144.856
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    104.775,
+    153.326,
+    143.446
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    100.565,
+    147.592,
+    152.648
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    108.851,
+    147.568,
+    152.879
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    154.922,
+    158.238,
+    193.238
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    174.602,
+    170.731,
+    193.238
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    212.947,
+    213.261,
+    133.731
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    137.427,
+    213.514,
+    133.731
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    141.217,
+    88.457,
+    133.731
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    137.09,
+    81.619,
+    133.998
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    137.788,
+    80.77,
+    144.103
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    134.56,
+    86.264,
+    144.103
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    143.242,
+    87.351,
+    144.103
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    141.232,
+    206.492,
+    133.998
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    142.317,
+    206.664,
+    144.103
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    135.945,
+    206.664,
+    144.103
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    139.406,
+    214.7,
+    144.103
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    208.912,
+    206.369,
+    133.998
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    209.621,
+    205.529,
+    144.103
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    206.32,
+    210.98,
+    144.103
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    214.987,
+    212.183,
+    144.103
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    194.774,
+    159.423,
+    193.238
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    175.055,
+    158.282,
+    195.244
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    185.623,
+    147.688,
+    195.266
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    175.015,
+    137.024,
+    195.288
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    164.366,
+    147.584,
+    195.265
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    212.631,
+    125.815,
+    192.582
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    214.399,
+    124.908,
+    196.482
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    174.909,
+    104.265,
+    192.412
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    175.364,
+    137.133,
+    210.68
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    164.715,
+    147.693,
+    210.657
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    175.404,
+    158.391,
+    210.636
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    185.972,
+    147.797,
+    210.658
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    175.02,
+    103.051,
+    197.235
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    137.157,
+    125.946,
+    192.342
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    135.605,
+    125.121,
+    196.414
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    136.137,
+    169.974,
+    192.177
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    135.357,
+    170.412,
+    196.77
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    174.906,
+    191.547,
+    191.895
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    174.928,
+    193.53,
+    195.421
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    212.552,
+    169.422,
+    192.319
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    214.462,
+    170.391,
+    196.187
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    248.44,
+    51.46,
+    192.005
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    242.964,
+    54.634,
+    195.414
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    219.966,
+    42.317,
+    195.323
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    220.074,
+    36.144,
+    191.832
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    239.822,
+    34.876,
+    185.442
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    243.281,
+    29.098,
+    184.906
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    128.441,
+    35.791,
+    192.011
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    128.408,
+    42.101,
+    195.44
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    106.466,
+    55.239,
+    195.41
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    101.133,
+    52.033,
+    192.019
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    106.426,
+    29.902,
+    185.344
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    110.031,
+    35.313,
+    185.436
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    57.782,
+    132.585,
+    189.201
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    63.246,
+    135.624,
+    192.787
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    58.892,
+    163.486,
+    189.138
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    63.762,
+    161.135,
+    192.819
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    43.556,
+    147.879,
+    185.971
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    37.691,
+    147.949,
+    185.931
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    101.335,
+    242.566,
+    190.874
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    106.453,
+    239.437,
+    194.836
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    129.593,
+    252.638,
+    194.863
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    221.011,
+    253.12,
+    195.467
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    242.912,
+    240.69,
+    195.477
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    248.231,
+    243.972,
+    191.557
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    197.756,
+    214.428,
+    185.317
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    221.565,
+    200.403,
+    185.777
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    244.463,
+    133.889,
+    185.588
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    244.287,
+    161.573,
+    185.62
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    221.237,
+    95.044,
+    185.394
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    197.47,
+    81.02,
+    185.755
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    152.396,
+    81.499,
+    185.285
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    128.65,
+    94.498,
+    185.621
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    105.646,
+    134.147,
+    185.163
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    106.175,
+    161.145,
+    185.214
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    128.83,
+    200.494,
+    185.544
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    152.078,
+    214.446,
+    185.712
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    154.609,
+    150.21,
+    162.058
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    125.818,
+    161.447,
+    184.824
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    125.612,
+    134.398,
+    184.865
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    170.623,
+    131.949,
+    134.586
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    174.903,
+    136.471,
+    134.586
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    179.935,
+    132.084,
+    134.586
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    175.176,
+    127.829,
+    134.586
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    155.38,
+    142.795,
+    134.415
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    150.704,
+    147.586,
+    134.415
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    155.359,
+    152.307,
+    134.415
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    160.182,
+    147.674,
+    134.415
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    174.832,
+    167.846,
+    134.175
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    170.25,
+    163.18,
+    134.175
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    179.688,
+    163.022,
+    134.175
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    174.871,
+    157.827,
+    134.175
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    200.974,
+    147.605,
+    134.561
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    195.858,
+    142.587,
+    134.561
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    195.892,
+    152.691,
+    134.561
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    190.114,
+    147.614,
+    134.561
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    129.485,
+    258.823,
+    191.005
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    106.888,
+    265.566,
+    185.612
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    109.84,
+    260.109,
+    185.487
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    220.987,
+    259.328,
+    191.472
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    239.789,
+    259.503,
+    185.577
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    243.562,
+    264.886,
+    185.452
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    258.967,
+    147.131,
+    132.605
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    294.315,
+    164.228,
+    191.288
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    289.015,
+    160.917,
+    195.43
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    294.555,
+    132.315,
+    192.142
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    289.655,
+    135.473,
+    195.705
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    304.697,
+    147.665,
+    185.439
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    311.371,
+    147.424,
+    185.315
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  }
+ ],
+ "sounds": {
+  "music": [
+   "sfx/AC9_Main_NM"
+  ],
+  "ambience": [
+   "sfx/demonic_drone_lp"
+  ],
+  "events": {
+   "music": [
+    "Music/ZonesMusic/AC9_main"
+   ],
+   "ambience": [
+    "Ambience/OutdoorAmbience/AmbiencePresets/Demonic_AP"
+   ]
+  },
+  "waves": {
+   "Ambience/OutdoorAmbience/AmbiencePresets/Demonic_AP": {
+    "file": "sfx/demonic_drone_lp",
+    "wave": "demonic_drone_lp",
+    "bank": "SFX/Ambience/Ambience_Outdoor.bsb",
+    "duration": 22.947
+   },
+   "Music/ZonesMusic/AC9_main": {
+    "file": "sfx/AC9_Main_NM",
+    "wave": "AC9_Main_NM",
+    "bank": "SFX/Music/Music_Zone.fsb",
+    "duration": 83.0
+   },
+   "World/Zones/AC7/AC7_Nihaz_Camp_Lightning": {
+    "file": "sfx/AC7_Nihaz_Camp_Lightning_lp",
+    "wave": "AC7_Nihaz_Camp_Lightning_lp",
+    "bank": "SFX/World/World_AC7.bsb",
+    "duration": 5.904
+   },
+   "spells/FX/Spells/ArchitectorFX/PowerShieldBearer": {
+    "file": "sfx/PowerShieldBearer",
+    "wave": "PowerShieldBearer",
+    "bank": "SFX/Spells/ArchitectFX.bsb",
+    "duration": 15.784
+   }
+  },
+  "volume": {
+   "music": 0.35,
+   "ambience": 0.5,
+   "sfx": 0.8,
+   "voice": 1.0
+  }
+ },
+ "post": [
+  {
+   "t": 0,
+   "kind": "fadeIn",
+   "duration": 2.0,
+   "_note": "AO12_Prologue04_TransitionToCutscene : Black_Long"
+  },
+  {
+   "t": 81.0,
+   "kind": "fadeOut",
+   "duration": 1.0,
+   "_note": "AO12_Prologue04_CutsceneFinal : Black_Instant"
+  }
+ ]
 }
