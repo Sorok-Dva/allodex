@@ -175,7 +175,7 @@ ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le rest
 
 ### Cinématiques moteur recréées en 3D
 
-Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Treize
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Quinze
 sont **recréées dans three.js** avec les données du dernier client et jouées dans le film comme
 des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix russes) :
 
@@ -194,6 +194,34 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Ferris 6.0 · « La chute du Locus » (`ferris-locus-fall`) | serveur 7.0 | `FerrisRaid` | 122 s |
 | Invasion 7.0 · « La mort de l’ingénieur » (`invasion-engineer-kania`, Ligue) | client (`GameViewScene`) | `Inst_ZoneContested12_Start` | 13 s |
 | Citadelle de Nihaz 12.0 · « Le monde caché » (`ao12-prologue04`, pilote) | manifeste | `AO12_PrologueInst` | 82 s |
+| Zone de départ de l’Empire · « L’abordage » (`empire-start-boarding`, zone `Jump`, quête `Quest4_4`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 14 s |
+| Zone de départ de l’Empire · « Le chevalier vaincu » (`empire-start-knight-defeated`, `DeathTriggerPaladinFinal`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 15 s |
+
+**Zone de départ de l’Empire** (arc `empire-start`, juste après le prologue de l’Empire) : dans le
+17.0, les trois races de l’Empire (Xadaganiens, Orcs, Arisen) commencent au même tutoriel,
+`Inst_EmpireStart` (navire astral attaqué par la Ligue), qui sort vers `Hadagan_Sanatorium` (Igsh,
+d’après l’`ImpactTeleport` du 7.0) ; Pridiens et Aoidoi, factions à part à la création
+(`chargen.json`), n’en font pas partie (le départ pridien, `PridensStart`/`Inst_PridensStart`, montre
+des PNJ des deux factions). Le client 17.0 garde pour ce tutoriel deux `CameraTrackAction` (buffs 389009 et
+389797, points identiques au millième aux `JumpCameraFix` et `IE1_Teleport_Camera` du 7.0) et deux
+`GameViewScene` (389716, 389728, combattants des deux navires) ; `Hadagan_Sanatorium` n’a qu’une
+`GameViewScene` de figurants (faucons au repos, pas de caméra : une vue de jeu, pas une cinématique).
+Ces scènes ne sont pas des chaînes de buffs mais des **déclencheurs** (`"trigger"` du manifeste) :
+la zone de script `Jump` (entrée du joueur, `impactsIn`) et la capacité de mort de Gradimir Belov
+(`HealthTrigger`, porteur `trigger_owner`). Le déroulé en suit les branches `ImpactIfTarget`, les
+impacts instanciés et ceux sur les avatars voisins ; il en relève les **états des stèles**
+(`ImpactSetVisualState` : navire kanien `League_Ship_Final`, modèle `KaniaShip` et ses `idle`/
+`idle01`/`special` ; stèles `Empire_Ship_Fight1`/`League_Ship_Fight1`, dont chaque état joue un
+`GameViewScript` : combat en boucle, morts, disparition), les **explosions** des `ClientData`
+(`CreatureFixedPointProjectileAction` : gabarit d’explosion posé au repère d’arrivée, retrouvé au
+17.0 par ses gabarits et son `theGe`), les **sons** ponctuels (`Sound2DAction` des projets `World`),
+les PNJ posés qui marchent (`GoThroughPath`) ou disparaissent, et la sortie du joueur
+(`ImpactTeleport`, fin de scène). L’état de départ des stèles (laissé par le tutoriel avant le
+déclencheur) et la musique/ambiance encore actives viennent du manifeste, justifiés par les zones
+qui les posent. La scène commence au premier plan de caméra (avant, c’est la vue du joueur).
+Stèle du 17.0 retrouvée par sa place (`SpawnLocation` : case de 32 m en `+0x30`, repère local en
+`+0x24`) ; lacet propre d’un PNJ de `GameViewScene` en `+0xB8` ; délai `delayBefore` d’une action de
+`GameViewScript` en `+0x2C` (recoupés sur le 7.0).
 
 En attente, hors du film : `isa-freya` (Isa 14.0 : le navire « Freya », sujet du plan, est posé par le
 serveur et n'est pas dans le décor du client) et `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
@@ -292,7 +320,9 @@ c'est le serveur qui enchaîne les buffs.
   (`ferris-portal`, 20 à 37 s) restent : le même objet `FerrisRaid_CoreBottom` est à la même place en
   7.0 et en 17.0, rien n'autorise à déplacer la caméra ;
 - éclairage de zone : liste de `ZoneLights` (`+0x168`), ou éclairage unique en ligne (`+0x48`, cartes
-  d'intérieur comme `Ferris_indoor`) ; nuages de ciel « alpha » dont la texture n'a pas d'alpha
+  d'intérieur comme `Ferris_indoor`) ; dans l'élément, `PointLightColor` en `+0x4C` et
+  `SelfIllumColor` en `+0x50` (le champ `+0x48`, lu auparavant, vaut −1 partout : recoupé sur les 26
+  éléments 7.0 de six cartes) ; nuages de ciel « alpha » dont la texture n'a pas d'alpha
   rendus additifs.
 
 **Rendu** : décor non éclairé, couleur de sommet = ambiante + soleil (`N·S`) + octet 2 ×
@@ -380,7 +410,7 @@ sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce
 
 ### Ce qui manque
 
-- **Cinématiques moteur** : treize sont recréées (voir plus haut). Liste dans
+- **Cinématiques moteur** : quinze sont recréées (voir plus haut). Liste dans
   `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
   (7_0Events), extraites ici.
 - **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et
