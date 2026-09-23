@@ -26,7 +26,7 @@ export type Totals = {
 
 export type StatsResponse = {
   range: Range;
-  /** Filtre de chemin appliqué (`?path=`), ou null. */
+  /** Filtre de chemin appliqué (`?path=`) : la page et ses sous-pages, l'accueil seul pour `/` ; ou null. */
   path: string | null;
   /** Bornes de la période, en millisecondes depuis l'époque. */
   from: number;
@@ -79,6 +79,6 @@ export type CollectEvent = {
   lang?: string;
   /** Largeur d'écran, pour classer tablette / mobile quand l'agent utilisateur ne suffit pas. */
   width?: number;
-  /** `leave` : temps de visibilité cumulé de la vue, en millisecondes. */
+  /** `ping` et `leave` : temps de visibilité cumulé de la vue, en millisecondes. */
   duration?: number;
 };

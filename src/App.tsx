@@ -3,6 +3,8 @@ import { loadManifest, cursor, hasAssets } from '@/lib/assets';
 import { useRoute } from '@/lib/router';
 import { AudioProvider } from '@/lib/audio/AudioProvider';
 import { I18nProvider } from '@/lib/i18n';
+import { PageHead } from '@/seo/PageHead';
+import { PageTracker } from '@/analytics/PageTracker';
 import { OpeningScreen } from '@/screens/OpeningScreen/OpeningScreen';
 import { MedalsScreen } from '@/screens/MedalsScreen/MedalsScreen';
 import { ChroniclesScreen } from '@/screens/ChroniclesScreen/ChroniclesScreen';
@@ -30,6 +32,8 @@ export default function App() {
   if (!ready) return null;
   return (
     <I18nProvider>
+    <PageHead />
+    <PageTracker />
     <AudioProvider>
       {import.meta.env.DEV && !hasAssets() && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 99, background: '#a33', color: '#fff', padding: 6, textAlign: 'center', fontSize: 14 }}>
