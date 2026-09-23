@@ -1035,6 +1035,22 @@ n'existe pas avant la 17.0 (aucune référence rubis → sort du livre en 15.0/1
 surbrillance de liens dans les versions anciennes. Au toucher, sans survol : un premier toucher
 sélectionne la case (infobulle et liens), un second ajoute un rang, l'appui long en retire un.
 
+**Icônes vérifiées.** Chaque talent porte `iconSrc` (chemin `.bin` en 32 bits, entrée du pak
+en 64 bits) ; `tools/talent_icons_check.py` le confronte à l'arbre serveur 7.0 (`<image>` du sort,
+en remontant les `<Prototype>`, puis `<singleTexture>` et `<binaryFile>`) et compare d'une version
+à l'autre les fichiers d'icône des talents de même nom. Correctif du 23/09/2026 : le cache
+d'icônes de l'extracteur, commun à toutes les versions, avait pour clé « nom du pak#rang » ; or
+`Interface.Mini.pak` existe dans les trois clients 64 bits avec un contenu différent : le 16.0 et
+le 17.0 reprenaient l'icône du 15.0 au même rang (bon titre, mauvaise image : 195 icônes sur
+1 055 en 16.0, 220 sur 1 058 en 17.0 ; aucune avant la 16.0). La clé est désormais le chemin
+complet du pak. Après correction : 7.0 conforme à l'arbre serveur à 100 % (375/375 talents dont
+l'arbre donne l'icône), 15.0 ↔ 16.0 : 99,8 % de fichiers identiques, 7.0 ↔ 17.0 : 80 % (les
+écarts restants sont des icônes renouvelées, cohérentes avec le talent : « Merciless Storm » →
+`RuthlessStorm`, « Summer Storm » → `DruidCallLightningUpgrade`). Table code → pak : le bloc 6
+lu par `tools/packbin.py` est identique à `PackDB.pak_names` de `tools/allods_packdb.py` (309
+paks) ; chemins des paks résolus par `packs_path()` (repli `Packs.adc-real`) ; `pack.bin` des
+clients 64 bits décompressé dans le cache partagé et projeté en mémoire.
+
 **Icônes sans fond.** Certaines icônes (potions, soleils, 39 × 39, 32 × 39, 25 × 25…) occupent
 le coin haut-gauche d'une texture de 64 × 64 : le jeu n'en affiche que la zone utile
 (`realWidth × realHeight` de la `UITexture`), étirée sur la case, sur le fond normal de la case
