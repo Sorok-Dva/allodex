@@ -197,3 +197,29 @@ def test_rebase_objects_points_particle_files_to_the_map_folder():
     out = rebase_objects(objects, map_prefix("Ferris4"))
     assert out["Fx"]["particles"]["file"] == "../maps/Ferris4/particles/Fx.bin"
     assert objects["Fx"]["particles"]["file"] == "particles/Fx.bin"      # l'original n'est pas touché
+
+
+def test_xdb70_spawn_tables_become_present_actors_walking_paths(tmp_path):
+    (tmp_path / "Mobs").mkdir()
+    (tmp_path / "Mobs" / "Fireman.(MobWorld).xdb").write_text("<MobWorld><walkSpeed>4</walkSpeed></MobWorld>")
+    (tmp_path / "T.(SpawnTable).xdb").write_text(
+        "<SpawnTable><singles><Item><object href=\"/Mobs/Fireman.(MobWorld).xdb\" /></Item></singles></SpawnTable>")
+    (tmp_path / "S.(BuffResource).xdb").write_text("""<BuffResource><duration>5000</duration><effects>
+      <Item type="gameMechanics.elements.effects.Switch"><impactsOn>
+        <Item type="gameMechanics.elements.impacts.ImpactFindSpawnTable">
+          <impacts><Item type="gameMechanics.elements.impacts.GoThroughPath"><path>
+            <Item><scriptID>p1</scriptID><map href="/Maps/Ferris4/inst2_MapResource.(MapResource).xdb" /></Item>
+            <Item><scriptID>p2</scriptID></Item></path></Item></impacts>
+          <spawnResource href="T.(SpawnTable).xdb" />
+        </Item></impactsOn></Item></effects></BuffResource>""")
+    tl = cutscene_xdb70.simulate(tmp_path, "S.(BuffResource).xdb")
+    (actor,) = tl.summons
+    assert actor["id"] == "table:T.(SpawnTable).xdb" and actor["t"] == 0.0 and actor["walkSpeed"] == 4
+    assert [m["locator"] for m in actor["moves"]] == ["p1", "p2"] and tl.maps == {"Ferris4"}
+
+
+def test_packs_path_falls_back_to_the_real_packs_folder(tmp_path):
+    from tools.allods_packdb import packs_path
+    (tmp_path / "data" / "Packs.adc-real").mkdir(parents=True)
+    (tmp_path / "data" / "Packs.adc-real" / "x.pak").write_bytes(b"")
+    assert packs_path(tmp_path / "data" / "Packs" / "x.pak") == tmp_path / "data" / "Packs.adc-real" / "x.pak"

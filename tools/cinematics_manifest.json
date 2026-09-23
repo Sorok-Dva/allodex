@@ -1245,6 +1245,60 @@
    }
   },
   {
+   "id": "ferris-fractal",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid Portal_Start",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 162,
+   "title": {
+    "fr": "La profanation du Fractal",
+    "en": "The Desecrated Fractal"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« Portal_Start », 6.0) : devant le portail, Marianne di Arder prépare le sceau quand l’Architecte parle et envoie sa créature ; le portail ne se fermera pas tant qu’elle vivra.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-no-way-back",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid Portal_Ending_Main",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 164,
+   "title": {
+    "fr": "Pas de retour",
+    "en": "No Way Back"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« Portal_Ending_Main », 6.0) : l’Architecte promet la transformation de tous ; le portail franchi, Rysina et Marianne découvrent un lieu étrange qui pulse d’énergie.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-power-of-order",
+   "kind": "engine",
+   "source": "main",
+   "event": "FerrisRaid Swarm_Ending_Main",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 166,
+   "title": {
+    "fr": "La force de l’Ordre",
+    "en": "The Power of Order"
+   },
+   "chronology": "Cinématique moteur du raid de Ferris (« Swarm_Ending_Main », 6.0) : après l’essaim, l’Architecte fait la démonstration de la force de l’Ordre ; Marianne tente d’ouvrir un nouveau portail.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "ferris-order",
    "kind": "engine",
    "source": "main",
@@ -22788,6 +22842,42 @@
     "Marianna": "diarder"
    },
    "_note": "Déroulé serveur 7.0 (Ferris_Cutscene_Main → Ferris_Cutscene … _9ID) ; PNJ invoqués sur les repères de 5_5_ServerObjects ; répliques posées sur le joueur attribuées par le nom de la voix (FR_PreRaidRysina → Rysina ; Vayatel → le Colosse, Marianna → di Arder)."
+  },
+  {
+   "id": "ferris-fractal",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/Portal_Start.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Сердце Локуса"
+   },
+   "_note": "Déroulé serveur 7.0 (Portal_Start et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix."
+  },
+  {
+   "id": "ferris-no-way-back",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/Portal_Ending_Main.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Сердце Локуса"
+   },
+   "_note": "Déroulé serveur 7.0 (Portal_Ending_Main et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix."
+  },
+  {
+   "id": "ferris-power-of-order",
+   "source": "xdb70",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_Ending_Main.(BuffResource).xdb",
+   "map": "FerrisRaid",
+   "speakers": {
+    "Vayatel": "colossus",
+    "Marianna": "diarder",
+    "Arch": "Сердце Локуса"
+   },
+   "_note": "Déroulé serveur 7.0 (Swarm_Ending_Main et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix."
   },
   {
    "id": "ferris-order",

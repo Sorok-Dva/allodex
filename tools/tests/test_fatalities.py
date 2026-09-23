@@ -16,6 +16,7 @@ import numpy as np
 import pytest
 
 from tools import allods_visdb as vis
+from tools.allods_packdb import packs_path
 from tools.allods_packdb import PackDB, PakCatalog, vote_pak_codes
 from tools.allods_particles import (Channel, Emitter, Particle, ParticleFile, encode_particles,
                                     parse_particles, sample, simplify, simplify_channel)
@@ -26,7 +27,7 @@ from tools.fatality_script import flatten
 
 CLIENT = Path("/mnt/h/MyGames/AllodsRU")
 SERVER = Path("/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data")
-client = pytest.mark.skipif(not (CLIENT / "data" / "Packs" / "BaseLocall_x64.pak").is_file()
+client = pytest.mark.skipif(not packs_path(CLIENT / "data" / "Packs" / "BaseLocall_x64.pak").is_file()
                             or not SERVER.is_dir(), reason="client RU ou arbre serveur 7.0 absent")
 
 
@@ -352,7 +353,7 @@ def test_real_fatalities_are_the_26_types(real):
 def test_real_particle_file_roundtrips_byte_for_byte(real):
     from tools.extract_menu_scene import BinSource, read_chunks
     db, cat = real
-    bins = BinSource([], [str(CLIENT / "data" / "Packs" / "Spells_FX_Spells.Mini.pak")])
+    bins = BinSource([], [str(packs_path(CLIENT / "data" / "Packs" / "Spells_FX_Spells.Mini.pak"))])
     raw = read_chunks(bins.get("Spells/FX/Spells/Fatality/FatalityWarrior_Fire.(ParticleAnimation).bin"))[0]
     pf = parse_particles(raw)
     assert len(pf.emitters) == 9 and pf.textures == 15

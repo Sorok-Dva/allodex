@@ -56,7 +56,7 @@ if __package__ in (None, ""):
 from tools.allods_characters import bake_skin, read_character_template, read_variation, read_visual_item, resolve_appearance  # noqa: E402
 from tools.allods_fx import FxBuild, ParticlePool, fsb5_stream_names  # noqa: E402
 from tools.allods_gltf import Exporter, TexturePool, load_animation, load_geometry  # noqa: E402
-from tools.allods_packdb import EXTERN, PackDB, open_catalog, open_map, open_pack  # noqa: E402
+from tools.allods_packdb import EXTERN, PackDB, open_catalog, open_map, open_pack, packs_path  # noqa: E402
 from tools.allods_scenes import (  # noqa: E402
     VM_VARIATION, buff_camera_track, buff_scripts, mob_name_index, mob_visual, read_client_line, read_lightvrt,
     read_regions, read_zone_light, sky_parts, static_visobject, visual_dress, visual_template,
@@ -815,7 +815,7 @@ class Texts:
         from tools.allods_packdb import default_cache_dir
         from tools.allods_scenes import PackBinView
         from tools.packbin import PackBin
-        pak = self.fr_root / "data" / "Packs" / "BaseLocfra_x64.pak"
+        pak = packs_path(self.fr_root / "data" / "Packs" / "BaseLocfra_x64.pak")
         stat = pak.stat()
         raw_path = default_cache_dir() / f"pack-fr-{stat.st_size}-{int(stat.st_mtime)}.raw"
         if not raw_path.is_file():
@@ -1198,7 +1198,7 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         server_root: Path | None = None) -> list[str]:
     report: list[str] = []
     db = open_pack(client)
-    packs = client / "data" / "Packs"
+    packs = packs_path(client / "data" / "Packs")
     bins = BinSource([], [str(packs / "*.pak")])
     texts = Texts(manifest, report)
     anim_names = animation_names(db)

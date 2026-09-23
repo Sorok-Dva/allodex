@@ -1,0 +1,2520 @@
+{
+ "id": "ferris-power-of-order",
+ "map": "FerrisRaid",
+ "up": [
+  0,
+  0,
+  1
+ ],
+ "mirror": true,
+ "duration": 54.0,
+ "timing": "server",
+ "camera": {
+  "points": [
+   {
+    "t": 0.0,
+    "p": [
+     14710.0,
+     16072.0,
+     47.0
+    ]
+   },
+   {
+    "t": 6.5,
+    "p": [
+     14704.0,
+     16067.0,
+     47.0
+    ]
+   },
+   {
+    "t": 12.999,
+    "p": [
+     14701.0,
+     16060.0,
+     47.0
+    ]
+   },
+   {
+    "t": 13.0,
+    "p": [
+     14696.0,
+     16078.0,
+     57.0
+    ]
+   },
+   {
+    "t": 21.999,
+    "p": [
+     14696.0,
+     16078.0,
+     57.0
+    ]
+   },
+   {
+    "t": 22.0,
+    "p": [
+     14740.0,
+     16039.0,
+     41.0
+    ]
+   },
+   {
+    "t": 30.999,
+    "p": [
+     14746.0,
+     16049.0,
+     41.0
+    ]
+   },
+   {
+    "t": 31.0,
+    "p": [
+     14742.0,
+     16090.0,
+     46.0
+    ]
+   },
+   {
+    "t": 52.999,
+    "p": [
+     14748.0,
+     16073.0,
+     46.0
+    ]
+   }
+  ],
+  "targets": [
+   {
+    "t": 0.0,
+    "p": [
+     14716.0,
+     16056.0,
+     44.0
+    ]
+   },
+   {
+    "t": 12.999,
+    "p": [
+     14716.0,
+     16056.0,
+     42.0
+    ]
+   },
+   {
+    "t": 13.0,
+    "p": [
+     14740.0,
+     16089.0,
+     56.0
+    ]
+   },
+   {
+    "t": 21.999,
+    "p": [
+     14750.0,
+     16056.0,
+     56.0
+    ]
+   },
+   {
+    "t": 22.0,
+    "p": [
+     14726.0,
+     16049.0,
+     46.0
+    ]
+   },
+   {
+    "t": 30.999,
+    "p": [
+     14726.0,
+     16049.0,
+     46.0
+    ]
+   },
+   {
+    "t": 31.0,
+    "p": [
+     14705.0,
+     16053.0,
+     46.0
+    ]
+   },
+   {
+    "t": 52.999,
+    "p": [
+     14705.0,
+     16053.0,
+     46.0
+    ]
+   }
+  ],
+  "duration": 54.0,
+  "fov": 45
+ },
+ "lines": [
+  {
+   "n": 1,
+   "start": 0.0,
+   "duration": 17.0,
+   "speaker": "swarm",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_SwarmArch01",
+    "wave": "CS_FR_SwarmArch01",
+    "bank": "SFX/Voice/Voice_CS_FR602_02_cs_rus.bsb",
+    "ogg": "voice/01.ogg",
+    "mp3": "voice/01.mp3",
+    "duration": 5.003
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Очень хорошо... Продолжайте ваше вторжение.",
+    "en": "Very well... Continue your invasion.",
+    "fr": "Très bien... Continuez votre invasion."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Swarm_Sub_1.(ClientData).xdb"
+  },
+  {
+   "n": 2,
+   "start": 13.0,
+   "duration": 17.0,
+   "speaker": "swarm",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_SwarmArch02",
+    "wave": "CS_FR_SwarmArch02",
+    "bank": "SFX/Voice/Voice_CS_FR602_02_cs_rus.bsb",
+    "ogg": "voice/02.ogg",
+    "mp3": "voice/02.mp3",
+    "duration": 5.003
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Мы рады продемонстрировать вам силу порядка. Смотрите. Анализируйте. Готовьтесь.",
+    "en": "We are happy to demonstrate you the power of order. See. Analyze. Prepare.",
+    "fr": "Nous sommes heureux de vous démontrer la force de l'ordre. Voir. Analyser. Préparez."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Swarm_Sub_2.(ClientData).xdb"
+  },
+  {
+   "n": 3,
+   "start": 31.0,
+   "duration": 10.0,
+   "speaker": "diarder",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_SwarmMarianna05",
+    "wave": "CS_FR_SwarmMarianna05",
+    "bank": "SFX/Voice/Voice_CS_FR602_02_cs_rus.bsb",
+    "ogg": "voice/03.ogg",
+    "mp3": "voice/03.mp3",
+    "duration": 1.987
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Похоже, стоит готовиться к худшему...",
+    "en": "We should prepare for the worst...",
+    "fr": "Nous devrions nous préparer au pire..."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Swarm_Sub_3.(ClientData).xdb"
+  },
+  {
+   "n": 4,
+   "start": 34.0,
+   "duration": 10.0,
+   "speaker": "rysina",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_SwarmRysina05",
+    "wave": "CS_FR_SwarmRysina05",
+    "bank": "SFX/Voice/Voice_CS_FR602_02_cs_rus.bsb",
+    "ogg": "voice/04.ogg",
+    "mp3": "voice/04.mp3",
+    "duration": 5.863
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Да, стоит... Им! Гляньте - они уже убегают. Мудрое решение!",
+    "en": "Ahem... Look at them - they are already running. A wise decision!",
+    "fr": "Hum... Regardez-les, ils courent déjà. Une sage décision !"
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Swarm_Sub_4.(ClientData).xdb"
+  },
+  {
+   "n": 5,
+   "start": 40.0,
+   "duration": 10.0,
+   "speaker": "diarder",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_SwarmMarianna06",
+    "wave": "CS_FR_SwarmMarianna06",
+    "bank": "SFX/Voice/Voice_CS_FR602_02_cs_rus.bsb",
+    "ogg": "voice/05.ogg",
+    "mp3": "voice/05.mp3",
+    "duration": 5.756
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Я попробую открыть портал... Но лишь Тенсес ведает, что ждёт нас на той стороне!",
+    "en": "I will try to open the portal... But only Tensess knows what is waiting for us on the other side!",
+    "fr": "J'essaierai d'ouvrir le portail... Tensess seul sait ce qui nous attend de l'autre côté !"
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Swarm_Sub_5.(ClientData).xdb"
+  },
+  {
+   "n": 6,
+   "start": 46.0,
+   "duration": 10.0,
+   "speaker": "rysina",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_SwarmRysina06",
+    "wave": "CS_FR_SwarmRysina06",
+    "bank": "SFX/Voice/Voice_CS_FR602_02_cs_rus.bsb",
+    "ogg": "voice/06.ogg",
+    "mp3": "voice/06.mp3",
+    "duration": 4.318
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Пускай. Чем быстрее мы атакуем, тем чаще враг ошибается!",
+    "en": "Let it be so. The faster we attack, the more often the enemy fails!",
+    "fr": "Qu'il en soit ainsi. Plus vite nous attaquerons et plus d'ennemis échoueront !"
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Swarm_Sub_6.(ClientData).xdb"
+  },
+  {
+   "n": 7,
+   "start": 50.0,
+   "duration": 10.0,
+   "speaker": "diarder",
+   "voice": {
+    "event": "Cutscenes/Ferris4/CS_FR_SwarmMarianna07",
+    "wave": "CS_FR_SwarmMarianna07",
+    "bank": "SFX/Voice/Voice_CS_FR602_02_cs_rus.bsb",
+    "ogg": "voice/07.ogg",
+    "mp3": "voice/07.mp3",
+    "duration": 2.365
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Вот только у нас права на ошибку нет...",
+    "en": "But we don't have the right to make mistakes...",
+    "fr": "Mais n'avons pas le droit à l'erreur..."
+   },
+   "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/Swarm_Sub_7.(ClientData).xdb"
+  }
+ ],
+ "actors": [
+  {
+   "id": "swarm",
+   "glb": "actors/swarm.glb",
+   "name": {
+    "ru": "",
+    "en": ""
+   },
+   "path": [
+    {
+     "t": 0.0,
+     "p": [
+      14716.336,
+      16056.488,
+      39.986
+     ],
+     "yaw": 2.63545
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     0.0,
+     20.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 0.0,
+     "until": 20.0,
+     "clips": [
+      "Attack"
+     ],
+     "loop": false
+    },
+    {
+     "t": 0.0,
+     "until": 20.0,
+     "clips": [
+      "Attack01"
+     ],
+     "loop": false
+    },
+    {
+     "t": 0.0,
+     "until": 20.0,
+     "clips": [
+      "Attack02"
+     ],
+     "loop": false
+    },
+    {
+     "t": 0.0,
+     "until": 20.0,
+     "clips": [
+      "HitCritical"
+     ],
+     "loop": false
+    },
+    {
+     "t": 0.0,
+     "until": 20.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false
+    }
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/GolemJunes/GolemJunes.(Geometry).bin",
+   "height": 3.433,
+   "animations": {
+    "Attack": 1.7,
+    "Attack01": 1.8,
+    "Death": 4.0,
+    "HitCritical": 1.1,
+    "Idle": 2.6333,
+    "Walk": 1.3
+   }
+  },
+  {
+   "id": "rysina",
+   "glb": "actors/rysina.glb",
+   "name": {
+    "ru": "Елизавета Рысина",
+    "en": "Elizaveta Rysina"
+   },
+   "path": [
+    {
+     "t": 31.0,
+     "p": [
+      14694.081,
+      16073.565,
+      39.6984
+     ],
+     "yaw": 5.68977
+    },
+    {
+     "t": 33.0,
+     "p": [
+      14694.081,
+      16073.565,
+      39.6984
+     ],
+     "yaw": 5.68977
+    },
+    {
+     "t": 47.026,
+     "p": [
+      14716.336,
+      16056.488,
+      39.986
+     ],
+     "yaw": 0.9163
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     31.0,
+     53.0
+    ]
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/Rysina/Rysina.(Geometry).bin",
+   "height": 1.916,
+   "animations": {
+    "Idle": 2.6333,
+    "Walk": 1.6333
+   }
+  },
+  {
+   "id": "diarder",
+   "glb": "actors/diarder.glb",
+   "name": {
+    "ru": "Марианна ди Ардер",
+    "en": "Marianne de Ardeur"
+   },
+   "path": [
+    {
+     "t": 31.0,
+     "p": [
+      14691.6438,
+      16066.482,
+      39.986
+     ],
+     "yaw": 5.74213
+    },
+    {
+     "t": 33.0,
+     "p": [
+      14691.6438,
+      16066.482,
+      39.986
+     ],
+     "yaw": 5.74213
+    },
+    {
+     "t": 46.319,
+     "p": [
+      14716.336,
+      16056.488,
+      39.986
+     ],
+     "yaw": 1.1862
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     31.0,
+     53.0
+    ]
+   ],
+   "light": [
+    0.5859,
+    0.8047,
+    1.0234
+   ],
+   "geometry": "Creatures/Mirianna/Mirianna.(Geometry).bin",
+   "height": 2.34,
+   "animations": {
+    "Idle": 4.0,
+    "Idle01": 3.0,
+    "Walk": 1.0
+   }
+  }
+ ],
+ "decor": {
+  "glb": "../maps/FerrisRaid/decor.glb",
+  "light": "decor-light.bin",
+  "instances": [
+   {
+    "vot": "Architect_Arena",
+    "p": [
+     14721.569,
+     16053.469,
+     39.986
+    ],
+    "yaw": 5.73139,
+    "light": [
+     0,
+     32544
+    ]
+   },
+   {
+    "vot": "Architect_Console",
+    "p": [
+     14592.7386,
+     16114.332,
+     31.5714
+    ],
+    "yaw": 5.76605,
+    "scale": 1.4,
+    "light": [
+     32544,
+     510
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14704.713,
+     16086.129,
+     52.6836
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.97585,
+    "light": [
+     33054,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14755.752,
+     16083.904,
+     46.2355
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.87442,
+    "light": [
+     33078,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14733.828,
+     16097.733,
+     49.6436
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.74476,
+    "light": [
+     33102,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14761.435,
+     16053.353,
+     50.7106
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.40884,
+    "light": [
+     33126,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14763.855,
+     16041.918,
+     42.6819
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.39605,
+    "light": [
+     33150,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14740.944,
+     16014.655,
+     44.693
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.41011,
+    "light": [
+     33174,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14717.981,
+     16093.122,
+     51.8049
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.98455,
+    "light": [
+     33198,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14757.874,
+     16091.983,
+     45.7514
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.91161,
+    "light": [
+     33222,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14709.498,
+     16092.635,
+     39.5565
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 2.24015,
+    "light": [
+     33246,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14751.441,
+     16065.907,
+     50.3643
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.64631,
+    "light": [
+     33270,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14758.808,
+     16018.247,
+     49.4422
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.48243,
+    "light": [
+     33294,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14743.1,
+     16103.561,
+     48.4082
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.78526,
+    "light": [
+     33318,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14754.749,
+     16078.319,
+     51.9798
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.86492,
+    "light": [
+     33342,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14747.267,
+     16091.284,
+     51.9878
+    ],
+    "yaw": 0.61851,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.84831,
+    "light": [
+     33366,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14750.565,
+     16072.189,
+     52.3567
+    ],
+    "yaw": 6.2057,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.95454,
+    "light": [
+     33390,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14741.701,
+     16094.294,
+     46.6486
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.82437,
+    "light": [
+     33414,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14729.068,
+     16096.239,
+     56.7689
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.71996,
+    "light": [
+     33438,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14766.601,
+     16043.46,
+     53.4281
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.38426,
+    "light": [
+     33462,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14758.663,
+     16056.057,
+     45.9473
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.43396,
+    "light": [
+     33486,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14735.08,
+     16013.358,
+     48.6681
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.429,
+    "light": [
+     33510,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14759.853,
+     16061.183,
+     54.157
+    ],
+    "yaw": 0.0,
+    "tilt": [
+     0.0,
+     4.72137
+    ],
+    "scale": 1.41094,
+    "light": [
+     33534,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14706.38,
+     16065.187,
+     34.3168
+    ],
+    "yaw": 2.75918,
+    "tilt": [
+     4.50809,
+     4.76047
+    ],
+    "light": [
+     33558,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14735.273,
+     16073.207,
+     34.2251
+    ],
+    "yaw": 2.75918,
+    "tilt": [
+     4.50809,
+     4.76047
+    ],
+    "light": [
+     33582,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     14728.013,
+     16036.571,
+     34.4947
+    ],
+    "yaw": 2.75918,
+    "tilt": [
+     4.50809,
+     4.76047
+    ],
+    "light": [
+     33606,
+     24
+    ]
+   },
+   {
+    "vot": "Architect_Arena",
+    "p": [
+     14641.6928,
+     16022.915,
+     227.676
+    ],
+    "yaw": 5.84296,
+    "scale": 0.84308,
+    "light": [
+     33630,
+     32544
+    ]
+   },
+   {
+    "vot": "Architect_Console",
+    "p": [
+     14592.9098,
+     16101.954,
+     31.7103
+    ],
+    "yaw": 0.10763,
+    "scale": 1.4,
+    "light": [
+     66174,
+     510
+    ]
+   },
+   {
+    "vot": "Architect_Console",
+    "p": [
+     14681.0336,
+     16063.892,
+     38.93
+    ],
+    "yaw": 2.10317,
+    "tilt": [
+     6.27825,
+     0.04918
+    ],
+    "scale": 1.4,
+    "light": [
+     66684,
+     510
+    ]
+   },
+   {
+    "vot": "Architect_Console",
+    "p": [
+     14685.6913,
+     16077.968,
+     39.0121
+    ],
+    "yaw": 5.87937,
+    "tilt": [
+     0.0146,
+     6.22969
+    ],
+    "scale": 1.4,
+    "light": [
+     67194,
+     510
+    ]
+   },
+   {
+    "vot": "ArchitectDoor_Impost",
+    "p": [
+     14604.1235,
+     16110.504,
+     32.1309
+    ],
+    "yaw": 0.06829,
+    "light": [
+     67704,
+     1667
+    ]
+   },
+   {
+    "vot": "ArchitectDoor_Impost",
+    "p": [
+     14689.5377,
+     16070.446,
+     39.3544
+    ],
+    "yaw": 2.76608,
+    "light": [
+     69371,
+     1667
+    ]
+   },
+   {
+    "vot": "Architect_Flying_Bot",
+    "p": [
+     14695.248,
+     16055.443,
+     81.7343
+    ],
+    "yaw": 0.0,
+    "light": [
+     71038,
+     1023
+    ]
+   },
+   {
+    "vot": "Architect_Flying_Bot",
+    "p": [
+     14593.5961,
+     16142.1217,
+     40.1139
+    ],
+    "yaw": 0.0,
+    "light": [
+     72061,
+     1023
+    ]
+   }
+  ],
+  "sky": {
+   "radius": 735.69,
+   "parts": 4
+  },
+  "skyGlb": "sky.glb",
+  "terrainGlb": "../maps/FerrisRaid/terrain.glb",
+  "oneSided": true
+ },
+ "fx": {
+  "glb": null,
+  "spawns": []
+ },
+ "objects": {
+  "Architect_Portal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 20.0,
+   "loop": true
+  },
+  "Architect_Teleport_Place_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/Architect_Teleport_Place_FX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 511,
+    "loopFrame": 301,
+    "frames": [
+     0,
+     1,
+     2
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.0938,
+       0.0,
+       0.1797
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.2891,
+       1.7031,
+       1.7031
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.5,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.1797,
+       0.3203,
+       0.5781
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Teleport_Place_FX01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/Architect_Teleport_Place_FX01.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 511,
+    "loopFrame": 301,
+    "frames": [
+     0,
+     1,
+     2
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.0938,
+       0.0,
+       0.1797
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.2891,
+       1.7031,
+       1.7031
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.5,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.1797,
+       0.3203,
+       0.5781
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Teleport_Place_FX02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/Architect_Teleport_Place_FX02.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 511,
+    "loopFrame": 301,
+    "frames": [
+     0,
+     1,
+     2
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.0938,
+       0.0,
+       0.1797
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.2891,
+       1.7031,
+       1.7031
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.5,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.1797,
+       0.3203,
+       0.5781
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Teleport_Place_FX03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/Architect_Teleport_Place_FX03.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 511,
+    "loopFrame": 301,
+    "frames": [
+     0,
+     1,
+     2
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.0938,
+       0.0,
+       0.1797
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.2891,
+       1.7031,
+       1.7031
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.5,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.1797,
+       0.3203,
+       0.5781
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Teleport_Place": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Architect_Teleport_Place_FX",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Architect_Teleport_Place_FX01",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Architect_Teleport_Place_FX02",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Architect_Teleport_Place_FX03",
+     "locator": "Slot_Special04"
+    }
+   ]
+  },
+  "InstLeague1_AI_2X2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_World_HugeStone_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_05": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Kernel_Big_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/Architect_Kernel_Big_01.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 4801,
+    "loopFrame": 2401,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "orientation": "BILLBOARD",
+   "duration": 80.0,
+   "loop": true
+  },
+  "Architect_Kernel_Big": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 0.699999988079071,
+   "sound": "World/Races/Architectors/Kernel",
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/Architect_Kernel_Big.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 4801,
+    "loopFrame": 2401,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "orientation": "Z_AXIS",
+   "duration": 80.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Kernel_Big_01",
+     "locator": "Slot_Special01"
+    }
+   ],
+   "sfx": "sfx/Kernel"
+  },
+  "Architect_Rock_Lantern": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Architect_Kernel_Big",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Rock_02#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.6667,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Rock_02#2",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Architect_Kernel_Big",
+     "locator": "Slot_Special02"
+    }
+   ]
+  },
+  "Architect_Rock_Small_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Arch_BigStone_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Tripod_Eye": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.8,
+   "scale": 1.0,
+   "orientation": "BILLBOARD",
+   "duration": 0.0,
+   "loop": false
+  },
+  "ArchitectBot_BodyFX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/ArchitectBot_BodyFX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 121,
+    "frames": [
+     0,
+     3
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.1719,
+       0.6875,
+       0.5859
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.1484,
+       0.3906,
+       0.7812
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": -1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 4.0,
+   "loop": true
+  },
+  "Architect_Flying_Bot": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 85.8667,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Tripod_Eye",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "ArchitectBot_BodyFX",
+     "locator": "Hips"
+    }
+   ]
+  },
+  "ArhangelWingsGlo_2": {
+   "fadeIn": 0.0,
+   "fadeOut": 2.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/ArhangelWingsGlo_2.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 261,
+    "loopFrame": 201,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.1406,
+       0.1797,
+       0.375
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Teleport_Place#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "ArhangelWingsGlo_2",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "ArhangelWingsGlo_2",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "ArhangelWingsGlo_2",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "ArhangelWingsGlo_2",
+     "locator": "Slot_Special04"
+    }
+   ]
+  },
+  "Architect_Portal_Big_In_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "spells/World/UI04/idle01",
+   "duration": 0.0,
+   "loop": false,
+   "sfx": "sfx/idle01"
+  },
+  "Architect_Portal_Big_In": {
+   "fadeIn": 0.5,
+   "fadeOut": 0.5,
+   "scale": 1.0,
+   "duration": 50.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Portal_Big_In_01",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Big_Portal_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "BILLBOARD",
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Big_Portal_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "spells/FX/Mobs/ArchitectFX/ArchitectBigPortal",
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/Architect_Big_Portal_01.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 3001,
+    "loopFrame": 1501,
+    "frames": [
+     4
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       0.0,
+       1.0234,
+       1.2812
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.8,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 50.0,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Big_Portal_02",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Big_Portal#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Architect_Big_Portal_01",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Architect_Big_Portal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Architect_Portal_Big_In",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Architect_Big_Portal#2",
+     "locator": "Slot_Special02"
+    }
+   ]
+  },
+  "Architect_Rock_04#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.6667,
+   "loop": true,
+   "components": [
+    {
+     "vot": "Architect_Kernel_Big",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Architect_Rock_04#2",
+     "locator": "Slot_Special02"
+    }
+   ]
+  },
+  "Architect_Arena_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Arena": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Architect_Arena_FX",
+     "locator": ""
+    }
+   ]
+  },
+  "Architect_Console": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ArchitectDoor_Impost": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_04#3": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.6667,
+   "loop": true
+  },
+  "Architect_World_InfectedStone_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_World_MagicStone": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_Small_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Architect_Rock_Small_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena_Ray": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "orientation": "Z_AXIS",
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena_Ray_Out": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "spells/FX/Mobs/ArchitectFX/ArchitectBigPortal",
+   "particles": {
+    "file": "../maps/FerrisRaid/particles/Carrier_Arena_Ray_Out.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 241,
+    "loopFrame": 121,
+    "frames": [
+     5
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.4688,
+       1.5938,
+       1.8203
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Carrier_Arena_Ray",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Carrier_Arena_Sky": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena#2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena_SkyRing": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena_Ring": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena_Line": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Carrier_Arena": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "Carrier_Arena_Ray_Out",
+     "locator": ""
+    },
+    {
+     "vot": "Carrier_Arena_Sky",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena#2",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena#2",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena#2",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena#2",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena_SkyRing",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena_Ring",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Carrier_Arena_Line",
+     "locator": "Slot_Special01"
+    }
+   ]
+  }
+ },
+ "particleAtlas": {
+  "file": "../maps/FerrisRaid/particles/atlas.png",
+  "width": 1024,
+  "height": 128,
+  "rects": [
+   [
+    384,
+    0,
+    64,
+    64
+   ],
+   [
+    0,
+    0,
+    128,
+    128
+   ],
+   [
+    128,
+    0,
+    128,
+    128
+   ],
+   [
+    448,
+    0,
+    64,
+    64
+   ],
+   [
+    256,
+    0,
+    128,
+    128
+   ],
+   [
+    512,
+    0,
+    64,
+    64
+   ]
+  ],
+  "sources": [
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1440,
+    1152,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1280,
+    512,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    896,
+    896,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1536,
+    448,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1280,
+    1152,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1568,
+    1280,
+    64,
+    64
+   ]
+  ]
+ },
+ "light": {
+  "ambient": 4283131779,
+  "ambientFactor": 0.5,
+  "diffuse": 4280421122,
+  "fog": 4279245607,
+  "fogEnd": 200.0,
+  "fogStart": -50.0,
+  "pointLight": 4294967295,
+  "selfIllum": 2013265920,
+  "specular": 0,
+  "sunPitch": 45.0,
+  "sunYaw": 0.0,
+  "sunDirection": [
+   0.7071,
+   0.0,
+   0.7071
+  ]
+ },
+ "pointLights": [
+  {
+   "p": [
+    13553.984,
+    13906.69,
+    150.348
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    13433.057,
+    13925.436,
+    144.244
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    13600.936,
+    13918.547,
+    167.971
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    13608.704,
+    13948.3,
+    165.384
+   ],
+   "intensity": 0.9,
+   "radius": 4.0,
+   "attenuation": 0.8
+  },
+  {
+   "p": [
+    13558.215,
+    16120.715,
+    14.405
+   ],
+   "intensity": 1.0,
+   "radius": 36.221,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    13542.012,
+    16119.907,
+    22.861
+   ],
+   "intensity": 2.0,
+   "radius": 18.727,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15333.962,
+    15798.019,
+    205.389
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15332.221,
+    15796.864,
+    211.803
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15224.645,
+    15732.833,
+    221.693
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15228.792,
+    15720.661,
+    228.074
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15206.035,
+    15751.836,
+    185.975
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15205.995,
+    15755.87,
+    184.463
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15251.593,
+    15816.162,
+    206.92
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15104.0,
+    15616.0,
+    0.0
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15286.443,
+    15778.439,
+    233.255
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15344.237,
+    15757.772,
+    228.742
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15334.17,
+    15717.426,
+    226.799
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15322.663,
+    15747.009,
+    253.591
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15294.532,
+    15685.503,
+    229.214
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15262.427,
+    15705.956,
+    246.818
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15249.11,
+    15716.808,
+    195.977
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15255.359,
+    15731.293,
+    193.338
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15253.358,
+    15810.62,
+    200.837
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15234.031,
+    15722.377,
+    174.686
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    15345.161,
+    15795.967,
+    199.504
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  }
+ ],
+ "sounds": {
+  "music": [
+   {
+    "file": "sfx/Tep",
+    "t": 0.0,
+    "until": 54.0
+   }
+  ],
+  "ambience": [],
+  "events": {
+   "music": [],
+   "ambience": [
+    "Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1"
+   ]
+  },
+  "waves": {
+   "Music/ZonesMusic/Tep": {
+    "file": "sfx/Tep",
+    "wave": "Tep",
+    "bank": "SFX/Music/Music_Zone.fsb",
+    "duration": 55.0
+   },
+   "World/Races/Architectors/Kernel": {
+    "file": "sfx/Kernel",
+    "wave": "Kernel",
+    "bank": "SFX/Creatures/ArchitectSiegeHeavyArtillery.bsb",
+    "duration": 7.776
+   },
+   "spells/World/UI04/idle01": {
+    "file": "sfx/idle01",
+    "wave": "idle01",
+    "bank": "SFX/Creatures/BasiliskPet.bsb",
+    "duration": 0.916
+   }
+  },
+  "volume": {}
+ },
+ "post": [],
+ "sources": {
+  "timeline": "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_Ending_Main.(BuffResource).xdb",
+  "buffs": [
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_Ending_Main.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_Ending.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_Ending_BossDie.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_Ending_DroneDie.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_Ending_DroneDie_2.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_Ending_DroneDie_3.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_Ending_RysinaAnimation.(BuffResource).xdb",
+   "Mechanics/RaidInstances/FerrisRaid/CutScene/Swarm_Ending_DiarderAnimation.(BuffResource).xdb"
+  ],
+  "spawns": [
+   "Maps/FerrisRaid/050_060/7_2_ServerObjects.xdb"
+  ]
+ }
+}
