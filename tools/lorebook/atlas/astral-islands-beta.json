@@ -1,0 +1,218 @@
+[
+ {
+  "part": "beta",
+  "section": "0",
+  "ru": "Астральные Острова BETA(ОБТ и Классики)",
+  "en": "Astral Islands BETA (Open Beta and Classic)",
+  "parent": "",
+  "text": ""
+ },
+ {
+  "part": "beta",
+  "section": "1",
+  "ru": "Астральная Жемчужина",
+  "en": "Astral Pearl",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Tropical, closest to Asee-Teph and the Dragon Ring.\n\nAffiliation: Neutral allod, a pirate lair.\n\nStory:\n\nWe arrive at a camp of Free Traders who want to destroy the pirate lair that has settled here. According to their plan, to drive the pirates away one must kill their leader and the goblins, so that the rest will slaughter one another fighting for power. Those who remain the Free Traders can finish off themselves. Naturally, we do all of this for them. Along the way we also catch fish for an Orc and kill a hydra that roars at night and keeps a delicate Elf maiden from sleeping.\n\nBosses: Hydra, Pirate Ataman.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "2",
+  "ru": "Астральное кладбище",
+  "en": "Astral Graveyard",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Temperate, closest to Darkwater and Avilon.\n\nAffiliation: Neutral allod, belongs to followers of Tep.\n\nStory:\n\nSorbas Logey, a senior laboratory assistant at the ZIT, was testing a technology for transferring an essence into mechanisms other than Zem bodies. When the ship of their expedition moored at this island, it was attacked by an Astral Monster. After his death on this island, in accordance with his technology, he moved into the body of his robot, the \"Astral Guardian\"; and the island holds a huge number of undead (although, because of the gift of Tensess, he ought to have ended up in Purgatory). To help sort this out, one must fight one's way into the depths of the island and kill \"Little Skull\", an undead draconid, clearing the island of the dead along the way. Since after the draconid's death the assistant still remained in the guardian's body, he asked us to reach the center of the island and try to get to the bottom of it there, for in the guardian's body he is weak and cannot get there himself. At the center of the island there turns out to be a place of power and a Cultist Rhetor; after defeating him we return to the guardian. Sorbas says that this place works on the same principle as Tep's pyramid, but now (apparently after the ritual was interrupted) he can go back to Purgatory again.\n\nBosses: Little Skull, Cultist Rhetor.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "3",
+  "ru": "Бунт Машин",
+  "en": "Revolt of the Machines",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Varied (temperate and tundra), closest to Tenebra and Avilon.\n\nAffiliation: Neutral allod, although representatives of the House de Desirae have settled here.\n\nStory:\n\nAfter landing on the allod, we are met by the master seeker Scius de Desirae.\n\nAccording to him, their House was building a galleon ship, but decided to secretly build another ship for personal purposes; however, it rebelled and vanished. They searched for it carefully while concealing what they were doing, and in the end found it wrecked on this allod. We are asked to try to tame it (the galleon). By killing the elementals, we show the galleon our strength. We return to Scius; he thanks us for the help and gives us the ring of the 8 houses, which was supposed to continue the story, but there is no information about it.\n\nBosses: Great Fire Elemental, Great Water Elemental, Great Ice Elemental, Great Air Elemental.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "4",
+  "ru": "Великий Дракон",
+  "en": "The Great Dragon",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Tropical, closest to Asee-Teph and the Dragon Ring.\n\nAffiliation: Neutral allod, inhabited by draconids.\n\nStory:\n\nOn the island we meet a mysterious individual who tells us about his supposed exploits and says that his task is to obtain the blood of the Great Dragon. He asks us to get some practice before we go after the Great Dragon together with him, and to clear the island of draconids, killing their leader in the process. When we return victorious, the Mysterious Individual says that while we were resting and amusing ourselves with the draconids, he found out that the Great Dragon is in a cave on the other end of the island, and it is time to finish him off. After the victory, the Mysterious Individual says that we did well to defeat the Dragon, and that he, too, started out with exploits just like these and is now a great hero. In a word, showing off.\n\nBosses: Draconid Boss, Dragon (great).\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "5",
+  "ru": "Вражеское гнездо(Осколок Хикута)",
+  "en": "Enemy Nest (Hickut Shard)",
+  "parent": "0",
+  "text": "Climate: Varied (temperate and wasteland), closest to Coba Plateau (part of the Holy Land island), and also the Igsh Military District.\n\nAffiliation: Imperial allod; a research base is located here.\n\nStory:\n\nWe are met by the base staff, who mention a distress signal in passing but immediately get down to business. Demons have attacked the allod; the base personnel are fighting, but without reinforcements they won't hold out long. An employee tells us, in spite of the secrecy of all the base's work, that a Zem burial has been found on the allod, and that it appeared later than Tep's Plague; as they found out in the course of their research, these Zem turned out to be followers of Tep. During the battle at Asee-Teph the protection fell, and the followers took their secrets to the grave — and it was those that we were looking for. We must find Yaver Matez, the chief Zem scientist at this base, with the help of a Mentaloscope. Making our way past aggressively disposed personnel, we find the scientist. Yaver told us that, according to his theory, the demons are hunting for Tep's knowledge. We must defeat the demon mentors who are trying to extract information from Tep's dead followers. We kill them, and all that remains is to destroy their leader, the Astral Worm.\n\nBosses: Astral Worm.\n\nType: Small allod. Dungeon. Astral island.\n\nAddendum: Over time it was reworked into the Isle of the Edge."
+ },
+ {
+  "part": "beta",
+  "section": "6",
+  "ru": "Залесская вотчина(Своя игра)",
+  "en": "Zalesky Patrimony (A Game of One's Own)",
+  "parent": "0",
+  "text": "Climate: Temperate, closest to Lightwood.\n\nAffiliation: League allod, a Kanian colony.\n\nStory:\n\nWe are met by serfs. They tell us that everything is fine on their island and that the allod is run by the lady Verona de Doucer. But in a whisper they ask us to go to the north of the allod and question the fugitives, for in truth they are oppressed here. At the astral shipyard we are met by Borodai Zalesky, a man of standing on the allod, who advises us to be sure to go to the lady. Verona tells us that she was invited here by Gordei Zalesky, but he died in her arms for unknown reasons, and his nephew asked her to stay and help run the allod. Gordei had invited other races to the allod — Gibberlings, orcs and so on — so that they would help the allod develop, but after his death they began to stir up unrest. We reach the fugitives' camp; there the Gibberlings tell the whole truth: the lady has set up a dictatorship, keeps everyone as slaves, they work themselves to the bone, and they are left only enough provisions to survive, but no more. The lady's troops had been spying on us; they attacked us, but we dealt with them. The Gibberling tells us the plan: he will raise the people against the remaining soldiers, and we are required to kill the lady, and the island will become free. As we approach the lady, we run into the voivode Zaruba Zalesky, and he has to be killed. A dialogue with Verona takes place, in which she says we are idiots and that she is the one holding the allod together, sends us to kill the chief conspirator, Otrad Zalesky, and goes off herself to calm the people.\n\nAfter thinking over what had happened, the Gibberling shared his theory: the allod somehow held together even without the lady, so apparently Otrad was the one holding it, and he was most likely stupefied because of the golems the lady had brought with her. We stand at a crossroads: either we help return the allod to Otrad — switching off the golems, restoring his reason and killing Verona — or we kill Otrad and leave the island, for Verona no longer wants to see us on it.\n\nBosses: Zaruba Zalesky, Otrad Zalesky or Verona de Doucer.\n\nType: Small allod. Dungeon. Astral island.\n\nAddendum: Over time the story was changed somewhat."
+ },
+ {
+  "part": "beta",
+  "section": "7",
+  "ru": "Лаборатория №9",
+  "en": "Lab Nine",
+  "parent": "0",
+  "text": "Climate: Temperate, closest to Coba Plateau (part of the Holy Land), and also the Igsh Military District.\n\nAffiliation: Imperial allod; a research base is located here.\n\nStory:\n\nWe are met by a crowd of vicious undead and the only living man, Iov Milin. He reports to us that this laboratory was engaged in research into necromagic and Tep's technologies. The laboratory was headed by Yaver Gover, a Zem scientist. However, according to Iov, Yaver was not in his right mind and performed strange experiments on the personnel. Iov reported this to General Zubin, but he wouldn't listen. Our task is to reach Mark Grobin, the commissar, and use a secret artifact to inform the Committee of what has happened. After the communication session, the Committee sends reinforcements here (most likely a cleanup squad), and we are ordered to kill Yaver Gover. After the victory we get his diary, from which we learn that he was trying to synthesize Tep's plague, and that he succeeded. He himself survived, since he had already lived through Tep's plague, as did one of the soldiers — Iov Milin. Gover's last entry shows that he intended to capture Milin and study him most thoroughly, in order to understand the cause of his resistance to the Plague.\n\nBosses: General Plague, Yaver Gover.\n\nType: Small allod. Dungeon. Astral island. Contested island.\n\nAddendum: Over time the island was remade, partly changing the story. It was also reworked into an Isle of the Astral Dominion."
+ },
+ {
+  "part": "beta",
+  "section": "8",
+  "ru": "Мировая Ладья(Религиозный вопрос)",
+  "en": "World Boat (A Religious Question)",
+  "parent": "0",
+  "text": "Climate: Tropical, closest to Asee-Teph.\n\nAffiliation: Neutral allod, inhabited by the Waterfolk Tribe.\n\nStory:\n\nThe allod was part of the Holy Land, like the Isle of the Dead; it broke off for unknown reasons. After landing and walking a little way, we come to a village of neutral Waterfolk. Rogoz (the chief of the neutral Waterfolk) speaks with us; he says that in the other settlements on this allod they still believe that the Whale-Fish saved the allod during the great splash, and they believed it too, until their prophet Leafy fell asleep at the altar in the center of the allod. He began to see visions and to enlighten us Waterfolk; he managed to tell… Our chief Bagor did not believe him and wants to sacrifice him. We agree to help him. We free Leafy. He says that he saw us in his visions, and also: \"I dreamed a lot of things. I understood almost nothing. I dreamed of some dreadful creature with a big beard, chained to the sky. I dreamed of some monsters with tentacles on their faces... Oh, it's so complicated\" (it is obvious to us that this is about Sarn). He also asks us to kill Bagor, who is preparing the place for the sacrifice. After our victory over Bagor, Leafy says that in another dream we defeat the Whale-Fish. And in yet another dream he becomes the leader on this boat-island. True, he refuses the power, but he still asks us to kill the Fish. After the victory Leafy says: \"Now the lake turtles will gnaw the Whale-Fish's bones clean! It won't devour my people anymore!\"\n\nBosses: Bagor, chief of the Waterfolk; Rybko the Whale-Fish.\n\nType: Small allod. Dungeon. Astral island.\n\nAddendum: Over time it was reworked into the Shard of Power."
+ },
+ {
+  "part": "beta",
+  "section": "9",
+  "ru": "Могильный остров",
+  "en": "Grave Island",
+  "parent": "0",
+  "text": "Climate: Tundra. Closest to Coldberg.\n\nAffiliation: Neutral allod, the grave of a June hunter.\n\nStory:\n\nWe are met by the Fearless Family of Gibberlings. They told us that they were sent here by an elder from the Frozen Frontier to find some blood artifact that Nordrak needs so badly. It should be somewhere near the grave of the great June dragon hunter Yad-Volk (he imprisoned Nordrak on the Frozen Frontier). Along the way we try to solve the riddle of the grave: on one of the obelisks a wolf is drawn, and next to it two stones with patterns — and it is these we seek out. The first stone drops from the Yeti Leader, the second is carried by the Harpy Chieftainess. We insert these stones into the hollows of the obelisk in the center of the allod. In a snowstorm Yad-Volk and a Ghostly Dragon appear. After the victory over the dragon, we take the blood artifact from the stele and give it to the Gibberlings.\n\nBosses: Polar Yeti Leader, Rock Harpy Chieftainess, Ghostly Dragon.\n\nType: Small allod. Dungeon. Astral island.\n\nAddendum: Over time it was reworked into the Whirl."
+ },
+ {
+  "part": "beta",
+  "section": "10",
+  "ru": "На краю(Колония)",
+  "en": "On the Edge (Colony)",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Temperate, closest to Lightwood.\n\nAffiliation: League allod, a colony.\n\nStory:\n\nWe are met by Ivan Poklyovych (the village headman). He tells us that they had been living peacefully on this colony for 3 years, but then pirates of the \"Insidious\" clan sailed to the allod, after them a ship of the House de Lua, and now, he says, us. He asks us to help deal with the pirates and sends us to Vitold de Lua. Vitold informs us that the pirates attacked because of the battery that powered the sphere of astral resistance, an ancient artifact that protects space the way the great mages do. The Sphere is not working because the battery is missing, and for now \"I am holding the island; the inhabitants were very lucky that I happened to be here in time. The pirates' ship has been destroyed and they cannot leave the allod, but they don't want to hand over the stolen battery. It is with one of the officers — there are only 4 of them, so we won't have to search long.\" On the way to the pirates, Ivan asks us to rescue the captured villagers. We defeat the officers, but Uryg the Insidious begs for mercy and says that the Elf is no great mage, but a cultist who hired them to steal the battery; when he sailed in after them, the first thing he did was destroy their ship. He demands the battery and says he will save us from this island if we give it to him. He advises us to give it to the girl from the church — she should know — but she is somewhat shady. We take the battery and return it to the church, giving it to Taisia. She puts it back in place, and her reason returns to her. After that we go to rescue the captured villagers, and then to kill the impostor. After the victory over Vitold, the headman thanks us.\n\nBosses: Urgan Big Axe, Uryuk Long Arm, Nakhrap the Wrathful, Uryg the Insidious, Vitold de Lua.\n\nType: Small allod. Dungeon. Astral island.\n\nAddendum: Over time the story was changed."
+ },
+ {
+  "part": "beta",
+  "section": "11",
+  "ru": "Нечто",
+  "en": "The Thing",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Taiga. Closest to Siveria.\n\nAffiliation: Neutral allod; most likely smugglers lived here.\n\nStory:\n\nIn the game the island had no NPCs. At the start of the island we discover a wrecked ship (of League design) and an empty open cage. From the ship a path leads up the mountain, where we discover a small camp and also another ship, this one intact. From the camp a half-ruined path leads to June ruins. Most likely the ship crashed, and the Creature got out of the cage and began to kill.\n\nBosses: no information.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "12",
+  "ru": "Одинокая Крепость",
+  "en": "Lonely Fortress",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Temperate, closest to Lightwood.\n\nAffiliation: League allod, a settlement with a fortress.\n\nStory:\n\nThe allod was part of Kania (most likely located territorially near Kvatoh). We are met by a Seasoned Sailor; seeing our astral ship, he asks for help and directs us to the Great Mage of this allod. Svetalan, the Great Mage, tells us that the allod was attacked by astral creatures (demons); part of the retinue went off to defend the settlement, but there is still no news of them. And we are asked to find the survivors and help them cope with the scourge. We fought our way to the voivode; he told us that a hundred or so soldiers went to scout at the mill, and while the voivode and the survivors gather their strength, we go scouting. We defeat a Demon Scout and find the scouts hiding in the mill. They say they noticed some people in hoods on the other bank — apparently cultist conspirators. We kill the cultists and their leader. We return to Svetalan to tell him what happened, but the demons have already got into the town. We must fight our way to the chief demon and defeat him. After the victory over the boss, the Great Mage says that as a sign of gratitude we may stay with them on the allod, and also that, if his granddaughter survived, he will introduce her to us.\n\nBosses: Ferocious Demon Scout, Master Cultist, Demon Boss.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "13",
+  "ru": "Освобождение",
+  "en": "Liberation",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Temperate, closest to Igsh.\n\nAffiliation: Imperial allod, an industrial city.\n\nStory:\n\nIn the game the island had no NPCs. Presumably demons invaded the allod and killed the great mage, the allod began to collapse, and the commissariat tried to evacuate the inhabitants. There is a wrecked ship, and not far from it the corpses of soldiers and civilians.\n\nBosses: no information.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "14",
+  "ru": "Осколок Исы(Великий Мастер)",
+  "en": "Isa Shard (The Great Master)",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Varied (tropical and wasteland): an oasis inside, the rest of the allod is rock.\n\nAffiliation: Neutral allod, inhabited by demons.\n\nStory:\n\nWe arrive on the allod and, fighting our way through the demons into the dome, meet a Gibberling named Yodo (the master). The Master is indignant that we disturbed him, but decides to teach us great wisdom all the same. The first task he gives is to find the most beautiful, most special water lily. After a long search we return to the Master without having found it. He shares the wisdom that we would never have found it, for all lilies are special and beautiful — one need only notice their beauty. Then, to humble our pride, we must walk around every root of the Great Tree, and without hurrying. When we return to the Master, he wants to test us on Demons and orders us to kill three of each of the 3 kinds that live on the allod beyond the dome, but no more. After the victory over these demons, Yodo gives us a serious trial: to defeat two Demon Leaders, but no more. We defeat them. Yodo says that we are strong, but will we keep our balance on the edge between strength and wisdom? He gives us a last lesson: to kill the Great Demon — he is cunning, and we need to know how to deal with such creatures if they go on the attack against other allods. We overcome this demon too, and in parting Yodo says that we did well and learned wisdom — a pity it wasn't the wisdom he wanted to teach us.\n\nBosses: Demon Leader Scout, Demon Leader Warrior, Great Demon.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "15",
+  "ru": "Осколок Умойра",
+  "en": "Umoir Shard",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Temperate, closest to Darkwater.\n\nAffiliation: Neutral allod; before the undead curse it belonged to Kania.\n\nStory:\n\nWe are met by the Kanian woman Vlasta Shukhova in a camp on the shore. She tells us that Catherina sent her to this allod to gather deathcap mushrooms, which she needs for a potion for speaking with the dead. According to her, they grow only here (actually they also grow in Jeer's Mansion). We agree to help her. Also in the camp is the aviak mercenary Daris. He complains that everything is bad: his sword broke, his comrades Amis, Atis and Potis died, a black raven flew past. He asks us to bring back the rings of his fallen comrades; he will carry them to his homeland. After we bring the deathcaps, Vlasta says that now we can overcome Fiercefang, who lives here; she makes a calming potion, and we are to use it when he goes berserk. In that state we would not defeat him. We find the first ring on Fiercefang. We find the second ring on a bunch of zombie warriors by a hut near the bridge (there is a chest of gold in it). We make our way into the settlement with the church, clearing out hordes of undead, and there we kill the Cursed Banshee Tear, and on her we pick up the last, third ring. In one of the huts is the Kanian necromancer Bolegost Mrakov. After the victory over him we pick up his diary. Judging by the entries, Bolegost, trying to save the island from a demon attack, decided to resort to an army of undead, made an elixir from deathcaps, but miscalculated the dose, went mad, and believed that the demons were still invading. It's a good thing we put an end to his madness. And we will send the diary to Umoir. We give it to Vlasta. \"I'll pass this document on to the Umoir archive. If you ask me, this Bolegost is a hero! Just a poor unfortunate one.\"\n\nBosses: Fiercefang, Tear, Bolegost Mrakov.\n\nType: Small allod. Dungeon. Astral island.\n\nAddendum: Over time it was reworked into Wolf Isle."
+ },
+ {
+  "part": "beta",
+  "section": "16",
+  "ru": "Охота на Демонов",
+  "en": "Demon Hunt",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Wasteland, closest to Yazes Shard.\n\nAffiliation: Neutral allod, a camp of Demon Hunters.\n\nStory:\n\nIn the game the island had no NPCs. Presumably we were supposed to help kill an Uber Demon that lived in the center of the allod, surrounded by astral peaks.\n\nBosses: no information.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "17",
+  "ru": "Покинутая пирамида",
+  "en": "Abandoned Pyramid",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Desert, closest to the Catacombs.\n\nAffiliation: Neutral allod; most likely Tep's cultists lived here.\n\nStory:\n\nIn the game the island had no NPCs. Of interest: at the entrance lies a dead Zem, and the pyramid itself resembles in layout the one in Siveria.\n\nBosses: no information.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "18",
+  "ru": "Притон(Притон контрабандистов)",
+  "en": "The Den (Smugglers' Den)",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Temperate, closest to Eljune.\n\nAffiliation: Neutral allod, a smugglers' lair.\n\nStory:\n\nWe land near a Free Traders' camp. We are met by the Gibberlings of the Earthy Family. They say they are waiting for their mercenaries, who are supposed to kill the smugglers. They complain about them: they knock down prices and don't pay duties. This allod should be destroyed altogether, so that they don't gather here anymore. The allod is held together by meteorite iron, which we will have to steal. The next to ask us for help is Marat Vykhin. According to him, the ship with the mercenaries has been missing for a very long time, and they (the Free Traders) could be discovered and killed at any moment. He asks us to kill their chief, Kolotun the Forester, and then the rest will start fighting for power. The third, Khvoshch the Rowdy, says that they are out of money: he went into the forest to relieve himself and was spotted by the local Forestfolk. Now they are blackmailing the orc, saying that as long as he brings them a precious stone a day, they won't hand the traders over to the smugglers. In short, he asks us to deal with the Forestfolk and their chief, Barefoot. After clearing out the Forestfolk and the Camp, and also gathering the meteorite iron, we are thanked for our help. Khvoshch says that now the 10 sapphires they swindled out of him somehow have to be quietly slipped back to Marat, and asks us not to spread word of what happened.\n\nBosses: Forestfolk Chief Barefoot, Kolotun the Forester.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "19",
+  "ru": "Приют Отверженных(Новая жизнь)",
+  "en": "Refuge of the Outcasts (A New Life)",
+  "parent": "0",
+  "text": "Climate: Temperate, closest to Avilon.\n\nAffiliation: Elven allod, a settlement of the House de Doucer.\n\nStory:\n\nWe are met by Patrick de Doucer. He tells us that all those who did not follow Armando have gathered on this allod. The other elven houses would not accept them, and they want nothing to do with the vampires. Patrick asks us to help win back the southern part of the allod from the creatures living there. First, to defeat the granite trolls and their leader, Cliff. Martin de Doucer also has a request for us, but this time to help on the eastern part of the allod. Mantises live there, and it is them we must deal with. The Great Mage Karl de Doucer turns to us. He tells us that for the time being he is protecting the allod from the astral and holding up the shields; he is worried by the presence of lizards on the allod — they are far more dangerous than any trolls or mantises. The lizards are ruled by a creature resembling a draconid, named Oskal. The trouble is that he can't be negotiated with, as with the lizards, and our goal is to make our way into their settlement and destroy Oskal. After clearing the allod of the mantises and trolls, we go to the lizards' altar. There we defeat Oskal. The sentries Patrick and Martin thank us and say that now developing the settlement will be easier. And the Great Mage thanks us and says that he now feels better, since the evil that was hindering him has been defeated.\n\nBosses: Troll Chief Cliff, Lizard Leader Oskal.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "20",
+  "ru": "Проклятье Тэпа",
+  "en": "Tep's Curse",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Taiga, closest to Siveria.\n\nAffiliation: League allod, a Gibberling settlement.\n\nStory:\n\nIn the game the island had no NPCs. We arrive on the island at a makeshift pier, next to which is a mini-fort with astral cannons. Further on we see burning huts, and also books gathered in a pile and set on fire. The allod itself is a mountain, and the higher we climb along the paths, the more corpses of Gibberlings and Kanians we meet. At the very top stands the main hut; on the other side of the allod the houses are empty but not burned.\n\nBosses: no information.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "21",
+  "ru": "Райский уголок",
+  "en": "Paradise Nook",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Temperate, closest to Darkwater.\n\nAffiliation: League allod, a colony of Kanians and a settlement of Forestfolk.\n\nStory:\n\nWe are met by the Kanian Leader. According to him, their ship was wrecked during an astral storm, and they ended up on this island. At first they wanted to make repairs quickly, but in the end they grew used to this quiet, peaceful allod and are now settling in here. He asks us to help the settlers, since there aren't enough hands and there is a lot of work. We meet the Cook; she asks us to take food to the fishermen. And another Kanian woman asks for her help: she cooks and tends the cauldrons, and the men, the fishermen, haven't brought the fish yet. We need to help them deliver it, because it's already time to cook. After we bring the fishermen food, they thank us and ask us to help explore the wondrous valley and the lake while they organize the fishery. We stroll through the valley all the way to the lake. Then we dive into it and discover that in the depths there is some kind of tunnel with a magical barrier. We return and tell the fishermen about it. They say that they don't understand such things — talk to our Leader. We return to the settlement and bring the women fish. They invite us to come and eat when we have time. The Leader says about the tunnel that we may explore it, but carefully, so as not to bring trouble upon the settlement. They want to stay and live here. After passing through the tunnel, we surface on the other side of the island and find a settlement of natives there. We are met by a Shaman, who says he doesn't mind neighbors, but he cannot decide such matters alone. We must find the elder; he is hunting by the big lake. By the Lake, in the thickets, we find the Chief. He says that if we help kill the Unthinkable Monster, then they (the Forestfolk) agree to live in alliance with the humans. We dive in and defeat the Hydra. After that the Chief says that he has a daughter, and the Kanians have men; to seal the alliance forever, the two clans must be joined in marriage. We return to the settlement and tell them everything that happened. The Leader thanks us for the help and says that the Forestfolk will have their bridegroom. An alliance is important, since we have decided to stay here.\n\nBosses: Unthinkable Monster Hydra.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "22",
+  "ru": "Реликвия",
+  "en": "Relic",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Desert, closest to the Dead Sea.\n\nAffiliation: Neutral allod.\n\nStory:\n\nIn the game the island had no NPCs. The least developed allod of the unfinished ones: it had only a rough sketch of the landscape, without buildings or NPCs. What might have happened here in the story is a mystery.\n\nBosses: no information.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "23",
+  "ru": "Республика Гоблинов",
+  "en": "Goblin Republic",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Tundra, closest to the Frozen Frontier archipelago.\n\nAffiliation: Neutral allod, presumably one of the main goblin allods.\n\nStory:\n\nThe island was supposed to be populated entirely by hostile goblins, without quests or friendly NPCs. It was found without NPCs or mobs... It is mentioned on the allod of Drought (Waters of the Great Canyon), and also in quests on Coba Plateau and in many other places.\n\nBosses: no information.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "24",
+  "ru": "Сушь(Каньон больших вод/Воды большого каньона)",
+  "en": "Drought (Canyon of Great Waters / Waters of the Great Canyon)",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Desert, closest to the Dead Sea.\n\nAffiliation: Neutral allod, an old Imperial base settled by orcs and goblins.\n\nStory:\n\nNo sooner have we stepped off the ship than Tep's cultists attack us. After defeating them, we free a goblin named Sypun. He fearfully asks whether we are going to beat him. Once he is sure he is safe, he tells us about the situation on the allod. The goblin Zanud (the Supreme Shaman) declared these lands an independent goblin republic. They separated from the orcs, but then the water ran out. Since the water remained with the orcs, the goblins decided to attack them, but got a thrashing. Then \"suicide men\" appeared on the allod — that is what Zanud called Tep's cultists — and drove the orcs out. Now both the orcs and the goblins are on the verge of death because they have no water. The goblin sends us to their village to talk to Zanud. In short, Zanud didn't add many details; he only specified that the Cultists had seized the lake, the so-called Puddle, and won't let anyone near it; they are doing something there. We are asked to drive them out of there and to kill their chief — he sits in the former orc camp. The goblins will have water, and the orcs will fall before their might and beg the goblins to share the water. After the victory over the Shepherd, we find the orc woman Koryaga in a cage. She says that helping the foolish goblins is a bad idea: the Real locals are the Orcs; they stayed here to live after the night of astral portals, in the old Imperial camp. Their shaman Lysukha sent her to scout, but Koryaga was captured and so never found out what the cultists are looking for here. She asks us to intercept the punitive squad that has headed for the orcs and to kill their chief punisher. After the victory over the Commander, Lysukha thanks us for the rescue and says that before the orcs were driven out, the Commander tried to win them over to his side, saying they would restore Tep's power; she suggests we find and destroy the sources of Tep's power. In the old Zem ruins we find a mechanism; after activating it, the Shard of Tep appears, and we destroy it. After its destruction an orc woman crawls out of the sand and says that she hid and saw us destroy that thing; she thanks us, says she will tell Lysukha everything, and that we will be honored.\n\nBosses: Shepherd, Servant of Tep; Commander, Cultist of Tep; Shard of Tep.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "25",
+  "ru": "Темная Сторона",
+  "en": "The Dark Side",
+  "parent": "0",
+  "text": "[Map missing]\n\nClimate: Taiga, closest to Eljune.\n\nAffiliation: Neutral allod, formerly Kanian.\n\nStory:\n\nWe are met by the Aviak Elder. He tells us that they (the aviaks) have been guarding this place for a very long time, so that the evil does not get out and so that the strangers who come to this island do not feed the EVIL with strength. The aviak suggests that we go to the guarded borders and see from whom they are protecting the world. We discover banshees and decide they ought to be killed. Besides the ordinary ones, we also defeat an ancient banshee and return. The aviak is amazed at our courage and strength and says that the banshees are apparently scouts, but the shadows by the second bridge are already closer to the source. If you manage to defeat them too, find the spirit of the priest in one of the huts.\n\nWe head there, defeat the Shadows and look for the hut with the priest. The Hermit Spirit (the priest) tells us that in the times of the great battles he felt some shadow flying from the depths of the astral, but it could not fly any further. It stopped near our church. That is when it all began: the earth began to rot, the animals changed horribly, shadows began to crawl out. The Kanians left these places, but he, a servant of Tensess, decided to stay, and tried to cleanse these places and drive out the shadows. By his reckoning, his attempts to cope with the evil only helped it to spread.\n\nIn his helplessness the aviaks began to help him. He points out to us that the source of the evil lies beyond the church, to the southeast. Arriving at the spot, we discover that the cause of the horrors on this island is a part — the evil part — of the soul of Tensess. And we destroy it.\n\nBosses: Ancient Banshee, Ancient Shadow, the Dark Side of Tensess.\n\nType: Small allod. Dungeon. Astral island."
+ },
+ {
+  "part": "beta",
+  "section": "26",
+  "ru": "Технический раздел",
+  "en": "Technical section",
+  "parent": "0",
+  "text": "Island size:\n\nSmall allods — the smallest allods, mostly a single settlement.\n\nMedium islands — larger islands, usually with several large settlements.\n\nLarge islands — have many settlements and various zones and regions.\n\nClimate:\n\nDesert — deserts, little vegetation, palm trees.\n\nTropical — jungle and swampy jungle.\n\nTemperate — meadows and forests of the middle latitudes, coniferous and deciduous forest.\n\nTaiga — mostly coniferous trees and snow cover.\n\nTundra — small trees or none at all, permafrost.\n\nWasteland — a mixture of ordinary matter with the matter of another universe; also the astral wasteland.\n\nVaried — a mixture of different types of climate.\n\nAffiliation:\n\nLeague — population: Kanians, Gibberlings and elves.\n\nImperial — population: Zem, Xadaganians and orcs.\n\nElven — population: elves only; not part of the League.\n\nNeutral — population from both the League and the Empire, Free Traders and pirates. Also various lesser races (Forestfolk, lizards, etc.).\n\nThanks for help in developing the project:\n\nTo Rpikt a.k.a. the Knight of Pathos and those who helped him, for invaluable work filming materials on the Islands.\n\nTo Kochegarov, for similar merits.\n\nTo Darya Klemenchuk a.k.a. Evpraksia, for providing the necessary materials and information, and also as the chief archivist of the lore and world of Allods.\n\nTo the Allods Team, for creating such a magnificent universe that has given us so many emotions.\n\nAnd also to everyone who helped in any way at all. Without these people my initiative would have burned out.\n\nSources used:\n\nEvpraksia's article on the open-beta islands (and also her secret archive collected for writing the article and its unpublished sequel)\nhttps://alloder.pro/main/lore/ostrova-rannego-obt-r715/\n\nRpikt's playlist on the Lost Story of AO\nhttps://www.youtube.com/playlist?list=PLDo7e68EtppBBjwQ2Be2mGBBMxkJtxjFX\n\nThe Allodswiki database\nhttps://allodswiki.ru/\n\nKochegarov's channel\nhttps://www.youtube.com/c/Kochegarovhttps://www.youtube.com/c/Kochegarov\n\nDigging in the game resources.\n\nNumerous borrowings from various internet resources and YouTube channels.\n\nAuthor:\n\nDarkyAndSparky, 2021\n\nhttps://vk.com/bladeinbutter"
+ }
+]

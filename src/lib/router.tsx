@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode, type MouseEvent } from 'react';
+import { useEffect, useState, type CSSProperties, type ReactNode, type MouseEvent } from 'react';
 
 function read() {
   return { path: window.location.pathname, query: new URLSearchParams(window.location.search) };
@@ -25,7 +25,12 @@ export function useRoute() {
   return route;
 }
 
-export function Link({ to, children, className }: { to: string; children: ReactNode; className?: string }) {
-  const onClick = (e: MouseEvent) => { e.preventDefault(); navigate(to); };
-  return <a href={to} onClick={onClick} className={className}>{children}</a>;
+export function Link({ to, children, className, style }: { to: string; children: ReactNode; className?: string; style?: CSSProperties }) {
+  // Clic du milieu ou avec modificateur : laisser le navigateur ouvrir un nouvel onglet.
+  const onClick = (e: MouseEvent) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    navigate(to);
+  };
+  return <a href={to} onClick={onClick} className={className} style={style}>{children}</a>;
 }

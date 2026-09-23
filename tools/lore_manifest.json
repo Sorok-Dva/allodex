@@ -1,0 +1,219 @@
+{
+  "_note": "Sources de tools/extract_lore.py (préparation de la page Lorebook, langue cible : anglais). Chemins = montages WSL des disques de l'utilisateur ; une source optionnelle absente est signalée et ignorée. `client` = DERNIER client officiel (référence de toute extraction) : `Texts_x64.pak` (pack.rus.loc + pack.eng_eu.loc, même table d'index) et `BaseLocall_x64.pak` (Bin/pack.bin, la base de ressources compilée qui dit quelle ressource porte quel texte). `server_root` = arbre serveur décompressé (xdb + .txt, dépôt git) : chemins de ressources, types et champs des contenus qui y figurent (étiqueté 7.0, contenus jusqu'à ZC14/Ferris/Umoir). `fr_client` = client FR officiel actuel (16.0, français seul) : son `Texts_x64.pak` et son `BaseLocfra_x64.pak` (Bin/pack.bin) donnent le français, par ressource commune (voir `bridge_fr`). Chemins surchargeables : `--client`, `--fr-client`, `--server-root`, `--corpus` ou `ALLODS_RU_CLIENT_DIR`, `ALLODS_FR_CLIENT_DIR` (à défaut `ALLODS_CLIENT_DIR`), `ALLODS_SERVER_ROOT`, `ALLODS_LORE_CORPUS`. `credit` = attribution du matériel communautaire (atlas et récits fournis par Makar Terentiev / DarkyAndSparky, dépôt atlas-ao étudié le 2026-09-23) : ligne de crédit, licence, contenu du dépôt ; `sources` qualifie chaque fichier (premier motif trouvé, sinon `default_source`) ; reporté dans community.json (en tête et par fichier : `credit`, `source`) et atlas.json. `corpus` = matériel communautaire (git-ignoré, jamais recopié : l'index le référence par chemin). `provenance` = classement des textes que l'appariement au client ne rattache pas au jeu (couverture < 50 %) : `files` (chemin exact, `force` = même si l'appariement dit « en jeu »), puis motifs `excluded` / `official` / `community`, puis un titre daté (« Titre01.11.2025 », format des articles du site officiel) ; sinon `community`. Les notes « verify » signalent une provenance à confirmer avant tout usage.",
+  "client": {
+    "root": "/mnt/h/MyGames/AllodsRU",
+    "texts_pak": "data/Packs/Texts_x64.pak",
+    "base_pak": "data/Packs/BaseLocall_x64.pak",
+    "ru": "Bin/pack.rus.loc",
+    "en": "Bin/pack.eng_eu.loc",
+    "pack": "Bin/pack.bin"
+  },
+  "server_root": "/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data",
+  "fr_client": {
+    "root": "/mnt/h/MyGames/Allods Online FR (FR)",
+    "texts_pak": "data/Packs/Texts_x64.pak",
+    "member": "Bin/pack.loc",
+    "base_pak": "data/Packs/BaseLocfra_x64.pak",
+    "pack": "Bin/pack.bin"
+  },
+  "corpus": "/home/llyam/projects/allodex/refs/lorebook",
+  "provenance": {
+    "excluded": {
+      "patterns": [
+        "текстовик",
+        "Texts.pak",
+        "allods adventure",
+        "Пираты штурм небес",
+        "библиотека аллодов"
+      ],
+      "note": "dump brut du client (on extrait nous-mêmes) ou texte d'un autre jeu (Allods Adventure, Cloud Pirates, Аллоды 1998)"
+    },
+    "official": {
+      "patterns": [
+        "анонс",
+        "Скоро в игре",
+        "ответы на вопросы по сюжету",
+        "Холодный ветер с севера"
+      ],
+      "note": "annonce de mise à jour ou FAQ scénario de l'équipe (réponses à vérifier)"
+    },
+    "community": {
+      "patterns": [
+        "хронология",
+        "Энциклопедия Сарнаута",
+        "АТЛАС",
+        "ATLAS",
+        "Астральные Острова(AO2.0+)",
+        "BETA(ОБТ",
+        "с форума",
+        "sec list",
+        "Созвездия",
+        "boses",
+        "таблица по событиям",
+        "репозитории",
+        "Копперлок"
+      ],
+      "note": "compilation ou travail de fans (atlas, encyclopédie, chronologie, notes)"
+    },
+    "files": {
+      "Mdrn world/Кадаган/о зэм.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "interview of the development team about update 16.0"
+      },
+      "Mdrn world/Кадаган/1234.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "developer article about Kadagan and the Risen Zem"
+      },
+      "Mdrn world/Кадаган/Тени над Песчаным Аллодом.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "update announcement"
+      },
+      "Mdrn world/Джигран/Джигран.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "update announcement (new location Jigran)"
+      },
+      "Mdrn world/Джигран/Джигран 2.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "update announcement"
+      },
+      "Mdrn world/Джигран/Текстовый документ.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "update announcement"
+      },
+      "Mdrn world/Джигран/Сардок рейд/Новый текстовый документ.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "raid announcement (Sadrok)"
+      },
+      "Mdrn world/Джигран/Сардок рейд/Новый текстовый документ (2).txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "raid announcement (Sadrok)"
+      },
+      "Mdrn world/Лига/кватох загорье (Кватор)/Слово о Загорье от Князя Финиста.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "in-character pre-release lore post of the Kvator series (verify source)"
+      },
+      "Mdrn world/Лига/кватох загорье (Кватор)/Слово о землях Кватора от Ольги, ведьмы из ковена Кватора.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "in-character pre-release lore post of the Kvator series (verify source)"
+      },
+      "Астральные Острова/Героическое приключение «Висячие сады»/2.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "developer commentary"
+      },
+      "Астральные Острова/Героическое приключение Пионерлагерь Мираж/Пионерлагерь Мираж.txt": {
+        "class": "official out-of-game (announcement/FAQ)",
+        "note": "update announcement"
+      },
+      "Mdrn world/Джигран/Доклад Саранг Кидо Совету Учёных Советов народа Зэм.txt": {
+        "class": "community",
+        "note": "story supplied with the community material of Makar Terentiev (DarkyAndSparky, atlas-ao); authorship and origin to confirm with him before any reuse"
+      },
+      "Mdrn world/Кадаган/Отчет о сообществе Восставших на Кадагане.txt": {
+        "class": "community",
+        "note": "story supplied with the community material of Makar Terentiev (DarkyAndSparky, atlas-ao); authorship and origin to confirm with him before any reuse"
+      },
+      "Mdrn world/Кадаган/Искра в пепле иллюзий.txt": {
+        "class": "community",
+        "note": "story supplied with the community material of Makar Terentiev (DarkyAndSparky, atlas-ao); authorship and origin to confirm with him before any reuse"
+      },
+      "Mdrn world/Лига/кватох загорье (Кватор)/Тень Пустоты над Сарнаутом.txt": {
+        "class": "community",
+        "note": "story supplied with the community material of Makar Terentiev (DarkyAndSparky, atlas-ao); authorship and origin to confirm with him before any reuse"
+      },
+      "Несортированые/другие источники/Воспоминания Смеяны.txt": {
+        "class": "community",
+        "note": "story supplied with the community material of Makar Terentiev (DarkyAndSparky, atlas-ao); authorship and origin to confirm with him before any reuse"
+      },
+      "Несортированые/другие источники/Найан. Груз тысячелетий.txt": {
+        "class": "community",
+        "note": "story supplied with the community material of Makar Terentiev (DarkyAndSparky, atlas-ao); authorship and origin to confirm with him before any reuse"
+      },
+      "Несортированые/другие источники/Письмо из «Архива Скракана».txt": {
+        "class": "community",
+        "note": "story supplied with the community material of Makar Terentiev (DarkyAndSparky, atlas-ao); authorship and origin to confirm with him before any reuse"
+      },
+      "Несортированые/другие источники/Путь Изгнанника.txt": {
+        "class": "community",
+        "note": "story supplied with the community material of Makar Terentiev (DarkyAndSparky, atlas-ao); authorship and origin to confirm with him before any reuse"
+      },
+      "Несортированые/другие источники/Мауни Плясунья и суровая зима.txt": {
+        "class": "community",
+        "note": "story supplied with the community material of Makar Terentiev (DarkyAndSparky, atlas-ao); authorship and origin to confirm with him before any reuse"
+      },
+      "Несортированые/другие источники/Сны о Великом Древе.txt": {
+        "class": "community",
+        "note": "story supplied with the community material of Makar Terentiev (DarkyAndSparky, atlas-ao); authorship and origin to confirm with him before any reuse"
+      },
+      "Несортированые/другие источники/Край мира с форума АО.txt": {
+        "class": "community",
+        "note": "fan blog post (druidsdiary.blogspot.com) reposted on the forum"
+      },
+      "Mdrn world/Святая земля/Остров Головорезов/Новый текстовый документ.txt": {
+        "class": "community",
+        "note": "excerpt of an older client's texts ([path]: string), mostly absent from the 17.0 client"
+      },
+      "Другие острова/battle/Буян/Новый текстовый документ.txt": {
+        "class": "community",
+        "note": "excerpt of an older client's texts ([path]: string); the Buyan battleground is absent from the 17.0 client"
+      }
+    }
+  },
+  "credit": {
+    "author": "Макар Терентьев (Makar Terentiev), GitHub DarkyAndSparky",
+    "short": "Makar Terentiev (DarkyAndSparky)",
+    "url": "https://github.com/DarkyAndSparky/atlas-ao",
+    "line": "Allods atlas and community lore material compiled by Makar Terentiev (DarkyAndSparky), https://github.com/DarkyAndSparky/atlas-ao",
+    "license": "atlas-ao LICENSE: MIT for the website code only; its clause explicitly excludes the game content and the atlas data (server/seed-data.json, uploads/, atlas.db). No licence is granted for the data or the texts: any reuse beyond reference needs the author's permission",
+    "repository": {
+      "checked": "2026-09-23 (branch main, first commit 2026-07-31)",
+      "content": "Node.js + SQLite atlas website (interactive map, wiki catalogue, editor)",
+      "data": "server/seed-data.json: 318 allods (name, climate, size, holder, faction, category, archipelago, type, expansion, map flag; 9 short descriptions, no history text)",
+      "not_in_repository": "the stories, the atlas .docx/.xlsx working files and the other texts of refs/lorebook: supplied directly by the author"
+    },
+    "sources": [
+      {
+        "patterns": [
+          "АТЛАС АЛЛОДЫ табл"
+        ],
+        "source": "same 318-allod table as atlas-ao server/seed-data.json (318/318 names, whitespace aside)"
+      },
+      {
+        "patterns": [
+          "АТЛАС",
+          "ATLAS",
+          "Астральные Острова(AO2.0+)",
+          "BETA(ОБТ",
+          "Острова Cloud Pirates",
+          "sec list"
+        ],
+        "source": "atlas working material supplied by the author; not published in the atlas-ao repository"
+      },
+      {
+        "patterns": [
+          "с форума"
+        ],
+        "source": "third-party fan blog post (druidsdiary.blogspot.com) reposted on the game forum; collected in the author's corpus"
+      },
+      {
+        "patterns": [
+          "FardreamerFoxes"
+        ],
+        "source": "third-party artbook (Fardreamer); collected in the author's corpus"
+      },
+      {
+        "patterns": [
+          "Остров Головорезов/Новый",
+          "battle/Буян"
+        ],
+        "source": "excerpt of an older official client; collected in the author's corpus"
+      },
+      {
+        "patterns": [
+          "Энциклопедия Сарнаута"
+        ],
+        "source": "encyclopedia signed 'Nomarch Avilar', origin to confirm; collected in the author's corpus"
+      }
+    ],
+    "default_source": "community material supplied by the author (not in the atlas-ao repository); authorship to confirm with him"
+  }
+}

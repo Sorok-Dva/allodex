@@ -16,6 +16,7 @@ import { TalentsScreen } from '@/screens/TalentsScreen/TalentsScreen';
 const CharacterCreationScreen = import.meta.env.DEV
   ? lazy(() => import('@/screens/CharacterCreationScreen/CharacterCreationScreen'))
   : null;
+import { LorebookScreen } from '@/screens/LorebookScreen/LorebookScreen';
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -38,6 +39,7 @@ export default function App() {
        path === '/fatalities' || path === '/fatalites' ? <FatalitiesScreen /> :
        CharacterCreationScreen && (path === '/character' || path === '/personnage') ? <Suspense fallback={null}><CharacterCreationScreen /></Suspense> :
        path === '/talents' ? <TalentsScreen /> :
+       path === '/lorebook' || path.startsWith('/lorebook/') ? <LorebookScreen /> :
        <OpeningScreen />}
     </AudioProvider>
     </I18nProvider>

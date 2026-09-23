@@ -81,6 +81,7 @@ export function OpeningScreen() {
   useEffect(() => { document.title = 'Allodex'; }, []);
   const items: ActionItem[] = [
     { id: 'chronicles', base: `${T.pinMenu}/ButtonQuestlog`, label: t('home.chronicles'), hint: t('home.chroniclesHint'), onClick: () => navigate('/chronicles') },
+    { id: 'lorebook', base: `${T.pinMenu}/ButtonSpellbook`, label: t('home.lorebook'), hint: t('home.lorebookHint'), onClick: () => navigate('/lorebook') },
     { id: 'music', base: `${T.pinMenu}/ButtonMedals`, image: 'Official/media_player', label: t('music.title'), hint: t('home.musicHint'), onClick: () => navigate('/music') },
     { id: 'fatalities', base: T.spells, image: `${T.spells}/FatalityLotus`, label: t('home.fatalities'), hint: t('home.fatalitiesHint'), disabled: import.meta.env.PROD, onClick: () => navigate('/fatalities') },
     { id: 'talents', base: `${T.pinMenu}/ButtonTalents`, label: t('home.talents'), hint: t('home.talentsHint'), onClick: () => navigate('/talents') },

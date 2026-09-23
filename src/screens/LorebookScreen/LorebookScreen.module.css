@@ -1,0 +1,184 @@
+/* Lorebook : décor du journal de quêtes du jeu (cadres `QuestLog/MainFrameLeft|Right` en
+   bordure étirée), plaque de titre `Contextructor/WindowHeader/TiledHeader`, pages de lecture sur
+   le parchemin du courrier (`MailBox/BackgroundMessage`), boutons de l'hôtel des ventes. */
+.screen {
+  position: fixed; inset: 0; overflow: hidden auto;
+  display: flex; flex-direction: column; min-height: 100%;
+  background: #0b0906 center / cover no-repeat fixed;
+  color: #e9dcbf; user-select: text; -webkit-user-select: text;
+  --page-h: calc(100dvh - 206px);
+}
+.shade { position: fixed; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 30%, #0b090640 0%, #0b0906d9 70%, #0b0906f2 100%); }
+.screen > :not(.shade) { position: relative; }
+
+/* --- bandeau ------------------------------------------------------------------------------ */
+.header {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px;
+  flex: none; padding: 10px 16px 6px; background: linear-gradient(#050403f2, #05040399); border-bottom: 1px solid #6b5a33;
+}
+.backHome { justify-self: start; color: #c9d6a3; font-size: 15px; padding: 6px 4px; }
+.backHome:hover, .backHome:focus-visible { color: #ffe77b; }
+.plate { position: relative; display: block; min-width: 260px; height: 44px; }
+.plateSkin { position: absolute; inset: 0; border-style: solid; border-width: 0 96px; border-image-slice: 0 96 fill; border-image-width: 0 96px; border-image-repeat: round stretch; }
+.title { position: absolute; left: 48px; right: 45px; top: 8px; height: 26px; margin: 0; display: flex; align-items: center; justify-content: center; font-size: 21px; font-weight: normal; color: #ffeb73; text-shadow: 0 1px 2px #000, 0 0 4px #000a; white-space: nowrap; letter-spacing: .04em; }
+.tools { justify-self: end; display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.search {
+  width: min(300px, 24vw); height: 34px; padding: 0 12px; font: inherit; font-size: 15px;
+  color: #f4e8c8; background: #140f09e6; border: 1px solid #8a7340; border-radius: 3px; outline: none;
+  box-shadow: inset 0 1px 3px #000;
+}
+.search::placeholder { color: #a8987a; }
+.search:focus-visible { border-color: #ffe77b; }
+.langs { display: flex; align-items: center; border: 1px solid #849361; background: #09150ed9; }
+.langsLabel { padding: 0 6px 0 8px; font-size: 12px; color: #9fb08e; font-family: Georgia, serif; }
+.langs button { min-width: 38px; min-height: 34px; color: #b9c9b4; font-size: 14px; }
+.langs button[aria-pressed="true"] { color: #ffe77b; background: #2c3a1ecc; }
+.langs button:focus-visible { outline: 1px solid #ffe77b; }
+.uiLang { font-size: 14px; flex: none; }
+.uiLang button { min-height: 32px; }
+
+/* --- onglets des sections ------------------------------------------------------------------ */
+.tabs { flex: none; display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; padding: 8px 12px 4px; }
+.tab {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 118px; height: 36px; padding: 0 16px;
+  color: #f1dfa6; font-size: 15px; text-shadow: 0 1px 1px #000;
+  border-style: solid; border-width: 12px 14px; border-image: url('/game/textures/Interface/Ingame/ContextAuction/AuctionButtonNormal.png') 12 14 fill / 12px 14px stretch;
+}
+.tab:hover, .tab:focus-visible { color: #fff4c0; filter: brightness(1.15); }
+.tabActive { border-image-source: url('/game/textures/Interface/Ingame/ContextAuction/AuctionButtonPressed.png'); color: #ffe77b; }
+
+.main { flex: 1 0 auto; padding: 8px 16px 12px; }
+.empty { margin: 40px auto; text-align: center; color: #ffeb73; }
+
+/* --- accueil ---------------------------------------------------------------------------------- */
+.home { max-width: 1100px; margin: 0 auto; }
+.intro { max-width: 70ch; margin: 18px auto 22px; text-align: center; line-height: 1.6; color: #e9dcbf; font-size: 17px; }
+.cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.card {
+  display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 22px 26px 20px; color: #2b1d0e;
+  border-style: solid; border-width: 18px; border-image: url('/game/textures/Interface/Ingame/MailBox/Textures/BackgroundMessage.png') 18 fill / 18px stretch;
+  box-shadow: 0 4px 14px #000a; transition: transform .12s ease-out;
+}
+.card:hover, .card:focus-visible { transform: translateY(-2px); }
+.cardTitle { font-size: 21px; color: #4a2208; }
+.card .count { color: #6b5536; font-size: 13px; margin-top: auto; }
+.cardHint { font-family: Georgia, 'Times New Roman', serif; font-size: 15px; line-height: 1.45; color: #3b2a14; }
+
+/* --- livre : liste à gauche, page à droite ------------------------------------------------------ */
+.book { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 10px; max-width: 1360px; margin: 0 auto; height: var(--page-h); min-height: 420px; }
+.pageLeft, .pageRight {
+  min-height: 0; border-style: solid; border-width: 58px 50px 22px 20px;
+  border-image-slice: 58 50 22 20 fill; border-image-width: 58px 50px 22px 20px; border-image-repeat: stretch;
+  position: relative;
+}
+.pageLeft { display: flex; flex-direction: column; margin-top: 0; }
+.pageRight { display: flex; }
+
+.listPane { position: absolute; inset: -48px 0 0 0; display: flex; flex-direction: column; min-height: 0; }
+.groupFilter { display: flex; gap: 4px; overflow-x: auto; padding: 2px 4px 8px; scrollbar-width: thin; flex: none; }
+.groupFilter button { flex: none; padding: 3px 9px; font-size: 13px; color: #1f3f21; background: #b6d8c4cc; border: 1px solid #3f6a4e; border-radius: 2px; white-space: nowrap; }
+.groupFilter button[aria-pressed="true"] { background: #ffe77b; color: #3a2508; }
+.groupFilter .count { color: #3f6a4e; }
+.listViewport { flex: 1; min-height: 0; overflow: hidden auto; scrollbar-width: thin; scrollbar-color: #8a7340 #1c140b; }
+.groupRow { position: absolute; left: 0; right: 0; display: flex; align-items: flex-end; gap: 6px; padding: 0 10px 6px; color: #ffe77b; font-size: 15px; border-bottom: 1px solid #b89a5a66; text-shadow: 0 1px 1px #000; }
+.row { position: absolute; left: 0; right: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 12px; border-bottom: 1px solid #00000033; color: #f4e6c3; text-shadow: 0 1px 1px #000; }
+.row:hover, .row:focus-visible { background: #ffe77b1f; }
+.rowSelected { background: linear-gradient(90deg, #ffe77b40, #ffe77b10); color: #ffe77b; }
+.rowTitle { font-size: 15px; line-height: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rowSub { display: flex; gap: 6px; align-items: center; font-size: 12px; line-height: 17px; color: #d7c79f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: Georgia, serif; }
+.count { color: #b9a978; font-size: 12px; font-family: Georgia, serif; }
+
+/* --- page de lecture : parchemin ---------------------------------------------------------------- */
+.entry {
+  position: absolute; inset: -40px 0 0 0; overflow: hidden auto; padding: 28px clamp(18px, 4vw, 48px) 36px;
+  color: #2b1d0e; background: #e6d3a3;
+  border-style: solid; border-width: 16px; border-image: url('/game/textures/Interface/Ingame/MailBox/Textures/BackgroundMessage.png') 16 fill / 16px stretch;
+  scrollbar-width: thin; scrollbar-color: #8a6a3a #d8c291;
+}
+.entry > * { max-width: 72ch; margin-left: auto; margin-right: auto; }
+.backToList { display: none; color: #6b3b10; font-size: 15px; margin-bottom: 10px; }
+.entryHead { margin-bottom: 18px; }
+.entryTitle { margin: 0 auto 4px; font-size: clamp(22px, 2.4vw, 30px); font-weight: normal; color: #4a2208; line-height: 1.2; }
+.entrySub { margin: 0 auto 6px; font-family: Georgia, serif; font-style: italic; color: #5b4322; }
+.communityBox { margin-top: 10px; padding: 10px 14px; background: #f3e4bd99; border-left: 3px solid #7b5a1c; font-family: Georgia, serif; font-size: 14px; line-height: 1.45; }
+.communityBox p { margin: 4px 0 0; }
+.communityBox a, .creditLine a { color: #7a2e08; text-decoration: underline; }
+.sourceLine { color: #6b5536; font-size: 13px; }
+
+.textBlock { margin: 0 auto 18px; }
+.textHead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+.fieldLabel { margin: 0; font-size: 16px; font-weight: normal; color: #7a3b0c; letter-spacing: .02em; }
+.prose { font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.65; color: #2b1d0e; overflow-wrap: anywhere; }
+.prose p { margin: 0 0 .7em; }
+.prose p:last-child { margin-bottom: 0; }
+.mdHeading { font-family: var(--font-serif); font-weight: normal; font-size: 20px; color: #4a2208; margin: 1.2em 0 .4em; }
+.mdList { margin: 0 0 .8em; padding-left: 1.3em; }
+.mdList li { margin-bottom: .45em; }
+.autoLink { color: #7a2e08; text-decoration: underline; text-decoration-color: #7a2e0866; text-underline-offset: 2px; }
+.autoLink:hover, .autoLink:focus-visible { text-decoration-color: #7a2e08; }
+
+.badge { display: inline-block; padding: 1px 7px; font-family: Georgia, serif; font-size: 12px; line-height: 17px; border-radius: 2px; white-space: nowrap; }
+.badgeCommunity { background: #2f5a3a; color: #e8f3d6; }
+.badgeMissing { background: #8b2d12; color: #ffe9cf; }
+.badgeRevised { background: transparent; color: #6b5536; border: 1px dashed #8a6f45; font-style: italic; }
+.row .badge { font-size: 11px; line-height: 15px; padding: 0 5px; }
+.row .badgeMissing { background: transparent; color: #f0a07a; border: 1px solid #b0583a; }
+
+.facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px 18px; margin: 0 auto 20px; padding: 12px 14px; background: #f3e4bd80; border: 1px solid #b89a5a; font-family: Georgia, serif; font-size: 14px; }
+.facts dt { color: #7a3b0c; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+.facts dd { margin: 0; color: #2b1d0e; }
+
+.items { margin: 26px auto 0; }
+.itemsTitle { font-size: 20px; font-weight: normal; color: #4a2208; border-bottom: 1px solid #b89a5a; padding-bottom: 4px; margin: 0 0 12px; }
+.item { padding: 10px 0 12px; border-bottom: 1px dotted #b89a5a; }
+.itemHead { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin: 0 0 6px; font-weight: normal; font-size: 16px; color: #6b2f08; }
+.itemHead .prose { font-style: italic; color: #6b2f08; font-size: 16px; }
+
+.links { display: grid; gap: 12px; margin: 22px auto 0; }
+.linkGroup h4 { margin: 0 0 6px; font-weight: normal; font-size: 16px; color: #7a3b0c; }
+.linkGroup ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 4px 14px; font-family: Georgia, serif; font-size: 15px; }
+.linkGroup a { color: #7a2e08; text-decoration: underline; text-decoration-color: #7a2e0855; }
+
+/* --- recherche ------------------------------------------------------------------------------------ */
+.searchPane { max-width: 900px; margin: 6px auto; padding: 22px clamp(16px, 4vw, 40px); color: #2b1d0e; border-style: solid; border-width: 16px; border-image: url('/game/textures/Interface/Ingame/MailBox/Textures/BackgroundMessage.png') 16 fill / 16px stretch; }
+.searchPane .empty { color: #4a2208; }
+.searchTitle { margin: 0 0 12px; font-size: 20px; font-weight: normal; color: #4a2208; }
+.results { list-style: none; margin: 0; padding: 0; }
+.results li a { display: flex; align-items: baseline; gap: 10px; padding: 7px 4px; border-bottom: 1px dotted #b89a5a; }
+.results li a:hover, .results li a:focus-visible { background: #ffffff40; }
+.more { display: block; margin: 14px auto 0; padding: 6px 18px; color: #f1dfa6; border-style: solid; border-width: 12px 14px; border-image: url('/game/textures/Interface/Ingame/ContextAuction/AuctionButtonNormal.png') 12 14 fill / 12px 14px stretch; }
+.more:hover, .more:focus-visible { filter: brightness(1.15); }
+.more .count { color: #d9c992; }
+.resultSection { flex: none; width: 118px; font-size: 13px; color: #7a3b0c; }
+.resultTitle { font-family: Georgia, serif; font-size: 16px; color: #2b1d0e; }
+
+/* --- pied de page ------------------------------------------------------------------------------------ */
+.footer { flex: none; padding: 8px 16px 12px; text-align: center; font-family: Georgia, serif; font-size: 12.5px; line-height: 1.5; color: #b9ad8c; background: #050403cc; border-top: 1px solid #6b5a33; }
+.footer p { margin: 2px 0; }
+.footer a { color: #e8c877; text-decoration: underline; }
+
+/* --- mobile : une seule page à la fois ----------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .screen { --page-h: calc(100dvh - 250px); }
+  .header { grid-template-columns: auto 1fr; padding: 8px 10px 6px; }
+  .backHome span { display: none; }
+  .plate { justify-self: center; min-width: 220px; }
+  .tools { grid-column: 1 / -1; justify-self: stretch; justify-content: center; flex-wrap: wrap; }
+  .search { flex: 1 1 100%; width: auto; min-width: 0; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding: 6px 8px 2px; }
+  .tab { min-width: auto; flex: none; font-size: 14px; padding: 0 8px; }
+  .main { padding: 6px 6px 10px; }
+  .book { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .bookList .pageRight { display: none; }
+  .bookList .pageLeft { height: var(--page-h); }
+  .bookEntry .pageLeft { display: none; }
+  .bookEntry .pageRight { border: 0; display: block; }
+  .bookEntry .entry { position: static; inset: auto; overflow: visible; }
+  .backToList { display: inline-block; }
+  .more { display: block; margin: 14px auto 0; padding: 6px 18px; color: #f1dfa6; border-style: solid; border-width: 12px 14px; border-image: url('/game/textures/Interface/Ingame/ContextAuction/AuctionButtonNormal.png') 12 14 fill / 12px 14px stretch; }
+.more:hover, .more:focus-visible { filter: brightness(1.15); }
+.more .count { color: #d9c992; }
+.resultSection { width: 90px; }
+  .cards { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } }
