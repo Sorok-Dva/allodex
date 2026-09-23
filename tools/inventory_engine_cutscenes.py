@@ -292,12 +292,124 @@ def summarize(scenes: list[dict]) -> dict:
     }
 
 
+# --- dernier client : ressources de mise en scène compilées (pack.bin) -----------------------------
+
+# Fenêtre d'identifiants de ressources autour d'un buff de caméra : `pack.bin` range les ressources
+# dossier par dossier, avec des identifiants consécutifs (le dossier `AO12_Prologue04` va de 507555 à
+# 507582). Rattacher une réplique ou un PNJ à un buff par cette proximité est une **approximation**,
+# signalée comme telle dans la sortie.
+CLUSTER_WINDOW = 40
+
+
+def client_scenes(client: Path) -> dict:
+    """Inventaire du 17.0 seul : tous les `CameraTrackAction` (rangés par ressource de tête), les
+    `GameViewScene`/`GameViewScript` reliés par `ShowSceneAction`, et, autour de chaque buff de
+    caméra, les répliques (`ClientData` avec sous-titre ou voix) et les noms de PNJ voisins."""
+    from tools.allods_bins17 import Ref, open_pack
+    from tools.allods_vis17 import read_camera_track, read_client_line
+    from tools.extract_cinematics import clean_text as _clean
+    pack = open_pack(client)
+    pb = pack.pb
+    with zipfile.ZipFile(Path(client) / "data/Packs/Texts_x64.pak") as z:
+        ru = unpack_loc(z.read("Bin/pack.rus.loc"))
+    rev = {v: k for k, v in pb.ids.items()}
+    keys, tgt = pb._rkeys, pb._rtarget
+    m = (keys & 3) == 0
+    src, dst = keys[m] >> 2, tgt[m]
+    order = dst.argsort()
+    ds, ss = dst[order], src[order]
+    bounds = sorted(int(a) for a in pb._obj_addr)
+    import bisect
+    import numpy as np
+
+    def owner(a: int) -> int:
+        return bounds[bisect.bisect_right(bounds, a) - 1]
+
+    def referrers(t: int) -> list[int]:
+        lo, hi = np.searchsorted(ds, t), np.searchsorted(ds, t, side="right")
+        return [owner(int(x)) for x in ss[lo:hi]]
+
+    def head(a: int, depth: int = 0) -> int:
+        if a in rev or depth > 8:
+            return a
+        up = referrers(a)
+        return head(up[0], depth + 1) if up else a
+
+    by_head: dict[int, list] = collections.defaultdict(list)
+    for a in pb.objects_of("CameraTrackAction"):
+        track = read_camera_track(Ref(pack, a))
+        by_head[head(a)].append(track)
+    heads = collections.Counter(pb.type_at(h) for h in by_head)
+    buffs = []
+    for h, tracks in sorted(by_head.items(), key=lambda kv: rev.get(kv[0], 0)):
+        if pb.type_at(h) != "BuffVisScripts":
+            continue
+        rid = rev[h]
+        lines, mobs = [], []
+        for k in range(rid - CLUSTER_WINDOW, rid + CLUSTER_WINDOW + 1):
+            off = pb.ids.get(k)
+            if off is None:
+                continue
+            kind = pb.type_at(off)
+            if kind == "ClientData":
+                try:
+                    cl = read_client_line(Ref(pack, off))
+                except Exception:  # noqa: BLE001 — ClientData d'une autre forme
+                    continue
+                if cl.voice or cl.text_index is not None:
+                    text = _clean(ru[cl.text_index]) if cl.text_index is not None and cl.text_index < len(ru) else ""
+                    lines.append({"id": k, "voice": cl.voice, "ru": text[:120], "delay_ms": cl.delay_ms})
+            elif kind == "MobWorld":
+                n = pb.u32(off + 0x68)
+                if n < len(ru) and ru[n]:
+                    mobs.append(_clean(ru[n]))
+        buffs.append({"buff_vis_scripts": rid, "tracks": len(tracks),
+                      "duration": round(sum(t.duration for t in tracks), 2),
+                      "points": sum(len(t.points) for t in tracks),
+                      "nearby_lines": lines, "nearby_mobs": sorted(set(mobs))})
+    shows = []
+    for a in pb.objects_of("ShowSceneAction"):
+        scene, script = pb.ptr(a + 0x50), pb.ptr(a + 0x58)
+        entry = {"scene": rev.get(scene), "script": rev.get(script), "map": None, "mobs": []}
+        if scene is not None:
+            mp = pb.ptr(scene + 0xE8)
+            paths = {v: k for k, v in pb.paths.items()}
+            entry["map"] = paths.get(mp, "").split("/")[1] if mp in paths else None
+            data, size = pb.vector(scene + 0xA0)
+            entry["mobs"] = [pb.string(data + 192 * i + 0x80) for i in range(size // 192)] if data is not None else []
+        shows.append(entry)
+    with_lines = [b for b in buffs if b["nearby_lines"]]
+    return {
+        "_note": ("Relevé du client 17.0 seul (tools/inventory_engine_cutscenes.py --client-only). "
+                  "nearby_lines / nearby_mobs : ressources à ±40 identifiants du buff (même dossier "
+                  "d'origine le plus souvent), rattachement approché. Les positions des PNJ et "
+                  "l'enchaînement des répliques sont décidés par le serveur, absents du client."),
+        "summary": {"camera_tracks": sum(len(v) for v in by_head.values()),
+                    "camera_tracks_by_head": dict(heads),
+                    "cutscene_buffs": len(buffs), "cutscene_buffs_with_lines": len(with_lines),
+                    "game_view_scenes": len(pb.objects_of("GameViewScene")),
+                    "game_view_scripts": len(pb.objects_of("GameViewScript")),
+                    "show_scene_actions": len(shows),
+                    "subtitle_resources": len(pb.objects_of("UISubtitleShow"))},
+        "cutscene_buffs": buffs,
+        "show_scene_actions": shows,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--server-root", default=DEFAULT_SERVER)
     p.add_argument("--client", default=DEFAULT_CLIENT)
     p.add_argument("--hits", help="liste de fichiers xdb déjà repérés (un par ligne), évite le parcours")
+    p.add_argument("--client-only", action="store_true", help="ne refait que le relevé du 17.0 (engine_cutscenes.client_17)")
     args = p.parse_args(argv)
+    if args.client_only:
+        manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        engine = manifest.setdefault("engine_cutscenes", {})
+        engine["client_17"] = client_scenes(Path(args.client))
+        MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(json.dumps(engine["client_17"]["summary"], ensure_ascii=False, indent=1))
+        return 0
     root = Path(args.server_root)
     hits = Path(args.hits).read_text().split("\n") if args.hits else find_markers(root)
     hits = [h for h in hits if h.strip()]
