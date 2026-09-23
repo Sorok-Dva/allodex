@@ -450,6 +450,9 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
           if (!mesh.isMesh) return;
           const material = mesh.material as THREE.MeshBasicMaterial;
           if (material.transparent || material.blending === THREE.AdditiveBlending) return;
+          // Décor opaque rendu d'une seule face, comme le jeu : une caméra de cinématique posée dans
+          // un rocher du décor (cristaux du portail de Ferris) ou sous une plateforme voit au travers.
+          if (data!.decor.oneSided) material.side = THREE.FrontSide;
           if (mesh === own && item.light && baked) {
             const [offset, count] = item.light;
             const geometry = mesh.geometry.clone();

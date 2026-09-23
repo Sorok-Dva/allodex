@@ -1339,7 +1339,10 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
             "timing": plan["timing"], "camera": camera, "lines": scene_lines, "actors": actors_meta,
             "decor": {"glb": prefix + "decor.glb", "light": "decor-light.bin", "instances": instances, "sky": sky,
                       "skyGlb": "sky.glb" if sky_glb else None,
-                      "terrainGlb": prefix + "terrain.glb" if decor.get("terrain") else None},
+                      "terrainGlb": prefix + "terrain.glb" if decor.get("terrain") else None,
+                      # Décor opaque d'une seule face, comme le jeu : vérifié sur `ferris-locus-fall`, dont
+                      # la caméra d'ouverture, sous la plateforme du Locus, montre alors le Cœur au-dessus.
+                      "oneSided": True},
             "fx": {"glb": "fx.glb" if fx_glb else None, "spawns": spawns},
             "objects": objects, "particleAtlas": atlas,
             "light": {**zone, "sunDirection": [round(float(v), 4) for v in sun_direction(light)]},

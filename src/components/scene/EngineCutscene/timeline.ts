@@ -83,7 +83,9 @@ export type EngineScene = {
   /** `glb` : décor commun de la carte (`../maps/<carte>/decor.glb`) ; `skyGlb` : ciel propre à la scène. */
   decor: { glb: string; light: string; instances: DecorInstance[]; sky: { radius: number } | null; skyGlb?: string | null;
     /** Sol de la carte (`terrainDump`), commun aux scènes de la carte. */
-    terrainGlb?: string | null };
+    terrainGlb?: string | null;
+    /** Décor opaque d'une seule face (culling du jeu). */
+    oneSided?: boolean };
   fx: { glb: string | null; spawns: FxSpawn[] };
   objects: Record<string, import('@/components/scene/FatalityViewer/timeline').FatalityObject>;
   particleAtlas: import('@/components/scene/FatalityViewer/particles').ParticleAtlasMeta | null;

@@ -821,7 +821,8 @@
    "parts": 4
   },
   "skyGlb": "sky.glb",
-  "terrainGlb": "../maps/FerrisRaid/terrain.glb"
+  "terrainGlb": "../maps/FerrisRaid/terrain.glb",
+  "oneSided": true
  },
  "fx": {
   "glb": null,

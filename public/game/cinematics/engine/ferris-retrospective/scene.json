@@ -3636,7 +3636,8 @@
    "radius": 1472.39,
    "parts": 5
   },
-  "skyGlb": "sky.glb"
+  "skyGlb": "sky.glb",
+  "oneSided": true
  },
  "fx": {
   "glb": null,

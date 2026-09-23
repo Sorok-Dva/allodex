@@ -1278,7 +1278,8 @@
    "parts": 14
   },
   "skyGlb": "sky.glb",
-  "terrainGlb": "../maps/Ferris4/terrain.glb"
+  "terrainGlb": "../maps/Ferris4/terrain.glb",
+  "oneSided": true
  },
  "fx": {
   "glb": null,
