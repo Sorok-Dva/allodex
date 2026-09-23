@@ -34,6 +34,7 @@ Messages en anglais, au format gitmoji `<gitmoji> <type>(<scope>): <message>` (e
 - `/achievements` : panneau Succès fidèle au jeu, données mockées (`src/data/medals.mock.json`). La progression et les paliers restent fictifs.
 - `/chronicles` : archive des écrans de lancement, version par version, avec leur thème musical (voir « Chroniques » ci-dessous).
 - `/music` : catalogue musical FR/RU, accessible par le bouton gramophone, avec lecture par catégorie.
+- `/character` (développement seulement) : création de personnage du client 17.0 (voir « Création de personnage »).
 - Non fait : comptes, addon d'export, import de progression, icônes réelles de tous les succès.
 
 ## Musiques
@@ -571,6 +572,60 @@ du script (dernier gabarit éteint) : certaines fatalités (Occultiste, Crâne 2
 plusieurs secondes vides, comme leurs gabarits le demandent.
 Poids : 62 Mo de personnages, 32 Mo d’effets, 28 Mo de textures partagées, 11 Mo de particules,
 7 Mo de sons (54 ondes, toutes trouvées).
+
+## Création de personnage (développement)
+
+La page `/character` (entrée « Personnage » de l'accueil, désactivée et absente du build de
+production : la route n'existe que si `import.meta.env.DEV`) reproduit l'écran de création du
+**client 17.0** (`/mnt/h/MyGames/AllodsRU`), dans l'ordre du jeu : **faction** → **race et
+classe** (avec sexe et niveau de tenue) → **apparence et nom** (familier des Pacificateurs, trio
+des gibberlings), puis « Créer ».
+
+    python3 tools/extract_character_creation.py          # tout (≈ 25 min)
+    python3 tools/extract_character_creation.py --only Elf --no-scenes
+
+**Sources, toutes dans le client 17** (`Bin/pack.bin`, lu par `tools/allods_packdb.py`) :
+
+- interface : addon `CharacterGenerator` (arbre de widgets, placements, calques, textures de
+  `Interface/Wrap/MainMenu/CharacterGenerator3`, icônes de races et de classes, textes RU/EN du
+  `.loc`, FR relus par clé dans le client FR) — `tools/chargen_ui.py` ;
+- données : `CharacterRoot` → factions → races → classes → deux sexes (`Character` : trois tenues
+  de création avec leurs animations `chargen<Classe>Start`/`chargen<Classe>`, familier), gabarits
+  `VisCharacterTemplate` et `CharacterVariations` (visages, traits, coiffures, couleurs, peaux,
+  teintes, signes, pierres des aèdes), `VisualItem` (géosets montrés/cachés, calques de peau,
+  modèles accrochés), règles de nommage `NameRules` — `tools/allods_chargen.py` ;
+- décors : la carte `MainMenu` compilée à part dans `Bin/Maps_MainMenu.bin` (même format, codes
+  de pak propres) : décor `World/MainMenu/Chargen_<Race>` et ses objets accrochés et animés,
+  `ZoneLights` de la case (ambiante, soleil, brouillard), ambiance sonore ; place et caméra de
+  `UICharacterScenes` (`CharacterSelect<Race>`) — `tools/chargen_scene.py`.
+
+Sorties dans `public/game/character/` : `chargen.json` (index versionné, `schema: 1`),
+`ui/layout.json` + textures, `models/<Gabarit>.glb` (tous les géosets, squelette, attente et
+animations de création), `attach/` (casques, épaulières, armes), `textures/`, `scenes/<Race>.glb`.
+
+**Règles établies sur les données** : tenue par défaut = corps nu (cache tous les géosets à
+variantes) ; un objet porté montre ses formes et cache ses géosets, un géoset caché par un objet
+l'emporte (le casque cache les cheveux) ; texture cuite = peau (`IndexedTexture`, teinte sous le
+masque alpha) puis calques (visage, pilosité, signe, cuir chevelu teint de la couleur des cheveux,
+sous-vêtements `bra`/`pants`, pièces de tenue), rectangles `x1 x2 y1 y2` avec V depuis le bas ;
+décors de plus de 32 768 sommets : indices 16 bits par pages de 32 768 ; calques additifs de
+l'interface (`WidgetLayer` +0x24 = 2) rendus en alpha (noir transparent).
+
+**Descripteur** (`src/data/character/descriptor.ts`, `kind: "allodex.character"`, `version: 1`) :
+faction, race, sexe, classe, nom, indices d'apparence dans les listes du gabarit, niveau de tenue,
+compagnons du trio, familier (gabarit, pelage, nom). Validé contre `chargen.json`
+(`validateDescriptor`, utilisable côté serveur). Persistance derrière `CharacterStore`
+(`src/data/character/store.ts`) : `LocalCharacterStore` (`localStorage`) aujourd'hui, une
+implémentation HTTP demain sans toucher à l'écran.
+
+**Export `.glb`** : côté navigateur (`GLTFExporter`), de ce qui est affiché — géosets visibles,
+texture cuite composée, modèles accrochés, compagnons et familier en nœuds frères, clips de la
+tenue et attente ; repère converti en Y en haut (nœud racine), descripteur dans les `extras`.
+
+**Écarts connus** : caméra de la place de *sélection* (`UICharacterScenes`), celle de la création
+(`preMissionCamera`) n'étant pas décodée ; effets animés des tenues (plantes du Pacificateur,
+lueurs) non rejoués ; ambiances FMOD relevées mais non jouées (musique du menu 17.0 à la place) ;
+morphologie (`morphPresets`, citée par le script) non décodée ; aèdes : estrade reprise du décor.
 
 ## Déploiement (production)
 

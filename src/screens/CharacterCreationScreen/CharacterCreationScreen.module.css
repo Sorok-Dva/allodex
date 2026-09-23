@@ -1,0 +1,146 @@
+.screen {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+  color: #eadbb6;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.viewer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hidden {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+}
+
+.ui {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.toolbar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  z-index: 5;
+}
+
+.toolbar button,
+.dialog button {
+  padding: 4px 10px;
+  background: rgba(20, 16, 10, 0.8);
+  border: 1px solid #8b6b32;
+  border-radius: 3px;
+  color: #f0dfb0;
+}
+
+.toolbar button:hover,
+.dialog button:hover {
+  border-color: #e8c877;
+  color: #fff3cc;
+}
+
+.toolbar button:disabled {
+  opacity: 0.5;
+}
+
+.badge {
+  padding: 3px 8px;
+  background: rgba(120, 30, 20, 0.8);
+  border: 1px solid #c05030;
+  border-radius: 3px;
+  color: #ffd8c8;
+}
+
+.langPick {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 3px 6px;
+  background: rgba(20, 16, 10, 0.8);
+  border: 1px solid #8b6b32;
+  border-radius: 3px;
+}
+
+.langPick select {
+  background: #1c160e;
+  color: #f0dfb0;
+  border: 0;
+  font: inherit;
+}
+
+.dialog {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 360px;
+  padding: 18px 22px;
+  background: rgba(14, 11, 7, 0.94);
+  border: 1px solid #b9923f;
+  border-radius: 4px;
+  z-index: 10;
+  font-family: var(--font-serif);
+}
+
+.dialog h2 {
+  margin: 0 0 8px;
+  color: #ffe08a;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.note {
+  font-size: 13px;
+  color: #bcae8a;
+}
+
+.dialogButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.missing,
+.loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  color: #eadbb6;
+  font-family: var(--font-serif);
+}
+
+.missing button {
+  padding: 4px 10px;
+  border: 1px solid #8b6b32;
+  color: #f0dfb0;
+}
