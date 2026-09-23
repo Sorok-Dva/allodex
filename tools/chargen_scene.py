@@ -45,11 +45,6 @@ ZONE_ITEM = 0x48             # ZoneLights du menu : éclairage unique en ligne
 ZONE_SKY = 0x150
 PEDESTAL_TOP = 0.28          # dessus de l'estrade de `Chargen_Aed` (sommets à moins de 3 m de l'axe)
 SCENE_RADIUS = 40.0          # rayon (m) autour du décor : le décor et ses voisins immédiats
-# Lumières ponctuelles de la carte (lanternes, feux, cristaux) : leur couleur de zone vaut
-# `0xFFFFFF` partout au menu, soit 2 en unités du jeu (0x80 = 1) — décor et personnages sortaient
-# surexposés (statues de l'elfe 184/157/35 contre 133/94/48 à l'écran du 17.0). Ramenée à 1 : écart
-# de calibrage mesuré, la formule de l'octet 2 (`vertex_light`) restant celle des cinématiques.
-POINT_LIGHT_SCALE = 0.5
 # Textures du décor : taille native (décision : pas de réduction, WebP).
 DECOR_TEXTURE_MAX = 4096
 
@@ -72,11 +67,6 @@ class WebpTexturePool(TexturePool):
         img.save(path, format="WEBP", quality=90, method=6, alpha_quality=100)
         self.bytes_written += path.stat().st_size
         return file
-
-
-def scale_argb(value: int, k: float) -> int:
-    a, r, g, b = (value >> 24) & 255, (value >> 16) & 255, (value >> 8) & 255, value & 255
-    return (a << 24) | (min(255, round(r * k)) << 16) | (min(255, round(g * k)) << 8) | min(255, round(b * k))
 
 
 def zone_lights_at(m: PackDB, pos, grid: int = REGION_ZONE_LIGHTS, reach: int = 0) -> int | None:
@@ -104,7 +94,10 @@ def zone_lights_at(m: PackDB, pos, grid: int = REGION_ZONE_LIGHTS, reach: int = 
 def zone_light(m: PackDB, zl: int) -> dict:
     """Éclairage d'une zone du menu, au format de `allods_scenes.read_zone_light` (couleurs ARGB,
     unité 0x80 = 1) : ambiante, diffuse (soleil), brouillard, lumière ponctuelle, auto-illumination,
-    spéculaire, soleil (degrés), ciel."""
+    spéculaire, soleil (degrés), ciel. Valeurs lues telles quelles, comme dans les cinématiques :
+    `PointLightColor` vaut `0xFFFFFF` (2) à sept places, `0xA59243` à celle des aèdes, et le
+    client pose aussi `0x808080` (1) ailleurs (zone de `ferris-retrospective`) : une valeur choisie
+    par zone, qu'aucune donnée ne demande de rééchelonner."""
     e = zl + ZONE_ITEM
     sky = m.ptr(zl + ZONE_SKY)
     return {"ambient": m.u32(e + 0x24), "ambientFactor": round(m.f32(e + 0x28), 4),
@@ -274,8 +267,6 @@ def export_scenes(ctx, races: list[str], race_scene: dict[str, str], vgmstream: 
         place, P, origin = plan["place"], plan["P"], plan["origin"]
         zl = zone_lights_at(mp, place.character)
         light = zone_light(mp, zl) if zl is not None and mp.vtype(zl) == "ZoneLights" else {}
-        if light and POINT_LIGHT_SCALE != 1:
-            light["pointLight"] = scale_argb(light["pointLight"], POINT_LIGHT_SCALE)
         instances, blob = light_decor(decor, light, [float(origin[0]), float(origin[1])], SCENE_RADIUS)
         (scenes_dir / f"{race}-light.bin").write_bytes(blob)
         sky_glb, sky = build_sky(mp, cat, bins, textures, light, f"../{prefix}textures/", report) if light.get("sky") else (None, None)
