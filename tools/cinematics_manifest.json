@@ -22716,6 +22716,13 @@
    }
   },
   {
+   "id": "ferris-sarcophagus",
+   "source": "xdb70",
+   "first_buff": "Items/InteractiveObjects/Ferris_indoor/Ferris_4_start/Ferris_4_start_elf_cutscenes.(BuffResource).xdb",
+   "map": "Ferris_indoor",
+   "_note": "Déroulé serveur 7.0 (Ferris_4_start_elf_cutscenes → Cutscene_01 … Cutscene_04 → Cutscene_fade_end, musique Ferris4_Cutscene3) ; carte Ferris_indoor (le déroulé ne la nomme pas : c’est celle dont la salle de recherche, FerisLab_ArchitectResearchRoom, est sous la caméra). L’ouverture de la sphère (CreatureSetFlagVisAction, drapeau visuel Ferris_4_start_02) n’est pas reproduite. En attente, hors du film : la salle, éclairée par le seul éclairage de zone du 17.0 (violet sombre, sans lumière ponctuelle ; les octets 0-1 du lightvrt ne sont pas élucidés), est presque noire, et l’ouverture de la sphère manque."
+  },
+  {
    "id": "ferris-retrospective",
    "source": "xdb70",
    "first_buff": "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_fade_start.(BuffResource).xdb",

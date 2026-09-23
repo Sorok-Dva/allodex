@@ -1201,14 +1201,15 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     for spec in manifest["engine_scenes"]:
         plans[spec["id"]] = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report) \
             if spec.get("source") == "xdb70" else plan_manual(spec, db, texts, lines17, anim_names, report)
-    wanted_maps = {plans[s["id"]]["map"] for s in manifest["engine_scenes"] if not only or s["id"] in only}
+    # Une scène sans chapitre dans le film (en attente) ne s'extrait que demandée (`--only`).
+    chapters = {c["id"] for c in manifest["cinematics"]}
+    selected = [s for s in manifest["engine_scenes"] if (s["id"] in only if only else s["id"] in chapters)]
+    wanted_maps = {plans[s["id"]]["map"] for s in selected}
     maps: dict[str, dict] = {}
     for map_name in sorted(wanted_maps):
-        on_map = [s for s in manifest["engine_scenes"] if plans[s["id"]]["map"] == map_name]
+        on_map = [s for s in manifest["engine_scenes"] if plans[s["id"]]["map"] == map_name and (s["id"] in chapters or s in selected)]
         maps[map_name] = build_map(map_name, on_map, plans, db, client, bins, root, out_root, report)
-    for spec in manifest["engine_scenes"]:
-        if only and spec["id"] not in only:
-            continue
+    for spec in selected:
         plan = plans[spec["id"]]
         ctx = maps[plan["map"]]
         mp, cat, prefix = ctx["mp"], ctx["cat"], map_prefix(plan["map"])
@@ -1366,8 +1367,13 @@ def update_index(manifest: dict, out_root: Path, entries: list[dict]) -> None:
     path = out_root / "cinematics.json"
     index = json.loads(path.read_text(encoding="utf-8"))
     by_id = {c["id"]: c for c in manifest["cinematics"]}
+    engine_ids = {e["id"] for e in manifest["engine_scenes"]}
+    # Chapitres moteur retirés du film (scène en attente) : ôtés de l'index.
+    index["cinematics"] = [c for c in index["cinematics"] if not (c.get("engine") and c["id"] in engine_ids and c["id"] not in by_id)]
     for e in entries:
-        spec = by_id[e["spec"]["id"]]
+        spec = by_id.get(e["spec"]["id"])
+        if spec is None:
+            continue
         entry = {
             "id": spec["id"], "arc": spec["arc"], "version": spec["version"], "faction": spec["faction"],
             "order": spec["order"], "event": spec.get("event"), "title": spec["title"], "chronology": spec["chronology"],
