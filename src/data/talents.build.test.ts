@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  addBook, addField, bookBlock, checkShared, bookSpent, decodeBuild, emptyBuild, encodeBuild, fieldBlock, fieldSpent, fieldTalentRank,
+  addBook, addField, bookBlock, checkShared, decodeBuilds, encodeBuilds, linkedTalents, bookSpent, decodeBuild, emptyBuild, encodeBuild, fieldBlock, fieldSpent, fieldTalentRank,
   normalize, removeBook, removeField, rulesFor, spentBeforeRow, type Build, type Calc,
 } from './talents.build';
 import type { ClassTalents, TalentCell, TalentsIndex } from './talents.types';
@@ -32,8 +32,8 @@ const data: ClassTalents = {
   talents: Object.fromEntries(['s1', 's2', 's3', 's4', 's5', 's6', 'a1', 'a2', 'a3', 'c', 'b1', 'b2', 'b3'].map(k => [k, { kind: 'spell' as const, ref: k, name: {}, ranks: three }])),
 };
 
-const calc17: Calc = { data, rules: rulesFor('17.0') };
-const calcOld: Calc = { data: { ...data, version: '9.0' }, rules: rulesFor('9.0') };
+const calc17: Calc = { data, rules: rulesFor({ book: 82, field: 77 }) };
+const calcOld: Calc = { data: { ...data, version: '9.0' }, rules: rulesFor(null) };
 
 function apply(_calc: Calc, build: Build, ...steps: ((b: Build) => Build | null)[]): Build {
   return steps.reduce((b, step) => {
@@ -47,8 +47,9 @@ describe('règles par version', () => {
   it('17.0 : 82/77 points, première couche au rang 1, coûts 1/2/3', () => {
     expect(calc17.rules).toMatchObject({ bookPoints: 82, fieldPoints: 77, bookStartRank: true, rankCost: [1, 2, 3] });
   });
-  it('version sans total connu : pas de plafond ni de rang de départ', () => {
-    expect(calcOld.rules).toMatchObject({ bookPoints: null, fieldPoints: null, bookStartRank: false });
+  it('version sans total connu : pas de plafond, première couche offerte quand même', () => {
+    expect(calcOld.rules).toMatchObject({ bookPoints: null, fieldPoints: null, bookStartRank: true });
+    expect(emptyBuild(calcOld).book[0]).toEqual([1, 1, 1, 0]);
   });
 });
 
@@ -63,18 +64,19 @@ describe('livre', () => {
 
   it('coût croissant des rangs et palier de la couche suivante', () => {
     let b = emptyBuild(calcOld);
+    expect(spentBeforeRow(calcOld, b, 1)).toBe(3); // 3 sorts offerts au rang 1
     expect(bookBlock(calcOld, b, 1, 3)).toBe('threshold');
-    b = apply(calcOld, b, x => addBook(calcOld, x, 0, 1), x => addBook(calcOld, x, 0, 1));
+    b = apply(calcOld, b, x => addBook(calcOld, x, 0, 1));
     expect(b.book[0][1]).toBe(2);
-    expect(bookSpent(calcOld, b)).toBe(3); // 1 + 2
-    expect(bookBlock(calcOld, b, 1, 3)).toBe('threshold');
-    b = apply(calcOld, b, x => addBook(calcOld, x, 0, 2));
-    expect(bookBlock(calcOld, b, 1, 3)).toBeNull();
+    expect(bookSpent(calcOld, b)).toBe(2); // rang 2 : 2 points
+    expect(bookBlock(calcOld, b, 1, 3)).toBeNull(); // 1 + 3 + 1 = 5 ≥ 4
+    b = apply(calcOld, b, x => addBook(calcOld, x, 0, 1));
+    expect(bookSpent(calcOld, b)).toBe(5); // + rang 3 : 3 points
   });
 
   it('un enfant ne dépasse pas le rang de son parent', () => {
-    let b = apply(calcOld, emptyBuild(calcOld), x => addBook(calcOld, x, 0, 1, true), x => addBook(calcOld, x, 0, 0));
-    expect(bookBlock(calcOld, b, 1, 0)).toBeNull();
+    let b = apply(calcOld, emptyBuild(calcOld), x => addBook(calcOld, x, 0, 1, true));
+    expect(bookBlock(calcOld, b, 1, 0)).toBeNull(); // parent au rang 1
     b = apply(calcOld, b, x => addBook(calcOld, x, 1, 0));
     expect(bookBlock(calcOld, b, 1, 0)).toBe('parent');
   });
@@ -87,7 +89,8 @@ describe('livre', () => {
     b = apply(calcOld, b, x => removeBook(calcOld, x, 0, 0));
     expect(b.book[1][0]).toBe(2); // ramené au rang du parent
     b = apply(calcOld, b, x => removeBook(calcOld, x, 0, 1, true), x => removeBook(calcOld, x, 0, 0, true));
-    expect(b.book[1]).toEqual([0, 0, 0, 0]); // palier perdu
+    expect(b.book[0]).toEqual([1, 1, 1, 0]);
+    expect(b.book[1]).toEqual([0, 0, 0, 0]); // palier perdu (3 < 4)
   });
 
   it('plafond de points 17.0', () => {
@@ -145,6 +148,7 @@ describe('codage URL', () => {
   it('aller-retour exact', () => {
     for (const calc of [calc17, calcOld]) {
       const b = sample(calc);
+      expect(bookSpent(calc, b)).toBeGreaterThan(0);
       const code = encodeBuild(calc, b)!;
       expect(code.startsWith('1.')).toBe(true);
       expect(decodeBuild(calc, code)).toEqual({ ok: true, build: b });
@@ -182,6 +186,30 @@ describe('codage URL', () => {
   });
 });
 
+describe('deux builds', () => {
+  it('b et b2 : aller-retour indépendant, ancien lien à un seul build accepté', () => {
+    const one = apply(calc17, emptyBuild(calc17), x => addBook(calc17, x, 0, 0, true));
+    const two = apply(calc17, emptyBuild(calc17), x => addField(calc17, x, 0, 0, 1));
+    const codes = encodeBuilds(calc17, [one, two]);
+    expect(codes).toEqual({ b: '1.311', b2: '1.111.C' });
+    expect(decodeBuilds(calc17, codes.b, codes.b2)).toEqual({ builds: [one, two], errors: [null, null] });
+    expect(decodeBuilds(calc17, '1.311', null)).toEqual({ builds: [one, emptyBuild(calc17)], errors: [null, null] });
+  });
+  it('un build invalide est signalé sans toucher à l’autre', () => {
+    const one = apply(calc17, emptyBuild(calc17), x => addBook(calc17, x, 0, 0, true));
+    expect(decodeBuilds(calc17, '1.311', '9.1')).toEqual({ builds: [one, emptyBuild(calc17)], errors: [null, 'format'] });
+  });
+});
+
+describe('liens sort ↔ rubis', () => {
+  it('les deux sens, sans le talent lui-même', () => {
+    const linked: ClassTalents = { ...data, talents: { ...data.talents, a1: { ...data.talents.a1, links: ['s1', 's2', 'a1'] } } };
+    expect([...linkedTalents(linked, 'a1')].sort()).toEqual(['s1', 's2']);
+    expect([...linkedTalents(linked, 's1')]).toEqual(['a1']);
+    expect(linkedTalents(linked, 's3').size).toBe(0);
+  });
+});
+
 describe('lien partagé', () => {
   const index: TalentsIndex = {
     versions: [
@@ -202,7 +230,7 @@ describe('données réelles 17.0', () => {
   const files = import.meta.glob<ClassTalents>('../../public/game/talents/17.0/druid.json', { eager: true, import: 'default' });
   const real = Object.values(files)[0];
   it.skipIf(!real)('un build complet tient dans 82/77 et fait l\'aller-retour', () => {
-    const calc: Calc = { data: real, rules: rulesFor('17.0') };
+    const calc: Calc = { data: real, rules: rulesFor({ book: 82, field: 77 }) };
     let b = emptyBuild(calc);
     // Remplit le livre couche par couche puis les grilles tant que c'est permis.
     for (let guard = 0; guard < 500; guard++) {

@@ -25,24 +25,23 @@ export type VersionRules = {
   rankCost: number[];
 };
 
-const DEFAULT_RULES: VersionRules = { bookPoints: null, fieldPoints: null, bookStartRank: false, rankCost: [1, 2, 3] };
+const DEFAULT_RULES: VersionRules = { bookPoints: null, fieldPoints: null, bookStartRank: true, rankCost: [1, 2, 3] };
+
+/** Totaux d'une version, tels que l'index les tient du manifeste (`points`, avec leur source). */
+export type VersionPoints = { book: number; field: number; source?: string };
 
 /**
- * Règles connues par version. Les totaux de points ne sont pas dans les données du client
- * (ils sont accordés par le serveur au fil des niveaux) :
- *
- * - 17.0 : 82 / 77, relevés dans la fenêtre du jeu d'un personnage au niveau maximal
- *   (« Points de compétence : 0/82 », « Événements de développement : 0/77 »). Le script
- *   affiche `libres + dépensés + appris − 3` : les 3 points de départ (3 sorts de la
- *   première couche au rang 1, les 3 cases centrales des grilles) ne sont pas comptés, ce que
- *   confirme la capture (rangs appris = 85 = 82 + 3).
+ * Règles d'une version. Les totaux de points ne sont pas dans les données du client (le serveur
+ * les accorde au fil des niveaux) : ils viennent de `tools/talents_manifest.json` (`points`),
+ * recopiés dans l'index ; sans eux, pas de plafond. La première couche du livre est offerte au
+ * rang 1 dans toutes les versions ; le script 17.0 le confirme (compteur « − 3 »).
  */
-export const VERSION_RULES: Record<string, Partial<VersionRules>> = {
-  '17.0': { bookPoints: 82, fieldPoints: 77, bookStartRank: true },
-};
-
-export function rulesFor(version: string, rankCost?: number[]): VersionRules {
-  return { ...DEFAULT_RULES, ...(rankCost?.length ? { rankCost } : {}), ...VERSION_RULES[version] };
+export function rulesFor(points?: VersionPoints | null, rankCost?: number[]): VersionRules {
+  return {
+    ...DEFAULT_RULES,
+    ...(rankCost?.length ? { rankCost } : {}),
+    ...(points ? { bookPoints: points.book, fieldPoints: points.field } : {}),
+  };
 }
 
 export type Build = {
@@ -396,4 +395,43 @@ export function checkShared(index: TalentsIndex, v: string | null, c: string | n
   const version = index.versions.find(x => x.id === v && x.classes.length);
   if (!version) return 'version';
   return version.classes.some(x => x.slug === c) ? null : 'class';
+}
+
+/* --- deux builds (I et II) -------------------------------------------------------------- */
+
+/**
+ * Le jeu garde deux builds par personnage (sélecteur I / II) ; le lien les porte tous deux :
+ * `b` (build I) et `b2` (build II), chacun au format ci-dessus, et `s=2` quand le build II est
+ * affiché. Un ancien lien à un seul build (`b`) reste valable.
+ */
+export type Builds = [Build, Build];
+export type SharedBuilds = { builds: Builds; errors: [DecodeError | null, DecodeError | null] };
+
+export function encodeBuilds(calc: Calc, builds: Builds): { b: string | null; b2: string | null } {
+  return { b: encodeBuild(calc, builds[0]), b2: encodeBuild(calc, builds[1]) };
+}
+
+export function decodeBuilds(calc: Calc, b: string | null, b2: string | null): SharedBuilds {
+  const one = (code: string | null): [Build, DecodeError | null] => {
+    if (!code) return [emptyBuild(calc), null];
+    const d = decodeBuild(calc, code);
+    return d.ok ? [d.build, null] : [emptyBuild(calc), d.error];
+  };
+  const [first, e1] = one(b);
+  const [second, e2] = one(b2);
+  return { builds: [first, second], errors: [e1, e2] };
+}
+
+/* --- liens sort ↔ rubis ----------------------------------------------------------------- */
+
+/**
+ * Talents liés à `talent` : les sorts qu'il modifie (`links`, 17.0) et, en retour, les talents
+ * qui le modifient — ce que le jeu surligne au survol (`CalcTalentLinkedResources` marque les
+ * deux sens). Le talent lui-même n'y est pas.
+ */
+export function linkedTalents(data: ClassTalents, talent: string): Set<string> {
+  const out = new Set<string>(data.talents[talent]?.links ?? []);
+  for (const [key, t] of Object.entries(data.talents)) if (t.links?.includes(talent)) out.add(key);
+  out.delete(talent);
+  return out;
 }

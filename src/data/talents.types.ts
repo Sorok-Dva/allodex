@@ -24,6 +24,8 @@ export type TalentInfo = {
   description?: LocText;
   icon?: string;
   ranks: TalentRank[];
+  /** Sorts que cette capacité modifie (17.0 : surlignés au survol, et réciproquement). */
+  links?: string[];
   missing?: string[];
 };
 
@@ -77,6 +79,8 @@ export type VersionEntry = {
   languages: TalentLang[];
   format: 'v1' | 'v2';
   classes: ClassEntry[];
+  /** Totaux de points (manifeste, avec leur source) ; absents = pas de plafond connu. */
+  points?: { book: number; field: number; source?: string };
 };
 
 export type TalentsIndex = {
