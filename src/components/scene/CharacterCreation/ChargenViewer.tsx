@@ -292,7 +292,7 @@ export const ChargenViewer = forwardRef<ChargenViewerHandle, ChargenViewerProps>
           // Effets : ceux des objets portés en continu, ceux de la tenue avec l'animation de création.
           const fx: FxWant[] = look.fx.map(f => ({ fx: f.fx, locator: f.locator, start: 0, effectsOnly: true }));
           if (want.key === 'primary') {
-            for (const f of growth?.fx ?? []) if (f.fx) fx.push({ fx: f.fx, locator: f.locator, scale: f.scale || 1, start: s0.playAt });
+            for (const f of growth?.fx ?? []) if (f.fx) fx.push({ fx: f.fx, locator: f.locator, scale: f.scale || 1, start: s0.playAt, runType: f.runType });
           }
           void fxHost().sync(rig, fx);
         });

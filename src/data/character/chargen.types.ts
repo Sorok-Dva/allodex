@@ -50,8 +50,8 @@ export type Growth = {
   start: string | null;
   loop: string | null;
   items: { slot: string; item: string }[];
-  /** Effets de la tenue de création (`fx/…glb`), rejoués avec l'animation de création. */
-  fx: { locator: string; scale: number; fx: string | null }[];
+  /** Effets de la tenue de création (`fx/…glb`), rejoués avec l'animation de création : échelle du client (+0x24 du `ChargenEffect`), `runType` (0 ou 1, sens non établi). */
+  fx: { locator: string; scale: number; runType?: number; fx: string | null }[];
 };
 
 export type ChargenCombo = {
