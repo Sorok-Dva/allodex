@@ -338,3 +338,30 @@ def test_state_windows_start_from_the_manifest_state():
     from tools.extract_engine_cutscene import state_windows
     w = state_windows(1, [{"t": 0.0, "state": 2}, {"t": 11.0, "state": 3}], 14.0)
     assert w == [(-1e6, 0.0, 1), (0.0, 11.0, 2), (11.0, 14.0, 3)]
+
+
+def test_read_zone_light_reads_point_light_after_the_constant_field():
+    """Élément `Ferris4_Base` : `+0x48` vaut −1, `PointLightColor` 12362130 en `+0x4C` (7.0)."""
+    from tools.allods_scenes import ZONE_LIGHTS, read_zone_light
+    raw = bytearray(0x200)
+    e = 0x100
+    for off, value in ((0x24, 0xFF655045), (0x48, 0xFFFFFFFF), (0x4C, 12362130), (0x50, 2024878104), (0x54, 9259293)):
+        struct.pack_into("<I", raw, e + off, value)
+
+    class Db:
+        def resources(self, kind):
+            return [0]
+
+        def elements(self, loc, stride):
+            return [e] if loc == ZONE_LIGHTS else []
+
+        def ptr(self, loc):
+            return None
+
+        def u32(self, off):
+            return struct.unpack_from("<I", raw, off)[0]
+
+        def f32(self, off):
+            return struct.unpack_from("<f", raw, off)[0]
+    light = read_zone_light(Db())
+    assert light["pointLight"] == 12362130 and light["selfIllum"] == 2024878104 and light["specular"] == 9259293
