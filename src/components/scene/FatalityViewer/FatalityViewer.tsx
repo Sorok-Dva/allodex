@@ -71,15 +71,18 @@ export type FatalityEnvironment = {
 
 /**
  * Place du tueur : à `ATTACKER_DISTANCE` m de la victime, décalé de `ATTACKER_BEARING` depuis
- * l'avant de la victime (côté +X du jeu), tourné vers elle. Mise en scène : le client pose le
- * tueur où il se trouvait au coup fatal ; c'est la distance d'un sort à portée moyenne.
+ * l'avant de la victime (côté −X du jeu, à droite de la caméra), tourné vers elle. Mise en
+ * scène : le client pose le tueur où il se trouvait au coup fatal. Le côté +X est pris par
+ * certains effets modelés à l'écart de la victime (l'écureuil de 2024).
  */
 const ATTACKER_DISTANCE = 5;
-const ATTACKER_BEARING = THREE.MathUtils.degToRad(55);
+const ATTACKER_BEARING = THREE.MathUtils.degToRad(-55);
 /**
  * Axe le long duquel les rayons (`CreatureChannelDirectAction`) sont modelés : l'avant des
  * modèles du jeu, −Y (`Fatality_Channel` s'étend de 0 à −8,6 m à sa pose de bind).
  */
+/** Part du chemin victime → tueur dont glisse la cible du cadrage initial. */
+const ATTACKER_FOCUS = 0.3;
 const CHANNEL_AXIS = new THREE.Vector3(0, -1, 0);
 /** Compense la division par π du Lambert de three.js : une lumière du jeu à 1 éclaire à 1. */
 const LIGHT_SCALE = Math.PI;
@@ -230,10 +233,10 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     resetView: () => {
       const st = state.current;
       if (!st.camera || !st.controls) return;
-      frameCamera(st.camera, st.controls, height);
+      frameCamera(st.camera, st.controls, height, !!attackerUrl);
       st.dirty = true;
     },
-  }), [height]);
+  }), [height, attackerUrl]);
 
   useEffect(() => {
     const st = state.current;
@@ -546,7 +549,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       controls.maxDistance = Math.max(height, 1) * 16;
       controls.maxPolarAngle = Math.PI * 0.53;
       st.controls = controls;
-      frameCamera(camera, controls, height);
+      frameCamera(camera, controls, height, !!attackerUrl);
       window.addEventListener('resize', resize);
       if (typeof ResizeObserver !== 'undefined') { observer = new ResizeObserver(resize); observer.observe(canvas.parentElement ?? canvas); }
       resize();
@@ -743,12 +746,17 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
   return <canvas ref={canvasRef} className={`${s.canvas} ${className ?? ''}`} data-testid="fatality-viewer" aria-hidden="true" />;
 });
 
-/** Cadrage initial : face à la victime (côté −Y du jeu, celui du tueur), légère plongée. */
-export function frameCamera(camera: THREE.PerspectiveCamera, controls: OrbitControls, height: number): void {
+/**
+ * Cadrage initial : face à la victime (côté −Y du jeu), légère plongée. Avec un tueur, la cible
+ * glisse de `ATTACKER_FOCUS` vers lui pour que les deux tiennent dans l'image (`withAttacker`).
+ */
+export function frameCamera(camera: THREE.PerspectiveCamera, controls: OrbitControls, height: number, withAttacker = false): void {
   const h = Math.max(height, 1);
+  // Repère de la scène (miroir X du repère du jeu).
+  const shift = withAttacker ? -ATTACKER_DISTANCE * Math.sin(ATTACKER_BEARING) * ATTACKER_FOCUS : 0;
   // Les effets montent à 3-6 hauteurs de personnage et s'étalent sur ~8 m : cadre large.
-  controls.target.set(0, 0, h * FRAME_TARGET);
-  camera.position.set(h * FRAME_SIDE, -h * FRAME_BACK, h * FRAME_UP);
+  controls.target.set(shift, 0, h * FRAME_TARGET);
+  camera.position.set(shift + h * FRAME_SIDE, -h * FRAME_BACK, h * FRAME_UP);
   camera.lookAt(controls.target);
   controls.update();
 }

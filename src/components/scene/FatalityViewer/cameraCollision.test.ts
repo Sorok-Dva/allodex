@@ -51,6 +51,12 @@ describe('CameraCollider', () => {
     expect(out.y).toBeCloseTo(-4 + CAMERA_GROUND_MARGIN, 3);
   });
 
+  it('ne bloque pas une vue plongeante sur une cible posée au sol', () => {
+    const { c } = collider();
+    const out = c.constrain(new THREE.Vector3(-10, -10, -1), new THREE.Vector3(-10, -10, 11), new THREE.Vector3());
+    expect(out.z).toBeCloseTo(11, 3);
+  });
+
   it('laisse passer la caméra à travers les feuillages découpés', () => {
     const { c } = collider();
     const out = c.constrain(new THREE.Vector3(5, 0, 1), new THREE.Vector3(5, -10, 1), new THREE.Vector3());

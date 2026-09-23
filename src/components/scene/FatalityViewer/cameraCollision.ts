@@ -43,6 +43,7 @@ export class CameraCollider {
   private readonly offset = new THREE.Vector3();
   private readonly tmp = new THREE.Vector3();
   private readonly dir = new THREE.Vector3();
+  private readonly origin = new THREE.Vector3();
   private readonly opts: Required<CameraColliderOptions>;
 
   constructor(options: CameraColliderOptions = {}) {
@@ -79,14 +80,19 @@ export class CameraCollider {
     out.copy(wanted);
     const { margin } = this.opts;
     if (this.obstacles.length) {
-      this.dir.subVectors(wanted, target);
+      // Une cible posée au ras du sol (déplacement au clic droit) toucherait le terrain dès le
+      // départ du rayon : on la relève au-dessus du sol pour ce test.
+      const origin = this.origin.copy(target);
+      const under = this.groundHeight(origin.x, origin.y);
+      if (under !== null && origin.z < under + margin) origin.z = under + margin;
+      this.dir.subVectors(wanted, origin);
       const distance = this.dir.length();
       if (distance > 1e-6) {
         this.dir.divideScalar(distance);
-        this.ray.set(target, this.dir);
+        this.ray.set(origin, this.dir);
         this.ray.far = distance;
         const hit = this.ray.intersectObjects(this.obstacles, true)[0];
-        if (hit) out.copy(target).addScaledVector(this.dir, Math.max(hit.distance - margin, 0));
+        if (hit) out.copy(origin).addScaledVector(this.dir, Math.max(hit.distance - margin, 0));
       }
     }
     const floor = this.groundHeight(out.x, out.y);
