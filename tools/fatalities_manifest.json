@@ -1,5 +1,5 @@
 {
-  "_note": "Écran « Fatalités ». Source : le dernier client (RU 17.x, `client_root`) — géométries, textures, animations, sons ET métadonnées (compilées dans Bin/pack.bin, lues par tools/allods_packdb.py). `server_root` (arbre serveur 7.0) ne sert plus qu'à la sélection des géosets de la tenue par défaut des personnages (VisualItem pas encore décodés dans pack.bin) et aux comparaisons. `type` = valeur de FatalityType dans le SlonRoot du client (1-10 classes, 11-26 boutique) ; l'association type → effets, animations, délais vient des données. Les libellés sont bilingues ; ceux de la boutique sont des noms d'usage (le client RU ne donne que des noms internes).",
+  "_note": "Écran « Fatalités ». Source : le dernier client (RU 17.x, `client_root`) — géométries, textures, animations, sons ET métadonnées (compilées dans Bin/pack.bin, lues par tools/allods_packdb.py). `server_root` (arbre serveur 7.0) ne sert plus qu'à la lumière de zone du décor (ZoneLights pas encore décodé dans pack.bin) et aux comparaisons ; l'apparence des personnages est lue dans pack.bin (tools/allods_characters.py). `type` = valeur de FatalityType dans le SlonRoot du client (1-10 classes, 11-26 boutique) ; l'association type → effets, animations, délais vient des données. Les libellés sont bilingues ; ceux de la boutique sont des noms d'usage (le client RU ne donne que des noms internes).",
   "client_root": "/mnt/h/MyGames/AllodsRU",
   "server_root": "/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data",
   "characters": [
@@ -395,7 +395,7 @@
     }
   ],
   "scene": {
-    "_note": "Décor : un coin des Prés bénis (Kania). Textures de terrain et ornements tirés du client (World/Kvatoh/BlessedMeadows) ; ciel = SkyMesh du client dont la première partie est Sky01_DayBackground ; lumière = ZoneLights 7.0 BlessedMeadowsDefault à midi (le ZoneLights compilé du client n'est pas décodé). La disposition des ornements est une mise en scène (aucune carte n'est lue).",
+    "_note": "Décor : un coin des Prés bénis (Kania). Textures de terrain et ornements tirés du client (World/Kvatoh/BlessedMeadows) ; ciel = SkyMesh du client dont la première partie est Kvatoh_Day (ciel de jour de Kvatoh, la région des Prés bénis) ; lumière = ZoneLights 7.0 BlessedMeadowsDefault à midi (le ZoneLights compilé du client n'est pas décodé). La disposition des ornements est une mise en scène (aucune carte n'est lue).",
     "label": {
       "fr": "Prés bénis (Kania)",
       "en": "Blessed Meadows (Kania)"

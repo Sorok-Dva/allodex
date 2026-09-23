@@ -18,12 +18,15 @@ d'une fatalité (voir le README, § « Fatalités ») :
 
 Sorties (`public/game/fatalities/`) :
 
-* `characters/<id>.glb` — personnage (géométrie et matériaux RU, géosets de la tenue par
-  défaut) avec les clips : `idle01` et toutes les animations que les chronologies demandent ;
+* `characters/<id>.glb` — personnage sans équipement tel que le client le montre (apparence
+  par défaut et peau cuite : `tools/allods_characters.py`) avec les clips : `Idle01` et toutes les
+  animations que les scripts de la victime et du tueur demandent ;
 * `fx/<id>.glb` — les gabarits d'objets d'une fatalité, un nœud `vot:<nom>` chacun, avec
   leur squelette, leur clip et leurs composants accrochés ; textures communes dans `textures/` ;
 * `sfx/<nom>.ogg|.mp3` — les ondes des fatalités ;
-* `fatalities.json` — index : personnages, fatalités, chronologies par personnage, gabarits.
+* `fatalities.json` — index : personnages, fatalités, chronologies par personnage (victime et
+  tueur : `casterFxScript`, effets et rayons), gabarits ;
+* `scene/scene.glb` — le décor (terrain, ornements, ciel des Prés bénis).
 
 Le repère du jeu (main gauche, Z en haut) est conservé dans les `.glb` : le lecteur les place
 sous un nœud miroir unique.
@@ -135,12 +138,12 @@ class TexturePool:
         self.dir = out_dir / "textures"
         self.done: dict[tuple[str, int], str | None] = {}
         self.has_alpha: dict[str, bool] = {}
-        self.by_name: dict[str, int] = {}
+        self.by_name: dict[str, list[int]] = {}
         for kind in ("Texture", "IndexedTexture"):
             for off in db.resources(kind):
                 name = cat.name(db.binary_ref(off))
                 if name:
-                    self.by_name.setdefault(name, off)
+                    self.by_name.setdefault(name, []).append(off)
         self.bytes_written = 0
 
     def uri(self, name: str | None, max_size: int, prefix: str = "../textures/") -> str | None:
@@ -155,45 +158,49 @@ class TexturePool:
     def image(self, name: str, max_size: int) -> Image.Image | None:
         """Texture décodée (RGBA), au plus grand niveau de mipmap qui tient dans `max_size`.
 
-        Sans ressource `Texture` (textures de terrain, lues par les calques de carte), format et
-        dimensions se déduisent de la chaîne de mipmaps (`infer_texture_dims`)."""
-        off = self.by_name.get(name)
-        if off is not None:
-            info = read_texture(self.db, self.cat, off)
-        else:
-            info = SimpleNamespace(binary=name, binary_hi=name[:-4] + ".hi.bin", fmt=None, width=0, height=0)
+        Plusieurs ressources `Texture` peuvent nommer le même `.bin` avec des dimensions
+        différentes (`Rays12White` : 256² et 128²) : on essaie chacune, puis les dimensions
+        déduites de la chaîne de mipmaps (`infer_texture_dims`, seule source pour les textures
+        de terrain), et l'on garde la première dont les niveaux ont la taille attendue."""
+        infos = [read_texture(self.db, self.cat, off) for off in self.by_name.get(name, [])]
+        binary = infos[0].binary if infos else name
+        binary_hi = infos[0].binary_hi if infos else name[:-4] + ".hi.bin"
         mips: dict[int, bytes] = {}
-        for binary in (info.binary, info.binary_hi):
-            data = self.bins.get(binary) if binary else None
+        for file in (binary, binary_hi):
+            data = self.bins.get(file) if file else None
             if data:
                 try:
                     mips.update(read_chunks(data))
                 except zlib.error:
                     pass
-        if info.fmt is None:
-            candidates = infer_texture_dims(mips)
-            if not candidates:
-                return None
-            fmt, width, height = next((c for c in candidates if c[1] == c[2]), candidates[0])
-            info = SimpleNamespace(binary=info.binary, binary_hi=info.binary_hi, fmt=fmt, width=width, height=height)
-        fmt = info.fmt
-        if (fmt not in FOURCC and fmt != "RGBA") or not info.width or not info.height:
+        candidates = [(i.fmt, i.width, i.height) for i in infos]
+        inferred = infer_texture_dims(mips)
+        candidates += sorted(inferred, key=lambda c: c[1] != c[2])
+        for fmt, width, height in dict.fromkeys(candidates):
+            img = self._decode(mips, fmt, width, height, max_size)
+            if img is not None:
+                return img
+        return None
+
+    @staticmethod
+    def _decode(mips: dict[int, bytes], fmt: str, width: int, height: int, max_size: int) -> Image.Image | None:
+        if (fmt not in FOURCC and fmt != "RGBA") or not width or not height:
             return None
         for level in sorted(mips):
-            w, h = max(1, info.width >> level), max(1, info.height >> level)
+            w, h = max(1, width >> level), max(1, height >> level)
             if max(w, h) > max_size and level < max(mips):
                 continue
             payload = mips[level]
             if fmt == "RGBA":
                 # Non compressée : 4 octets par pixel, ordre B G R A (A8R8G8B8 de Direct3D).
-                if len(payload) < w * h * 4:
-                    continue
-                bgra = np.frombuffer(payload[:w * h * 4], np.uint8).reshape(h, w, 4)
+                if len(payload) != w * h * 4:
+                    return None
+                bgra = np.frombuffer(payload, np.uint8).reshape(h, w, 4)
                 return Image.fromarray(bgra[:, :, [2, 1, 0, 3]].copy(), "RGBA")
             need = max(1, (w + 3) // 4) * max(1, (h + 3) // 4) * BLOCK_BYTES[fmt]
-            if len(payload) < need:
-                continue
-            img = Image.open(io.BytesIO(build_dds(w, h, FOURCC[fmt], payload[:need])))
+            if len(payload) != need:
+                return None
+            img = Image.open(io.BytesIO(build_dds(w, h, FOURCC[fmt], payload)))
             img.load()
             return img.convert("RGBA")
         return None
