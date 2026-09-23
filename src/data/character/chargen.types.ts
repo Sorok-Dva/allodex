@@ -114,8 +114,12 @@ export type SceneCharacter = {
   scale: number;
   /** Place sur l'estrade, relative à l'origine du décor. */
   position?: [number, number, number];
-  /** Lumière à la place (ambiante + ponctuelles de la carte), unités du jeu (1 = 0x80). */
-  light?: [number, number, number] | null;
+  /** Ambiante de la zone à la place, unités du jeu (1 = 0x80). */
+  ambient?: [number, number, number] | null;
+  /** `PointLightColor` de la zone (1 = 0x80). */
+  pointColor?: [number, number, number] | null;
+  /** Lumières ponctuelles de la carte qui atteignent la place (positions relatives à l'origine du décor). */
+  pointLights?: { p: [number, number, number]; intensity: number; radius: number; attenuation: number }[];
 };
 
 /** Caméra de `UICharacterScenes` : position relative au personnage, lacet et tangage (degrés, tangage positif vers le bas), champ horizontal (rad). */

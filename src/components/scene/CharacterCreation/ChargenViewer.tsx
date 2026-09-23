@@ -8,6 +8,7 @@ import { CharacterRig, createAssetCache, type AssetCache } from './rig';
 import { aimCamera, chargenCamera, clampZoom } from './stage';
 import { loadChargenDecor, type ChargenDecor } from './chargenDecor';
 import { CharacterFxHost, type FxWant } from './characterFx';
+import { ActorLighting } from './actorLight';
 import { exportCharacterGlb } from './exportGlb';
 import s from './ChargenViewer.module.css';
 
@@ -79,6 +80,8 @@ export const ChargenViewer = forwardRef<ChargenViewerHandle, ChargenViewerProps>
     /** Départ de l'animation de création en cours (les effets de la tenue s'y calent). */
     playAt: 0,
     fx: null as CharacterFxHost | null,
+    /** Éclairage des personnages (ambiante, soleil, lumières ponctuelles de la place). */
+    lighting: new ActorLighting(),
     frame: null as null | (() => void),
   });
 
@@ -148,6 +151,8 @@ export const ChargenViewer = forwardRef<ChargenViewerHandle, ChargenViewerProps>
       const p = propsRef.current;
       s0.decor?.update(s0.time, s0.camera, p.step !== 'faction' && !p.muted);
       s0.fx?.update(s0.time, s0.camera);
+      s0.camera.updateMatrixWorld();
+      s0.lighting.update(s0.camera, s0.world);
       renderer.render(s0.scene, s0.camera);
     };
     const sceneYaw = () => propsRef.current.data.scenes?.[propsRef.current.descriptor.race]?.character.yaw ?? 0;
@@ -231,6 +236,7 @@ export const ChargenViewer = forwardRef<ChargenViewerHandle, ChargenViewerProps>
         s0.scene.background = decor.background;
         s0.scene.fog = decor.fog;
         s0.scene.add(decor.sun);
+        s0.lighting.setScene(props.data.scenes?.[race]?.character, { color: decor.sun.color, direction: decor.sun.position });
         s0.frame?.();
         propsRef.current.onReady?.();
       }).catch(err => propsRef.current.onError?.(String(err)));
@@ -247,18 +253,15 @@ export const ChargenViewer = forwardRef<ChargenViewerHandle, ChargenViewerProps>
     const meta = p.data.scenes?.[d.race];
     const combo = p.data.combos[comboKey(d.race, d.class)];
     const scale = meta?.character.scale ?? 1;
-    // Lumière du personnage : ambiante + lumières ponctuelles de la carte à sa place, en émission
-    // modulée par la texture ; le soleil de la zone s'y ajoute par N·L (formule du jeu).
-    const glow = meta?.character.light ? new THREE.Color(...meta.character.light) : new THREE.Color(0.4, 0.4, 0.45);
+    // Lumière du personnage (shaders du jeu, voir `ActorLighting`) : ambiante de la zone en émission
+    // modulée par la texture, soleil par N·L, lumières ponctuelles de la place une à une.
     const lightRig = (rig: CharacterRig) => {
       rig.root.traverse(node => {
         const mesh = node as THREE.Mesh;
         if (!mesh.isMesh) return;
         for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
           if (!(material instanceof THREE.MeshLambertMaterial) || material.transparent || material.blending === THREE.AdditiveBlending) continue;
-          material.emissive = glow;
-          material.emissiveMap = material.map;
-          material.needsUpdate = true;
+          s0.lighting.apply(material);
         }
       });
     };

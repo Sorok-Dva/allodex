@@ -116,6 +116,25 @@ def zone_light(m: PackDB, zl: int) -> dict:
             "sky": sky if sky is not None and m.vtype(sky) == "SkyMesh" else None}
 
 
+ACTOR_REACH = 1.5            # m : demi-hauteur d'un personnage, marge autour de la portée d'une lumière
+
+
+def actor_point_lights(position, lights: list[dict], origin) -> list[dict]:
+    """Lumières ponctuelles de la carte qui atteignent le personnage (portée + `ACTOR_REACH` autour
+    du milieu du corps), positions ramenées à l'origine du décor. Le lecteur les applique comme le
+    jeu : une passe par lumière (`Material/pointLit-dx11.bin`), `N·L` par sommet, résultat saturé à
+    2 × la texture, couleur `PointLightColor` × intensité × `(1 − d / rayon)^atténuation` (loi de
+    l'octet 2 du `lightvrt` du décor, `extract_engine_cutscene.vertex_light`)."""
+    p = np.array(position, float) + np.array([0, 0, 1.0])
+    out = []
+    for lt in lights:
+        d = float(np.linalg.norm(np.array(lt["p"]) - p))
+        if d < lt["radius"] + ACTOR_REACH and lt["intensity"]:
+            out.append({"p": [round(float(v), 3) for v in np.array(lt["p"]) - np.array(origin)],
+                        "intensity": lt["intensity"], "radius": lt["radius"], "attenuation": lt["attenuation"]})
+    return out
+
+
 def scene_origin(mp: PackDB, cat, objects, place, radius: float = 10.0) -> tuple[float, float, float] | None:
     """Position de l'objet de décor de création le plus proche (horizontalement) de la place."""
     best = None
@@ -189,7 +208,7 @@ def export_scenes(ctx, races: list[str], race_scene: dict[str, str], vgmstream: 
     `scenes/<Race>-light.bin`, ciel `scenes/<Race>-sky.glb`), sons dans `sfx/`."""
     import tools.extract_engine_cutscene as eec
     from tools.extract_engine_cutscene import (
-        DEFAULT_VGMSTREAM, build_decor, build_sky, export_waves, light_at, light_decor, map_sounds,
+        DEFAULT_VGMSTREAM, _rgb, build_decor, build_sky, build_terrain, export_waves, light_decor, map_sounds,
         rebase_objects, sun_direction,
     )
     # Réglages propres à la création, posés sur la chaîne commune le temps de l'extraction :
@@ -291,8 +310,11 @@ def export_scenes(ctx, races: list[str], race_scene: dict[str, str], vgmstream: 
             "origin": [round(float(v), 4) for v in origin],
             "character": {"yaw": round(place.character_yaw, 3), "scale": round(place.character_scale, 3),
                           "position": [round(float(v), 3) for v in stand],
-                          # Lumière du personnage (ambiante + ponctuelles de la carte à sa place, 1 = 0x80).
-                          "light": light_at(list(origin + stand), decor["pointLights"], light) if light else None},
+                          # Lumière du personnage (1 = 0x80) : ambiante de la zone (`shadowColor` du shader
+                          # des personnages), soleil laissé au lecteur (`N·L`), lumières ponctuelles.
+                          "ambient": [round(float(v), 4) for v in _rgb(light.get("ambient"))] if light else None,
+                          "pointColor": [round(float(v), 4) for v in _rgb(light.get("pointLight"))] if light else None,
+                          "pointLights": actor_point_lights(origin + stand, decor["pointLights"], origin)},
             "camera": {"position": [round(float(v), 4) for v in (np.array(place.camera) - P)],
                        "yaw": round(place.camera_yaw, 3), "pitch": round(place.camera_pitch, 3),
                        "height": round(place.camera_height, 3), "fov": round(place.fov, 4)},
