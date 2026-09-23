@@ -131,8 +131,9 @@ bonus » mène à la fin. La bannière de faction indique la durée du film sans
   (VP9 CRF 40 + Opus 96 k) et MP4 (H.264 CRF 29 + AAC 128 k), 720p au plus, et une affiche.
 - **Audio** : la piste est **incrustée** dans l'`.ogv` et identique dans tous les clients
   (FR compris) : voix **russes** quand il y a des dialogues (23 vidéos), musique et effets
-  seulement pour les 11 autres. Les paks `SFX_Voice_*` du 17.0 ne contiennent que des
-  répliques de Kvator et des scènes moteur de ZC12, rien pour les vidéos.
+  seulement pour les 11 autres. Les paks `SFX_Voice_*` du 17.0 ne contiennent que les
+  répliques de Kvator ; les voix des scènes moteur des quêtes sont dans `BaseLocall_x64.pak`
+  (`SFX/Voice/*.bsb`, 226 banques russes), rien pour les vidéos.
 - **Sous-titres** : ils ne sont pas dans la vidéo. Le client les affiche par l'add-on
   `Subtitles` (événement `EVENT_SHOW_SUBTITLES`) depuis des ressources `UISubtitleShow`
   (`subtitles[] = {delayMs, text}` ; `delayMs` = durée d'affichage). Compilées dans
@@ -161,12 +162,80 @@ Sorties : `public/game/cinematics/<id>/{video.webm, video.mp4, poster.jpg, fr.vt
 ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le reste de
 `public/game/` (≈ 380 Mo : 193 Mo de MP4, 186 Mo de WebM, moins d'1 Mo d'affiches et de pistes ; environ 25 min 30 s de film par faction).
 
+### Cinématiques moteur recréées en 3D (pilote)
+
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Le
+chapitre 12.0 « Le monde caché » (`ao12-prologue04`, quête `AO12_Prologue04`, carte
+`AO12_PrologueInst`, la Citadelle de Nihaz) en est une, **recréée dans three.js** avec les
+données du dernier client et jouée dans le film comme un chapitre vidéo (même barre, mêmes
+raccourcis, sous-titres FR/EN/RU, voix russes).
+
+    python3 tools/extract_engine_cutscene.py                 # tout le pilote
+    python3 tools/extract_engine_cutscene.py --no-voices     # garde les voix déjà extraites
+    python3 tools/inventory_engine_cutscenes.py --client-only   # relevé du 17.0 (4 s)
+
+**Inventaire** (`engine_cutscenes` du manifeste). Deux relevés : celui de l'arbre serveur 7.0
+croisé avec le 17.0 (141 scènes, `scenes`) et celui du **17.0 seul** (`client_17`) :
+555 trajets de caméra (`CameraTrackAction`), dont 375 dans des scripts de buff de
+cinématique, 69 dans des `ClientData`, 7 dans des actions de créature ; 73 de ces buffs ont,
+rangées à côté d'eux, des répliques sous-titrées et doublées (67 avec des voix
+`Cutscenes/*`) — les meilleurs candidats ; 36 `GameViewScene`, 37 `GameViewScript` et 60
+`ShowSceneAction` (figurants des instances de départ, fantômes, combats : pas de dialogue) ;
+662 ressources de sous-titres. Le rattachement réplique ↔ buff se fait par proximité
+d'identifiants (`pack.bin` range les ressources dossier par dossier) : approché, signalé.
+
+**Ce qui vient du client 17.0** (lecteurs `tools/allods_bins17.py`, `tools/allods_vis17.py`) :
+
+- *caméra* : `BuffResource 507556` → `BuffVisScripts` → `CameraTrackAction`, six points de
+  caméra et six visées avec leur durée, identiques au `.xdb` 7.0 ; la durée d'un point est le
+  temps pour rejoindre le suivant (82 s au total) ;
+- *répliques* : dix `ClientData` (voix `Cutscenes/Eden2/Prologue04_Cutscene_1…10`) : sous-titre
+  (indice de texte + durée), voix, animation du locuteur (`emoteSpeech`) ; FR du client 16.0 ;
+  voix de `SFX/Voice/Voice_Eden06_rus.bsb` (sous-pistes nommées comme les événements) ;
+- *décor* : base propre à la carte `Bin/Maps_AO12_PrologueInst.bin` (même format que
+  `pack.bin` ; ses pointeurs de genre 1 visent `pack.bin`) : 4 régions, 193 objets posés
+  (27 géométries — le quartier général de Nihaz, le Pointeur, portails, colonne d'éclairs —,
+  164 lumières ponctuelles, 1 particule) ; **éclairage précalculé** `…_lightvrt.bin` (un
+  sommet par sommet de géométrie, vérifié sur les 27) ; éclairage de zone `ZoneLights`
+  (ambiante, brouillard, auto-illumination ; champs rangés par ordre alphabétique, recoupés
+  sur `AC5_base` 7.0) ;
+- *acteurs* : `MobWorld` → `VisualMob` → gabarit : Gort-Kostolom (Kania, cuir), Reniesta
+  (Kania, robe violette, bâton), Véronika (modèle `Creatures/Veronika`), Nihaz (dragon
+  `NihazDragonBoss`, seul visuel du `MobWorld` « Нихаз » rangé avec la quête) ; habillage
+  comme le client : tenue par défaut, variations (visage, coiffure), objets portés
+  (géosets montrés/cachés, objets accrochés aux articulations `Slot_*`, élément « L »/« R »
+  choisi par le nom de la forme, texture de remplacement), **atlas de peau** composé des
+  patchs de texture des objets (rectangles UV, sous-vêtements d'abord) ; animations `Idle`,
+  `Idle01`, `EmoteSpeech`, `SpellCastOmni`.
+
+**Ce que le client ne contient pas** (décidé par le serveur) et que le manifeste fournit,
+justifié (`engine_scenes`) : la **place des acteurs** (le groupe autour du Pointeur, visé
+par les 42 premières secondes ; Nihaz au point visé par le plan fixe de ses répliques, visible
+à partir de 39 s) et l'**instant des répliques** (trois groupes calés sur trois tronçons de la
+trajectoire : 4 répliques dans le premier plan de 39 s, 3 dans le plan fixe de 21 s, 3 dans le
+dernier de 15 s ; dans un groupe, à la fin de la voix précédente + 0,6 s). Choix du lecteur,
+nommés : champ vertical 45° ; couleur des sommets du décor = ambiante × 2 + octet 2 du
+`lightvrt` × auto-illumination × 2 (le shader du client n'est pas lu, les octets 0-1 restent
+à comprendre) ; acteurs éclairés par la lumière précalculée moyenne du décor autour d'eux.
+L'affiche (`poster.jpg`) est une capture du lecteur à 46 s.
+
+**Manques du pilote** : particules et effets posés par le serveur (le dernier travelling
+vise un point vide, (90 ; 148 ; 210), sans doute un effet de vision) ; ciel (`SkyMesh`, fond =
+couleur du brouillard) ; lumières ponctuelles temps réel ; objets animés du décor figés à leur
+pose de bind ; le joueur, présent dans le jeu, absent ici ; interpolation de caméra linéaire.
+Poids : 13 Mo (décor 2 Mo, acteurs 4 Mo, textures 5,5 Mo, voix 1 Mo).
+
+**Code repris** : `tools/packbin.py` est une copie telle quelle de la branche des talents
+(commit 1ad668d) ; les décalages de `Geometry`, `Texture`, `VisObjectTemplate` et
+l'assemblage glTF (`Glb`) viennent de la branche des fatalités (`allods_visdb.py`,
+`extract_fatalities.py`, commit 5615126), recopiés et adaptés (doublon à réunir quand les
+deux branches seront fusionnées).
+
 ### Ce qui manque
 
-- **Cinématiques moteur** (GameViewScene + script, jouées en temps réel) : pas de fichier
-  vidéo, il faudrait filmer le jeu. Liste dans `engine_cutscenes` du manifeste (ZC12 : mort
-  de l'ingénieur Kania/Hadagan ; départ Empire : combats de navires ; raids Ferris, Umoir…).
-  Huit d'entre elles ont été refaites en sept vidéos HD (7_0Events), extraites ici.
+- **Cinématiques moteur** : une seule est recréée (pilote, voir ci-dessous). Liste dans
+  `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
+  (7_0Events), extraites ici.
 - **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et
   « Pas prévu au plan » (11.0). « Le héros de Sarnaut » a 12 répliques officielles mais
   leur texte diffère parfois de ce qui est dit (« Он сделал нас богатыми » écrit, « Он
