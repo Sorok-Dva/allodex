@@ -152,3 +152,15 @@
 .tip_red { color: #ff6b57; }
 .tip_blue { color: #7ab8ff; }
 .header_ { font-size: 1.15em; }
+
+/* Texte fixe d'un widget (`<header alignx="center" fontsize="20" color="0xffcae484">`). */
+.static {
+  justify-content: center;
+  text-align: center;
+}
+
+.static .header {
+  font-size: 21px;
+  color: #cae484;
+  padding-left: 0;
+}

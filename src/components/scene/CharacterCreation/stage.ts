@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import type { SceneMeta } from '@/data/character/chargen.types';
+import type { ChargenTemplate, SceneMeta } from '@/data/character/chargen.types';
 import { uvScrollOf } from './rig';
 
 /**
@@ -64,20 +64,45 @@ export function gameDirection(yawDeg: number, pitchDeg: number): THREE.Vector3 {
   return new THREE.Vector3(Math.cos(pitch) * Math.cos(yaw), Math.cos(pitch) * Math.sin(yaw), Math.sin(pitch));
 }
 
+/** Zoom de la molette et du pincement : 0 = plan du jeu, 1 = visage. */
+export function clampZoom(z: number): number {
+  return Math.min(1, Math.max(0, z));
+}
+
+/** Distance du plan rapproché au visage (m, à l'échelle du personnage) : réglage du site. */
+const FACE_DISTANCE = 1.3;
+
 /**
- * Caméra de la place `CharacterSelect<Race>` (`UICharacterScenes`) dans le repère du monde
- * affiché (miroir X appliqué) : position relative au personnage, visée par lacet et tangage.
- * Le champ du jeu (1,36 rad) est pris comme **horizontal** et converti en vertical selon l'image.
+ * Plan de la création : la caméra de la place `CharacterSelect<Race>` (`UICharacterScenes`,
+ * position relative au personnage, lacet et tangage — **positif vers le bas** : −3° pour l'elfe,
+ * le quaternion de la place 7.0 donne une visée relevée de 3°), reculée sur son axe de
+ * `preMissionAdditionalAway` du gabarit (0,5 m : l'écart mesuré entre la caméra brute et les
+ * écrans du jeu, statues et estrade entières). Le zoom avance vers `preMissionFaceCameraAnchor`
+ * (hauteur du visage) jusqu'à `FACE_DISTANCE`.
  */
-export function placeCamera(camera: THREE.PerspectiveCamera, meta: SceneMeta['camera'], aspect: number): void {
-  const [x, y, z] = meta.position;
-  const dir = gameDirection(meta.yaw, meta.pitch);
-  camera.position.set(-x, y, z);
-  const target = new THREE.Vector3(-x - dir.x, y + dir.y, z + dir.z);
+export function chargenCamera(meta: SceneMeta, tpl: ChargenTemplate | undefined, zoom: number): { position: THREE.Vector3; target: THREE.Vector3 } {
+  const stand = new THREE.Vector3(...(meta.character.position ?? [0, 0, 0]));
+  const dir = gameDirection(meta.camera.yaw, -meta.camera.pitch);
+  const away = tpl?.ui?.preMissionAdditionalAway ?? 0;
+  const base = new THREE.Vector3(...meta.camera.position).add(stand).addScaledVector(dir, -away);
+  const reach = base.distanceTo(stand);
+  const baseTarget = base.clone().addScaledVector(dir, reach);
+  if (zoom <= 0) return { position: base, target: baseTarget };
+  const scale = (meta.character.scale ?? 1) * (tpl?.scale ?? 1);
+  const anchor = tpl?.ui?.preMissionFaceCameraAnchor ?? [0, 0, tpl?.height ?? 1.8];
+  const face = stand.clone().add(new THREE.Vector3(0, 0, anchor[2] * scale));
+  const back = base.clone().sub(face).setZ(0).normalize();
+  const close = face.clone().addScaledVector(back, FACE_DISTANCE * scale);
+  const k = zoom * zoom * (3 - 2 * zoom);   // départ et arrivée en douceur
+  return { position: base.clone().lerp(close, k), target: baseTarget.clone().lerp(face, k) };
+}
+
+/** Oriente la caméra ; le champ du jeu (1,36 rad) est **horizontal**, converti en vertical selon l'image. */
+export function aimCamera(camera: THREE.PerspectiveCamera, position: THREE.Vector3, target: THREE.Vector3, fovH: number, aspect: number): void {
+  camera.position.copy(position);
   camera.up.set(0, 0, 1);
   camera.lookAt(target);
-  const horizontal = meta.fov;
-  camera.fov = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(horizontal / 2) / Math.max(aspect, 0.1)));
+  camera.fov = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(fovH / 2) / Math.max(aspect, 0.1)));
   camera.aspect = aspect;
   camera.updateProjectionMatrix();
 }
@@ -88,26 +113,3 @@ export function gameColor(hex: string): THREE.Color {
   return new THREE.Color(((n >> 16) & 255) / 128, ((n >> 8) & 255) / 128, (n & 255) / 128);
 }
 
-/** three.js divise l'éclairage de Lambert par π (BRDF physique) : compensé, comme les fatalités. */
-export const LIGHT_SCALE = Math.PI;
-
-/**
- * Lumière de la zone (`ZoneLights` de la carte) : formule du jeu texture × (ambiante + soleil·N·L),
- * brouillard linéaire ; le fond prend la couleur du brouillard.
- */
-export function applyLight(scene: THREE.Scene, meta: SceneMeta | undefined): { ambient: THREE.AmbientLight; sun: THREE.DirectionalLight } {
-  const light = meta?.light;
-  const ambient = new THREE.AmbientLight(light ? gameColor(light.ambient) : new THREE.Color(0.5, 0.5, 0.5), LIGHT_SCALE);
-  const sun = new THREE.DirectionalLight(light ? gameColor(light.sun) : new THREE.Color(1, 1, 1), LIGHT_SCALE);
-  const d = light?.sunDirection ?? [0.5, -0.5, 0.7];
-  // Direction du jeu vers le soleil ; le monde affiché est en miroir X.
-  sun.position.set(-d[0] * 10, d[1] * 10, d[2] * 10);
-  scene.add(ambient, sun);
-  if (light?.fog && light.fog.far > light.fog.near) {
-    scene.fog = new THREE.Fog(light.fog.color, Math.max(light.fog.near, 0), light.fog.far);
-    scene.background = new THREE.Color(light.fog.color);
-  } else {
-    scene.background = new THREE.Color('#1b1f27');
-  }
-  return { ambient, sun };
-}

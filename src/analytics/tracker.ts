@@ -11,6 +11,9 @@ const ENDPOINT = '/api/collect';
 const SESSION_KEY = 'allodex:session';
 export const PING_INTERVAL = 20_000;
 
+// En développement, rien n'est envoyé sauf avec VITE_TRACK=1 (backend lancé dans server/).
+export const TRACKING_ENABLED = import.meta.env.PROD || import.meta.env.VITE_TRACK === '1';
+
 type View = { id: string; path: string; visibleMs: number; visibleSince: number | null };
 
 export function randomId(): string {
@@ -74,10 +77,15 @@ export function createTracker(send: (event: CollectEvent) => void, now: () => nu
   };
 }
 
-export function beacon(event: CollectEvent) {
-  const body = JSON.stringify(event);
+/** Envoi sans attente de réponse (`sendBeacon`, sinon `fetch` maintenu à la fermeture). */
+export function postBeacon(endpoint: string, data: unknown) {
+  const body = JSON.stringify(data);
   try {
-    if (navigator.sendBeacon?.(ENDPOINT, new Blob([body], { type: 'text/plain' }))) return;
+    if (navigator.sendBeacon?.(endpoint, new Blob([body], { type: 'text/plain' }))) return;
   } catch { /* repli sur fetch */ }
-  fetch(ENDPOINT, { method: 'POST', body, keepalive: true, headers: { 'Content-Type': 'text/plain' } }).catch(() => {});
+  fetch(endpoint, { method: 'POST', body, keepalive: true, headers: { 'Content-Type': 'text/plain' } }).catch(() => {});
+}
+
+export function beacon(event: CollectEvent) {
+  postBeacon(ENDPOINT, event);
 }

@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -94,11 +94,13 @@ const ATTACKER_BEARING = THREE.MathUtils.degToRad(-55);
  * Axe le long duquel les rayons (`CreatureChannelDirectAction`) sont modelés : l'avant des
  * modèles du jeu, −Y (`Fatality_Channel` s'étend de 0 à −8,6 m à sa pose de bind).
  */
-/** Part du chemin victime → tueur où se pose la cible du cadrage initial (victime au premier plan). */
-const ATTACKER_FOCUS = 0.3;
-/** Marge du cadrage initial autour du segment victime → tueur (fraction de sa longueur). */
-const ATTACKER_FRAME_MARGIN = 1.5;
 const CHANNEL_AXIS = new THREE.Vector3(0, -1, 0);
+/**
+ * Marge du cadrage autour de l'étendue des effets (fraction de la distance ajustée). Le client ne
+ * décrit aucune caméra de fatalité (la caméra reste celle du joueur, seules des secousses s'y
+ * ajoutent) : le lecteur cadre la victime et ses effets.
+ */
+const EFFECT_FRAME_MARGIN = 1.1;
 /** Compense la division par π du Lambert de three.js : une lumière du jeu à 1 éclaire à 1. */
 const LIGHT_SCALE = Math.PI;
 /** Couleur de fond sans décor (et sous le ciel tant qu'il charge). */
@@ -153,6 +155,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
   });
   const callbacks = useRef({ onProgress, onEnded, onReady });
   callbacks.current = { onProgress, onEnded, onReady };
+  const bounds = useMemo(() => effectBounds(timeline, objects, height), [timeline, objects, height]);
 
   useImperativeHandle(ref, () => ({
     seek: (time: number) => {
@@ -165,10 +168,10 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     resetView: () => {
       const st = state.current;
       if (!st.camera || !st.controls) return;
-      frameCamera(st.camera, st.controls, height, !!attackerUrl, st.camera.aspect);
+      frameCamera(st.camera, st.controls, height, bounds, st.camera.aspect);
       st.dirty = true;
     },
-  }), [height, attackerUrl]);
+  }), [height, bounds]);
 
   useEffect(() => {
     const st = state.current;
@@ -241,7 +244,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     const channels: { inst: VotInstance; event: ChannelEvent }[] = [];
     const sounds: { t: number; audio: HTMLAudioElement; duration: number }[] = [];
 
-    const factory = new VotFactory({ objects, baseUrl: fxUrl, disposables, anisotropy: () => renderer?.capabilities?.getMaxAnisotropy?.() ?? 1 });
+    const factory = new VotFactory({ objects, baseUrl: fxUrl, disposables, anisotropy: () => renderer?.capabilities?.getMaxAnisotropy?.() ?? 1, lifetimes: true });
     const prepare = (root: THREE.Object3D, lit: boolean, tinted: Tinted[], scrolling: null) => factory.prepare(root, lit, tinted, scrolling);
     let skyNode: THREE.Object3D | null = null;
     // Herbe et eau : horloge propre (le vent ne repart pas à chaque boucle de la fatalité).
@@ -422,7 +425,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       window.addEventListener('resize', resize);
       if (typeof ResizeObserver !== 'undefined') { observer = new ResizeObserver(resize); observer.observe(canvas.parentElement ?? canvas); }
       resize();
-      frameCamera(camera, controls, height, !!attackerUrl, camera.aspect);
+      frameCamera(camera, controls, height, bounds, camera.aspect);
 
       try {
         const [character, fx, decor, killer] = await Promise.all([
@@ -630,30 +633,74 @@ function dressKey(dress: FatalityDress | null): string {
 }
 
 /**
- * Cadrage initial : face à la victime (côté −Y du jeu), légère plongée. Avec un tueur, la
- * caméra se place face au segment victime → tueur, assez loin pour les voir tous deux
- * (`ATTACKER_FRAME_MARGIN`), la cible posée à `ATTACKER_FOCUS` du chemin ; l'orbite reste libre.
+ * Étendue de l'effet principal de la victime, dans le repère de la scène (miroir X du jeu).
+ * L'effet principal est le gabarit posé (`CreatureIndependentFxAction`) ou accroché à la victime
+ * qui porte le son de la fatalité (`FatalityBard`, `FatalityDruid`…), avec ses composants ; à
+ * défaut de son, tous les gabarits de la victime. Les auras au sol et fonds (`Fatality_Back`,
+ * boîte à 10 m au-dessus du sol) n'y entrent donc pas. Chaque gabarit apporte la boîte de son
+ * animation dans le client (`bounds`, toutes images), à l'échelle et au décalage du script ; le
+ * sous-sol est retiré (des os d'animation descendent sous le terrain, qui les cache : lianes du
+ * Tribaliste jusqu'à −16 m) ; la victime debout y est toujours. `null` sans aucune boîte connue.
  */
-export function frameCamera(camera: THREE.PerspectiveCamera, controls: OrbitControls, height: number, withAttacker = false,
+export function effectBounds(timeline: FatalityTimeline | null, objects: Record<string, FatalityObject>, height: number): THREE.Box3 | null {
+  if (!timeline) return null;
+  const box = new THREE.Box3(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, Math.max(height, 1)));
+  const sounded = (vot: string, depth = 0): boolean => {
+    const info = objects[vot];
+    return !!info && depth <= 8 && (!!info.sound || (info.components ?? []).some(c => sounded(c.vot, depth + 1)));
+  };
+  let found = false;
+  const add = (vot: string, scale: number, offset: [number, number, number], depth: number) => {
+    const info = objects[vot];
+    if (!info || depth > 8) return;
+    const s = scale * (depth === 0 ? info.scale || 1 : 1);
+    if (info.bounds) {
+      const [cx, cy, cz, ex, ey, ez] = info.bounds;
+      const center = new THREE.Vector3(-(offset[0] + cx * s), offset[1] + cy * s, offset[2] + cz * s);
+      const part = new THREE.Box3().setFromCenterAndSize(center, new THREE.Vector3(2 * ex * s, 2 * ey * s, 2 * ez * s));
+      part.min.z = Math.max(part.min.z, 0);
+      if (part.max.z > part.min.z) { box.union(part); found = true; }
+    }
+    for (const component of info.components ?? []) add(component.vot, s, offset, depth + 1);
+  };
+  const roots = [...timeline.spawns, ...timeline.attached];
+  const main = roots.filter(item => sounded(item.vot));
+  for (const item of main.length ? main : roots) add(item.vot, item.scale || 1, item.offset ?? [0, 0, 0], 0);
+  return found ? box : null;
+}
+
+/**
+ * Cadrage initial : face à la victime (côté −Y du jeu), légère plongée, centré sur la victime et
+ * ses effets (`effectBounds`) à la distance qui fait tenir leur boîte dans le champ
+ * (`EFFECT_FRAME_MARGIN`) ; sans boîte, cadre fixe en hauteurs de personnage. Le tueur n'entre
+ * pas dans le cadrage (il peut sortir du champ) ; l'orbite reste libre.
+ */
+export function frameCamera(camera: THREE.PerspectiveCamera, controls: OrbitControls, height: number, bounds: THREE.Box3 | null = null,
   aspect = camera.aspect || 16 / 9): void {
   const h = Math.max(height, 1);
-  if (!withAttacker) {
-    // Les effets montent à 3-6 hauteurs de personnage et s'étalent sur ~8 m : cadre large.
+  const direction = new THREE.Vector3(FRAME_SIDE, -FRAME_BACK, FRAME_UP - FRAME_TARGET).normalize();
+  if (!bounds) {
     controls.target.set(0, 0, h * FRAME_TARGET);
     camera.position.set(h * FRAME_SIDE, -h * FRAME_BACK, h * FRAME_UP);
   } else {
-    // Repère de la scène (miroir X du repère du jeu).
-    const ax = -ATTACKER_DISTANCE * Math.sin(ATTACKER_BEARING);
-    const ay = -ATTACKER_DISTANCE * Math.cos(ATTACKER_BEARING);
-    const line = new THREE.Vector2(ax, ay).normalize();
-    // Perpendiculaire côté −Y (devant la victime).
-    const side = new THREE.Vector2(-line.y, line.x);
-    if (side.y > 0) side.negate();
-    const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
-    const halfWidth = Math.atan(Math.tan(halfFov) * Math.max(aspect, 0.5));
-    const distance = Math.max((ATTACKER_DISTANCE * ATTACKER_FRAME_MARGIN / 2) / Math.tan(halfWidth), h * FRAME_BACK);
-    controls.target.set(ax * ATTACKER_FOCUS, ay * ATTACKER_FOCUS, h * FRAME_TARGET);
-    camera.position.set(controls.target.x + side.x * distance, controls.target.y + side.y * distance, h * FRAME_TARGET + distance * 0.28);
+    const center = bounds.getCenter(new THREE.Vector3());
+    // Repère de la caméra (regard −direction, Z en haut) : chaque coin de la boîte doit tenir dans
+    // le champ vertical et horizontal, `D ≥ p·d + |p·u| / tan(½ champ)`.
+    const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 0, 1), direction).normalize();
+    const up = new THREE.Vector3().crossVectors(direction, right).normalize();
+    const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    const tanH = tanV * Math.max(aspect, 0.5);
+    let distance = h * 2;
+    const corner = new THREE.Vector3();
+    for (let i = 0; i < 8; i += 1) {
+      corner.set(i & 1 ? bounds.max.x : bounds.min.x, i & 2 ? bounds.max.y : bounds.min.y, i & 4 ? bounds.max.z : bounds.min.z).sub(center);
+      const depth = corner.dot(direction);
+      distance = Math.max(distance, depth + Math.abs(corner.dot(right)) / tanH, depth + Math.abs(corner.dot(up)) / tanV);
+    }
+    distance *= EFFECT_FRAME_MARGIN;
+    controls.target.copy(center);
+    camera.position.copy(center).addScaledVector(direction, distance);
+    controls.maxDistance = Math.max(controls.maxDistance, distance * 1.5);
   }
   camera.lookAt(controls.target);
   controls.update();

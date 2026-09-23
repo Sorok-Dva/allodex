@@ -10,6 +10,8 @@ import { SpeakerToggle } from '@/components/controls/SpeakerToggle';
 import { useIntroState } from './useIntroState';
 import s from './OpeningScreen.module.css';
 
+const DISCORD_URL = 'https://discord.gg/rYnx7GNTsU';
+
 const MenuScene = lazy(() => import('@/components/scene/MenuScene').then(m => ({ default: m.MenuScene })));
 
 function Video({ name, loop, onEnded, onError, className, testId }: { name: 'intro' | 'mainmenu'; loop?: boolean; onEnded?: () => void; onError?: () => void; className?: string; testId?: string }) {
@@ -88,6 +90,7 @@ export function OpeningScreen() {
     { id: 'talents', base: `${T.pinMenu}/ButtonTalents`, label: t('home.talents'), hint: t('home.talentsHint'), onClick: () => navigate('/talents') },
     { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: t('home.medals'), hint: t('home.medalsHint'), onClick: () => navigate('/achievements') },
     { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: t('home.character'), hint: t('home.characterHint'), disabled: import.meta.env.PROD, onClick: () => navigate('/character') },
+    { id: 'discord', base: `${T.pinMenu}/ButtonMedals`, src: '/icons/discord.svg', label: t('home.discord'), hint: t('home.discordHint'), href: DISCORD_URL },
   ];
   const latest = latestArchiveEntry();
   const hasIntro = latest ? Boolean(latest.intro) : true;

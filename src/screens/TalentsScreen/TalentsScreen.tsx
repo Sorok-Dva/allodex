@@ -13,6 +13,8 @@ import {
   fieldTalentRank, autoStart, linkedTalents, maxRank, minRank, removeBook, removeField, rulesFor, spentBeforeRow,
   type Build, type Builds, type Calc,
 } from '@/data/talents.build';
+import { createBuildTracker, type TrackedBuild } from '@/data/talents.track';
+import { postBeacon, TRACKING_ENABLED } from '@/analytics/tracker';
 import { toRoman } from '@/lib/roman';
 import type { TalentLang } from '@/data/talents.types';
 import { TalentBuilder, type Hover, type Target } from './TalentBuilder';
@@ -20,6 +22,35 @@ import { TalentCard } from './TalentCard';
 import s from './TalentsScreen.module.css';
 
 const FRAME: [number, number, number, number] = [4, 4, 4, 4];
+
+/**
+ * Registre des builds (`/api/talents/events`) : vue d'un build venu d'un lien, build composé
+ * quand l'édition se pose, lien copié. Renvoie la fonction à appeler au partage.
+ */
+function useBuildTracking(current: TrackedBuild | null, fromLink: boolean, lang: string) {
+  const langRef = useRef(lang);
+  langRef.current = lang;
+  const tracker = useMemo(() => createBuildTracker(e => { if (TRACKING_ENABLED) postBeacon('/api/talents/events', e); }, () => langRef.current), []);
+  const started = useRef(false);
+  const key = current ? `${current.v}|${current.c}|${current.b ?? ''}|${current.b2 ?? ''}` : null;
+  useEffect(() => {
+    if (!current) return;
+    if (!started.current) { started.current = true; tracker.landed(current, fromLink); }
+    else tracker.changed(current);
+  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps -- le contenu du build suffit
+  useEffect(() => {
+    const onHide = () => tracker.flush();
+    const onVisibility = () => { if (document.visibilityState === 'hidden') tracker.flush(); };
+    window.addEventListener('pagehide', onHide);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.removeEventListener('pagehide', onHide);
+      document.removeEventListener('visibilitychange', onVisibility);
+      tracker.flush();
+    };
+  }, [tracker]);
+  return () => { if (current) tracker.shared(current); };
+}
 
 function useViewport() {
   const read = () => ({ w: typeof window === 'undefined' ? 1920 : window.innerWidth, h: typeof window === 'undefined' ? 1080 : window.innerHeight });
@@ -74,6 +105,12 @@ export function TalentsScreen() {
   const [copied, setCopied] = useState(false);
   const copyTimer = useRef<number | null>(null);
   const vp = useViewport();
+  // Build affiché, recodé depuis l'état décodé (forme normale) ; aucun si le lien est refusé.
+  const landedWithBuild = useRef(Boolean(qb || qb2));
+  const codes = calc && shared && !shareError && sel.version && sel.slug ? encodeBuilds(calc, shared.builds) : null;
+  const current: TrackedBuild | null = codes && sel.version && sel.slug ? { v: sel.version.id, c: sel.slug, ...codes } : null;
+  const fromLink = landedWithBuild.current && Boolean(shared && !shared.errors.some(Boolean));
+  const trackShare = useBuildTracking(current, fromLink, lang);
 
   useEffect(() => { document.title = `Allodex — ${t('talents.title')}`; }, [t]);
   useEffect(() => { playSfx('medals-open'); }, [playSfx]);
@@ -107,6 +144,7 @@ export function TalentsScreen() {
   };
   const onCopy = async () => {
     if (await copyText(window.location.href)) {
+      trackShare();
       setCopied(true);
       if (copyTimer.current !== null) window.clearTimeout(copyTimer.current);
       copyTimer.current = window.setTimeout(() => setCopied(false), 1600);
