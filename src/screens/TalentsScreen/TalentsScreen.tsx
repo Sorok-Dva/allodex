@@ -9,10 +9,11 @@ import { SpeakerToggle } from '@/components/controls/SpeakerToggle';
 import { useClassTalents, useTalentsIndex, useUiLayout } from '@/data/talents.api';
 import { bookPrereqs, fieldPrereqs, resolveSelection, talentName, textFor } from '@/data/talents.logic';
 import {
-  addBook, addField, bookBlock, bookCell, checkShared, decodeBuild, emptyBuild, encodeBuild, fieldBlock, fieldStart,
-  fieldTalentRank, autoStart, maxRank, minRank, removeBook, removeField, rulesFor, spentBeforeRow,
-  type Build, type Calc,
+  addBook, addField, bookBlock, bookCell, checkShared, decodeBuilds, encodeBuilds, fieldBlock, fieldStart,
+  fieldTalentRank, autoStart, linkedTalents, maxRank, minRank, removeBook, removeField, rulesFor, spentBeforeRow,
+  type Build, type Builds, type Calc,
 } from '@/data/talents.build';
+import { toRoman } from '@/lib/roman';
 import type { TalentLang } from '@/data/talents.types';
 import { TalentBuilder, type Hover, type Target } from './TalentBuilder';
 import { TalentCard } from './TalentCard';
@@ -58,14 +59,17 @@ export function TalentsScreen() {
   const { playSfx } = useGameAudio();
   const index = useTalentsIndex();
   const ui = useUiLayout();
-  const qv = query.get('v'), qc = query.get('c'), qb = query.get('b');
+  const qv = query.get('v'), qc = query.get('c'), qb = query.get('b'), qb2 = query.get('b2');
+  const slot: 0 | 1 = query.get('s') === '2' ? 1 : 0;
   const sel = useMemo(() => (index.data ? resolveSelection(index.data, qv, qc) : { version: null, slug: null }), [index.data, qv, qc]);
-  const shareError = index.data && (qv || qc || qb) ? checkShared(index.data, qv, qc) : null;
+  const shareError = index.data && (qv || qc || qb || qb2) ? checkShared(index.data, qv, qc) : null;
   const cls = useClassTalents(sel.version?.id ?? null, sel.slug);
   const data = cls.data && cls.data.version === sel.version?.id && cls.data.code.toLowerCase() === sel.slug ? cls.data : null;
-  const calc: Calc | null = useMemo(() => (data && ui.data ? { data, rules: rulesFor(data.version, ui.data.layout.rankCost) } : null), [data, ui.data]);
-  const decoded = useMemo(() => (calc && qb && !shareError ? decodeBuild(calc, qb) : null), [calc, qb, shareError]);
-  const build: Build | null = useMemo(() => (calc ? (decoded?.ok ? decoded.build : emptyBuild(calc)) : null), [calc, decoded]);
+  const points = sel.version?.points ?? null;
+  const calc: Calc | null = useMemo(() => (data && ui.data ? { data, rules: rulesFor(points, ui.data.layout.rankCost) } : null), [data, ui.data, points]);
+  // Deux builds (I : `b`, II : `b2`) ; un lien refusé (version/classe inconnue) n'en charge aucun.
+  const shared = useMemo(() => (calc ? decodeBuilds(calc, shareError ? null : qb, shareError ? null : qb2) : null), [calc, qb, qb2, shareError]);
+  const build: Build | null = shared ? shared.builds[slot] : null;
   const [hover, setHover] = useState<Hover>(null);
   const [copied, setCopied] = useState(false);
   const copyTimer = useRef<number | null>(null);
@@ -86,10 +90,12 @@ export function TalentsScreen() {
   }, []);
 
   const commit = useCallback((next: Build | null) => {
-    if (!calc || !next || !sel.version || !sel.slug) return;
+    if (!calc || !shared || !next || !sel.version || !sel.slug) return;
     playSfx('ui-click');
-    update({ v: sel.version.id, c: sel.slug, b: encodeBuild(calc, next) });
-  }, [calc, sel, update, playSfx]);
+    const builds: Builds = slot === 0 ? [next, shared.builds[1]] : [shared.builds[0], next];
+    const codes = encodeBuilds(calc, builds);
+    update({ v: sel.version.id, c: sel.slug, b: codes.b, b2: codes.b2 });
+  }, [calc, shared, slot, sel, update, playSfx]);
 
   const onAdd = (target: Target, all: boolean) => {
     if (!calc || !build) return;
@@ -123,6 +129,7 @@ export function TalentsScreen() {
     const c = sel.version?.classes.find(x => x.slug === slug);
     return c ? classLabel(c.code, c.name) : slug;
   };
+  const pointsSource = points?.source;
   const versionMenu = {
     label: t('talents.versionButton', { v: sel.version?.id ?? '' }),
     value: sel.version?.id ?? '',
@@ -131,21 +138,24 @@ export function TalentsScreen() {
       playSfx('ui-click');
       const next = versions.find(x => x.id === v);
       const c = next?.classes.some(x => x.slug === sel.slug) ? sel.slug : next?.classes[0]?.slug ?? null;
-      update({ v, c, b: null });
+      update({ v, c, b: null, b2: null, s: null });
     },
   };
   const classMenu = {
     label: t('talents.classButton', { name: sel.slug ? className(sel.slug) : '' }),
     value: sel.slug ?? '',
     options: (sel.version?.classes ?? []).map(c => ({ value: c.slug, label: classLabel(c.code, c.name) })).sort((a, b) => a.label.localeCompare(b.label, lang)),
-    onChange: (c: string) => { playSfx('ui-click'); update({ v: sel.version?.id ?? null, c, b: null }); },
+    onChange: (c: string) => { playSfx('ui-click'); update({ v: sel.version?.id ?? null, c, b: null, b2: null, s: null }); },
   };
 
   // Note en pied de fenêtre : lien refusé, sinon particularités de la version.
   let note: { text: string; tone: 'info' | 'error' } | null = null;
   if (shareError === 'version') note = { text: t('talents.errVersion', { v: qv ?? '—' }), tone: 'error' };
   else if (shareError === 'class') note = { text: t('talents.errClass', { c: qc ?? '—' }), tone: 'error' };
-  else if (decoded && !decoded.ok) note = { text: t('talents.errBuild', { reason: t(`talents.err.${decoded.error}`) }), tone: 'error' };
+  else if (shared && shared.errors.some(Boolean)) {
+    const parts = shared.errors.flatMap((e, i) => (e ? [t('talents.errBuild', { n: toRoman(i + 1), reason: t(`talents.err.${e}`) })] : []));
+    note = { text: parts.join(' '), tone: 'error' };
+  }
   else if (calc) {
     const info: string[] = [];
     if (calc.rules.bookPoints === null) info.push(t('talents.noteLimits'));
@@ -165,6 +175,8 @@ export function TalentsScreen() {
   const status = (() => {
     if (!hover || !calc || !build) return null;
     const tg = hover.target;
+    const linked = [...linkedTalents(calc.data, hover.talent)].map(k => talentName(calc.data.talents[k], tl).text);
+    const linkLine = linked.length ? <><br />{t('talents.linked', { names: linked.slice(0, 6).join(', ') + (linked.length > 6 ? '…' : '') })}</> : null;
     if (tg.kind === 'book') {
       const rank = build.book[tg.r][tg.c];
       const max = maxRank(calc.data, tg.r, tg.c);
@@ -180,6 +192,7 @@ export function TalentsScreen() {
           <b>{t('talents.rankOf', { current: rank, total: max })}</b>
           {minRank(calc, tg.r, tg.c) > 0 && <> · {t('talents.startRank')}</>}
           {why && <><br /><em>{why}</em></>}
+          {linkLine}
           <br />{t('talents.clickHint')}
         </>
       );
@@ -196,6 +209,7 @@ export function TalentsScreen() {
         <b>{t('talents.rankOf', { current: rank.current, total: rank.total })}</b>
         {isStart && <> · {t('talents.startCell')}</>}
         {why && <><br /><em>{why}</em></>}
+        {linkLine}
         <br />{t('talents.clickHint')}
       </>
     );
@@ -221,9 +235,10 @@ export function TalentsScreen() {
               <TalentBuilder
                 ui={ui.data} calc={calc} build={build} lang={tl}
                 onAdd={onAdd} onRemove={onRemove} onHover={setHover}
-                onClose={handleClose} onCopy={onCopy} onReset={() => { playSfx('ui-click'); update({ b: null }); }}
+                onClose={handleClose} onCopy={onCopy} onReset={() => { playSfx('ui-click'); update(slot === 0 ? { b: null } : { b2: null }); }}
+                slot={slot} onSlot={i => { playSfx('ui-click'); setHover(null); update({ s: i === 1 ? '2' : null }); }}
                 copied={copied} versionMenu={versionMenu} classMenu={classMenu} note={note}
-                classLabel={className(sel.slug ?? '')}
+                classLabel={className(sel.slug ?? '')} pointsSource={pointsSource}
               />
             </div>
           )}

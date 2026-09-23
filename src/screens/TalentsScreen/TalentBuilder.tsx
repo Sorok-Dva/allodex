@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import type { ClassTalents, Rgba, TalentLang, UiLayer, UiLayout, UiVariant, UiWidget } from '@/data/talents.types';
 import { boardOffset, iconFile, placeAxis, placeWidget, textFor } from '@/data/talents.logic';
 import {
-  BOOK_COLS, bookBlock, bookSpent, fieldBlock, fieldSpent, maxRank,
+  BOOK_COLS, bookBlock, bookSpent, fieldBlock, fieldSpent, linkedTalents, maxRank,
   type Build, type Calc,
 } from '@/data/talents.build';
 import { nineSlice } from '@/lib/nineSlice';
@@ -33,6 +33,11 @@ type Props = {
   note?: { text: string; tone: 'info' | 'error' } | null;
   /** Nom de la classe affiché sous le titre (repli sur les données de la version). */
   classLabel?: string;
+  /** Source des totaux de points (infobulle des compteurs). */
+  pointsSource?: string;
+  /** Build affiché (0 = I, 1 = II) et bascule entre les deux. */
+  slot: 0 | 1;
+  onSlot: (slot: 0 | 1) => void;
 };
 
 const LONG_PRESS_MS = 450;
@@ -152,15 +157,23 @@ function MenuButton({ ui, variant, rect, menu }: { ui: UiLayout; variant: UiVari
 
 /**
  * Gestes d'une case : clic (ou Entrée) = +1, clic droit (ou Suppr, Retour, « - ») = −1,
- * Maj = tous les rangs ; au toucher, appui long = −1 (menu contextuel neutralisé).
+ * Maj = tous les rangs. Au toucher, sans survol possible : un premier toucher sélectionne la case
+ * (infobulle et liens surlignés, comme le survol), un toucher sur la case déjà sélectionnée = +1,
+ * appui long = −1 (menu contextuel neutralisé).
  */
-function useCellGestures(target: Target, props: Props) {
+function useCellGestures(target: Target, props: Props, cell: CellProps) {
   const timer = useRef<number | null>(null);
   const longPressed = useRef(false);
+  const touch = useRef(false);
   const clear = () => { if (timer.current !== null) { window.clearTimeout(timer.current); timer.current = null; } };
   return {
-    onClick: (e: ReactMouseEvent) => {
+    onClick: (e: ReactMouseEvent<HTMLElement>) => {
       if (longPressed.current) { longPressed.current = false; return; }
+      if (touch.current && cell.selected !== cell.cellKey) {
+        cell.setSelected(cell.cellKey);
+        cell.show(e);
+        return;
+      }
       props.onAdd(target, e.shiftKey);
     },
     onContextMenu: (e: ReactMouseEvent) => {
@@ -168,11 +181,18 @@ function useCellGestures(target: Target, props: Props) {
       if (longPressed.current) return;
       props.onRemove(target, e.shiftKey);
     },
-    onPointerDown: (e: ReactPointerEvent) => {
+    onPointerDown: (e: ReactPointerEvent<HTMLElement>) => {
       longPressed.current = false;
-      if (e.pointerType !== 'touch') return;
+      touch.current = e.pointerType === 'touch';
+      if (!touch.current) return;
       clear();
-      timer.current = window.setTimeout(() => { longPressed.current = true; props.onRemove(target, false); }, LONG_PRESS_MS);
+      const el = e.currentTarget;
+      timer.current = window.setTimeout(() => {
+        longPressed.current = true;
+        cell.setSelected(cell.cellKey);
+        cell.show({ currentTarget: el });
+        props.onRemove(target, false);
+      }, LONG_PRESS_MS);
     },
     onKeyDown: (e: ReactKeyboardEvent) => {
       if (e.key === 'Delete' || e.key === 'Backspace' || e.key === '-') { e.preventDefault(); props.onRemove(target, e.shiftKey); }
@@ -183,11 +203,28 @@ function useCellGestures(target: Target, props: Props) {
   };
 }
 
-function BookCell(props: Props & { r: number; c: number; x: number; y: number; size: number; hovered: string | null; setHovered: (k: string | null) => void }) {
-  const { ui, calc, build, r, c, x, y, size, hovered } = props;
+/** État partagé des cases : talents surlignés (survol ou sélection et leurs liens), sélection tactile. */
+type CellProps = {
+  lit: Set<string>;
+  setHovered: (k: string | null) => void;
+  selected: string | null;
+  setSelected: (k: string | null) => void;
+  cellKey: string;
+  show: (e: { currentTarget: HTMLElement }) => void;
+};
+
+type Shared = { lit: Set<string>; setHovered: (k: string | null) => void; selected: string | null; setSelected: (k: string | null) => void };
+
+function BookCell(props: Props & Shared & { r: number; c: number; x: number; y: number; size: number }) {
+  const { ui, calc, build, r, c, x, y, size, lit } = props;
   const cell = calc.data.book.layers[r]?.cells[c];
   const target: Target = { kind: 'book', r, c };
-  const gestures = useCellGestures(target, props);
+  const talentKey = cell?.talent ?? '';
+  const showCell = (e: { currentTarget: HTMLElement }) => {
+    props.setHovered(talentKey);
+    props.onHover({ target, talent: talentKey, anchor: e.currentTarget.getBoundingClientRect() });
+  };
+  const gestures = useCellGestures(target, props, { ...props, cellKey: `b${r}-${c}`, show: showCell });
   if (!cell) return null;
   const tpl = ui.templates.BaseTalent;
   const btn = find(tpl, 'Button');
@@ -200,12 +237,9 @@ function BookCell(props: Props & { r: number; c: number; x: number; y: number; s
   const rr = rankW ? placeWidget(rankW.place, size, size) : null;
   const name = textFor(talent?.name, props.lang)?.text ?? cell.talent;
   const blocked = bookBlock(calc, build, r, c);
-  const same = hovered === cell.talent;
-  const show = (e: { currentTarget: HTMLElement }) => {
-    props.setHovered(cell.talent);
-    props.onHover({ target, talent: cell.talent, anchor: e.currentTarget.getBoundingClientRect() });
-  };
-  const hide = () => { props.setHovered(null); props.onHover(null); };
+  const same = lit.has(cell.talent);
+  const show = showCell;
+  const hide = () => { if (!props.selected) { props.setHovered(null); props.onHover(null); } };
   return (
     <button
       type="button"
@@ -215,6 +249,7 @@ function BookCell(props: Props & { r: number; c: number; x: number; y: number; s
       data-talent={cell.talent}
       data-rank={rank}
       data-state={rank > 0 ? 'learned' : blocked ? 'locked' : 'available'}
+      data-lit={same || undefined}
       onMouseEnter={show} onFocus={show} onMouseLeave={hide} onBlur={hide}
       {...gestures}
     >
@@ -233,12 +268,17 @@ function BookCell(props: Props & { r: number; c: number; x: number; y: number; s
   );
 }
 
-function FieldCell(props: Props & { f: number; r: number; c: number; x: number; y: number; size: number; hovered: string | null; setHovered: (k: string | null) => void }) {
-  const { ui, calc, build, f, r, c, x, y, size, hovered } = props;
+function FieldCell(props: Props & Shared & { f: number; r: number; c: number; x: number; y: number; size: number }) {
+  const { ui, calc, build, f, r, c, x, y, size, lit } = props;
   const field = calc.data.fields[f];
   const cell = field.rows[r]?.[c];
   const target: Target = { kind: 'field', f, r, c };
-  const gestures = useCellGestures(target, props);
+  const talentKey = cell?.talent ?? '';
+  const showCell = (e: { currentTarget: HTMLElement }) => {
+    props.setHovered(talentKey);
+    props.onHover({ target, talent: talentKey, anchor: e.currentTarget.getBoundingClientRect() });
+  };
+  const gestures = useCellGestures(target, props, { ...props, cellKey: `f${f}-${r}-${c}`, show: showCell });
   if (!cell) return null;
   const { main, done } = ui.layout.fieldTalentSize;
   const k = size / main;
@@ -246,15 +286,12 @@ function FieldCell(props: Props & { f: number; r: number; c: number; x: number; 
   const learned = build.fields[f][r][c];
   const ready = !learned && !fieldBlock(calc, build, f, r, c);
   const doneSize = done * k;
-  const same = hovered === cell.talent;
+  const same = lit.has(cell.talent);
   const hlColor = ui.layout.fieldHighlight.TALENT_HIGHLIGHT_FULL;
   const hlTex = texUrl(ui, ui.templates.FieldTalentHighlight?.back?.texture);
   const name = textFor(talent?.name, props.lang)?.text ?? cell.talent;
-  const show = (e: { currentTarget: HTMLElement }) => {
-    props.setHovered(cell.talent);
-    props.onHover({ target, talent: cell.talent, anchor: e.currentTarget.getBoundingClientRect() });
-  };
-  const hide = () => { props.setHovered(null); props.onHover(null); };
+  const show = showCell;
+  const hide = () => { if (!props.selected) { props.setHovered(null); props.onHover(null); } };
   return (
     <button
       type="button"
@@ -264,6 +301,7 @@ function FieldCell(props: Props & { f: number; r: number; c: number; x: number; 
       aria-pressed={learned}
       data-talent={cell.talent}
       data-state={learned ? 'learned' : ready ? 'available' : 'locked'}
+      data-lit={same || undefined}
       onMouseEnter={show} onFocus={show} onMouseLeave={hide} onBlur={hide}
       {...gestures}
     >
@@ -308,6 +346,19 @@ export function TalentBuilder(props: Props) {
   const { t } = useI18n();
   const { ui, calc, build, lang } = props;
   const [hovered, setHovered] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+  // Survol (ou sélection tactile) : le talent, toutes ses cases, et les talents liés (sort ↔ rubis).
+  const lit = useMemo(() => (hovered ? new Set([hovered, ...linkedTalents(calc.data, hovered)]) : new Set<string>()), [hovered, calc.data]);
+  const shared: Shared = { lit, setHovered, selected, setSelected };
+  useEffect(() => {
+    if (!selected) return;
+    // Toucher hors d'une case : fin de la sélection.
+    const off = (e: PointerEvent) => {
+      if (!(e.target as HTMLElement).closest?.('[data-talent]')) { setSelected(null); setHovered(null); props.onHover(null); }
+    };
+    document.addEventListener('pointerdown', off);
+    return () => document.removeEventListener('pointerdown', off);
+  }, [selected, props.onHover]);
   const L = ui.layout;
   const main = ui.root.children?.find(c => c.name === 'TalentsBuilder') ?? ui.root;
   const W = main.place.x.size ?? 1810;
@@ -348,7 +399,7 @@ export function TalentBuilder(props: Props) {
     data.book.layers.forEach((_, r) => {
       for (let c = 0; c < BOOK_COLS; c++) {
         const [x, y] = pos(r, c);
-        cells.push(<BookCell key={`b${r}-${c}`} {...props} r={r} c={c} x={x} y={y} size={size} hovered={hovered} setHovered={setHovered} />);
+        cells.push(<BookCell key={`b${r}-${c}`} {...props} {...shared} r={r} c={c} x={x} y={y} size={size} />);
       }
     });
     return <>{links}{cells}</>;
@@ -364,7 +415,7 @@ export function TalentBuilder(props: Props) {
     field.rows.forEach((row, r) => row.forEach((_, c) => {
       const x = F.LEFT_BORDER + (c + dc) * (size + F.INTERVAL_X);
       const y = F.UP_BORDER + (r + dr) * (size + F.INTERVAL_Y);
-      cells.push(<FieldCell key={`f${f}-${r}-${c}`} {...props} f={f} r={r} c={c} x={x} y={y} size={size} hovered={hovered} setHovered={setHovered} />);
+      cells.push(<FieldCell key={`f${f}-${r}-${c}`} {...props} {...shared} f={f} r={r} c={c} x={x} y={y} size={size} />);
     }));
     return cells;
   };
@@ -399,7 +450,9 @@ export function TalentBuilder(props: Props) {
         const cr = count ? placeWidget(count.place, rect.w, rect.h) : rect;
         return (
           <div key={key} className={s.widget} style={style} data-widget={name}>{back}
-            <div className={`${s.widget} ${s.counter}`} style={box(0, cr.y, rect.w, cr.h || rect.h)} data-testid={name === 'BaseTalentsHeader' ? 'book-points' : 'field-points'}>{counters[name]}</div>
+            <div className={`${s.widget} ${s.counter}`} style={box(0, cr.y, rect.w, cr.h || rect.h)} data-testid={name === 'BaseTalentsHeader' ? 'book-points' : 'field-points'}>
+              <span title={props.pointsSource} className={s.counterText}>{counters[name]}</span>
+            </div>
           </div>
         );
       }
@@ -452,7 +505,7 @@ export function TalentBuilder(props: Props) {
           </div>
         );
       case 'ActiveBuildSelector': {
-        // Deux builds dans le jeu ; le calculateur n'en édite qu'un : « I » actif, « II » inerte.
+        // Deux builds (I / II) comme le jeu : variante 1 (`SetShoiceButtonActive`) pour le build affiché.
         const tpl = ui.templates.ActiveBuildSelectorVariant;
         if (!tpl) return null;
         return (
@@ -460,12 +513,18 @@ export function TalentBuilder(props: Props) {
             {[0, 1].map(i => {
               const vr = placeWidget(tpl.place, rect.w, rect.h);
               const x = rect.w - (2 - i) * vr.w;
-              const variant = tpl.variants?.[i === 0 ? 1 : 0];
+              const active = props.slot === i;
+              const variant = tpl.variants?.[active ? 1 : 0];
+              const label = t('talents.buildSlot', { n: toRoman(i + 1) });
               return (
-                <div key={i} className={`${s.widget} ${s.buildVariant}`} style={box(x, vr.y, vr.w, vr.h)} title={t('talents.buildSlot', { n: toRoman(i + 1) })}>
+                <button
+                  key={i} type="button" className={`${s.button} ${s.buildVariant}`} style={box(x, vr.y, vr.w, vr.h)}
+                  aria-pressed={active} aria-label={label} title={label} data-slot={i + 1}
+                  onClick={() => props.onSlot(i as 0 | 1)}
+                >
                   <Back ui={ui} layer={variant?.normal} w={vr.w} h={vr.h} />
-                  <span className={i === 0 ? s.buildActive : s.buildInactive}>{toRoman(i + 1)}</span>
-                </div>
+                  <span className={active ? s.buildActive : s.buildInactive}>{toRoman(i + 1)}</span>
+                </button>
               );
             })}
           </div>

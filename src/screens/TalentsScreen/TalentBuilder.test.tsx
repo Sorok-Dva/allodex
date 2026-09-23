@@ -24,6 +24,7 @@ const ui: UiLayout = {
         panel('TalentsPanel', { align: 'low', pos: 19, size: 388 }, { align: 'center', size: 536.5 }, { back: simple('MilestoneBackActive') }),
         panel('BaseTalentsHeader', { align: 'center', pos: 11, size: 372 }, { align: 'low', pos: 27, size: 44 }, { children: [panel('Count', { align: 'center' }, { align: 'center', pos: 2, size: 18 })] }),
         panel('FieldTalentsHeader', { align: 'low', pos: 586, size: 1341 }, { align: 'low', pos: 27, size: 44 }, { children: [panel('Count', { align: 'center' }, { align: 'center', pos: 2, size: 18 })] }),
+        panel('ActiveBuildSelector', { align: 'high', high: 40, size: 300 }, { align: 'high', high: 22, size: 50 }),
         panel('Controls', { align: 'both', pos: 19, high: 21 }, { align: 'high', high: 17, size: 41 }, { children: [
           { type: 'WidgetButton', name: 'ActivateBuild', place: { x: { align: 'center', pos: -27, size: 144 }, y: { align: 'center', size: 30 } }, variants: buttonVariant },
           panel('LearnSelected', { align: 'center', pos: -92, size: 105 }, { align: 'center', size: 30 }, { children: [
@@ -42,6 +43,7 @@ const ui: UiLayout = {
         panel('Rank', { align: 'high', high: 4, size: 42 }, { align: 'high', high: 7, size: 18 }),
       ] },
     ] }),
+    ActiveBuildSelectorVariant: { type: 'WidgetButton', name: null, place: { x: { align: 'high', size: 50 }, y: { align: 'high', high: 7, size: 50 } }, variants: [{ normal: simple('SetChoiceButtonInactive') }, { normal: simple('SetShoiceButtonActive') }] },
     FieldTalentLearned: panel('IconBackDone', { align: 'center', size: 40 }, { align: 'center', size: 40 }, { back: simple('FieldTalent') }),
     FieldTalentReadyToLearn: panel('IconBackReady', { align: 'center', size: 36 }, { align: 'center', size: 36 }, { back: simple('FieldReady') }),
     FieldTalentHighlight: panel('Highlight', { align: 'both' }, { align: 'both' }, { back: simple('TalentBuiderHighlighted') }),
@@ -71,16 +73,17 @@ const data: ClassTalents = {
   fields: [{ ref: '#3', name: { fr: 'Combattant' }, icon: null, rows: [[{ type: 'TalentAbility', talent: 't2' }]] }],
   talents: {
     t1: { kind: 'spell', ref: 'a', name: { fr: 'Frappe' }, icon: 'abc.png', description: { fr: 'Inflige <r name="v"/> dégâts.' }, ranks: [{ ref: 'a', vars: { v: { value: 3 } } }, { ref: 'b', vars: { v: { value: 6 } } }] },
-    t2: { kind: 'ability', ref: 'c', name: { fr: 'Rage' }, ranks: [{ ref: 'c' }] },
+    t2: { kind: 'ability', ref: 'c', name: { fr: 'Rage' }, ranks: [{ ref: 'c' }], links: ['t1'] },
     t3: { kind: 'spell', ref: 'd', name: { fr: 'Élan' }, ranks: three },
   },
 };
-const calc: Calc = { data, rules: rulesFor('17.0') };
+const calc: Calc = { data, rules: rulesFor({ book: 82, field: 77 }) };
 
 function renderBuilder(build: Build = emptyBuild(calc)) {
   const props = {
     ui, calc, build, lang: 'fr' as const,
     onAdd: vi.fn(), onRemove: vi.fn(), onHover: vi.fn(), onClose: vi.fn(), onCopy: vi.fn(), onReset: vi.fn(), copied: false,
+    slot: 0 as const, onSlot: vi.fn(),
     versionMenu: { label: 'Version 17.0', value: '17.0', options: [{ value: '9.0', label: '9.0' }, { value: '17.0', label: '17.0' }], onChange: vi.fn() },
     classMenu: { label: 'Classe : Guerrier', value: 'warrior', options: [{ value: 'warrior', label: 'Guerrier' }], onChange: vi.fn() },
   };
@@ -146,6 +149,42 @@ describe('TalentBuilder', () => {
     const { container, props } = renderBuilder();
     fireEvent.mouseEnter(container.querySelector('[data-talent="t1"]')!);
     expect(props.onHover).toHaveBeenCalledWith(expect.objectContaining({ talent: 't1', target: { kind: 'book', r: 0, c: 0 } }));
+  });
+});
+
+describe('liens et builds', () => {
+  it('survol d’un rubis : ses cases et le sort qu’il modifie sont encadrés (et réciproquement)', () => {
+    const { container } = renderBuilder();
+    const ruby = container.querySelector('[data-talent="t2"]') as HTMLElement;
+    const spell = container.querySelector('[data-talent="t1"]') as HTMLElement;
+    const other = container.querySelector('[data-talent="t3"]') as HTMLElement;
+    fireEvent.mouseEnter(ruby);
+    expect(ruby.dataset.lit).toBe('true');
+    expect(spell.dataset.lit).toBe('true');
+    expect(other.dataset.lit).toBeUndefined();
+    expect(ruby.querySelector('[class*="tint"]')).toBeTruthy(); // cadre sarcelle natif
+    fireEvent.mouseLeave(ruby);
+    fireEvent.mouseEnter(spell);
+    expect(ruby.dataset.lit).toBe('true');
+  });
+
+  it('au toucher : 1er toucher = sélection (sans +1), 2e = +1', () => {
+    const { container, props } = renderBuilder();
+    const cell = container.querySelector('[data-talent="t3"]') as HTMLElement;
+    fireEvent.pointerDown(cell, { pointerType: 'touch' });
+    fireEvent.click(cell);
+    expect(props.onAdd).not.toHaveBeenCalled();
+    expect(props.onHover).toHaveBeenCalledWith(expect.objectContaining({ talent: 't3' }));
+    fireEvent.pointerDown(cell, { pointerType: 'touch' });
+    fireEvent.click(cell);
+    expect(props.onAdd).toHaveBeenCalledWith({ kind: 'book', r: 1, c: 0 }, false);
+  });
+
+  it('boutons I / II', () => {
+    const { getByRole, props } = renderBuilder();
+    expect(getByRole('button', { name: 'Build I' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(getByRole('button', { name: 'Build II' }));
+    expect(props.onSlot).toHaveBeenCalledWith(1);
   });
 });
 

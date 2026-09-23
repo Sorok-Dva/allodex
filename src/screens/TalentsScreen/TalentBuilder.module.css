@@ -16,6 +16,7 @@
   color: #103c26; font-size: 14px;
   text-shadow: 0 0 1px rgba(111, 181, 149, 0.75), 0 0 2px rgba(111, 181, 149, 0.75);
 }
+.counterText { pointer-events: auto; }
 .title { color: #ffe868; font-size: 15px; text-shadow: 0 0 2px #3a1e08, 0 1px 1px #3a1e08; }
 .buildPanel { gap: 6px; }
 .classIcon { display: block; flex: none; mask-size: 100% 100%; -webkit-mask-size: 100% 100%; }
@@ -70,6 +71,7 @@
 .rankMax { color: #00ff00; }
 
 .buildVariant { display: flex; align-items: center; justify-content: center; }
+.buildVariant:not([aria-pressed='true']):hover .buildInactive { color: #d8d2bc; }
 .buildActive, .buildInactive { position: relative; font-size: 20px; text-shadow: 0 0 2px #000; }
 .buildActive { color: #f1e6c5; }
 .buildInactive { color: #8d8a7c; }
