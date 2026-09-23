@@ -218,6 +218,9 @@ def zone_light(server_root: Path, path: str, time: float) -> dict | None:
 # Terrain : sous-carreaux de 8 m au niveau de détail fin jusqu'à `TERRAIN_FINE` m du centre, puis
 # grossier jusqu'au rayon du manifeste (le brouillard du jeu commence à 80 m).
 TERRAIN_FINE = 90.0
+# Rayon de l'herbe autour du centre (m) : la caméra orbite près de la victime et l'herbe se dissout
+# à 70 m de la caméra (`GRASS_FADE_FAR` du lecteur).
+GRASS_RADIUS = 110.0
 
 
 def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: dict | None) -> tuple[list[int], object]:
@@ -238,6 +241,7 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
     radius = float(spec.get("radius", 300.0))
     groups: dict[str, list] = {}
     grid: dict[tuple[int, int], float] = {}
+    regions: list = []
     for path, region in sorted(mp.paths.items()):
         if not path.endswith("_MapRegion.xdb"):
             continue
@@ -249,6 +253,7 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
             continue
         layer_sets, patches = parsed
         layers = terrain_layers(mp, cat, mp.ptr(region + 0x98))
+        regions.append((path, mp.ptr(region + 0x98), (ox, oy), patches))
         for patch in patches:
             if patch.level:
                 continue
@@ -313,7 +318,18 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
         near = [(pts, n, t, trample.get("tile", 4.0), d) for parts in groups.values() for pts, n, t, _tl, d in parts
                 if d <= trample["radius"] + 8]
         emit("ground_patch", near, trample["texture"], trample["radius"] * 0.45)
-    ex.notes.append(f"sol : {sum(len(v) for v in groups.values())} sous-carreaux, {len(groups)} calques ({spec['map']})")
+    # Herbe (autour du centre : l'orbite de la caméra y reste) et eau du `terrainDump`, sans lumière
+    # cuite (le sol des fatalités est éclairé par la lumière de la zone).
+    from tools.allods_terrain_extras import ExtrasBuilder
+    extras = ExtrasBuilder(mp, cat, ex.textures, lambda name, size: ex.textures.uri(name, size, ex.texture_prefix))
+    grass_radius = min(radius, float(spec.get("grass_radius", GRASS_RADIUS)))
+    for path, terra, origin, patches in regions:
+        extras.add_region(bins.get, path, terra, origin, patches,
+                          lambda x, y: math.hypot(x - cx, y - cy) <= grass_radius, shift=(-cx, -cy, -base),
+                          keep_water=lambda x, y: math.hypot(x - cx, y - cy) <= radius)
+    nodes += extras.emit(ex)
+    ex.notes.append(f"sol : {sum(len(v) for v in groups.values())} sous-carreaux, {len(groups)} calques ({spec['map']}), "
+                    f"{extras.tufts} touffes d'herbe ({len(extras.kinds)} sortes), {extras.water_elements // 64} carrés d'eau")
     return nodes, height
 
 
