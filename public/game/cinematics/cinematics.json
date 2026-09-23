@@ -7,6 +7,13 @@
    },
    "version": "16.0"
   },
+  "ferris": {
+   "title": {
+    "fr": "Ferris",
+    "en": "Ferris"
+   },
+   "version": "6.0"
+  },
   "invasion": {
    "title": {
     "fr": "L'Invasion",
@@ -189,6 +196,58 @@
     "event": "FactionsIntro/LeagueIntro"
    },
    "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de la Ligue ; placée en tête du film."
+  },
+  {
+   "id": "ferris-retrospective",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 150,
+   "event": "Ferris_4_secret1",
+   "title": {
+    "fr": "Rétrospective",
+    "en": "Retrospective"
+   },
+   "chronology": "Cinématique moteur de la quête « Ferris_4_secret1 » (« Ретроспектива », Ferris, 6.0) : le journal de l’« Objet » fait revivre la réunion de Vasily Promozglin, du nécromant Negus Jig et d’une laborantine avant la catastrophe de Ferris ; 6.0 précède l’Invasion (7.0).",
+   "bonus": false,
+   "duration": 82.5,
+   "files": {
+    "poster": "engine/ferris-retrospective/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/ferris-retrospective/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/ferris-retrospective/fr.vtt",
+     "lines": 9
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/ferris-retrospective/en.vtt",
+     "lines": 9
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/ferris-retrospective/ru.vtt",
+     "lines": 9
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 9,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
   },
   {
    "id": "invasion-plague",

@@ -8,6 +8,7 @@
  ],
  "mirror": true,
  "duration": 82.0,
+ "timing": "estimated",
  "camera": {
   "points": [
    {
@@ -124,14 +125,18 @@
     "mp3": "voice/01.mp3",
     "duration": 1.781
    },
+   "clips": [
+    "EmoteSpeech"
+   ],
    "animations": [
-    "emoteSpeech"
+    "EmoteSpeech"
    ],
    "text": {
     "ru": "Горт: Ну и чего мы тут ждем?",
     "en": "Gort: So what are we waiting for?",
     "fr": "Gort : alors, qu'est-ce qu'on attend ?"
-   }
+   },
+   "source": "ClientData 507557"
   },
   {
    "n": 2,
@@ -144,12 +149,14 @@
     "mp3": "voice/02.mp3",
     "duration": 7.888
    },
+   "clips": [],
    "animations": [],
    "text": {
     "ru": "Рениеста: Я чувствую, как информация проходит сквозь меня, но не могу ничего осознать… Что происходит, Вероника?!",
     "en": "Reniesta: I feel the information pass through me, but I cannot understand anything... What's going on, Klavdia?!",
     "fr": "Reniesta : Je sens les informations me traverser, mais je ne comprends rien... Que se passe-t-il, Klavdia ?"
-   }
+   },
+   "source": "ClientData 507580"
   },
   {
    "n": 3,
@@ -162,14 +169,18 @@
     "mp3": "voice/03.mp3",
     "duration": 8.132
    },
+   "clips": [
+    "EmoteSpeech"
+   ],
    "animations": [
-    "emoteSpeech"
+    "EmoteSpeech"
    ],
    "text": {
     "ru": "Вероника: Все так, как должно быть. Эта форма знаний не создана для восприятия слабыми умами. Зато я все прекрасно понимаю.",
     "en": "Klavdia: Everything is as it should be. This form of knowledge is not designed to be perceived by weak minds. But I understand everything perfectly.",
     "fr": "Klavdia : Tout est en ordre. Cette forme de savoir n'est pas faite pour être perçue par les esprits faibles. Mais je comprends tout à la perfection."
-   }
+   },
+   "source": "ClientData 507576"
   },
   {
    "n": 4,
@@ -182,14 +193,18 @@
     "mp3": "voice/04.mp3",
     "duration": 9.518
    },
+   "clips": [
+    "EmoteSpeech"
+   ],
    "animations": [
-    "emoteSpeech"
+    "EmoteSpeech"
    ],
    "text": {
     "ru": "Вероника: Это то, что мы искали. Мир, расположение которого Нихаз стремился скрыть. Мир, который он хочет поработить. Мир…",
     "en": "Klavdia: This is what we were looking for. The world that Nihaz was trying to hide. The world he wants to conquer. The world...",
     "fr": "Klavdia : C'est ce que nous cherchions. Le monde que Nihaz essayait de cacher. Le monde qu'il veut conquérir. Le monde..."
-   }
+   },
+   "source": "ClientData 507579"
   },
   {
    "n": 5,
@@ -202,12 +217,14 @@
     "mp3": "voice/05.mp3",
     "duration": 9.225
    },
+   "clips": [],
    "animations": [],
    "text": {
     "ru": "Нихаз: …Твоей матери. Стоило ли ждать от тебя такой сентиментальности?.. В этой Цитадели полно других тайн…",
     "en": "Nihaz: ...of your mother. I shouldn't have expected you to be sentimental... There are other secrets in this Citadel...",
     "fr": "Nihaz : ... de votre mère. Je ne m'attendais pas à vous voir faire preuve de sentiment... Il y a d'autres secrets dans cette Citadelle..."
-   }
+   },
+   "source": "ClientData 507569"
   },
   {
    "n": 6,
@@ -220,12 +237,14 @@
     "mp3": "voice/06.mp3",
     "duration": 4.696
    },
+   "clips": [],
    "animations": [],
    "text": {
     "ru": "Вероника: Я знаю, что я ищу. И в последнюю очередь нуждаюсь в твоих советах.",
     "en": "Klavdia: I know what I'm looking for. I don't need your advice.",
     "fr": "Klavdia : Je sais ce que je cherche. Je n'ai pas besoin de vos conseils."
-   }
+   },
+   "source": "ClientData 507570"
   },
   {
    "n": 7,
@@ -238,12 +257,14 @@
     "mp3": "voice/07.mp3",
     "duration": 5.64
    },
+   "clips": [],
    "animations": [],
    "text": {
     "ru": "Нихаз: Не сомневаюсь. Вам очень повезло, что я занят этим вторжением.",
     "en": "Nihaz: I don't doubt it. You are very fortunate that I'm busy with this invasion.",
     "fr": "Nihaz : Je n'en doute pas. Vous avez de la chance que je sois occupé par cette invasion."
-   }
+   },
+   "source": "ClientData 507577"
   },
   {
    "n": 8,
@@ -256,12 +277,14 @@
     "mp3": "voice/08.mp3",
     "duration": 2.859
    },
+   "clips": [],
    "animations": [],
    "text": {
     "ru": "Нихаз: Погоди-ка… Это не ты.",
     "en": "Nihaz: Wait a second... That's not you.",
     "fr": "Nihaz : Attendez une seconde... Ce n'est pas vous."
-   }
+   },
+   "source": "ClientData 507573"
   },
   {
    "n": 9,
@@ -274,12 +297,14 @@
     "mp3": "voice/09.mp3",
     "duration": 2.569
    },
+   "clips": [],
    "animations": [],
    "text": {
     "ru": "Нихаз: Она впустила тебя в свои воспоминания?..",
     "en": "Nihaz: She let you into her memories...?",
     "fr": "Nihaz : Elle vous a laissée entrer dans ses souvenirs ?"
-   }
+   },
+   "source": "ClientData 507581"
   },
   {
    "n": 10,
@@ -292,12 +317,14 @@
     "mp3": "voice/10.mp3",
     "duration": 2.439
    },
+   "clips": [],
    "animations": [],
    "text": {
     "ru": "Нихаз: Как… Интересно.",
     "en": "Nihaz: How... curious.",
     "fr": "Nihaz : Comme... c'est étrange."
-   }
+   },
+   "source": "ClientData 507582"
   }
  ],
  "actors": [
@@ -332,8 +359,9 @@
    "geometry": "Characters/Kania_female/KaniaFemale.(Geometry).bin",
    "height": 1.835,
    "animations": {
-    "Idle01": 3.3333,
-    "EmoteSpeech": 5.9667
+    "EmoteSpeech": 5.9667,
+    "Idle": 3.0,
+    "Idle01": 3.3333
    }
   },
   {
@@ -367,8 +395,8 @@
    "geometry": "Creatures/Veronika/Veronika.(Geometry).bin",
    "height": 1.871,
    "animations": {
-    "Idle": 3.0,
-    "EmoteSpeech": 6.0
+    "EmoteSpeech": 6.0,
+    "Idle": 3.0
    }
   },
   {
@@ -402,8 +430,9 @@
    "geometry": "Characters/Kania_male/KaniaMale.(Geometry).bin",
    "height": 1.867,
    "animations": {
-    "Idle01": 3.0,
-    "EmoteSpeech": 5.3
+    "EmoteSpeech": 5.3,
+    "Idle": 5.9667,
+    "Idle01": 3.0
    }
   },
   {
@@ -844,7 +873,8 @@
    }
   ],
   "sky": {
-   "radius": 835.38
+   "radius": 835.38,
+   "parts": 1
   }
  },
  "fx": {
@@ -4019,5 +4049,6 @@
    "duration": 1.0,
    "_note": "AO12_Prologue04_CutsceneFinal : Black_Instant"
   }
- ]
+ ],
+ "sources": {}
 }

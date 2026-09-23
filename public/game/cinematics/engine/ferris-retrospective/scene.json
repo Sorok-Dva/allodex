@@ -1,0 +1,5455 @@
+{
+ "id": "ferris-retrospective",
+ "map": "Ferris4",
+ "up": [
+  0,
+  0,
+  1
+ ],
+ "mirror": true,
+ "duration": 82.5,
+ "timing": "server",
+ "camera": {
+  "points": [
+   {
+    "t": 3.0,
+    "p": [
+     1513.0,
+     1172.0,
+     2.0
+    ]
+   },
+   {
+    "t": 14.999,
+    "p": [
+     1480.0,
+     1177.0,
+     1.0
+    ]
+   },
+   {
+    "t": 15.0,
+    "p": [
+     1514.0,
+     1176.0,
+     1.0
+    ]
+   },
+   {
+    "t": 23.999,
+    "p": [
+     1514.0,
+     1177.0,
+     1.0
+    ]
+   },
+   {
+    "t": 24.0,
+    "p": [
+     1518.0,
+     1181.0,
+     2.0
+    ]
+   },
+   {
+    "t": 29.499,
+    "p": [
+     1517.0,
+     1180.0,
+     2.0
+    ]
+   },
+   {
+    "t": 29.5,
+    "p": [
+     1516.0,
+     1175.0,
+     1.0
+    ]
+   },
+   {
+    "t": 39.999,
+    "p": [
+     1525.0,
+     1185.0,
+     2.0
+    ]
+   },
+   {
+    "t": 40.0,
+    "p": [
+     1518.0,
+     1181.0,
+     2.0
+    ]
+   },
+   {
+    "t": 43.999,
+    "p": [
+     1517.0,
+     1180.0,
+     2.0
+    ]
+   },
+   {
+    "t": 44.0,
+    "p": [
+     1514.0,
+     1176.0,
+     1.0
+    ]
+   },
+   {
+    "t": 57.499,
+    "p": [
+     1514.0,
+     1177.0,
+     1.0
+    ]
+   },
+   {
+    "t": 57.5,
+    "p": [
+     1518.0,
+     1178.0,
+     1.0
+    ]
+   },
+   {
+    "t": 65.499,
+    "p": [
+     1517.0,
+     1168.0,
+     2.0
+    ]
+   },
+   {
+    "t": 65.5,
+    "p": [
+     1514.0,
+     1176.0,
+     1.0
+    ]
+   },
+   {
+    "t": 82.499,
+    "p": [
+     1514.0,
+     1177.0,
+     1.0
+    ]
+   }
+  ],
+  "targets": [
+   {
+    "t": 3.0,
+    "p": [
+     1521.0,
+     1172.0,
+     5.0
+    ]
+   },
+   {
+    "t": 14.999,
+    "p": [
+     1521.0,
+     1172.0,
+     5.0
+    ]
+   },
+   {
+    "t": 15.0,
+    "p": [
+     1521.0,
+     1178.0,
+     1.0
+    ]
+   },
+   {
+    "t": 23.999,
+    "p": [
+     1521.0,
+     1178.0,
+     1.0
+    ]
+   },
+   {
+    "t": 24.0,
+    "p": [
+     1517.0,
+     1168.0,
+     -1.0
+    ]
+   },
+   {
+    "t": 29.499,
+    "p": [
+     1518.0,
+     1176.0,
+     0.0
+    ]
+   },
+   {
+    "t": 29.5,
+    "p": [
+     1525.0,
+     1185.0,
+     2.0
+    ]
+   },
+   {
+    "t": 39.999,
+    "p": [
+     1520.0,
+     1180.0,
+     2.0
+    ]
+   },
+   {
+    "t": 40.0,
+    "p": [
+     1517.0,
+     1168.0,
+     -1.0
+    ]
+   },
+   {
+    "t": 43.999,
+    "p": [
+     1518.0,
+     1176.0,
+     0.0
+    ]
+   },
+   {
+    "t": 44.0,
+    "p": [
+     1521.0,
+     1178.0,
+     1.0
+    ]
+   },
+   {
+    "t": 57.499,
+    "p": [
+     1521.0,
+     1178.0,
+     1.0
+    ]
+   },
+   {
+    "t": 57.5,
+    "p": [
+     1517.0,
+     1168.0,
+     2.0
+    ]
+   },
+   {
+    "t": 65.499,
+    "p": [
+     1517.0,
+     1168.0,
+     2.0
+    ]
+   },
+   {
+    "t": 65.5,
+    "p": [
+     1521.0,
+     1178.0,
+     1.0
+    ]
+   },
+   {
+    "t": 82.499,
+    "p": [
+     1521.0,
+     1178.0,
+     1.0
+    ]
+   }
+  ],
+  "duration": 82.5,
+  "fov": 45
+ },
+ "lines": [
+  {
+   "n": 1,
+   "start": 15.5,
+   "duration": 8.5,
+   "speaker": "promozglin",
+   "voice": {
+    "event": "Ferris4/Vasily01",
+    "wave": "Vasily01",
+    "bank": "SFX/Voice/Voice_Ferris4_rus.bsb",
+    "ogg": "voice/01.ogg",
+    "mp3": "voice/01.mp3",
+    "duration": 7.864
+   },
+   "clips": [
+    "EmoteSpeech",
+    "EmoteGreeting"
+   ],
+   "animations": [
+    "EmoteSpeech",
+    "EmoteGreeting"
+   ],
+   "text": {
+    "ru": "...Шахта, саркофаг и портал - часть единой системы. Саркофаг послужит фокусирующим элементом для энергии Объекта.",
+    "en": "...The bunker, the sarcophagus and the portal are parts of one system. The sarcophagus will serve as a focusing element for the Object's energy...",
+    "fr": "... Le bunker, le sarcophage et le portail sont des éléments d'un même système. Le sarcophage servira d'élément de focalisation de l'énergie de l'Objet..."
+   },
+   "source": "World/Quests/Ferris4/Ferris_4_secret1/Promozglin_01.(ClientData).xdb"
+  },
+  {
+   "n": 2,
+   "start": 24.0,
+   "duration": 5.5,
+   "speaker": "scientist",
+   "voice": {
+    "event": "Ferris4/Scientist01",
+    "wave": "Scientist01",
+    "bank": "SFX/Voice/Voice_Ferris4_rus.bsb",
+    "ogg": "voice/02.ogg",
+    "mp3": "voice/02.mp3",
+    "duration": 5.353
+   },
+   "clips": [
+    "EmoteSpeech"
+   ],
+   "animations": [
+    "EmoteSpeech"
+   ],
+   "text": {
+    "ru": "...А размер шахты идеален для разгона мана-частиц. Гениально!",
+    "en": "...and the size of the Bunker is just perfect for mana-particle acceleration. Genius!",
+    "fr": "... et la taille du Bunker est idéale pour l'accélération de particules de mana. Génial !"
+   },
+   "source": "World/Quests/Ferris4/Ferris_4_secret1/Scientist_01.(ClientData).xdb"
+  },
+  {
+   "n": 3,
+   "start": 29.5,
+   "duration": 10.5,
+   "speaker": "saw",
+   "voice": {
+    "event": "Ferris4/zem01",
+    "wave": "zem01",
+    "bank": "SFX/Voice/Voice_Ferris4_rus.bsb",
+    "ogg": "voice/03.ogg",
+    "mp3": "voice/03.mp3",
+    "duration": 10.249
+   },
+   "clips": [
+    "EmoteBoring",
+    "EmoteSay"
+   ],
+   "animations": [
+    "EmoteBoring",
+    "EmoteSay"
+   ],
+   "text": {
+    "ru": "Хм... Позвольте возразить. Один малейший просчёт в конструкции - и весь аллод обратится в пшик.",
+    "en": "Hm... Let me make an objection. Just one small miscalculation will lead to the allod's full destruction.",
+    "fr": "Hum... Laissez-moi formuler une objection. Une seule petite erreur de calcul entraînera la destruction totale de l'Allod."
+   },
+   "source": "World/Quests/Ferris4/Ferris_4_secret1/Saw1.(ClientData).xdb"
+  },
+  {
+   "n": 4,
+   "start": 40.0,
+   "duration": 3.0,
+   "speaker": "promozglin",
+   "voice": {
+    "event": "Ferris4/Vasily02",
+    "wave": "Vasily02",
+    "bank": "SFX/Voice/Voice_Ferris4_rus.bsb",
+    "ogg": "voice/04.ogg",
+    "mp3": "voice/04.mp3",
+    "duration": 2.67
+   },
+   "clips": [
+    "EmoteSayYes",
+    "EmoteSayNo"
+   ],
+   "animations": [
+    "EmoteSayYes",
+    "EmoteSayNo"
+   ],
+   "text": {
+    "ru": "Именно. Поэтому просчётов не будет.",
+    "en": "Exactly. That's why there will be no miscalculations.",
+    "fr": "Exactement. C'est pourquoi il n'y aura aucune erreur de calcul."
+   },
+   "source": "World/Quests/Ferris4/Ferris_4_secret1/Promozglin2.(ClientData).xdb"
+  },
+  {
+   "n": 5,
+   "start": 44.0,
+   "duration": 8.5,
+   "speaker": "saw",
+   "voice": {
+    "event": "Ferris4/zem02",
+    "wave": "zem02",
+    "bank": "SFX/Voice/Voice_Ferris4_rus.bsb",
+    "ogg": "voice/05.ogg",
+    "mp3": "voice/05.mp3",
+    "duration": 8.511
+   },
+   "clips": [
+    "EmoteSayNo",
+    "EmoteSpeech"
+   ],
+   "animations": [
+    "EmoteSayNo",
+    "EmoteSpeech"
+   ],
+   "text": {
+    "ru": "Это бесполезная трата времени. Вы игнорируете реальные результаты. Мои исследования...",
+    "en": "It's a waste of time. You are ignoring the real results. My research...",
+    "fr": "C'est une perte de temps. Vous ignorez les résultats réels. Mes recherches..."
+   },
+   "source": "World/Quests/Ferris4/Ferris_4_secret1/Saw2.(ClientData).xdb"
+  },
+  {
+   "n": 6,
+   "start": 52.5,
+   "duration": 4.0,
+   "speaker": "promozglin",
+   "voice": {
+    "event": "Ferris4/Vasily03",
+    "wave": "Vasily03",
+    "bank": "SFX/Voice/Voice_Ferris4_rus.bsb",
+    "ogg": "voice/06.ogg",
+    "mp3": "voice/06.mp3",
+    "duration": 4.544
+   },
+   "clips": [
+    "EmoteProvoke",
+    "EmoteSayNo"
+   ],
+   "animations": [
+    "EmoteProvoke",
+    "EmoteSayNo"
+   ],
+   "text": {
+    "ru": "...были закрыты, и это решение обжалованию не подлежит, коллега.",
+    "en": "...has been closed, and this decision is not a matter for discussion, colleague.",
+    "fr": "... a été clos, et cette décision n'est pas sujette à discussion, cher collègue."
+   },
+   "source": "World/Quests/Ferris4/Ferris_4_secret1/Promozglin3.(ClientData).xdb"
+  },
+  {
+   "n": 7,
+   "start": 57.5,
+   "duration": 8.0,
+   "speaker": "promozglin",
+   "voice": {
+    "event": "Ferris4/Vasily04",
+    "wave": "Vasily04",
+    "bank": "SFX/Voice/Voice_Ferris4_rus.bsb",
+    "ogg": "voice/07.ogg",
+    "mp3": "voice/07.mp3",
+    "duration": 7.067
+   },
+   "clips": [
+    "EmoteSay",
+    "EmoteSay"
+   ],
+   "animations": [
+    "EmoteSay",
+    "EmoteSay"
+   ],
+   "text": {
+    "ru": "Мы не будем испытывать влияние Объекта на людях... Или орках. Пока что - только на животных. И кстати...",
+    "en": "We will not test the Object on humans... or orcs. Only animals for now. And, by the way...",
+    "fr": "Nous ne testerons pas l'Objet sur des humains... ni des Orcs. Seulement des animaux pour le moment. Et d'ailleurs..."
+   },
+   "source": "World/Quests/Ferris4/Ferris_4_secret1/Promozglin4.(ClientData).xdb"
+  },
+  {
+   "n": 8,
+   "start": 65.5,
+   "duration": 9.0,
+   "speaker": "promozglin",
+   "voice": {
+    "event": "Ferris4/Vasily05",
+    "wave": "Vasily05",
+    "bank": "SFX/Voice/Voice_Ferris4_rus.bsb",
+    "ogg": "voice/08.ogg",
+    "mp3": "voice/08.mp3",
+    "duration": 7.831
+   },
+   "clips": [
+    "EmoteSpeech",
+    "EmoteSpeech"
+   ],
+   "animations": [
+    "EmoteSpeech",
+    "EmoteSpeech"
+   ],
+   "text": {
+    "ru": "Персонал «Бестиария» совершил прорыв в работе над Особью. Я отправляюсь туда завтра. Хотите составить компанию?",
+    "en": "The staff at the Bestiary have achieved some amazing results in the study of the Specimen. I will head there tomorrow. Do you want to join me?",
+    "fr": "Le personnel du Bestiaire a obtenu d'intéressants résultats dans l'étude du Spécimen. J'irai là-bas demain. Voulez-vous venir avec moi ?"
+   },
+   "source": "World/Quests/Ferris4/Ferris_4_secret1/Promozglin5.(ClientData).xdb"
+  },
+  {
+   "n": 9,
+   "start": 74.5,
+   "duration": 2.0,
+   "speaker": "saw",
+   "voice": {
+    "event": "Ferris4/zem03",
+    "wave": "zem03",
+    "bank": "SFX/Voice/Voice_Ferris4_rus.bsb",
+    "ogg": "voice/09.ogg",
+    "mp3": "voice/09.mp3",
+    "duration": 1.073
+   },
+   "clips": [
+    "EmoteShrug",
+    "EmoteCurtsey"
+   ],
+   "animations": [
+    "EmoteShrug",
+    "EmoteCurtsey"
+   ],
+   "text": {
+    "ru": "Конечно...",
+    "en": "Of course...",
+    "fr": "Évidemment..."
+   },
+   "source": "World/Quests/Ferris4/Ferris_4_secret1/Saw3.(ClientData).xdb"
+  }
+ ],
+ "actors": [
+  {
+   "id": "scientist",
+   "glb": "actors/scientist.glb",
+   "name": {
+    "ru": "Лаборантка",
+    "en": "Lab Worker"
+   },
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      1516.724,
+      1176.793,
+      -0.2954
+     ],
+     "yaw": 0.79091
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "light": [
+    1.2942,
+    1.3778,
+    1.706
+   ],
+   "geometry": "Characters/Hadagan_female/HadaganFemale.(Geometry).bin",
+   "height": 1.767,
+   "animations": {
+    "EmoteSpeech": 5.3333,
+    "Idle": 5.3,
+    "Idle01": 4.2333
+   }
+  },
+  {
+   "id": "promozglin",
+   "glb": "actors/promozglin.glb",
+   "name": {
+    "ru": "Василий Промозглин",
+    "en": "Vasily Dankin"
+   },
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      1517.775,
+      1175.773,
+      -0.2954
+     ],
+     "yaw": 1.42738
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "light": [
+    1.2979,
+    1.3821,
+    1.7094
+   ],
+   "geometry": "Characters/Hadagan_male/HadaganMale.(Geometry).bin",
+   "height": 1.857,
+   "animations": {
+    "EmoteGreeting": 2.3333,
+    "EmoteProvoke": 1.3333,
+    "EmoteSay": 4.2667,
+    "EmoteSayNo": 2.3333,
+    "EmoteSayYes": 1.6667,
+    "EmoteSpeech": 5.3,
+    "Idle": 3.9667,
+    "Idle01": 4.0
+   }
+  },
+  {
+   "id": "saw",
+   "glb": "actors/saw.glb",
+   "name": {
+    "ru": "Негус Джиг",
+    "en": "Negus Jeeg"
+   },
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      1518.496,
+      1178.31,
+      -0.2954
+     ],
+     "yaw": 4.28683
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "light": [
+    1.3067,
+    1.3922,
+    1.7177
+   ],
+   "geometry": "Characters/Undead_male/UndeadMale.(Geometry).bin",
+   "height": 2.429,
+   "animations": {
+    "EmoteBoring": 6.6667,
+    "EmoteCurtsey": 2.5,
+    "EmoteSay": 4.0,
+    "EmoteSayNo": 3.0,
+    "EmoteShrug": 2.0,
+    "EmoteSpeech": 5.9667,
+    "Idle": 2.9667,
+    "Idle01": 6.6667
+   }
+  }
+ ],
+ "decor": {
+  "glb": "decor.glb",
+  "light": "decor-light.bin",
+  "instances": [
+   {
+    "vot": "FerrisRaid_Core",
+    "p": [
+     1418.24,
+     1176.297,
+     -0.2954
+    ],
+    "yaw": 0.0,
+    "light": [
+     0,
+     87009
+    ]
+   },
+   {
+    "vot": "HG8_Wall_01",
+    "p": [
+     1533.335,
+     1190.825,
+     -24.2004
+    ],
+    "yaw": 0.03867,
+    "tilt": [
+     0.00826,
+     0.02135
+    ],
+    "light": [
+     87009,
+     372
+    ]
+   },
+   {
+    "vot": "HG8_Rock_01",
+    "p": [
+     1529.312,
+     1155.064,
+     -8.6942
+    ],
+    "yaw": 5.92946,
+    "tilt": [
+     5.85789,
+     6.26107
+    ],
+    "scale": 0.9335,
+    "light": [
+     87381,
+     369
+    ]
+   },
+   {
+    "vot": "HG8_Wall_01",
+    "p": [
+     1512.706,
+     1190.027,
+     -23.7595
+    ],
+    "yaw": 0.03867,
+    "tilt": [
+     0.00826,
+     0.02135
+    ],
+    "light": [
+     87750,
+     372
+    ]
+   },
+   {
+    "vot": "HG8_Corner",
+    "p": [
+     1512.742,
+     1152.112,
+     -24.2984
+    ],
+    "yaw": 0.0272,
+    "tilt": [
+     0.00741,
+     0.01841
+    ],
+    "light": [
+     88122,
+     608
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1527.026,
+     1182.217,
+     14.7983
+    ],
+    "yaw": 4.66746,
+    "tilt": [
+     4.99035,
+     6.07459
+    ],
+    "scale": 0.50767,
+    "light": [
+     88730,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_Rock_06",
+    "p": [
+     1528.79,
+     1172.12,
+     -2.1104
+    ],
+    "yaw": 1.49621,
+    "tilt": [
+     6.27715,
+     6.26429
+    ],
+    "scale": 0.70949,
+    "light": [
+     89372,
+     137
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1534.321,
+     1145.132,
+     -8.6848
+    ],
+    "yaw": 1.52811,
+    "tilt": [
+     0.8516,
+     0.27124
+    ],
+    "scale": 0.75023,
+    "light": [
+     89509,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Corner_01",
+    "p": [
+     1524.438,
+     1159.234,
+     1.6414
+    ],
+    "yaw": 2.85145,
+    "tilt": [
+     0.20356,
+     6.12135
+    ],
+    "scale": 0.563,
+    "light": [
+     90151,
+     550
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1533.911,
+     1128.82,
+     -13.116
+    ],
+    "yaw": 4.64869,
+    "tilt": [
+     5.61945,
+     0.01727
+    ],
+    "scale": 0.75023,
+    "light": [
+     90701,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1509.832,
+     1061.43,
+     -1.4085
+    ],
+    "yaw": 4.29005,
+    "tilt": [
+     5.81233,
+     0.35839
+    ],
+    "scale": 1.55417,
+    "light": [
+     91343,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Back",
+    "p": [
+     1518.587,
+     1105.4836,
+     -9.6631
+    ],
+    "yaw": 4.55312,
+    "tilt": [
+     5.90459,
+     0.13045
+    ],
+    "light": [
+     91985,
+     43
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1526.939,
+     1174.331,
+     23.4154
+    ],
+    "yaw": 4.18865,
+    "tilt": [
+     5.23109,
+     6.24047
+    ],
+    "scale": 0.87726,
+    "light": [
+     92028,
+     642
+    ]
+   },
+   {
+    "vot": "FerisLab_Room_Books03",
+    "p": [
+     1507.049,
+     1175.573,
+     -0.2954
+    ],
+    "yaw": 0.0,
+    "light": [
+     92670,
+     48
+    ]
+   },
+   {
+    "vot": "Hadagan_ArmorStand_02",
+    "p": [
+     1517.091,
+     1170.69,
+     -24.0506
+    ],
+    "yaw": 5.75146,
+    "light": [
+     92718,
+     3114
+    ]
+   },
+   {
+    "vot": "Hadagan_ArmorStand_01",
+    "p": [
+     1522.346,
+     1170.226,
+     -24.0363
+    ],
+    "yaw": 3.12723,
+    "light": [
+     95832,
+     3445
+    ]
+   },
+   {
+    "vot": "Place_C_Hadagan_SetBoxes_04",
+    "p": [
+     1521.653,
+     1184.284,
+     -24.0507
+    ],
+    "yaw": 6.07284,
+    "light": [
+     99277,
+     550
+    ]
+   },
+   {
+    "vot": "Hadagan_ArmorStand_02",
+    "p": [
+     1517.023,
+     1181.75,
+     -24.0503
+    ],
+    "yaw": 3.47421,
+    "light": [
+     99827,
+     3114
+    ]
+   },
+   {
+    "vot": "Place_C_Hadagan_SetBoxes_03",
+    "p": [
+     1509.724,
+     1180.219,
+     -24.0503
+    ],
+    "yaw": 0.02066,
+    "light": [
+     102941,
+     196
+    ]
+   },
+   {
+    "vot": "Ferris_Small_Barrel",
+    "p": [
+     1495.952,
+     1173.015,
+     -24.0503
+    ],
+    "yaw": 2.80526,
+    "light": [
+     103137,
+     70
+    ]
+   },
+   {
+    "vot": "Ferris_Small_Barrel",
+    "p": [
+     1497.346,
+     1172.763,
+     -24.0503
+    ],
+    "yaw": 0.97286,
+    "light": [
+     103207,
+     70
+    ]
+   },
+   {
+    "vot": "Place_D_Hadagan_Hydrant",
+    "p": [
+     1512.329,
+     1172.293,
+     -24.0878
+    ],
+    "yaw": 3.20711,
+    "light": [
+     103277,
+     1385
+    ]
+   },
+   {
+    "vot": "ZC10_MechMelee_Corrupted_Dead_Hand_Legs",
+    "p": [
+     1521.227,
+     1163.091,
+     -47.8053
+    ],
+    "yaw": 0.08099,
+    "light": [
+     104662,
+     4263
+    ]
+   },
+   {
+    "vot": "ZC10_MechMelee_Corrupted_Dead_Hand_Legs",
+    "p": [
+     1518.693,
+     1190.372,
+     -47.8053
+    ],
+    "yaw": 0.08099,
+    "light": [
+     108925,
+     4263
+    ]
+   },
+   {
+    "vot": "FerrisRaid_InnerPortal",
+    "p": [
+     1407.256,
+     1176.607,
+     -47.8053
+    ],
+    "yaw": 0.0,
+    "scale": 0.70029,
+    "light": [
+     113188,
+     205
+    ]
+   },
+   {
+    "vot": "FerrisRaid_InnerPortal",
+    "p": [
+     1391.038,
+     1176.337,
+     -24.0503
+    ],
+    "yaw": 0.0,
+    "scale": 0.70029,
+    "light": [
+     113393,
+     205
+    ]
+   },
+   {
+    "vot": "FerrisRaid_InnerPortal",
+    "p": [
+     1378.8331,
+     1176.281,
+     -0.2954
+    ],
+    "yaw": 0.0,
+    "scale": 0.70029,
+    "light": [
+     113598,
+     205
+    ]
+   },
+   {
+    "vot": "HG8_Terminal_01",
+    "p": [
+     1389.041,
+     1176.34,
+     -1.8149
+    ],
+    "yaw": 4.69087,
+    "light": [
+     113803,
+     1523
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     1480.41,
+     1299.9953,
+     -0.0224
+    ],
+    "yaw": 6.26709,
+    "scale": 0.35,
+    "light": [
+     115326,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     1463.731,
+     1316.0494,
+     -0.0224
+    ],
+    "yaw": 4.67305,
+    "scale": 0.35,
+    "light": [
+     115350,
+     24
+    ]
+   },
+   {
+    "vot": "ZC10_AkaciaMedium",
+    "p": [
+     1559.1364,
+     1122.3273,
+     -21.4586
+    ],
+    "yaw": 0.37772,
+    "scale": 0.78311,
+    "light": [
+     115374,
+     1731
+    ]
+   },
+   {
+    "vot": "ZC10_ManaTrain_Rail_LeftTurn",
+    "p": [
+     1619.5677,
+     1088.4657,
+     18.9273
+    ],
+    "yaw": 5.82994,
+    "light": [
+     117105,
+     186
+    ]
+   },
+   {
+    "vot": "ZC10_ManaTrain_Rail_Straight",
+    "p": [
+     1634.7221,
+     1146.101,
+     18.9163
+    ],
+    "yaw": 6.20187,
+    "light": [
+     117291,
+     76
+    ]
+   },
+   {
+    "vot": "HG8_Corner",
+    "p": [
+     1538.0201,
+     1152.8,
+     -24.7639
+    ],
+    "yaw": 0.0272,
+    "tilt": [
+     0.00741,
+     0.01841
+    ],
+    "light": [
+     117367,
+     608
+    ]
+   },
+   {
+    "vot": "HG8_Tank_01",
+    "p": [
+     1583.7008,
+     1097.05,
+     -23.3708
+    ],
+    "yaw": 4.74468,
+    "tilt": [
+     0.00562,
+     0.00024
+    ],
+    "light": [
+     117975,
+     1937
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03_Corner",
+    "p": [
+     1599.1235,
+     1182.215,
+     -25.3536
+    ],
+    "yaw": 6.27609,
+    "tilt": [
+     6.27562,
+     6.26486
+    ],
+    "light": [
+     119912,
+     864
+    ]
+   },
+   {
+    "vot": "HG8_Tank_02",
+    "p": [
+     1610.688,
+     1194.631,
+     -15.6019
+    ],
+    "yaw": 4.68071,
+    "tilt": [
+     0.01851,
+     6.27607
+    ],
+    "light": [
+     120776,
+     2337
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03",
+    "p": [
+     1612.54,
+     1182.363,
+     -25.3506
+    ],
+    "yaw": 3.13235,
+    "tilt": [
+     6.27598,
+     6.26147
+    ],
+    "light": [
+     123113,
+     666
+    ]
+   },
+   {
+    "vot": "HG8_Support",
+    "p": [
+     1598.4564,
+     1175.259,
+     -26.4579
+    ],
+    "yaw": 0.00968,
+    "tilt": [
+     0.00764,
+     0.02158
+    ],
+    "scale": 1.01606,
+    "light": [
+     123779,
+     76
+    ]
+   },
+   {
+    "vot": "HG8_Support",
+    "p": [
+     1591.9958,
+     1182.437,
+     -26.4649
+    ],
+    "yaw": 4.68664,
+    "tilt": [
+     6.26136,
+     0.00687
+    ],
+    "scale": 1.01606,
+    "light": [
+     123855,
+     76
+    ]
+   },
+   {
+    "vot": "HG8_Support",
+    "p": [
+     1565.5547,
+     1189.135,
+     -24.5375
+    ],
+    "yaw": 0.03472,
+    "tilt": [
+     0.0002,
+     0.00322
+    ],
+    "light": [
+     123931,
+     76
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03",
+    "p": [
+     1560.1829,
+     1196.296,
+     -24.7743
+    ],
+    "yaw": 3.18615,
+    "tilt": [
+     6.27481,
+     6.26189
+    ],
+    "light": [
+     124007,
+     666
+    ]
+   },
+   {
+    "vot": "HG8_Support",
+    "p": [
+     1543.2523,
+     1187.871,
+     -24.4341
+    ],
+    "yaw": 0.0547,
+    "tilt": [
+     0.0086,
+     0.02122
+    ],
+    "light": [
+     124673,
+     76
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03",
+    "p": [
+     1548.1755,
+     1195.761,
+     -24.4821
+    ],
+    "yaw": 3.18615,
+    "tilt": [
+     6.27481,
+     6.26189
+    ],
+    "light": [
+     124749,
+     666
+    ]
+   },
+   {
+    "vot": "HG8_Wall_Projector",
+    "p": [
+     1565.5602,
+     1188.93,
+     -10.7603
+    ],
+    "yaw": 6.22032,
+    "tilt": [
+     6.28307,
+     0.00322
+    ],
+    "light": [
+     125415,
+     142
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03",
+    "p": [
+     1572.3411,
+     1196.837,
+     -25.0741
+    ],
+    "yaw": 3.18615,
+    "tilt": [
+     6.27481,
+     6.26189
+    ],
+    "light": [
+     125557,
+     666
+    ]
+   },
+   {
+    "vot": "HG8_Wall_Top",
+    "p": [
+     1575.9641,
+     1192.798,
+     -9.8032
+    ],
+    "yaw": 0.03904,
+    "tilt": [
+     0.0,
+     0.01546
+    ],
+    "light": [
+     126223,
+     161
+    ]
+   },
+   {
+    "vot": "HG8_Wall_Top",
+    "p": [
+     1554.7834,
+     1192.001,
+     -9.6039
+    ],
+    "yaw": 0.03904,
+    "tilt": [
+     0.0,
+     0.00202
+    ],
+    "light": [
+     126384,
+     161
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1589.1456,
+     1204.717,
+     -14.8482
+    ],
+    "yaw": 6.22881,
+    "tilt": [
+     0.29741,
+     0.10608
+    ],
+    "scale": 0.64585,
+    "light": [
+     126545,
+     450
+    ]
+   },
+   {
+    "vot": "HG8_Truss_Vertical_01",
+    "p": [
+     1554.2845,
+     1197.568,
+     -14.2477
+    ],
+    "yaw": 4.76627,
+    "tilt": [
+     6.27394,
+     6.26455
+    ],
+    "scale": 2.74826,
+    "light": [
+     126995,
+     297
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_01",
+    "p": [
+     1560.8174,
+     1202.323,
+     3.5243
+    ],
+    "yaw": 0.17635,
+    "tilt": [
+     0.76434,
+     0.13216
+    ],
+    "light": [
+     127292,
+     1294
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03",
+    "p": [
+     1584.349,
+     1197.373,
+     -25.2536
+    ],
+    "yaw": 3.18615,
+    "tilt": [
+     6.27481,
+     6.26189
+    ],
+    "light": [
+     128586,
+     666
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03_Corner",
+    "p": [
+     1598.2144,
+     1198.199,
+     -25.5478
+    ],
+    "yaw": 3.20703,
+    "tilt": [
+     6.27437,
+     6.26207
+    ],
+    "light": [
+     129252,
+     864
+    ]
+   },
+   {
+    "vot": "HG8_Support",
+    "p": [
+     1586.6911,
+     1190.393,
+     -25.2081
+    ],
+    "yaw": 0.0547,
+    "tilt": [
+     0.0086,
+     0.02122
+    ],
+    "scale": 1.01606,
+    "light": [
+     130116,
+     76
+    ]
+   },
+   {
+    "vot": "HG8_Rock_01",
+    "p": [
+     1536.6253,
+     1200.205,
+     -12.3331
+    ],
+    "yaw": 3.29398,
+    "tilt": [
+     5.81926,
+     6.2584
+    ],
+    "scale": 1.05719,
+    "light": [
+     130192,
+     369
+    ]
+   },
+   {
+    "vot": "HG8_Wall_Projector",
+    "p": [
+     1543.5619,
+     1187.59,
+     -10.5795
+    ],
+    "yaw": 6.22032,
+    "tilt": [
+     6.28307,
+     0.00322
+    ],
+    "light": [
+     130561,
+     142
+    ]
+   },
+   {
+    "vot": "HG8_Wall_01",
+    "p": [
+     1546.9537,
+     1106.7384,
+     -25.1162
+    ],
+    "yaw": 1.59971,
+    "tilt": [
+     0.0211,
+     6.27431
+    ],
+    "light": [
+     130703,
+     372
+    ]
+   },
+   {
+    "vot": "HG8_Wall_01",
+    "p": [
+     1546.3443,
+     1127.814,
+     -24.9285
+    ],
+    "yaw": 1.59971,
+    "tilt": [
+     0.0211,
+     6.27431
+    ],
+    "light": [
+     131075,
+     372
+    ]
+   },
+   {
+    "vot": "HG8_Support",
+    "p": [
+     1545.075,
+     1164.492,
+     -24.4341
+    ],
+    "yaw": 3.1382,
+    "tilt": [
+     0.0086,
+     0.02122
+    ],
+    "light": [
+     131447,
+     76
+    ]
+   },
+   {
+    "vot": "HG8_Truss_Vertical_01",
+    "p": [
+     1575.6444,
+     1198.717,
+     -14.4454
+    ],
+    "yaw": 4.76627,
+    "tilt": [
+     6.27394,
+     6.26455
+    ],
+    "scale": 2.74826,
+    "light": [
+     131523,
+     297
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01_Corner",
+    "p": [
+     1566.9155,
+     1113.5145,
+     -24.8756
+    ],
+    "yaw": 1.5318,
+    "tilt": [
+     6.26436,
+     6.26864
+    ],
+    "light": [
+     131820,
+     622
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01",
+    "p": [
+     1566.2132,
+     1100.536,
+     -25.1768
+    ],
+    "yaw": 1.50858,
+    "tilt": [
+     6.26574,
+     6.24478
+    ],
+    "light": [
+     132442,
+     580
+    ]
+   },
+   {
+    "vot": "HG8_Support",
+    "p": [
+     1656.287,
+     1145.904,
+     -18.2578
+    ],
+    "yaw": 4.69252,
+    "light": [
+     133022,
+     76
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03",
+    "p": [
+     1624.3867,
+     1182.254,
+     -25.6079
+    ],
+    "yaw": 3.13235,
+    "tilt": [
+     6.27598,
+     6.26147
+    ],
+    "light": [
+     133098,
+     666
+    ]
+   },
+   {
+    "vot": "HG8_Support",
+    "p": [
+     1614.3329,
+     1175.312,
+     -26.8014
+    ],
+    "yaw": 0.00968,
+    "tilt": [
+     0.00764,
+     0.02158
+    ],
+    "scale": 1.01606,
+    "light": [
+     133764,
+     76
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01_Corner",
+    "p": [
+     1565.1227,
+     1087.2509,
+     -25.6275
+    ],
+    "yaw": 4.65265,
+    "tilt": [
+     0.00328,
+     0.00141
+    ],
+    "light": [
+     133840,
+     622
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03",
+    "p": [
+     1650.348,
+     1141.271,
+     -18.5038
+    ],
+    "yaw": 3.14727,
+    "light": [
+     134462,
+     666
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1614.6859,
+     1277.839,
+     32.8169
+    ],
+    "yaw": 1.98817,
+    "tilt": [
+     1.89751,
+     0.06982
+    ],
+    "scale": 0.64585,
+    "light": [
+     135128,
+     450
+    ]
+   },
+   {
+    "vot": "HG8_Corner",
+    "p": [
+     1656.362,
+     1158.318,
+     -8.0097
+    ],
+    "yaw": 3.12843,
+    "tilt": [
+     6.27829,
+     6.26398
+    ],
+    "light": [
+     135578,
+     608
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03_Corner",
+    "p": [
+     1636.795,
+     1141.177,
+     -18.6365
+    ],
+    "yaw": 6.27547,
+    "tilt": [
+     6.27685,
+     6.2644
+    ],
+    "light": [
+     136186,
+     864
+    ]
+   },
+   {
+    "vot": "HG8_Rock_01",
+    "p": [
+     1573.5228,
+     1069.0243,
+     -22.4527
+    ],
+    "yaw": 5.79896,
+    "tilt": [
+     6.27118,
+     6.2377
+    ],
+    "scale": 1.10407,
+    "light": [
+     137050,
+     369
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03",
+    "p": [
+     1636.71,
+     1155.267,
+     -18.6938
+    ],
+    "yaw": 1.5603,
+    "light": [
+     137419,
+     666
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Ceiling_02",
+    "p": [
+     1616.7803,
+     1139.446,
+     34.628
+    ],
+    "yaw": 5.85441,
+    "tilt": [
+     6.27962,
+     0.00111
+    ],
+    "light": [
+     138085,
+     268
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1622.2752,
+     1249.976,
+     32.6141
+    ],
+    "yaw": 1.98817,
+    "tilt": [
+     1.89751,
+     0.06982
+    ],
+    "scale": 0.64585,
+    "light": [
+     138353,
+     450
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1654.897,
+     1179.516,
+     3.9194
+    ],
+    "yaw": 4.68746,
+    "tilt": [
+     0.4398,
+     0.03445
+    ],
+    "scale": 0.67884,
+    "light": [
+     138803,
+     450
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Ceiling_02",
+    "p": [
+     1644.159,
+     1185.206,
+     31.8757
+    ],
+    "yaw": 5.98326,
+    "tilt": [
+     6.18131,
+     6.1057
+    ],
+    "light": [
+     139253,
+     268
+    ]
+   },
+   {
+    "vot": "HG8_Tank_01",
+    "p": [
+     1645.225,
+     1121.9501,
+     -18.612
+    ],
+    "yaw": 4.74468,
+    "tilt": [
+     0.00562,
+     0.00024
+    ],
+    "light": [
+     139521,
+     1937
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1597.5972,
+     1205.288,
+     13.9742
+    ],
+    "yaw": 3.45947,
+    "tilt": [
+     5.64648,
+     0.26757
+    ],
+    "scale": 0.48458,
+    "light": [
+     141458,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1587.0467,
+     1201.202,
+     24.8818
+    ],
+    "yaw": 0.32558,
+    "tilt": [
+     0.63469,
+     6.01017
+    ],
+    "scale": 0.68335,
+    "light": [
+     142100,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_Rock_01",
+    "p": [
+     1604.378,
+     1208.269,
+     15.6357
+    ],
+    "yaw": 2.96264,
+    "tilt": [
+     5.56682,
+     6.20929
+    ],
+    "scale": 1.10407,
+    "light": [
+     142742,
+     369
+    ]
+   },
+   {
+    "vot": "HG8_Rock_03",
+    "p": [
+     1620.7041,
+     1206.745,
+     25.764
+    ],
+    "yaw": 2.96264,
+    "tilt": [
+     5.0934,
+     6.20929
+    ],
+    "scale": 1.18161,
+    "light": [
+     143111,
+     837
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1615.6618,
+     1213.419,
+     9.2173
+    ],
+    "yaw": 3.06353,
+    "tilt": [
+     5.60092,
+     6.24047
+    ],
+    "scale": 0.68335,
+    "light": [
+     143948,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1625.8369,
+     1222.385,
+     28.894
+    ],
+    "yaw": 1.9873,
+    "tilt": [
+     1.88024,
+     0.03088
+    ],
+    "scale": 0.64585,
+    "light": [
+     144590,
+     450
+    ]
+   },
+   {
+    "vot": "ZC10_ManaTrain_Pillar_Segment_Double",
+    "p": [
+     1568.3203,
+     1064.6599,
+     2.089
+    ],
+    "yaw": 0.0,
+    "light": [
+     145040,
+     452
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1580.1217,
+     1192.708,
+     27.7988
+    ],
+    "yaw": 3.06353,
+    "tilt": [
+     5.23109,
+     6.24047
+    ],
+    "scale": 0.87726,
+    "light": [
+     145492,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_Tank_02",
+    "p": [
+     1542.0992,
+     1031.3645,
+     -20.6311
+    ],
+    "yaw": 1.49479,
+    "tilt": [
+     0.01851,
+     6.27607
+    ],
+    "light": [
+     146134,
+     2337
+    ]
+   },
+   {
+    "vot": "HG8_Corner",
+    "p": [
+     1574.0671,
+     1048.9784,
+     -33.5504
+    ],
+    "yaw": 4.63415,
+    "tilt": [
+     6.27829,
+     6.26398
+    ],
+    "light": [
+     148471,
+     608
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01",
+    "p": [
+     1554.7787,
+     1034.8745,
+     -31.2511
+    ],
+    "yaw": 1.56618,
+    "tilt": [
+     0.00335,
+     0.0031
+    ],
+    "light": [
+     149079,
+     580
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1578.2619,
+     1056.1126,
+     33.2751
+    ],
+    "yaw": 0.29579,
+    "tilt": [
+     3.57114,
+     6.26111
+    ],
+    "scale": 0.77688,
+    "light": [
+     149659,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_Ramp",
+    "p": [
+     1592.8902,
+     1056.0642,
+     -25.791
+    ],
+    "yaw": 6.28181,
+    "tilt": [
+     0.00168,
+     6.28007
+    ],
+    "light": [
+     150301,
+     1001
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01",
+    "p": [
+     1599.2179,
+     1056.1242,
+     -25.4919
+    ],
+    "yaw": 6.26605,
+    "tilt": [
+     0.01387,
+     6.25423
+    ],
+    "light": [
+     151302,
+     580
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03_Half",
+    "p": [
+     1555.2693,
+     1035.8939,
+     -33.3143
+    ],
+    "yaw": 4.71156,
+    "light": [
+     151882,
+     342
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01_UnRailed_02",
+    "p": [
+     1567.0879,
+     1055.9968,
+     -31.0775
+    ],
+    "yaw": 3.14953,
+    "light": [
+     152224,
+     350
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01_UnRailed_02",
+    "p": [
+     1555.0345,
+     1046.6594,
+     -31.0775
+    ],
+    "yaw": 4.72026,
+    "light": [
+     152574,
+     350
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01_UnRailed_02",
+    "p": [
+     1551.9344,
+     1050.7536,
+     -30.8832
+    ],
+    "yaw": 4.91839,
+    "tilt": [
+     0.0,
+     6.25936
+    ],
+    "light": [
+     152924,
+     350
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1615.3969,
+     1219.902,
+     -8.7897
+    ],
+    "yaw": 3.06353,
+    "tilt": [
+     5.60092,
+     6.24047
+    ],
+    "scale": 0.68335,
+    "light": [
+     153274,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1660.626,
+     1169.049,
+     -10.5262
+    ],
+    "yaw": 3.06353,
+    "tilt": [
+     5.60092,
+     6.24047
+    ],
+    "scale": 0.68335,
+    "light": [
+     153916,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03",
+    "p": [
+     1636.71,
+     1167.097,
+     -18.6938
+    ],
+    "yaw": 1.5603,
+    "light": [
+     154558,
+     666
+    ]
+   },
+   {
+    "vot": "HG8_Wall_01",
+    "p": [
+     1649.538,
+     1183.562,
+     -7.5516
+    ],
+    "yaw": 4.68942,
+    "light": [
+     155224,
+     372
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01",
+    "p": [
+     1625.8377,
+     1184.957,
+     -18.0367
+    ],
+    "yaw": 4.68247,
+    "tilt": [
+     0.01387,
+     6.25423
+    ],
+    "light": [
+     155596,
+     580
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01",
+    "p": [
+     1626.1921,
+     1196.799,
+     -18.358
+    ],
+    "yaw": 4.68247,
+    "tilt": [
+     0.01387,
+     6.25423
+    ],
+    "light": [
+     156176,
+     580
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01",
+    "p": [
+     1625.4701,
+     1172.673,
+     -17.6589
+    ],
+    "yaw": 4.68247,
+    "tilt": [
+     0.01387,
+     6.25423
+    ],
+    "light": [
+     156756,
+     580
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03",
+    "p": [
+     1636.837,
+     1179.156,
+     -18.6938
+    ],
+    "yaw": 1.5603,
+    "light": [
+     157336,
+     666
+    ]
+   },
+   {
+    "vot": "HG8_Wall_01",
+    "p": [
+     1650.02,
+     1204.717,
+     -7.5535
+    ],
+    "yaw": 4.68942,
+    "light": [
+     158002,
+     372
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01_Corner",
+    "p": [
+     1624.7872,
+     1159.746,
+     -17.6211
+    ],
+    "yaw": 3.10922,
+    "tilt": [
+     6.28188,
+     0.00332
+    ],
+    "light": [
+     158374,
+     622
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1659.093,
+     1197.813,
+     8.8627
+    ],
+    "yaw": 1.40834,
+    "tilt": [
+     5.8348,
+     0.30822
+    ],
+    "scale": 0.73999,
+    "light": [
+     158996,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_Wall_01",
+    "p": [
+     1649.905,
+     1225.574,
+     -7.5516
+    ],
+    "yaw": 4.73926,
+    "light": [
+     159638,
+     372
+    ]
+   },
+   {
+    "vot": "ZC10_ManaTrain_Rail_LeftTurn",
+    "p": [
+     1639.594,
+     1205.872,
+     18.901
+    ],
+    "yaw": 6.16728,
+    "light": [
+     160010,
+     186
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1624.1817,
+     1240.338,
+     -11.7632
+    ],
+    "yaw": 1.65893,
+    "tilt": [
+     0.04814,
+     0.02056
+    ],
+    "scale": 0.64585,
+    "light": [
+     160196,
+     450
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1582.8658,
+     1066.5042,
+     -22.7437
+    ],
+    "yaw": 2.97932,
+    "tilt": [
+     6.25588,
+     6.16504
+    ],
+    "scale": 0.54959,
+    "light": [
+     160646,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1631.3701,
+     1225.075,
+     30.6172
+    ],
+    "yaw": 4.86155,
+    "tilt": [
+     2.85342,
+     5.89794
+    ],
+    "scale": 0.64585,
+    "light": [
+     161288,
+     450
+    ]
+   },
+   {
+    "vot": "ZC10_ManaTrain_Rail_LeftTurn",
+    "p": [
+     1635.5202,
+     1263.831,
+     18.901
+    ],
+    "yaw": 0.43283,
+    "light": [
+     161738,
+     186
+    ]
+   },
+   {
+    "vot": "HG8_Terminal_01",
+    "p": [
+     1626.0024,
+     1201.566,
+     -8.0242
+    ],
+    "yaw": 0.00592,
+    "tilt": [
+     6.27506,
+     6.2651
+    ],
+    "scale": 1.93948,
+    "light": [
+     161924,
+     1523
+    ]
+   },
+   {
+    "vot": "ZC10_ManaTrain_Pillar_Segment_Double",
+    "p": [
+     1568.2933,
+     1064.5843,
+     -16.7678
+    ],
+    "yaw": 0.0,
+    "light": [
+     163447,
+     452
+    ]
+   },
+   {
+    "vot": "ZC10_ManaTrain_Pillar_Segment_Double",
+    "p": [
+     1568.3203,
+     1064.6599,
+     -7.1602
+    ],
+    "yaw": 0.0,
+    "light": [
+     163899,
+     452
+    ]
+   },
+   {
+    "vot": "ZC10_ManaTrain_Pillar_Segment_Double",
+    "p": [
+     1568.0919,
+     1064.6725,
+     -26.3753
+    ],
+    "yaw": 0.0,
+    "light": [
+     164351,
+     452
+    ]
+   },
+   {
+    "vot": "ZC10_MechGunslinger_Corrupted_Dead",
+    "p": [
+     1605.0903,
+     1082.1591,
+     -24.4312
+    ],
+    "yaw": 0.0,
+    "light": [
+     164803,
+     5014
+    ]
+   },
+   {
+    "vot": "ZC10_MechMelee_Corrupted_Dead_Hand_Legs",
+    "p": [
+     1606.8616,
+     1080.767,
+     -24.5444
+    ],
+    "yaw": 0.0,
+    "light": [
+     169817,
+     4263
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Corner_01",
+    "p": [
+     1537.4365,
+     1059.3923,
+     -17.7263
+    ],
+    "yaw": 1.2032,
+    "tilt": [
+     0.11522,
+     6.19632
+    ],
+    "light": [
+     174080,
+     550
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_01",
+    "p": [
+     1536.496,
+     1084.772,
+     -10.6364
+    ],
+    "yaw": 1.29974,
+    "tilt": [
+     0.3857,
+     5.98845
+    ],
+    "light": [
+     174630,
+     1294
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1540.9122,
+     1118.2912,
+     -11.104
+    ],
+    "yaw": 1.44914,
+    "tilt": [
+     0.49158,
+     0.04207
+    ],
+    "light": [
+     175924,
+     450
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1547.5542,
+     1099.2762,
+     19.4814
+    ],
+    "yaw": 1.25601,
+    "tilt": [
+     0.99821,
+     6.1567
+    ],
+    "light": [
+     176374,
+     450
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1573.6487,
+     1103.3235,
+     49.7221
+    ],
+    "yaw": 3.11754,
+    "tilt": [
+     3.89091,
+     6.23927
+    ],
+    "scale": 0.97031,
+    "light": [
+     176824,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1572.2445,
+     1080.8345,
+     31.0379
+    ],
+    "yaw": 3.11754,
+    "tilt": [
+     3.643,
+     6.23927
+    ],
+    "scale": 0.77688,
+    "light": [
+     177466,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1554.667,
+     1202.997,
+     -14.0329
+    ],
+    "yaw": 0.13714,
+    "tilt": [
+     0.32209,
+     0.18723
+    ],
+    "scale": 0.64585,
+    "light": [
+     178108,
+     450
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1541.0324,
+     1145.025,
+     16.5622
+    ],
+    "yaw": 1.9336,
+    "tilt": [
+     0.78547,
+     6.07424
+    ],
+    "scale": 0.78675,
+    "light": [
+     178558,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_Truss_Vertical_01",
+    "p": [
+     1547.6816,
+     1101.699,
+     -10.7066
+    ],
+    "yaw": 1.52654,
+    "tilt": [
+     0.00739,
+     0.01944
+    ],
+    "scale": 2.74826,
+    "light": [
+     179200,
+     297
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03_Half",
+    "p": [
+     1554.8174,
+     1130.126,
+     -24.5758
+    ],
+    "yaw": 0.0189,
+    "light": [
+     179497,
+     342
+    ]
+   },
+   {
+    "vot": "HG8_Ramp",
+    "p": [
+     1550.3912,
+     1080.3768,
+     -25.7258
+    ],
+    "yaw": 1.50672,
+    "tilt": [
+     6.2802,
+     6.28133
+    ],
+    "light": [
+     179839,
+     1001
+    ]
+   },
+   {
+    "vot": "HG8_Platform_01_Corner",
+    "p": [
+     1550.9701,
+     1087.6594,
+     -25.6395
+    ],
+    "yaw": 1.51243,
+    "tilt": [
+     6.28012,
+     6.27989
+    ],
+    "light": [
+     180840,
+     622
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03_Half",
+    "p": [
+     1566.8363,
+     1130.353,
+     -24.6015
+    ],
+    "yaw": 0.0189,
+    "light": [
+     181462,
+     342
+    ]
+   },
+   {
+    "vot": "HG8_Platform_03_Half",
+    "p": [
+     1543.0339,
+     1129.903,
+     -21.53
+    ],
+    "yaw": 0.0189,
+    "light": [
+     181804,
+     342
+    ]
+   },
+   {
+    "vot": "Hadagan_ResurrectPlaceFerris",
+    "p": [
+     1585.5328,
+     1132.121,
+     -15.2163
+    ],
+    "yaw": 4.37179,
+    "tilt": [
+     0.01406,
+     0.01753
+    ],
+    "light": [
+     182146,
+     1140
+    ]
+   },
+   {
+    "vot": "HG8_Corner",
+    "p": [
+     1577.7414,
+     1069.7029,
+     -33.9609
+    ],
+    "yaw": 6.15606,
+    "tilt": [
+     6.27829,
+     6.26398
+    ],
+    "light": [
+     183286,
+     608
+    ]
+   },
+   {
+    "vot": "Hadagan_Street_Latern_02",
+    "p": [
+     1570.5687,
+     1049.1193,
+     -20.7795
+    ],
+    "yaw": 2.95887,
+    "light": [
+     183894,
+     294
+    ]
+   },
+   {
+    "vot": "Hadagan_Street_Latern_02",
+    "p": [
+     1574.596,
+     1120.7051,
+     -14.9038
+    ],
+    "yaw": 2.32636,
+    "light": [
+     184188,
+     294
+    ]
+   },
+   {
+    "vot": "Hadagan_Street_Latern_02",
+    "p": [
+     1597.0945,
+     1120.1409,
+     -14.935
+    ],
+    "yaw": 3.76177,
+    "light": [
+     184482,
+     294
+    ]
+   },
+   {
+    "vot": "Hadagan_Street_Latern_02",
+    "p": [
+     1597.5893,
+     1142.625,
+     -14.588
+    ],
+    "yaw": 5.65979,
+    "light": [
+     184776,
+     294
+    ]
+   },
+   {
+    "vot": "Hadagan_Street_Latern_02",
+    "p": [
+     1575.4157,
+     1143.372,
+     -14.6859
+    ],
+    "yaw": 0.89141,
+    "light": [
+     185070,
+     294
+    ]
+   },
+   {
+    "vot": "Hadagan_Street_Latern_02",
+    "p": [
+     1544.9764,
+     1167.607,
+     -23.8366
+    ],
+    "yaw": 3.20447,
+    "light": [
+     185364,
+     294
+    ]
+   },
+   {
+    "vot": "Hadagan_Street_Latern_02",
+    "p": [
+     1594.6651,
+     1173.355,
+     -23.782
+    ],
+    "yaw": 5.60061,
+    "light": [
+     185658,
+     294
+    ]
+   },
+   {
+    "vot": "HG8_Corner",
+    "p": [
+     1548.0668,
+     1074.2532,
+     -34.5677
+    ],
+    "yaw": 1.44745,
+    "tilt": [
+     6.26402,
+     0.00498
+    ],
+    "light": [
+     185952,
+     608
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Ceiling_02",
+    "p": [
+     1596.1858,
+     1054.4175,
+     32.9516
+    ],
+    "yaw": 6.04623,
+    "tilt": [
+     6.18867,
+     0.07335
+    ],
+    "light": [
+     186560,
+     268
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Ceiling_02",
+    "p": [
+     1597.2707,
+     1101.2332,
+     34.0002
+    ],
+    "yaw": 5.85373,
+    "tilt": [
+     6.18867,
+     0.07335
+    ],
+    "light": [
+     186828,
+     268
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1552.6364,
+     1138.715,
+     17.5569
+    ],
+    "yaw": 1.23505,
+    "tilt": [
+     1.24341,
+     6.23954
+    ],
+    "light": [
+     187096,
+     450
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1598.373,
+     1185.061,
+     42.3044
+    ],
+    "yaw": 3.39751,
+    "tilt": [
+     4.44523,
+     5.79889
+    ],
+    "scale": 0.87726,
+    "light": [
+     187546,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_Rock_06",
+    "p": [
+     1578.5453,
+     1109.3905,
+     2.8038
+    ],
+    "yaw": 3.22062,
+    "tilt": [
+     0.02421,
+     0.11473
+    ],
+    "scale": 1.40708,
+    "light": [
+     188188,
+     137
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Ceiling_02",
+    "p": [
+     1580.9439,
+     1146.681,
+     35.3338
+    ],
+    "yaw": 5.85235,
+    "tilt": [
+     0.04033,
+     6.18858
+    ],
+    "light": [
+     188325,
+     268
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1554.1829,
+     1188.603,
+     24.8369
+    ],
+    "yaw": 3.85595,
+    "tilt": [
+     4.91866,
+     5.87203
+    ],
+    "scale": 0.87726,
+    "light": [
+     188593,
+     642
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Back",
+    "p": [
+     1616.5744,
+     1116.4135,
+     65.6103
+    ],
+    "yaw": 3.05143,
+    "tilt": [
+     1.60732,
+     0.01198
+    ],
+    "scale": 1.91585,
+    "light": [
+     189235,
+     43
+    ]
+   },
+   {
+    "vot": "HG8_Terminal_01",
+    "p": [
+     1593.3841,
+     1122.5957,
+     -14.8667
+    ],
+    "yaw": 3.83096,
+    "light": [
+     189278,
+     1523
+    ]
+   },
+   {
+    "vot": "HG8_CaveRock_Wall_03",
+    "p": [
+     1536.8308,
+     1202.351,
+     -7.5584
+    ],
+    "yaw": 0.13714,
+    "tilt": [
+     0.32209,
+     0.18723
+    ],
+    "scale": 0.64585,
+    "light": [
+     190801,
+     450
+    ]
+   },
+   {
+    "vot": "ZC10_Ferris_Akacia_02",
+    "p": [
+     1590.3524,
+     1048.956,
+     -29.7151
+    ],
+    "yaw": 0.80513,
+    "tilt": [
+     0.01612,
+     6.26909
+    ],
+    "scale": 0.63951,
+    "light": [
+     191251,
+     780
+    ]
+   },
+   {
+    "vot": "ZC10_AkaciaBush_02",
+    "p": [
+     1647.146,
+     1111.8102,
+     -18.1161
+    ],
+    "yaw": 6.27226,
+    "tilt": [
+     6.08684,
+     6.28101
+    ],
+    "scale": 1.40992,
+    "light": [
+     192031,
+     34
+    ]
+   },
+   {
+    "vot": "ZC10_Ferris_Akacia_01",
+    "p": [
+     1574.9531,
+     1086.48,
+     -24.6795
+    ],
+    "yaw": 4.18977,
+    "tilt": [
+     6.15469,
+     0.01266
+    ],
+    "scale": 0.85238,
+    "light": [
+     192065,
+     869
+    ]
+   },
+   {
+    "vot": "ZC10_Ferris_Akacia_02",
+    "p": [
+     1591.3736,
+     1107.1611,
+     -23.2116
+    ],
+    "yaw": 0.53324,
+    "tilt": [
+     6.2142,
+     6.26917
+    ],
+    "scale": 0.69082,
+    "light": [
+     192934,
+     780
+    ]
+   },
+   {
+    "vot": "ZC10_Ferris_Akacia_02",
+    "p": [
+     1597.3471,
+     1060.4508,
+     -24.9462
+    ],
+    "yaw": 0.56352,
+    "tilt": [
+     6.09071,
+     6.11308
+    ],
+    "scale": 0.72871,
+    "light": [
+     193714,
+     780
+    ]
+   },
+   {
+    "vot": "ZC10_Ferris_Akacia_02",
+    "p": [
+     1637.574,
+     1130.112,
+     -18.9092
+    ],
+    "yaw": 0.54076,
+    "tilt": [
+     6.28243,
+     6.23
+    ],
+    "scale": 0.83159,
+    "light": [
+     194494,
+     780
+    ]
+   },
+   {
+    "vot": "ZC10_Ferris_Akacia_02",
+    "p": [
+     1587.2403,
+     1185.195,
+     -23.5692
+    ],
+    "yaw": 0.56352,
+    "tilt": [
+     6.26135,
+     6.11308
+    ],
+    "scale": 0.83159,
+    "light": [
+     195274,
+     780
+    ]
+   },
+   {
+    "vot": "ZC10_AkaciaBush_02",
+    "p": [
+     1636.122,
+     1125.95,
+     -18.1436
+    ],
+    "yaw": 6.27226,
+    "tilt": [
+     6.08684,
+     6.28101
+    ],
+    "scale": 1.40992,
+    "light": [
+     196054,
+     34
+    ]
+   },
+   {
+    "vot": "ZC10_AkaciaBush_02",
+    "p": [
+     1616.0883,
+     1172.138,
+     -22.8453
+    ],
+    "yaw": 6.27226,
+    "tilt": [
+     6.08684,
+     6.28101
+    ],
+    "scale": 1.40992,
+    "light": [
+     196088,
+     34
+    ]
+   },
+   {
+    "vot": "ZC10_AkaciaBush_02",
+    "p": [
+     1563.4472,
+     1186.798,
+     -23.1225
+    ],
+    "yaw": 6.27226,
+    "tilt": [
+     6.08684,
+     6.28101
+    ],
+    "scale": 1.40992,
+    "light": [
+     196122,
+     34
+    ]
+   },
+   {
+    "vot": "HG8_Rock_04",
+    "p": [
+     1624.5062,
+     1157.63,
+     -25.6652
+    ],
+    "yaw": 5.29184,
+    "tilt": [
+     5.89151,
+     6.17074
+    ],
+    "scale": 0.44435,
+    "light": [
+     196156,
+     642
+    ]
+   },
+   {
+    "vot": "ZC10_AkaciaBush_02",
+    "p": [
+     1628.7025,
+     1143.277,
+     -18.4601
+    ],
+    "yaw": 6.27226,
+    "tilt": [
+     6.08684,
+     6.28101
+    ],
+    "scale": 1.40992,
+    "light": [
+     196798,
+     34
+    ]
+   },
+   {
+    "vot": "ZC10_Ferris_Akacia_02",
+    "p": [
+     1561.7882,
+     1065.6933,
+     -21.6394
+    ],
+    "yaw": 0.79972,
+    "tilt": [
+     0.00029,
+     0.00173
+    ],
+    "scale": 0.7357,
+    "light": [
+     196832,
+     780
+    ]
+   },
+   {
+    "vot": "ZC10_Ferris_Akacia_02",
+    "p": [
+     1574.1562,
+     1155.734,
+     -23.04
+    ],
+    "yaw": 0.79972,
+    "tilt": [
+     0.00029,
+     0.00173
+    ],
+    "scale": 0.7357,
+    "light": [
+     197612,
+     780
+    ]
+   },
+   {
+    "vot": "ZC10_AkaciaBush_02",
+    "p": [
+     1567.96,
+     1155.702,
+     -22.8769
+    ],
+    "yaw": 6.27226,
+    "tilt": [
+     6.08684,
+     6.28101
+    ],
+    "scale": 1.40992,
+    "light": [
+     198392,
+     34
+    ]
+   },
+   {
+    "vot": "ZC10_AkaciaBush_02",
+    "p": [
+     1542.0919,
+     1040.8992,
+     -18.5047
+    ],
+    "yaw": 6.27226,
+    "tilt": [
+     6.08684,
+     6.28101
+    ],
+    "scale": 1.40992,
+    "light": [
+     198426,
+     34
+    ]
+   },
+   {
+    "vot": "ZC10_MechMelee_Corrupted_Dead_Hand_Legs",
+    "p": [
+     1613.8955,
+     1127.946,
+     -21.1038
+    ],
+    "yaw": 2.03368,
+    "light": [
+     198460,
+     4263
+    ]
+   },
+   {
+    "vot": "ZC10_AkaciaBush_02",
+    "p": [
+     1596.5388,
+     1151.076,
+     -21.0033
+    ],
+    "yaw": 6.27226,
+    "tilt": [
+     6.08684,
+     6.28101
+    ],
+    "scale": 1.40992,
+    "light": [
+     202723,
+     34
+    ]
+   },
+   {
+    "vot": "HG8_Truss_Angled_01",
+    "p": [
+     1616.2103,
+     1074.9533,
+     27.695
+    ],
+    "yaw": 0.91255,
+    "tilt": [
+     3.11915,
+     0.02326
+    ],
+    "scale": 0.99511,
+    "light": [
+     202757,
+     564
+    ]
+   },
+   {
+    "vot": "HG8_Truss_Vertical_01",
+    "p": [
+     1613.8297,
+     1076.7158,
+     20.0233
+    ],
+    "yaw": 4.26192,
+    "tilt": [
+     6.27394,
+     6.26455
+    ],
+    "scale": 1.23643,
+    "light": [
+     203321,
+     297
+    ]
+   },
+   {
+    "vot": "HG8_Truss_Angled_01",
+    "p": [
+     1611.7791,
+     1078.3701,
+     27.868
+    ],
+    "yaw": 4.15165,
+    "tilt": [
+     3.06736,
+     6.26716
+    ],
+    "scale": 0.99511,
+    "light": [
+     203618,
+     564
+    ]
+   },
+   {
+    "vot": "HG8_Truss_Angled_01",
+    "p": [
+     1637.05,
+     1140.476,
+     29.9208
+    ],
+    "yaw": 1.26028,
+    "tilt": [
+     3.11915,
+     0.02326
+    ],
+    "scale": 0.99511,
+    "light": [
+     204182,
+     564
+    ]
+   },
+   {
+    "vot": "HG8_Truss_Vertical_01",
+    "p": [
+     1634.245,
+     1141.069,
+     20.0233
+    ],
+    "yaw": 4.60964,
+    "tilt": [
+     6.27394,
+     6.26455
+    ],
+    "scale": 1.23643,
+    "light": [
+     204746,
+     297
+    ]
+   },
+   {
+    "vot": "HG8_Truss_Angled_01",
+    "p": [
+     1631.7533,
+     1141.926,
+     30.0938
+    ],
+    "yaw": 4.49938,
+    "tilt": [
+     3.06736,
+     6.26716
+    ],
+    "scale": 0.99511,
+    "light": [
+     205043,
+     564
+    ]
+   },
+   {
+    "vot": "HG8_Truss_Vertical_01",
+    "p": [
+     1640.145,
+     1212.806,
+     19.9611
+    ],
+    "yaw": 4.6447,
+    "tilt": [
+     6.27394,
+     6.26455
+    ],
+    "scale": 1.23643,
+    "light": [
+     205607,
+     297
+    ]
+   },
+   {
+    "vot": "HG8_Truss_Angled_01",
+    "p": [
+     1637.625,
+     1213.574,
+     28.4425
+    ],
+    "yaw": 4.53444,
+    "tilt": [
+     3.06736,
+     6.26716
+    ],
+    "scale": 0.99511,
+    "light": [
+     205904,
+     564
+    ]
+   },
+   {
+    "vot": "HG8_Truss_Angled_01",
+    "p": [
+     1643.011,
+     1212.15,
+     28.2695
+    ],
+    "yaw": 1.29533,
+    "tilt": [
+     3.11915,
+     0.02326
+    ],
+    "scale": 0.99511,
+    "light": [
+     206468,
+     564
+    ]
+   },
+   {
+    "vot": "ZC10_MechMelee_Corrupted_Dead",
+    "p": [
+     1544.4169,
+     1185.371,
+     -47.8053
+    ],
+    "yaw": 5.59088,
+    "light": [
+     207032,
+     7110
+    ]
+   },
+   {
+    "vot": "ZC10_MechMelee_Corrupted_Dead_Hand_Legs",
+    "p": [
+     1545.1175,
+     1190.029,
+     -47.8053
+    ],
+    "yaw": 0.08099,
+    "light": [
+     214142,
+     4263
+    ]
+   },
+   {
+    "vot": "HG8_Platform_Big_01",
+    "p": [
+     1586.2175,
+     1131.957,
+     -25.0454
+    ],
+    "yaw": 6.25326,
+    "tilt": [
+     0.01408,
+     0.00011
+    ],
+    "light": [
+     218405,
+     7843
+    ]
+   },
+   {
+    "vot": "FerisLab_Obj_Comp_01",
+    "p": [
+     1547.9982,
+     1314.7941,
+     15.5783
+    ],
+    "yaw": 4.70349,
+    "light": [
+     226248,
+     323
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     1541.9772,
+     1322.5119,
+     15.5559
+    ],
+    "yaw": 1.5708,
+    "scale": 0.35,
+    "light": [
+     226571,
+     24
+    ]
+   }
+  ],
+  "sky": {
+   "radius": 1472.39,
+   "parts": 5
+  }
+ },
+ "fx": {
+  "glb": null,
+  "spawns": []
+ },
+ "objects": {
+  "FerrisRaid_Core_Details_LiftRoom1": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisRaid_Core_Portal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisRaid_Core": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "FerrisRaid_Core_Details_LiftRoom1",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "FerrisRaid_Core_Portal",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "HG8_Wall_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Rock_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Corner": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Rock_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Rock_06": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_CaveRock_Corner_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_CaveRock_Back": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerisLab_Room_Books03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Hadagan_ArmorStand_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Hadagan_ArmorStand_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_C_Hadagan_SetBoxes_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_C_Hadagan_SetBoxes_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Ferris_Small_Barrel": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Place_D_Hadagan_Hydrant": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_MechMelee_Corrupted_Dead_Hand_Legs": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerrisRaid_InnerPortal": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Terminal_01_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/HG8_Terminal_01_FX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 91,
+    "loopFrame": 61,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.2188,
+       0.375,
+       0.6641
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.2,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.1719,
+       0.3203,
+       0.1094
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.2,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0859,
+       0.0547,
+       0.0547
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.2,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.7344,
+       0.4375,
+       0.1172
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.2,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Terminal_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "World/Zones/Ferris/HG8_Terminal_01",
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "HG8_Terminal_01_FX",
+     "locator": ""
+    }
+   ],
+   "sfx": "sfx/HG8_Terminal_01"
+  },
+  "InstLeague1_AI_2X2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_AkaciaMedium": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 20.0,
+   "loop": true
+  },
+  "ZC10_ManaTrain_Rail_LeftTurn": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_ManaTrain_Rail_Straight": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Tank_01_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/HG8_Tank_01_FX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 91,
+    "loopFrame": 61,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.5469,
+       0.4141,
+       0.1484
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.5469,
+       0.4141,
+       0.1484
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.5469,
+       0.4141,
+       0.1484
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.5469,
+       0.4141,
+       0.1484
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Tank_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "HG8_Tank_01_FX",
+     "locator": ""
+    }
+   ]
+  },
+  "HG8_Platform_03_Corner": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Tank_02_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/HG8_Tank_02_FX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 91,
+    "loopFrame": 61,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.4844,
+       0.2344
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.4844,
+       0.2344
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.4844,
+       0.2344
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.4844,
+       0.2344
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.6172,
+       0.4844,
+       0.2344
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Tank_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "HG8_Tank_02_FX",
+     "locator": ""
+    }
+   ]
+  },
+  "HG8_Platform_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Support": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Projector_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "particles/HG8_Projector_FX.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 91,
+    "loopFrame": 61,
+    "frames": [
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.2734,
+       0.2344,
+       0.1875
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.2,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Wall_Projector": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "components": [
+    {
+     "vot": "HG8_Projector_FX",
+     "locator": ""
+    }
+   ]
+  },
+  "HG8_Wall_Top": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_CaveRock_Wall_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Truss_Vertical_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_CaveRock_Wall_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Platform_01_Corner": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Platform_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_CaveRock_Ceiling_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Rock_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_ManaTrain_Pillar_Segment_Double": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Ramp": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Platform_03_Half": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Platform_01_UnRailed_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_MechGunslinger_Corrupted_Dead": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Hadagan_ResurrectPlaceFerris": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "Hadagan_Street_Latern_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_Ferris_Akacia_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 10.0,
+   "loop": true
+  },
+  "ZC10_AkaciaBush_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 6.6667,
+   "loop": true
+  },
+  "ZC10_Ferris_Akacia_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 10.0,
+   "loop": true
+  },
+  "HG8_Truss_Angled_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "ZC10_MechMelee_Corrupted_Dead": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "HG8_Platform_Big_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  },
+  "FerisLab_Obj_Comp_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false
+  }
+ },
+ "particleAtlas": {
+  "file": "particles/atlas.png",
+  "width": 1024,
+  "height": 64,
+  "rects": [
+   [
+    0,
+    0,
+    64,
+    64
+   ]
+  ],
+  "sources": [
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1440,
+    1152,
+    64,
+    64
+   ]
+  ]
+ },
+ "light": {
+  "ambient": 4288785366,
+  "ambientFactor": 0.5,
+  "diffuse": 4280758840,
+  "fog": 4278322702,
+  "fogEnd": 270.0,
+  "fogStart": 0.0,
+  "pointLight": 4292672974,
+  "selfIllum": 4293193182,
+  "specular": 4149952,
+  "sunPitch": 45.0,
+  "sunYaw": 180.0,
+  "desaturation": 0.9,
+  "sunDirection": [
+   -0.7071,
+   0.0,
+   0.7071
+  ]
+ },
+ "pointLights": [
+  {
+   "p": [
+    1227.189,
+    974.776,
+    -12.279
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1259.467,
+    1008.293,
+    -44.144
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1267.146,
+    955.959,
+    -39.683
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1245.333,
+    957.035,
+    -39.577
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1168.984,
+    1152.778,
+    -13.583
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1139.779,
+    1059.964,
+    1.126
+   ],
+   "intensity": 1.0,
+   "radius": 93.167,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1166.392,
+    1106.487,
+    10.805
+   ],
+   "intensity": 1.0,
+   "radius": 67.023,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1249.696,
+    1100.051,
+    -34.988
+   ],
+   "intensity": 1.0,
+   "radius": 80.445,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1249.194,
+    1029.469,
+    -35.955
+   ],
+   "intensity": 1.0,
+   "radius": 71.876,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1262.706,
+    1026.674,
+    -42.158
+   ],
+   "intensity": 1.0,
+   "radius": 80.594,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1189.802,
+    1048.309,
+    -14.896
+   ],
+   "intensity": 1.0,
+   "radius": 54.08,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1186.961,
+    1159.879,
+    -13.048
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1197.223,
+    1176.262,
+    -13.226
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1194.988,
+    1195.341,
+    -13.778
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1262.214,
+    1172.245,
+    -25.648
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1240.069,
+    1109.388,
+    -41.852
+   ],
+   "intensity": -100.0,
+   "radius": 6.371,
+   "attenuation": 0.0
+  },
+  {
+   "p": [
+    1257.243,
+    1045.387,
+    -44.47
+   ],
+   "intensity": -100.0,
+   "radius": 12.885,
+   "attenuation": 0.0
+  },
+  {
+   "p": [
+    1269.536,
+    1101.564,
+    -39.869
+   ],
+   "intensity": -100.0,
+   "radius": 8.702,
+   "attenuation": 0.0
+  },
+  {
+   "p": [
+    1236.8,
+    1044.042,
+    -35.463
+   ],
+   "intensity": 1.0,
+   "radius": 30.837,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1274.234,
+    1059.311,
+    -45.523
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1247.672,
+    1094.009,
+    -41.245
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1265.36,
+    1136.496,
+    -41.853
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1501.343,
+    975.791,
+    -20.505
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1522.854,
+    975.737,
+    -15.487
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1462.856,
+    965.425,
+    -5.128
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1355.577,
+    986.831,
+    4.624
+   ],
+   "intensity": 1.0,
+   "radius": 41.968,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1336.136,
+    1017.418,
+    -8.477
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1366.647,
+    991.738,
+    4.942
+   ],
+   "intensity": 1.0,
+   "radius": 41.968,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1349.525,
+    997.281,
+    4.592
+   ],
+   "intensity": 1.0,
+   "radius": 41.968,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1356.723,
+    990.044,
+    -19.332
+   ],
+   "intensity": 1.0,
+   "radius": 41.968,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1487.867,
+    912.754,
+    -9.842
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1398.579,
+    986.264,
+    -8.262
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1366.863,
+    924.264,
+    -9.792
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1283.703,
+    955.456,
+    -8.983
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1488.594,
+    916.6,
+    14.131
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1437.751,
+    931.2,
+    -8.482
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1531.676,
+    957.873,
+    -13.701
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1529.456,
+    944.348,
+    -13.831
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1526.764,
+    995.797,
+    -4.199
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1535.677,
+    1005.798,
+    -3.762
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1516.484,
+    1004.575,
+    -4.136
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1285.588,
+    986.647,
+    -37.839
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1282.118,
+    978.862,
+    -38.499
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1346.275,
+    964.657,
+    -30.925
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1375.748,
+    961.718,
+    -29.916
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1324.332,
+    983.626,
+    -30.746
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1392.733,
+    947.908,
+    -8.298
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1314.98,
+    961.687,
+    -30.79
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1418.16,
+    969.767,
+    -26.741
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1455.753,
+    957.546,
+    -22.48
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1410.653,
+    952.404,
+    -27.604
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1332.055,
+    1003.3,
+    -30.801
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1296.944,
+    1018.844,
+    -30.801
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1292.921,
+    1168.77,
+    -34.656
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1291.914,
+    1184.774,
+    -34.696
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1298.58,
+    1093.156,
+    -8.279
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1593.927,
+    953.232,
+    -4.117
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1593.948,
+    972.556,
+    -3.874
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1579.014,
+    1014.934,
+    -22.13
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1542.083,
+    1022.293,
+    16.163
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1545.473,
+    955.578,
+    -13.679
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1630.006,
+    1002.45,
+    -4.318
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1634.591,
+    1021.007,
+    -4.261
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1637.138,
+    984.488,
+    -4.056
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1549.476,
+    977.121,
+    -27.747
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1588.533,
+    975.589,
+    -23.957
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1588.223,
+    951.49,
+    -23.655
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1570.661,
+    1049.629,
+    -16.262
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1574.972,
+    1121.061,
+    -10.386
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1596.793,
+    1120.561,
+    -10.417
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1597.288,
+    1142.204,
+    -10.07
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1575.819,
+    1143.048,
+    -10.168
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1544.943,
+    1168.123,
+    -19.319
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1594.34,
+    1172.952,
+    -19.264
+   ],
+   "intensity": 1.2,
+   "radius": 8.0,
+   "attenuation": 0.7
+  },
+  {
+   "p": [
+    1649.638,
+    1033.384,
+    -4.339
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1638.7,
+    1115.034,
+    -2.669
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1638.269,
+    1128.438,
+    -2.543
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1652.306,
+    1115.24,
+    -2.574
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1651.842,
+    1129.122,
+    -2.491
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1590.3,
+    1104.227,
+    -7.35
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1590.781,
+    1090.327,
+    -7.242
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1577.189,
+    1090.108,
+    -7.284
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1576.72,
+    1103.515,
+    -7.268
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1551.651,
+    1030.372,
+    16.055
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1548.072,
+    1030.991,
+    -8.105
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1609.705,
+    1185.883,
+    21.419
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1619.072,
+    1194.96,
+    21.094
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1600.852,
+    1195.034,
+    20.881
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1604.871,
+    1194.97,
+    -2.905
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1660.548,
+    1106.491,
+    20.754
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1543.392,
+    1184.975,
+    -11.691
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1565.472,
+    1186.531,
+    -11.972
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1666.081,
+    1071.702,
+    5.92
+   ],
+   "intensity": 1.0,
+   "radius": 55.864,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    1586.702,
+    1037.506,
+    -27.724
+   ],
+   "intensity": 1.0,
+   "radius": 20.446,
+   "attenuation": 4.0
+  }
+ ],
+ "sounds": {
+  "music": [
+   {
+    "file": "sfx/AG1_Village_NM",
+    "t": 3.0,
+    "until": 82.5
+   }
+  ],
+  "ambience": [],
+  "events": {
+   "music": [],
+   "ambience": []
+  },
+  "waves": {
+   "Music/ZonesMusic/AG1_Village": {
+    "file": "sfx/AG1_Village_NM",
+    "wave": "AG1_Village_NM",
+    "bank": "SFX/Music/Music_Zone.fsb",
+    "duration": 83.5
+   },
+   "World/Zones/Ferris/HG8_Terminal_01": {
+    "file": "sfx/HG8_Terminal_01",
+    "wave": "HG8_Terminal_01",
+    "bank": "SFX/World/World_Ferris03.bsb",
+    "duration": 39.971
+   },
+   "World/Zones/ZC10/ManaTrain_Active": {
+    "file": "sfx/ManaTrain_Active",
+    "wave": "ManaTrain_Active",
+    "bank": "SFX/World/World_ZC10.bsb",
+    "duration": 7.5
+   }
+  },
+  "volume": {}
+ },
+ "post": [
+  {
+   "t": 0.0,
+   "until": 3.0,
+   "kind": "veil",
+   "fadeIn": 2.0,
+   "fadeOut": 1.0
+  },
+  {
+   "t": 79.5,
+   "until": 82.5,
+   "kind": "veil",
+   "fadeIn": 2.0,
+   "fadeOut": 1.0
+  }
+ ],
+ "sources": {
+  "timeline": "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_fade_start.(BuffResource).xdb",
+  "buffs": [
+   "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_fade_start.(BuffResource).xdb",
+   "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_effect.(BuffResource).xdb",
+   "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_01.(BuffResource).xdb",
+   "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_02.(BuffResource).xdb",
+   "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_02_1.(BuffResource).xdb",
+   "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_03.(BuffResource).xdb",
+   "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_04.(BuffResource).xdb",
+   "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_05.(BuffResource).xdb",
+   "World/Quests/Ferris4/Ferris_4_secret1/Cutscene06.(BuffResource).xdb",
+   "World/Quests/Ferris4/Ferris_4_secret1/Cutscene07.(BuffResource).xdb",
+   "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_fade_end.(BuffResource).xdb"
+  ],
+  "spawns": [
+   "Maps/Ferris4/000_000/5_4_ServerObjects.xdb"
+  ]
+ }
+}

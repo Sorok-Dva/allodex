@@ -8,6 +8,13 @@
    },
    "version": "16.0"
   },
+  "ferris": {
+   "title": {
+    "fr": "Ferris",
+    "en": "Ferris"
+   },
+   "version": "6.0"
+  },
   "invasion": {
    "title": {
     "fr": "L'Invasion",
@@ -1161,6 +1168,24 @@
     "en": "The hidden world"
    },
    "chronology": "Cinématique moteur de la quête « AO12_Prologue04 » (prologue 12.0, carte AO12_PrologueInst, la Citadelle de Nihaz) : Klavdia y trouve dans les souvenirs gardés par Nihaz « le monde qu’il cherchait à cacher », d’où partent les arcs 12.0 et 13.0 (Eden, la Toute-Mère) ; placée avant les vidéos de Suslanger (12.0). Recréée en 3D, voir engine_scenes.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "ferris-retrospective",
+   "kind": "engine",
+   "source": "main",
+   "event": "Ferris_4_secret1",
+   "arc": "ferris",
+   "version": "6.0",
+   "faction": "common",
+   "order": 150,
+   "title": {
+    "fr": "Rétrospective",
+    "en": "Retrospective"
+   },
+   "chronology": "Cinématique moteur de la quête « Ferris_4_secret1 » (« Ретроспектива », Ferris, 6.0) : le journal de l’« Objet » fait revivre la réunion de Vasily Promozglin, du nécromant Negus Jig et d’une laborantine avant la catastrophe de Ferris ; 6.0 précède l’Invasion (7.0).",
    "audio": {
     "language": "ru"
    }
@@ -22617,6 +22642,12 @@
     "sfx": 0.8,
     "voice": 1.0
    }
+  },
+  {
+   "id": "ferris-retrospective",
+   "source": "xdb70",
+   "first_buff": "World/Quests/Ferris4/Ferris_4_secret1/Cutscene_fade_start.(BuffResource).xdb",
+   "_note": "Déroulé serveur relu dans l’arbre 7.0 (buffs Cutscene_fade_start → Cutscene_01 … Cutscene07 → Cutscene_fade_end), rapporté au client 17.0 : caméras, répliques et locuteurs, PNJ et leur place (5_4_ServerObjects), ciel et lumière de la vision, musique et ambiance."
   }
  ]
 }
