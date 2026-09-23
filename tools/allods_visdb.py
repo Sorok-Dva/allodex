@@ -55,6 +55,8 @@ EL_BOOLS = 0x6C                # scrollAlpha, scrollRGB, ignoreDiffuseAlpha, tra
 EL_MATERIAL_NAME = 0x78
 EL_NAME = 0x90
 EL_SKIN_INDEX = 0xA8
+EL_PARAMS = 0x58               # MaterialParams (polymorphe)
+PARAMS_ENV_TEXTURE = 0x48      # CommonMaterialParams.envReflectionTexture
 
 NODE_STRIDE = 64
 NODE_NAME = 0x08
@@ -99,6 +101,10 @@ VOT_COMPONENTS = 0x138
 STATE_STRIDE = 144
 STATE_ANIMATION = 0x80
 
+COMPONENT_ID = 0x28            # VisualObjectComponentID
+DELAY_CHILD = 0x48             # DelayComponent : composant retardé, puis timeMin, timeMax
+DELAY_TIME_MIN = 0x50
+STOP_IDS = 0x48                # StopVisObjectComponents : vecteur de chaînes (24 o chacune)
 COMP_LOCATOR = 0x48
 COMP_OFFSET = 0x60
 COMP_ROTATION = 0x70
@@ -142,6 +148,16 @@ EFFECT_OFFSET = 0x88
 PREDICATE_FLAG = 0x48
 PREDICATE_TEMPLATES = 0x48
 TEMPLATE_NAME = 0xE8
+CHANNEL_FX = 0x58             # CreatureChannelDirectAction : channelingFx
+CHANNEL_END = 0x60            # endPoint (VisPoint)
+CHANNEL_FADE_IN = 0x68        # ms
+CHANNEL_FADE_OUT = 0x6C       # ms
+CHANNEL_LENGTH = 0x70         # fxLength : longueur modelée du rayon (m)
+CHANNEL_VELOCITY = 0x98
+CHANNEL_START = 0xB0          # startPoint (VisPoint)
+POINT_SHIFT = 0x24            # VisPoint.shift (vec3), puis VisPointLocator : locator, nom
+POINT_LOCATOR = 0x38
+POINT_LOCATOR_NAME = 0x40
 SHAKE_PARAMS = 0x48
 SHAKE_FIELDS = 0x20            # 8 flottants bruts de CameraShakeParameters
 
@@ -245,6 +261,12 @@ def read_geometry(db: PackDB, cat: PakCatalog, off: int) -> GeometryInfo:
                            transparent=bool(flags[3]), visible=bool(flags[6]),
                            alpha=db.f32(el + EL_TRANSPARENCY),
                            uv_scroll=(db.f32(el + EL_U_SPEED), db.f32(el + EL_V_SPEED)))
+        params = db.ptr(el + EL_PARAMS)
+        if params is not None and db.vtype(params) == "CommonMaterialParams":
+            env = db.ptr(params + PARAMS_ENV_TEXTURE)
+            # Texture d'environnement : `SoftGeometryGrain*` sert de masque d'alpha indexé par la
+            # normale vue de la caméra (disque blanc = bords estompés, « géométrie douce »).
+            mat.env_texture = cat.name(db.binary_ref(env)) if env is not None else None
         doc.elements.append(ElementSpec(name=db.string(el + EL_NAME) or "?", ib0=ib0, ib1=ib1,
                                         vb0=vb0, vb1=vb1, material=mat,
                                         skin_index=db.i32(el + EL_SKIN_INDEX)))
@@ -262,6 +284,10 @@ class Component:
     rotation: tuple[float, float, float, float]
     scale: float
     visobject: int | None
+    ident: str = ""
+    start: float = 0.0                 # `DelayComponent` : apparition retardée (s)
+    stop: float | None = None          # `StopVisObjectComponents` retardé : disparition (s)
+    random_delay: bool = False         # timeMin ≠ timeMax : délai tiré au hasard par le client
 
 
 @dataclass
@@ -297,14 +323,36 @@ def read_visobject(db: PackDB, cat: PakCatalog, off: int) -> VisObject:
     if animation is None and geometry is not None:
         animation = db.ptr(geometry + GEO_SKELETAL_ANIMATION)
     components = []
+    stops: list[tuple[float, list[str]]] = []
+
+    def visit(comp: int, delay: float, ident: str, random_delay: bool) -> None:
+        kind = db.vtype(comp)
+        ident = db.string(comp + COMPONENT_ID) or ident
+        if kind == "DelayComponent":
+            tmin, tmax = db.floats(comp + DELAY_TIME_MIN, 2)
+            child = db.ptr(comp + DELAY_CHILD)
+            if child is not None:
+                visit(child, delay + float(tmin), ident, random_delay or abs(tmax - tmin) > 1e-6)
+        elif kind == "StopVisObjectComponents":
+            v = db.vec(comp + STOP_IDS)
+            ids = [db.string(v[0] + 24 * k) or "" for k in range(v[1] // 24)] if v else []
+            stops.append((delay, ids))
+        elif kind == "AttachedVisObjectComponent":
+            components.append(Component(locator=db.string(comp + COMP_LOCATOR) or "",
+                                        offset=_vec3(db, comp + COMP_OFFSET),
+                                        rotation=tuple(float(v) for v in db.floats(comp + COMP_ROTATION, 4)),
+                                        scale=db.f32(comp + COMP_SCALE),
+                                        visobject=db.ptr(comp + COMP_VISOBJECT),
+                                        ident=ident, start=round(delay, 4), random_delay=random_delay))
+
     for comp in db.pointers(off + VOT_COMPONENTS):
-        if db.vtype(comp) != "AttachedVisObjectComponent":
-            continue
-        components.append(Component(locator=db.string(comp + COMP_LOCATOR) or "",
-                                    offset=_vec3(db, comp + COMP_OFFSET),
-                                    rotation=tuple(float(v) for v in db.floats(comp + COMP_ROTATION, 4)),
-                                    scale=db.f32(comp + COMP_SCALE),
-                                    visobject=db.ptr(comp + COMP_VISOBJECT)))
+        visit(comp, 0.0, "", False)
+    # Un arrêt ne vaut que pour un composant déjà apparu (`MuseL` du Barde : arrêté à 7,85 s,
+    # apparu à 7,87 s, il reste).
+    for when, ids in stops:
+        for c in components:
+            if c.ident and c.ident in ids and when > c.start and (c.stop is None or when < c.stop):
+                c.stop = round(when, 4)
     return VisObject(off, vot_name(db, cat, off), geometry, db.ptr(off + VOT_PARTICLE), animation,
                      db.f32(off + VOT_SCALE), db.i32(off + VOT_FADE_IN), db.i32(off + VOT_FADE_OUT),
                      db.string(off + VOT_SOUND_NAME), components)
@@ -459,11 +507,30 @@ def read_action(db: PackDB, off: int | None, depth: int = 0) -> dict | None:
         node["flag"] = db.string(off + PREDICATE_FLAG)
     elif kind == "PredicateCreatureVisCharacterAction":
         node["templates"] = [db.string(t + TEMPLATE_NAME) for t in db.pointers(off + PREDICATE_TEMPLATES)]
+    elif kind == "CreatureChannelDirectAction":
+        node["visObject"] = db.ptr(off + CHANNEL_FX)
+        node["fadeIn"] = db.i32(off + CHANNEL_FADE_IN) / 1000.0
+        node["fadeOut"] = db.i32(off + CHANNEL_FADE_OUT) / 1000.0
+        node["length"] = db.f32(off + CHANNEL_LENGTH)
+        node["velocity"] = db.f32(off + CHANNEL_VELOCITY)
+        node["start"] = read_point(db, db.ptr(off + CHANNEL_START))
+        node["end"] = read_point(db, db.ptr(off + CHANNEL_END))
     elif kind == "ShakeAction":
         params = db.ptr(off + SHAKE_PARAMS)
         if params is not None:
             node["params"] = [round(float(v), 4) for v in db.floats(params + SHAKE_FIELDS, 8)]
     return node
+
+
+def read_point(db: PackDB, off: int | None) -> dict:
+    """`VisPoint` d'un rayon : décalage et, pour un `VisPointLocator`, le locator (défaut
+    `Global`, la racine de la créature)."""
+    if off is None:
+        return {"locator": "Global", "shift": [0.0, 0.0, 0.0]}
+    loc = db.u32(off + POINT_LOCATOR)
+    name = db.string(off + POINT_LOCATOR_NAME)
+    locator = name if (loc == 19 and name) else (FX_LOCATORS[loc] if loc < len(FX_LOCATORS) else "Global")
+    return {"locator": locator, "shift": [round(float(v), 4) for v in db.floats(off + POINT_SHIFT, 3)]}
 
 
 @dataclass
