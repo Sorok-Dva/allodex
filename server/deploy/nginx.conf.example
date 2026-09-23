@@ -63,10 +63,18 @@ server {
     }
 }
 
-# Domaine canonique unique (les autres noms redirigent) — à activer si c'est bien le choix :
-# server {
-#     listen 443 ssl; http2 on;
-#     server_name allodex.online allodex.allods-developers.eu;
-#     # … certificats …
-#     return 301 https://allodex.eu$request_uri;
-# }
+# Domaine principal : allodex.eu. Les autres noms redirigent (301), requête comprise, pour
+# qu'une seule adresse par page soit indexée.
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name allodex.online allodex.allods-developers.eu;
+    # … certificats (les mêmes que le vhost principal s'ils couvrent ces noms) …
+    return 301 https://allodex.eu$request_uri;
+}
+# Redirection HTTP → HTTPS, si le vhost actuel (certbot) ne la fait pas déjà pour ces noms.
+server {
+    listen 80;
+    server_name allodex.eu allodex.online allodex.allods-developers.eu;
+    return 301 https://allodex.eu$request_uri;
+}
