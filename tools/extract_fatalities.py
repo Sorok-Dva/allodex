@@ -256,7 +256,7 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
             if d > radius:
                 continue
             ids = layer_sets[patch.passes[0][1]] if patch.passes and patch.passes[0][1] < len(layer_sets) else ()
-            layer = layers[ids[0] - 1] if ids and 0 < ids[0] <= len(layers) else (None, 30.0)
+            layer = layers[ids[0]] if ids and ids[0] < len(layers) else (None, 30.0)
             pts = patch.points + np.array([ox - cx, oy - cy, 0.0])
             tris = patch.triangles if d <= TERRAIN_FINE or not len(patch.coarse) else patch.coarse
             groups.setdefault(layer[0] or "", []).append((pts, patch.normals, tris, layer[1], d))

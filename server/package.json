@@ -1,0 +1,29 @@
+{
+  "name": "allodex-server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "drizzle-orm": "^0.45.3",
+    "hono": "^4.13.8",
+    "mysql2": "^3.24.4",
+    "tsx": "^4.23.15"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.6",
+    "drizzle-kit": "^0.31.11",
+    "typescript": "~6.0.2",
+    "vitest": "^4.1.11"
+  }
+}
