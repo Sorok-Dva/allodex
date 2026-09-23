@@ -1753,7 +1753,12 @@
      ],
      "missingNames": 0
     }
-   ]
+   ],
+   "points": {
+    "book": 82,
+    "field": 77,
+    "source": "Fenêtre Talents du client FR, personnage au niveau maximal (« Points de compétence : 0/82 », « Événements de développement : 0/77 ») ; confirmé par les rangs appris de la capture (85 = 82 + 3 offerts)."
+   }
   }
  ],
  "unavailable": [
