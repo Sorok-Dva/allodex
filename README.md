@@ -519,8 +519,30 @@ et l'extracteur y prend :
 Le site rend la fenêtre à l'échelle 1:1 quand l'écran le permet (réduite sinon, jamais sous
 0,5 sur téléphone : la page défile). États des cases, comme le script : sort du livre en
 couleur dès le rang 1, rang en jaune (vert au maximum) ; case de grille apprise en couleur sur
-`FieldTalent`, case accessible encadrée de `FieldReady`, autres en gris ; survol : cases du même
-talent teintées de `TalentBuiderHighlighted` (couleur `TALENT_HIGHLIGHT_FULL`). Les versions
+`FieldTalent` ; case que l'on peut apprendre encadrée d'orange (`FieldReady`, gabarit
+`FieldTalentReadyToLearn` : le script l'affiche quand `canLearn` ou pour une case en file
+d'attente) ; autres en gris.
+
+**Survol = talents liés.** Le cadre sarcelle du jeu n'indique pas les cases accessibles : au
+survol d'un rubis ou d'un sort, `ClassFieldTalent.UpdateHighlight` surligne en
+`TALENT_HIGHLIGHT_FULL` (0,07 ; 0,48 ; 0,48 sur `TalentBuiderHighlighted`) les cases du même
+talent et celles des talents liés, et `ClassBaseTalent` pose `HighlightBlueFull` (`Highlighted`,
+mélange additif) sur les sorts du livre concernés. Le lien vient de `GetLinkedTalents`, que
+`ClassBuild.CalcTalentLinkedResources` rend réciproque ; dans les données, c'est le tableau de
+sorts de la partie fixe de l'`AbilityResource` du rubis (`+0xE8` en 17.0 : « Sève toxique » →
+« Chute des feuilles »), extrait en `links` (563 rubis liés sur 682 en 17.0). Ce tableau
+n'existe pas avant la 17.0 (aucune référence rubis → sort du livre en 15.0/16.0) : pas de
+surbrillance de liens dans les versions anciennes. Au toucher, sans survol : un premier toucher
+sélectionne la case (infobulle et liens), un second ajoute un rang, l'appui long en retire un.
+
+**Icônes sans fond.** Certaines icônes (potions, soleils, 39 × 39, 32 × 39, 25 × 25…) occupent
+le coin haut-gauche d'une texture de 64 × 64 : le jeu n'en affiche que la zone utile
+(`realWidth × realHeight` de la `UITexture`), étirée sur la case, sur le fond normal de la case
+(damier ou `BaseTalentBack`). L'extracteur recadre donc chaque icône sur cette zone : champs
+`+0x88`/`+0x8C` en 64 bits ; en 32 bits, repérés par le marqueur `FFFFFFFF, dimension` (7.0-11.x :
+hauteur et largeur utiles 0x14 plus loin ; 1.1-4.0 : largeur et hauteur 0xC avant, ordre vérifié
+sur les icônes de monnaie 32 × 39). Test : aucune icône extraite n'a plus son dessin confiné au
+coin haut-gauche. Les versions
 anciennes sont dessinées dans ce même cadre (grilles 7 × 7 ou 9 × 7 centrées sur le damier,
 note en pied de fenêtre).
 
@@ -530,7 +552,10 @@ priorité fournie par le serveur) ne sont pas affichées ; les boutons du pied s
 `ResetSelected` → réinitialiser ; « activer le build » masqué) ; le build II est inerte ; les
 textes français des compteurs viennent de la capture du client FR (le client 17.0 n'a que
 l'anglais et le russe) ; le nom français d'une classe est repris de la dernière version qui en a
-un. Les icônes de classe Paladin et Guérisseur n'existent pas dans le client 17.0.
+un. Icônes de classe Paladin et Guérisseur : les fichiers sont dans `BaseLocall_x64.pak` du
+17.0 mais son `pack.bin` n'a pas de `UITexture` pour eux ; leurs dimensions viennent de la
+`UITexture` de même chemin du client FR 16.0 (provenance dans `ui_class_icons` du manifeste et
+dans `from`/`dimsFrom` des textures).
 
 Poids : ≈ 9,6 Mo de JSON de talents, 1 150 icônes PNG dédupliquées (6,4 Mo), fenêtre ≈ 1,5 Mo
 (29 Ko de JSON, 52 textures).
@@ -540,7 +565,8 @@ Poids : ≈ 9,6 Mo de JSON de talents, 1 150 icônes PNG dédupliquées (6,4 Mo)
 Clic : +1 rang (case de grille : +1 case) ; clic droit, ou appui long au toucher : −1 ; Maj :
 tous les rangs permis (grille : toutes les cases accessibles du même talent). Les compteurs
 « Points de compétence » et « Événements de développement » suivent en direct, au format du jeu
-(points libres / total).
+(points libres / total). Deux builds indépendants, comme le jeu : les boutons I / II basculent
+de l'un à l'autre (double spécialisation, par exemple dégâts et soins), chacun avec ses compteurs.
 
 Règles (`src/data/talents.build.ts`), reprises de `ClassBuild`/`ClassState` :
 
@@ -553,17 +579,29 @@ Règles (`src/data/talents.build.ts`), reprises de `ClassBuild`/`ClassState` :
   case de départ (déclarée par la ressource, sinon le centre). Une case de départ qui porte un
   talent est apprise d'office ; vide (quelques grilles 8.0/9.0/11.0), elle sert d'ancre. Retirer
   une case retire celles qui ne sont plus reliées au départ.
-- **Totaux** : absents des données du client (accordés par le serveur au fil des niveaux).
-  17.0 : **82** points de compétence et **77** événements de développement, relevés dans la
-  fenêtre du jeu d'un personnage au niveau maximal. Le script affiche `libres + dépensés +
-  appris − 3` : les trois sorts de la première couche au rang 1 et les trois cases de départ sont
-  offerts, ce que confirme la capture (rangs appris = 85 = 82 + 3). Autres versions : pas de
-  total connu, les compteurs affichent les points dépensés sans plafond (note en pied de fenêtre)
-  et la première couche n'est pas apprise d'office. Coût d'une case de grille (1) et des rangs
-  (1, 2, 3) appliqués à toutes les versions.
+- **Première couche** offerte au rang 1 dans toutes les versions (les trois sorts de départ).
+- **Totaux** : absents des données du client (accordés par le serveur au fil des niveaux) ; ils
+  viennent de `points` dans `tools/talents_manifest.json` (avec leur source, recopiés dans l'index
+  par `python3 tools/extract_talents.py --index-only`).
+  - 17.0 : **82** points de compétence et **77** événements de développement, relevés dans la
+    fenêtre du jeu d'un personnage au niveau maximal. Le script affiche `libres + dépensés +
+    appris − 3` : les trois sorts de la première couche au rang 1 et les trois cases de départ
+    sont offerts, ce que confirme la capture (rangs appris = 85 = 82 + 3).
+  - Calculateurs en ligne consultés (23/09/2026) : `en.allodswiki.ru/calc` (« allodsdb ») et
+    `allodsdb.com` sont derrière une vérification de navigateur (preuve de travail et curseur à
+    glisser) que l'outil n'a pas contournée : leurs totaux par version restent à relever à la main.
+    `alloder.pro/calc-en` (`/c/data/en.config.json` : 91 / 80 en f2p, 86 / 76 en p2p) et
+    `allods-sunshine.com/calc` (80 / 79) donnent les totaux des serveurs actuels, sans version :
+    non repris, faute de pouvoir les rattacher à une version du site. Le premier retire aussi un
+    point par sort de départ, comme le script du jeu.
+  - Autres versions : pas de total, les compteurs affichent les points dépensés sans plafond
+    (note en pied de fenêtre). Coût d'une case de grille (1) et des rangs (1, 2, 3) appliqués à
+    toutes les versions.
 - Les déblocages (`requiredUnlocks`, quêtes) sont ignorés, comme en « mode calcul » du jeu.
 
-**Lien** : `?v=<version>&c=<classe>&b=<code>`, avec `b = 1.<livre>.<grille 1>.<grille 2>.<grille 3>` :
+**Lien** : `?v=<version>&c=<classe>&b=<build I>&b2=<build II>&s=2`, chaque code au format
+`1.<livre>.<grille 1>.<grille 2>.<grille 3>` ; `s=2` quand le build II est affiché. Un ancien
+lien à un seul build (`b`) reste valable ; un build invalide est signalé sans toucher à l'autre.
 
 - `1` : version du format de codage ;
 - livre : un chiffre par emplacement (rang), couche après couche, 4 par couche, zéros de fin
