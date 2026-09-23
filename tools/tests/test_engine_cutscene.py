@@ -284,3 +284,57 @@ def test_lightmap_uv_skips_the_two_texel_border_and_flips_y():
     uv = lightmap_uv(pts, (1, 0), 2) * 2 * 512          # en texels de l'atlas (deux cases de 512)
     # x = 0 au bord des texels 1-2 de la case (512 + 2), x = 256 à celui des texels 509-510 ; y retourné
     assert np.allclose(uv[0], [514, 510]) and np.allclose(uv[1], [1022, 2]) and np.allclose(uv[2], [768, 256])
+
+
+def test_xdb70_trigger_zone_takes_the_if_branch_and_records_states_fx_and_exit(tmp_path):
+    (tmp_path / "Boom.(ClientData).xdb").write_text("""<ClientData><customData type="CreatureVisActionData">
+      <action type="CreatureFixedPointProjectileAction"><projectileFx href="/P.(VisObjectTemplate).xdb" />
+      <explosionFx href="/E.(VisObjectTemplate).xdb" /><theGe>5</theGe>
+      <lines><Item><throwDuration>3000</throwDuration><endPointIndex>1</endPointIndex></Item></lines></action>
+    </customData></ClientData>""")
+    (tmp_path / "Snd.(ClientData).xdb").write_text("""<ClientData><customData type="CreatureVisActionData">
+      <action type="Sound2DAction"><sound><project href="/SFX/World/World.(FMODProject).xdb" />
+      <name>World/Zones/IE1/IE1_ShipDestroy</name></sound></action></customData></ClientData>""")
+
+    def spawn(script: str, inner: str) -> str:
+        return (f"<Item type=\"gameMechanics.elements.impacts.ImpactsToSingleSpawn\"><spawn><scriptID>{script}</scriptID>"
+                f"</spawn><impacts>{inner}</impacts></Item>")
+    state = '<Item type="gameMechanics.elements.impacts.ImpactSetVisualState"><visualState>{}</visualState></Item>'
+    (tmp_path / "Z.(ScriptZone).xdb").write_text(f"""<ScriptZone><impactsIn>
+      <Item type="gameMechanics.elements.impacts.ImpactIfTarget"><impactsIf>
+        <Item type="gameMechanics.elements.impacts.ImpactsDeferred"><delay>2000</delay><impacts>
+          <Item type="gameMechanics.elements.impacts.ImpactClientData"><data href="Boom.(ClientData).xdb" />
+            <locators><Item><scriptID>A</scriptID></Item><Item><scriptID>B</scriptID></Item></locators></Item>
+          <Item type="gameMechanics.elements.impacts.ImpactClientDataParams"><data href="Snd.(ClientData).xdb" /></Item>
+          {spawn('Ship', state.format(2))}
+        </impacts></Item></impactsIf>
+        <impactsElse>{spawn('No', state.format(9))}</impactsElse></Item>
+      {spawn('Squid', '<Item type="gameMechanics.elements.impacts.GoThroughPath"><path><Item><scriptID>P1</scriptID></Item></path></Item>'
+             '<Item type="gameMechanics.elements.impacts.ImpactsDeferred"><delay>4000</delay><impacts>'
+             '<Item type="gameMechanics.elements.impacts.Disintegrate" /></impacts></Item>')}
+      <Item type="gameMechanics.elements.impacts.ImpactsDeferred"><delay>6000</delay><impacts>
+        <Item type="gameMechanics.elements.impacts.ImpactTeleport" /></impacts></Item>
+    </impactsIn></ScriptZone>""")
+    tl = cutscene_xdb70.simulate(tmp_path, trigger="Z.(ScriptZone).xdb")
+    assert tl.states == [{"t": 2.0, "spawn": "Ship", "state": 2}]
+    (fx,) = tl.fx
+    assert fx["locators"] == ["A", "B"] and fx["throw"] == 3.0 and fx["end"] == 1
+    assert fx["explosion"] == "E.(VisObjectTemplate).xdb"
+    assert tl.sfx[0]["name"] == "World/Zones/IE1/IE1_ShipDestroy" and not tl.lines
+    assert tl.spawn_moves == {"Squid": [{"t": 0.0, "locator": "P1"}]} and tl.spawn_until == {"Squid": 4.0}
+    assert tl.exit == 6.0 and tl.duration == 6.0
+
+
+def test_xdb70_ability_trigger_reads_only_the_named_effect():
+    import xml.etree.ElementTree as ET
+    doc = ET.fromstring("""<AbilityResource><effects>
+      <Item type="gameMechanics.elements.effects.HealthTrigger"><impactsOn><Item type="a.X" /></impactsOn></Item>
+      <Item type="gameMechanics.elements.effects.CombatStateTrigger"><impactsOn><Item type="a.Y" /></impactsOn></Item>
+    </effects></AbilityResource>""")
+    assert [i.get("type") for i in cutscene_xdb70.trigger_impacts(doc, "HealthTrigger")] == ["a.X"]
+
+
+def test_state_windows_start_from_the_manifest_state():
+    from tools.extract_engine_cutscene import state_windows
+    w = state_windows(1, [{"t": 0.0, "state": 2}, {"t": 11.0, "state": 3}], 14.0)
+    assert w == [(-1e6, 0.0, 1), (0.0, 11.0, 2), (11.0, 14.0, 3)]
