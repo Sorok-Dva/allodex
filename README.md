@@ -52,7 +52,7 @@ sans distinction de casse ou d'accents. La barre du morceau en cours affiche le 
 écoulé et permet de déplacer la lecture par clic, glissement ou touches du clavier,
 y compris en pause. La catégorie interne Kadagan est affichée « Xadagan » en FR/EN.
 « Zones » se déplie en sous-catégories, avec le parchemin et les boutons +/− des
-Succès. Eden, Jigran, Xadagan et Kvator y sont intégrés. Les correspondances vivent
+Succès. Eden, Jigran, Xadagan et Quator y sont intégrés. Les correspondances vivent
 dans `src/data/music-zones.json` : ZL1 → Kania, ZE2 → Empire, Umoir → Umoira ; les
 noms non identifiés restent dans « Autres zones ». La recherche inclut les noms de
 zone et l'enchaînement reste dans la sous-catégorie du morceau joué.
@@ -142,7 +142,7 @@ bonus » mène à la fin. La bannière de faction indique la durée du film sans
 - **Audio** : la piste est **incrustée** dans l'`.ogv` et identique dans tous les clients
   (FR compris) : voix **russes** quand il y a des dialogues (23 vidéos), musique et effets
   seulement pour les 11 autres. Les paks `SFX_Voice_*` du 17.0 ne contiennent que les
-  répliques de Kvator ; les voix des scènes moteur des quêtes sont dans `BaseLocall_x64.pak`
+  répliques de Quator ; les voix des scènes moteur des quêtes sont dans `BaseLocall_x64.pak`
   (`SFX/Voice/*.bsb`, 226 banques russes), rien pour les vidéos.
 - **Sous-titres** : ils ne sont pas dans la vidéo. Le client les affiche par l'add-on
   `Subtitles` (événement `EVENT_SHOW_SUBTITLES`) depuis des ressources `UISubtitleShow`
@@ -210,7 +210,7 @@ d'identifiants (`pack.bin` range les ressources dossier par dossier) : approché
   (ambiante, brouillard, auto-illumination ; champs rangés par ordre alphabétique, recoupés
   sur `AC5_base` 7.0) ;
 - *acteurs* : `MobWorld` → `VisualMob` → gabarit : Gort-Kostolom (Kania, cuir), Reniesta
-  (Kania, robe violette, bâton), Véronika (modèle `Creatures/Veronika`), Nihaz (dragon
+  (Kania, robe violette, bâton), Klavdia (modèle `Creatures/Veronika`), Nihaz (dragon
   `NihazDragonBoss`, seul visuel du `MobWorld` « Нихаз » rangé avec la quête) ; habillage
   comme le client : tenue par défaut, variations (visage, coiffure), objets portés
   (géosets montrés/cachés, objets accrochés aux articulations `Slot_*`, élément « L »/« R »
@@ -1054,7 +1054,7 @@ Chemins surchargeables : `--client` / `ALLODS_RU_CLIENT_DIR` (client 17.0), `--f
   `git cat-file`, contenus jusqu'à ZC14/Ferris/Umoir malgré l'étiquette 7.0) — chemins de
   ressources, types (balise racine du xdb) et champs (`name`, `startText`…) des contenus qui y
   figurent : 121 488 ressources reliées au client par leur `resourceId`. Pour les ressources plus
-  récentes (Eden, Jigran, Kadagan, Kvator, Isa, Suslanger, Airin…), le type est **déduit** de la
+  récentes (Eden, Jigran, Xadagan, Quator, Isa, Suslanger, Airin…), le type est **déduit** de la
   disposition binaire par un classifieur bayésien naïf (décalages des textes + silhouette des
   premiers mots) : **94,9 %** de bonnes réponses sur 12 612 ressources connues tenues à l'écart ;
   quêtes 100 %, dialogues et objets 99,9 %, PNJ 98,9 %, zones 98 % (messages `TextMessage` : 77 %).
@@ -1162,7 +1162,7 @@ lore : 31 699 entrées, 71 697 textes, 1,72 M mots russes.
 | **total** | **31 699** | **71 697** | **88,9 %** | **92,6 %** | **1 731 077** | **225 608** |
 
 Par ère : **98,5 %** des textes anciens (présents dans l'arbre serveur) ont un anglais officiel,
-**79,7 %** des récents. Ce qui manque est surtout la 17.0 (Kvator : « Сказ о Валирах », « Сказ о
+**79,7 %** des récents. Ce qui manque est surtout la 17.0 (Quator : « Сказ о Валирах », « Сказ о
 Соловье-разбойнице »), Kadagan, les « Новости 1025/1026 года », le Jubilé 2025, une partie des
 objets d'ambiance récents et des secrets récents ; 163 793 mots russes supplémentaires ont un
 anglais **peut-être périmé** (`ru_revised`) à relire.
@@ -1262,11 +1262,17 @@ colonne de lecture de 72 caractères, une seule page à la fois sur mobile.
 | Section | Contenu | Entrées |
 |---|---|---:|
 | Timeline | chronologie de Sarnaut (communautaire, 3 ères), 45 événements, 1 403 scènes et narrations par région | 1 451 |
-| Atlas | les 318 allods de l'atlas de Makar Terentiev (données, descriptions), 13 notes d'atlas, 111 régions, 1 298 lieux du jeu | 1 740 |
-| Library | 11 livres et séries (pages dans l'ordre), 10 récits communautaires, 143 documents, 507 lettres, 447 descriptions d'ambiance | 1 118 |
-| Characters | 3 640 PNJ nommés (homonymes fusionnés) avec leurs dialogues, 403 factions/races/classes, 10 517 autres dialogues | 14 560 |
+| Atlas | les 318 allods de l'atlas de Makar Terentiev (données, descriptions pour 159 d'entre eux), 30 notes d'atlas (îles sans allod, sections techniques), 111 régions, 1 298 lieux du jeu | 1 757 |
+| Library | 11 livres et séries (pages dans l'ordre), 10 récits et 3 notes communautaires, 143 documents, 507 lettres, 447 descriptions d'ambiance | 1 121 |
+| Characters | 3 640 PNJ nommés (homonymes fusionnés) avec leurs dialogues, 403 factions/races/classes | 4 043 |
 | World Secrets | 50 secrets, leurs étapes et les quêtes de chaque étape | 50 |
 | Quests | 6 962 quêtes par région | 6 962 |
+| *(Dialogues)* | 10 517 répliques qu'aucun PNJ ne rattache : **sans onglet ni liste**, atteintes par la recherche et par le lien de leur quête (1 801 ont une quête) | 10 517 |
+
+Les répliques non rattachées vivent dans une section cachée (`/lorebook/dialogues/<id>`) : leurs
+blocs sont rangés par rid croissant et la page trouve le bon par dichotomie sur
+`list/dialogues-index.json` (1 Ko, premier rid de chaque bloc), sans charger de liste. La liste des
+personnages passe ainsi de 870 Ko (250 Ko gzip) à **192 Ko (61 Ko gzip)**.
 
 **URL stables** : `/lorebook/<section>/<id>` (`r<rid>` pour les textes du jeu, `a-…` allods,
 `z-…` régions, `s-…` séries, `c-…` textes communautaires), `/lorebook/<section>?group=…`,
@@ -1281,10 +1287,10 @@ relocation, `public/game/lore/links.json`).
 fragmenté par les deux premiers caractères du mot (760 fragments par langue) ; une requête ne
 charge que le fragment de ses mots puis les blocs du répertoire (64 entrées) des 30 premiers
 résultats, titres en tête. **Chargement à la demande** : `meta.json` (7 Ko) à l'accueil, la liste
-de la section ouverte (`list/<langue>/`, 2 Ko à 870 Ko ; 250 Ko gzip pour les personnages), le bloc
+de la section ouverte (`list/<langue>/`, 2 Ko à 340 Ko ; au plus 96 Ko gzip, pour les quêtes), le bloc
 de l'entrée (~90 Ko) et, s'il manque un texte, le même bloc dans la langue de repli ; les listes
 sont **virtualisées** (seules les lignes visibles existent dans le DOM). Poids total sur disque :
-78 Mo (textes 48, index 18, répertoire 7, listes 5), dont rien n'est chargé d'un bloc.
+79 Mo (textes 51, index 19, répertoire 7, listes 3), dont rien n'est chargé d'un bloc.
 
 **Matériel communautaire** (repris avec l'accord de Makar Terentiev) : badge vert « Community »,
 encadré « Community text, translated by Allodex », ligne de crédit et source sur chaque entrée,
@@ -1298,13 +1304,28 @@ glossaire et des textes parallèles du client), dans `tools/lorebook/` :
   « Dreams of the Great Tree » (≈ 36 600 mots russes) ; le russe original reste lisible en mode RU ;
 - `atlas/allods.json` : la table des 318 allods (203 noms officiels, 115 traduits ou translittérés,
   marqués « Unofficial name ») ; `atlas/descriptions.json` : sections 1 et 2 de l'atlas (îles des
-  jeux classiques, îles mentionnées, allods du scénario) ; `atlas/astral-islands-*.json` : les
-  quatre documents des îles astrales (AO 2.0+ parties 1 à 3, BETA) (≈ 28 000 mots russes).
+  jeux classiques, îles mentionnées, allods du scénario) ; `atlas/atlas-section-3a|3b.json` et
+  `atlas/atlas-sections-4-7.json` : le reste de l'atlas (îles astrales, autres îles, non classées,
+  journal des modifications, sources) ; `atlas/astral-islands-*.json` : les quatre documents des îles
+  astrales (AO 2.0+ parties 1 à 3, BETA) (≈ 41 000 mots russes) ;
+- `community/secret-list.md`, `constellations-martyrs-patrons-dragons.md`,
+  `reflection-bosses.md` : les notes (« sec list », « Созвездия », `boses.txt`), groupe
+  « Community notes ».
 
-Reste à traduire : les sections 3 à 7 de `ATLAS ALLODS.docx` (≈ 12 000 mots, en partie redondantes
-avec les documents des îles astrales), `sec list.txt` (liste de 2 400 mots) et deux notes courtes
-(« Созвездия », `boses.txt`). Non repris : le billet de blog tiers « Край мира с форума АО »,
-l'artbook de Fardreamer et l'« Энциклопедия Сарнаута » (droits de tiers).
+Tout le matériel de Makar Terentiev est désormais traduit. Non repris : le billet de blog tiers
+« Край мира с форума АО », l'artbook de Fardreamer et l'« Энциклопедия Сарнаута » (droits de tiers).
+
+**Noms propres** : alignés sur le client anglais officiel (textes parallèles russe/anglais de
+`public/game/lore/`). Quelques arbitrages, avec le nombre de textes du client qui les emploient :
+Вероника Гипатская = **Klavdia** (Kalugina) (239 textes, contre 6 pour Veronika/Veronica) ;
+Кватор = **Quator** (« Quator Knights' Helm »… ; « Casque des chevaliers de Quator » côté FR),
+aussi dans les libellés du lecteur de musique ; Кватох = **Kania** (60, « Kanian Archipelago » 31,
+« Kvatoh » 1) ; Ингос = **Lightwood** (17) ; Сонная дубрава = **Drowsy Woods**, Лумисаар =
+**Lumix Isle**, Бухта Чёрных флагов = **Jolly Roger Bay** ; Остров головорезов = **Goblinball
+Stadium** ; les boss et PNJ renommés par la version anglaise (Бузаги-бей = Minotaur, Змееликая =
+Lamia Princess, Чёрная Вдова = Widixa…). Un contrôle systématique compare chaque nom du glossaire
+présent dans un texte russe à sa traduction ; les écarts restants sont des mots communs
+(« хлад », « застава », « галерея ») ou des paires du glossaire non confirmées par le client.
 
 Crédit affiché : *Allods atlas and community lore material compiled by Makar Terentiev
 (DarkyAndSparky), https://github.com/DarkyAndSparky/atlas-ao*.
