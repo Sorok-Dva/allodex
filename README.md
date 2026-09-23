@@ -897,9 +897,11 @@ lus par `packs_path()`, qui passe par `Packs.adc-real` quand `Packs` est une jon
   `NameRules` — `tools/allods_chargen.py`, effets `tools/chargen_fx.py` ;
 - décors : la carte `MainMenu` (`Bin/Maps_MainMenu.bin`, liée à `pack.bin` par `open_map`),
   construite par la **chaîne commune des cinématiques moteur** (`build_decor`, `light_decor`,
-  `build_sky`, `export_waves` de `tools/extract_engine_cutscene.py`) : gabarits posés, éclairage
-  précalculé de chaque sommet (`lightvrt` : ambiante + soleil + lumières ponctuelles des lanternes et
-  cristaux), particules (feuilles d'automne), animations, ciel, `ZoneLights` de la case, ambiance
+  `build_sky`, `build_terrain`, `export_waves` de `tools/extract_engine_cutscene.py`) : gabarits
+  posés, éclairage précalculé de chaque sommet (`lightvrt` : ambiante + soleil + lumières ponctuelles
+  des lanternes et cristaux), **sol de la carte** (`terrainDump`, calques du SplatMap, lightmaps ;
+  le sol des places kaniane et gibberling n'est que du terrain), particules (feuilles d'automne),
+  animations, ciel, `ZoneLights` de la case, lumières ponctuelles qui atteignent la place, ambiance
   sonore ; place et caméra de `UICharacterScenes` (`CharacterSelect<Race>`) — `tools/chargen_scene.py`.
 
 Sorties dans `public/game/character/` : `chargen.json` (index versionné, `schema: 1`),
@@ -923,7 +925,20 @@ commandes d'apparence dans l'ordre `variationOrder` du script (`faces`, `facials
 `hairColors`, `shoulderStones`, `additionals`, `skins`, `skinColors`, `morphPresets`), montrées
 si leur plage compte plus d'une valeur ; l'objet de main secondaire se tient dans la main gauche,
 l'arme à distance n'est pas tenue ; les matériaux transparents des personnages (ailes des elfes,
-lueurs) sont sans éclairage.
+lueurs) sont sans éclairage ; `StaticLight` du 17 : champs par ordre alphabétique avec un mot
+ajouté en `+0x48`, d'où `PointLightColor` en `+0x4C` et `SelfIllumColor` en `+0x50` (recoupé sur
+les sept `ZoneLights/*_Chargen` de l'arbre 7.0) ; effets de tenue (`ChargenEffect`) : échelle en
+`+0x24`, `runType` en `+0x20` (`KEY` joué une fois, `LOOP` en boucle), gabarit non bouclé effacé
+à la fin de sa durée ; matériaux opaques des effets découpés à l'alpha 0,5 de leur texture (seuil
+des pixel shaders du jeu, fougères du Tribaliste).
+
+**Éclairage des personnages**, d'après les shaders du client désassemblés
+(`Material/common_sm4-dx11.bin`, `pointLit-dx11.bin`) : passe principale `texture × (ambiante +
+soleil · max(N·L, 0) + ¼ · min(N·L, 0)² · (⅔ · Σ soleil − soleil))`, sans lumière ponctuelle ;
+une passe additive par lumière ponctuelle, par `N·L`, saturée à 2 × la texture. La couleur que le
+moteur passe à cette passe n'est pas publiée : les personnages prennent la loi du décor
+(`PointLightColor · min(1, Σ intensité · (1 − d/rayon)^atténuation · N·L)`) — `ActorLighting`
+(`src/components/scene/CharacterCreation/actorLight.ts`).
 
 **Repère** : sans miroir. Confronté aux écrans du 17.0, le repère du jeu (X, Y au sol, Z en haut)
 se lit en main droite — méridienne à gauche du décor elfe, orbe du mage dans la main levée ; avec
@@ -960,7 +975,9 @@ ordre des étapes du jeu (faction → race et classe → apparence et nom).
 ambiances sans onde retrouvable (`AI36` de l'elfe, `LoginScreen`, `SnowWindy_AP`…) muettes, le
 projet d'événements FMOD des ambiances n'étant pas livré ; places du familier et des compagnons du
 trio inventées (le client ne les publie pas) ; aèdes : estrade reprise du décor ; préréglage de
-corpulence par défaut = le plus proche de l'échelle 1.
+corpulence par défaut = le plus proche de l'échelle 1 ; un effet `KEY` part avec l'animation de
+création (les clés d'animation qui le déclenchent peut-être ne sont pas décodées) ; loi des
+lumières ponctuelles sur les personnages reprise du décor (voir « Éclairage des personnages »).
 
 ## Talents
 
