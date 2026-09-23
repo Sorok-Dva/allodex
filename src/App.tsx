@@ -9,6 +9,7 @@ import { ChroniclesScreen } from '@/screens/ChroniclesScreen/ChroniclesScreen';
 import { MusicScreen } from '@/screens/MusicScreen/MusicScreen';
 import { LegalScreen } from '@/screens/LegalScreen/LegalScreen';
 import { FatalitiesScreen } from '@/screens/FatalitiesScreen/FatalitiesScreen';
+import { TalentsScreen } from '@/screens/TalentsScreen/TalentsScreen';
 
 // Création de personnage : fonction de test, absente du build de production (la condition
 // `import.meta.env.DEV` est remplacée par `false` au build, l'import dynamique disparaît).
@@ -36,6 +37,7 @@ export default function App() {
        path === '/music' || path === '/musiques' ? <MusicScreen /> :
        path === '/fatalities' || path === '/fatalites' ? <FatalitiesScreen /> :
        CharacterCreationScreen && (path === '/character' || path === '/personnage') ? <Suspense fallback={null}><CharacterCreationScreen /></Suspense> :
+       path === '/talents' ? <TalentsScreen /> :
        <OpeningScreen />}
     </AudioProvider>
     </I18nProvider>

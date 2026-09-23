@@ -1,0 +1,257 @@
+{
+  "_doc": "Sources par version pour tools/extract_talents.py. pack = [chemin, entrée zip | null] ; texts = {langue: [chemin, entrée | null] | {tree: dossier}} ; icons = globs de paks (v1) ou dossier Packs (v2). Les chemins absents sont signalés, jamais devinés. points = totaux du livre (points de compétence) et des grilles (événements de développement) au niveau maximal, hors 3 points offerts, avec leur source : ils ne sont pas dans les données du client. ui_class_icons = provenance des icônes de classe de la fenêtre 17.0.",
+  "versions": [
+    {
+      "id": "1.1",
+      "label": "1.1.02",
+      "client": "Arbre de développement 1.1.02 (révision SVN 168362)",
+      "pack": [
+        "/mnt/f/ALLODS ONLINE SERVER/Allods 1.0/allods/Client/data/Bin/pack.bin",
+        null
+      ],
+      "texts": {
+        "ru": {
+          "tree": "/mnt/f/ALLODS ONLINE SERVER/Allods 1.0/allods/Client/data"
+        }
+      },
+      "icon_dirs": [
+        "/mnt/f/ALLODS ONLINE SERVER/Allods 1.0/allods/Client/data"
+      ],
+      "icon_paks": []
+    },
+    {
+      "id": "2.0",
+      "label": "2.0.04",
+      "client": "Client anglais 2.0.04",
+      "pack": [
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods 2.0.04/data/Packs/BaseLoceng.pak",
+        "Bin/pack.bin"
+      ],
+      "texts": {
+        "en": [
+          "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods 2.0.04/data/Packs/BaseLoceng.pak",
+          "Bin/pack.loc"
+        ]
+      },
+      "icon_paks": [
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods 2.0.04/data/Packs/Interface*.pak",
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods 2.0.04/data/Packs/BaseLoc*.pak",
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods 2.0.04/data/Packs/Bin*.pak",
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods 2.0.04/data/Packs/Texts*.pak"
+      ]
+    },
+    {
+      "id": "3.0",
+      "label": "3.0.2.19",
+      "client": "Client russe 3.0.2.19",
+      "pack": [
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsOnline3.0.2.19[5.12GB]-20200522T111620Z-001/AllodsOnline3.0.2.19[5.12GB]/data/Packs/BaseLocrus.pak",
+        "Bin/pack.bin"
+      ],
+      "texts": {
+        "ru": [
+          "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsOnline3.0.2.19[5.12GB]-20200522T111620Z-001/AllodsOnline3.0.2.19[5.12GB]/data/Packs/BaseLocrus.pak",
+          "Bin/pack.loc"
+        ]
+      },
+      "icon_paks": [
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsOnline3.0.2.19[5.12GB]-20200522T111620Z-001/AllodsOnline3.0.2.19[5.12GB]/data/Packs/Interface*.pak",
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsOnline3.0.2.19[5.12GB]-20200522T111620Z-001/AllodsOnline3.0.2.19[5.12GB]/data/Packs/BaseLoc*.pak",
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsOnline3.0.2.19[5.12GB]-20200522T111620Z-001/AllodsOnline3.0.2.19[5.12GB]/data/Packs/Bin*.pak",
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsOnline3.0.2.19[5.12GB]-20200522T111620Z-001/AllodsOnline3.0.2.19[5.12GB]/data/Packs/Texts*.pak"
+      ]
+    },
+    {
+      "id": "4.0",
+      "label": "4.0.02",
+      "client": "pack.bin d'origine 4.0.02 (dossier ORI du repacker, même empreinte que le client « AllodsLegend ») + textes français du même dossier",
+      "pack": [
+        "/mnt/f/ALLODS ONLINE SERVER/Allods 4.2/Tools/Client Repacker/data/ORI/pack.bin",
+        null
+      ],
+      "texts": {
+        "fr": [
+          "/mnt/f/ALLODS ONLINE SERVER/Allods 4.2/Tools/Client Repacker/data/Packs/Texts.pak",
+          "Bin/pack.loc"
+        ]
+      },
+      "icon_paks": [
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsLegend - 1.0/data/Packs/Interface.Mini.pak",
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsLegend - 1.0/data/Packs/Interface.HiMini.pak",
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsLegend - 1.0/data/Packs/Interface.HiRes.pak",
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsLegend - 1.0/data/Packs/BaseLoc*.pak"
+      ]
+    },
+    {
+      "id": "7.0",
+      "label": "7.0",
+      "client": "Client « Revelation » 7.0 (textes anglais et russes)",
+      "pack": [
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0/data/Packs/Bin.pak",
+        "Bin/pack.bin"
+      ],
+      "texts": {
+        "en": [
+          "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0/data/Packs/Texts.pak",
+          "Bin/pack.loc"
+        ],
+        "ru": [
+          "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0/data/Packs/Texts_ru.pak",
+          "Bin/pack.loc"
+        ]
+      },
+      "icon_paks": [
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0/data/Packs/Interface*.pak",
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0/data/Packs/BaseLoc*.pak",
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0/data/Packs/Bin*.pak",
+        "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0/data/Packs/Texts*.pak"
+      ]
+    },
+    {
+      "id": "8.0",
+      "label": "8.0",
+      "client": "Client français 8.0",
+      "pack": [
+        "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0/data/Packs/BaseLocfra.pak",
+        "Bin/pack.bin"
+      ],
+      "texts": {
+        "fr": [
+          "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0/data/Packs/Texts.pak",
+          "Bin/pack.loc"
+        ]
+      },
+      "icon_paks": [
+        "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0/data/Packs/Interface*.pak",
+        "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0/data/Packs/BaseLoc*.pak",
+        "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0/data/Packs/Bin*.pak",
+        "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0/data/Packs/Texts*.pak"
+      ]
+    },
+    {
+      "id": "9.0",
+      "label": "9.0.01.89",
+      "client": "Client français 9.0.01.89",
+      "pack": [
+        "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 9.0.01.89/data/Packs/BaseLocfra.pak",
+        "Bin/pack.bin"
+      ],
+      "texts": {
+        "fr": [
+          "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 9.0.01.89/data/Packs/Texts.pak",
+          "Bin/pack.loc"
+        ]
+      },
+      "icon_paks": [
+        "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 9.0.01.89/data/Packs/Interface*.pak",
+        "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 9.0.01.89/data/Packs/BaseLoc*.pak",
+        "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 9.0.01.89/data/Packs/Bin*.pak",
+        "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 9.0.01.89/data/Packs/Texts*.pak"
+      ]
+    },
+    {
+      "id": "11.0",
+      "label": "11.0",
+      "client": "Client Steam anglais 11.0 (téléchargement partiel : pack.bin et Interface.Mini.pak, pas de pak de textes)",
+      "pack": [
+        "~/allods-clients/11.0-steam/Allods Online EN/data/Packs/BaseLoceng_eu.pak",
+        "Bin/pack.bin"
+      ],
+      "texts": {},
+      "icon_paks": [
+        "~/allods-clients/11.0-steam/Allods Online EN/data/Packs/Interface*.pak",
+        "~/allods-clients/11.0-steam/Allods Online EN/data/Packs/BaseLoc*.pak",
+        "~/allods-clients/11.0-steam/Allods Online EN/data/Packs/Bin*.pak",
+        "~/allods-clients/11.0-steam/Allods Online EN/data/Packs/Texts*.pak"
+      ]
+    },
+    {
+      "id": "15.0",
+      "label": "15.0.03.23",
+      "client": "Client français 15.0.03.23.2 (x64)",
+      "pack": [
+        "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR (FR) 15.0.03.23.2 (end of patch)/data/Packs/BaseLocfra_x64.pak",
+        "Bin/pack.bin"
+      ],
+      "texts": {
+        "fr": [
+          "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR (FR) 15.0.03.23.2 (end of patch)/data/Packs/Texts_x64.pak",
+          "Bin/pack.loc"
+        ]
+      },
+      "packs_dir": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR (FR) 15.0.03.23.2 (end of patch)/data/Packs"
+    },
+    {
+      "id": "16.0",
+      "label": "16.0.01.78",
+      "client": "Client français 16.0.01.78.2 (x64)",
+      "pack": [
+        "/mnt/h/MyGames/Allods Online FR (FR)/data/Packs/BaseLocfra_x64.pak",
+        "Bin/pack.bin"
+      ],
+      "texts": {
+        "fr": [
+          "/mnt/h/MyGames/Allods Online FR (FR)/data/Packs/Texts_x64.pak",
+          "Bin/pack.loc"
+        ]
+      },
+      "packs_dir": "/mnt/h/MyGames/Allods Online FR (FR)/data/Packs"
+    },
+    {
+      "id": "17.0",
+      "label": "17.0",
+      "client": "Dernier client russe (x64), textes anglais et russes",
+      "pack": [
+        "/mnt/h/MyGames/AllodsRU/data/Packs/BaseLocall_x64.pak",
+        "Bin/pack.bin"
+      ],
+      "texts": {
+        "en": [
+          "/mnt/h/MyGames/AllodsRU/data/Packs/Texts_x64.pak",
+          "Bin/pack.eng_eu.loc"
+        ],
+        "ru": [
+          "/mnt/h/MyGames/AllodsRU/data/Packs/Texts_x64.pak",
+          "Bin/pack.rus.loc"
+        ]
+      },
+      "packs_dir": "/mnt/h/MyGames/AllodsRU/data/Packs",
+      "points": {
+        "book": 82,
+        "field": 77,
+        "source": "Fenêtre Talents du client FR, personnage au niveau maximal (« Points de compétence : 0/82 », « Événements de développement : 0/77 ») ; confirmé par les rangs appris de la capture (85 = 82 + 3 offerts)."
+      }
+    }
+  ],
+  "unavailable": [
+    {
+      "id": "5.0",
+      "reason": "~/allods-clients/5.0 ne contient que Interface/SFX_Music/scènes de menu : aucun pack.bin ni pak de textes"
+    },
+    {
+      "id": "6.0",
+      "reason": "~/allods-clients/6.0 ne contient que Interface/SFX_Music/scènes de menu : aucun pack.bin ni pak de textes"
+    },
+    {
+      "id": "10.0",
+      "reason": "aucun client 10.x disponible"
+    },
+    {
+      "id": "12.0",
+      "reason": "seuls des paks de textes 12.0 existent (Tools/work/12.0), sans pack.bin"
+    },
+    {
+      "id": "13.0",
+      "reason": "aucun client 13.x disponible"
+    },
+    {
+      "id": "14.0",
+      "reason": "aucun client 14.x disponible"
+    }
+  ],
+  "ui_class_icons": {
+    "folder": "Interface/Ingame/ContextRelatedTextures/PlayerClasses/",
+    "fallback_version": "16.0",
+    "note": "Paladin et Priest : fichiers présents dans BaseLocall_x64.pak du client 17.0 mais sans ressource UITexture dans son pack.bin ; dimensions (32 × 32) reprises de la UITexture de même chemin du client FR 16.0, fichier repris du 16.0 s'il manque au 17.0."
+  }
+}

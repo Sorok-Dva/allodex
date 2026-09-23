@@ -1,0 +1,33 @@
+.card { width: 320px; max-width: calc(100vw - 32px); color: #e6f3e6; font-size: 13px; line-height: 17px; }
+.head { display: flex; align-items: baseline; gap: 6px; }
+.name { color: #ffdc00; font-size: 15px; line-height: 19px; }
+.meta { color: #b0d9be; font-size: 12px; margin-top: 1px; }
+.status { margin-top: 5px; color: #e6f3e6; font-size: 12px; line-height: 16px; }
+.status b { color: #9dff77; font-weight: normal; }
+.status em { color: #ff9c7a; font-style: normal; }
+.prereqs { margin: 6px 0 0; padding: 0 0 0 14px; color: #e8c877; font-size: 12px; }
+.desc { margin-top: 6px; }
+.missing { margin-top: 6px; color: #8a9a8a; font-style: italic; }
+.langTag {
+  display: inline-block; margin-right: 4px; padding: 0 3px; border: 1px solid rgba(176, 217, 190, 0.4);
+  color: #b0d9be; font-size: 10px; line-height: 13px; vertical-align: 1px;
+}
+.var { font-variant-numeric: tabular-nums; }
+.ranks { margin-top: 6px; border-collapse: collapse; font-size: 12px; }
+.ranks th, .ranks td { padding: 1px 6px 1px 0; text-align: left; font-weight: normal; }
+.ranks thead th { color: #b0d9be; }
+.ranks tbody th { color: #8fb39b; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ranks td { color: #9dff77; font-variant-numeric: tabular-nums; }
+.rankDescs { margin-top: 6px; }
+.rankTitle { color: #b0d9be; font-size: 12px; margin-top: 4px; }
+.note { margin-top: 6px; color: #8a9a8a; font-size: 11px; line-height: 14px; }
+
+/* Couleurs des balises du jeu (`tip_*`) */
+.green { color: #9dff77; }
+.blue { color: #7ed2ff; }
+.base { color: #ffeb9c; }
+.red { color: #ff7a6b; }
+.yellow { color: #ffdc00; }
+.white { color: #ffffff; }
+.grey { color: #9aa39a; }
+.magenta { color: #ff7bf2; }
