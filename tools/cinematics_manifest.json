@@ -23268,7 +23268,9 @@
      "_note": "Messages de PNJ (TextMessage) : les deux discours du Grand Mage, « Осторожно, камни! » ↔ « Attention ! Rochers ! »."
     }
    ],
-   "_note": "Zone PaladinQuest (Inst_LeagueStart, 7.0) rejouée depuis l’arbre serveur : discours du Grand Mage Klement (voix, bulles), l’Ombre invoquée sur KillerSpawn qui le frappe, sa mort, les apprentis de l’étage 6 qui meurent (GameViewScene Floor6_People, script PeopleDie, état 2 de la stèle Device_Floor6_GameScene), l’effondrement de l’étage (RoomDestruction), la chute des paladins et de Светобор Ратнев, qui court au mage mourant et le pleure."
+   "_note": "Zone PaladinQuest (Inst_LeagueStart, 7.0) rejouée depuis l’arbre serveur : discours du Grand Mage Klement (voix, bulles), l’Ombre invoquée sur KillerSpawn qui le frappe, sa mort, les apprentis de l’étage 6 qui meurent (GameViewScene Floor6_People, script PeopleDie, état 2 de la stèle Device_Floor6_GameScene), l’effondrement de l’étage (RoomDestruction), la chute des paladins et de Светобор Ратнев, qui court au mage mourant et le pleure.",
+   "zone_lights": 200291,
+   "zone_lights_note": "La base de carte Maps_Inst_LeagueStart.bin ne porte aucune ZoneLights : celle de pack.bin (200291) dont le premier éclairage a les couleurs de AstralCoast_Tubes.(ZoneLights), éclairage des zones InstLeague1 de l’arbre 7.0 (AmbientColor 2015437136, DiffuseColor 2015839606, brouillard 10–935 m)."
   },
   {
    "id": "league-evacuation",
@@ -23330,7 +23332,9 @@
      "_note": "Messages de PNJ (TextMessage) : les deux discours du Grand Mage, « Осторожно, камни! » ↔ « Attention ! Rochers ! »."
     }
    ],
-   "_note": "Début de la quête « Эвакуация » (Quest_4_30.startImpacts, 7.0) : le gibberling court vers le front et appelle, Amanda ouvre le portail et lève son champ protecteur ; trois GameViewScene de l’étage 1 posées par leurs stèles (état 1) — combat des civils et des démons (1 s), civils qui fuient par le portail (4 s), démons (15 s). La scène dure jusqu’à la fin du plus long de leurs scripts."
+   "_note": "Début de la quête « Эвакуация » (Quest_4_30.startImpacts, 7.0) : le gibberling court vers le front et appelle, Amanda ouvre le portail et lève son champ protecteur ; trois GameViewScene de l’étage 1 posées par leurs stèles (état 1) — combat des civils et des démons (1 s), civils qui fuient par le portail (4 s), démons (15 s). La scène dure jusqu’à la fin du plus long de leurs scripts.",
+   "zone_lights": 200291,
+   "zone_lights_note": "La base de carte Maps_Inst_LeagueStart.bin ne porte aucune ZoneLights : celle de pack.bin (200291) dont le premier éclairage a les couleurs de AstralCoast_Tubes.(ZoneLights), éclairage des zones InstLeague1 de l’arbre 7.0 (AmbientColor 2015437136, DiffuseColor 2015839606, brouillard 10–935 m)."
   }
  ]
 }
