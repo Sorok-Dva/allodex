@@ -212,7 +212,8 @@ export type ChapterView = {
 
 export function gapOf(entries: readonly PlanEntry[]): Gap {
   const live = entries.filter(e => e.status !== 'discarded');
-  if (entries.some(e => e.status === 'film' && !e.bonus)) return 'none';
+  // un chapitre bonus (présentations de boss) est couvert par ses chapitres bonus
+  if (entries.some(e => e.status === 'film')) return 'none';
   return live.length ? 'partial' : 'empty';
 }
 

@@ -58,9 +58,10 @@ describe('frise', () => {
 
   it('signale les trous', () => {
     const byId = Object.fromEntries(timeline(p, 'all').map(c => [c.chapter.id, c.gap]));
-    expect(byId).toEqual({ a: 'none', l: 'partial', b: 'partial', e: 'none' });
+    expect(byId).toEqual({ a: 'none', l: 'partial', b: 'none', e: 'none' });
     expect(gapOf([])).toBe('empty');
-    expect(timeline(p, 'league', { ...DEFAULT_FILTERS, gapsOnly: true }).map(c => c.chapter.id)).toEqual(['l', 'b']);
+    expect(gapOf([entry('d', { status: 'discarded' })])).toBe('empty');
+    expect(timeline(p, 'league', { ...DEFAULT_FILTERS, gapsOnly: true }).map(c => c.chapter.id)).toEqual(['l']);
   });
 
   it('filtre sans cacher les chapitres', () => {
@@ -70,7 +71,7 @@ describe('frise', () => {
   });
 
   it('totalise film actuel et film visé, bonus à part', () => {
-    expect(totals(p, 'league')).toEqual({ current: 10, planned: 30, unknown: 1, gaps: 2, bonus: 99 });
+    expect(totals(p, 'league')).toEqual({ current: 10, planned: 30, unknown: 1, gaps: 1, bonus: 99 });
     expect(totals(p, 'empire')).toMatchObject({ current: 40, planned: 40 });
   });
 
