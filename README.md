@@ -665,9 +665,10 @@ libre (fenêtre du jeu).
 **Inventaire du 24/09/2026** (pré-remplissage) :
 
 - **Vidéos** : les 18 clients lisibles (1.0 → 17.0, dont 7.0 ADC, Divinity et Revelation, 8.0, 9.0, 15.0 et 16.0 FR,
-  Warp 11.0) ont 53 vidéos distinctes, toutes identiques (CRC) d'un client à l'autre : les 34 cinématiques du
-  site (dont les 4 vidéos 10.0 retirées, du seul client Warp), 18 vidéos de menu (Intro/MainMenu 9.0 → 17.0) et le
-  clip de test 7.2. Aucune cinématique vidéo ne manque. Les clients 1.x → 6.0 et 7.0 Revelation n'ont aucune vidéo.
+  Warp 11.0) et les arbres serveur 1.0, 3.0 et 7.0 (`Packs`, `Packs_old`, client personnalisé) ont 53 vidéos
+  distinctes, identiques (CRC) d'un client à l'autre : les 34 cinématiques du site (dont les 4 vidéos 10.0
+  retirées, du seul client Warp), 18 vidéos de menu (Intro/MainMenu 9.0 → 17.0) et le clip de test 7.2. Aucune
+  cinématique vidéo ne manque. Les clients 1.x → 6.0 et 7.0 Revelation n'ont aucune vidéo.
 - **Scènes moteur** : les 25 recréées (13 dans le film, 10 des zones de départ retenues, 2 en attente), les
   8 scènes refaites en vidéo HD (écartées, doublons), et les candidates non recréées relevées dans l'arbre 7.0
   (`engine_cutscenes.scenes`), les buffs de caméra du 17.0 voisins de répliques (`client_17`) et les événements
