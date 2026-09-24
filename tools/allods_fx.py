@@ -265,6 +265,8 @@ class ParticlePool:
         self.rects: list[tuple[str, int, int, int, int]] = []
         self.rect_index: dict[tuple, int] = {}
         self.bytes_written = 0
+        # Largeur de l'atlas réduit (`PARTICLE_ATLAS_WIDTH` ; 2048 pour les auras, riches en textures entières).
+        self.width = PARTICLE_ATLAS_WIDTH
 
     def system(self, off: int, report: list[str]) -> dict | None:
         from tools.allods_particles import encode_particles, parse_particles, simplify
@@ -290,8 +292,14 @@ class ParticlePool:
         (self.dir / file).write_bytes(packed)
         self.bytes_written += len(packed)
         frames = []
-        for element in info.textures:
+        own = own_textures(self.db, off)
+        for k, element in enumerate(info.textures):
             rect = atlas_rect(self.db, self.cat, element)
+            if rect is None and element is None and k < len(own) and own[k] is not None:
+                # Image propre au système (texture entière, hors de `Client/Render/ParticleAtlas`) :
+                # runes et cercles des auras, dont l'élément d'atlas est nul. Rangée dans l'atlas
+                # réduit, au plus `WHOLE_TEXTURE_MAX`.
+                rect = whole_texture_rect(self.db, self.cat, own[k])
             if rect is None:
                 frames.append(-1)
                 continue
@@ -305,7 +313,8 @@ class ParticlePool:
             "emitters": [{"additive": e.additive, "tint": [round(c / 128.0, 4) for c in e.color[:3]],
                           "render": e.render, "pivot": [round(v, 4) for v in e.pivot],
                           "virtualOffset": round(e.virtual_offset, 4), "looping": e.looping,
-                          "worldSpace": e.world_space, "flip": list(e.flip)} for e in info.emitters],
+                          "worldSpace": e.world_space, "flip": list(e.flip),
+                          **({"decal": True} if e.decal else {})} for e in info.emitters],
         }
         self.systems[info.binary] = entry
         return entry
@@ -317,11 +326,11 @@ class ParticlePool:
         sources: dict[str, Image.Image] = {}
         for name, *_ in self.rects:
             if name and name not in sources:
-                img = textures.image(name, 4096)
+                img = textures.image(name.removesuffix(WHOLE_SUFFIX), 4096)
                 if img is not None:
                     sources[name] = img
         order = sorted(range(len(self.rects)), key=lambda i: -self.rects[i][4])
-        width = PARTICLE_ATLAS_WIDTH
+        width = self.width
         x = y = row = 0
         placed: dict[int, tuple[int, int]] = {}
         for i in order:
@@ -339,7 +348,9 @@ class ParticlePool:
         for i, (name, sx, sy, w, h) in enumerate(self.rects):
             src = sources.get(name)
             px, py = placed[i]
-            if src is not None:
+            if src is not None and name.endswith(WHOLE_SUFFIX):
+                atlas.paste(src if src.size == (w, h) else src.resize((w, h), Image.LANCZOS), (px, py))
+            elif src is not None:
                 atlas.paste(src.crop((sx, sy, sx + w, sy + h)), (px, py))
             out_rects.append([px, py, w, h])
         self.dir.mkdir(parents=True, exist_ok=True)
@@ -360,6 +371,41 @@ class ParticlePool:
 
 # Largeur de l'atlas réduit (les images de l'atlas du client font 32 à 256 px).
 PARTICLE_ATLAS_WIDTH = 1024
+# Texture entière d'un système de particules (pas un élément de `ParticleAtlas`) : marquée par ce
+# suffixe dans l'atlas réduit, ramenée à `WHOLE_TEXTURE_MAX` px au plus (les runes des auras
+# montent à 1024 px pour des particules d'1 à 3 m).
+WHOLE_SUFFIX = "#whole"
+WHOLE_TEXTURE_MAX = 256
+
+
+#: Vecteur des textures propres d'un `ParticleAnimation` (pointeurs `Texture`, un par image, en
+#: regard des éléments d'atlas de `PART_TEXTURES` ; relevé sur `HeroesArena_Aura02` du 17.0 :
+#: élément d'atlas nul, texture `HeroesArena_Aura02` ici).
+PART_OWN_TEXTURES = 0xE0
+
+
+def own_textures(db: PackDB, off: int) -> list[int | None]:
+    v = db.vec(off + PART_OWN_TEXTURES)
+    if not v:
+        return []
+    out = []
+    for k in range(v[1] // 8):
+        p = db.ptr(v[0] + 8 * k)
+        out.append(p if p is not None and db.vtype(p) == "Texture" else None)
+    return out
+
+
+def whole_texture_rect(db: PackDB, cat: PakCatalog, texture: int) -> tuple[str, int, int, int, int] | None:
+    """Entrée d'atlas d'une texture entière : `(nom#whole, 0, 0, largeur, hauteur)`, réduite de
+    moitié en moitié (niveaux de mipmap) jusqu'à tenir dans `WHOLE_TEXTURE_MAX`."""
+    from tools.allods_visdb import read_texture
+    info = read_texture(db, cat, texture)
+    if not info.binary or not info.width or not info.height:
+        return None
+    w, h = info.width, info.height
+    while max(w, h) > WHOLE_TEXTURE_MAX and min(w, h) > 1:
+        w, h = w // 2, h // 2
+    return (info.binary + WHOLE_SUFFIX, 0, 0, w, h)
 
 
 

@@ -1,0 +1,5 @@
+/* Compléments de l'écran des fatalités (FatalitiesScreen.module.css, repris tel quel). */
+.transport { width: auto; min-width: 360px; justify-content: center; }
+.unofficial { font-style: italic; }
+.desc { margin-top: 6px; color: #ffdc00; white-space: pre-line; }
+.obtain { margin-top: 6px; color: #b0d9be; }

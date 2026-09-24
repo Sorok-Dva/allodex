@@ -112,7 +112,7 @@ export type PageId = keyof typeof PAGES;
 export const PAGE_IDS = Object.keys(PAGES) as PageId[];
 
 /** Pages servies mais à ne pas indexer (outils internes, fonctions de développement). */
-const PRIVATE_PATHS = ['/stats', '/fatalities', '/fatalites', '/character', '/personnage'];
+const PRIVATE_PATHS = ['/stats', '/fatalities', '/fatalites', '/auras', '/character', '/personnage'];
 
 export const LORE_SECTIONS = ['timeline', 'atlas', 'library', 'characters', 'secrets', 'quests', 'gallery'] as const;
 export type LoreSection = (typeof LORE_SECTIONS)[number] | 'dialogues';
