@@ -237,7 +237,7 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Zone de départ de la Ligue · « L’évacuation » (`league-evacuation`, quête `Quest_4_30`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 81 s |
 | Zone de départ des Pridiens · « Ah, le cinéma ! » (`pride-cinema`, quête `Pride_1_9`) | serveur 7.0 (déclencheur) | `PridensStart` | 12 s |
 | Zone de départ des Pridiens · « Le spectacle » (`pride-performance`, quête `Pride_1_11`) | serveur 7.0 (déclencheur) | `PridensStart` | 11 s |
-| Isa 14.0 · neuf chapitres (`isa-unn-trance`, `isa-arrival`, `isa-fighting-pit`, `isa-weavers-saga`, `isa-fishers-legend`, `isa-freya`, `isa-captain-journal`, `isa-feast`, `isa-gerda-threshold`) | client 17.0 (voir « Isa ») | `Isa`, `Isa_Prologue` | 21 à 144 s |
+| Isa 14.0 · dix chapitres (`isa-unn-trance`, `isa-arrival`, `isa-fighting-pit`, `isa-weavers-saga`, `isa-fishers-legend`, `isa-mountain-path`, `isa-freya`, `isa-captain-journal`, `isa-feast`, `isa-gerda-threshold`) | client 17.0 (voir « Isa ») | `Isa`, `Isa_Prologue` | 17 à 144 s |
 
 **Zone de départ de l’Empire** (arc `empire-start`, en tête du film de l’Empire ; le prologue de l’Empire vient juste après sa fin, choix de l’utilisateur) : dans le
 17.0, les trois races de l’Empire (Xadaganiens, Orcs, Arisen) commencent au même tutoriel,
@@ -456,7 +456,7 @@ et l'arbre serveur 7.0 ne les connaît pas : tout vient du 17.0. Relevé : 204 v
 (19,2 min, toutes dans des `ClientData`, 16 seulement avec un sous-titre) ; presque toutes ont leur **texte
 officiel** ailleurs, dans une bulle ou un message (appariement par reconnaissance vocale : 160 voix sur 204 à plus
 de 0,8 de ressemblance, les autres sont surtout des cris courts) ; 15 buffs de caméra dans le bloc d'Isa, dont un seul script complet (la légende des pêcheurs) et
-neuf caméras sans point (scènes vues par le joueur, avec voile noir). Neuf chapitres :
+neuf caméras sans point (scènes vues par le joueur, avec voile noir). Dix chapitres :
 
 | Chapitre | Source | Carte | Durée |
 |---|---|---|---|
@@ -465,6 +465,7 @@ neuf caméras sans point (scènes vues par le joueur, avec voile noir). Neuf cha
 | « La fosse aux combats » (`isa-fighting-pit`, Skalgard) | travelling (choix) puis buff de caméra res:740170162 | `Isa` | 21 s |
 | « La saga des tapisseries » (`isa-weavers-saga`, Skalgard) | voix + 14 quatrains officiels ; buff res:740170307 (la toile) puis travelling | `Isa` | 125 s |
 | « La légende de Lyngbakr » (`isa-fishers-legend`, pilote) | script complet du buff res:740170090 | `Isa` | 44 s |
+| « Le chemin des montagnes » (`isa-mountain-path`) | voix + 4 sous-titres officiels ; voiles du buff res:740171271 ; travelling | `Isa` | 17 s |
 | « La Freya » (`isa-freya`) | voile du buff res:740171413 ; travelling (choix) | `Isa` | 21 s |
 | « Le journal du capitaine » (`isa-captain-journal`) | voix + textes officiels ; travelling (choix) | `Isa` | 64 s |
 | « Le festin de Skalgard » (`isa-feast`) | voix de Бродди + 5 sous-titres officiels, clameurs ; travelling (choix) | `Isa` | 31 s |
@@ -542,9 +543,11 @@ neuf caméras sans point (scènes vues par le joueur, avec voile noir). Neuf cha
 - **Non repris** : le voile sous-marin (brouillard et teinte sous la surface de l'eau : aucune donnée décodée) ;
   Lyngbakr lui-même (absent du script) ; les animations de combat de la fosse ; l'apparition de Ratatosk (instant
   choisi). **Reste d'Isa** (voir `tools/film_plan.json`) : l'attaque des urun, le discours de Харысхан
-  (`Isa_Destiny_4`), le défi de Харысхан (61 s, Харысхан n'est pas posé dans le client), le départ par la montagne (buff res:740171271, 17 s),
-  la prophétie des os, la chasse à Lyngbakr, le cimetière (les ancêtres de Gerda, 64 s), la dimension du Destin
-  (`Isa_Destiny` : la Toute-Mère et Unn, 29 s ; ses décors sont des stèles posées par le serveur), l'adieu de Gerda.
+  (`Isa_Destiny_4`), le défi de Харысхан (61 s, Харысхан n'est pas posé dans le client),
+  la prophétie des os, la chasse à Lyngbakr, le cimetière (les ancêtres de Gerda, 64 s : les tombes, stèles
+  res:740171900…911, n'ont pas de `SpawnLocation`), la dimension du Destin (`Isa_Destiny` : la Toute-Mère et Unn,
+  29 s ; ses décors sont des stèles posées par le serveur), l'adieu de Gerda (`Isa_Final_2`, aucune des seize
+  places de Герда du client ne s'y rattache).
 
 En attente, hors du film : `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
 éclairée par le seul éclairage de zone du 17.0 (violet sombre, sans lumière ponctuelle), est presque
@@ -776,7 +779,7 @@ sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce
 
 ### Ce qui manque
 
-- **Cinématiques moteur** : trente-deux sont recréées (voir plus haut), dont neuf d'Isa. Liste dans
+- **Cinématiques moteur** : trente-trois sont recréées (voir plus haut), dont dix d'Isa. Liste dans
   `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
   (7_0Events), extraites ici.
 - **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et

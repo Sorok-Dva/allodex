@@ -2549,7 +2549,26 @@
       "subtitles": "partial",
       "trigger": "quêtes Isa_Ship_* (d’après les noms)",
       "source": "Voix 17.0 Cutscenes/Isa/Isa_Ship_* : 45 événements, 213.6 s de voix (projet VoiceDialogsCutScenes). 17.0 : buff de caméra 521225 (19 s) voisin de Isa_Ship_7_FinalScene_Subtitle ; isa-freya (521226) en attente.",
-      "note": "Recréé : la Freya (isa-freya) et le journal du capitaine (isa-captain-journal). Reste : la descente de la rivière (Isa_Ship_2_*), le départ par la montagne (Isa_Ship_6, buff res:740171271, 17 s, sous-titres officiels), le défi de Харысхан (Isa_Ship_9_Scene, 61 s, textes officiels : Харысхан n'est pas posé dans le client), le vol sur Ratatosk (Isa_Ship_9_FlyByTour). Durée = somme des voix de la série (répliques isolées comprises) : à trier avant recréation."
+      "note": "Recréé : le chemin des montagnes (isa-mountain-path), la Freya (isa-freya) et le journal du capitaine (isa-captain-journal). Reste : la descente de la rivière (Isa_Ship_2_*), le défi de Харысхан (Isa_Ship_9_Scene, 61 s, textes officiels : Харысхан n'est pas posé dans le client), le vol sur Ratatosk (Isa_Ship_9_FlyByTour). Durée = somme des voix de la série (répliques isolées comprises) : à trier avant recréation."
+    },
+    {
+      "status": "film",
+      "priority": "none",
+      "siteChapter": "isa-mountain-path",
+      "id": "isa-mountain-path",
+      "title": "Le chemin des montagnes",
+      "chapter": "isa",
+      "faction": "common",
+      "zone": "Isa",
+      "version": "14.0",
+      "kind": "engine",
+      "duration": 17.0,
+      "importance": "epic",
+      "voice": "ru",
+      "subtitles": "official",
+      "trigger": "Isa_Ship_6_StartScene",
+      "source": "Scène moteur recréée (engine_scenes « isa-mountain-path » du manifeste) : voix Isa_Ship_6_StartScene_Subtitle_1…4 et quatre sous-titres officiels ; voiles du buff res:740171271 ; petit travelling de mise en scène (choix) ; place : SpawnLocation de Герда res:740171270.",
+      "note": "Chronologie : Isa (14.0), série du navire (Isa_Ship_*) : le départ par la montagne, avant la Freya. Locutrice attribuée à Герда (approché). Recréée en 3D, voir engine_scenes."
     },
     {
       "status": "film",

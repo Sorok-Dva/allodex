@@ -1562,6 +1562,24 @@
    "audio": {
     "language": "ru"
    }
+  },
+  {
+   "id": "isa-mountain-path",
+   "kind": "engine",
+   "source": "main",
+   "event": "Isa_Ship_6_StartScene",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1265,
+   "title": {
+    "fr": "Le chemin des montagnes",
+    "en": "The mountain path"
+   },
+   "chronology": "Isa (14.0), série du navire (Isa_Ship_*) : Герда mène les héros au chemin des montagnes, vers l'épave de la Freya ; après les pêcheurs, avant la Freya (Isa_Ship_7) — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "audio": {
+    "language": "ru"
+   }
   }
  ],
  "held_back": {
@@ -25544,6 +25562,99 @@
     }
    ],
    "staging_note": "Герда res:740172038 : sa SpawnLocation (+0,3 m, reposée sur le sol), à 30 m à l'est des tables du festin, sur le seuil ; cap : vers la salle d'où vient le joueur (choix).",
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
+   }
+  },
+  {
+   "id": "isa-mountain-path",
+   "_note": "Le départ par la montagne (série Isa_Ship, voix Isa_Ship_6_StartScene_Subtitle_1 à _4) : au pied du chemin des montagnes, Герда prévient — « Путь через горы очень опасен! … Но нас это не остановит, правда? ». Buff de caméra res:740171271 (17 s : voile noir 1,5 s puis caméra sans point, vue du joueur, voile de fin à 17 s), rangé juste après la Герда res:740171270 (seule PNJ posée là par le client) et juste avant les quatre ClientData à sous-titre officiel qu'il accompagne (resourceId 740171272 à 275). Locutrice : Герда (attribution approchée : le client ne nomme pas qui parle). Point de vue : petit travelling de mise en scène (tools/cutscene_travelling.py), choix documenté, pas une donnée.",
+   "map": "Isa",
+   "cameras": [
+    {
+     "t": 0.0,
+     "p": [
+      12893.0,
+      13081.0,
+      69.0
+     ],
+     "look": [
+      12896.43,
+      13083.0,
+      68.3
+     ],
+     "_note": "Point de vue de départ (repli) : face à Герда (choix).",
+     "travelling": {
+      "subjects": [
+       "gerda"
+      ],
+      "bearing": 200,
+      "distance": 3.6,
+      "height": 0.3,
+      "arc": 26,
+      "dolly": 0.15,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : face à Герда (cap 200°), à 3,6 m et 0,3 m au-dessus de sa tête, arc de 26° et rapprochement de 15 % pendant ses quatre répliques."
+     }
+    },
+    {
+     "t": 0.0,
+     "buff": "res:740171271",
+     "_note": "BuffResource res:740171271 (volatil 521172) : voiles d'ouverture et de fin."
+    }
+   ],
+   "lines": [
+    "res:740171272",
+    "res:740171273",
+    "res:740171274",
+    "res:740171275"
+   ],
+   "lines_note": "ClientData à sous-titre officiel rangés avec le buff (délais 5 ; 5 ; 5 ; 7 s).",
+   "speakers": {
+    "1": "gerda",
+    "2": "gerda",
+    "3": "gerda",
+    "4": "gerda"
+   },
+   "fr_pair": {
+    "ru": "Но в глубокой бездне водятся чудовища",
+    "fr": "Mais il y a des monstres dans les profondeurs abyssales",
+    "_note": "Paire de textes d'une même réplique (légende des pêcheurs) : l'écart d'indice entre le 17.0 et le client FR 16.0 qu'elle donne (7 285 au 24/09/2026) est le même sur tout le bloc des textes d'Isa, vérifié réplique par réplique de l'arrivée (« Морозец пробирает до костей ») au journal du capitaine (« Но какой ценой? Череп снова будет свободен! »)."
+   },
+   "fov": 45,
+   "timing": {
+    "starts": [
+     2.0,
+     6.0,
+     10.0,
+     14.0
+    ],
+    "_note": "Estimés : la première à la fin du voile (1,5 s) + 0,5 s, puis toutes les 4 s, pour que les quatre tiennent dans les 17 s du buff (les délais du client, 5 à 7 s, n'y tiennent pas)."
+   },
+   "decor_center": [
+    12896.0,
+    13083.0
+   ],
+   "decor_radius": 70,
+   "actors": [
+    {
+     "id": "gerda",
+     "mob": "res:740171270",
+     "position": [
+      12896.43,
+      13083.0,
+      67.21
+     ],
+     "ground": true,
+     "face": [
+      12880.0,
+      13078.0
+     ]
+    }
+   ],
+   "staging_note": "Герда res:740171270 : sa SpawnLocation (+0,3 m, reposée sur le sol) ; cap : vers l'ouest-sud-ouest, face au point de vue (choix).",
    "mix": {
     "music": 0.35,
     "ambience": 0.5,

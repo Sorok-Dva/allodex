@@ -2006,6 +2006,58 @@
    }
   },
   {
+   "id": "isa-mountain-path",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1265,
+   "event": "Isa_Ship_6_StartScene",
+   "title": {
+    "fr": "Le chemin des montagnes",
+    "en": "The mountain path"
+   },
+   "chronology": "Isa (14.0), série du navire (Isa_Ship_*) : Герда mène les héros au chemin des montagnes, vers l'épave de la Freya ; après les pêcheurs, avant la Freya (Isa_Ship_7) — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "bonus": false,
+   "duration": 17.0,
+   "files": {
+    "poster": "engine/isa-mountain-path/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/isa-mountain-path/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-mountain-path/fr.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-mountain-path/en.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-mountain-path/ru.vtt",
+     "lines": 4
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 4,
+    "timing": "measured",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "isa-freya",
    "arc": "isa",
    "version": "14.0",
