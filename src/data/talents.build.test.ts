@@ -118,6 +118,23 @@ describe('grilles', () => {
     expect(fieldBlock(calc17, b, 1, 1, 1)).toBe('empty');
   });
 
+  it('case vide : elle s\'apprend pour 1 point et ouvre le passage vers les rubis voisins', () => {
+    // Grille 0 : (1,0) est vide, (0,0) n'est accessible qu'en passant par (1,0) ou (0,1).
+    let b = apply(calc17, emptyBuild(calc17), x => addField(calc17, x, 0, 1, 0));
+    expect(b.fields[0][1][0]).toBe(true);
+    expect(fieldSpent(calc17, b)).toBe(1);
+    expect(fieldBlock(calc17, b, 0, 0, 0)).toBeNull();
+    expect(fieldBlock(calc17, b, 0, 2, 0)).toBeNull();
+    b = apply(calc17, b, x => addField(calc17, x, 0, 2, 0));
+    expect(fieldTalentRank(data.fields[0], b.fields[0], 'a3')).toEqual({ current: 1, total: 2 });
+    // Le lien partagé garde la case vide ; la retirer détache ce qui en dépendait.
+    const code = encodeBuild(calc17, b)!;
+    expect(decodeBuild(calc17, code)).toEqual({ ok: true, build: b });
+    b = apply(calc17, b, x => removeField(calc17, x, 0, 1, 0));
+    expect(b.fields[0][2][0]).toBe(false);
+    expect(fieldSpent(calc17, b)).toBe(0);
+  });
+
   it('retirer une case retire celles qui ne sont plus reliées au départ', () => {
     let b = apply(calc17, emptyBuild(calc17), x => addField(calc17, x, 0, 0, 1), x => addField(calc17, x, 0, 0, 0));
     expect(fieldSpent(calc17, b)).toBe(2);
