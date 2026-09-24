@@ -140,7 +140,28 @@ export type FatalityObject = {
   bounds?: [number, number, number, number, number, number];
   /** Composants accrochés ; `start`/`stop` : fenêtre des `DelayComponent`/`StopVisObjectComponents`. */
   components?: { vot: string; locator: string; start?: number; stop?: number }[];
+  /**
+   * Opacité des éléments de géométrie au fil du clip (piste de transparence du `.bin` de
+   * l'animation) : par nom d'élément, clés `[t0, a0, t1, a1, …]`, secondes du clip, linéaire.
+   */
+  elementAlpha?: Record<string, number[]>;
 };
+
+/** Opacité d'un élément au temps `t` de son clip, d'après ses clés `[t0, a0, t1, a1, …]`. */
+export function elementAlphaAt(keys: number[], t: number): number {
+  const n = keys.length >> 1;
+  if (n === 0) return 1;
+  if (t <= keys[0]) return keys[1];
+  for (let i = 1; i < n; i += 1) {
+    const t1 = keys[2 * i];
+    if (t <= t1) {
+      const t0 = keys[2 * i - 2];
+      const w = t1 > t0 ? (t - t0) / (t1 - t0) : 1;
+      return keys[2 * i - 1] + (keys[2 * i + 1] - keys[2 * i - 1]) * w;
+    }
+  }
+  return keys[2 * n - 1];
+}
 
 /**
  * Durée prêtée à `CreatureSetTransparencyAction` pour atteindre sa transparence cible, divisée
@@ -227,12 +248,24 @@ export function objectClipTime(local: number, duration: number, loop: boolean): 
   return Math.max(0, Math.min(local, duration - 1e-4));
 }
 
+/**
+ * Plus long fondu de sortie d'un gabarit et de ses composants : chacun meurt au plus tard avec
+ * son parent, puis s'efface à son propre rythme (fumée du météore du Mage, 3,5 s).
+ */
+export function longestFadeOut(objects: Record<string, FatalityObject>, vot: string, depth = 0): number {
+  const object = objects[vot];
+  if (!object || depth > 8) return 0;
+  let out = object.fadeOut ?? 0;
+  for (const component of object.components ?? []) out = Math.max(out, longestFadeOut(objects, component.vot, depth + 1));
+  return out;
+}
+
 /** Durée totale d'une fatalité : le dernier objet éteint, la dernière animation, le fondu final. */
 export function timelineDuration(timeline: FatalityTimeline, objects: Record<string, FatalityObject>,
   fadeStart: number, fadeDuration: number): number {
   let end = Math.max(timeline.end || 0, fadeStart + fadeDuration);
   for (const step of timeline.victim) end = Math.max(end, step.end);
-  for (const spawn of timeline.spawns) end = Math.max(end, spawn.t + spawn.lifeTime + (objects[spawn.vot]?.fadeOut ?? 0));
+  for (const spawn of timeline.spawns) end = Math.max(end, spawn.t + spawn.lifeTime + longestFadeOut(objects, spawn.vot));
   for (const item of timeline.attached) end = Math.max(end, item.t + (item.fadeIn ?? 0));
   return end;
 }

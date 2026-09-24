@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
 import { createRef } from 'react';
 import * as THREE from 'three';
-import { FatalityViewer, effectBounds, toViewerMaterial, type FatalityViewerHandle } from './FatalityViewer';
+import { FatalityViewer, effectBounds, skyBehindEverything, toViewerMaterial, type FatalityViewerHandle } from './FatalityViewer';
 import type { FatalityObject } from './timeline';
 import type { FatalityTimeline } from './timeline';
 import type { LoadedScene, SceneLoader } from '@/components/scene/MenuScene';
@@ -50,6 +50,23 @@ beforeEach(() => {
   vi.stubGlobal('cancelAnimationFrame', vi.fn());
 });
 afterEach(() => vi.unstubAllGlobals());
+
+describe('skyBehindEverything', () => {
+  it('draws sky layers first, farthest first, without depth test but still blended', () => {
+    const sky = new THREE.Group();
+    const near = new THREE.Mesh(new THREE.SphereGeometry(104), new THREE.MeshBasicMaterial({ transparent: true }));
+    const far = new THREE.Mesh(new THREE.SphereGeometry(585), new THREE.MeshBasicMaterial());
+    sky.add(near, far);
+    skyBehindEverything(sky);
+    expect(far.renderOrder).toBeLessThan(near.renderOrder);
+    expect(near.renderOrder).toBeLessThan(0);
+    const material = near.material as THREE.MeshBasicMaterial;
+    expect(material.depthTest).toBe(false);
+    expect(material.transparent).toBe(false);
+    expect(material.blending).toBe(THREE.CustomBlending);
+    expect(material.blendDst).toBe(THREE.OneMinusSrcAlphaFactor);
+  });
+});
 
 describe('toViewerMaterial', () => {
   it('éclaire les matériaux opaques et laisse les additifs sans éclairage', () => {

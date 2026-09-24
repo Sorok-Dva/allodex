@@ -19,7 +19,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from tools.allods_gltf import Exporter, TexturePool, load_animation, load_geometry
+from tools.allods_gltf import Exporter, TexturePool, load_animation, load_geometry, reduce_keys
 from tools.allods_packdb import PackDB, PakCatalog
 from tools.allods_visdb import animation_bounds, read_visobject
 from tools.extract_menu_scene import BinSource, read_chunks
@@ -87,6 +87,11 @@ class FxBuild:
                 ex.stats["objects"] += 1
                 mesh_node = {"name": f"{name}_mesh", "mesh": mesh}
                 skeleton = loaded.skeleton
+                anim_name = self.cat.name(self.db.binary_ref(vot.animation)) if vot.animation is not None else None
+                span = float(np.max(np.abs(loaded.vertices["position"])) * 8.0) if len(loaded.vertices["position"]) else 0.0
+                animation = load_animation(self.bins, anim_name, skeleton, span) if anim_name else None
+                speed = (self.db.f32(vot.animation + 0x100) or 1.0) if animation is not None else 1.0
+                looped = animation is not None and bool(self.db.u8(vot.animation + 0x108))
                 if skeleton is not None and skinned:
                     joint_nodes = ex.emit_skeleton(skeleton, name)
                     joint_names = list(skeleton.names)
@@ -95,13 +100,18 @@ class FxBuild:
                     children.extend(joint_nodes[i] for i in range(len(skeleton))
                                     if not (0 <= skeleton.parents[i] < len(skeleton)))
                     children.append(static_node)
-                    anim_name = self.cat.name(self.db.binary_ref(vot.animation)) if vot.animation is not None else None
-                    span = float(np.max(np.abs(loaded.vertices["position"])) * 8.0) if len(loaded.vertices["position"]) else 0.0
-                    animation = load_animation(self.bins, anim_name, skeleton, span)
                     if animation is not None:
-                        speed = self.db.f32(vot.animation + 0x100) or 1.0
-                        loop = bool(self.db.u8(vot.animation + 0x108))
+                        loop = looped
                         duration = ex.emit_clip(name, skeleton, joint_nodes, animation, speed)
+                if animation is not None:
+                    alpha = element_alpha(animation, {e.name for e in elements}, speed)
+                    if alpha:
+                        info["elementAlpha"] = alpha
+                        loop = looped
+                        # Le clip porte au moins la transparence de ses éléments : sa durée
+                        # compte même sans squelette animé (dague du Paladin, feux du Guerrier).
+                        if duration <= 0 and animation.frames > 1:
+                            duration = (animation.frames - 1) / float(animation.fps) / max(speed, 1e-6)
                 children.append(ex.gltf.add_node(mesh_node))
         info["duration"] = round(duration, 4)
         info["loop"] = loop
@@ -112,6 +122,9 @@ class FxBuild:
         attached = []
         for comp in vot.components:
             if comp.visobject is None:
+                continue
+            if comp.cancelled:
+                self.exporter.notes.append(f"{name} : composant {comp.ident} annulé (arrêté avant son échéance)")
                 continue
             child = self.emit(comp.visobject, depth + 1)
             if child is None:
@@ -154,6 +167,25 @@ class FxBuild:
             info["components"] = attached
         self.meta[name] = info
         return ex.gltf.add_node({"name": f"vot:{name}", "children": children, "extras": {"vot": name}})
+
+
+#: Écart toléré sur l'opacité d'un élément entre deux clés gardées (un pas de l'octet source).
+ALPHA_TOLERANCE = 1.0 / 255.0
+
+
+def element_alpha(animation, drawn: set[str], speed: float = 1.0) -> dict[str, list[float]]:
+    """Transparence des éléments dessinés, en clés `[t0, a0, t1, a1, …]` (secondes du clip à
+    sa vitesse, opacité 0 à 1, interpolation linéaire) : seules les pistes qui ne sont pas
+    pleines d'un bout à l'autre, allégées des clés redondantes."""
+    out: dict[str, list[float]] = {}
+    for track in animation.elements:
+        alpha = track.alpha
+        if alpha is None or track.name not in drawn or track.name in out or float(alpha.min()) >= 1.0:
+            continue
+        keep = reduce_keys(alpha[:, None], ALPHA_TOLERANCE)
+        times = np.arange(len(alpha)) / float(animation.fps) / max(speed, 1e-6)
+        out[track.name] = [round(float(v), 4) for k in keep for v in (times[k], alpha[k])]
+    return out
 
 
 def _qmul(a, b):
