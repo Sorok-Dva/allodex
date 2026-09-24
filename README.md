@@ -195,7 +195,7 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Ferris 6.0 · « L’essaim » (`ferris-swarm`, `Swarm_CutScene`) | serveur 7.0 | `FerrisRaid` | 72 s |
 | Ferris 6.0 · « La force de l’Ordre » (`ferris-power-of-order`, `Swarm_Ending_Main`) | serveur 7.0 | `FerrisRaid` | 54 s |
 | Ferris 6.0 · « Les serviteurs de l’Ordre » (`ferris-order`) | serveur 7.0 | `FerrisRaid` | 51 s |
-| Ferris 6.0 · « Le Locus » (`ferris-locus`) | serveur 7.0 | `FerrisRaid` | 162 s |
+| Ferris 6.0 · « Le Locus » (`ferris-locus`) | serveur 7.0 | `FerrisRaid` | 106 s |
 | Ferris 6.0 · « La chute du Locus » (`ferris-locus-fall`) | serveur 7.0 | `FerrisRaid` | 122 s |
 | Invasion 7.0 · « La mort de l’ingénieur » (`invasion-engineer-kania`, Ligue) | client (`GameViewScene`) | `Inst_ZoneContested12_Start` | 13 s |
 | Citadelle de Nihaz 12.0 · « Le monde caché » (`ao12-prologue04`, pilote) | manifeste | `AO12_PrologueInst` | 82 s |
@@ -527,6 +527,17 @@ c'est le serveur qui enchaîne les buffs.
 caméra) ; particules et effets posés (`votInstances.ts`, commun avec les fatalités) ;
 musique, ambiance et sons d'objets (atténués linéairement), voix ; voile noir des fondus,
 désaturation des visions. Lecteur : `src/components/scene/EngineCutscene/`.
+
+**Une seule musique à la fois** : le jeu joue la musique de la zone du joueur, qu'une action `Music`
+du déroulé (`Sound2DAction` de type `Music`) remplace jusqu'à son `postAction`. L'extraction garde
+donc la musique du déroulé quand il en a une, sinon **une** musique de zone de la carte (la première,
+signalée quand la carte en a plusieurs). Un événement adaptatif à plusieurs calques joue son premier
+calque, ou celui que nomme `audio_layers` au manifeste (choix justifié). `ferris-locus` partait d'un
+buff enfant (`LastStart_CutScene`) et perdait ainsi la musique de sa racine `LastStart_CutScene_Main`
+(posée par la zone `ZoneFR16`) : il superposait les deux musiques de zone de `FerrisRaid` (`Winter`,
+`AC5_main`) et durait 162 s (60 s de `Cooldown_CarrierIntro`). Depuis la racine : `TepPyramidAdaptive`,
+calque `TepPyramid_high` (la scène met le paramètre `action` à 2, maximum de sa plage 0–2 dans
+`Music.bev` ; enveloppes non décodées), ambiance `Last_Start`, et 106 s, borne de la racine.
 
 **Code commun** : `allods_packdb.py` (table des paks exacte, identifiants, bases de carte
 liées), `allods_visdb.py`, `allods_characters.py` (habillage, corrigé : couleur de peau

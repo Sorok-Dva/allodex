@@ -688,7 +688,7 @@
    },
    "chronology": "Cinématique moteur avant le dernier combat du raid de Ferris (« LastStart_CutScene », 6.0) : le Ваятель présente le Locus, puis le Cœur du Locus, l’Architecte, s’adresse aux héros.",
    "bonus": false,
-   "duration": 162.0,
+   "duration": 106.0,
    "files": {
     "poster": "engine/ferris-locus/poster.jpg"
    },

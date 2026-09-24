@@ -916,16 +916,21 @@ def fev_resolver(bins, index: dict) -> FevResolver:
 
 
 def resolve_wave(event: str, index: dict, fev: FevResolver, report: list[str], prefer: str | None = None,
-                 voice: bool = False) -> tuple[tuple[str, int, str] | None, str]:
+                 voice: bool = False, layer: str | None = None) -> tuple[tuple[str, int, str] | None, str]:
     """Onde d'un événement : celle que nomme son `.bev` (définition de son du premier son de son
-    premier calque), sinon l'appariement par le nom (`find_wave`). Deuxième valeur : la source.
+    premier calque, ou du calque dont l'onde est `layer` : choix justifié du manifeste,
+    `audio_layers`), sinon l'appariement par le nom (`find_wave`). Deuxième valeur : la source.
     Voix : le paramètre de leurs calques (la distance des sons 3D) n'est pas signalé."""
     waves, why = fev.waves(event)
     if waves:
-        first = waves[0]
-        rest = [w["stream"] for w in waves[1:]]
+        chosen = [w for w in waves if layer and w["stream"].lower() == layer.lower()]
+        if layer and not chosen:
+            report.append(f"{event} : calque {layer} absent du .bev, premier calque joué")
+        first = chosen[0] if chosen else waves[0]
+        rest = [w["stream"] for w in waves if w is not first]
         if rest:
-            report.append(f"{event} : {len(waves)} sons dans le .bev, le premier joué ({first['stream']}) ; "
+            how = "calque choisi par le manifeste" if chosen else "le premier"
+            report.append(f"{event} : {len(waves)} sons dans le .bev, un seul joué ({first['stream']}, {how}) ; "
                           f"non repris : {', '.join(rest)}")
         if first["param"] >= 0 and not voice:
             report.append(f"{event} : calque piloté par un paramètre du jeu (enveloppes non reproduites)")
@@ -937,9 +942,10 @@ def resolve_wave(event: str, index: dict, fev: FevResolver, report: list[str], p
 
 
 def export_waves(events: set[str], bins, out_dir: Path, vgmstream: Path, report: list[str],
-                 music_seconds: float | None = None) -> dict[str, dict]:
+                 music_seconds: float | None = None, layers: dict[str, str] | None = None) -> dict[str, dict]:
     """Ondes des événements, encodées en Ogg Vorbis et MP3 dans `sfx/`. La musique de zone est
-    coupée à la durée de la scène (`music_seconds`, fondu de sortie de 2 s) : le poids du site."""
+    coupée à la durée de la scène (`music_seconds`, fondu de sortie de 2 s) : le poids du site.
+    `layers` : onde jouée d'un événement adaptatif à plusieurs calques (`audio_layers` du manifeste)."""
     from tools.extract_audio import encode_outputs
     index = sound_index(bins, Path(os.environ.get("ALLODEX_CACHE") or Path.home() / ".cache" / "allodex"))
     fev = fev_resolver(bins, index)
@@ -947,7 +953,7 @@ def export_waves(events: set[str], bins, out_dir: Path, vgmstream: Path, report:
     target = out_dir / "sfx"
     with tempfile.TemporaryDirectory(prefix="allodex-sfx-") as tmp:
         for event in sorted(events):
-            hit, source = resolve_wave(event, index, fev, report)
+            hit, source = resolve_wave(event, index, fev, report, layer=(layers or {}).get(event))
             if hit is None:
                 report.append(f"onde introuvable pour l'événement {event}")
                 continue
@@ -2728,19 +2734,29 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     # Plans de toutes les scènes : le décor d'une carte est commun à toutes celles qui s'y jouent,
     # il couvre donc leurs zones à toutes, même quand une seule est réextraite (`--only`).
     plans: dict[str, dict] = {}
-    for spec in manifest["engine_scenes"]:
-        source = spec.get("source")
-        plans[spec["id"]] = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report, rtexts) \
-            if source == "xdb70" \
-            else plan_gameview(spec, db, texts, anim_names, report) if source == "gameview" \
-            else plan_manual(spec, db, texts, lines17, anim_names, report)
     # Une scène sans chapitre dans le film (en attente) ne s'extrait que demandée (`--only`).
     chapters = {c["id"] for c in manifest["cinematics"]}
     selected = [s for s in manifest["engine_scenes"] if (s["id"] in only if only else s["id"] in chapters)]
+    for spec in manifest["engine_scenes"]:
+        source = spec.get("source")
+        try:
+            plans[spec["id"]] = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report, rtexts) \
+                if source == "xdb70" \
+                else plan_gameview(spec, db, texts, anim_names, report) if source == "gameview" \
+                else plan_manual(spec, db, texts, lines17, anim_names, report)
+        except (AttributeError, KeyError, ValueError) as err:
+            # Scène non demandée (`--only`) dont le plan ne se lit plus (ressource du client déplacée par
+            # une mise à jour) : elle ne bloque pas les autres, mais ne contribue pas au décor commun
+            # de sa carte (signalé).
+            if spec in selected:
+                raise
+            report.append(f"{spec['id']} : plan illisible, scène ignorée, décor de sa carte sans ses zones "
+                          f"({type(err).__name__}: {err})")
     wanted_maps = {plans[s["id"]]["map"] for s in selected}
     maps: dict[str, dict] = {}
     for map_name in sorted(wanted_maps):
-        on_map = [s for s in manifest["engine_scenes"] if plans[s["id"]]["map"] == map_name and (s["id"] in chapters or s in selected)]
+        on_map = [s for s in manifest["engine_scenes"] if s["id"] in plans and plans[s["id"]]["map"] == map_name
+                  and (s["id"] in chapters or s in selected)]
         maps[map_name] = build_map(map_name, on_map, plans, db, client, bins, root, out_root, report)
     # Acteurs communs : un modèle par PNJ (et par jeu d'animations réuni sur toutes les scènes du
     # film), dans `engine/shared/actors/`, textures dans `engine/shared/textures/`.
@@ -2748,7 +2764,7 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     shared_tex = TexturePool(db, pack_cat, bins, shared, jpeg=True)
     clips_of: dict[int, set[str]] = {}
     for s_id in {s["id"] for s in manifest["engine_scenes"] if s["id"] in chapters} | {s["id"] for s in selected}:
-        for actor in plans[s_id]["actors"]:
+        for actor in plans.get(s_id, {}).get("actors", []):
             clips_of.setdefault(actor_model_key(actor), set()).update(
                 set(actor.get("animations", [])) | {actor.get("idle") or "Idle", "Idle01", "Idle"} |
                 set(actor.get("clips_wanted", [])) | ({actor["move"]} if actor.get("move") else set()) |
@@ -2870,9 +2886,18 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
             if timed.get(key):
                 audio[key] = []   # le déroulé remplace la musique et l'ambiance de la carte
         audio.update({k: v for k, v in spec.get("audio", {}).items() if not k.startswith("_")})
-        wanted = set(decor["sounds"]) | set(fx_sounds) | set(audio.get("music", [])) | set(audio.get("ambience", [])) | \
+        # Une seule musique à la fois : le jeu joue celle de la zone où se tient le joueur (canal
+        # `Music`, qu'une action `Music` du déroulé remplace). Les musiques de zone de la carte
+        # (`map_sounds`) ne se superposent donc jamais : la première est gardée, faute de zone connue.
+        music = list(dict.fromkeys(audio.get("music", [])))
+        if len(music) > 1:
+            report.append(f"{spec['id']} : {len(music)} musiques de zone sur la carte ({', '.join(music)}), "
+                          f"une seule jouée ({music[0]}) ; préciser `audio.music` au manifeste")
+        audio["music"] = music[:1]
+        wanted =set(decor["sounds"]) | set(fx_sounds) | set(audio.get("music", [])) | set(audio.get("ambience", [])) | \
             {s["event"] for key in ("music", "ambience", "sfx") for s in timed.get(key, [])}
-        waves = export_waves(wanted, bins, out, vgmstream, report, camera["duration"] + 1) if voices or not (out / "scene.json").is_file() else \
+        waves = export_waves(wanted, bins, out, vgmstream, report, camera["duration"] + 1,
+                             spec.get("audio_layers")) if voices or not (out / "scene.json").is_file() else \
             json.loads((out / "scene.json").read_text(encoding="utf-8")).get("sounds", {}).get("waves", {})
         for info in objects.values():
             if info.get("sound") in waves:
