@@ -190,7 +190,7 @@ export function FatalitiesScreen() {
           className={`${s.pill} ${current ? s.pillActive : ''}`}
           onClick={() => { playSfx('ui-click'); select({ f: f.id }); }}
         >
-          <span className={s.pillSkin} aria-hidden="true" style={nineSlice(current ? 'pill-full-open' : 'pill-full', PILL_SLICE)} />
+          <span className={s.pillSkin} aria-hidden="true" style={nineSlice(current ? 'pill-full-open' : 'pill-full', PILL_SLICE, { fill: true })} />
           <span className={s.pillLabel}>{pick(f.label, lang) ?? f.id}</span>
         </button>
       </li>

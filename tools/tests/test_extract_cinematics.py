@@ -235,9 +235,11 @@ def test_manifest_opens_each_film_with_its_start_zone_then_its_prologue(manifest
     # vient juste après sa fin.
     for faction in ("league", "empire"):
         film = sorted((c for c in manifest["cinematics"] if c["faction"] in (faction, "common")), key=lambda c: c["order"])
+        # zones de départ de la faction (Ligue : aussi le départ pridien, qui finit au même point)
         arcs = list(dict.fromkeys(c["arc"] for c in film))
-        assert arcs[:2] == [f"{faction}-start", "prologue"]
-        assert all(c["faction"] == faction for c in film if c["arc"] in (f"{faction}-start", "prologue"))
+        start = arcs.index("prologue")
+        assert start >= 1 and arcs[0] == f"{faction}-start" and all(a.endswith("-start") for a in arcs[:start])
+        assert all(c["faction"] == faction for c in film if c["arc"] in arcs[:start + 1])
         orders = [c["order"] for c in film]
         assert len(orders) == len(set(orders)), "deux cinématiques d'un même film à la même place"
 
