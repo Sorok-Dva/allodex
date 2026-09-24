@@ -203,7 +203,9 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
     l'une des zones (`areas` : centre, rayon de chaque scène) une fois chacun dans `decor.glb`, les
     instances avec ce qu'il faut pour éclairer chacune (`light_decor`, par scène : l'éclairage
     dépend du temps de la scène)."""
-    fx = FxBuild(Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/"), mp, cat, bins,
+    # feuillages : matériaux opaques à texture alphée découpés par leur alpha (`cutout`), comme la
+    # création de personnage ; sans lui, les frondaisons des cartes d'extérieur sortent en aplats
+    fx = FxBuild(Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/", cutout=True), mp, cat, bins,
                  particles=particles, report=report)
     lightvrt = read_lightvrt(mp, map_name, lambda name, pak: bins.get(name))
     objects = read_regions(mp)
