@@ -21,6 +21,13 @@ Sorties dans `public/game/lorebook/` (chargées à la demande par la page) :
   blocs de 64 ;
 * `names/<langue>.json` — nom propre → entrée (liens automatiques dans les textes).
 
+Images (`public/game/lore/media.json`, écrit par `tools/build_lore_media.py` ; fichiers dans
+`public/game/lorebook-media/`) : un corps porte `p` = `[[id, largeur, hauteur], …]` (galerie de
+l'entrée ou d'un élément), un texte porte `extra.img` (illustrations de sa rubrique du document de
+l'atlas). La section `gallery` a un album par dossier du corpus et par document `.docx` ; un allod
+ou une région reçoit les images du dossier qui porte son nom (ou d'un sous-dossier), des fichiers
+qui portent son nom et des intertitres de document à son nom.
+
 Ordre de repli d'un texte : anglais → français → russe (page en anglais), français → anglais →
 russe, russe → anglais → français. Un texte d'une autre langue que celle demandée porte cette
 langue (badge « pas encore traduit ») ; un russe réécrit depuis l'anglais officiel porte le
@@ -54,7 +61,7 @@ def default_corpus() -> Path:
 
 LANGS = ("en", "fr", "ru")
 FALLBACK = {"en": ("en", "fr", "ru"), "fr": ("fr", "en", "ru"), "ru": ("ru", "en", "fr")}
-SECTIONS = ("timeline", "atlas", "library", "characters", "secrets", "quests")
+SECTIONS = ("timeline", "atlas", "library", "characters", "secrets", "quests", "gallery")
 # sections sans liste ni onglet : leurs entrées ne sont atteintes que par la recherche et les liens
 # (les 10 500 répliques qu'aucun PNJ ne rattache alourdissaient la liste des personnages)
 HIDDEN = ("dialogues",)
@@ -67,15 +74,18 @@ LETTER_MIN_CHARS = 150
 TOKEN_MIN = 3
 FLAG_COMMUNITY, FLAG_EN_MISSING, FLAG_REVISED = 1, 2, 4
 TEXT_REVISED = 1
+DHASH_NEAR = 4           # bits d'écart sous lesquels deux images d'une entrée sont la même
 
 SEARCH_PRIORITY = {"character": 0, "secret": 0, "allod": 0, "region": 0, "series": 1, "story": 1, "chronology": 1,
                    "faction": 1, "place": 2, "event": 2, "quest": 3, "document": 3, "letter": 3, "atlasNote": 3,
-                   "ambience": 4, "scene": 6, "dialogue": 7}
+                   "ambience": 4, "album": 4, "scene": 6, "dialogue": 7}
 QUEST_FIELDS = ("goal", "startText", "checkText", "finishText", "kickText")
 CREDIT_FALLBACK = {"line": "Allods atlas and community lore material compiled by Makar Terentiev (DarkyAndSparky), "
                            "https://github.com/DarkyAndSparky/atlas-ao",
                    "short": "Makar Terentiev (DarkyAndSparky)", "url": "https://github.com/DarkyAndSparky/atlas-ao"}
 TRANSLATED_BY = "Community text, translated by Allodex"
+TRANSLIT = dict(zip("абвгдеёжзийклмнопрстуфхцчшщъыьэюя",
+                    "a b v g d e e zh z i y k l m n o p r s t u f kh ts ch sh shch - y - e yu ya".split()))
 
 STOPWORDS = set("""
 the and for with that this from are was were you your our not but have has had his her its they them their
@@ -145,6 +155,22 @@ def slug(s: str) -> str:
     return re.sub(r"[^0-9a-z]+", "-", s).strip("-") or "x"
 
 
+def translit_slug(s: str) -> str:
+    """Slug latin d'un chemin russe (ids d'albums lisibles dans l'URL)."""
+    s = "".join(TRANSLIT.get(c, c) for c in norm_text(s)).replace("-", " ")
+    return re.sub(r"[^0-9a-z]+", "-", s).strip("-") or "x"
+
+
+def image_stem_key(name: str) -> str:
+    """Clé d'appariement d'un nom de fichier image : sans extension, numéros ni suffixes « old »."""
+    stem = re.sub(r"\.[A-Za-z0-9]{2,4}$", "", name)
+    prev = None
+    while prev != stem:
+        prev = stem
+        stem = re.sub(r"(?i)[\s_\-]*(\(\d+\)|\d+|old|олд|big)\s*$", "", stem)
+    return atlas_key(stem)
+
+
 # --- sources -------------------------------------------------------------------------------------
 
 class Lore:
@@ -171,6 +197,7 @@ class Lore:
         self.atlas = opt("atlas.json", {})
         self.links = opt("links.json", {})
         self.community = opt("community.json", {})
+        self.media = opt("media.json", {})
         self.by_id = {e["id"]: (cat, e) for cat, es in self.cats.items() for e in es}
 
     def texts(self, f: dict) -> dict[str, str | None]:
@@ -344,6 +371,7 @@ class Builder:
         self.build_characters()
         self.build_secrets()
         self.build_quests()
+        self.build_gallery()
         self.resolve_links()
 
     def build_regions_index(self) -> None:
@@ -447,6 +475,7 @@ class Builder:
             if d.get("text"):
                 by_ru[atlas_key(d["ru"])].append(d)
         used_descs = set()
+        desc_imgs = self.doc_images_by_desc(descs)
         rows = self.atlas_rows()
         loc_owner = {}
         for cat, es in self.lore.cats.items():
@@ -472,6 +501,8 @@ class Builder:
                 used_descs.add(id(d))
                 rec = {"key": "atlasDescription", "texts": {"en": d["text"], "fr": None, "ru": None},
                        "revised": False, "markdown": True}
+                if desc_imgs.get(id(d)):
+                    rec["img"] = desc_imgs[id(d)]
                 if len(found) > 1:
                     rec["heading"] = ATLAS_DOC_TITLES.get(str(d.get("part")), "Atlas of the Allods")
                 texts.append(rec)
@@ -482,7 +513,7 @@ class Builder:
                         used_descs.add(id(sub))
                         texts.append({"key": "atlasSubPlace", "heading": sub.get("en") or sub["ru"],
                                       "texts": {"en": sub["text"], "fr": None, "ru": None}, "revised": False,
-                                      "markdown": True})
+                                      "markdown": True, **({"img": desc_imgs[id(sub)]} if desc_imgs.get(id(sub)) else {})})
             facts = [[k, a[k]] for k in ("climate", "size", "faction", "category", "type", "archipelago", "holder",
                                           "expansion") if a.get(k)]
             entry = {"id": f"a-{a['id']}", "kind": "allod", "community": True,
@@ -508,7 +539,8 @@ class Builder:
                     "id": f"n-{slug(str(d.get('part', '')))}-{n}", "kind": "atlasNote", "community": True,
                     "title": {"en": d.get("en") or d["ru"], "fr": None, "ru": d["ru"]},
                     "fields": [{"key": "atlasDescription", "texts": {"en": d["text"], "fr": None, "ru": None},
-                                "revised": False, "markdown": True}],
+                                "revised": False, "markdown": True,
+                                **({"img": desc_imgs[id(d)]} if desc_imgs.get(id(d)) else {})}],
                     "meta": {"credit": self.credit.get("line"), "translated": TRANSLATED_BY,
                              "source": ATLAS_DOCS.get(str(d.get("part")), "ATLAS ALLODS.docx")}})
         # régions et lieux du client
@@ -711,6 +743,177 @@ class Builder:
                 entry["links"] = links
             self.add("quests", self.zone_group("quests", z, "lore.group.otherQuests"), entry)
 
+    # -- images --------------------------------------------------------------------------------
+    def imgs(self, ids, similar_to=(), perceptual: bool = False) -> list[list]:
+        """`[[id, largeur, hauteur], …]` des images converties, sans doublon, dans l'ordre ;
+        `perceptual` écarte aussi les copies visuelles (empreintes à moins de `DHASH_NEAR` bits), y
+        compris de celles de `similar_to` (images déjà montrées ailleurs dans l'entrée)."""
+        media = self.lore.media or {}
+        sizes, hashes = media.get("images") or {}, media.get("hash") or {}
+        out, seen = [], set()
+        near = [int(hashes[i], 16) for i in similar_to if i in hashes] if perceptual else []
+        for i in ids:
+            if i not in sizes or i in seen:
+                continue
+            seen.add(i)
+            if perceptual and i in hashes:
+                h = int(hashes[i], 16)
+                if any(bin(h ^ x).count("1") <= DHASH_NEAR for x in near):
+                    continue
+                near.append(h)
+            out.append([i, *sizes[i]])
+        return out
+
+    def doc_images_by_desc(self, descs: list[dict]) -> dict[int, list[list]]:
+        """Illustrations des documents de l'atlas → rubrique traduite (`id(description)`) : même
+        partie et même numéro d'intertitre, sinon même nom dans le même document."""
+        by_doc = collections.defaultdict(list)
+        for d in descs:
+            by_doc[ATLAS_DOCS.get(str(d.get("part")), "ATLAS ALLODS.docx")].append(d)
+        out: dict[int, list] = collections.defaultdict(list)
+        self.doc_placed: set[tuple[int, int]] = set()
+        for di, doc in enumerate((self.lore.media or {}).get("docs", [])):
+            cands = by_doc.get(Path(doc["doc"]).name, [])
+            by_num = {(str(d.get("part")), d["section"]): d for d in cands}
+            by_key = collections.defaultdict(list)
+            for d in cands:
+                by_key[atlas_key(d["ru"])].append(d)
+            for ii, (iid, part, number, heading) in enumerate(doc["images"]):
+                d = by_num.get((part, number)) if part and number else None
+                if d is None:
+                    same = by_key.get(atlas_key(heading), [])
+                    d = same[0] if len(same) == 1 else next((x for x in same if x["section"] == number), None)
+                if d is not None and d.get("text"):
+                    out[id(d)].append(iid)
+                    self.doc_placed.add((di, ii))
+        return {k: self.imgs(v, perceptual=True) for k, v in out.items()}
+
+    def build_gallery(self) -> None:
+        """Albums : un par dossier d'images du corpus, un par document `.docx` ; images rattachées
+        aux allods et régions de l'atlas qui portent le nom du dossier, du fichier ou de l'intertitre."""
+        media = self.lore.media or {}
+        if not media.get("images"):
+            return
+        cfg_path = self.src / "media-albums.json"
+        cfg = json.loads(cfg_path.read_text(encoding="utf-8")) if cfg_path.exists() else {}
+        names = cfg.get("albums") or {}
+        glabels = cfg.get("groups") or {}
+        index: dict[str, dict] = {}
+        for e in self.entries["atlas"]:
+            if e["kind"] in ("allod", "region"):
+                ru = e["title"].get("ru") or ""
+                for name in [ru, *re.findall(r"\((.*?)\)", ru)]:
+                    k = atlas_key(name)
+                    if len(k) >= 3:
+                        index.setdefault(k, e)
+        # entrée → images : de ses dossiers d'abord, puis des fichiers et intertitres à son nom
+        extra: dict[str, list[str]] = collections.defaultdict(list)
+        named: dict[str, list[str]] = collections.defaultdict(list)
+
+        def owner_of(folder: str) -> tuple[dict | None, bool]:
+            """Entrée de l'atlas d'un dossier (le sien ou celui d'un parent) ; vrai si le nom est le sien."""
+            parts = [x for x in folder.split("/") if x]
+            for n, comp in enumerate(reversed(parts)):
+                e = index.get(atlas_key(comp))
+                if e:
+                    return e, n == 0
+            return None, False
+
+        def group_of(top: str) -> int:
+            lab = glabels.get(top) or {}
+            return self.group("gallery", "gal-" + translit_slug(top or "root"),
+                              label={lang: lab.get(lang) or lab.get("en") or top or "Corpus" for lang in LANGS})
+
+        def title_of(key: str, ru: str, owner: dict | None, own: bool) -> dict:
+            en = names.get(key) or (resolve(owner["title"], "en")[0] if owner and own else None)
+            fr = (resolve(owner["title"], "fr")[0] if owner and own and not names.get(key) else None)
+            return {"en": en, "fr": fr, "ru": ru}
+
+        folders: dict[str, list[str]] = collections.defaultdict(list)
+        for rel, iid in media.get("files", []):
+            folder = rel.rsplit("/", 1)[0] if "/" in rel else ""
+            folders[folder].append(iid)
+            k = image_stem_key(rel.rsplit("/", 1)[-1])
+            if len(k) >= 4 and k in index:
+                named[index[k]["id"]].append(iid)
+        credit = {"credit": self.credit.get("line")}   # images : rien de traduit
+        album_of: dict[str, str] = {}
+        tops = [t for t in (cfg.get("order") or [])] + sorted({f.split("/")[0] for f in folders} - set(cfg.get("order") or []))
+        pending = sorted(folders, key=lambda f: (tops.index(f.split("/")[0]) if f.split("/")[0] in tops else len(tops), norm_text(f)))
+        for folder in pending:
+            ids = folders[folder]
+            owner, own = owner_of(folder)
+            if owner:
+                extra[owner["id"]].extend(ids)
+            ru = folder.rsplit("/", 1)[-1] if folder else "Корпус"
+            eid = "g-" + translit_slug(folder or "root")
+            while eid in self.ref_of:
+                eid += "-2"
+            album_of[folder] = eid
+            n = len(self.imgs(ids))
+            entry = {"id": eid, "kind": "album", "community": True, "title": title_of(folder, ru, owner, own),
+                     "subtitle": {"en": f"{n} images", "fr": f"{n} images", "ru": f"{n} изобр."},
+                     "fields": [], "images": self.imgs(ids), "meta": {"source": folder or "/", **credit}}
+            if owner:
+                entry["links"] = {"atlas": [owner["id"]]}
+            self.add("gallery", group_of(folder.split("/")[0] if folder else ""), entry)
+        # sous-albums et album parent
+        for folder, eid in album_of.items():
+            parent = folder.rsplit("/", 1)[0] if "/" in folder else None
+            while parent is not None and parent not in album_of:
+                parent = parent.rsplit("/", 1)[0] if "/" in parent else ("" if parent else None)
+            if parent is not None and parent != folder and parent in album_of:
+                pe = self.entry_of_gallery(album_of[parent])
+                pe.setdefault("links", {}).setdefault("albums", []).append(eid)
+                self.entry_of_gallery(eid).setdefault("links", {})["album"] = [album_of[parent]]
+        # documents de l'atlas : un album, un élément par intertitre
+        gdocs = self.group("gallery", "gal-documents", label={lang: (glabels.get("#documents") or {}).get(lang) or
+                                                              "Atlas documents" for lang in LANGS})
+        for di, doc in enumerate(media.get("docs", [])):
+            items, last = [], None
+            for ii, (iid, part, number, heading) in enumerate(doc["images"]):
+                if (di, ii) not in getattr(self, "doc_placed", set()):
+                    k = atlas_key(heading)
+                    if len(k) >= 3 and k in index:
+                        named[index[k]["id"]].append(iid)
+                label = f"{number} {heading}".strip()
+                if last is None or last["label"] != label:
+                    owner = index.get(atlas_key(heading)) if heading else None
+                    last = {"label": label, "ids": [], "owner": owner}
+                    items.append(last)
+                last["ids"].append(iid)
+            all_ids = [x[0] for x in doc["images"]]
+            if not all_ids:
+                continue
+            stem = Path(doc["doc"]).stem
+            n = len(self.imgs(all_ids))
+            out_items = []
+            for it in items:
+                o = {"id": "", "fields": [], "images": self.imgs(it["ids"])}
+                if it["label"]:
+                    en = resolve(it["owner"]["title"], "en")[0] if it["owner"] else None
+                    o["heading"] = {"key": "albumSection", "texts": {"en": en, "fr": None, "ru": it["label"]}, "revised": False}
+                if it["owner"]:
+                    o["links"] = {"atlas": [it["owner"]["id"]]}
+                out_items.append(o)
+            self.add("gallery", gdocs, {
+                "id": "g-doc-" + translit_slug(stem), "kind": "album", "community": True,
+                "title": {"en": names.get(doc["doc"]), "fr": None, "ru": stem},
+                "subtitle": {"en": f"{n} images", "fr": f"{n} images", "ru": f"{n} изобр."},
+                "fields": [], "items": out_items, "meta": {"source": doc["doc"], **credit}})
+        # galeries des entrées de l'atlas
+        for e in self.entries["atlas"]:
+            in_text = [x[0] for r in e.get("fields", []) for x in r.get("img", [])]
+            imgs = self.imgs(extra.get(e["id"], []) + named.get(e["id"], []), in_text, perceptual=True)
+            if imgs:
+                e["images"] = imgs
+            albums = [eid for f, eid in album_of.items() if owner_of(f)[0] is e]
+            if albums:
+                e.setdefault("links", {})["albums"] = albums
+
+    def entry_of_gallery(self, eid: str) -> dict:
+        return next(e for e in self.entries["gallery"] if e["id"] == eid)
+
     def resolve_links(self) -> None:
         """Liens réciproques région → quêtes / PNJ ; liens vers des entrées absentes retirés."""
         back = collections.defaultdict(lambda: collections.defaultdict(list))
@@ -765,8 +968,8 @@ class Builder:
         text = text if text and text.strip() else 0
         flags = TEXT_REVISED if r.get("revised") and lang == "en" and text else 0
         out = [r["key"], text, flags]
-        if r.get("heading") or r.get("markdown"):
-            out.append({k: v for k, v in (("heading", r.get("heading")), ("md", r.get("markdown"))) if v})
+        if r.get("heading") or r.get("markdown") or r.get("img"):
+            out.append({k: v for k, v in (("heading", r.get("heading")), ("md", r.get("markdown")), ("img", r.get("img"))) if v})
         return out
 
     def link_list(self, ids: list[str], lang: str) -> list[list[str]]:
@@ -793,10 +996,14 @@ class Builder:
                     o["n"] = it["step"]
                 if it.get("links"):
                     o["l"] = {k: self.link_list(v, lang) for k, v in it["links"].items()}
+                if it.get("images"):
+                    o["p"] = it["images"]
                 items.append(o)
             b["i"] = items
         if e.get("links"):
             b["l"] = {k: self.link_list(v, lang) for k, v in e["links"].items()}
+        if e.get("images"):
+            b["p"] = e["images"]
         meta = {k: v for k, v in (e.get("meta") or {}).items() if v not in (None, "")}
         if meta:
             b["m"] = meta

@@ -8,12 +8,13 @@ import {
   type Body, type ContentLang, type Links, type ListData, type ResolvedText, type SectionId,
 } from './lorebook.logic';
 import { loreEntryTitle } from '@/seo/meta';
+import { Gallery } from './Gallery';
 import { RichText } from './RichText';
 import { useAsync } from './useAsync';
 import s from './LorebookScreen.module.css';
 
 const hasKey = (k: string): k is MessageKey => k in MESSAGES.fr;
-const LINK_ORDER = ['secrets', 'region', 'place', 'places', 'characters', 'quests'];
+const LINK_ORDER = ['atlas', 'album', 'secrets', 'region', 'place', 'places', 'characters', 'quests', 'albums'];
 
 type Props = { section: SectionId; id: string; list?: ListData; lang: ContentLang; meta: LoreMeta };
 
@@ -42,6 +43,7 @@ function TextBlock({ text, lang, names, self, used, showLabel = true }: {
         </div>
       )}
       <RichText text={text.text} markdown={text.extra?.md} names={names} self={self} used={used} />
+      {text.extra?.img && <Gallery images={text.extra.img} compact />}
     </section>
   );
 }
@@ -114,7 +116,7 @@ export function EntryView({ section, id, list, lang, meta }: Props) {
           <div className={s.communityBox}>
             <span className={`${s.badge} ${s.badgeCommunity}`}>{t('lore.badge.community')}</span>
             {bodyMeta?.name_official === false && <span className={`${s.badge} ${s.badgeRevised}`}>{t('lore.badge.unofficialName')}</span>}
-            {lang !== 'ru' && <p>{t('lore.translatedBy')}</p>}
+            {bodyMeta?.translated && lang !== 'ru' && <p>{t('lore.translatedBy')}</p>}
             <p className={s.creditLine}>{t('lore.credit')} <a href={meta.credit.url} target="_blank" rel="noopener noreferrer">{meta.credit.line}</a></p>
             {bodyMeta?.source && <p className={s.sourceLine}>{t('lore.source')} {bodyMeta.source}</p>}
           </div>
@@ -131,9 +133,15 @@ export function EntryView({ section, id, list, lang, meta }: Props) {
             </dl>
           )}
           {body.texts.map((text, i) => <TextBlock key={i} text={text} lang={lang} names={names} self={self} used={used} />)}
+          {body.images.length > 0 && (
+            <section className={s.textBlock}>
+              {section !== 'gallery' && <h3 className={s.fieldLabel}>{t('lore.gallery')}</h3>}
+              <Gallery images={body.images} />
+            </section>
+          )}
           {body.items.length > 0 && (
             <div className={s.items}>
-              <h3 className={s.itemsTitle}>{t(section === 'secrets' ? 'lore.steps' : section === 'library' ? 'lore.pages' : 'lore.dialogues')}</h3>
+              <h3 className={s.itemsTitle}>{t(section === 'secrets' ? 'lore.steps' : section === 'library' ? 'lore.pages' : section === 'gallery' ? 'lore.gallery' : 'lore.dialogues')}</h3>
               {body.items.map((item, i) => (
                 <section key={i} className={s.item}>
                   {item.step && <h4 className={s.itemHead}>{t('lore.step', { n: item.step })}</h4>}
@@ -144,6 +152,7 @@ export function EntryView({ section, id, list, lang, meta }: Props) {
                     </div>
                   )}
                   {item.texts.map((text, j) => <TextBlock key={j} text={text} lang={lang} names={names} self={self} used={used} showLabel={section === 'secrets'} />)}
+                  <Gallery images={item.images} compact />
                   <LinkLists links={item.links} />
                 </section>
               ))}

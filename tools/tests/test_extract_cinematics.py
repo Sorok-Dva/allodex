@@ -256,7 +256,7 @@ def test_engine_chapters_have_an_extraction_spec(manifest):
     assert engine and all(c["id"] in specs for c in engine)
     for spec in specs.values():
         if spec.get("source") == "xdb70":
-            if "trigger" in spec and spec.get("trigger_tag") == "startImpacts":   # début d'une quête
+            if "trigger" in spec and spec.get("trigger_tag") in ("startImpacts", "rewardImpacts"):   # début, fin d'une quête
                 assert spec["trigger"].startswith("World/Quests/") and spec.get("until_last")
             elif "trigger" in spec:                                     # zone de script ou capacité
                 assert spec["trigger"].endswith((".(ScriptZone).xdb", ".(AbilityResource).xdb"))

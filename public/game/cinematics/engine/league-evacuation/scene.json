@@ -7284,7 +7284,8 @@
     2.975,
     2.762,
     4.516
-   ]
+   ],
+   "sfx": "sfx/Luster_lp"
   },
   "InstLeague1_Floor6_Destroyed_Details": {
    "fadeIn": 0.0,
@@ -7941,19 +7942,38 @@
  },
  "pointLights": [],
  "sounds": {
-  "music": [],
+  "music": [
+   "sfx/Siege_warfare_adaptive"
+  ],
   "ambience": [],
   "sfx": [],
   "events": {
-   "music": [],
+   "music": [
+    "Music/AdaptiveMusic/Siege_warfare"
+   ],
    "ambience": []
   },
   "waves": {
+   "Music/AdaptiveMusic/Siege_warfare": {
+    "file": "sfx/Siege_warfare_adaptive",
+    "wave": "Siege_warfare_adaptive",
+    "bank": "SFX/Music/Music_Ingame.fsb",
+    "duration": 82.0,
+    "match": "bev"
+   },
+   "World/Zones/IL1/LusterLoop": {
+    "file": "sfx/Luster_lp",
+    "wave": "Luster_lp",
+    "bank": "SFX/World/World_IL1_3D.bsb",
+    "duration": 3.5,
+    "match": "bev"
+   },
    "spells/Mage/MageTeleportAbility_End": {
     "file": "sfx/MageTeleportAbility_End",
     "wave": "MageTeleportAbility_End",
     "bank": "SFX/Spells/MageV2.bsb",
-    "duration": 4.0
+    "duration": 4.0,
+    "match": "name"
    }
   },
   "volume": {}

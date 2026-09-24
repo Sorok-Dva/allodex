@@ -3644,7 +3644,8 @@
     2.975,
     2.762,
     4.516
-   ]
+   ],
+   "sfx": "sfx/Luster_lp"
   },
   "InstLeague1_Floor6_Destroyed_Details": {
    "fadeIn": 0.0,
@@ -4691,7 +4692,13 @@
  },
  "pointLights": [],
  "sounds": {
-  "music": [],
+  "music": [
+   {
+    "file": "sfx/Siege_warfare_adaptive",
+    "t": 25.5,
+    "until": 600.0
+   }
+  ],
   "ambience": [],
   "sfx": [
    {
@@ -4715,29 +4722,47 @@
    "ambience": []
   },
   "waves": {
+   "Music/AdaptiveMusic/Siege_warfare": {
+    "file": "sfx/Siege_warfare_adaptive",
+    "wave": "Siege_warfare_adaptive",
+    "bank": "SFX/Music/Music_Ingame.fsb",
+    "duration": 43.5,
+    "match": "bev"
+   },
+   "World/Zones/IL1/LusterLoop": {
+    "file": "sfx/Luster_lp",
+    "wave": "Luster_lp",
+    "bank": "SFX/World/World_IL1_3D.bsb",
+    "duration": 3.5,
+    "match": "bev"
+   },
    "World/Zones/IL1/MageDeath/MageDeath_part1": {
     "file": "sfx/MageDeath_part1",
     "wave": "MageDeath_part1",
     "bank": "SFX/World/World_IL1_3D.bsb",
-    "duration": 3.467
+    "duration": 3.467,
+    "match": "bev"
    },
    "World/Zones/IL1/MageDeath/MageDeath_part2": {
     "file": "sfx/MageDeath_part2",
     "wave": "MageDeath_part2",
     "bank": "SFX/World/World_IL1_3D.bsb",
-    "duration": 7.333
+    "duration": 7.333,
+    "match": "bev"
    },
    "World/Zones/IL1/RoomDestruction": {
     "file": "sfx/RoomDestruction",
     "wave": "RoomDestruction",
     "bank": "SFX/World/World_IL1_2D.bsb",
-    "duration": 4.961
+    "duration": 4.961,
+    "match": "bev"
    },
    "World/Zones/IL1/ShadowSpawned": {
     "file": "sfx/ShadowSpawned",
     "wave": "ShadowSpawned",
     "bank": "SFX/World/World_IL1_2D.bsb",
-    "duration": 7.822
+    "duration": 7.822,
+    "match": "bev"
    }
   },
   "volume": {}

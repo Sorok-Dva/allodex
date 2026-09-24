@@ -55,6 +55,7 @@ from PIL import Image
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from tools.allods_fev import FevResolver  # noqa: E402
 from tools.allods_characters import bake_skin, read_character_template, read_variation, read_visual_item, resolve_appearance  # noqa: E402
 from tools.allods_fx import FxBuild, ParticlePool, fsb5_stream_names  # noqa: E402
 from tools.allods_gltf import Exporter, TexturePool, load_animation, load_geometry  # noqa: E402
@@ -837,8 +838,8 @@ def grouped_wave(event: str, index: dict, prefer: str = "") -> tuple[str, int, s
 
 def find_wave(event: str, index: dict, prefer: str = "") -> tuple[str, int, str] | None:
     """Onde d'un événement FMOD par son nom (dernier segment) : nom identique, sinon suivi de
-    `_lp` (boucle), `_nm` ou d'un numéro (première variante). Le fichier d'événements `.bev`
-    (qui relie événements et ondes) n'est pas lu : appariement par le nom, documenté."""
+    `_lp` (boucle), `_nm` ou d'un numéro (première variante). Repli des événements que le
+    fichier d'événements `.bev` ne résout pas (`resolve_wave`), et chemin des voix."""
     tail = _key(event.split("/")[-1])
     for suffix in ("", "lp", "nm", "loop", "1", "01"):
         hits = index.get(tail + suffix)
@@ -861,17 +862,53 @@ def find_wave(event: str, index: dict, prefer: str = "") -> tuple[str, int, str]
     return loops[0] if stem and loops else None
 
 
+def fev_resolver(bins, index: dict) -> FevResolver:
+    """Résolveur des `.bev` (`tools/allods_fev.py`) : noms des sous-pistes repris de l'index."""
+    by_bank: dict[str, dict[int, str]] = {}
+    for hits in index.values():
+        for bank, sub, stream in hits:
+            by_bank.setdefault(bank, {})[sub - 1] = stream
+
+    def streams_of(bank: str) -> list[str]:
+        subs = by_bank.get(bank, {})
+        return [subs.get(i, "") for i in range(max(subs) + 1)] if subs else []
+
+    return FevResolver(bins._pak_index().keys(), bins.get, streams_of)
+
+
+def resolve_wave(event: str, index: dict, fev: FevResolver, report: list[str], prefer: str | None = None,
+                 voice: bool = False) -> tuple[tuple[str, int, str] | None, str]:
+    """Onde d'un événement : celle que nomme son `.bev` (définition de son du premier son de son
+    premier calque), sinon l'appariement par le nom (`find_wave`). Deuxième valeur : la source.
+    Voix : le paramètre de leurs calques (la distance des sons 3D) n'est pas signalé."""
+    waves, why = fev.waves(event)
+    if waves:
+        first = waves[0]
+        rest = [w["stream"] for w in waves[1:]]
+        if rest:
+            report.append(f"{event} : {len(waves)} sons dans le .bev, le premier joué ({first['stream']}) ; "
+                          f"non repris : {', '.join(rest)}")
+        if first["param"] >= 0 and not voice:
+            report.append(f"{event} : calque piloté par un paramètre du jeu (enveloppes non reproduites)")
+        return (first["bank"], first["sub"], first["stream"]), "bev"
+    report.append(f"{event} : .bev sans onde ({why}), appariement par le nom")
+    if prefer is None:
+        prefer = "Music" if event.startswith("Music/") else ""
+    return find_wave(event, index, prefer), "name"
+
+
 def export_waves(events: set[str], bins, out_dir: Path, vgmstream: Path, report: list[str],
                  music_seconds: float | None = None) -> dict[str, dict]:
     """Ondes des événements, encodées en Ogg Vorbis et MP3 dans `sfx/`. La musique de zone est
     coupée à la durée de la scène (`music_seconds`, fondu de sortie de 2 s) : le poids du site."""
     from tools.extract_audio import encode_outputs
     index = sound_index(bins, Path(os.environ.get("ALLODEX_CACHE") or Path.home() / ".cache" / "allodex"))
+    fev = fev_resolver(bins, index)
     found: dict[str, dict] = {}
     target = out_dir / "sfx"
     with tempfile.TemporaryDirectory(prefix="allodex-sfx-") as tmp:
         for event in sorted(events):
-            hit = find_wave(event, index, "Music" if event.startswith("Music/") else "")
+            hit, source = resolve_wave(event, index, fev, report)
             if hit is None:
                 report.append(f"onde introuvable pour l'événement {event}")
                 continue
@@ -895,19 +932,22 @@ def export_waves(events: set[str], bins, out_dir: Path, vgmstream: Path, report:
             duration = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of",
                                              "default=nw=1:nk=1", str(base.with_suffix(".ogg"))],
                                             capture_output=True, text=True).stdout.strip() or 0)
-            found[event] = {"file": f"sfx/{base.name}", "wave": stream, "bank": bank, "duration": round(duration, 3)}
+            found[event] = {"file": f"sfx/{base.name}", "wave": stream, "bank": bank, "duration": round(duration, 3),
+                            "match": source}
     return found
 
 
 def export_voices(events: list[str | None], bins, out_dir: Path, vgmstream: Path, report: list[str],
                   index: dict) -> list[dict | None]:
-    """Voix des répliques : onde nommée comme la fin de l'événement (`Cutscenes/Eden2/Prologue04_Cutscene_1`
-    → `Prologue04_Cutscene_1`), cherchée dans les banques `SFX/Voice/*` d'abord."""
+    """Voix des répliques : onde que nomme le `.bev` de l'événement (`IE1/13_Master_07` →
+    `13_Master_07_Captain_StartTheReactor_patch403`), sinon onde nommée comme la fin de l'événement
+    (`Cutscenes/Eden2/Prologue04_Cutscene_1` → `Prologue04_Cutscene_1`), banques `SFX/Voice/*` d'abord."""
     out_dir.mkdir(parents=True, exist_ok=True)
     result: list[dict | None] = []
+    fev = fev_resolver(bins, index)
     with tempfile.TemporaryDirectory(prefix="allodex-voice-") as tmp:
         for n, event in enumerate(events, 1):
-            hit = find_wave(event, index, "SFX/Voice/") if event else None
+            hit = resolve_wave(event, index, fev, report, "SFX/Voice/", voice=True)[0] if event else None
             if hit is None:
                 if event:
                     report.append(f"voix introuvable : {event}")
@@ -1380,7 +1420,9 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
                       owner=spec.get("trigger_owner", "player"), trigger_tag=spec.get("trigger_tag"), until_last=open_end,
                       home=spec.get("map"))
     map_name = spec.get("map") or sorted(tl.maps)[0]
-    spawns = x70.find_spawns(root, map_name, tl.scripts | set(spec.get("states", {})) |
+    # PNJ posés : ceux du déroulé, les stèles et les PNJ que le manifeste place (`start_at`, laissés là
+    # par une zone ou une quête précédente, même si le déroulé ne les nomme pas)
+    spawns = x70.find_spawns(root, map_name, tl.scripts | set(spec.get("states", {})) | set(spec.get("start_at", {})) |
                              {v["locator"] for v in spec.get("start_at", {}).values()})
     inter = spec.get("interlocutor")
     if inter:
@@ -1481,7 +1523,9 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
     weather = [w for w in tl.weather if (w["until"] - w["t"]) >= 0.8 * tl.duration - tl.weather[0]["t"]] if tl.weather else []
     sounds = {"music": [], "ambience": []}
     for snd in tl.sounds:
-        key = "music" if snd["kind"] == "Music" else "ambience"
+        # musique : type `Music` de l'action, ou événement du projet FMOD `Music` (catégorie
+        # `music` de ses événements dans `Music.bev`, même sans type d'action)
+        key = "music" if snd["kind"] == "Music" or snd["name"].startswith("Music/") else "ambience"
         sounds[key].append({"event": snd["name"], "t": snd["t"], "until": snd["until"]})
     post = [{"t": p["t"], "until": p["until"], "kind": "veil", "fadeIn": p["fadeIn"], "fadeOut": p["fadeOut"]}
             for p in tl.post if p["black"]]

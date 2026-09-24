@@ -114,7 +114,7 @@ export const PAGE_IDS = Object.keys(PAGES) as PageId[];
 /** Pages servies mais à ne pas indexer (outils internes, fonctions de développement). */
 const PRIVATE_PATHS = ['/stats', '/fatalities', '/fatalites', '/character', '/personnage'];
 
-export const LORE_SECTIONS = ['timeline', 'atlas', 'library', 'characters', 'secrets', 'quests'] as const;
+export const LORE_SECTIONS = ['timeline', 'atlas', 'library', 'characters', 'secrets', 'quests', 'gallery'] as const;
 export type LoreSection = (typeof LORE_SECTIONS)[number] | 'dialogues';
 
 export const LORE_SECTION_COPY: Record<LoreSection, Record<SeoLang, Copy>> = {
@@ -141,6 +141,10 @@ export const LORE_SECTION_COPY: Record<LoreSection, Record<SeoLang, Copy>> = {
   quests: {
     fr: { title: 'Quêtes', description: "Les quêtes d'Allods Online et leurs textes : objectifs, dialogues et récits de chaque allod." },
     en: { title: 'Quests', description: 'Allods Online quests and their texts: objectives, dialogues and stories of every allod.' },
+  },
+  gallery: {
+    fr: { title: 'Galerie', description: "Cartes, captures et illustrations des allods d'Allods Online, réunies par Makar Terentiev pour son atlas." },
+    en: { title: 'Gallery', description: 'Maps, screenshots and illustrations of the Allods Online allods, gathered by Makar Terentiev for his atlas.' },
   },
   dialogues: {
     fr: { title: 'Dialogues', description: "Répliques de PNJ d'Allods Online." },
