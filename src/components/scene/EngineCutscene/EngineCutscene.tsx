@@ -7,7 +7,7 @@ import { loadParticleFile } from '@/components/scene/FatalityViewer/particles';
 import { spawnOpacity } from '@/components/scene/FatalityViewer/timeline';
 import { VotFactory, particleSystems, toViewerMaterial, updateInstance, type Tinted, type VotInstance } from '@/components/scene/vot/votInstances';
 import { buildTerrainExtras, type TerrainExtras } from '@/components/scene/vot/terrainExtras';
-import { actorClipAt, argb, falloff, pathAt, presentAt, sampleKeys, subtitleAt, veilAt, voiceAt, type EngineScene } from './timeline';
+import { actorClipAt, argb, decorShownAt, falloff, pathAt, presentAt, sampleKeys, shakeAt, subtitleAt, veilAt, voiceAt, type DecorInstance, type EngineScene } from './timeline';
 import s from './EngineCutscene.module.css';
 
 // Même parti pris que les scènes de menu et les fatalités : les textures du jeu sont des octets,
@@ -276,6 +276,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
     camera.up.set(0, 0, 1);
     const actors: Actor[] = [];
     const decorInstances: VotInstance[] = [];
+    const decorItems: DecorInstance[] = [];
     const spawns: { inst: VotInstance; until: number }[] = [];
     const disposables: { dispose(): void }[] = [];
     const factory = new VotFactory({ objects: {}, baseUrl: base, disposables, anisotropy: () => renderer?.capabilities?.getMaxAnisotropy?.() ?? 1 });
@@ -338,6 +339,9 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       gamePoint(sampleKeys(data.camera.points, t), camera.position);
       gamePoint(sampleKeys(data.camera.targets, t), target);
       if (camera.position.distanceToSquared(target) > 1e-6) camera.lookAt(target);
+      // Secousses (`ShakeAction`) : décalage dans le repère de la caméra, après la visée.
+      const [sx, sy, sz] = shakeAt(data.shakes, t);
+      if (sx || sy || sz) { camera.translateX(sx); camera.translateY(sy); camera.translateZ(sz); }
       if (sky) { const eye = world.worldToLocal(camera.position.clone()); sky.position.set(eye.x, eye.y, 0); }
       for (const actor of actors) {
         const info = data.actors.find(a => a.id === actor.id);
@@ -357,7 +361,11 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         actor.mixer.update(0);
       }
       actors.forEach(a => a.holder.updateMatrixWorld(true));
-      for (const inst of decorInstances) updateInstance(inst, t, 1, camera);
+      decorInstances.forEach((inst, i) => {
+        const item = decorItems[i];
+        updateInstance(inst, t - (item?.t ?? 0), 1, camera);
+        if (item && !decorShownAt(item, t)) inst.root.visible = false;
+      });
       for (const { inst } of spawns) updateInstance(inst, t - inst.start, spawnOpacity(t - inst.start, inst.lifeTime, inst.fadeIn, inst.fadeOut), camera);
       if (veilRef.current) veilRef.current.style.opacity = String(veilAt(data.post ?? [], t));
       const text = subtitleAt(data, t, state.lang);
@@ -585,7 +593,8 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         });
         world.add(inst.root);
         decorInstances.push(inst);
-        soundAt(item.vot, world.localToWorld(new THREE.Vector3(...item.p)), 0, Infinity);
+        decorItems.push(item);
+        soundAt(item.vot, world.localToWorld(new THREE.Vector3(...item.p)), item.t ?? 0, item.until ?? Infinity);
       }
       data.actors.forEach((info, i) => {
         const gltf = actorGltfs[i];

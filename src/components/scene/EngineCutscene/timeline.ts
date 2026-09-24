@@ -69,7 +69,11 @@ export type EngineLight = {
 /** `tilt` : (roulis X, tangage Y) des objets inclinés, composés `Rz(yaw)·Ry·Rx` (Euler `ZYX`). */
 /** `hold` : jouée une fois puis tenue sur sa dernière image (`CLAMP` du jeu : mort, navire parti). */
 export type ActorAction = { t: number; until: number; clips: string[]; loop: boolean; hold?: boolean };
-export type DecorInstance = { vot: string; p: Vec3; yaw: number; tilt?: [number, number]; scale?: number; light?: [number, number]; ambient?: Vec3 };
+/** `t`/`until` : modèle posé par une stèle pendant un état ; `hidden` : intervalles où l'objet est retiré. */
+export type DecorInstance = { vot: string; p: Vec3; yaw: number; tilt?: [number, number]; scale?: number; light?: [number, number]; ambient?: Vec3;
+  t?: number; until?: number; hidden?: [number, number][] };
+/** Secousse de caméra (`ShakeAction`) : décalages `keys` (m, repère caméra) à `fps`, dès `t`. */
+export type CameraShake = { t: number; fps: number; amplitude: number; timeScale: number; keys: Vec3[] };
 export type FxSpawn = { vot: string; t: number; until: number; p?: Vec3; yaw?: number; scale?: number; attach?: string; locator?: string };
 export type PostEffect =
   | { t: number; kind: 'fadeIn' | 'fadeOut'; duration: number }
@@ -98,6 +102,7 @@ export type EngineScene = {
   /** `sfx` : sons ponctuels du déroulé, joués une fois de `t` à `until`. */
   sounds: { music: SoundLoop[]; ambience: SoundLoop[]; sfx?: { file: string; t: number; until: number }[]; volume?: Partial<Record<'music' | 'ambience' | 'sfx' | 'voice', number>> };
   post: PostEffect[];
+  shakes?: CameraShake[];
 };
 
 /**
@@ -250,4 +255,30 @@ export function veilAt(post: readonly PostEffect[], t: number): number {
 /** Volume d'une source ponctuelle entendue à `distance` m (linéaire jusqu'à `range`). */
 export function falloff(distance: number, range = 60): number {
   return Math.max(0, 1 - distance / range);
+}
+
+/** Un objet du décor est-il montré à `t` : de `t` à `until` s'ils sont donnés, hors de ses retraits `hidden`. */
+export function decorShownAt(item: Pick<DecorInstance, 't' | 'until' | 'hidden'>, t: number): boolean {
+  if (item.t !== undefined && t < item.t) return false;
+  if (item.until !== undefined && t >= item.until) return false;
+  return !(item.hidden ?? []).some(([a, b]) => t >= a && t < b);
+}
+
+/**
+ * Décalage de caméra des secousses (`ShakeAction`), dans le repère de la caméra : courbe
+ * `cameraTranslate` lue à `fps` images par seconde, temps multiplié par `timeScale`, décalages par
+ * `amplitude` ; interpolée entre deux images, nulle hors de la courbe. Plusieurs secousses s'ajoutent.
+ */
+export function shakeAt(shakes: readonly CameraShake[] | undefined, t: number): Vec3 {
+  const out: Vec3 = [0, 0, 0];
+  for (const shake of shakes ?? []) {
+    const frame = (t - shake.t) * shake.timeScale * shake.fps;
+    if (frame < 0 || frame >= shake.keys.length - 1) continue;
+    const i = Math.floor(frame);
+    const u = frame - i;
+    const a = shake.keys[i];
+    const b = shake.keys[i + 1];
+    for (let k = 0; k < 3; k++) out[k] += (a[k] + (b[k] - a[k]) * u) * shake.amplitude;
+  }
+  return out;
 }
