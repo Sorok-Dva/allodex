@@ -1,0 +1,85 @@
+{
+ "_note": "tools/extract_auras.py : auras de la garde-robe (collection « Ауры » de la catégorie « Дары » du dernier client), noms officiels (ru/en : `latest` ; fr : client FR 16.0, même resourceId), icônes, obtention (description de la capacité débloquée : texte « Sources » de la garde-robe), effets et version d'apparition (premier des `clients` archivés, dans l'ordre, qui la contient : resourceId dans les clients 64 bits, nom de fichier de l'icône dans les clients 32 bits ; `previous` = dernier client lu sans elle). Mêmes clients que les fatalités (tools/fatalities_manifest.json, `items`).",
+ "latest": {
+  "version": "17.0",
+  "root": "/mnt/h/MyGames/AllodsRU",
+  "pak": "BaseLocall_x64.pak",
+  "texts": {
+   "ru": [
+    "Texts_x64.pak",
+    "Bin/pack.rus.loc"
+   ],
+   "en": [
+    "Texts_x64.pak",
+    "Bin/pack.eng_eu.loc"
+   ]
+  }
+ },
+ "fr": {
+  "version": "16.0",
+  "root": "/mnt/h/MyGames/Allods Online FR (FR)",
+  "pak": "BaseLocfra_x64.pak",
+  "texts": {
+   "fr": [
+    "Texts_x64.pak",
+    "Bin/pack.loc"
+   ]
+  }
+ },
+ "clients": [
+  {
+   "version": "3.0",
+   "game_version": "3.0.02.19",
+   "root": "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsOnline3.0.2.19[5.12GB]-20200522T111620Z-001/AllodsOnline3.0.2.19[5.12GB]",
+   "pak": "BaseLocrus.pak"
+  },
+  {
+   "version": "4.0",
+   "game_version": "4.0.02.42",
+   "root": "/mnt/f/ALLODS ONLINE SERVER/Allods 4.2/Allods Nova/Allods Nova",
+   "pak": "BaseLoceng.pak"
+  },
+  {
+   "version": "7.0",
+   "game_version": "7.0.00.00",
+   "root": "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0",
+   "pak": "Bin.pak"
+  },
+  {
+   "version": "8.0",
+   "game_version": "8.0.02.61.1",
+   "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0",
+   "pak": "BaseLocfra.pak"
+  },
+  {
+   "version": "9.0",
+   "game_version": "9.0.01.89",
+   "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 9.0.01.89",
+   "pak": "BaseLocfra.pak"
+  },
+  {
+   "version": "11.0",
+   "game_version": "11.0.00.12.1",
+   "root": "/home/llyam/allods-clients/11.0-steam/Allods Online EN",
+   "pak": "BaseLoceng_eu.pak"
+  },
+  {
+   "version": "15.0",
+   "game_version": "15.0.03.23.2",
+   "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR (FR) 15.0.03.23.2 (end of patch)",
+   "pak": "BaseLocfra_x64.pak"
+  },
+  {
+   "version": "16.0",
+   "game_version": "16.0.01.78.2",
+   "root": "/mnt/h/MyGames/Allods Online FR (FR)",
+   "pak": "BaseLocfra_x64.pak"
+  },
+  {
+   "version": "17.0",
+   "game_version": "17.0.01.64",
+   "root": "/mnt/h/MyGames/AllodsRU",
+   "pak": "BaseLocall_x64.pak"
+  }
+ ]
+}
