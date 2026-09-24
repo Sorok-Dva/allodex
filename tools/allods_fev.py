@@ -9,8 +9,9 @@ entête de 68 octets propre au jeu. Format lu (recoupé sur `Music.bev`, `Ambien
 - `LGCY` : `u32`, `u32`, nom du projet (chaîne longueur + texte), `u32` nombre de banques,
   `u32`, puis par banque `u32` mode, `u32` flux, 8 octets, `u32`, nom ; l'indice de banque des ondes compte
   à partir de la première banque ;
-- événement complexe (type 8) : `u32` type, `u32` nom (indice `STRR`), GUID, `f32` volume… ;
-  ses calques commencent à `+0xA8` (`u32` nombre) : `u16` drapeaux, `i16` priorité, `i16`
+- événement : `u32` type (8 complexe, 16 simple), `u32` nom (indice `STRR`), GUID, `f32`
+  volume… ; à `+0xA8`, un événement simple porte `u32` 1 et `u32` l'indice de sa définition de
+  son ; un complexe, ses calques (`u32` nombre) : `u16` drapeaux, `i16` priorité, `i16`
   paramètre (−1 : aucun), `u16` sons, `u16` enveloppes ; un son (58 octets) commence par
   l'indice `u16` de sa définition, finit par les fondus (`f32` −1, −1, `u32` 2, 2) ;
 - définitions de sons (la table dont le premier nom est le premier chemin `/…` de `STRR`) :
@@ -145,19 +146,25 @@ def parse_bev(raw: bytes) -> Project:
         bank, p = _cstr(raw, p + 20)
         banks.append(bank)
     sdefs = _sounddefs(raw, p, hi, strs, banks)
-    # événements complexes : entête (type 8, nom, GUID, volume)
+    # événements : entête (type 8 complexe ou 16 simple, nom, GUID, volume)
     heads = []
-    for i in range(p, hi - 0xAC):
+    for i in range(p, hi - 0xB0):
         t, n = struct.unpack_from("<II", raw, i)
-        if t == 8 and 0 < n < len(strs) and not strs[n].startswith("/"):
+        if t in (8, 16) and 0 < n < len(strs) and not strs[n].startswith("/"):
             vol = struct.unpack_from("<f", raw, i + 24)[0]
             if 0 < vol <= 1.0 and raw[i + 8:i + 24].count(0) < 6:
-                heads.append((i, strs[n]))
+                heads.append((i, t, strs[n]))
     events = []
-    for (i, ename), nxt in zip(heads, heads[1:] + [(hi, "")]):
+    for (i, kind, ename), nxt in zip(heads, heads[1:] + [(hi, 0, "")]):
         ev = Event(ename, i)
         q = i + 0xA8
-        nlayers = struct.unpack_from("<I", raw, q)[0]
+        nlayers, simple = struct.unpack_from("<II", raw, q)
+        if kind == 16:
+            # événement simple : `u32` 1, `u32` définition de son
+            if nlayers == 1 and simple < len(sdefs):
+                ev.layers.append((-1, [simple]))
+            events.append(ev)
+            continue
         if nlayers > 64:
             continue
         # calques et sons par signature, dans l'étendue de l'événement

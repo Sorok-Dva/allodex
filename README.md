@@ -255,8 +255,10 @@ première. Éclairage : la base de carte n'a pas de `ZoneLights` ; celle de `pac
 de `AstralCoast_Tubes` (7.0) est désignée par `"zone_lights"`. **Caméra** : aucune dans les données
 (scènes vues par le joueur) ; point de vue fixe du manifeste, justifié : centre de la zone
 `PaladinQuest` vers le Grand Mage ; centre de la zone `FinalGibberlingMorph` (où le joueur retrouve
-le gibberling qui lui donne la quête) vers la place du combat. **Non repris** : la musique adaptative `Siege_warfare` (aucune
-onde), la poussière (`Dust_enlarge`, projectile sans gabarit retrouvé), le rayon du champ
+le gibberling qui lui donne la quête) vers la place du combat. **Musique** : `Siege_warfare` (buff `Music_Buff`, sans durée,
+posé par `PaladinQuest` à 25,5 s, retiré par la récompense de « Эвакуация ») : onde
+`Siege_warfare_adaptive` d'après `Music.bev` ; ses enveloppes adaptatives ne sont pas reproduites.
+**Non repris** : la poussière (`Dust_enlarge`, projectile sans gabarit retrouvé), le rayon du champ
 protecteur d'Amanda, les secousses de caméra, les vagues de démons de combat (tables d'apparition
 du jeu) et les cris aléatoires des réfugiés (`NPC_Ask` : `RandomImpact`), les paladins
 `Paladin_live1…4` (`MobWorld` sans nom, introuvable dans le 17.0). Non montées : la foule immobile
@@ -443,9 +445,23 @@ sommet du carreau), `xmax` (`−FLT_MAX` dans 89 % des cas), boîte haute de 1 0
 d'occlusion du sol (culling). Invisibles, non rendus ni exploités : three.js ne fait que du
 culling par frustum et nos décors sont petits.
 
+**Événements FMOD** (`tools/allods_fev.py`) : les `SFX/**/*.bev` du client sont des projets FMOD
+Designer 4.44 compilés (zlib, entête de 68 octets, `RIFF` `FEV ` version `0x00450000`), dont le
+bloc `LGCY` garde l'ancien format `FEV1` et `STRR` les noms. On en lit les banques, les
+définitions de sons (ondes : fichier source, banque, sous-piste, durée) et, pour chaque
+événement (simple : l'indice de sa définition à `+0xA8` ; complexe : ses calques, puis ses sons
+de 58 octets), la définition jouée : `Music/ZonesMusic/IE1_main` → `/Music/Conquer_high` →
+`adaptivemusic/Conquer_high.wav`, sous-piste 2 de `Music_StartZones.fsb`. La sous-piste n'est
+retenue que si la banque FSB lui donne le nom de l'onde (onze définitions du menu pointent des
+ondes retirées) ; sinon, et pour un nom d'événement ambigu dans son projet, l'appariement par le
+nom reste le repli (`match` : `bev` ou `name` dans `scene.json`). Un événement à plusieurs sons
+joue le premier (les autres sont signalés : `4Layer_3Tier` en a trois, pilotés par un
+paramètre) ; les voix (`Voice*.bev`, entête de projet différent) restent appariées par le nom.
+
 **Manques** : `ferris-sarcophagus` reste sombre même lu en entier (zone violette, aucune lumière
 ponctuelle ; octets 0-1 pleins) ; le fichier
-d'événements FMOD `.bev` (sons appariés par nom : quelques ambiances introuvables) ; les effets de
+d'événements FMOD `.bev` n'est lu que pour ses calques et définitions de sons (voir « Événements FMOD ») :
+enveloppes, paramètres et effets DSP non interprétés ; les effets de
 sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce que montre
 « Оглянитесь ! » ; les drapeaux visuels (`CreatureSetFlagVisAction`) ; les scènes faites de
 `GameViewScene` (`Swarm_CutScene`) ; le joueur, absent.

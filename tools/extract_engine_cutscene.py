@@ -1401,7 +1401,9 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
     weather = [w for w in tl.weather if (w["until"] - w["t"]) >= 0.8 * tl.duration - tl.weather[0]["t"]] if tl.weather else []
     sounds = {"music": [], "ambience": []}
     for snd in tl.sounds:
-        key = "music" if snd["kind"] == "Music" else "ambience"
+        # musique : type `Music` de l'action, ou événement du projet FMOD `Music` (catégorie
+        # `music` de ses événements dans `Music.bev`, même sans type d'action)
+        key = "music" if snd["kind"] == "Music" or snd["name"].startswith("Music/") else "ambience"
         sounds[key].append({"event": snd["name"], "t": snd["t"], "until": snd["until"]})
     post = [{"t": p["t"], "until": p["until"], "kind": "veil", "fadeIn": p["fadeIn"], "fadeOut": p["fadeOut"]}
             for p in tl.post if p["black"]]
