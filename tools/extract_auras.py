@@ -79,6 +79,7 @@ NAME_FIELDS = {"ItemResource": ITEM_NAME, "BuffResource": BUFF_NAME, "UnlockReso
                "AlternativeCurrency": 0xA0}
 # Collection de la garde-robe, par son nom dans la langue du client de référence.
 AURA_COLLECTIONS = {"Ауры", "Auras"}
+AURA_ATLAS_WIDTH = 2048
 # Part minimale de textes en cyrillique pour qu'un `.loc` soit du russe (même seuil que
 # `tools/extract_cinematics.RUSSIAN_SHARE` : 95 % pour le russe du 17.0, 8 % pour son anglais).
 RUSSIAN_SHARE = 0.5
@@ -607,6 +608,9 @@ def export_fx(manifest: dict, out_dir: Path, records: list[AuraRecord], auras: l
     bins = BinSource([], [str(packs / p) for p in sorted(cat.names)])
     textures = WebpTexturePool(db, cat, bins, out_dir)
     particles = ParticlePool(db, cat, bins, out_dir)
+    # Atlas de 2048 px de large : les auras rangent leurs textures entières (runes, cercles) à 256 px,
+    # ce qui tient en 2048 × 4096 (limite des GPU mobiles) au lieu de 1024 × 8192.
+    particles.width = AURA_ATLAS_WIDTH
     anim_names = animation_names(db)
     all_sounds: set[str] = set()
     builds: list[tuple[dict, FxBuild]] = []
