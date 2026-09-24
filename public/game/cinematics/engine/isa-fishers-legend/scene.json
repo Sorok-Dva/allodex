@@ -8261,6 +8261,81 @@
     11.441
    ]
   },
+  "Isa_Ice_06Wall": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -3.864,
+    -0.555,
+    12.771,
+    20.519,
+    41.326,
+    14.37
+   ]
+  },
+  "Elf_Crystal_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    23.199,
+    26.088,
+    -37.592,
+    60.838,
+    59.408,
+    113.606
+   ]
+  },
+  "Elf_Crystal_05": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.766,
+    -2.475,
+    -13.662,
+    19.892,
+    20.158,
+    46.556
+   ]
+  },
+  "2ndCircle_AC1_Snow_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -55.931,
+    -11.305,
+    -3.922,
+    42.0,
+    30.5,
+    9.844
+   ]
+  },
+  "Isa_Fir_03_snow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 7.9667,
+   "loop": true,
+   "bounds": [
+    0.019,
+    -0.22,
+    2.179,
+    2.789,
+    3.118,
+    3.408
+   ]
+  },
   "WA_FishingCamp_Bridge_Snow": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -8899,12 +8974,661 @@
     1.45,
     0.655
    ]
+  },
+  "Isa_Fence_Gate_Open": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.007,
+    0.481,
+    4.765,
+    8.041,
+    2.118,
+    4.92
+   ]
+  },
+  "Isa_Landmark_Tree_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 7.9667,
+   "loop": true,
+   "bounds": [
+    1.639,
+    0.028,
+    2.688,
+    2.311,
+    1.677,
+    3.06
+   ]
+  },
+  "Isa_Landmark_Bush": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 8.0,
+   "loop": true,
+   "bounds": [
+    0.229,
+    0.088,
+    0.718,
+    1.285,
+    1.187,
+    1.329
+   ]
+  },
+  "Kania_Port_Cage_02_Open": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -1.102,
+    0.002,
+    1.298,
+    2.87,
+    1.357,
+    1.298
+   ]
+  },
+  "Kania_Port_Cage_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.006,
+    0.002,
+    1.298,
+    1.762,
+    1.357,
+    1.298
+   ]
+  },
+  "Isa_Fence_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -0.213,
+    -0.212,
+    4.189,
+    3.842,
+    1.439,
+    4.344
+   ]
+  },
+  "Two_Shield": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -0.093,
+    -0.049,
+    1.601,
+    0.459,
+    0.17,
+    1.643
+   ]
+  },
+  "Ferris_MountainSmoke_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -1.199,
+    -0.9,
+    3.649,
+    34.959,
+    26.592,
+    30.464
+   ]
+  },
+  "Tribune_Glow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Isa/particles/Tribune_Glow.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 181,
+    "loopFrame": 121,
+    "frames": [
+     0,
+     12
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.3125,
+       1.3125,
+       1.3125
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.6562,
+       1.6562,
+       1.6562
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.2,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "WA_Tribune_Snow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -0.62,
+    1.434,
+    5.466,
+    3.819,
+    9.818,
+    5.748
+   ],
+   "components": [
+    {
+     "vot": "Tribune_Glow",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Tribune_Glow",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Tribune_Glow",
+     "locator": "Slot_Special03"
+    },
+    {
+     "vot": "Tribune_Glow",
+     "locator": "Slot_Special04"
+    }
+   ]
+  },
+  "isa_ShipDamAngledMastIce": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.21,
+    -0.805,
+    -0.357,
+    5.772,
+    3.803,
+    4.123
+   ]
+  },
+  "Bandit_Skin": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.059,
+    -0.017,
+    0.112,
+    1.531,
+    1.104,
+    0.252
+   ]
+  },
+  "Bandit_Bottle_Box": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -0.006,
+    -0.003,
+    0.354,
+    0.483,
+    0.383,
+    0.353
+   ]
+  },
+  "Bandit_Armour_Stand_Snow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -0.207,
+    -0.021,
+    1.323,
+    0.736,
+    1.337,
+    1.456
+   ]
+  },
+  "Isa_Gibberling_Statue_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -0.047,
+    -0.847,
+    1.305,
+    1.147,
+    0.84,
+    1.313
+   ]
+  },
+  "AD05_Door": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.3333,
+   "loop": true,
+   "bounds": [
+    -0.133,
+    0.0,
+    3.579,
+    0.705,
+    3.187,
+    3.585
+   ]
+  },
+  "Isa_Fir_01_snow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 7.9667,
+   "loop": true,
+   "bounds": [
+    0.441,
+    0.129,
+    6.448,
+    5.239,
+    5.661,
+    8.171
+   ]
+  },
+  "Isa_Landmark_Tree_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 8.0,
+   "loop": true,
+   "bounds": [
+    1.139,
+    -0.088,
+    6.723,
+    6.571,
+    5.91,
+    8.09
+   ]
+  },
+  "Isa_Place_B_Gibberling_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -0.01,
+    -0.278,
+    0.03,
+    1.708,
+    0.328,
+    2.042
+   ]
+  },
+  "Isa_pine_01_snow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.104,
+    0.02,
+    1.392,
+    1.487,
+    1.422,
+    1.92
+   ]
+  },
+  "Astral_Battery_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -0.166,
+    0.02,
+    1.41,
+    2.074,
+    1.334,
+    1.409
+   ]
+  },
+  "Isa_Caravan_Box_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -0.01,
+    0.011,
+    0.531,
+    0.722,
+    0.571,
+    0.531
+   ]
+  },
+  "Caravan_Barrel_Snow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.012,
+    -0.007,
+    0.434,
+    0.402,
+    0.402,
+    0.455
+   ]
+  },
+  "Elf_Crystal_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    26.704,
+    -4.359,
+    -0.674,
+    67.445,
+    26.83,
+    89.443
+   ]
+  },
+  "Isa_BlackMountain02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    22.552,
+    21.305,
+    17.772,
+    29.744
+   ]
+  },
+  "Cave_Ice": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -6.02,
+    55.705,
+    21.642,
+    155.768,
+    117.162,
+    31.099
+   ]
+  },
+  "Snowfall": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Isa/particles/Snowfall.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 391,
+    "loopFrame": 301,
+    "frames": [
+     13
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "AstralShipKaniaGroupBroken": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    4.439,
+    -1.641,
+    12.893,
+    19.703,
+    42.053,
+    19.138
+   ]
+  },
+  "Cave_Warewolf_VolumeLight": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Isa/particles/Cave_Warewolf_VolumeLight.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 151,
+    "loopFrame": 91,
+    "frames": [
+     14
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -2.246,
+    4.175,
+    2.563,
+    13.994,
+    16.248,
+    19.858
+   ]
+  },
+  "Bandit_Big_Tent_Snow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.708,
+    0.152,
+    3.392,
+    5.987,
+    7.252,
+    4.095
+   ]
+  },
+  "Caravan_Box_02_Snow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -0.01,
+    0.011,
+    0.531,
+    0.722,
+    0.571,
+    0.531
+   ]
+  },
+  "Kania_Port_Box_03_Snow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    0.932,
+    1.025,
+    1.541,
+    0.927
+   ]
+  },
+  "Gurluxsor_tower_interior_Books": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.034,
+    -0.19,
+    0.167,
+    0.488,
+    0.492,
+    0.277
+   ]
+  },
+  "HadaganLadder_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.007,
+    -0.003,
+    0.1,
+    3.72,
+    2.493,
+    0.211
+   ]
   }
  },
  "particleAtlas": {
   "file": "../maps/Isa/particles/atlas.png",
   "width": 1024,
-  "height": 128,
+  "height": 256,
   "rects": [
    [
     512,
@@ -8925,14 +9649,14 @@
     64
    ],
    [
-    832,
     0,
+    128,
     32,
     32
    ],
    [
-    864,
-    0,
+    32,
+    128,
     32,
     32
    ],
@@ -8973,10 +9697,28 @@
     64
    ],
    [
-    896,
-    0,
+    64,
+    128,
     32,
     32
+   ],
+   [
+    832,
+    0,
+    64,
+    64
+   ],
+   [
+    896,
+    0,
+    64,
+    64
+   ],
+   [
+    960,
+    0,
+    64,
+    64
    ]
   ],
   "sources": [
@@ -9063,6 +9805,27 @@
     864,
     32,
     32
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1728,
+    1536,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1536,
+    768,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    320,
+    64,
+    64
    ]
   ]
  },
