@@ -70,10 +70,11 @@
 
 .row { display: flex; align-items: center; gap: 10px; min-height: 34px; padding: 3px 8px; }
 .handle { color: #658e7c; cursor: grab; letter-spacing: -2px; user-select: none; }
-.arrows { display: flex; flex-direction: column; }
-.arrow { width: 18px; height: 13px; font-size: 9px; line-height: 13px; color: #b0bf88; }
-.arrow:disabled { opacity: .25; }
-.arrow:not(:disabled):hover { color: var(--gold); }
+/* Flèches de l'ascenseur du jeu (`scroll-up` / `scroll-down`, 22 × 23), réduites. */
+.arrows { display: flex; flex-direction: column; gap: 1px; }
+.arrow { width: 15px; height: 15px; background: center / contain no-repeat; }
+.arrow:disabled { opacity: .45; }
+.arrow:not(:disabled):hover { filter: brightness(1.2); }
 .entryTitle { flex: 1 1 260px; min-width: 0; text-align: left; color: #fff3c4; font-size: 15px; display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .entryTitle:hover { color: var(--gold); }
 .kind { flex: none; padding: 0 5px; border-radius: 3px; font-size: 11px; line-height: 16px; color: #0b100c; background: #b0bf88; }

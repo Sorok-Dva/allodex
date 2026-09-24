@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type FormEvent } from 'react';
 import { navigate, useRoute } from '@/lib/router';
+import { sprite } from '@/lib/assets';
 import { nineSlice } from '@/lib/nineSlice';
 import { GameDropdown, type DropdownOption } from '@/components/ui/GameDropdown';
 import { GameStrip } from '@/components/ui/GameStrip';
@@ -321,8 +322,10 @@ function EntryRow({ entry: e, view, first, last, open, dragging, dropBefore, onT
       <div className={s.row}>
         <span className={s.handle} title="Glisser pour déplacer" aria-hidden="true">⋮⋮</span>
         <span className={s.arrows}>
-          <button type="button" className={s.arrow} onClick={() => onStep(-1)} disabled={first} aria-label={`Monter « ${e.title} »`}>▲</button>
-          <button type="button" className={s.arrow} onClick={() => onStep(1)} disabled={last} aria-label={`Descendre « ${e.title} »`}>▼</button>
+          <button type="button" className={s.arrow} onClick={() => onStep(-1)} disabled={first} aria-label={`Monter « ${e.title} »`}
+            style={{ backgroundImage: `url(${sprite(first ? 'scroll-up-off' : 'scroll-up')})` }} />
+          <button type="button" className={s.arrow} onClick={() => onStep(1)} disabled={last} aria-label={`Descendre « ${e.title} »`}
+            style={{ backgroundImage: `url(${sprite(last ? 'scroll-down-off' : 'scroll-down')})` }} />
         </span>
         <button type="button" className={s.entryTitle} onClick={onToggle} aria-expanded={open}>
           <span className={`${s.kind} ${s[`kind_${e.kind}`]}`}>{KIND_LABEL[e.kind]}</span>
