@@ -322,8 +322,6 @@ export function AurasScreen() {
           <div className={s.lists} role="listbox" aria-label={t('auras.list')}>
             <div className={s.group}>{t('auras.wardrobe')}</div>
             <ul className={s.list}>{list('aura')}</ul>
-            {choices.some(c => group(c) === 'appearance') && <div className={s.group}>{t('auras.appearances')}</div>}
-            <ul className={s.list}>{list('appearance')}</ul>
             {choices.some(c => group(c) === 'exoskin') && <div className={s.group}>{t('auras.exoskins')}</div>}
             <ul className={s.list}>{list('exoskin')}</ul>
           </div>

@@ -1591,9 +1591,8 @@ La page `/auras` (entrée « Auras » de l'accueil, active en production, non in
 fatalités) montre les **55 auras de la garde-robe** du client 17.0 — catégorie « Дары » (FR
 « Cadeaux »), collection « Ауры » (« Auras ») — aux pieds d'un avatar habillé de la création de
 personnage, dans la clairière des Prés bénis des fatalités (même `scene.glb`, même lumière, même
-orbite bornée à 45 m), **quatre apparences à aura** (lots qui donnent une aura avec une peau
-d'exosquelette, de monture, ou un costume) et **31 couleurs de robe de carapace** qui posent une
-aura au sol sous leur porteur.
+orbite bornée à 45 m), et **31 couleurs de robe de carapace** qui posent une aura au sol sous leur
+porteur.
 
     python3 tools/extract_auras.py                  # tout (≈ 3 min, 9 clients)
     python3 tools/extract_auras.py --no-versions    # sans relire les anciens clients
@@ -1668,11 +1667,10 @@ Chaque couleur de robe montre la carapace de la fenêtre **sans son socle** (`Mo
 `MountExoskeleton_Suit_Stall*` écartés), son aura (`fx/s<id>.glb`) à ses pieds ; nom, description
 et source (`MountSkin +0x60`, `+0x40`, `+0x80`), icône (`+0x90`), version par `resourceId`.
 
-Le lien exosquelette ↔ aura par **lot** reste listé (« Apparences à aura ») : l'objet « Цветовая
-схема мистической брони «Пожиратель» » (FR « Couleur de robe pour la Carapace mystique :
-Dévoreur ») donne la peau et deux auras (« Astral Azur / violet brillant ») ; monture (modèle du
-gabarit du `VisualMount` de la peau, `models/<id>.glb`), costume (l'avatar garde sa tenue de
-classe : les costumes de la garde-robe ne sont pas encore portables par `resolveLook`).
+Les **lots** qui « donnent » une aura avec une peau de monture, d'exosquelette ou un costume
+(« Apparences à aura » : Dévoreur, Hickut, Quator, Молния) ne sont plus listés (décision du
+24/09/2026) : ce ne sont pas des auras à part entière, ou elles font doublon avec l'aura de la
+garde-robe qu'ils donnent.
 
 **Marche** (option « Marcher », active d'office pour les auras à empreintes) : l'avatar fait un
 cercle de 3 m (`walk.ts`, règle du lecteur) à la vitesse de course de son gabarit
@@ -1702,7 +1700,7 @@ Les images propres aux systèmes de particules (texture entière, pas un éléme
 (`allods_fx.whole_texture_rect`, 256 px au plus) — les fatalités en profiteront à leur prochain
 export.
 
-Poids : `public/game/auras/` ≈ 77 Mo — modèles 47 Mo (31 carapaces 34 Mo après compression `EXT_meshopt_compression` sans perte, `tools/compress_glb.mjs`, 81 Mo bruts ; monture « Молния » 12 Mo), particules et atlas 18 Mo (dont ≈ 11 Mo pour les lueurs des carapaces), textures 6,7 Mo (carapaces à 512 px), clips de marche 2,6 Mo, effets 2,3 Mo, icônes 0,4 Mo. Le décor est celui des fatalités, partagé (aucun octet de plus).
+Poids : `public/game/auras/` ≈ 64 Mo — modèles 34 Mo (31 carapaces, compression `EXT_meshopt_compression` sans perte, `tools/compress_glb.mjs`, 81 Mo bruts), particules et atlas 18 Mo (dont ≈ 11 Mo pour les lueurs des carapaces), textures 6,7 Mo (carapaces à 512 px), clips de marche 2,6 Mo, effets 2,3 Mo, icônes 0,4 Mo. Le décor est celui des fatalités, partagé (aucun octet de plus).
 
 ## Création de personnage (développement)
 

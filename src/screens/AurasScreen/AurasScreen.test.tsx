@@ -22,10 +22,6 @@ const INDEX: AurasIndex = {
       objects: {}, timeline: { attached: [], spawns: [] } },
   ],
   appearances: [
-    { id: 'b740112796', resourceId: 740112796, kind: 'mount', name: { fr: 'Couleur de robe pour la Carapace mystique : Dévoreur' }, description: {},
-      icon: 'icons/MountExoskeletV9.webp', auras: ['a740017040'], obtain: {},
-      skin: { resourceId: 1, name: { fr: 'Dévoreur' }, mount: { fr: 'Carapace mystique' }, source: {} },
-      model: { glb: 'models/b740112796.glb', vot: 'MountExo9', objects: {} } },
     { id: 's740178049', resourceId: 740178049, kind: 'exoskin', name: { fr: 'Néphalion' },
       description: { fr: "Couleur de robe spéciale pour la Carapace d'assaut Angelion." }, icon: null, auras: [],
       obtain: { fr: 'Sentier des incarnations, Tournoi du sang, été 2023' },
@@ -98,13 +94,12 @@ describe('AurasScreen', () => {
     expect(getByText('Auras non extraites')).toBeTruthy();
   });
 
-  it('liste les auras de la garde-robe puis les apparences, noms officiels ou signalés', async () => {
+  it('liste les auras de la garde-robe puis les couleurs de robe, noms officiels ou signalés', async () => {
     const { getByText, getAllByRole } = render(<AurasScreen />);
     await act(async () => {});
     expect(getByText('Cadeaux — Auras')).toBeTruthy();
-    expect(getByText('Apparences à aura')).toBeTruthy();
     expect(getAllByRole('option').map(o => o.textContent)).toEqual([
-      'Aura de Saint Patron', "Rune de l'esclavagiste", 'Аура Трувера', 'Couleur de robe pour la Carapace mystique : Dévoreur', 'Néphalion']);
+      'Aura de Saint Patron', "Rune de l'esclavagiste", 'Аура Трувера', 'Néphalion']);
     expect(getByText('Carapaces : couleurs de robe')).toBeTruthy();
   });
 
@@ -132,10 +127,10 @@ describe('AurasScreen', () => {
     expect(second.getByRole('region', { name: "Fiche de l'aura" }).textContent).toContain('Aucun effet visuel');
   });
 
-  it('passe l’avatar habillé et l’aura au lecteur, et l’apparence avec son modèle', async () => {
+  it('passe l’avatar habillé et l’aura au lecteur', async () => {
     webgl = true;
     window.history.replaceState(null, '', '/auras?a=a740017040');
-    const { getByRole } = render(<AurasScreen />);
+    render(<AurasScreen />);
     await act(async () => {});
     expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({
       fxUrl: '/game/auras/fx/a740017040.glb',
@@ -143,13 +138,6 @@ describe('AurasScreen', () => {
       sceneUrl: '/game/fatalities/scene/scene.glb',
       orbitMax: 45,
       dress: expect.objectContaining({ template: 'KaniaMale', tier: 2 }),
-    }));
-    await act(async () => { fireEvent.click(getByRole('option', { name: /Dévoreur/ })); });
-    expect(window.location.search).toBe('?a=b740112796');
-    expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({
-      dress: null,
-      appearance: { url: '/game/auras/models/b740112796.glb', vot: 'MountExo9', objects: {} },
-      fxUrl: '/game/auras/fx/a740017040.glb',
     }));
   });
 

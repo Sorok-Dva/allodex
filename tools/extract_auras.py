@@ -618,8 +618,9 @@ def run(manifest: dict, out_dir: Path, versions: bool = True, fx: bool = True, s
         auras.append(entry)
     index = {"schema": 1, "client": manifest["latest"]["version"], "auras": auras}
 
-    bundles = appearance_bundles(latest, fr, records, auras, icons, report)
-    bundles += exo_skin_auras(latest, fr, icons, report)
+    # Seules les couleurs de robe des carapaces : les lots (costumes, montures) qui « donnent » une aura
+    # font doublon avec l'aura elle-même ou n'en posent aucune (retirés le 24/09/2026).
+    bundles = exo_skin_auras(latest, fr, icons, report)
     index["appearances"] = bundles
     # Mémoire : les deux bases (≈ 1,2 Go) sont libérées avant d'ouvrir celle des effets.
     del latest, fr
@@ -637,83 +638,6 @@ def run(manifest: dict, out_dir: Path, versions: bool = True, fx: bool = True, s
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "auras.json").write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     return index
-
-
-def appearance_bundles(latest: Client, fr: Client | None, records: list[AuraRecord], auras: list[dict],
-                       icons: Path, report: list[str]) -> list[dict]:
-    """Objets qui donnent une aura et une apparence : peau de monture ou d'exosquelette
-    (`MountSkin`, dont le modèle est le gabarit de son `VisualMount`), ou pièces de costume."""
-    pb = latest.pb
-    by_item: dict[int, list[str]] = {}
-    for rec, entry in zip(records, auras):
-        for it in rec.items:
-            by_item.setdefault(it, []).append(entry["id"])
-    out: list[dict] = []
-    seen: set[int] = set()
-    for rec in records:
-        for cont in rec.containers:
-            if cont in seen:
-                continue
-            seen.add(cont)
-            inside = latest.pointers(cont)
-            aura_ids = sorted({a for it in inside + [cont] if it in by_item for a in by_item[it]})
-            skins = [p for p in dict.fromkeys(inside) if pb.type_at(p) == "MountSkin"]
-            costumes = [p for p in dict.fromkeys(inside) if pb.type_at(p) == "ItemResource" and p not in by_item
-                        and pb.ptr(p + 0x2F8) is not None and pb.type_at(pb.ptr(p + 0x2F8)) == "VisualItem"]
-            if not aura_ids or not (skins or costumes):
-                continue
-            names = plain_texts(texts_of(latest, fr, cont, ITEM_NAME))
-            k = export_icon(latest, cont, icons)
-            entry: dict = {"id": f"b{latest.keys.get(cont)}", "resourceId": latest.keys.get(cont), "name": names,
-                           "description": plain_texts(texts_of(latest, fr, cont, ITEM_DESC)),
-                           "icon": f"icons/{k}.webp" if k else None, "iconKey": k, "auras": aura_ids}
-            if skins:
-                skin = skins[0]
-                vm = pb.ptr(skin + SKIN_MOUNT)
-                mob = pb.ptr(vm + VISUAL_MOUNT_MOB) if vm is not None else None
-                tpl = pb.ptr(mob + VISUAL_MOB_TEMPLATE) if mob is not None else None
-                mounts = [p for p in dict.fromkeys(inside) if pb.type_at(p) == "MountResource"] or latest.referrers(skin, "MountResource")
-                entry["kind"] = "mount"
-                entry["skin"] = {"resourceId": latest.keys.get(skin),
-                                 "name": plain_texts(texts_of(latest, fr, skin, SKIN_NAME)),
-                                 "mount": plain_texts(texts_of(latest, fr, mounts[0], MOUNT_NAME)) if mounts else {},
-                                 "source": plain_texts(texts_of(latest, fr, skin, SKIN_SOURCE)),
-                                 "_template": pb.ptr(tpl + TEMPLATE_VISOBJECT) if tpl is not None else None}
-            else:
-                entry["kind"] = "costume"
-                entry["costume"] = [plain_texts(texts_of(latest, fr, c, ITEM_NAME)) for c in costumes]
-            # Obtention : source de la peau (`MountSkin +0x80`, « Лавка Редкостей »), sinon celle de
-            # l'aura dont le lot est l'objet (costumes des auras de Hickut et de Quator), sinon la
-            # phrase d'obtention de la description du lot.
-            own = next((e for e in auras if e["id"] in by_item.get(cont, [])), None)
-            obtain = dict(entry.get("skin", {}).get("source") or {}) or (dict(own["obtain"]) if own else {})
-            for lang in ("ru", "en", "fr") if not obtain else ():
-                client = fr if lang == "fr" else latest
-                o = (fr.by_key.get(latest.keys.get(cont)) if lang == "fr" and fr else cont)
-                if client is None or o is None:
-                    continue
-                text, _ = obtain_text(None, [client.text(o, ITEM_DESC, lang) or ""])
-                if text and is_official(text, lang):
-                    obtain[lang] = text
-            entry["obtain"] = obtain
-            out.append(entry)
-    print(f"{len(out)} apparences à aura")
-    return out
-
-
-# --- carapaces : couleurs de robe à aura au sol ------------------------------------------------------
-
-SKIN_VISUAL_MOUNT = 0xE8            # MountSkin.visualMount (7.0 : `visualMount`)
-VISUAL_MOUNT_STABLE = 0x90          # VisualMount.mountForStable (7.0) : la carapace de la fenêtre
-PREDICATE_MOUNTS = 0x48             # PredicateVisualMountAction : vecteur de VisualMount
-LIST_PLAY_WHILE = 0x70              # VisActionList.playWhile
-COMPONENT_LOCATOR, COMPONENT_OFFSET, COMPONENT_SCALE, COMPONENT_VISOBJECT = 0x48, 0x60, 0x80, 0x88
-GROUND_LOCATORS = ("Slot_Global", "Global")
-# Socle et lueurs de la vitrine (`mountForStable`), absents du monde : écartés du modèle.
-STALL_PARTS = re.compile(r"^MountExoskeleton_(Platform|Suit_Stall)")
-# 31 carapaces : textures ramenées à 512 px (comme les effets, `FX_TEXTURE_MAX`) et tampons compressés
-# sans perte (`tools/compress_glb.mjs`, `EXT_meshopt_compression`) — 94 Mo bruts sinon.
-EXO_TEXTURE_MAX = 512
 
 
 def compress_models(files: list[Path], report: list[str]) -> None:
