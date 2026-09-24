@@ -35,7 +35,7 @@ Messages en anglais, au format gitmoji `<gitmoji> <type>(<scope>): <message>` (e
 - `/chronicles` : archive des écrans de lancement, version par version, avec leur thème musical (voir « Chroniques » ci-dessous).
 - `/music` : catalogue musical FR/RU, accessible par le bouton gramophone, avec lecture par catégorie.
 - `/character` (développement seulement) : création de personnage du client 17.0 (voir « Création de personnage »).
-- `/cinematics` : toutes les cinématiques du jeu en film complet par faction, avec sous-titres officiels FR/EN/RU (voir « Cinématiques » ci-dessous).
+- `/cinematics` : toutes les cinématiques du jeu en film complet par faction, avec sous-titres officiels FR/EN/RU, et transcription automatique signalée pour les deux chapitres doublés que le jeu ne sous-titre pas (voir « Cinématiques » ci-dessous).
 - `/talents` : arbres de talents de chaque classe de la 1.1 à la 17.0 dans la fenêtre TalentBuilder du jeu, calculateur de build (deux builds) partageable par lien (voir « Talents »).
 - `/lorebook` : lore officiel du jeu en anglais (FR/RU en option), atlas et récits communautaires crédités, recherche et liens croisés (voir « Lorebook »).
 - `/fatalities` (développement seulement) : les 26 fatalités rejouées avec modèles, effets et sons du client 17.0 (voir « Fatalités »).
@@ -173,6 +173,34 @@ bonus » mène à la fin. La bannière de faction indique la durée du film sans
   (donjons 9.0) ;
   dans un arc, l'ordre du registre, sauf ZC13 où les dialogues placent le Forum avant la
   tombe d'Aellona (voir `chronology` de chaque entrée).
+
+### Sous-titres transcrits (pas ceux du jeu)
+
+Deux chapitres doublés n'ont aucune ressource de sous-titres dans le client : « Prologue — Vychegrad »
+(`warp-prologue`, 10.0, narrateur, 18 répliques) et « Pas prévu au plan » (`awakening-not-by-plan`,
+11.0, échanges radio, 8 répliques). Leur voix russe est **transcrite automatiquement**, en local, par
+`tools/transcribe_cinematics.py` (faster-whisper, CPU `int8`, filtre de voix, pas de reprise du texte
+précédent ; `small` d'abord, `medium` retenu pour les deux), puis relue et traduite à la main dans
+`tools/cinematics_transcripts.json` (versionné) : texte russe corrigé, anglais et français avec les noms
+officiels des textes du client (Вышеград = Hightown / Hauteville, « на краю мира » = Horizon, Ковчег =
+the Ark / l'Arche, эра Аллодов = the Allods Era / l'Ère des allods), sortie brute de Whisper,
+confiance, et notes de relecture (répliques douteuses de « Pas prévu au plan », recoupées par un second
+modèle acoustique, wav2vec2 russe sans modèle de langue). Les segments inventés par Whisper sur la
+musique ou le silence (« Редактор субтитров… », « СПОКОЙНАЯ МУЗЫКА ») sont écartés par le filtre ;
+les onze vidéos sans dialogue déclaré n'en contiennent pas d'autres. Index : `subtitles.status:
+"transcribed"`, pistes libellées « (auto) » ; le lecteur écrit « transcription automatique » dans la
+liste des chapitres et, tant que ces sous-titres sont affichés, « Sous-titres : transcription
+automatique, pas ceux du jeu » en haut de l'image. Les scènes moteur `ferris-awakening` et
+`invasion-engineer-kania` n'ont pas de voix : rien à transcrire.
+
+    python3 tools/transcribe_cinematics.py --list                  # chapitres doublés sans sous-titres
+    python3 tools/transcribe_cinematics.py --only <id> [--model medium]   # transcrit (un chapitre à la fois)
+    python3 tools/transcribe_cinematics.py --probe --only <id>     # segments et verdicts, sans rien écrire
+    python3 tools/transcribe_cinematics.py --apply                 # pistes et index depuis la relecture
+
+Un chapitre relu (`"reviewed": true`) n'est pas réécrit par une relance : la nouvelle sortie va dans
+`draft` (`--replace` pour remplacer). `extract_cinematics.py` et `extract_engine_cutscene.py` réécrivent
+ces pistes depuis le fichier de relecture, jamais par-dessus des sous-titres officiels.
 
 Sorties : `public/game/cinematics/<id>/{video.webm, video.mp4, poster.jpg, fr.vtt, en.vtt,
 ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le reste de

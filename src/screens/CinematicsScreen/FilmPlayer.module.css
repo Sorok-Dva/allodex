@@ -88,6 +88,8 @@
 .close:hover, .close:focus-visible { filter: brightness(1.25); outline: none; }
 
 .notice { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); margin: 0; padding: 4px 12px; font-size: 13px; color: #e9dcbf; background: #000a; pointer-events: none; }
+/* Sous-titres transcrits (pas ceux du jeu) : mention discrète, en haut à gauche de l'image. */
+.transcribedNote { position: absolute; top: 12px; left: 12px; margin: 0; padding: 2px 8px; font-size: 11px; color: #e9dcbfb3; background: #0008; pointer-events: none; }
 
 /* Plein écran (API Fullscreen sur le lecteur, ou mode CSS de repli pour iOS Safari) : la
    scène occupe tout, commandes et chapitres flottent par-dessus et s'effacent au repos. */

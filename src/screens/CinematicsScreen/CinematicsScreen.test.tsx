@@ -204,4 +204,20 @@ describe('CinematicsScreen — film', () => {
       vi.useRealTimers();
     }
   });
+
+  it('signale discrètement les sous-titres transcrits, jamais comme ceux du jeu', async () => {
+    search = 'faction=empire';
+    const transcribed = cine('warp', {
+      faction: 'empire', order: 50,
+      tracks: [{ lang: 'fr', label: 'Français (auto)', src: 'warp/fr.vtt', lines: 3 }],
+      subtitles: { status: 'transcribed', lines: 3, timing: 'transcribed', reviewed: true },
+    });
+    const index: CinematicsIndex = { arcs: INDEX.arcs, cinematics: [transcribed, INDEX.cinematics[3]] };
+    const page = render(<I18nProvider storage={null} initial="fr"><CinematicsScreen loader={() => Promise.resolve(index)} /></I18nProvider>);
+    expect((await page.findByTestId('transcribed-note')).textContent).toBe('Sous-titres : transcription automatique, pas ceux du jeu');
+    expect(page.getByTestId('chapter-warp').textContent).toContain('transcription automatique');
+    expect(page.getByTestId('chapter-warp').textContent).not.toContain('pas de sous-titres dans le jeu');
+    fireEvent.click(page.getByRole('button', { name: 'Aucun' }));
+    expect(page.queryByTestId('transcribed-note')).toBeNull();
+  });
 });
