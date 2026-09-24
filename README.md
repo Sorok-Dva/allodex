@@ -1514,8 +1514,9 @@ La page `/auras` (entrée « Auras » de l'accueil, active en production, non in
 fatalités) montre les **55 auras de la garde-robe** du client 17.0 — catégorie « Дары » (FR
 « Cadeaux »), collection « Ауры » (« Auras ») — aux pieds d'un avatar habillé de la création de
 personnage, dans la clairière des Prés bénis des fatalités (même `scene.glb`, même lumière, même
-orbite bornée à 45 m), et **quatre apparences à aura** (lots qui donnent une aura avec une peau
-d'exosquelette, de monture, ou un costume).
+orbite bornée à 45 m), **quatre apparences à aura** (lots qui donnent une aura avec une peau
+d'exosquelette, de monture, ou un costume) et **31 couleurs de robe de carapace** qui posent une
+aura au sol sous leur porteur.
 
     python3 tools/extract_auras.py                  # tout (≈ 3 min, 9 clients)
     python3 tools/extract_auras.py --no-versions    # sans relire les anciens clients
@@ -1550,20 +1551,59 @@ seul repère commun ; ces versions-là sont signalées « repérée par son icô
 précéder l'aura). `previous` = dernier client lu sans elle : « 15.0 (absente de la 11.0) » veut dire
 entre 11.0 et 15.0. La date n'est pas dans le client : « Date inconnue ».
 
-**Effets absents du client** : dix auras n'ont aucun buff scripté (trois auras Premium de 8.0 et
-la royale de 17.0, six auras de guilde de la Vallée d'ambroisie) : l'avatar est montré seul, avec
-« Aucun effet visuel pour cette aura dans les données du client ».
+**Buff visuel sans nom** (`link_visual_buffs`) : dix auras n'ont pas de buff scripté de même
+icône. Pour neuf d'entre elles, le visuel est un **buff sans nom ni icône créé juste après le sort**
+(`resourceId` suivant, avant la ressource d'une autre aura) — le lien sort → buff est côté
+serveur, ce voisinage est le seul repère du client (`visualBuff.link: "rid"`) :
 
-**Exosquelettes.** Les 107 peaux d'exosquelette (`MountSkin` dont le gabarit est `MountExoskeleton`,
-`MountExo8`, `MountExo9` ou `MEV*`) ont été passées au crible : leur visuel propre (gabarit,
-composants, objets portés, script de la peau, `IfAction` compris) ne pose **aucun effet au sol**
-autre que les socles de présentation de la boutique (`MountExoskeleton_Platform*`, composants du
-mannequin `KaniaMale`). Le lien exosquelette ↔ aura est un **lot** : l'objet « Цветовая схема
-мистической брони «Пожиратель» » (FR « Couleur de robe pour la Carapace mystique : Dévoreur »)
-donne la peau et deux auras (« Astral Azur / violet brillant »). La page liste ces lots
-(`appearances`) : exosquelette ou monture (modèle du gabarit du `VisualMount` de la peau,
-`models/<id>.glb`, sa propre animation), costume (l'avatar garde sa tenue de classe : les costumes
-de la garde-robe ne sont pas encore portables par `resolveLook`).
+- **Aura de Saint Patron, de Fondateur, du Magnat** (sorts 740017009, …016, …023 → buffs
+  740017010, …017, …024) : des **empreintes**. Le script ajoute au porteur un composant d'état
+  (`CreatureVisObjectComponentsAction` → `StateComponent` : animations `run`, `walk`) qui porte
+  `PremiumTrace_Step_01All` (`_02All`), gabarit invisible dont deux `EmitterVisObjComponent`
+  sèment chacun **deux empreintes par seconde** au locator `Slot_Special01` ± 0,5 (pied droit
+  décalé de 0,25 s), **laissées sur place** (`fixedPoint`), qui vivent le temps de leur clip
+  (50 images, fondu de 300 ms). L'arbre serveur 7.0 nomme ces scripts
+  `Items/VisualItems/Pet/PremiumTrace01.(BuffVisScripts).xdb` (…02, …03), du nom de l'icône des
+  auras (`PremiumTrace01`…), identiques champ pour champ ; le Magnat ajoute `PremiumTrace_Spark_02`
+  aux pieds. Rien ne se voit à l'arrêt : la page les ouvre en marchant ;
+- **six auras de la Vallée d'ambroisie** (740165958 → 740165975 `Aura_AmbrosiaWar_13_Gr_01`, …) :
+  vert pour la forêt, jaune pour le progrès, rangs 1-2-3 dans l'ordre des sorts.
+
+La **royale de 17.0** (« Королевская премиальная аура Покровителя », icône `Traces_DragonFire26`)
+n'a aucun buff visuel voisin : « Aucun effet visuel pour cette aura dans les données du client ».
+
+**Carapaces : couleurs de robe à aura au sol** (`exo_skin_auras`, groupe « Carapaces : couleurs de
+robe », 31 peaux). L'aura n'est ni dans la `MountSkin` ni dans son modèle : `VisualMount +0x88`
+(`mount`, 7.0) est le gabarit générique `MountExoskeleton`, `+0x90` (`mountForStable`) la carapace
+de la fenêtre de la monture, sur son socle. Dans le monde, c'est **l'avatar qui porte la
+carapace** : le script des carapaces (buff 740051965, `CreatureRunVisActionResource`) a une
+branche par couleur de robe, gardée par un `PredicateVisualMountAction` (`+0x48` → le `VisualMount`
+de la peau) ; elle change les objets visuels du porteur (`CreatureChangeVisItemsAction` →
+`VisualItem`, pièces par personnage `VICSelectComponentByChar`) — et **une de ces pièces est
+accrochée à `Slot_Global`** : l'aura au sol, sous l'avatar. Néphalion (740178049) → `VisualItem`
+740178050 → `MEV16Hunter_Dec` ; Destructeur des mondes → `MEV13_Com_Dec` ; Div → `MEV15Base_Dec` ;
+« Жнец » (couleur de base du Faucheur) n'en a pas, ni les peaux des anciennes carapaces
+(`MountExo*`, script de peau `+0xF0` → `CreatureChangeVisItemsAction` sans pièce au sol). L'erreur
+précédente (« aucune peau d'exosquelette ne pose d'effet au sol ») venait de là : le modèle et le
+script de la peau avaient été fouillés, pas les objets visuels que la carapace fait porter, et les
+`ListComponent` n'étaient pas lus (`allods_visdb.read_visobject` les suit désormais).
+Chaque couleur de robe montre la carapace de la fenêtre **sans son socle** (`MountExoskeleton_Platform*`,
+`MountExoskeleton_Suit_Stall*` écartés), son aura (`fx/s<id>.glb`) à ses pieds ; nom, description
+et source (`MountSkin +0x60`, `+0x40`, `+0x80`), icône (`+0x90`), version par `resourceId`.
+
+Le lien exosquelette ↔ aura par **lot** reste listé (« Apparences à aura ») : l'objet « Цветовая
+схема мистической брони «Пожиратель» » (FR « Couleur de robe pour la Carapace mystique :
+Dévoreur ») donne la peau et deux auras (« Astral Azur / violet brillant ») ; monture (modèle du
+gabarit du `VisualMount` de la peau, `models/<id>.glb`), costume (l'avatar garde sa tenue de
+classe : les costumes de la garde-robe ne sont pas encore portables par `resolveLook`).
+
+**Marche** (option « Marcher », active d'office pour les auras à empreintes) : l'avatar fait un
+cercle de 3 m (`walk.ts`, règle du lecteur) à la vitesse de course de son gabarit
+(`AnimationProperties.walkForward`, `+0x124`, 3,5 m/s pour les Kanians), avec son clip `run`
+(`walk/<gabarit>.glb` : clips `Walk` et `Run` du client, squelette seul) ; la caméra suit. Les
+auras au sol suivent l'avatar ; les composants d'état n'apparaissent que pendant leurs
+animations (fondu du gabarit) ; les empreintes sont posées dans le monde et s'effacent seules. Les
+modèles de monture et de carapace n'ont pas de clip de déplacement exporté : pas de marche.
 
 **Lecteur** (`src/components/scene/AuraViewer/`) : temps continu, sans fin ni barre de lecture
 (pause, vitesse, effets). Il réutilise les briques des fatalités — `VotFactory` (vies propres des
@@ -1585,7 +1625,7 @@ Les images propres aux systèmes de particules (texture entière, pas un éléme
 (`allods_fx.whole_texture_rect`, 256 px au plus) — les fatalités en profiteront à leur prochain
 export.
 
-Poids : `public/game/auras/` ≈ 21 Mo (modèle de la monture « Молния » 12 Mo, particules et atlas 2048 × 4096 ≈ 7 Mo, effets 0,3 Mo, icônes 0,2 Mo). Le décor est celui des fatalités, partagé (aucun octet de plus).
+Poids : `public/game/auras/` ≈ 77 Mo — modèles 47 Mo (31 carapaces 34 Mo après compression `EXT_meshopt_compression` sans perte, `tools/compress_glb.mjs`, 81 Mo bruts ; monture « Молния » 12 Mo), particules et atlas 18 Mo (dont ≈ 11 Mo pour les lueurs des carapaces), textures 6,7 Mo (carapaces à 512 px), clips de marche 2,6 Mo, effets 2,3 Mo, icônes 0,4 Mo. Le décor est celui des fatalités, partagé (aucun octet de plus).
 
 ## Création de personnage (développement)
 
