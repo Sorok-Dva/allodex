@@ -740,6 +740,62 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
 
 # --- effets de scène ------------------------------------------------------------------------------
 
+RESOURCE_REF = "res:"
+STELE_SCENE_REF = "stele:"
+
+
+def resource_ref(db: PackDB, ref, what: str = "ressource") -> int:
+    """Ressource désignée par le manifeste → identifiant **volatil** du client lu (`db.ids`).
+
+    Le manifeste ne garde pas l'identifiant volatil de la table de hachage (rang renuméroté à chaque
+    construction de `pack.bin` : la mise à jour du client RU des 23 et 24/09/2026 a décalé ceux
+    d'`isa-freya` et d'`ao12-prologue04`, dont les buffs ne donnaient plus de caméra) mais :
+
+    * `"res:<resourceId>"` — l'identifiant **persistant** de la ressource (`PackDB.resource_ids`) ;
+    * `"stele:res:<resourceId>"` — la `GameViewScene` que joue le `ShowSceneAction` d'une stèle (les
+      scènes du client, ressources visuelles, n'ont pas de `resourceId`).
+
+    Un entier nu est refusé : il ne désigne rien de façon durable."""
+    if isinstance(ref, str) and ref.startswith(STELE_SCENE_REF):
+        root = getattr(db, "parent", None) or db
+        stele = root.ids[resource_ref(db, ref[len(STELE_SCENE_REF):], what)]
+        default, states = device_states(root, stele, {})
+        scene = next((s["scene"] for s in [default, *states] if s and s["kind"] == "scene" and s["scene"] is not None), None)
+        rid = root.rid(scene) if scene is not None else None
+        if rid is None:
+            raise ValueError(f"{what} {ref} : la stèle ne joue aucune GameViewScene")
+        return rid
+    if isinstance(ref, str) and ref.startswith(RESOURCE_REF):
+        root = getattr(db, "parent", None) or db
+        off = root.resource_ids.get(int(ref[len(RESOURCE_REF):]))
+        rid = root.rid(off) if off is not None else None
+        if rid is None:
+            raise ValueError(f"{what} {ref} : resourceId absent de pack.bin")
+        return rid
+    raise ValueError(f"{what} {ref!r} : référence attendue « res:<resourceId> » (identifiant persistant), "
+                     "pas un identifiant volatil de pack.bin")
+
+
+def resolve_refs(spec: dict, db: PackDB) -> dict:
+    """Copie d'une scène du manifeste dont les références (`buff`, `lines`, `scene`, `script`, `mob`
+    des acteurs, `mob`/`buff`/`vot` des effets) sont ramenées aux identifiants volatils du client lu."""
+    out = json.loads(json.dumps(spec))
+    for key in ("buff", "scene", "script"):
+        if out.get(key) is not None:
+            out[key] = resource_ref(db, out[key], f"{spec['id']} : {key}")
+    if "lines" in out:
+        out["lines"] = [resource_ref(db, r, f"{spec['id']} : réplique") for r in out["lines"]]
+    for actor in out.get("actors", []):
+        if actor.get("mob") is not None:
+            actor["mob"] = resource_ref(db, actor["mob"], f"{spec['id']} : acteur {actor.get('id')}")
+    for item in out.get("spawns", []):
+        for key in ("mob", "buff", "vot"):
+            if item.get(key) is not None:
+                item[key] = resource_ref(db, item[key], f"{spec['id']} : effet {key}")
+    out["_refs"] = {k: spec[k] for k in ("buff", "scene", "script", "lines") if spec.get(k) is not None}
+    return out
+
+
 def pack_offset(db: PackDB, rid) -> int | None:
     """Ressource de `pack.bin` par identifiant, vue depuis la base de carte `db` (bit `EXTERN`)."""
     root = getattr(db, "parent", None) or db
@@ -1088,9 +1144,9 @@ class Texts:
 
     def __init__(self, manifest: dict, report: list[str]) -> None:
         main_spec, fr_spec = manifest["sources"]["main"], manifest["sources"]["fr"]
-        self.main = load_textset(Path(main_spec["root"]), main_spec)
+        self.main = load_textset(Path(main_spec["root"]), main_spec, report.append)
         try:
-            self.fr = load_textset(Path(fr_spec["root"]), fr_spec)
+            self.fr = load_textset(Path(fr_spec["root"]), fr_spec, report.append)
         except (OSError, KeyError, zipfile.BadZipFile) as exc:
             report.append(f"textes FR illisibles : {exc}")
             self.fr = None
@@ -1646,8 +1702,12 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
 
 # --- déroulé d'un déclencheur : stèles, effets, sons, PNJ posés ------------------------------------
 
-# `SteleResource` (17.0) : place (`SpawnLocation` : repère local en f32 + case de 32 m en i32),
-# gabarit visuel, scripts visuels (`DeviceVisScripts` : action par défaut, états).
+# `SteleResource` (17.0) : place (`SpawnLocation` : repère local en f32 + case de 32 m en i32 x, y, z),
+# gabarit visuel, scripts visuels (`DeviceVisScripts` : action par défaut, états). Les `MobWorld`
+# portent la même `SpawnLocation` au même décalage (7 911 PNJ du 17.0), avec sa zone (`+0x40`,
+# `ZoneResource`) ; elle ne garde pas de lacet. La case z (`+0x38`) compte aussi : sur `Isa`, un PNJ
+# en case z 2 à 40,57 m locaux est à 104,57 m, la hauteur du terrain sous lui (104,3 à 104,6) ;
+# le bateau `Isa_Ship_01` (case −1, 32 m) est à 0, au niveau de la mer, comme ceux du décor.
 STELE_SPAWN = 0x70
 STELE_VISOBJ = 0x110
 STELE_VISSCRIPTS = 0x118
@@ -1668,8 +1728,8 @@ def stele_position(db: PackDB, stele: int) -> list[float] | None:
     if loc is None or db.vtype(loc) != "SpawnLocation":
         return None
     x, y, z = db.floats(loc + SPAWNLOC_LOCAL, 3)
-    cx, cy = db.i32(loc + SPAWNLOC_CELL), db.i32(loc + SPAWNLOC_CELL + 4)
-    return [cx * SPAWNLOC_CELL_SIZE + x, cy * SPAWNLOC_CELL_SIZE + y, z]
+    cx, cy, cz = db.i32(loc + SPAWNLOC_CELL), db.i32(loc + SPAWNLOC_CELL + 4), db.i32(loc + SPAWNLOC_CELL + 8)
+    return [cx * SPAWNLOC_CELL_SIZE + x, cy * SPAWNLOC_CELL_SIZE + y, cz * SPAWNLOC_CELL_SIZE + z]
 
 
 def find_stele(db: PackDB, position: list[float], tolerance: float = 0.05) -> int | None:
@@ -2541,25 +2601,59 @@ def plan_gameview(spec: dict, db: PackDB, texts: Texts, anim_names: dict, report
                 points.insert(0, {"t": 0, "p": points[0]["p"]})
                 targets.insert(0, {"t": 0, "p": targets[0]["p"]})
             camera = {"points": points, "targets": targets, "duration": float(spec.get("duration", 0))}
-    report.append(f"{spec['id']} : GameViewScene {spec['scene']} sur {map_name}, {len(actors)} PNJ, "
+    report.append(f"{spec['id']} : GameViewScene {spec.get('_refs', {}).get('scene', spec['scene'])} sur {map_name}, {len(actors)} PNJ, "
                   f"{sum(1 for a in actors if a['animations'])} animés")
     return {"map": map_name, "camera": camera, "lines": [], "actors": actors, "weather": None,
             "sounds": {"music": [], "ambience": []}, "post": spec.get("post", []),
             "decor_center": [cam[0], cam[1]], "timing": "client", "duration_from_clips": not spec.get("duration"),
-            "sources": {"scene": spec["scene"], "script": spec.get("script")}}
+            "sources": {k: spec.get("_refs", {}).get(k, spec.get(k)) for k in ("scene", "script")}}
 
 
 def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim_names: dict, report: list[str]) -> dict:
     """Plan d'une scène sans déroulé serveur connu (après 7.0) : ressources du 17.0 nommées par le
-    manifeste, mise en scène et minutage du manifeste."""
-    track = buff_camera_track(db, db.ids[int(spec["buff"])])
-    camera = camera_keys(track)
+    manifeste, mise en scène et minutage du manifeste.
+
+    `"script": "client"` : le **script visuel du buff** est lu en entier (`tools/cutscene_client.py`) :
+    plans de caméra enchaînés (coupes franches), voix off (`Sound2DAction` d'un événement
+    `Cutscenes/…`), autres sons, voiles noirs (`PostEffectVisAction`). Sinon, seul le premier trajet
+    de caméra du buff est lu (pilote). `timing.starts` : départs des répliques mesurés (voir le
+    manifeste), à la place des groupes estimés."""
+    from tools import cutscene_xdb70 as x70
+    from tools.cutscene_client import buff_timeline
+    buff_ref = spec.get("_refs", {}).get("buff", spec["buff"])
+    client = buff_timeline(db, db.ids[int(spec["buff"])]) if spec.get("script") == "client" else None
     plan_lines = []
+    post = list(spec.get("post", []))
+    sfx: list[dict] = []
+    if client is not None:
+        shots = [{"t": sh["t"], "duration": (sh["until"] - sh["t"]) if sh["until"] is not None else None,
+                  "points": sh["points"], "targets": sh["targets"]} for sh in client.shots]
+        camera = x70.camera_keys(shots)
+        ends = [client.end] + [sh["t"] + (sh["duration"] if sh["duration"] is not None else sum(d for d, _ in sh["points"]))
+                               for sh in shots if sh["points"]]
+        camera["duration"] = round(max(ends), 3)
+        for veil in client.veils:
+            # voile noir (`UserPostEffect` au carré noir) jusqu'à la borne de sa liste, ou la fin
+            post.append({"t": veil["t"], "until": veil["until"] if veil["until"] is not None else camera["duration"],
+                         "kind": "veil", "fadeIn": veil["fadeIn"], "fadeOut": veil["fadeOut"]})
+        for snd in client.sounds:
+            if snd["event"].startswith("Cutscenes/"):
+                plan_lines.append({"start": snd["t"], "duration": 0.0, "voice_event": snd["event"],
+                                   "speaker": spec.get("narrator"), "clips": [], "text": {},
+                                   "source": f"script du buff {buff_ref}"})
+            else:
+                sfx.append({"event": snd["event"], "t": snd["t"], "until": None})
+        if client.ignored:
+            report.append(f"{spec['id']} : actions du script non reprises : {', '.join(sorted(set(client.ignored)))}")
+    else:
+        track = buff_camera_track(db, db.ids[int(spec["buff"])])
+        camera = camera_keys(track)
     anchor = None
-    for n, rid in enumerate(spec["lines"], 1):
+    refs = spec.get("_refs", {}).get("lines", spec["lines"])
+    for n, (rid, ref) in enumerate(zip(spec["lines"], refs), 1):
         cd = db.ids.get(int(rid))
         if cd is None:
-            raise ValueError(f"ClientData {rid} introuvable")
+            raise ValueError(f"ClientData {ref} introuvable")
         cl = read_client_line(db, cd)
         if anchor is None and spec.get("fr_anchor") and texts.fr is not None and cl.text_index is not None:
             anchor = cl.text_index - texts.fr.find("fr", spec["fr_anchor"])
@@ -2574,16 +2668,25 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
         actor = next((a for a in spec["actors"] if a["id"] == speaker), None)
         clips = [actor["talk"]] if actor and actor.get("talk") and cl.animations else []
         plan_lines.append({"start": None, "duration": cl.delay_ms / 1000.0, "voice_event": cl.voice, "speaker": speaker,
-                           "clips": clips, "text": text, "source": f"ClientData {rid}"})
+                           "clips": clips, "text": text, "source": f"ClientData {ref}"})
+    starts = spec.get("timing", {}).get("starts")
+    if starts is not None:
+        # départs mesurés (reconnaissance vocale sur la voix officielle, voir le manifeste)
+        official = [l for l in plan_lines if l["source"].startswith("ClientData")]
+        for line, t in zip(official, starts):
+            line["start"] = t
+        plan_lines.sort(key=lambda l: l["start"])
     actors = []
     for a in spec["actors"]:
         entry = dict(a)
         entry["mob_offset"] = pack_offset(db, a["mob"])
         entry["path"] = a.get("path") or [{"t": 0, "p": a["position"], "face": a.get("face")}]
         actors.append(entry)
+    timing = "measured" if starts is not None else ("client" if client is not None and not spec["lines"] else "estimated")
     return {"map": spec["map"], "camera": camera, "lines": plan_lines, "actors": actors, "weather": None,
-            "sounds": {"music": [], "ambience": []}, "post": spec.get("post", []),
-            "decor_center": spec.get("decor_center"), "timing": "estimated", "sources": spec.get("sources", {})}
+            "sounds": {"music": [], "ambience": [], "sfx": sfx}, "post": post,
+            "decor_center": spec.get("decor_center"), "timing": timing,
+            "sources": {"buff": buff_ref, **({"script": "client"} if client is not None else {}), **spec.get("sources", {})}}
 
 
 def weather_light(weather: dict, base: dict) -> dict:
@@ -2741,8 +2844,8 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         try:
             plans[spec["id"]] = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report, rtexts) \
                 if source == "xdb70" \
-                else plan_gameview(spec, db, texts, anim_names, report) if source == "gameview" \
-                else plan_manual(spec, db, texts, lines17, anim_names, report)
+                else plan_gameview(resolve_refs(spec, db), db, texts, anim_names, report) if source == "gameview" \
+                else plan_manual(resolve_refs(spec, db), db, texts, lines17, anim_names, report)
         except (AttributeError, KeyError, ValueError) as err:
             # Scène non demandée (`--only`) dont le plan ne se lit plus (ressource du client déplacée par
             # une mise à jour) : elle ne bloque pas les autres, mais ne contribue pas au décor commun

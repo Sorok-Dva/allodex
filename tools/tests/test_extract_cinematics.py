@@ -270,7 +270,49 @@ def test_engine_chapters_have_an_extraction_spec(manifest):
                 assert spec["first_buff"].endswith(".(BuffResource).xdb")   # déroulé serveur 7.0
             continue
         if spec.get("source") == "gameview":
-            assert isinstance(spec["scene"], int)                       # GameViewScene du client
+            assert spec["scene"].startswith("stele:res:")              # GameViewScene jouée par une stèle
+            continue
+        # références persistantes (resourceId), jamais l'identifiant volatil de pack.bin
+        refs = [spec["buff"], *spec["lines"], *(a["mob"] for a in spec["actors"])]
+        refs += [sp[k] for sp in spec.get("spawns", []) for k in ("mob", "buff", "vot") if k in sp]
+        assert all(isinstance(r, str) and r.startswith("res:") for r in refs), spec["id"]
+        if "starts" in spec["timing"]:                                  # départs mesurés sur la voix
+            assert len(spec["timing"]["starts"]) == len(spec["lines"])
+            assert spec["timing"]["starts"] == sorted(spec["timing"]["starts"])
             continue
         numbered = sorted(n for g in spec["timing"]["groups"] for n in g["lines"])
         assert numbered == list(range(1, len(spec["lines"]) + 1))
+
+
+def test_load_textset_rejects_or_replaces_a_russian_loc_that_is_not_russian(tmp_path):
+    import zipfile as _zip
+    from tools.extract_cinematics import cyrillic_share, load_textset
+
+    def loc(texts: list[str]) -> bytes:
+        blob, entries, off = b"", [], 0
+        for t in texts:
+            data = t.encode("utf-16-le")
+            entries.append((len(t), off))
+            blob += data
+            off += len(data)
+        body = struct.pack("<I", 7) + struct.pack("<I", 0) + struct.pack("<Q", 2 * len(entries))
+        body += b"".join(struct.pack("<QQ", n, o) for n, o in entries)
+        body += struct.pack("<I", 1) + struct.pack("<Q", len(blob)) + blob
+        return zlib.compress(body)
+
+    assert cyrillic_share(["Хаук", "Trondur", ""]) == 0.5
+    for name, rus in (("new", ["Is that a ship?", "Freya!"]), ("old", ["Это корабль?", "Фрейя!"])):
+        packs = tmp_path / name / "data" / "Packs"
+        packs.mkdir(parents=True)
+        with _zip.ZipFile(packs / "Texts_x64.pak", "w") as z:
+            z.writestr("Bin/pack.rus.loc", loc(rus))
+            z.writestr("Bin/pack.eng_eu.loc", loc(["Is that a ship?", "Freya!"]))
+        with _zip.ZipFile(packs / "BaseLocall_x64.pak", "w") as z:
+            z.writestr("Bin/pack.bin", zlib.compress(b"\0" * 64))
+    spec = {"texts_pak": "data/Packs/Texts_x64.pak", "bin_pak": "data/Packs/BaseLocall_x64.pak",
+            "locs": {"ru": "Bin/pack.rus.loc", "en": "Bin/pack.eng_eu.loc"}}
+    with pytest.raises(ValueError, match="pas du russe"):
+        load_textset(tmp_path / "new", spec, lambda msg: None)
+    notes: list[str] = []
+    ts = load_textset(tmp_path / "new", {**spec, "ru_fallback": str(tmp_path / "old")}, notes.append)
+    assert ts.texts["ru"] == ["Это корабль?", "Фрейя!"] and "appariés par l'anglais" in notes[0]
