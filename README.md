@@ -96,7 +96,12 @@ s'enchaînent dans l'ordre chronologique, avec un carton de titre à chaque chap
 liste des chapitres (vignettes, navigation), une barre de progression sur la durée du
 film (repères de chapitres) et les sous-titres officiels en `<track>` WebVTT (FR, EN, RU
 ou aucun). Deux lecteurs se relaient : pendant qu'un chapitre joue, l'autre, caché et
-muet, précharge le suivant, d'où un passage sans attente. `?faction=league|empire` ouvre
+muet, précharge le suivant, d'où un passage sans attente ; après un changement de chapitre, le
+lecteur libéré attend 1,5 s avant de précharger (la lecture des modèles d'une scène moteur ne tombe
+pas pendant le fondu). **Fondus** : un voile noir ferme chaque chapitre et ouvre le suivant (0,6 s,
+vidéo comme scène moteur) et reste posé tant que le lecteur montré n'est pas prêt ; une scène moteur
+n'est prête qu'une fois préparée (programmes compilés, textures envoyées quelques-unes par image,
+premier rendu), et son horloge ne part qu'ensuite. `?faction=league|empire` ouvre
 directement un film. Clavier : espace (lecture/pause), Maj+←/→ (chapitre), F (plein écran),
 Échap (quitte le plein écran, sinon retour au choix de faction).
 
@@ -228,6 +233,36 @@ qui les posent. La scène commence au premier plan de caméra (avant, c’est la
 Stèle du 17.0 retrouvée par sa place (`SpawnLocation` : case de 32 m en `+0x30`, repère local en
 `+0x24`) ; lacet propre d’un PNJ de `GameViewScene` en `+0xB8` ; délai `delayBefore` d’une action de
 `GameViewScript` en `+0x2C` (recoupés sur le 7.0).
+
+Corrections du tutoriel de l’Empire (toutes génériques, règles tirées des données) :
+
+- **Composants d’état** (`StateComponent` : indices d’animations en `+0x68`, composant porté en
+  `+0x88`, `stopForOtherAnimation` en `+0x99`, recoupés sur `KaniaShip` 7.0) : un composant montré tant
+  que le gabarit joue l’une de ces animations. Le modèle de la stèle `League_Ship_Final`, `KaniaShip`,
+  n’est qu’une boîte invisible : la coque du navire kanien (`KaniaShip_Clear` en `idle`,
+  `KaniaShip_Break` en flammes en `idle01`, `KaniaShip_Part01` en `special`) et le Спрутоглав qui
+  l’enserre (`AstralCtulhuShip`, `idle01`/`special`, à (100, −35, 0), échelle 0,75) sont ses
+  composants d’état ; ils sont posés comme effets accrochés à la stèle, pendant les états qui les
+  montrent (d’où les combattants kaniens qui flottaient : leur pont n’était pas dessiné). Le décor et
+  les effets ne les posent pas (aucun ne les pilote).
+- **Échelle de la `VisualMob`** (`+0xB4`, f32 ; 12 066 `VisualMob`, 8 971 à 1) appliquée aux acteurs :
+  le Спрутоглав est à 0,4 (`AstralCthulhu_Inst`) ; à l’échelle 1 il traversait le navire. Il se
+  déplace à sa `walkSpeed` (8 m/s) sur son chemin serveur, 14 m sous le pont (`z` 0,889 des
+  `ServerObjects`) ; son modèle n’a pas de marche : il court (`Run`), choix documenté.
+- **Portes** : un objet du décor qui porte une `StaticDevice` à `DoorResource` dans l’arbre 7.0 (le
+  17.0 ne le dit pas : le serveur envoie l’état) est une porte. Elle est montrée dans l’état de sa
+  ressource (`isOpen`, `openVisState`/`closedVisState` → animation `CLAMP` du `DeviceVisScripts`),
+  ou dans celui que le tutoriel lui a laissé (`"doors"` du manifeste, justifié), puis suit les
+  `DoorSwitch` du déroulé ; chaque état est une variante du gabarit (`IH1_Door_01@special01`) tenue sur
+  sa dernière image. Sans cela, le modèle jouait en boucle son premier état (l’ouverture).
+- **Ciel du pont** (`"sky"` du manifeste) : dans le 7.0, le pont (région 0_5, zone `FinalZone`) a
+  l’éclairage `AstralShip_Tubes` et son ciel astral `Astral_Sky` ; le 17.0 ne relie plus le pont à
+  aucun éclairage, et le premier de la carte (`AstralShip`) n’a que le dôme de nuit gris et les
+  étoiles. Le `SkyMesh` 103155 du 17.0 a les trois mêmes calques qu’`Astral_Sky`. Non repris : ses
+  animations, le plancton (`AreaEffect` `Plankton_Tubes`) et l’ombrage astral (`AstralShadingParams`).
+- **Orientations** : un PNJ que le manifeste replace (`start_at`, `"yaw": "walk"`) garde le cap de
+  la marche qui l’y a mené ; un donneur de quête (`"interlocutor"`, `"face": "player"`) se tourne
+  vers le joueur qui lui parle (comportement du client, non tiré des fichiers).
 
 **Tutoriel de l’Empire, scènes doublées** (étape 2) : comme pour la Ligue, les enchaînements doublés des
 zones de script et des quêtes d’`Inst_EmpireStart` qui mettent en scène plusieurs répliques sont montés,

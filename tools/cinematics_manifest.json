@@ -23293,7 +23293,11 @@
     ],
     "_note": "Aucune caméra dans les données : la scène se joue dans la vue du joueur. Point de vue : centre de la zone de script ComanadPost (5_4_ServerObjects), que le joueur atteint, à 2 m ; regard vers le capitaine (IE1_Captain, même fichier)."
    },
-   "_note": "Zone de script ComanadPost (Inst_EmpireStart, 7.0) : au poste de commandement, le second Алексей Грубин (« Подача энергии падает! ») et le capitaine Казимир Саблин (« Проклятье! Что там происходит? ») ; dialogue doublé IE1/08-10_Dialogue_Mechanic-Master, bulles, gestes (emoteSpeech), bombardement (IE1_OutdoorShelling). La zone change ensuite le capitaine en donneur de la quête « Реакторная » (ImpactMobMorph → Captain_Morph)."
+   "_note": "Zone de script ComanadPost (Inst_EmpireStart, 7.0) : au poste de commandement, le second Алексей Грубин (« Подача энергии падает! ») et le capitaine Казимир Саблин (« Проклятье! Что там происходит? ») ; dialogue doublé IE1/08-10_Dialogue_Mechanic-Master, bulles, gestes (emoteSpeech), bombardement (IE1_OutdoorShelling). La zone change ensuite le capitaine en donneur de la quête « Реакторная » (ImpactMobMorph → Captain_Morph).",
+   "doors": {
+    "ES_Door7": "open",
+    "_note": "Portes (DoorResource des objets du décor, arbre 7.0) à l’entrée de la zone : la récompense de Quest3_1 (les canons, juste avant) a ouvert ES_Door7 ; ComanadPost la referme et ouvre ES_Door7_2 dans la scène ; les autres ont l’état de leur ressource (fermées ; ES_Door11 ouverte, Door_01Open)."
+   }
   },
   {
    "id": "empire-start-lost-artifact",
@@ -23323,7 +23327,8 @@
      16.3284
     ],
     "yaw": 2.45108,
-    "_note": "Donneur de la quête « Сердце корабля » (sa MobWorld cite Quest4_1) : le savant Саранг Кафири, posé en IE1_NPC2 (5_5_ServerObjects), sa place et son lacet."
+    "_note": "Donneur de la quête « Сердце корабля » (sa MobWorld cite Quest4_1) : le savant Саранг Кафири, posé en IE1_NPC2 (5_5_ServerObjects), sa place et son lacet. Le donneur de la quête se tourne vers le joueur qui lui parle (comportement du client, non tiré des fichiers) : lacet vers le point de vue.",
+    "face": "player"
    },
    "fr_blocks": [
     {
@@ -23362,7 +23367,14 @@
     ],
     "_note": "Aucune caméra dans les données : la scène se joue dans la vue du joueur. Point de vue : centre de la zone de script Lazor (5_5_ServerObjects : la salle du réacteur, où le savant parle au joueur qui y entre), à 2 m ; regard vers la place d’où part le capitaine (IE1_Captain02, 5_4_ServerObjects)."
    },
-   "_note": "Récompense de la quête « Сердце корабля » (Quest4_1.rewardImpacts, 7.0) : le savant (« Слава Свету! Мы успели! »), le capitaine Казимир Саблин et le second Алексей Грубин montent à la salle du réacteur (IE1_Captain02_Path, IE1_StarPom02_Path), deux techniciens courent aux machines et s’en servent ; ordres du capitaine (IE1/13_Master_07, 14_Master_08 : le « прибор » a disparu), bulles, puis l’annonce du navigateur (IE1/15_Navigator_Broadcast_01). Le capitaine devient ensuite le donneur de « Схватка с витязем » (ImpactMobMorph → Captain_3)."
+   "_note": "Récompense de la quête « Сердце корабля » (Quest4_1.rewardImpacts, 7.0) : le savant (« Слава Свету! Мы успели! »), le capitaine Казимир Саблин et le second Алексей Грубин montent à la salle du réacteur (IE1_Captain02_Path, IE1_StarPom02_Path), deux techniciens courent aux machines et s’en servent ; ordres du capitaine (IE1/13_Master_07, 14_Master_08 : le « прибор » a disparu), bulles, puis l’annonce du navigateur (IE1/15_Navigator_Broadcast_01). Le capitaine devient ensuite le donneur de « Схватка с витязем » (ImpactMobMorph → Captain_3).",
+   "doors": {
+    "ES_Door7_2": "open",
+    "ES_Door10": "open",
+    "ES_Door10_2": "open",
+    "ES_Door10_3": "open",
+    "_note": "Portes à la salle du réacteur : ComanadPost a fermé ES_Door7 et ouvert ES_Door7_2 ; les zones Generator1, Generator1_2 et Generator1_3 du couloir vers le réacteur ont ouvert ES_Door10, ES_Door10_2, ES_Door10_3 (Generator1_3 ferme ES_Door9) ; les autres ont l’état de leur ressource."
+   }
   },
   {
    "id": "empire-start-boarding-order",
@@ -23392,12 +23404,14 @@
      16.328
     ],
     "yaw": 3.1833,
-    "_note": "Donneur de la quête « Схватка с витязем » (sa MobWorld cite Quest4_4) : le capitaine, que la récompense de Quest4_1 a mené en IE1_Captain02_Path (5_5_ServerObjects) puis changé en Captain_3 (ImpactMobMorph). Lacet : sens de cette marche (de IE1_Captain02 à IE1_Captain02_Path, face_yaw du lecteur), choix documenté : les données ne le donnent pas."
+    "_note": "Donneur de la quête « Схватка с витязем » (sa MobWorld cite Quest4_4) : le capitaine, que la récompense de Quest4_1 a mené en IE1_Captain02_Path (5_5_ServerObjects) puis changé en Captain_3 (ImpactMobMorph). Le donneur de la quête se tourne vers le joueur qui lui parle (comportement du client, non tiré des fichiers) : lacet vers le point de vue.",
+    "face": "player"
    },
    "start_at": {
     "IE1_StarPom02": {
      "locator": "IE1_StarPom02_Path",
-     "_note": "La récompense de Quest4_1 a mené le second Алексей Грубин en IE1_StarPom02_Path : il y reste."
+     "_note": "La récompense de Quest4_1 a mené le second Алексей Грубин en IE1_StarPom02_Path (GoThroughPath depuis IE1_StarPom02) : il y reste, tourné dans le sens de cette marche, comme à la fin de « L’artefact perdu ».",
+     "yaw": "walk"
     }
    },
    "fr_blocks": [
@@ -23437,7 +23451,14 @@
     ],
     "_note": "Aucune caméra dans les données. Point de vue : le même que la scène précédente (centre de la zone Lazor, à 2 m), le joueur n’ayant pas quitté la salle ; regard vers le capitaine, à 1 m au-dessus de sa place."
    },
-   "_note": "Début de la quête « Схватка с витязем » (Quest4_4.startImpacts, 7.0) : le capitaine donne l’ordre de l’abordage, dialogue doublé du capitaine et du second (IE1/16-18_Dialogue_Master-FirstMate), bulle « Приказываю вернуть артефакт. Любой ценой! », lampe d’alerte IE1_Lamp15."
+   "_note": "Début de la quête « Схватка с витязем » (Quest4_4.startImpacts, 7.0) : le capitaine donne l’ordre de l’abordage, dialogue doublé du capitaine et du second (IE1/16-18_Dialogue_Master-FirstMate), bulle « Приказываю вернуть артефакт. Любой ценой! », lampe d’alerte IE1_Lamp15.",
+   "doors": {
+    "ES_Door7_2": "open",
+    "ES_Door10": "open",
+    "ES_Door10_2": "open",
+    "ES_Door10_3": "open",
+    "_note": "Portes à la salle du réacteur : ComanadPost a fermé ES_Door7 et ouvert ES_Door7_2 ; les zones Generator1, Generator1_2 et Generator1_3 du couloir vers le réacteur ont ouvert ES_Door10, ES_Door10_2, ES_Door10_3 (Generator1_3 ferme ES_Door9) ; les autres ont l’état de leur ressource."
+   }
   },
   {
    "id": "empire-start-stolen-device",
@@ -23497,7 +23518,9 @@
     ],
     "_note": "Aucune caméra dans les données. Point de vue : centre de la zone de script TeleportPaladin (0_5_ServerObjects), que le joueur atteint sur le pont, à 2 m ; regard vers Gradimir Belov (IE1_PaladinTeleport, même fichier)."
    },
-   "_note": "Zone de script TeleportPaladin (Inst_EmpireStart, 7.0), sur le pont : Градимир Белов, le « прибор » volé en main, crie « Прибор у нас, задержите их! » (IE1/22_Gradimir_Paluba, bulle), marche vers le point de saut (IE1_PaladinTeleportMove) et disparaît à 6 s ; le combat du navire kanien commence (League_Ship_Fight1, état 1). La zone Jump (« L’abordage ») s’ouvre 9 s après."
+   "_note": "Zone de script TeleportPaladin (Inst_EmpireStart, 7.0), sur le pont : Градимир Белов, le « прибор » volé en main, crie « Прибор у нас, задержите их! » (IE1/22_Gradimir_Paluba, bulle), marche vers le point de saut (IE1_PaladinTeleportMove) et disparaît à 6 s ; le combat du navire kanien commence (League_Ship_Fight1, état 1). La zone Jump (« L’abordage ») s’ouvre 9 s après.",
+   "sky": 103155,
+   "sky_note": "Ciel du pont : dans l’arbre 7.0, la région 0_5 (le pont) est de la zone FinalZone, dont l’éclairage AstralShip_Tubes a pour ciel Astral_Sky (Astral_SkyBackGround, Astral_SkyStars, Astral_SkyForegroundGround) ; le 17.0 ne relie plus le pont à aucun éclairage (ni ZoneInfo ni grille), et le premier éclairage de la carte (AstralShip) n’a que le dôme de nuit gris et les étoiles. SkyMesh 103155 du 17.0 : le premier des huit aux trois mêmes calques qu’Astral_Sky."
   },
   {
    "id": "empire-start-boarding",
@@ -23519,7 +23542,9 @@
     ]
    },
    "audio_note": "Buffs posés avant la scène et encore actifs : MusicBuff (EnemyAtack ; retiré plus tard par Key2_Spell) joue Music/ZonesMusic/IE1_main, IE1_Ships_Ambient (LastEventStart ; retiré à la mort de Gradimir) joue Ambience/AstralAmbience/4Layer_3Tier. Onde de IE1_main d'après Music.bev : définition /Music/Conquer_high (adaptivemusic/Conquer_high.wav, sous-piste 2 de Music_StartZones.fsb).",
-   "_note": "Zone de script Jump du tutoriel de l’Empire (Inst_EmpireStart, quête Quest4_4 « Схватка с витязем ») : buff Jump_Camera (14 s, plan JumpCameraFix), le navire impérial touché (Shield.CanonHitFire aux repères IE_Boom_01…04, Hull.Death à IE_ShipDestroy et IE_ShipDestroy2, son IE1_ShipDestroy), les combattants de la GameViewScene IE1_EmpireShip_Fight1 tombent (état 2) puis disparaissent (état 3), le Спрутоглав (IE1_Ktulha) suit son chemin puis est retiré, débarquement (Demon_Desant : SummonUndead aux repères d’arrivée), le navire kanien (stèle League_Ship_Final) passe à idle01. Le joueur, qui saute (ShipOutJump, route FromShipFly), n’est pas montré."
+   "_note": "Zone de script Jump du tutoriel de l’Empire (Inst_EmpireStart, quête Quest4_4 « Схватка с витязем ») : buff Jump_Camera (14 s, plan JumpCameraFix), le navire impérial touché (Shield.CanonHitFire aux repères IE_Boom_01…04, Hull.Death à IE_ShipDestroy et IE_ShipDestroy2, son IE1_ShipDestroy), les combattants de la GameViewScene IE1_EmpireShip_Fight1 tombent (état 2) puis disparaissent (état 3), le Спрутоглав (IE1_Ktulha) suit son chemin puis est retiré, débarquement (Demon_Desant : SummonUndead aux repères d’arrivée), le navire kanien (stèle League_Ship_Final) passe à idle01. Le joueur, qui saute (ShipOutJump, route FromShipFly), n’est pas montré.",
+   "sky": 103155,
+   "sky_note": "Ciel du pont : dans l’arbre 7.0, la région 0_5 (le pont) est de la zone FinalZone, dont l’éclairage AstralShip_Tubes a pour ciel Astral_Sky (Astral_SkyBackGround, Astral_SkyStars, Astral_SkyForegroundGround) ; le 17.0 ne relie plus le pont à aucun éclairage (ni ZoneInfo ni grille), et le premier éclairage de la carte (AstralShip) n’a que le dôme de nuit gris et les étoiles. SkyMesh 103155 du 17.0 : le premier des huit aux trois mêmes calques qu’Astral_Sky."
   },
   {
    "id": "empire-start-knight-defeated",
@@ -23541,7 +23566,9 @@
     ]
    },
    "audio_note": "MusicBuff a été retiré par Key2_Spell : pas de musique de buff ; IE1_Ships_Ambient reste jusqu’à la téléportation (retiré à 24 s).",
-   "_note": "Capacité DeathTriggerPaladinFinal de Gradimir Belov (Quest4_4) : à sa mort, le joueur se téléporte (Teleport4sec, fondu au noir Effect_Avatar_Fade), à 9 s le buff Teleport4sec_Camera (17 s, plan IE1_Teleport_Camera), à 10 s le navire kanien joue « special » (League_Ship_Final, état 3) et ses combattants disparaissent (League_Ship_Fight1, état 3), à 24 s le joueur part pour Hadagan_Sanatorium (ImpactTeleport) : la scène va du premier plan (9 s) au départ (24 s). La réplique de la mort de Gradimir (IE1/24_Gradimir_Death, bulle sans sous-titre) est dite à 0 s, avant le plan : hors scène."
+   "_note": "Capacité DeathTriggerPaladinFinal de Gradimir Belov (Quest4_4) : à sa mort, le joueur se téléporte (Teleport4sec, fondu au noir Effect_Avatar_Fade), à 9 s le buff Teleport4sec_Camera (17 s, plan IE1_Teleport_Camera), à 10 s le navire kanien joue « special » (League_Ship_Final, état 3) et ses combattants disparaissent (League_Ship_Fight1, état 3), à 24 s le joueur part pour Hadagan_Sanatorium (ImpactTeleport) : la scène va du premier plan (9 s) au départ (24 s). La réplique de la mort de Gradimir (IE1/24_Gradimir_Death, bulle sans sous-titre) est dite à 0 s, avant le plan : hors scène.",
+   "sky": 103155,
+   "sky_note": "Ciel du pont : dans l’arbre 7.0, la région 0_5 (le pont) est de la zone FinalZone, dont l’éclairage AstralShip_Tubes a pour ciel Astral_Sky (Astral_SkyBackGround, Astral_SkyStars, Astral_SkyForegroundGround) ; le 17.0 ne relie plus le pont à aucun éclairage (ni ZoneInfo ni grille), et le premier éclairage de la carte (AstralShip) n’a que le dôme de nuit gris et les étoiles. SkyMesh 103155 du 17.0 : le premier des huit aux trois mêmes calques qu’Astral_Sky."
   },
   {
    "id": "league-klement-death",
