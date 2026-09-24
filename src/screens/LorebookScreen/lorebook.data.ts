@@ -40,6 +40,9 @@ export const loadDir = (lang: ContentLang, block: number) => get<DirRow[]>(`dir/
 export const loadNames = (lang: ContentLang) => get<Record<string, string>>(`names/${lang}.json`);
 export const loadHiddenIndex = (section: SectionId) => get<{ first: number[] }>(`list/${section}-index.json`);
 
+/** Images du matériel communautaire (`tools/build_lore_media.py`) : pleine taille ou vignette. */
+export const imageUrl = (id: string, thumb = false) => `/game/lorebook-media/${id}${thumb ? '-t' : ''}.webp`;
+
 /** Réservé aux tests. */
 export function clearLoreCache() {
   cache.clear();
