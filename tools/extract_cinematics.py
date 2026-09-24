@@ -166,10 +166,59 @@ class TextSet:
         return hits[0]
 
 
-def load_textset(root: Path, spec: dict) -> TextSet:
+# Part minimale des textes non vides écrits en cyrillique pour qu'un `.loc` soit du russe (le 17.0 :
+# 95 % ; son `pack.eng_eu.loc` : 8 %, noms propres et textes non traduits).
+RUSSIAN_SHARE = 0.5
+
+
+def cyrillic_share(texts: list[str]) -> float:
+    filled = [t for t in texts if t.strip()]
+    return sum(1 for t in filled if has_cyrillic(t)) / max(1, len(filled))
+
+
+def russian_from(root: Path, spec: dict, z: zipfile.ZipFile, texts: dict[str, list[str]], warn) -> list[str]:
+    """Textes russes quand le `.loc` russe du client n'en est pas (mise à jour partielle : le
+    `pack.rus.loc` d'une construction peut sortir en anglais). Dans l'ordre : un autre `.loc` du même
+    pak, de même longueur, qui soit du russe ; sinon le russe d'un client antérieur (`ru_fallback`),
+    réplique par réplique, apparié par le texte anglais (seulement quand il est unique des deux côtés)."""
     from tools.allods_packdb import packs_path
+    count = len(texts["ru"])
+    for entry in sorted(n for n in z.namelist() if n.endswith(".loc") and n != spec["locs"]["ru"]):
+        other = unpack_loc(z.read(entry))
+        if len(other) == count and cyrillic_share(other) >= RUSSIAN_SHARE:
+            warn(f"{spec['locs']['ru']} n'est pas du russe : textes russes lus dans {entry}")
+            return other
+    fallback = spec.get("ru_fallback")
+    if not fallback or "en" not in texts:
+        raise ValueError(f"{spec['locs']['ru']} n'est pas du russe ({cyrillic_share(texts['ru']):.0%} de cyrillique) "
+                         "et aucun autre texte russe n'est désigné (`ru_fallback`)")
+    with zipfile.ZipFile(packs_path(Path(fallback) / spec["texts_pak"])) as fz:
+        old_ru, old_en = unpack_loc(fz.read(spec["locs"]["ru"])), unpack_loc(fz.read(spec["locs"]["en"]))
+    seen: dict[str, int] = {}
+    for i, t in enumerate(old_en):
+        seen[t] = -1 if t in seen else i
+    mine: dict[str, int] = {}
+    for t in texts["en"]:
+        mine[t] = mine.get(t, 0) + 1
+    out = [old_ru[seen[t]] if seen.get(t, -1) >= 0 and mine[t] == 1 else "" for t in texts["en"]]
+    warn(f"{spec['locs']['ru']} n'est pas du russe : russe du client {fallback}, {sum(1 for t in out if t)} "
+         f"textes sur {count} appariés par l'anglais")
+    return out
+
+
+def load_textset(root: Path, spec: dict, warn=None) -> TextSet:
+    """Textes d'un client et éléments de sous-titres. La langue de chaque `.loc` est vérifiée : le russe
+    doit être en cyrillique, les autres non (sinon `russian_from`, ou erreur)."""
+    from tools.allods_packdb import packs_path
+    warn = warn or (lambda msg: print(msg, file=sys.stderr))
     with zipfile.ZipFile(packs_path(root / spec["texts_pak"])) as z:
         texts = {lang: unpack_loc(z.read(entry)) for lang, entry in spec["locs"].items()}
+        for lang, entries in texts.items():
+            share = cyrillic_share(entries)
+            if lang == "ru" and share < RUSSIAN_SHARE:
+                texts["ru"] = russian_from(root, spec, z, texts, warn)
+            elif lang != "ru" and share >= RUSSIAN_SHARE:
+                raise ValueError(f"{spec['locs'][lang]} ({lang}) est en cyrillique à {share:.0%} : langue inattendue")
     with zipfile.ZipFile(packs_path(root / spec["bin_pak"])) as z:
         blob = zlib.decompress(z.read("Bin/pack.bin"))
     count = min(len(v) for v in texts.values())

@@ -208,7 +208,7 @@ ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le rest
 
 ### Cinématiques moteur recréées en 3D
 
-Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Vingt-trois
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Vingt-neuf
 sont **recréées dans three.js** avec les données du dernier client et jouées dans le film comme
 des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix russes) :
 
@@ -237,6 +237,7 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Zone de départ de la Ligue · « L’évacuation » (`league-evacuation`, quête `Quest_4_30`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 81 s |
 | Zone de départ des Pridiens · « Ah, le cinéma ! » (`pride-cinema`, quête `Pride_1_9`) | serveur 7.0 (déclencheur) | `PridensStart` | 12 s |
 | Zone de départ des Pridiens · « Le spectacle » (`pride-performance`, quête `Pride_1_11`) | serveur 7.0 (déclencheur) | `PridensStart` | 11 s |
+| Isa 14.0 · six chapitres (`isa-unn-trance`, `isa-arrival`, `isa-fighting-pit`, `isa-fishers-legend`, `isa-freya`, `isa-captain-journal`) | client 17.0 (voir « Isa ») | `Isa`, `Isa_Prologue` | 21 à 91 s |
 
 **Zone de départ de l’Empire** (arc `empire-start`, en tête du film de l’Empire ; le prologue de l’Empire vient juste après sa fin, choix de l’utilisateur) : dans le
 17.0, les trois races de l’Empire (Xadaganiens, Orcs, Arisen) commencent au même tutoriel,
@@ -447,10 +448,68 @@ mènent (`ZoneLeague1/Quest_13_01…05`, `Quest_14_01Heroic`) n'ont ni caméra, 
 script ne portent que des téléportations, des invocations de boss et un anti-invisibilité ; aucune
 onde `Voice_*` ne les nomme.
 
-En attente, hors du film : `isa-freya` (Isa 14.0 : le navire « Freya », sujet du plan, est posé par le
-serveur et n'est pas dans le décor du client) et `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
+**Isa (14.0)** (arc `isa`, commun aux deux factions) : **aucune vidéo**. Le `Video.pak` du dernier client (mis à
+jour le 23/09/2026), ceux des clients RU 17 du 13/09, FR 15.0 (fin de patch) et FR 16.0 n'ont pour la 14.0 que
+`14_0Events/MainMenu/{Intro,MainMenu}.ogv` (logo et fond du menu, exclus) ; aucun autre pak du dernier client
+ne contient de vidéo (`.ogv`, `.bik`, `.webm`, `.mp4`…). Les cinématiques d'Isa sont jouées par le moteur,
+et l'arbre serveur 7.0 ne les connaît pas : tout vient du 17.0. Relevé : 204 voix `Cutscenes/Isa/*`
+(19,2 min, toutes dans des `ClientData`, 16 seulement avec un sous-titre) ; presque toutes ont leur **texte
+officiel** ailleurs, dans une bulle ou un message (appariement par reconnaissance vocale : 160 voix sur 204 à plus
+de 0,8 de ressemblance, les autres sont surtout des cris courts) ; 15 buffs de caméra dans le bloc d'Isa, dont un seul script complet (la légende des pêcheurs) et
+neuf caméras sans point (scènes vues par le joueur, avec voile noir). Six chapitres :
+
+| Chapitre | Source | Carte | Durée |
+|---|---|---|---|
+| « La transe d’Unn » (`isa-unn-trance`, Olm) | voix + textes officiels ; vue du joueur (choix) | `Isa_Prologue` | 91 s |
+| « L’arrivée sur Isa » (`isa-arrival`) | vue du joueur puis buff de caméra res:740170126 | `Isa` | 33 s |
+| « La fosse aux combats » (`isa-fighting-pit`, Skalgard) | vue du joueur puis buff de caméra res:740170162 | `Isa` | 21 s |
+| « La légende de Lyngbakr » (`isa-fishers-legend`, pilote) | script complet du buff res:740170090 | `Isa` | 44 s |
+| « La Freya » (`isa-freya`) | voile du buff res:740171413 ; vue du joueur (choix) | `Isa` | 21 s |
+| « Le journal du capitaine » (`isa-captain-journal`) | voix + textes officiels ; vue du joueur (choix) | `Isa` | 64 s |
+
+- **Script d'un buff du 17.0** (`tools/cutscene_client.py`, `"buff_script": true` ou un moment de `"cameras"`) :
+  l'arbre de `VisAction` du `BuffVisScripts` est rejoué avec les règles des fatalités — `VisActionList` en
+  séquence (`play` 0) ou simultanée (1), bornée par son `playWhile` (`+0x70`, un `VisActionDelay`) ; un
+  `CameraTrackAction` est un plan jusqu'à la borne de sa liste (durées des points en poids, règle 7.0) ;
+  `Sound2DAction` (événement en `+0xA0`) d'un projet `Cutscenes/…` → voix off ; `PostEffectVisAction` →
+  `UserPostEffect` (fondus `+0x28`/`+0x2C` en ms, carré noir en `+0x60`) → voile. La légende de Lyngbakr : voile
+  2,5 s, six plans (la mer, la statue, puis sous l'eau, les épaves et les côtes du poisson-île au fond), voix du
+  conteur à 3 s, six sous-titres rangés avec le buff (resourceId 740170091 à 096) dans l'ordre de la voix ; seul
+  leur instant est mesuré sur la voix (horodatage mot à mot de faster-whisper, `timing.starts`).
+- **Places des PNJ** : les `MobWorld` du 17.0 portent une `SpawnLocation` (`+0x70`, comme les stèles ; 7 911 PNJ),
+  avec leur zone (`+0x40` → `ZoneResource`, que la base de carte cite) et la **case z** (`+0x38`, i32, 32 m) :
+  un PNJ d'Isa en case z 2 à 40,57 m locaux est à 104,57 m, la hauteur du terrain sous lui (104,3 à 104,6). Pas
+  de lacet : les caps sont un choix (vers l'interlocuteur ou ce que la scène montre), documenté. `stele_position`
+  compte désormais la case z (nulle sur `Inst_EmpireStart` : rien n'y change).
+- **Textes officiels hors sous-titre** : les répliques d'Isa ont leur texte dans une **bulle** du `ClientData`
+  (`InterfaceAction` `ENUM_SHOW_BUBBLE`, indice du texte en `+0x78`), que `read_client_line` lit désormais, avec les
+  voix rangées dans une `VisActionList` (`+0x48`) et le nom d'un `Sound2DAction` en `+0xA0` (`+0x78` pour un
+  `Sound3DAction`) : avant, 39 voix d'Isa seulement sur 204 étaient lues. Une réplique du manifeste peut être
+  `{ref, ru}` : le `ClientData` et le début de son texte russe, qui vérifie la bulle (et désigne la suite d'une
+  réplique en plusieurs bulles). RU/EN du 17.0 à l'indice de la bulle ; FR du 16.0 par l'écart d'une paire de textes
+  connus (`fr_pair`, désignée par son début russe et français : 7 285 au 24/09/2026, vérifié réplique par réplique sur
+  tout le bloc d'Isa), qui sert aussi aux sous-titres que la voix ne relie pas au client FR. Plus robuste que
+  `fr_blocks`, qui retient des indices du 17.0 (ils bougent d'une mise à jour à l'autre : +27 textes au 24/09).
+- **Moments** (`"cameras"`) : une scène peut enchaîner plans de buffs de caméra du client (`buff`, à l'instant `t`)
+  et points de vue fixes du manifeste (`p`, `look`) ; groupes de répliques à un instant (`timing.groups[].t`) ;
+  animation du locuteur prise dans son `ClientData` (`line_animations`, `emoteTalkExcited`, `emoteFacepalm`…) ;
+  stèle posée par le client comme effet (`spawns[].stele`, gabarit et place de la stèle).
+- **La Freya** : l'épave du navire astral de Колль Фитилёк est dans le **décor** d'Isa
+  (`AstralShipKaniaGroupBroken`, région 050_050/3_2, seul navire astral de la carte), entourée des pages de son
+  journal (stèles `Offhand_Book_D_03`) et des places de Хаук et Герда. L'ancienne scène en attente suivait le buff de
+  caméra res:740171462 (19 s), qui regarde le ciel au-dessus du plateau de Skalgard, à 1 km de l'épave : son
+  rattachement à la Freya n'était pas établi, elle est remplacée.
+- **Non repris** : le voile sous-marin (brouillard et teinte sous la surface de l'eau : aucune donnée décodée) ;
+  Lyngbakr lui-même (absent du script) ; les animations de combat de la fosse ; l'apparition de Ratatosk (instant
+  choisi). **Reste d'Isa** (voir `tools/film_plan.json`) : la saga récitée aux Держащие Нить (7 vers, 117 s), le défi
+  de Харысхан (61 s, Харысхан n'est pas posé dans le client), le départ par la montagne (buff res:740171271, 17 s),
+  la prophétie des os, la chasse à Lyngbakr, le cimetière (les ancêtres de Gerda, 64 s), la dimension du Destin
+  (`Isa_Destiny` : la Toute-Mère et Unn, 29 s ; ses décors sont des stèles posées par le serveur), l'adieu de Gerda.
+
+En attente, hors du film : `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
 éclairée par le seul éclairage de zone du 17.0 (violet sombre, sans lumière ponctuelle), est presque
-noire, et l'ouverture de la sphère (drapeau visuel) n'est pas reproduite.
+noire, et l'ouverture de la sphère (drapeau visuel) n'est pas reproduite. (`isa-freya`, qui y était, est
+désormais dans le film : voir Isa ci-dessus.)
 
 **Troisième source : les scènes du client** (`"source": "gameview"`) : une `GameViewScene` (place et
 placement de caméra en doubles x, y, f32 lacet, double z ; PNJ par `VisualMob`) jouée par le
@@ -477,6 +536,20 @@ scène), ciel (`sky.glb`), effets, voix, sons, sous-titres. Les acteurs sont com
 un modèle par `MobWorld` (ou `VisualMob`) dans `engine/shared/actors/`, avec toutes les animations que
 les scènes lui demandent (110 Mo pour les treize scènes). Si `data/Packs` du client est un
 lien illisible depuis WSL, les outils lisent `data/Packs.adc-real`.
+
+**Références robustes aux mises à jour du client.** L'identifiant de la table de hachage de `pack.bin`
+(`PackDB.ids`) est un rang **volatil** : la mise à jour du client RU des 23 et 24/09/2026 l'a renuméroté (le buff
+de caméra d'`isa-freya`, 521226, est devenu 521264, et 521226 un `ClientData` ; `ao12-prologue04` ne trouvait plus
+son trajet). Le manifeste désigne donc chaque ressource par son **`resourceId` persistant** (tables de l'entête en
+0x30/0x38, `PackDB.resource_ids`/`resource_id` ; ressources de mécanique : buffs, PNJ, `ClientData`, quêtes…),
+écrit `"res:<resourceId>"`, ou, pour une scène du client (ressource visuelle, sans `resourceId`),
+`"stele:res:<resourceId>"` : la `GameViewScene` que joue la stèle. Un entier nu est refusé
+(`resolve_refs`, `resource_ref`). Les 18 références d'`ao12-prologue04`, `isa-freya` et `invasion-engineer-kania`
+ont été converties par l'ancien et le nouveau `pack.bin` (types identiques des deux côtés). **Langue des
+textes** : `load_textset` vérifie chaque `.loc` (le russe en cyrillique à plus de 50 %, les autres non) ; un
+`pack.rus.loc` qui ne serait pas du russe est remplacé par un autre `.loc` russe du même pak, sinon par celui du
+client RU antérieur (`sources.main.ru_fallback`), apparié texte à texte par l'anglais. Au 24/09 (paks de 16 h 13),
+le `pack.rus.loc` est bien du russe (95 % de cyrillique).
 
     python3 tools/extract_engine_cutscene.py                      # toutes les scènes
     python3 tools/extract_engine_cutscene.py --only ferris-locus  # une scène
@@ -663,7 +736,7 @@ sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce
 
 ### Ce qui manque
 
-- **Cinématiques moteur** : vingt et une sont recréées (voir plus haut). Liste dans
+- **Cinématiques moteur** : vingt-neuf sont recréées (voir plus haut), dont six d'Isa. Liste dans
   `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
   (7_0Events), extraites ici.
 - **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et

@@ -9,8 +9,16 @@ en relit la structure, établie sur les données (septembre 2026) :
 * **entête** : `u32 magic, u32 version, u32 hash, u32 ?, u64 ?` puis cinq couples
   `(u32 pointeur auto-relatif, u32 nombre)` en 0x18, 0x20, 0x28, 0x30, 0x38 et un sixième en
   0x40 : table de hachage des objets (65521 seaux), table des chemins racines (4081 seaux),
-  table des **types** (1498 noms `struct NDb::…`), deux index id ↔ décalage (65521 seaux) et
-  le début des **blocs** ;
+  table des **types** (1498 noms `struct NDb::…`), deux index **`resourceId` ↔ décalage**
+  (65521 seaux) et le début des **blocs** ;
+* **deux identifiants** : l'identifiant de la table de hachage (0x18, `PackDB.ids`) est un **rang
+  volatil**, renuméroté à chaque construction de la base (mise à jour du client RU des 23 et 24/09/2026 :
+  le buff de caméra 521226 d'`isa-freya` est devenu 521264, 521226 étant désormais un `ClientData`) ;
+  le **`resourceId`** des tables 0x30/0x38 (`PackDB.resource_ids`, `PackDB.resource_id`) est
+  l'identifiant **persistant** des ressources de mécanique que le serveur nomme (buffs, PNJ,
+  `ClientData`, quêtes… : 270 000 ressources sur 553 000, pas les ressources visuelles), stable d'un
+  build à l'autre (vérifié sur les 17 références du manifeste entre les builds du 13 et du 23/09).
+  Le manifeste des cinématiques désigne les ressources par lui (`"res:<resourceId>"`) ;
 * **blocs** : `u32 genre, u64 taille, charge utile`. Genre 3 = image mémoire des objets
   (« données »), genre 4 = **table de relocation** (`u64 emplacement | genre, u64 cible` par
   entrée), genre 5 = table annexe (non utilisée ici) ;
@@ -119,6 +127,9 @@ class PackDB:
         self._paths: dict[str, int] | None = None
         self._ids: dict[int, int] | None = None
         self._pak_names: list[str] | None = None
+        self._resource_ids: dict[int, int] | None = None
+        self._resource_of: dict[int, int] | None = None
+        self._rid_of: dict[int, int] | None = None
         self._reloc_end = reloc_at + 16 * count
 
     # -- structure du fichier
@@ -189,6 +200,36 @@ class PackDB:
                     out[self._u32(rec + 4)] = offset
             self._ids = out
         return self._ids
+
+    def _pairs(self, header: int) -> dict[int, int]:
+        base, buckets = self._selfptr(header)
+        out: dict[int, int] = {}
+        for b in range(buckets):
+            p, n = self._selfptr(base + 8 * b)
+            for k in range(n):
+                key, value = struct.unpack_from("<QQ", self.raw, p + 16 * k)
+                out[key] = value
+        return out
+
+    @property
+    def resource_ids(self) -> dict[int, int]:
+        """`resourceId` persistant → décalage (table de l'entête en 0x30). Stable d'une construction
+        de la base à l'autre, contrairement à `ids` ; seules les ressources de mécanique en ont un."""
+        if self._resource_ids is None:
+            self._resource_ids = self._pairs(HEADER_ID_TO_OFFSET)
+        return self._resource_ids
+
+    def resource_id(self, off: int) -> int | None:
+        """`resourceId` persistant de la ressource au décalage `off` (table en 0x38), ou None."""
+        if self._resource_of is None:
+            self._resource_of = self._pairs(HEADER_OFFSET_TO_ID)
+        return self._resource_of.get(off)
+
+    def rid(self, off: int) -> int | None:
+        """Identifiant volatil (`ids`) de la ressource au décalage `off`, ou None."""
+        if self._rid_of is None:
+            self._rid_of = {v: k for k, v in self.ids.items()}
+        return self._rid_of.get(off)
 
     @property
     def pak_names(self) -> list[str]:

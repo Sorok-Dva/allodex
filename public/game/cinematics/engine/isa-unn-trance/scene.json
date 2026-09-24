@@ -1,0 +1,1681 @@
+{
+ "id": "isa-unn-trance",
+ "map": "Isa_Prologue",
+ "up": [
+  0,
+  0,
+  1
+ ],
+ "mirror": true,
+ "duration": 90.885,
+ "timing": "estimated",
+ "camera": {
+  "points": [
+   {
+    "t": 0,
+    "p": [
+     13103.8,
+     13745.2,
+     55.8
+    ]
+   }
+  ],
+  "targets": [
+   {
+    "t": 0,
+    "p": [
+     13099.3,
+     13750.4,
+     54.8
+    ]
+   }
+  ],
+  "duration": 90.885,
+  "fov": 45
+ },
+ "lines": [
+  {
+   "n": 1,
+   "start": 0.5,
+   "duration": 0.0,
+   "speaker": "unn",
+   "voice": {
+    "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_01",
+    "wave": "Isa_Prologue_4_UnnTranceSay_01",
+    "bank": "SFX/Voice/Voice_Isa3_rus.bsb",
+    "ogg": "voice/01.ogg",
+    "mp3": "voice/01.mp3",
+    "duration": 4.994
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Тысячу лет назад спасли они Ольм, пожертвовав собой.",
+    "en": "A thousand years ago they saved Howlem by sacrificing themselves.",
+    "fr": "Il y a des milliers d'années, ils ont sauvé Howlem en se sacrifiant."
+   },
+   "source": "ClientData res:740169543"
+  },
+  {
+   "n": 2,
+   "start": 6.494,
+   "duration": 0.0,
+   "speaker": "unn",
+   "voice": {
+    "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_02",
+    "wave": "Isa_Prologue_4_UnnTranceSay_02",
+    "bank": "SFX/Voice/Voice_Isa3_rus.bsb",
+    "ogg": "voice/02.ogg",
+    "mp3": "voice/02.mp3",
+    "duration": 5.177
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Но ничто не исчезает на совсем, они всё ещё здесь, в Древе…",
+    "en": "But nothing disappears completely, they are still here in the Tree...",
+    "fr": "Mais rien ne disparaît complètement, ils sont toujours ici, dans l'Arbre..."
+   },
+   "source": "ClientData res:740169544"
+  },
+  {
+   "n": 3,
+   "start": 12.671,
+   "duration": 0.0,
+   "speaker": "unn",
+   "voice": {
+    "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_03",
+    "wave": "Isa_Prologue_4_UnnTranceSay_03",
+    "bank": "SFX/Voice/Voice_Isa3_rus.bsb",
+    "ogg": "voice/03.ogg",
+    "mp3": "voice/03.mp3",
+    "duration": 3.583
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Они были со своим народом, видели его радости и беды…",
+    "en": "They were with their people, saw their joys and troubles...",
+    "fr": "Ils étaient avec leur peuple et furent témoins de leurs joies et de leurs problèmes."
+   },
+   "source": "ClientData res:740169545"
+  },
+  {
+   "n": 4,
+   "start": 17.254,
+   "duration": 0.0,
+   "speaker": "unn",
+   "voice": {
+    "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_04",
+    "wave": "Isa_Prologue_4_UnnTranceSay_04",
+    "bank": "SFX/Voice/Voice_Isa3_rus.bsb",
+    "ogg": "voice/04.ogg",
+    "mp3": "voice/04.mp3",
+    "duration": 4.235
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Достаточно лишь позвать… Я чувствую, они откликнутся…",
+    "en": "It is enough just to call... They will respond, I can feel it...",
+    "fr": "C'est assez pour appeler... Ils répondront, je peux le sentir..."
+   },
+   "source": "ClientData res:740169546"
+  },
+  {
+   "n": 5,
+   "start": 22.489,
+   "duration": 0.0,
+   "speaker": "unn",
+   "voice": {
+    "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_05",
+    "wave": "Isa_Prologue_4_UnnTranceSay_05",
+    "bank": "SFX/Voice/Voice_Isa3_rus.bsb",
+    "ogg": "voice/05.ogg",
+    "mp3": "voice/05.mp3",
+    "duration": 5.998
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Ты была быстрой, словно молния, но теперь ты крепко спишь, Валь. Прости.",
+    "en": "You were fast as lightning, but now you are fast asleep, Val. I'm sorry.",
+    "fr": "Vous étiez rapide comme l'éclair, mais maintenant, vous êtes rapidement endormi, Val. Pardon."
+   },
+   "source": "ClientData res:740169547"
+  },
+  {
+   "n": 6,
+   "start": 29.487,
+   "duration": 0.0,
+   "speaker": "unn",
+   "voice": {
+    "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_06",
+    "wave": "Isa_Prologue_4_UnnTranceSay_06",
+    "bank": "SFX/Voice/Voice_Isa3_rus.bsb",
+    "ogg": "voice/06.ogg",
+    "mp3": "voice/06.mp3",
+    "duration": 7.48
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Ты видел вершины самых высоких гор, но вечные грёзы объяли тебя, Орн. Прости.",
+    "en": "You have seen the peaks of the highest mountains, but eternal dreams have seized you, Orn. I'm sorry.",
+    "fr": "Vous avez contemplé les sommets des plus hautes montagnes, mais les rêves éternels se sont emparés de vous, Orn. Pardon."
+   },
+   "source": "ClientData res:740169548"
+  },
+  {
+   "n": 7,
+   "start": 37.967,
+   "duration": 0.0,
+   "speaker": "unn",
+   "voice": {
+    "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_07",
+    "wave": "Isa_Prologue_4_UnnTranceSay_07",
+    "bank": "SFX/Voice/Voice_Isa3_rus.bsb",
+    "ogg": "voice/07.ogg",
+    "mp3": "voice/07.mp3",
+    "duration": 8.085
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Я чувствую… живую Нить, зовущую меня на помощь…",
+    "en": "I feel... a living Thread calling for help...",
+    "fr": "Je sens... un Fil vivant qui appelle à l'aide..."
+   },
+   "source": "ClientData res:740169549"
+  },
+  {
+   "n": 8,
+   "start": 47.052,
+   "duration": 0.0,
+   "speaker": "unn",
+   "voice": {
+    "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_08",
+    "wave": "Isa_Prologue_4_UnnTranceSay_08",
+    "bank": "SFX/Voice/Voice_Isa3_rus.bsb",
+    "ogg": "voice/08.ogg",
+    "mp3": "voice/08.mp3",
+    "duration": 4.854
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Бьётся словно сердце… Но нужно больше силы, иначе не вытянуть.",
+    "en": "It beats like a heart... But we need more power, otherwise I won’t be able to pull it out.",
+    "fr": "Il bat comme un cœur... Mais nous avons besoin de plus de puissance, sinon je ne pourrai pas le retirer."
+   },
+   "source": "ClientData res:740169550"
+  },
+  {
+   "n": 9,
+   "start": 52.906,
+   "duration": 0.0,
+   "speaker": "unn",
+   "voice": {
+    "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceGotHelpSay_01",
+    "wave": "Isa_Prologue_4_UnnTranceGotHelpSay_01",
+    "bank": "SFX/Voice/Voice_Isa3_rus.bsb",
+    "ogg": "voice/09.ogg",
+    "mp3": "voice/09.mp3",
+    "duration": 4.322
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Да, я вижу очертания, словно сквозь туман… Но нужно ещё силы.",
+    "en": "Yes, I see the outlines, as though through a fog... But more power is needed.",
+    "fr": "Oui, je vois les contours, comme dans le brouillard. Mais il me faut plus de puissance."
+   },
+   "source": "ClientData res:740169592"
+  },
+  {
+   "n": 10,
+   "start": 58.228,
+   "duration": 0.0,
+   "speaker": "unn",
+   "voice": {
+    "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceGotHelpSay_02",
+    "wave": "Isa_Prologue_4_UnnTranceGotHelpSay_02",
+    "bank": "SFX/Voice/Voice_Isa3_rus.bsb",
+    "ogg": "voice/10.ogg",
+    "mp3": "voice/10.mp3",
+    "duration": 7.874
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Да, это белка, теперь я вижу силуэт. Она спит и чтобы пробудить её нужна ещё сила.",
+    "en": "Yes, it's a squirrel - I see the silhouette now. It's sleeping. I need more power to wake it up.",
+    "fr": "Oui, c'est un écureuil, je vois sa silhouette maintenant. Il dort. J'ai besoin de plus de puissance pour le réveiller."
+   },
+   "source": "ClientData res:740169593"
+  },
+  {
+   "n": 11,
+   "start": 67.102,
+   "duration": 0.0,
+   "speaker": "unn",
+   "voice": {
+    "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceGotHelpSay_03",
+    "wave": "Isa_Prologue_4_UnnTranceGotHelpSay_03",
+    "bank": "SFX/Voice/Voice_Isa3_rus.bsb",
+    "ogg": "voice/11.ogg",
+    "mp3": "voice/11.mp3",
+    "duration": 8.576
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Она… пробудилась. Рататоск! Белка, что скачет по великому Ясеню.",
+    "en": "It… woke up. Ratatoskr! The squirrel that jumps between the branches of the Great Ash Tree.",
+    "fr": "Il... s'est réveillé. Ratatoskr ! L'écureuil qui saute de branche en branche dans les frondaisons du Grand frêne !"
+   },
+   "source": "ClientData res:740169594"
+  },
+  {
+   "n": 12,
+   "start": 76.678,
+   "duration": 0.0,
+   "speaker": "unn",
+   "voice": {
+    "event": "/Cutscenes/Isa/Isa_Prologue_Unn_TranceEnd",
+    "wave": "Isa_Prologue_Unn_TranceEnd",
+    "bank": "SFX/Voice/Voice_Isa3_rus.bsb",
+    "ogg": "voice/12.ogg",
+    "mp3": "voice/12.mp3",
+    "duration": 14.207
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "С богиней поговорить мы можем! Чувствую я, что Древо своим сознанием обладает и связаны мысли его с ней. Но непросто сие сделать будет, ох, непросто…",
+    "en": "We can speak with the goddess! I can sense that the Tree has its own mind and its thoughts are linked with hers. But it won't be easy...",
+    "fr": "Nous pouvons parler à la déesse ! Je peux sentir que l'Arbre à son propre esprit et que ses pensées sont liées aux siennes. Mais cela ne sera pas facile..."
+   },
+   "source": "ClientData res:740169123"
+  }
+ ],
+ "actors": [
+  {
+   "id": "unn",
+   "glb": "../shared/actors/mob-a45b1c8.glb",
+   "name": {
+    "ru": "Унн",
+    "en": "Unn"
+   },
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      13099.99,
+      13749.11,
+      53.8415
+     ],
+     "yaw": 0.7724
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "light": [
+    0.75,
+    0.75,
+    0.8672
+   ],
+   "geometry": "Creatures/Tikuani/Prophetess.(Geometry).bin",
+   "height": 1.547,
+   "animations": {
+    "Idle": 5.9667,
+    "Idle01": 4.9333
+   }
+  },
+  {
+   "id": "ratatosk",
+   "glb": "../shared/actors/mob-a4698a8.glb",
+   "name": {
+    "ru": "Рататоск",
+    "en": "Ratatoskr"
+   },
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      13098.55,
+      13751.79,
+      53.6467
+     ],
+     "yaw": 0.4931
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 67.1,
+   "light": [
+    0.75,
+    0.75,
+    0.8672
+   ],
+   "geometry": "Creatures/MountSquirrel/MountSquirrelSpirit.(Geometry).bin",
+   "height": 2.212,
+   "animations": {
+    "Idle": 7.9667,
+    "Idle01": 6.3
+   }
+  }
+ ],
+ "decor": {
+  "glb": "../maps/Isa_Prologue/decor.glb",
+  "light": "decor-light.bin",
+  "instances": [
+   {
+    "vot": "Priden_Temple_UpperEntrance_Snow",
+    "p": [
+     13087.0713,
+     13762.936,
+     224.521
+    ],
+    "yaw": 3.14159,
+    "scale": 0.99993,
+    "light": [
+     0,
+     22852
+    ]
+   },
+   {
+    "vot": "Priden_Pathway_Dam_01_Ruin_Snow",
+    "p": [
+     13087.8809,
+     13799.356,
+     206.426
+    ],
+    "yaw": 4.75845,
+    "light": [
+     22852,
+     721
+    ]
+   },
+   {
+    "vot": "Priden_Pathway_Dam_01_Ruin_Snow",
+    "p": [
+     13108.2439,
+     13784.6,
+     206.407
+    ],
+    "yaw": 6.27559,
+    "tilt": [
+     0.20115,
+     6.27046
+    ],
+    "light": [
+     23573,
+     721
+    ]
+   },
+   {
+    "vot": "Priden_Pathway_Dam_01_Ruin_Snow",
+    "p": [
+     13068.8406,
+     13784.489,
+     205.605
+    ],
+    "yaw": 0.02932,
+    "tilt": [
+     0.20154,
+     6.28138
+    ],
+    "light": [
+     24294,
+     721
+    ]
+   },
+   {
+    "vot": "ZC10_BlackMountain_01",
+    "p": [
+     13089.4134,
+     13704.98,
+     297.218
+    ],
+    "yaw": 0.19463,
+    "tilt": [
+     6.20842,
+     0.24119
+    ],
+    "scale": 2.44983,
+    "light": [
+     25015,
+     560
+    ]
+   },
+   {
+    "vot": "BM_Pine_Big_02",
+    "p": [
+     13130.3901,
+     13781.216,
+     224.027
+    ],
+    "yaw": 3.53218,
+    "tilt": [
+     0.02554,
+     0.00139
+    ],
+    "scale": 1.08311,
+    "light": [
+     25575,
+     1254
+    ]
+   },
+   {
+    "vot": "ZC10_AkaciaBush_03",
+    "p": [
+     13129.4987,
+     13785.638,
+     224.244
+    ],
+    "yaw": 3.75568,
+    "tilt": [
+     0.16632,
+     6.18329
+    ],
+    "scale": 1.28292,
+    "light": [
+     26829,
+     214
+    ]
+   },
+   {
+    "vot": "Priden_Temple_Interior",
+    "p": [
+     13115.5356,
+     13763.526,
+     104.062
+    ],
+    "yaw": 0.0,
+    "light": [
+     27043,
+     44199
+    ]
+   },
+   {
+    "vot": "Collision_Circle_1x3",
+    "p": [
+     13120.6511,
+     13717.317,
+     54.3838
+    ],
+    "yaw": 0.0,
+    "light": [
+     71242,
+     6
+    ]
+   },
+   {
+    "vot": "Collision_Circle_1x3",
+    "p": [
+     13120.4242,
+     13696.171,
+     54.3838
+    ],
+    "yaw": 0.0,
+    "light": [
+     71248,
+     6
+    ]
+   },
+   {
+    "vot": "Collision_Circle_1x3",
+    "p": [
+     13075.2987,
+     13717.23,
+     54.0093
+    ],
+    "yaw": 0.0,
+    "light": [
+     71254,
+     6
+    ]
+   },
+   {
+    "vot": "Collision_Circle_1x3",
+    "p": [
+     13075.7166,
+     13696.13,
+     54.0093
+    ],
+    "yaw": 0.0,
+    "light": [
+     71260,
+     6
+    ]
+   },
+   {
+    "vot": "PridenTemple_Statue_Warder_02_Snow",
+    "p": [
+     13070.691,
+     13780.011,
+     223.45
+    ],
+    "yaw": 1.52949,
+    "scale": 1.19536,
+    "light": [
+     71266,
+     1650
+    ]
+   },
+   {
+    "vot": "PridenTemple_Statue_Warder_02_Snow",
+    "p": [
+     13103.8138,
+     13780.084,
+     223.621
+    ],
+    "yaw": 4.72626,
+    "scale": 1.20135,
+    "light": [
+     72916,
+     1650
+    ]
+   },
+   {
+    "vot": "Priden_Temple_Door",
+    "p": [
+     13087.2194,
+     13717.63,
+     226.82
+    ],
+    "yaw": 0.0,
+    "scale": 2.85,
+    "light": [
+     74566,
+     907
+    ]
+   },
+   {
+    "vot": "Priden_Temple_Door",
+    "p": [
+     13097.9473,
+     13786.343,
+     56.9938
+    ],
+    "yaw": 0.0,
+    "scale": 0.85,
+    "light": [
+     75473,
+     907
+    ]
+   }
+  ],
+  "sky": {
+   "radius": 736.2,
+   "parts": 2
+  },
+  "skyGlb": "sky.glb",
+  "terrainGlb": "../maps/Isa_Prologue/terrain.glb",
+  "oneSided": true
+ },
+ "fx": {
+  "glb": null,
+  "spawns": []
+ },
+ "objects": {
+  "Priden_Temple_UpperEntrance_Snow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.0,
+    22.202,
+    49.565,
+    88.696,
+    49.063,
+    51.328
+   ]
+  },
+  "Priden_Pathway_Dam_01_Ruin_Snow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -0.0,
+    0.001,
+    9.228,
+    14.823,
+    7.412,
+    9.148
+   ]
+  },
+  "ZC10_BlackMountain_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    1.346,
+    -0.901,
+    17.842,
+    25.165,
+    15.661,
+    27.719
+   ]
+  },
+  "BM_Pine_Big_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -1.594,
+    -2.325,
+    18.723,
+    14.237,
+    12.885,
+    26.354
+   ]
+  },
+  "ZC10_AkaciaBush_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 8.0,
+   "loop": true,
+   "bounds": [
+    0.076,
+    0.001,
+    0.811,
+    2.2,
+    2.444,
+    1.628
+   ]
+  },
+  "Priden_Temple_Interior_StatueWater": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Isa_Prologue/particles/Priden_Temple_Interior_StatueWater.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 321,
+    "loopFrame": 161,
+    "frames": [
+     0,
+     1,
+     2
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.25,
+       1.4062,
+       1.3984
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.2,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.3281,
+       0.3281,
+       0.3281
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.2031,
+       0.2812,
+       0.3516
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.25,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.2891,
+       0.5703,
+       0.5469
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.2891,
+       0.5703,
+       0.5469
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    1.74,
+    -0.13,
+    3.646,
+    1.908,
+    2.915,
+    3.692
+   ]
+  },
+  "Priden_Temple_Interior_Water": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Isa_Prologue/particles/Priden_Temple_Interior_Water.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 121,
+    "loopFrame": 101,
+    "frames": [
+     3,
+     4
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       0.3906,
+       1.1016,
+       1.4531
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.2,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.9453,
+       0.9453,
+       0.9453
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.233,
+    7.681,
+    17.952,
+    28.551,
+    19.737,
+    15.905
+   ]
+  },
+  "Priden_Temple_Interior_Caustic": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -0.157,
+    -26.083,
+    23.493,
+    27.291,
+    51.278,
+    25.85
+   ]
+  },
+  "GlowStatic_Blue_04": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Isa_Prologue/particles/GlowStatic_Blue_04.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 31,
+    "loopFrame": 31,
+    "frames": [
+     5
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.2031,
+       0.2031,
+       0.2031
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 5.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "Priden_Temple_Interior_FX": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -17.452,
+    -16.13,
+    -31.263,
+    23.384,
+    27.506,
+    22.259
+   ],
+   "components": [
+    {
+     "vot": "GlowStatic_Blue_04",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "Priden_Temple_Interior": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -2.301,
+    -13.491,
+    2.679,
+    48.839,
+    109.582,
+    56.202
+   ],
+   "components": [
+    {
+     "vot": "Priden_Temple_Interior_StatueWater",
+     "locator": "Slot_Special02"
+    },
+    {
+     "vot": "Priden_Temple_Interior_StatueWater",
+     "locator": "Slot_Special01"
+    },
+    {
+     "vot": "Priden_Temple_Interior_Water",
+     "locator": "Slot_Special09"
+    },
+    {
+     "vot": "Priden_Temple_Interior_Caustic",
+     "locator": "Slot_Special09"
+    },
+    {
+     "vot": "Priden_Temple_Interior_FX",
+     "locator": ""
+    }
+   ]
+  },
+  "Collision_Circle_1x3": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.009,
+    -0.087,
+    0.01,
+    0.146,
+    0.073,
+    0.0
+   ]
+  },
+  "PridenTemple_Statue_Warder_02_Snow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.284,
+    0.806,
+    8.327,
+    3.008,
+    3.389,
+    8.364
+   ]
+  },
+  "Priden_Temple_Door": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    10.209,
+    5.597,
+    0.884,
+    10.209
+   ]
+  }
+ },
+ "particleAtlas": {
+  "file": "../maps/Isa_Prologue/particles/atlas.png",
+  "width": 1024,
+  "height": 128,
+  "rects": [
+   [
+    384,
+    0,
+    64,
+    64
+   ],
+   [
+    0,
+    0,
+    128,
+    128
+   ],
+   [
+    128,
+    0,
+    128,
+    128
+   ],
+   [
+    256,
+    0,
+    128,
+    128
+   ],
+   [
+    448,
+    0,
+    64,
+    64
+   ],
+   [
+    512,
+    0,
+    64,
+    64
+   ]
+  ],
+  "sources": [
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1536,
+    768,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    640,
+    1280,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    384,
+    1280,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    640,
+    256,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1856,
+    1920,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1440,
+    1152,
+    64,
+    64
+   ]
+  ]
+ },
+ "light": {
+  "ambient": 4284506223,
+  "ambientFactor": 0.5,
+  "diffuse": 4282459677,
+  "fog": 4283251775,
+  "fogEnd": 600.0,
+  "fogStart": 30.0,
+  "pointLight": 4289626880,
+  "selfIllum": 4282787328,
+  "specular": 4280685855,
+  "sunPitch": 40.0,
+  "sunYaw": 90.0,
+  "waterSpecular": 4279704623,
+  "waterGradientStart": 4279649404,
+  "waterGradientEnd": 4284124132,
+  "sunDirection": [
+   0.0,
+   0.766,
+   0.6428
+  ]
+ },
+ "pointLights": [
+  {
+   "p": [
+    12732.678,
+    13754.787,
+    183.829
+   ],
+   "intensity": 0.9,
+   "radius": 4.0,
+   "attenuation": 0.8
+  },
+  {
+   "p": [
+    13051.311,
+    12889.609,
+    29.161
+   ],
+   "intensity": 2.0,
+   "radius": 34.104,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    12999.85,
+    12896.28,
+    66.196
+   ],
+   "intensity": 2.0,
+   "radius": 42.354,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13021.049,
+    12896.28,
+    18.912
+   ],
+   "intensity": 2.0,
+   "radius": 25.896,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13047.748,
+    12896.28,
+    58.304
+   ],
+   "intensity": 2.0,
+   "radius": 40.091,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13005.437,
+    12896.28,
+    40.934
+   ],
+   "intensity": 2.0,
+   "radius": 26.443,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13037.105,
+    12912.769,
+    79.763
+   ],
+   "intensity": 2.0,
+   "radius": 34.93,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13002.484,
+    12874.356,
+    86.17
+   ],
+   "intensity": 2.0,
+   "radius": 51.441,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13018.416,
+    12936.443,
+    76.653
+   ],
+   "intensity": 2.0,
+   "radius": 51.441,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13037.185,
+    12874.356,
+    103.361
+   ],
+   "intensity": 2.0,
+   "radius": 51.441,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13028.869,
+    12900.497,
+    127.166
+   ],
+   "intensity": 2.0,
+   "radius": 104.912,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13029.121,
+    12940.617,
+    9.244
+   ],
+   "intensity": 2.0,
+   "radius": 19.449,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13026.244,
+    12858.483,
+    9.244
+   ],
+   "intensity": 2.0,
+   "radius": 18.481,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13018.69,
+    12835.297,
+    -1.218
+   ],
+   "intensity": 2.0,
+   "radius": 15.717,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13040.334,
+    12815.077,
+    -9.805
+   ],
+   "intensity": 2.0,
+   "radius": 15.717,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13021.315,
+    12804.75,
+    -13.465
+   ],
+   "intensity": 2.0,
+   "radius": 15.717,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13012.289,
+    12939.608,
+    9.244
+   ],
+   "intensity": 2.0,
+   "radius": 19.645,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13011.291,
+    12863.472,
+    6.811
+   ],
+   "intensity": 2.0,
+   "radius": 18.488,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13021.53,
+    12929.819,
+    36.224
+   ],
+   "intensity": 2.0,
+   "radius": 26.98,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13017.542,
+    12867.747,
+    28.96
+   ],
+   "intensity": 2.0,
+   "radius": 26.013,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13025.971,
+    13141.913,
+    21.416
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13026.883,
+    13151.924,
+    22.453
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    12976.859,
+    13281.981,
+    35.041
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    12982.78,
+    13276.161,
+    35.015
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    12938.01,
+    13385.024,
+    20.983
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    12938.366,
+    13375.01,
+    20.985
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    12978.034,
+    13460.857,
+    14.498
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    12980.716,
+    13480.912,
+    14.525
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13017.709,
+    13466.778,
+    41.777
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13036.902,
+    13466.859,
+    41.759
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13055.78,
+    13466.706,
+    41.779
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    12972.742,
+    13375.794,
+    12.276
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    12838.924,
+    13792.0,
+    181.801
+   ],
+   "intensity": 0.9,
+   "radius": 4.0,
+   "attenuation": 0.8
+  },
+  {
+   "p": [
+    12817.441,
+    13739.015,
+    187.878
+   ],
+   "intensity": 0.9,
+   "radius": 4.0,
+   "attenuation": 0.8
+  },
+  {
+   "p": [
+    13069.157,
+    12896.28,
+    73.886
+   ],
+   "intensity": 2.0,
+   "radius": 40.091,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13237.068,
+    13175.174,
+    29.143
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13229.328,
+    13171.668,
+    29.146
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13205.945,
+    13481.052,
+    14.534
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13208.779,
+    13460.73,
+    14.522
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13131.212,
+    13466.724,
+    41.782
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13150.447,
+    13466.819,
+    41.757
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13169.435,
+    13466.961,
+    41.749
+   ],
+   "intensity": 2.0,
+   "radius": 15.0,
+   "attenuation": 2.0
+  },
+  {
+   "p": [
+    13518.032,
+    13471.274,
+    50.63
+   ],
+   "intensity": 1.0,
+   "radius": 40.682,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    13469.988,
+    13507.039,
+    49.485
+   ],
+   "intensity": 1.0,
+   "radius": 22.686,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    13505.196,
+    13552.376,
+    45.163
+   ],
+   "intensity": 1.0,
+   "radius": 22.686,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    13463.889,
+    13555.548,
+    46.501
+   ],
+   "intensity": 1.0,
+   "radius": 22.686,
+   "attenuation": 4.0
+  },
+  {
+   "p": [
+    13438.036,
+    13558.027,
+    46.861
+   ],
+   "intensity": 1.0,
+   "radius": 22.686,
+   "attenuation": 4.0
+  }
+ ],
+ "sounds": {
+  "music": [
+   "sfx/Priden"
+  ],
+  "ambience": [
+   "sfx/plain_wind_day_lp"
+  ],
+  "sfx": [],
+  "events": {
+   "music": [
+    "Music/RacesMusic/Priden"
+   ],
+   "ambience": [
+    "Ambience/OutdoorAmbience/Zones/Inst_PridenStart/Plain"
+   ]
+  },
+  "waves": {
+   "Ambience/OutdoorAmbience/Zones/Inst_PridenStart/Plain": {
+    "file": "sfx/plain_wind_day_lp",
+    "wave": "plain_wind_day_lp",
+    "bank": "SFX/Ambience/Ambience_StartZones2.bsb",
+    "duration": 25.492,
+    "match": "name"
+   },
+   "Music/RacesMusic/Priden": {
+    "file": "sfx/Priden",
+    "wave": "Priden",
+    "bank": "SFX/Music/Music_Race.fsb",
+    "duration": 12.5,
+    "match": "bev"
+   }
+  },
+  "volume": {
+   "music": 0.35,
+   "ambience": 0.5,
+   "sfx": 0.8,
+   "voice": 1.0
+  }
+ },
+ "post": [],
+ "sources": {
+  "camera": "manifest"
+ }
+}

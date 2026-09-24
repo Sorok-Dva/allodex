@@ -565,3 +565,59 @@ def test_find_spawns_reads_static_device_steles_of_map_regions(tmp_path):
     assert out["Floor_6"]["p"] == [300.0, 5800.0, 0.0] and out["Floor_6"]["yaw"] == 0.5
     assert out["Floor_6"]["mob"] == "Items/Floor_6.(SteleResource).xdb"
     assert out["Floor_6"]["static"] == "World/Floor6_Intact.(StaticObject).xdb"
+
+
+class _RefDB:
+    """Base factice : resourceId persistants → décalages → identifiants volatils."""
+
+    def __init__(self, resource_ids: dict[int, int], ids: dict[int, int]) -> None:
+        self.resource_ids = resource_ids
+        self.ids = ids
+
+    def rid(self, off: int):
+        return {v: k for k, v in self.ids.items()}.get(off)
+
+
+def test_resource_ref_follows_the_persistent_resource_id_across_builds():
+    import pytest
+    from tools.extract_engine_cutscene import resource_ref, resolve_refs
+    # buff de caméra d'isa-freya : 521226 avant la mise à jour du 23/09/2026, 521264 après
+    before, after = _RefDB({740171462: 100}, {521226: 100}), _RefDB({740171462: 900}, {521264: 900, 521226: 5})
+    assert resource_ref(before, "res:740171462") == 521226
+    assert resource_ref(after, "res:740171462") == 521264
+    with pytest.raises(ValueError, match="volatil"):
+        resource_ref(after, 521226)
+    with pytest.raises(ValueError, match="absent"):
+        resource_ref(after, "res:1")
+    spec = {"id": "x", "buff": "res:740171462", "lines": ["res:740171462"], "actors": [{"id": "a", "mob": "res:740171462"}]}
+    out = resolve_refs(spec, after)
+    assert out["buff"] == 521264 and out["lines"] == [521264] and out["actors"][0]["mob"] == 521264
+    assert out["_refs"]["lines"] == ["res:740171462"] and spec["buff"] == "res:740171462"
+
+
+def test_stele_position_counts_the_vertical_cell():
+    from tools.extract_engine_cutscene import SPAWNLOC_CELL, SPAWNLOC_LOCAL, STELE_SPAWN, stele_position
+    words = {SPAWNLOC_CELL: 416, SPAWNLOC_CELL + 4: 391, SPAWNLOC_CELL + 8: 2}
+    db = SimpleNamespace(ptr=lambda off: 1000 if off == STELE_SPAWN else None, vtype=lambda off: "SpawnLocation",
+                         floats=lambda off, n: (38.33, 22.71, 40.57) if off == 1000 + SPAWNLOC_LOCAL else None,
+                         i32=lambda off: words[off - 1000])
+    x, y, z = stele_position(db, 0)
+    assert (round(x, 2), round(y, 2), round(z, 2)) == (13350.33, 12534.71, 104.57)   # terrain d'Isa : 104,3–104,6
+
+
+def test_read_client_line_finds_the_bubble_and_the_voice_inside_an_action_list():
+    # voix d'Isa : bulle ENUM_SHOW_BUBBLE (texte officiel), voix Sound3DAction dans une VisActionList
+    from tools.allods_scenes import (BUBBLE_KIND, BUBBLE_TEXT, CLIENT_DATA_LIST, LIST_ELEMENTS, SOUND2D_NAME,
+                                     SOUND_NAME, VIS_ACTION_DATA_ACTION, VIS_LIST_ELEMENTS, read_client_line)
+    types = {10: "CustomClientDataList", 20: "InterfaceAction", 30: "CreatureVisActionData", 40: "VisActionList",
+             50: "Sound3DAction", 60: "CreatureVisActionData", 70: "Sound2DAction"}
+    ptrs = {0 + CLIENT_DATA_LIST: 10, 30 + VIS_ACTION_DATA_ACTION: 40, 60 + VIS_ACTION_DATA_ACTION: 70}
+    lists = {10 + LIST_ELEMENTS: [20, 30, 60], 40 + VIS_LIST_ELEMENTS: [50]}
+    strings = {20 + BUBBLE_KIND: "ENUM_SHOW_BUBBLE", 50 + SOUND_NAME: "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_01",
+               70 + SOUND2D_NAME: "Cutscenes/Isa/autre"}
+    db = SimpleNamespace(ptr=ptrs.get, vtype=types.get, pointers=lambda off: lists.get(off, []),
+                         string=strings.get, u32=lambda off: 229774 if off == 20 + BUBBLE_TEXT else 0,
+                         elements=lambda off, stride: [], vec=lambda off: None)
+    line = read_client_line(db, 0)
+    assert line.bubble_index == 229774 and line.text_index is None
+    assert line.voice == "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_01"     # la première voix
