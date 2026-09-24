@@ -175,7 +175,7 @@ ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le rest
 
 ### Cinématiques moteur recréées en 3D
 
-Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Vingt et une
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Vingt-trois
 sont **recréées dans three.js** avec les données du dernier client et jouées dans le film comme
 des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix russes) :
 
@@ -200,8 +200,10 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Zone de départ de l’Empire · « L’appareil volé » (`empire-start-stolen-device`, zone `TeleportPaladin`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 7 s |
 | Zone de départ de l’Empire · « L’abordage » (`empire-start-boarding`, zone `Jump`, quête `Quest4_4`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 14 s |
 | Zone de départ de l’Empire · « Le chevalier vaincu » (`empire-start-knight-defeated`, `DeathTriggerPaladinFinal`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 15 s |
-| Zone de départ de la Ligue · « La mort du Grand Mage » (`league-klement-death`, zone `PaladinQuest`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 43 s |
+| Zone de départ de la Ligue · « La mort du Grand Mage » (`league-klement-death`, zone `PaladinQuest`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 53 s |
 | Zone de départ de la Ligue · « L’évacuation » (`league-evacuation`, quête `Quest_4_30`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 81 s |
+| Zone de départ des Pridiens · « Ah, le cinéma ! » (`pride-cinema`, quête `Pride_1_9`) | serveur 7.0 (déclencheur) | `PridensStart` | 12 s |
+| Zone de départ des Pridiens · « Le spectacle » (`pride-performance`, quête `Pride_1_11`) | serveur 7.0 (déclencheur) | `PridensStart` | 11 s |
 
 **Zone de départ de l’Empire** (arc `empire-start`, juste après le prologue de l’Empire) : dans le
 17.0, les trois races de l’Empire (Xadaganiens, Orcs, Arisen) commencent au même tutoriel,
@@ -326,6 +328,43 @@ réfugiés (`NPC_Ask` : `RandomImpact`), la chute du joueur lui-même (`KnockDow
 personne). Non montées : la foule immobile de l'étage 5 (`Floor5_People`, script vide, déclenchée à la
 sortie d'une zone de 30 m sans point de vue), les corps et la poussière de l'étage 1 (`Floor1_Dead`,
 `Dust1/2`, décor), le discours d'ambiance répété du Grand Mage (`StartSpeech`, toutes les 60 s).
+
+**Zone de départ des Pridiens** (arc `pride-start`) : les Pridiens sont une faction à part à la
+création (`chargen.json`) ; leur départ (`PridensStart`) se clôt sur « Присяга Лиге » (`Pride_7_8_L` :
+aller à Novograd voir Aidenus), au même point que la zone de départ de la Ligue, qui sort aussi vers
+Novograd : l'arc suit donc celle-ci dans le film de la Ligue (choix documenté, `faction` `league` ; la
+branche impériale, `Pride_7_8_E`, rejoindrait de même le film de l'Empire). Deux débuts de quête,
+seules scènes de la zone qui ont une caméra (inventaire : `Pride_1_9`, `Pride_1_11`), relus comme
+l'instance de la Ligue (`startImpacts`, `until_last`). « Ах, синема, синема! » : voile noir (3 s),
+travelling vers l'écran du cinéma hadagan et musique `Music/Ingame/Cinema` (onde du `.bev` :
+`YaskerBirthdayPatefon1_lp`) ; le drapeau visuel `Pride_Cinema_state2` posé à 1,5 s met la stèle du
+décor (`StaticDevice` sans `scriptID`, retrouvée par le drapeau que lit son script) dans son état
+`special` : son gabarit (`Hadagan_Cinema_PridenAll`, géométrie de base invisible) montre alors le
+modèle accroché par son `StateComponent` d'état (`+0x68` animations, `+0x88` composant
+`AttachedVisObjectComponent`, gabarit en `+0x88` : le film projeté, `Hadagan_Cinema_PridenReview` du
+7.0), posé à sa place et à son échelle. « Спектакль » : voile noir, travelling vers la scène,
+Эстель ди Грандер (5 s) puis Ромулус ди Ардер (9 s) jouent (bulles `CustomClientDataList`, RU/EN du
+17.0, FR du 16.0 par bloc aligné : écart 12 303), les spectateurs de la table `Pride_1_11_Spectators`
+applaudissent ; la scène s'arrête quand le joueur reçoit ses émotes (13 s). Son : la base de carte
+porte les six musiques de la carte ; on garde celles des cases de son de la région de la scène
+(`Muz_OlmEast` → `Music/RacesMusic/Priden`, `Amb_OlmEast`). Hors du film : `Inst_PS_critters`
+(serpents de décor, `GameViewScene` sans caméra). Les feuillages du décor sont découpés par l'alpha
+de leur texture (`Exporter.cutout`, comme la création de personnage).
+
+**Kvatoh** (`Kvator`, contenu d'après 7.0 sur la carte `Kania`) : aucun déroulé serveur. Relevé du
+17.0 : 295 ondes russes (`Voice_Kvator_*`, dont `Witches` 66, `Stump` 34, `Catorga` 22, `Fortress` 19,
+`Castle` 16, `Village` 13, `Wedding` 12, `Start` 11 — le vol d'arrivée, `Kvator_Start_Fly_Cut_Muzhik` —,
+`LeagueStart` 7) ; quatre buffs de caméra (`CameraTrackAction`) voisins de répliques de Kvatoh :
+542594 (vol de Зайкина et du Мужик, 23 s, 3 points), 542607 (même vol, sans point), 544917 (mariage,
+240 s, 7 trajets) et 545522 (discours de Светлана, 4 trajets sans durée) ; aucun `ShowSceneAction`
+ni `GameViewScene` sur la carte. Le client ne relie aucune réplique à ces buffs et ne pose pas les
+PNJ : une reconstruction demanderait un placement justifié par le manifeste (pilote), non tentée.
+
+**Fins de chapitre** (`Inst_Liga1End`, `Inst_Liga3End`) : aucune scène moteur. Les quêtes qui y
+mènent (`ZoneLeague1/Quest_13_01…05`, `Quest_14_01Heroic`) n'ont ni caméra, ni réplique doublée, ni
+`ClientData` de dialogue (escorte `Quest_13_05` : un PNJ invoqué qui suit un chemin) ; leurs zones de
+script ne portent que des téléportations, des invocations de boss et un anti-invisibilité ; aucune
+onde `Voice_*` ne les nomme.
 
 En attente, hors du film : `isa-freya` (Isa 14.0 : le navire « Freya », sujet du plan, est posé par le
 serveur et n'est pas dans le décor du client) et `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
