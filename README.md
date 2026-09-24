@@ -1046,7 +1046,9 @@ choisi pour ses calques d'herbe et son relief doux (5 m sur 120 m) — niveau de
 90 m, grossier jusqu'à 300 m ; chaque sous-carreau prend le premier calque de sa première passe (le
 mélange du `SplatMap` n'est pas élucidé), terre battue redessinée au centre ; bouleaux, pins,
 rochers et buissons de la zone posés sur ce sol (disposition mise en scène, `scene.props`) ; ciel
-`Sky01_Day*` ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi. Herbe du
+`Sky01_Day*`, dessiné avant tout le reste sans test de profondeur (ses calques de nuages, à
+100 m de la caméra, passaient devant les arbres lointains quand elle reculait : cadrage du
+Prêtre et du Mage) ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi. Herbe du
 `terrainDump` jusqu'à 110 m du centre et eau jusqu'à 300 m, rendues par le code commun aux
 cinématiques moteur (`vot/terrainExtras.ts`, voir « Herbe » et « Eau »), éclairées par la lumière de
 la zone (pas de lumière cuite ici) ; ni l'une ni l'autre n'arrête la caméra.
@@ -1070,14 +1072,41 @@ caméra, particules en quads instanciés (`particles.ts`), sons calés sur la ch
 - **Vie propre de chaque gabarit** (`VotPart`, `votInstances.ts`, option `lifetimes`) : la racine
   et chaque composant accroché ont leur fenêtre — apparition au retard du `DelayComponent` avec son
   `fadeInMS`, fin à l'arrêt (`StopVisObjectComponents`) ou **au bout de son clip s'il ne boucle pas**
-  (`SkeletalAnimation.looped` faux), avec son `fadeOutMS` ; un composant s'éteint avec son parent.
-  Preuve sur le Barde : `FatalityBardMuseLight` (clip de 1,5 s posé à 7,87 s, `fadeOutMS` 800) n'est
-  visé par aucun arrêt (celui de 7,85 s le précède) et son parent meurt sans fondu à 11,6 s : ce
-  fondu n'a de sens que si l'objet s'éteint seul à la fin de son clip ; de même le rayon et son
-  étincelle (ci-dessus). Avant, la dernière pose était tenue jusqu'à la fin de vie de l'instance :
-  67 gabarits figés dans 25 fatalités (Muse de lumière et neuf `FatalityBard_Lines` du Barde, dôme
-  `FatalityDruid_Explosion01` du Tribaliste, chauves-souris de l'Invocateur, rayon partout…). Les
-  cinématiques moteur gardent l'ancien comportement (règle non vérifiée sur leur décor) ;
+  (`SkeletalAnimation.looped` faux), avec son `fadeOutMS` (le rayon et son étincelle, ci-dessus).
+  Avant, la dernière pose était tenue jusqu'à la fin de vie de l'instance : 67 gabarits figés dans
+  25 fatalités (neuf `FatalityBard_Lines` du Barde, dôme `FatalityDruid_Explosion01` du
+  Tribaliste, chauves-souris de l'Invocateur, rayon partout…). Trois précisions **établies sur la
+  vidéo de référence** (voir « Comparaison à la vidéo ») :
+  - un composant **meurt au plus tard avec son parent, mais s'efface à son propre rythme** : la
+    fumée de `FatalityMage_Meteor` (`fadeOutMS` 3 500) survit au socle `FatalityMage` (vie 7,6 s,
+    800 ms) et se voit jusqu'à 10 s ; l'ange `FatalityPriest` (1 200 ms) est effacé à 10 s, avant
+    son socle `Fatality_Priest_Basis` (vie 8,8 s, 2 000 ms). Les fondus d'entrée, eux, se
+    multiplient (le socle du Mage entre en 3 s avec son météore) ;
+  - l'identifiant d'un composant est celui du `DelayComponent` qui le porte : **l'arrêter avant
+    son échéance l'annule**. Seul cas : `MuseL` du Barde, arrêté à 7,85 s pour une apparition à
+    7,87 s — la Muse de lumière (1,5 s de clip, dorée, à 2–5 m) n'apparaît jamais dans la vidéo ;
+  - un matériau opaque passe en mélange le temps d'un fondu (sinon l'ange du Prêtre surgissait
+    d'un bloc malgré ses 6,5 s d'entrée).
+
+  Les cinématiques moteur gardent l'ancien comportement (règles non vérifiées sur leur décor) ;
+- **Transparence des éléments** (`ElementTrack`, `tools/extract_menu_scene.py`) : le blob d'une
+  `SkeletalAnimation` porte un **second jeu de pistes, une par élément de géométrie**, que rien ne
+  lisait. L'entête est une suite de couples (pointeur auto-relatif, nombre) : +4 descripteurs des
+  articulations, +12 leurs noms, +20 leur ordre, **+28 descripteurs des éléments, +36 leurs
+  noms** ; descripteur de 20 octets comme ceux des articulations, masque `1` = transparence
+  (1 canal), `2` et `4` = deux canaux chacun (décalages de texture, non lus) ; **un octet par canal
+  et par image**, entrelacé, **0 = plein, 255 = caché**. Exporté en clés `elementAlpha` (secondes
+  du clip à sa vitesse, clés redondantes retirées à 1/255 près) pour 157 gabarits ; le lecteur
+  (`votInstances.ts`) en multiplie l'opacité des matériaux de l'élément au temps du clip de son
+  gabarit, cache l'élément à 0 et passe un élément opaque en mélange le temps d'un fondu. Un
+  gabarit non skinné qui porte de telles pistes prend la durée de son clip (dague du Paladin, feux
+  du Guerrier, éclairs de l'Ingénieur). C'est la règle qui cachait en jeu les poses figées :
+  instruments du Barde fondus à 5,7–5,9 s (la Muse prend le relais), météores du Mage cachés dans
+  le ciel puis révélés un à un à leur chute (5,3 à 7,2 s), lianes du Tribaliste rentrées à
+  l'explosion (3 s) et leur base à 4,7 s, dôme `FatalityDruid_Explosion` visible de 1 à 3 s
+  seulement… **Vérifiée sur une vidéo 1080p60 du jeu** (les 11 fatalités de classe, temps recalé
+  sur un repère commun : flash du Barde, explosion du Tribaliste) : les apparitions et
+  disparitions tombent à l'image près des pistes (voir « Comparaison à la vidéo ») ;
 - **cadrage** : aucune caméra de fatalité dans le client (seules des secousses, `CameraShakerComponent`,
   s'ajoutent à la caméra du joueur). Le cadrage initial vise l'effet principal et la victime :
   le gabarit posé ou accroché qui porte le son de la fatalité (`FatalityBard`, `FatalityDruid`… ;
@@ -1111,10 +1140,31 @@ rouge sombre du Guerrier, carbonisé de l'Ingénieur, pétrifié vert d'Avril 20
 `cameraTranslate` des `AnimatedParameters` (61 clés, 30 i/s, `fps` vaut 0 dans le client) × amplitude,
 amortie entre `minRadius` et `maxRadius` (Universelles 2022 et 2023) ; `timeScale` non interprété.
 
+**Comparaison à la vidéo.** Une capture du jeu (1080p60, les 11 fatalités de classe à la suite,
+non versionnée) a été comparée au lecteur image par image, caméra du lecteur recentrée sur la
+victime. Le temps 0 du lecteur est recalé sur un repère net de chaque segment (colonne
+`Fatality_Back`, flash du Barde à 7,5 s, explosion du Tribaliste à 3,5 s) ; l'onde de la fatalité
+ne suffit pas (musique mêlée, corrélation faible sauf Tribaliste et Rôdeur). Toutes les
+apparitions et disparitions tombent à ±0,25 s près, sauf mention :
+
+| Classe | Vérifié sur la vidéo |
+|---|---|
+| Mage | météores absents du ciel jusqu'à leur chute (7 s), explosion à 7,5 s, fumée jusqu'à 10 s |
+| Prêtre | ange entré en fondu (2,5–4 s), effacé à 10 s après le flash |
+| Psionique | nuage, éclairs, tourbillon bleu (9–10 s) puis flash ; rien de figé |
+| Paladin | vierge de fer : apparition 0,5 s, fermeture 3 s, dagues 4–8 s, ouverture 8,5 s, poussière 11 s |
+| Guerrier | lames `FatalityWarrior_Bottom` de 2 à 8,5 s, feu au sol jusqu'à 11,5 s |
+| Ingénieur | machine, rayon 4,5–7,5 s, poussière 8,5–9,5 s (écart ≈ 0,5 s, repère incertain) |
+| Invocateur | colonne 0–6,5 s, tas au sol 7–10 s |
+| Barde | instruments fondus à 5,7 s, Muse 4,5–7,8 s, jamais de Muse de lumière |
+| Rôdeur | épées 4,5–7,5 s, feu 8–10,5 s, épées plantées jusqu'à 11 s |
+| Occultiste | colonne et orbe (5,5 s), anneau jusqu'à 6,5 s, colonne jusqu'à 10 s |
+| Tribaliste | lianes rentrées à l'explosion, base au sol jusqu'à 4,7 s, fleur 5–10 s |
+
 **Manques.** `ProceduralEffect` (effet `Empty`) ignoré. Particules : `WorldSpaceEmitter` et `Z_BOX`
 traités comme locales / face caméra. Pas de bloom : la géométrie douce a ramené le Prêtre d'un
 blanc plein à des effets lisibles, un bloom le resaturerait. Effets des tenues de création
-(`growths.fx`) non joués. Aucune capture du jeu pour comparer (à venir). La durée affichée est celle
+(`growths.fx`) non joués. La durée affichée est celle
 du script : certaines fatalités (Occultiste, Crâne 2024) finissent par plusieurs secondes vides.
 
 ## Création de personnage (développement)

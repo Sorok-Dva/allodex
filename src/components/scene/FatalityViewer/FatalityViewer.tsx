@@ -342,7 +342,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       for (const inst of instances) {
         const local = t - inst.start;
         const fade = st.showFx ? spawnOpacity(local, inst.lifeTime, inst.fadeIn, inst.fadeOut) : 0;
-        updateInstance(inst, local, fade, camera);
+        updateInstance(inst, local, fade, camera, st.showFx);
       }
     };
 
@@ -439,16 +439,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
           prepare(decor.scene, true, [], null);
           // Dôme de ciel : suit la caméra, derrière tout, hors brouillard.
           decor.scene.traverse(node => {
-            if (!(node.userData as { sky?: boolean }).sky) return;
-            node.traverse(child => {
-              const mesh = child as THREE.Mesh;
-              if (!mesh.isMesh) return;
-              mesh.renderOrder = -10;
-              for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
-                material.depthWrite = false;
-                (material as THREE.MeshBasicMaterial).fog = false;
-              }
-            });
+            if ((node.userData as { sky?: boolean }).sky) skyBehindEverything(node);
           });
           const sky = decor.scene.getObjectByName('sky');
           if (sky) skyNode = sky;
@@ -626,6 +617,43 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
 
   return <canvas ref={canvasRef} className={`${s.canvas} ${className ?? ''}`} data-testid="fatality-viewer" aria-hidden="true" />;
 });
+
+/**
+ * Ciel dessiné avant tout le reste, sans test de profondeur : ses calques (rayon 100 à 600 m)
+ * ne passent plus devant le décor lointain quand la caméra recule (nuages de `Sky01_Day` à 104 m
+ * devant les arbres à 180 m, cadrage du Prêtre). Les calques vont dans la file opaque, triés du
+ * plus lointain au plus proche ; le mélange alpha y est gardé (`CustomBlending`, la file opaque
+ * de three.js coupant le mélange normal).
+ */
+export function skyBehindEverything(sky: THREE.Object3D): void {
+  const meshes: { mesh: THREE.Mesh; radius: number }[] = [];
+  sky.traverse(child => {
+    const mesh = child as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    mesh.geometry.computeBoundingSphere();
+    const sphere = mesh.geometry.boundingSphere;
+    meshes.push({ mesh, radius: sphere ? sphere.center.length() + sphere.radius : 0 });
+  });
+  meshes.sort((a, b) => b.radius - a.radius);
+  meshes.forEach(({ mesh }, i) => {
+    mesh.renderOrder = -1000 + i;
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      material.depthWrite = false;
+      material.depthTest = false;
+      (material as THREE.MeshBasicMaterial).fog = false;
+      if (material.transparent) {
+        if (material.blending === THREE.NormalBlending) {
+          material.blending = THREE.CustomBlending;
+          material.blendSrc = THREE.SrcAlphaFactor;
+          material.blendDst = THREE.OneMinusSrcAlphaFactor;
+          material.blendSrcAlpha = THREE.OneFactor;
+          material.blendDstAlpha = THREE.OneMinusSrcAlphaFactor;
+        }
+        material.transparent = false;
+      }
+    }
+  });
+}
 
 /** Clé d'un habit : le lecteur se reconstruit quand elle change. */
 function dressKey(dress: FatalityDress | null): string {

@@ -325,6 +325,7 @@ class Component:
     start: float = 0.0                 # `DelayComponent` : apparition retardée (s)
     stop: float | None = None          # `StopVisObjectComponents` retardé : disparition (s)
     random_delay: bool = False         # timeMin ≠ timeMax : délai tiré au hasard par le client
+    cancelled: bool = False            # arrêté avant son échéance : jamais créé
 
 
 @dataclass
@@ -384,11 +385,16 @@ def read_visobject(db: PackDB, cat: PakCatalog, off: int) -> VisObject:
 
     for comp in db.pointers(off + VOT_COMPONENTS):
         visit(comp, 0.0, "", False)
-    # Un arrêt ne vaut que pour un composant déjà apparu (`MuseL` du Barde : arrêté à 7,85 s,
-    # apparu à 7,87 s, il reste).
+    # L'identifiant est celui du `DelayComponent` qui porte le composant : l'arrêter avant son
+    # échéance l'annule (`MuseL` du Barde, arrêté à 7,85 s pour une apparition à 7,87 s : la
+    # vidéo de référence ne montre jamais la Muse de lumière) ; après, il disparaît.
     for when, ids in stops:
         for c in components:
-            if c.ident and c.ident in ids and when > c.start and (c.stop is None or when < c.stop):
+            if not c.ident or c.ident not in ids:
+                continue
+            if c.start > 0 and when <= c.start:
+                c.cancelled = True
+            elif when > c.start and (c.stop is None or when < c.stop):
                 c.stop = round(when, 4)
     return VisObject(off, vot_name(db, cat, off), geometry, db.ptr(off + VOT_PARTICLE), animation,
                      db.f32(off + VOT_SCALE), db.i32(off + VOT_FADE_IN), db.i32(off + VOT_FADE_OUT),
