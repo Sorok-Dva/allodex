@@ -23184,7 +23184,7 @@
      "Ambience/AstralAmbience/4Layer_3Tier"
     ]
    },
-   "audio_note": "Buffs posés avant la scène et encore actifs : MusicBuff (EnemyAtack ; retiré plus tard par Key2_Spell) joue Music/ZonesMusic/IE1_main, IE1_Ships_Ambient (LastEventStart ; retiré à la mort de Gradimir) joue Ambience/AstralAmbience/4Layer_3Tier.",
+   "audio_note": "Buffs posés avant la scène et encore actifs : MusicBuff (EnemyAtack ; retiré plus tard par Key2_Spell) joue Music/ZonesMusic/IE1_main, IE1_Ships_Ambient (LastEventStart ; retiré à la mort de Gradimir) joue Ambience/AstralAmbience/4Layer_3Tier. Onde de IE1_main d'après Music.bev : définition /Music/Conquer_high (adaptivemusic/Conquer_high.wav, sous-piste 2 de Music_StartZones.fsb).",
    "_note": "Zone de script Jump du tutoriel de l’Empire (Inst_EmpireStart, quête Quest4_4 « Схватка с витязем ») : buff Jump_Camera (14 s, plan JumpCameraFix), le navire impérial touché (Shield.CanonHitFire aux repères IE_Boom_01…04, Hull.Death à IE_ShipDestroy et IE_ShipDestroy2, son IE1_ShipDestroy), les combattants de la GameViewScene IE1_EmpireShip_Fight1 tombent (état 2) puis disparaissent (état 3), le Спрутоглав (IE1_Ktulha) suit son chemin puis est retiré, débarquement (Demon_Desant : SummonUndead aux repères d’arrivée), le navire kanien (stèle League_Ship_Final) passe à idle01. Le joueur, qui saute (ShipOutJump, route FromShipFly), n’est pas montré."
   },
   {
@@ -23279,6 +23279,13 @@
    "trigger_tag": "startImpacts",
    "until_last": true,
    "map": "Inst_LeagueStart",
+   "audio": {
+    "music": [
+     "Music/AdaptiveMusic/Siege_warfare"
+    ],
+    "ambience": []
+   },
+   "audio_note": "Buff Music_Buff (sans durée) posé par la zone PaladinQuest (scène précédente, 25,5 s) et retiré seulement par la récompense de la quête (Quest_4_30.rewardImpacts, BuffDetacher) : sa musique Music/AdaptiveMusic/Siege_warfare joue encore au début de la quête.",
    "interlocutor": {
     "mob": "Characters/Gibberling_male/Instances/InstLeague1/LI_GibberlingStalker3.(MobWorld).xdb",
     "p": [
