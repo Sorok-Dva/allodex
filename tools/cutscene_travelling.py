@@ -21,6 +21,7 @@ client ; elle est fondée sur les données de la scène :
 * **placement** (`bearing`, degrés, 0 = est, sens trigonométrique ; `distance`, m ; `height`, m au-dessus
   du centre des têtes) : l'œil de départ est posé par rapport au centre du groupe plutôt qu'au point du
   manifeste (devant les locuteurs, d'après le cap qu'ils regardent) ;
+* **acteurs** : l'œil reste à `PERSONAL` m au moins de l'axe de chaque acteur (il ne passe pas au travers) ;
 * **sol** : l'œil reste à `CLEARANCE` m au moins au-dessus du décor sous lui (`ground`).
 
 Les clés sont posées tous les `STEP` s ; le lecteur les interpole linéairement.
@@ -35,6 +36,7 @@ import numpy as np
 STEP = 0.25          # s entre deux clés
 HEAD = 0.85          # tête : 85 % de la hauteur du modèle
 CLEARANCE = 0.8      # m au-dessus du décor sous l'œil
+PERSONAL = 1.2       # m : l'œil reste à cette distance de l'axe de chaque acteur
 DEFAULTS = {"arc": 14.0, "dolly": 0.12, "lean": 0.65, "smooth": 0.9, "lead": 0.4}
 
 
@@ -109,12 +111,19 @@ def travelling_keys(t0: float, t1: float, eye: list[float], look: list[float] | 
     arc = math.radians(float(cfg["arc"]))
     points = []
     floor = None
+    bodies = [head_of(a) for a in actors]
     for k, t in enumerate(times):
         u = smootherstep((t - t0) / span)
         a = a0 + arc * (u - 0.5)
         d = d0 * (1.0 - float(cfg["dolly"]) * u)
         z = pivot[2] + rel[2] * (d / d0 if d0 > 1e-6 else 1.0)
         p = np.array([pivot[0] + d * math.cos(a), pivot[1] + d * math.sin(a), z])
+        for other in bodies:
+            # l'œil ne traverse pas un acteur : écarté à `PERSONAL` m de son axe
+            gap = p[:2] - other[:2]
+            dist = float(np.hypot(*gap))
+            if dist < PERSONAL and p[2] < other[2] + 0.5:
+                p[:2] = other[:2] + (gap / dist if dist > 1e-6 else np.array([1.0, 0.0])) * PERSONAL
         if ground is not None and (floor is None or k % 8 == 0):
             g = ground(float(p[0]), float(p[1]), float(p[2]) + 0.5)
             floor = g if g is not None else floor

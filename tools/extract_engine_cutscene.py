@@ -781,6 +781,11 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
 
 # --- effets de scène ------------------------------------------------------------------------------
 
+# `Cue` (dialogue d'un PNJ, 17.0) : réponse du joueur (indice de texte en `+0x88`), texte du PNJ
+# (`+0xC8`), réponses suivantes en `+0x90` (relevé sur le dialogue de Герда au festin de Skalgard).
+CUE_PLAYER = 0x88
+CUE_TEXT = 0xC8
+
 RESOURCE_REF = "res:"
 STELE_SCENE_REF = "stele:"
 
@@ -2858,6 +2863,8 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
             else:
                 shots.append({"t": t0, "duration": None, "points": [(0.0, tuple(seg["p"]))],
                               "targets": [(0.0, tuple(seg["look"]))]})
+                if seg.get("until") is not None:
+                    ends.append(float(seg["until"]))     # fin du moment (scène sans voix : dialogue lu)
                 if seg.get("travelling") is not None:
                     # point de vue du manifeste devenu travelling de mise en scène (`cutscene_travelling`),
                     # posé à l'extraction, quand places des acteurs et instants des répliques sont connus
@@ -2882,6 +2889,22 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
         cd = db.ids.get(int(rid))
         if cd is None:
             raise ValueError(f"ClientData {ref['ref'] if isinstance(ref, dict) else ref} introuvable")
+        if isinstance(ref, dict) and ref.get("cue"):
+            # Réplique d'un dialogue de PNJ (`Cue` : `+0xC8` texte du PNJ, `+0x88` réponse du joueur) :
+            # sans voix ni durée (temps de lecture) ; texte officiel RU/EN du 17.0, FR par `fr_pair`.
+            from tools.extract_cinematics import norm_key
+            idx = db.u32(cd + (CUE_PLAYER if ref["cue"] == "player" else CUE_TEXT))
+            text, _ = texts.official([ref.get("ru", "")], spec.get("fr_pair"), idx)
+            if ref.get("ru") and not norm_key(text["ru"]).startswith(norm_key(ref["ru"])):
+                report.append(f"{spec['id']} : réplique {n} : le dialogue ne commence pas par « {ref['ru']} »")
+            speaker = spec.get("speakers", {}).get(str(n))
+            parts = split_line_text(text, int(ref["chunk"])) if ref.get("chunk") else [text]
+            for k, part in enumerate(parts):
+                plan_lines.append({"start": None, "duration": 0.0, "voice_event": None, "speaker": speaker,
+                                   "clips": [], "text": part,
+                                   "source": f"ClientData Cue {ref['ref']} ({ref['cue']}"
+                                             f"{f', {k + 1}/{len(parts)}' if len(parts) > 1 else ''})"})
+            continue
         cl = read_client_line(db, cd)
         if isinstance(ref, dict):
             # réplique doublée sans sous-titre : texte officiel de sa bulle (`ENUM_SHOW_BUBBLE`), le début
@@ -2917,7 +2940,18 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
         plan_lines.append({"start": None, "duration": cl.delay_ms / 1000.0, "voice_event": cl.voice, "speaker": speaker,
                            "clips": clips, "text": text, "source": f"ClientData {ref}"})
     starts = spec.get("timing", {}).get("starts")
-    if starts is not None:
+    reading = spec.get("timing", {}).get("reading")
+    if reading is not None:
+        # Dialogue sans voix (textes de `Cue`) : répliques à la suite, chacune le temps de sa voix, sinon
+        # de la lecture de son texte (le plus long des trois, `cps` caractères par seconde) — estimé.
+        t = float(reading.get("t0", 0.5))
+        for line in plan_lines:
+            longest = max((len(v) for v in line["text"].values() if v), default=0)
+            line["start"] = round(t, 3)
+            line["duration"] = round(max(float(reading.get("min", READING_MIN)),
+                                         longest / float(reading.get("cps", READING_CPS))), 3)
+            t += line["duration"] + float(reading.get("gap", 0.5))
+    elif starts is not None:
         # départs mesurés (reconnaissance vocale sur la voix officielle, voir le manifeste)
         official = [l for l in plan_lines if l["source"].startswith("ClientData")]
         for line, t in zip(official, starts):
@@ -2931,7 +2965,7 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
         entry["mob_offset"] = pack_offset(db, a["mob"])
         entry["path"] = a.get("path") or [{"t": 0, "p": a["position"], "face": a.get("face")}]
         actors.append(entry)
-    timing = "measured" if starts is not None else ("client" if client is not None and not spec["lines"] else "estimated")
+    timing = "reading" if reading is not None else "measured" if starts is not None else ("client" if client is not None and not spec["lines"] else "estimated")
     return {"map": spec["map"], "camera": camera, "lines": plan_lines, "actors": actors, "weather": None,
             **({"duration_from_voices": True} if (fixed and not camera["duration"]) or spec.get("cameras") else {}),
             "sounds": {"music": [], "ambience": [], "sfx": sfx}, "post": post,
@@ -2940,6 +2974,35 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
             "sources": {**({"buff": buff_ref} if buff_ref else {"cameras": spec["_refs"]["cameras"]} if spec.get("cameras")
                            else {"camera": "manifest"}),
                         **({"buff_script": True} if client is not None else {}), **spec.get("sources", {})}}
+
+
+def split_line_text(text: dict[str, str], chunk: int) -> list[dict[str, str]]:
+    """Réplique trop longue pour un sous-titre (texte de dialogue : 600 caractères) coupée en autant de
+    parts dans chaque langue (celles du texte le plus long, `chunk` caractères au plus), aux fins de
+    vers ou de phrase, sinon aux mots, de longueurs voisines. Choix de présentation : le texte est entier."""
+    count = max(1, math.ceil(max(len(v) for v in text.values()) / chunk))
+    if count == 1:
+        return [dict(text)]
+
+    def cut(value: str) -> list[str]:
+        units = [u for u in re.split(r"(?<=[.!?…])\s+|\s*\n\s*", value.strip()) if u]
+        if len(units) < count:
+            units = value.split()
+        if len(units) < count:
+            return units + [""] * (count - len(units))
+        cum = np.cumsum([len(u) + 1 for u in units])
+        cuts, lo = [], 1
+        for j in range(1, count):
+            hi = len(units) - (count - j)
+            ideal = cum[-1] * j / count
+            b = min(range(lo, hi + 1), key=lambda i: abs(cum[i - 1] - ideal))
+            cuts.append(b)
+            lo = b + 1
+        bounds = [0] + cuts + [len(units)]
+        return [" ".join(units[a:b]).strip() for a, b in zip(bounds, bounds[1:])]
+
+    split = {lang: cut(value) for lang, value in text.items()}
+    return [{lang: parts[k] for lang, parts in split.items() if parts[k]} for k in range(count)]
 
 
 def weather_light(weather: dict, base: dict) -> dict:

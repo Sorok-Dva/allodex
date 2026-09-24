@@ -52,6 +52,17 @@ def test_troop_member_offset_turns_with_the_model():
     assert (round(dx, 3), round(dy, 3)) == (0.044, 0.415)
 
 
+def test_long_dialogue_text_is_cut_into_balanced_subtitles_per_language():
+    from tools.extract_engine_cutscene import split_line_text
+    text = {"ru": "Первая фраза здесь. Вторая фраза тоже тут!\nТретья строка стиха\nЧетвёртая строка стиха",
+            "fr": "Phrase une ici. Deux aussi ! Trois vers et quatre vers encore"}
+    parts = split_line_text(text, 40)
+    assert len(parts) == 3
+    assert " ".join(p["ru"] for p in parts) == text["ru"].replace("\n", " ")
+    assert all(p.get("fr") for p in parts)
+    assert split_line_text({"ru": "Коротко"}, 40) == [{"ru": "Коротко"}]
+
+
 def test_splice_replaces_the_window_and_holds_before_the_cut():
     track = [{"t": 0.0, "p": [0, 0, 0]}, {"t": 9.999, "p": [0, 0, 0]}, {"t": 10.0, "p": [5, 5, 5]}]
     keys = [{"t": 0.0, "p": [1, 1, 1]}, {"t": 5.0, "p": [2, 2, 2]}, {"t": 10.0, "p": [3, 3, 3]}]
