@@ -84,6 +84,9 @@ ACTOR_TEXTURE_MAX = 1024
 # Axe avant des modèles dans leur repère : −Y (queue du dragon et traîne de Klavdia vers +Y ; même
 # constat que les fatalités, `CHANNEL_AXIS`). Lacet pour regarder un point : atan2(dy, dx) + π/2.
 MODEL_FORWARD = -math.pi / 2
+# Hauteur d'œil du joueur au-dessus d'un repère où il est déplacé : celle des points de vue du
+# manifeste (« à 2 m »), choix documenté, pas une donnée.
+EYE_HEIGHT = 2.0
 # Couleurs du jeu : 0x80 = 1 (lumières de zone comme couleurs de sommets, règle des fatalités).
 GAME_COLOR_UNIT = 128.0
 GENERATOR = "allodex/extract_engine_cutscene"
@@ -194,7 +197,7 @@ def ground_z(solids: np.ndarray, x: float, y: float, below: float) -> float | No
 
 
 def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: ParticlePool, map_name: str,
-                areas: list[tuple[list[float] | None, float]], report: list[str]) -> dict:
+                areas: list[tuple[list[float] | None, float]], report: list[str], extras: list[dict] | None = None) -> dict:
     """Décor d'une carte, **commun aux scènes qui s'y jouent** : les gabarits des objets posés dans
     l'une des zones (`areas` : centre, rayon de chaque scène) une fois chacun dans `decor.glb`, les
     instances avec ce qu'il faut pour éclairer chacune (`light_decor`, par scène : l'éclairage
@@ -255,6 +258,30 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
                 idx = idx[: len(idx) // 3 * 3]
                 pts = np.column_stack([loaded.vertices["position"].astype(np.float64), np.ones(len(loaded.vertices["position"]))])
                 solids.append(((pts @ world.T)[:, :3])[idx].reshape(-1, 3, 3))
+        instances.append(inst)
+    for extra in extras or []:
+        # Modèle posé par une stèle à la place d'un objet du décor (sol effondré de l'étage 6) : propre à
+        # une scène (`_only`), présent de `t` à `until` ; sans `lightvrt` (hors région), l'ambiante seule.
+        vot = extra["show"] | EXTERN if getattr(mp, "parent", None) is not None else extra["show"]
+        vis = read_visobject(mp, cat, vot)
+        name = fx.name_of(vot)
+        if name not in emitted:
+            node = fx.emit(vot)
+            emitted.add(name)
+            if node is not None:
+                fx.roots.append(node)
+        if name not in fx.meta:
+            report.append(f"décor {map_name} : modèle de stèle {extra.get('name')} non exporté")
+            continue
+        inst = {"vot": name, "p": [round(v, 4) for v in extra["p"]], "yaw": extra["yaw"], "_only": extra["only"],
+                "_t": extra["t"], "_until": extra["until"]}
+        if vis.geometry is not None:
+            if vis.geometry not in geometries:
+                geometries[vis.geometry] = load_geometry(mp, cat, bins, vis.geometry)
+            m = np.eye(3)
+            c, s_ = math.cos(extra["yaw"]), math.sin(extra["yaw"])
+            m[:2, :2] = [[c, -s_], [s_, c]]
+            inst["_geo"], inst["_m"] = vis.geometry, m
         instances.append(inst)
     glb = fx.exporter.finish(fx.roots)
     report.append(f"décor {map_name} : {len(instances)} objets posés ({len(emitted)} gabarits), {skipped} sans gabarit visuel, "
@@ -438,15 +465,25 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
     return ex.finish([root, *more]), np.concatenate(solids) if solids else np.zeros((0, 3, 3))
 
 
-def light_decor(decor: dict, light: dict, center: list[float] | None, radius: float) -> tuple[list[dict], bytes]:
+def light_decor(decor: dict, light: dict, center: list[float] | None, radius: float,
+                scene: dict | None = None) -> tuple[list[dict], bytes]:
     """Instances d'une scène (dans son cercle) et leur éclairage de sommets (`decor-light.bin`) :
-    ambiante + soleil (`N·S`) + octet 2 du `lightvrt`, avec la lumière de la scène."""
+    ambiante + soleil (`N·S`) + octet 2 du `lightvrt`, avec la lumière de la scène. `scene` (id,
+    `decor_windows` du plan) : modèles de stèle propres à la scène, objets retirés pendant un état."""
     out, blobs, offset = [], [], 0
+    hides = [w for w in (scene or {}).get("decor_windows", []) if "hide" in w]
     for inst in decor["instances"]:
         x, y = inst["p"][0], inst["p"][1]
         if center is not None and math.hypot(x - center[0], y - center[1]) > radius:
             continue
+        if inst.get("_only") is not None and inst["_only"] != (scene or {}).get("id"):
+            continue
         entry = {k: v for k, v in inst.items() if not k.startswith("_")}
+        if inst.get("_only") is not None:
+            entry["t"], entry["until"] = inst["_t"], inst["_until"]
+        for w in hides:
+            if inst["vot"].split("#")[0].lower() == w["hide"].lower() and math.dist(inst["p"], w["p"]) < 0.05:
+                entry["hidden"] = entry.get("hidden", []) + [[w["t"], w["until"]]]
         loaded = decor["geometries"].get(inst.get("_geo"))
         if loaded is not None:
             normals = loaded.vertices.get("normal")
@@ -1104,6 +1141,8 @@ def find_mob_by_name(db: PackDB, cat, texts: Texts, name: str, model_hint: str) 
     dossier que le `MobWorld` 7.0 (`Characters/Hadagan_male/…`)."""
     from tools.extract_cinematics import norm_key
     want = norm_key(name)
+    if not want:
+        return None         # PNJ sans nom (paladins `KIS_NoobPaladin_live`) : le nom ne départage rien
     ru = texts.main.texts["ru"]
     hint = "/".join(model_hint.split("/")[:2]).lower() if model_hint else ""
     best = None
@@ -1122,6 +1161,60 @@ def find_mob_by_name(db: PackDB, cat, texts: Texts, name: str, model_hint: str) 
         if hint and path.startswith(hint):
             return off
     return best
+
+
+def _stem(name: str | None) -> str:
+    return Path(name.split("#")[0]).name.split(".(")[0].lower() if name else ""
+
+
+def visual_signature_70(root: Path, visual: str) -> tuple[int, int, set[str]] | None:
+    """Signature d'une `VisualMob` 7.0 : couleurs de peau et de cheveux, textures de remplacement de
+    sa tenue (`armorShapes` des `VisualItem`), qui départagent les `VisualMob` du 17.0."""
+    from tools import cutscene_xdb70 as x70
+    tree = x70.Tree(Path(root))
+    path = tree.root / visual
+    doc = x70._read(path)
+    if doc is None:
+        return None
+    textures: set[str] = set()
+    for item in doc.findall("items/Item/item"):
+        if not item.get("href"):
+            continue
+        idoc = x70._read(tree.resolve(path, item.get("href")))
+        for rep in (idoc.iter("replacement") if idoc is not None else []):
+            if rep.get("href"):
+                textures.add(_stem(rep.get("href")))
+    var = doc.find("variation")
+    return int(_f70(var, "skinColor", -1)), int(_f70(var, "hairColor", -1)), textures
+
+
+def _f70(node, tag: str, default: float) -> float:
+    from tools import cutscene_xdb70 as x70
+    return x70._f(node, tag, default)
+
+
+def find_visual_by_content(db: PackDB, cat, root: Path, visual: str | None) -> tuple[int | None, str]:
+    """`VisualMob` du 17.0 d'un PNJ sans nom (`KIS_NoobPaladin_live`) : mêmes couleurs de peau et de
+    cheveux que la `VisualMob` 7.0, et les textures de tenue les plus proches (au moins la moitié en
+    commun, seule en tête). Rend l'offset et le motif, ou `None` et la raison."""
+    from tools.allods_characters import CV_HAIR_COLOR, CV_SKIN_COLOR
+    sig = visual_signature_70(root, visual) if visual else None
+    if sig is None:
+        return None, "VisualMob 7.0 illisible"
+    skin, hair, want = sig
+    scored = []
+    for off in db.resources("VisualMob"):
+        v = off + VM_VARIATION
+        if db.i32(v + CV_SKIN_COLOR) != skin or db.i32(v + CV_HAIR_COLOR) != hair:
+            continue
+        have = {_stem(s.replacement) for item in visual_dress(db, off) for shapes in read_visual_item(db, cat, item).shapes.values()
+                for s in shapes if s.replacement}
+        score = len(want & have) / len(want | have) if want | have else 1.0
+        scored.append((score, off))
+    scored.sort(reverse=True)
+    if not scored or scored[0][0] < 0.5 or (len(scored) > 1 and scored[1][0] == scored[0][0]):
+        return None, f"{len(scored)} VisualMob aux mêmes couleurs, meilleur accord {scored[0][0]:.2f}" if scored else "aucune"
+    return scored[0][1], f"couleurs {skin}/{hair}, textures de tenue {scored[0][0]:.2f} ({len(scored)} candidates)"
 
 
 # Mots des noms de `MobWorld` qui ne désignent pas le PNJ (`CutScene_BossLast`, `Cut_Scene_Boss`).
@@ -1284,7 +1377,8 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
     from tools import cutscene_xdb70 as x70
     open_end = bool(spec.get("until_last"))
     tl = x70.simulate(root, spec.get("first_buff"), trigger=spec.get("trigger"), trigger_effect=spec.get("trigger_effect"),
-                      owner=spec.get("trigger_owner", "player"), trigger_tag=spec.get("trigger_tag"), until_last=open_end)
+                      owner=spec.get("trigger_owner", "player"), trigger_tag=spec.get("trigger_tag"), until_last=open_end,
+                      home=spec.get("map"))
     map_name = spec.get("map") or sorted(tl.maps)[0]
     spawns = x70.find_spawns(root, map_name, tl.scripts | set(spec.get("states", {})) |
                              {v["locator"] for v in spec.get("start_at", {}).values()})
@@ -1306,6 +1400,19 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
         # Aucune caméra dans le déroulé (scène jouée dans la vue du joueur) : vue donnée par le manifeste.
         cam = spec.get("camera") or {}
         camera = {"points": [dict(k) for k in cam.get("points", [])], "targets": [dict(k) for k in cam.get("targets", [])]}
+        for tp in tl.teleports:
+            # Le joueur est déplacé sur la carte (`ImpactTeleport` vers un repère) : sa vue le suit, à la
+            # hauteur d'œil du point de vue du manifeste (`EYE_HEIGHT`), tournée selon le lacet donné.
+            dest = spawns.get(tp["locator"])
+            if dest is None or not camera["points"]:
+                continue
+            yaw = tp["yaw"] if tp["yaw"] is not None else dest["yaw"]
+            p = [dest["p"][0], dest["p"][1], dest["p"][2] + EYE_HEIGHT]
+            q = [p[0] + 10 * math.cos(yaw), p[1] + 10 * math.sin(yaw), p[2]]
+            for track, value in ((camera["points"], p), (camera["targets"], q)):
+                track.append({"t": round(tp["t"] - 1e-3, 3), "p": list(track[-1]["p"])})
+                track.append({"t": tp["t"], "p": [round(v, 4) for v in value]})
+            report.append(f"{spec['id']} : joueur déplacé à {tp['t']} s vers {tp['locator']} (lacet {yaw}) : la vue le suit")
     camera["duration"] = round(tl.duration, 3)
     actors: dict[str, dict] = {}
     for script, sp in spawns.items():
@@ -1314,11 +1421,18 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
         if sp["mob"].endswith(".(SteleResource).xdb"):   # stèle : ses états visuels (voir trigger_extras)
             continue
         mob = find_mob_by_name(db, cat, texts, sp["name"], sp.get("visual") or sp["mob"] or "")
-        if mob is None:
+        visual = None
+        if mob is None and not sp["name"] and sp.get("visual"):
+            # `MobWorld` sans nom (paladins `Paladin_live1…4`) : sa `VisualMob` retrouvée par son contenu.
+            visual, why = find_visual_by_content(db, cat, root, sp["visual"])
+            report.append(f"{spec['id']} : {script} sans nom : VisualMob {'introuvable' if visual is None else 'retrouvée'} "
+                          f"({sp['visual']} ; {why})")
+        if mob is None and visual is None:
             report.append(f"{spec['id']} : PNJ introuvable dans le 17.0 : {sp['name']} ({script})")
             continue
         actors[script] = {"id": re.sub(r"[^a-z0-9]+", "-", script.lower()).strip("-"), "mob_offset": mob,
-                          "path": [{"t": 0, "p": sp["p"], "yaw": round(sp["yaw"], 5)}], "server": sp}
+                          "path": [{"t": 0, "p": sp["p"], "yaw": round(sp["yaw"], 5)}], "server": sp,
+                          **({"visual": visual, "name": {}} if visual is not None else {})}
     summoned = summon_actors(spec, tl, spawns, db, cat, texts, report)
     for key, info in summoned.items():
         actors[key] = info
@@ -1372,8 +1486,21 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
     post = [{"t": p["t"], "until": p["until"], "kind": "veil", "fadeIn": p["fadeIn"], "fadeOut": p["fadeOut"]}
             for p in tl.post if p["black"]]
     centre = np.mean([k["p"] for k in camera["points"]], axis=0) if camera["points"] else np.zeros(3)
+    shakes = []
+    for sh in tl.shakes:
+        # Secousse (`ShakeAction`) : pleine dans `minRadius` de sa source, nulle au-delà de `maxRadius`
+        # (entre les deux, décroissance linéaire : choix, le moteur n'en dit pas plus) ; source joueur : pleine.
+        src = spawns.get(sh["source"]) if sh["source"] != "player" else None
+        weight = 1.0
+        if src is not None and camera["points"]:
+            d = math.dist(src["p"], camera["points"][0]["p"])
+            span = max(sh["maxRadius"] - sh["minRadius"], 1e-6)
+            weight = 1.0 if d <= sh["minRadius"] else max(0.0, 1.0 - (d - sh["minRadius"]) / span)
+        if weight > 0 and sh["keys"]:
+            shakes.append({"t": sh["t"], "fps": sh["fps"], "amplitude": round(sh["amplitude"] * weight, 4),
+                           "timeScale": sh["timeScale"], "keys": sh["keys"], "_source": sh["clientdata"]})
     plan = {"map": map_name, "camera": camera, "lines": plan_lines, "actors": list(actors.values()),
-            "weather": weather[0] if weather else None, "sounds": sounds, "post": post,
+            "weather": weather[0] if weather else None, "sounds": sounds, "post": post, "shakes": shakes,
             "decor_center": [float(centre[0]), float(centre[1])], "timing": "server",
             "sources": {"timeline": spec.get("first_buff") or spec.get("trigger"), "buffs": [b["buff"] for b in tl.buffs],
                         "spawns": sorted({sp["file"] for sp in spawns.values()})}}
@@ -1517,7 +1644,8 @@ def state_windows(initial: int, changes: list[dict], horizon: float) -> list[tup
     return [w for w in out if w[1] > w[0]]
 
 
-def projectile_fx(db: PackDB, cat, explosion: str | None, projectile: str | None, the_ge: float) -> int | None:
+def projectile_fx(db: PackDB, cat, explosion: str | None, projectile: str | None, the_ge: float,
+                  root: Path | None = None) -> int | None:
     """Gabarit d'explosion du 17.0 d'un `CreatureFixedPointProjectileAction` 7.0 : l'action du client
     aux mêmes gabarits (nommés par leur binaire) et au même `theGe` (`+0x78`)."""
     from tools.allods_visdb import vot_name
@@ -1533,7 +1661,102 @@ def projectile_fx(db: PackDB, cat, explosion: str | None, projectile: str | None
         fallback = fallback or e
         if (pr is not None and vot_name(db, cat, pr) == want_p) and abs(db.f32(action + 0x78) - the_ge) < 1e-3:
             return e
+    if fallback is None and root is not None and explosion:
+        # Gabarit 7.0 propre à la scène (`Descending_Dust_enlarge`), nommé dans le 17.0 par son binaire
+        # (`Descending_Dust`) : celui du 17.0 aux mêmes binaire, fondus et échelle, tiré par une action
+        # du même projectile.
+        from tools import cutscene_xdb70 as x70
+        from tools.allods_visdb import VOT_FADE_IN, VOT_FADE_OUT, VOT_SCALE
+        doc = x70._read(Path(root) / explosion)
+        if doc is None:
+            return None
+        names = {stem(n.get("href").split("#")[0]) for n in (doc.find("geometry"), doc.find("particle")) if n is not None and n.get("href")}
+        want = (int(x70._f(doc, "fadeInMS")), int(x70._f(doc, "fadeOutMS")), x70._f(doc, "scale", 1.0))
+        found = set()
+        for action in db.structs("CreatureFixedPointProjectileAction"):
+            e, pr = db.ptr(action + 0x48), db.ptr(action + 0x70)
+            if e is None or vot_name(db, cat, e) not in names or (pr is not None and vot_name(db, cat, pr) != want_p):
+                continue
+            if (db.i32(e + VOT_FADE_IN), db.i32(e + VOT_FADE_OUT)) == want[:2] and abs(db.f32(e + VOT_SCALE) - want[2]) < 1e-4:
+                found.add(e)
+        return found.pop() if len(found) == 1 else None
     return fallback
+
+
+_VOT_BY_NAME: dict[int, dict[str, list[int]]] = {}
+
+
+def vots_named(db: PackDB, cat, name: str) -> list[int]:
+    """Gabarits du 17.0 nommés `name` (nom du binaire de leur géométrie ou de leurs particules)."""
+    from tools.allods_visdb import vot_name
+    index = _VOT_BY_NAME.get(id(db))
+    if index is None:
+        index = _VOT_BY_NAME[id(db)] = {}
+        for off in db.resources("VisObjectTemplate"):
+            index.setdefault(vot_name(db, cat, off).lower(), []).append(off)
+    return index.get(name.lower(), [])
+
+
+def static_device_states(root: Path, sp: dict) -> list[dict | None]:
+    """États (7.0) d'une stèle posée sur un objet du décor (`StaticDevice`) : changement de modèle
+    (`DeviceVisActionChangeModel` : nom du gabarit) ou animation (`DeviceAnimationAction`)."""
+    from tools import cutscene_xdb70 as x70
+    tree = x70.Tree(Path(root))
+    stele = tree.root / sp["mob"]
+    doc = x70._read(stele)
+    vis = doc.find("visScripts") if doc is not None else None
+    base = tree.resolve(stele, vis.get("href")) if vis is not None and vis.get("href") else None
+    vdoc = x70._read(base) if base is not None else None
+    out: list[dict | None] = []
+    for item in (vdoc.findall("states/Item") if vdoc is not None else []):
+        action = item.find("action")
+        kind = (action.get("type") or "") if action is not None else ""
+        if kind.endswith("DeviceVisActionChangeModel"):
+            href = (action.find("visObj").get("href") or "") if action.find("visObj") is not None else ""
+            out.append({"kind": "model", "name": Path(href.split("#")[0]).name.split(".(")[0]} if href else None)
+        elif kind.endswith("DeviceAnimationAction"):
+            clips = [clip_name(a.text) for a in action.findall("animations/Item") if a.text]
+            out.append({"kind": "anim", "clips": clips, "mode": action.findtext("mode") or "DIE"})
+        else:
+            out.append(None)
+    return out
+
+
+def static_device_extras(spec: dict, plan: dict, script: str, sp: dict, windows: list, root: Path, db: PackDB, cat,
+                         report: list[str]) -> None:
+    """Stèle d'un objet du décor : l'objet posé (gabarit statique de la carte) est retiré pendant un
+    état qui change son modèle (le gabarit de l'état le remplace, à la même place) ou l'anime (le
+    gabarit joue les animations de l'état, en acteur)."""
+    base = Path(sp.get("static") or "").name.split(".(")[0]
+    states = static_device_states(root, sp)
+    ident = re.sub(r"[^a-z0-9]+", "-", script.lower()).strip("-")
+    for t0, t1, state in windows:
+        st = states[state - 1] if 1 <= state <= len(states) else None
+        if st is None or t0 < -1e5:
+            continue
+        if st["kind"] == "model":
+            found = vots_named(db, cat, st["name"])
+            if len(found) != 1:
+                report.append(f"{spec['id']} : stèle {script}, état {state} : gabarit {st['name']} "
+                              f"{'introuvable' if not found else 'ambigu'} dans le 17.0")
+                continue
+            plan.setdefault("decor_windows", []).append({"hide": base, "p": sp["p"], "t": t0, "until": t1})
+            plan["decor_windows"].append({"show": found[0], "name": st["name"], "p": sp["p"], "yaw": round(sp["yaw"], 5),
+                                          "t": t0, "until": t1})
+            report.append(f"{spec['id']} : stèle {script} (objet {base}) → modèle {st['name']} de {t0} à {t1} s")
+        else:
+            found = vots_named(db, cat, base)
+            if len(found) != 1:
+                report.append(f"{spec['id']} : stèle {script} : gabarit {base} {'introuvable' if not found else 'ambigu'}")
+                continue
+            plan.setdefault("decor_windows", []).append({"hide": base, "p": sp["p"], "t": t0, "until": t1})
+            plan["actors"].append({"id": ident, "mob_offset": None, "visual": None, "vot": found[0],
+                                   "path": [{"t": 0, "p": sp["p"], "yaw": round(sp["yaw"], 5)}],
+                                   "presence": [[round(t0, 3), round(t1, 3)]], "animations": st["clips"],
+                                   "clips_wanted": st["clips"], "idle": None, "name": {},
+                                   "actions": [{"t": round(t0, 3), "until": round(t1, 3), "clips": st["clips"],
+                                                "loop": st["mode"] == "LOOP", **({"hold": True} if st["mode"] == "CLAMP" else {})}]})
+            report.append(f"{spec['id']} : stèle {script} (objet {base}) → animation {st['clips']} de {t0} à {t1} s")
 
 
 def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: PackDB, cat, anim_names: dict,
@@ -1591,6 +1814,10 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
             continue
         changes = [c for c in tl.states if c["spawn"] == script]
         if not changes and script not in initial:
+            continue
+        if sp.get("static"):
+            static_device_extras(spec, plan, script, sp, state_windows(int(initial.get(script, 0)), changes, horizon),
+                                 root, db, cat, report)
             continue
         stele = find_stele(db, sp["p"])
         if stele is not None:
@@ -1686,7 +1913,7 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
             continue
         locs = item["locators"]
         end = spawns.get(locs[min(item["end"], len(locs) - 1)]) if locs else None
-        vot = projectile_fx(db, cat, item["explosion"], item["projectile"], item["theGe"])
+        vot = projectile_fx(db, cat, item["explosion"], item["projectile"], item["theGe"], root)
         if end is None or vot is None or vot not in rev:
             report.append(f"{spec['id']} : effet non posé : {item['clientdata']} ({locs})")
             continue
@@ -1726,6 +1953,11 @@ def shift_plan(plan: dict, t0: float, report: list[str], ident: str) -> None:
         plan["sounds"][key] = [{**s, "t": round(s["t"] - t0, 3), **({"until": round(s["until"] - t0, 3)} if "until" in s else {})}
                                for s in items if s.get("until", s["t"] + 30) > t0]
     plan["post"] = [{**p, "t": round(p["t"] - t0, 3), "until": round(p["until"] - t0, 3)} for p in plan["post"] if p["until"] > t0]
+    plan["shakes"] = [{**s, "t": round(s["t"] - t0, 3)} for s in plan.get("shakes", []) if s["t"] >= t0]
+    for item in plan.get("decor_windows", []):
+        for key in ("t", "until"):
+            if item.get(key) is not None:
+                item[key] = round(item[key] - t0, 3)
     plan["sources"]["window"] = [t0, round(t0 + cam["duration"], 3)]
 
 
@@ -2091,7 +2323,8 @@ def build_map(map_name: str, specs: list[dict], plans: dict[str, dict], db: Pack
     textures = TexturePool(mp, cat, bins, map_dir, jpeg=True)
     particles = ParticlePool(mp, cat, bins, map_dir)
     areas = [scene_area(s, plans[s["id"]]) for s in specs]
-    decor = build_decor(mp, cat, bins, textures, particles, map_name, areas, report)
+    extras = [{**w, "only": s["id"]} for s in specs for w in plans[s["id"]].get("decor_windows", []) if "show" in w]
+    decor = build_decor(mp, cat, bins, textures, particles, map_name, areas, report, extras)
     (map_dir / "decor.glb").write_bytes(decor["glb"])
     terrain_glb, ground = build_terrain(mp, cat, bins, textures, areas, report, map_dir / "terrain-light.png")
     decor["terrain"] = terrain_glb is not None
@@ -2176,7 +2409,7 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         camera["fov"] = spec.get("fov", 45)
         decor = ctx["decor"]
         center, radius = scene_area(spec, plan)
-        instances, light_blob = light_decor(decor, light, center, radius)
+        instances, light_blob = light_decor(decor, light, center, radius, {"id": spec["id"], **plan})
         (out / "decor-light.bin").write_bytes(light_blob)
         solids = decor["solids"]
 
@@ -2315,6 +2548,9 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                                for s in timed.get("sfx", []) if s["event"] in waves],
                        "events": audio, "waves": waves, "volume": spec.get("mix", {})},
             "post": plan["post"], "sources": plan["sources"],
+            # Secousses de caméra (`ShakeAction`) : décalages `keys` (m, repère de la caméra) à `fps`.
+            **({"shakes": [{k: v for k, v in s.items() if not k.startswith("_")} for s in plan["shakes"]]}
+               if plan.get("shakes") else {}),
         }
         (out / "scene.json").write_text(json.dumps(scene, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         report.append(f"{spec['id']} : {len(instances)} objets du décor de {plan['map']}, textures des acteurs "
