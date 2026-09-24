@@ -145,6 +145,50 @@ export type FatalitiesIndex = {
   particleAtlas?: ParticleAtlasMeta;
 };
 
+/**
+ * Index des auras (`public/game/auras/auras.json`, écrit par `tools/extract_auras.py` depuis le
+ * dernier client) : la collection « Ауры » de la garde-robe, chargée par l'écran seulement.
+ */
+export type AuraSince = { version: string; client?: string; previous?: string; method?: 'resourceId' | 'icon' };
+export type AuraEntry = {
+  id: string;
+  resourceId: number | null;
+  /** Nom et description de l'infobulle de la garde-robe (sort qui pose l'aura). */
+  name: FatalityText;
+  description: FatalityText;
+  icon: string | null;
+  buff?: { resourceId: number | null; name: FatalityText };
+  /** Comment l'obtenir : texte du client (capacité débloquée ou objet), par langue. */
+  obtain: FatalityText;
+  obtainFrom?: 'unlock' | 'item';
+  items?: FatalityItem[];
+  contentKey?: boolean;
+  /** Faux : aucun buff scripté pour cette aura dans le client (pas d'effet visuel). */
+  visual?: boolean;
+  fx?: string;
+  objects?: Record<string, FatalityObject>;
+  timeline?: import('@/components/scene/AuraViewer/AuraViewer').AuraTimeline;
+  since?: AuraSince;
+};
+/** Objet qui donne une aura et une apparence (peau de monture ou d'exosquelette, costume). */
+export type AuraAppearance = {
+  id: string;
+  resourceId: number | null;
+  kind: 'mount' | 'costume';
+  name: FatalityText;
+  description: FatalityText;
+  icon: string | null;
+  auras: string[];
+  skin?: { resourceId: number | null; name: FatalityText; mount: FatalityText; source: FatalityText };
+  costume?: FatalityText[];
+  model?: { glb: string; vot: string; objects: Record<string, FatalityObject> };
+  obtain: FatalityText;
+  since?: AuraSince;
+};
+export type AurasIndex = { schema: number; client: string; auras: AuraEntry[]; appearances: AuraAppearance[]; particleAtlas?: ParticleAtlasMeta };
+/** URL d'un fichier de `public/game/auras/` (`fx/a740017040.glb`, `icons/HeroHalo06.webp`). */
+export const auraFile = (file: string) => `${BASE}/auras/${file}`;
+
 let manifest: Record<string, Size> | null = null;
 let sprites: Record<string, SpriteInfo> | null = null;
 let audioIndex: Record<string, AudioMeta> | null = null;
