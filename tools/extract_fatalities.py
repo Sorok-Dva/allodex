@@ -302,7 +302,7 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
     redessinée par-dessus le terrain au centre, son bord estompé par l'alpha des sommets."""
     from tools.allods_packdb import open_map
     from tools.allods_scenes import region_origin
-    from tools.allods_terrain import region_patches, terrain_layers
+    from tools.allods_terrain import layer_uv, region_patches, terrain_layers
     mp = open_map(db, client, spec["map"])
     cat = open_catalog(mp, client)
     packs = packs_path(client / "data" / "Packs")
@@ -349,11 +349,12 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
             if d > radius:
                 continue
             ids = layer_sets[patch.passes[0][1]] if patch.passes and patch.passes[0][1] < len(layer_sets) else ()
-            layer = layers[ids[0]] if ids and ids[0] < len(layers) else (None, 30.0)
+            layer = layers[ids[0]] if ids and ids[0] < len(layers) else None
             pts = patch.points + np.array([ox - cx, oy - cy, 0.0])
             tris = patch.triangles if d <= TERRAIN_FINE or not len(patch.coarse) else patch.coarse
             shade = baked_light(image, patch.points, patch.normals, light) if image is not None else None
-            groups.setdefault(layer[0] or "", []).append((pts, patch.normals, tris, layer[1], d, shade))
+            # UV du shader du terrain, depuis la position dans la région (même phase que la carte).
+            groups.setdefault(layer or "", []).append((pts, patch.normals, tris, layer_uv(patch.points[:, :2]), d, shade))
             for x, y, z in pts:
                 grid[(round(x), round(y))] = float(z)
     if not grid:
@@ -373,7 +374,7 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
 
     def emit(name: str, parts: list, texture: str | None, fade: float | None) -> None:
         pos, nor, uv, idx, rgba, count = [], [], [], [], [], 0
-        for pts, normals, tris, tiling, _d, shade in parts:
+        for pts, normals, tris, uvs, _d, shade in parts:
             p = pts - np.array([0.0, 0.0, base])
             # Couleurs de sommet toujours présentes (le lecteur multiplie par elles) : blanc (ou la
             # lumière cuite), et l'alpha du bord estompé pour la tache de terre battue.
@@ -386,7 +387,7 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
             rgba.append(np.column_stack([col, np.round(a * 255)]).astype(np.uint8))
             pos.append(p.astype(np.float32))
             nor.append(normals.astype(np.float32))
-            uv.append((pts[:, :2] / tiling).astype(np.float32))
+            uv.append(uvs)
             idx.append((tris + count).astype(np.uint32))
             count += len(p)
         # Calque vu seulement de loin (aucun sous-carreau à moins de `TERRAIN_FINE` m) : texture
@@ -411,8 +412,9 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
     for layer, parts in sorted(groups.items()):
         emit(f"ground {Path(layer).stem if layer else 'nu'}", parts, layer or None, None)
     if trample:
-        near = [(pts, n, t, trample.get("tile", 4.0), d, None) for parts in groups.values() for pts, n, t, _tl, d, _s in parts
-                if d <= trample["radius"] + 8]
+        tile = float(trample.get("tile", 4.0))
+        near = [(pts, n, t, (pts[:, :2] / tile).astype(np.float32), d, None) for parts in groups.values()
+                for pts, n, t, _uv, d, _s in parts if d <= trample["radius"] + 8]
         emit("ground_patch", near, trample["texture"], trample["radius"] * 0.45)
     # Herbe (autour du centre : l'orbite de la caméra y reste) et eau du `terrainDump`, sans lumière
     # cuite (le sol des fatalités est éclairé par la lumière de la zone).

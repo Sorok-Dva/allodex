@@ -84,7 +84,7 @@ export async function loadChargenDecor(scene: ChargenSceneFile, base: string,
   if (terrainGlb && scene.decor.terrainGlb) {
     const terrainUrl = new URL(base + scene.decor.terrainGlb, window.location.href);
     const node = terrainGlb.scene.getObjectByName('terrain');
-    const extras = node?.userData as { terrainLayers?: { texture: string | null; tiling: number }[]; terrainLightmap?: string | null } | undefined;
+    const extras = node?.userData as { terrainLayers?: { texture: string | null }[]; terrainLightmap?: string | null } | undefined;
     const material = await terrainMaterial(extras?.terrainLayers ?? [], extras?.terrainLightmap ?? null, terrainUrl, light);
     disposables.push(material);
     terrainGlb.scene.traverse(child => {
