@@ -6,7 +6,7 @@
 
 export const CONTENT_LANGS = ['en', 'fr', 'ru'] as const;
 export type ContentLang = (typeof CONTENT_LANGS)[number];
-export const SECTIONS = ['timeline', 'atlas', 'library', 'characters', 'secrets', 'quests'] as const;
+export const SECTIONS = ['timeline', 'atlas', 'library', 'characters', 'secrets', 'quests', 'gallery'] as const;
 /** Sections sans onglet ni liste (répliques non rattachées à un PNJ) : recherche et liens seulement. */
 export const HIDDEN_SECTIONS = ['dialogues'] as const;
 export type SectionId = (typeof SECTIONS)[number] | (typeof HIDDEN_SECTIONS)[number];
@@ -24,18 +24,22 @@ export const FLAG_EN_MISSING = 2;
 export const FLAG_REVISED = 4;
 export const TEXT_REVISED = 1;
 
-export type TextExtra = { heading?: string; md?: boolean };
+/** Image du matériel communautaire : `[id, largeur, hauteur]` (fichiers `<id>.webp` et `<id>-t.webp`). */
+export type Img = [id: string, w: number, h: number];
+export type TextExtra = { heading?: string; md?: boolean; img?: Img[] };
 /** `[clé du champ, texte ou 0 (absent dans cette langue), drapeaux, extra ?]`. */
 export type TextRec = [key: string, text: string | 0, flags: number, extra?: TextExtra];
 export type LinkRef = [ref: string, title: string];
 export type Links = Record<string, LinkRef[]>;
-export type Item = { t: TextRec[]; h?: TextRec; n?: number; l?: Links };
+export type Item = { t: TextRec[]; h?: TextRec; n?: number; l?: Links; p?: Img[] };
 export type Body = {
   t: TextRec[];
   s?: string;
   f?: [string, string][];
   i?: Item[];
   l?: Links;
+  /** Galerie de l'entrée. */
+  p?: Img[];
   m?: { era?: string; source?: string; credit?: string; translated?: string; name_official?: boolean };
   /** Sections cachées : titre et drapeaux de l'entrée (pas de ligne de liste). */
   n?: string;
@@ -103,13 +107,14 @@ export function chunkForId(id: string, firsts: readonly number[]): number {
 // --- langues du contenu -----------------------------------------------------------------------------
 
 export type ResolvedText = { key: string; text: string; from: ContentLang | null; revised: boolean; extra?: TextExtra };
-export type ResolvedItem = { heading?: ResolvedText; texts: ResolvedText[]; step?: number; links?: Links };
+export type ResolvedItem = { heading?: ResolvedText; texts: ResolvedText[]; step?: number; links?: Links; images: Img[] };
 export type ResolvedBody = {
   texts: ResolvedText[];
   items: ResolvedItem[];
   subtitle?: string;
   facts?: [string, string][];
   links?: Links;
+  images: Img[];
   meta?: Body['m'];
 };
 
@@ -150,8 +155,9 @@ export function resolveBody(bodies: Partial<Record<ContentLang, Body>>, lang: Co
     texts: it.t.map((_, i) => pickRec(bodies, lang, b => b.i?.[j]?.t[i])).filter((x): x is ResolvedText => !!x && !!x.text),
     step: it.n,
     links: it.l,
+    images: it.p ?? [],
   }));
-  return { texts, items, subtitle: base.s, facts: base.f, links: base.l, meta: base.m };
+  return { texts, items, subtitle: base.s, facts: base.f, links: base.l, images: base.p ?? [], meta: base.m };
 }
 
 // --- recherche ---------------------------------------------------------------------------------------
