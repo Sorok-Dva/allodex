@@ -168,24 +168,37 @@ export type AuraEntry = {
   fx?: string;
   objects?: Record<string, FatalityObject>;
   timeline?: import('@/components/scene/AuraViewer/AuraViewer').AuraTimeline;
+  /** Buff visuel sans nom retrouvé par son `resourceId` voisin du sort (`link: "rid"`). */
+  visualBuff?: { resourceId: number | null; link: 'rid' };
   since?: AuraSince;
 };
 /** Objet qui donne une aura et une apparence (peau de monture ou d'exosquelette, costume). */
 export type AuraAppearance = {
   id: string;
   resourceId: number | null;
-  kind: 'mount' | 'costume';
+  /** `exoskin` : couleur de robe de carapace qui pose elle-même une aura au sol (`fx`, `timeline`). */
+  kind: 'mount' | 'costume' | 'exoskin';
   name: FatalityText;
   description: FatalityText;
   icon: string | null;
   auras: string[];
-  skin?: { resourceId: number | null; name: FatalityText; mount: FatalityText; source: FatalityText };
+  skin?: { resourceId: number | null; name: FatalityText; mount: FatalityText; source?: FatalityText };
   costume?: FatalityText[];
   model?: { glb: string; vot: string; objects: Record<string, FatalityObject> };
   obtain: FatalityText;
   since?: AuraSince;
+  iconKey?: string | null;
+  /** Couleur de robe : aura au sol de la peau (pièce `Slot_Global` de ses objets visuels). */
+  visual?: boolean;
+  fx?: string;
+  objects?: Record<string, FatalityObject>;
+  timeline?: import('@/components/scene/AuraViewer/AuraViewer').AuraTimeline;
+  visualItems?: (number | null)[];
 };
-export type AurasIndex = { schema: number; client: string; auras: AuraEntry[]; appearances: AuraAppearance[]; particleAtlas?: ParticleAtlasMeta };
+/** Clips de marche d'un gabarit de la création (`walk/<gabarit>.glb`) et sa vitesse de course. */
+export type AuraWalkClips = { glb: string; clips: Record<string, number>; speed?: number };
+export type AurasIndex = { schema: number; client: string; auras: AuraEntry[]; appearances: AuraAppearance[]; particleAtlas?: ParticleAtlasMeta;
+  walks?: Record<string, AuraWalkClips> };
 /** URL d'un fichier de `public/game/auras/` (`fx/a740017040.glb`, `icons/HeroHalo06.webp`). */
 export const auraFile = (file: string) => `${BASE}/auras/${file}`;
 

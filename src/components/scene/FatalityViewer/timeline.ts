@@ -145,6 +145,11 @@ export type FatalityObject = {
    * l'animation) : par nom d'élément, clés `[t0, a0, t1, a1, …]`, secondes du clip, linéaire.
    */
   elementAlpha?: Record<string, number[]>;
+  /**
+   * Semeurs (`EmitterVisObjComponent`) : gabarits `vots` posés `rate` fois par seconde au point
+   * `point` du repère du gabarit, laissés sur place si `fixedPoint` (empreintes des auras premium).
+   */
+  emitters?: { vots: string[]; point: [number, number, number]; rate: number; start: number; fixedPoint: boolean; scale: [number, number] }[];
 };
 
 /** Opacité d'un élément au temps `t` de son clip, d'après ses clés `[t0, a0, t1, a1, …]`. */

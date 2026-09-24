@@ -41,6 +41,10 @@ class FxBuild:
     sounds: set[str] = field(default_factory=set)
     particles: "ParticlePool | None" = None
     report: list[str] = field(default_factory=list)
+    # Composants écartés par le nom de leur gabarit (socle de présentation des carapaces).
+    skip: "object | None" = None
+    # Gabarits semés par des `EmitterVisObjComponent` : exportés comme racines à part.
+    emitted: list[int] = field(default_factory=list)
 
     def name_of(self, off: int) -> str:
         if off not in self.names:
@@ -175,6 +179,9 @@ class FxBuild:
             if comp.cancelled:
                 self.exporter.notes.append(f"{name} : composant {comp.ident} annulé (arrêté avant son échéance)")
                 continue
+            if self.skip is not None and self.skip(read_visobject(self.db, self.cat, comp.visobject).name):
+                self.exporter.notes.append(f"{name} : composant {self.name_of(comp.visobject)} écarté")
+                continue
             child = self.emit(comp.visobject, depth + 1)
             if child is None:
                 continue
@@ -214,6 +221,26 @@ class FxBuild:
             attached.append(item)
         if attached:
             info["components"] = attached
+        # Semeurs (`EmitterVisObjComponent`) : point d'émission dans le repère du gabarit (locator de
+        # sa géométrie + décalage), cadence, gabarits semés (exportés à part, `emitted`).
+        emitters = []
+        for em in vot.emitters:
+            t = np.array(em.offset, float)
+            if em.locator in locators:
+                loc = locators[em.locator]
+                t = np.array(loc.position) + _rotate(loc.rotation, t) * loc.scale
+            elif em.locator:
+                self.exporter.notes.append(f"{name} : locator {em.locator} du semeur introuvable (origine)")
+            vots = []
+            for v in em.visobjects:
+                if v not in self.emitted:
+                    self.emitted.append(v)
+                vots.append(self.name_of(v))
+            emitters.append({"vots": vots, "point": [round(float(x), 4) for x in t], "rate": round(em.rate, 4),
+                             "start": em.start, "fixedPoint": em.fixed_point,
+                             "scale": [round(em.min_scale, 4), round(em.max_scale, 4)]})
+        if emitters:
+            info["emitters"] = emitters
         self.meta[name] = info
         return ex.gltf.add_node({"name": f"vot:{name}", "children": children, "extras": {"vot": name}})
 

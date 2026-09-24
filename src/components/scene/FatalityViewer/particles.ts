@@ -141,6 +141,27 @@ export function continuousFrames(local: number, meta: Pick<ParticleSystemMeta, '
   return [f, f + period];
 }
 
+/**
+ * Période d'un émetteur **non bouclé** (`UseLooping` faux) d'un système qui boucle : `loopFrame`
+ * (la fin si `loopFrame` n'est pas avant elle). Relevé sur les 245 émetteurs non bouclés des 55
+ * auras du 17.0 : tous portent **une seule particule, née à l'image 0, qui vit `période − 1`
+ * images** (décalques des cercles et des runes : `Aura_LoginEventFun_2024_Cat`, 601 images, boucle à
+ * 301, décalques vivants de 0 à 300), là où les émetteurs bouclés couvrent les deux tours
+ * (`[0, fin]`). Le client les garde affichés tant que l'effet dure : leur piste se rejoue sur sa
+ * période (la rotation du décalque de Marquis fait un tour en 300 images, 65318 → 0 → 65317, sans
+ * saut). Sans cette règle, le décalque s'éteint au bout d'une période (25 s pour Marquis).
+ */
+export function oncePeriod(meta: Pick<ParticleSystemMeta, 'endFrame' | 'loopFrame'>): number {
+  return meta.loopFrame > 0 && meta.loopFrame < meta.endFrame ? meta.loopFrame : meta.endFrame;
+}
+
+/** Image d'un émetteur non bouclé en boucle continue : le temps sur sa période (`oncePeriod`). */
+export function onceFrame(local: number, meta: Pick<ParticleSystemMeta, 'speed' | 'loop' | 'endFrame' | 'loopFrame'>): number {
+  const frame = local * PARTICLE_FPS * (meta.speed || 1);
+  const period = oncePeriod(meta);
+  return meta.loop && period > 0 ? frame % period : frame;
+}
+
 const VERTEX = /* glsl */`
 attribute vec3 iPos;
 attribute vec2 iSize;
@@ -269,18 +290,21 @@ export class ParticleSystemView {
     const frames = this.continuous ? continuousFrames(local, this.meta) : [particleFrame(local, this.meta)];
     const { width, height, rects } = this.atlasMeta;
     const s = this.scratch;
+    const once = this.continuous && this.meta.loop ? [onceFrame(local, this.meta)] : frames;
     for (const view of this.emitters) {
       const { data, meta } = view;
       view.material.uniforms.opacity.value = opacity;
       let n = 0;
       const capacity = view.pos.count;
-      for (let pass = 0; pass < frames.length; pass += 1) for (const p of data.particles) {
-        const x = frames[pass] - p.birth;
+      // Émetteur non bouclé (décalque d'aura) : sa piste sur sa propre période, sans tour précédent.
+      const own = meta.looping === false ? once : frames;
+      for (let pass = 0; pass < own.length; pass += 1) for (const p of data.particles) {
+        const x = own[pass] - p.birth;
         if (x < 0 || x > p.span || n >= capacity) continue;
         // Tour précédent : seulement les particules qui débordent la fin de l'animation ; après un
         // tour, celles nées avant le point de boucle (l'amorce) ne renaissent pas.
         if (pass > 0 && p.birth + p.span <= this.meta.endFrame) continue;
-        if (pass === 0 && frames.length > 1 && p.birth < loopStart(this.meta)) continue;
+        if (pass === 0 && own.length > 1 && p.birth < loopStart(this.meta)) continue;
         const [cp, cs, cr, cc, cf] = p.channels;
         sampleChannel(cp, x, s);
         view.pos.setXYZ(n, data.posMin[0] + s[0] * data.posStep[0], data.posMin[1] + s[1] * data.posStep[1], data.posMin[2] + s[2] * data.posStep[2]);

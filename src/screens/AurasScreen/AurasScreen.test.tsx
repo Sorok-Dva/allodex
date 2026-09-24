@@ -26,7 +26,14 @@ const INDEX: AurasIndex = {
       icon: 'icons/MountExoskeletV9.webp', auras: ['a740017040'], obtain: {},
       skin: { resourceId: 1, name: { fr: 'Dévoreur' }, mount: { fr: 'Carapace mystique' }, source: {} },
       model: { glb: 'models/b740112796.glb', vot: 'MountExo9', objects: {} } },
+    { id: 's740178049', resourceId: 740178049, kind: 'exoskin', name: { fr: 'Néphalion' },
+      description: { fr: "Couleur de robe spéciale pour la Carapace d'assaut Angelion." }, icon: null, auras: [],
+      obtain: { fr: 'Sentier des incarnations, Tournoi du sang, été 2023' },
+      skin: { resourceId: 740178049, name: { fr: 'Néphalion' }, mount: { fr: "Carapace d'assaut Angelion" } },
+      model: { glb: 'models/s740178049.glb', vot: 'KaniaMale', objects: {} },
+      visual: true, fx: 'fx/s740178049.glb', objects: {}, timeline: { attached: [{ t: 0, vot: 'MEV16Hunter_Dec', locator: 'Slot_Global', scale: 1 }], spawns: [] } },
   ],
+  walks: { KaniaMale: { glb: 'walk/KaniaMale.glb', clips: { walk: 1, run: 0.6 }, speed: 3.5 } },
 };
 const CHARGEN = {
   schema: 1, client: '17.0', texts: { Low: { fr: 'Départ' }, Medium: { fr: 'Intermédiaire' }, High: { fr: 'Supérieur' } },
@@ -97,7 +104,8 @@ describe('AurasScreen', () => {
     expect(getByText('Cadeaux — Auras')).toBeTruthy();
     expect(getByText('Apparences à aura')).toBeTruthy();
     expect(getAllByRole('option').map(o => o.textContent)).toEqual([
-      'Aura de Saint Patron', "Rune de l'esclavagiste", 'Аура Трувера', 'Couleur de robe pour la Carapace mystique : Dévoreur']);
+      'Aura de Saint Patron', "Rune de l'esclavagiste", 'Аура Трувера', 'Couleur de robe pour la Carapace mystique : Dévoreur', 'Néphalion']);
+    expect(getByText('Carapaces : couleurs de robe')).toBeTruthy();
   });
 
   it('montre l’encart : description, version, obtention', async () => {
@@ -143,6 +151,29 @@ describe('AurasScreen', () => {
       appearance: { url: '/game/auras/models/b740112796.glb', vot: 'MountExo9', objects: {} },
       fxUrl: '/game/auras/fx/a740017040.glb',
     }));
+  });
+
+  it('montre la couleur de robe avec sa propre aura, et fait marcher l’avatar des auras à empreintes', async () => {
+    webgl = true;
+    window.history.replaceState(null, '', '/auras?a=s740178049');
+    const first = render(<AurasScreen />);
+    await act(async () => {});
+    expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({
+      appearance: expect.objectContaining({ url: '/game/auras/models/s740178049.glb' }),
+      fxUrl: '/game/auras/fx/s740178049.glb', walk: null, walking: false,
+    }));
+    expect(first.getByRole('region', { name: "Fiche de l'aura" }).textContent).toContain("Couleur de robe de carapace — Carapace d'assaut Angelion");
+    first.unmount();
+    index = { ...INDEX, auras: INDEX.auras.map(a => (a.id === 'a740017009' ? { ...a, visual: true, fx: 'fx/a740017009.glb',
+      timeline: { attached: [], spawns: [], stateAttached: [{ vot: 'PremiumTrace_Step_01All', locator: 'Global', scale: 1, states: ['run'] }] } } : a)) };
+    window.history.replaceState(null, '', '/auras?a=a740017009');
+    const second = render(<AurasScreen />);
+    await act(async () => {});
+    expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({
+      walking: true, walk: { url: '/game/auras/walk/KaniaMale.glb', clips: { walk: 1, run: 0.6 }, speed: 3.5 },
+    }));
+    await act(async () => { fireEvent.click(second.getByRole('checkbox', { name: 'Marcher' })); });
+    expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({ walking: false }));
   });
 
   it('coupe les effets à la case et met en pause à la barre d’espace', async () => {

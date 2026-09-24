@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { LoadedScene, SceneLoader } from '@/components/scene/MenuScene';
 import { VotFactory, particleSystems, updateInstance, type VotInstance } from '@/components/scene/vot/votInstances';
@@ -11,6 +12,7 @@ import { loadParticleFile, type ParticleAtlasMeta } from '@/components/scene/Fat
 import { bindClips, dressedBodies, tintedOf, type Body, type FatalityDress } from '@/components/scene/FatalityViewer/dress';
 import { skyBehindEverything, type FatalityEnvironment } from '@/components/scene/FatalityViewer/FatalityViewer';
 import { objectClipTime, type FatalityObject } from '@/components/scene/FatalityViewer/timeline';
+import { moveClip, seedTimes, stateShown, walkPose, WALK_SPEED, type AuraWalk } from './walk';
 import s from '@/components/scene/FatalityViewer/FatalityViewer.module.css';
 
 // Mêmes conventions que les fatalités : textures en octets bruts, pas de linéarisation.
@@ -19,7 +21,12 @@ THREE.ColorManagement.enabled = false;
 /** Effets d'une aura (`tools/extract_auras.py`, `aura_timeline`) : gabarits accrochés, posés. */
 export type AuraAttach = { t: number; vot: string; locator: string; scale: number; offset?: [number, number, number]; fadeIn?: number };
 export type AuraSpawn = { t: number; vot: string; lifeTime?: number | null; offset?: [number, number, number] | null; scale: number };
-export type AuraTimeline = { attached: AuraAttach[]; spawns: AuraSpawn[]; ignored?: string[] };
+/**
+ * Composant d'état posé sur le porteur (`CreatureVisObjectComponentsAction` → `StateComponent`) :
+ * montré pendant les animations `states` du porteur (`run`, `walk` : empreintes des auras premium).
+ */
+export type AuraStateAttach = { vot: string; locator: string; scale: number; offset?: [number, number, number]; states: string[] | null };
+export type AuraTimeline = { attached: AuraAttach[]; spawns: AuraSpawn[]; stateAttached?: AuraStateAttach[]; ignored?: string[] };
 
 /** Modèle d'une apparence (peau de monture ou d'exosquelette) : gabarit du client exporté seul. */
 export type AuraAppearanceModel = { url: string; vot: string; objects: Record<string, FatalityObject> };
@@ -41,6 +48,10 @@ export type AuraViewerProps = {
   playing: boolean;
   speed: number;
   showFx: boolean;
+  /** Boucle de marche (avatar seulement, s'il a ses clips de marche). */
+  walking?: boolean;
+  /** Clips de marche du gabarit de l'avatar (`walk/<gabarit>.glb`). */
+  walk?: AuraWalk | null;
   assetUrl?: (file: string) => string;
   particleAtlas?: ParticleAtlasMeta | null;
   /** URL d'un son d'effet (`sfx/…`), `null` coupe les sons. */
@@ -68,11 +79,11 @@ const IDLE = /^idle/i;
  */
 export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function AuraViewer(
   { dress, appearance = null, fxUrl, objects, timeline, sceneUrl = null, environment = null, orbitMax = null, height,
-    playing, speed, showFx, assetUrl, particleAtlas = null, soundUrl = null, volume = 1, className, onReady, createLoader, createRenderer },
+    playing, speed, showFx, walking = false, walk = null, assetUrl, particleAtlas = null, soundUrl = null, volume = 1, className, onReady, createLoader, createRenderer },
   ref,
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const state = useRef({ playing, speed, showFx, volume, dirty: true, controls: null as OrbitControls | null, camera: null as THREE.PerspectiveCamera | null });
+  const state = useRef({ playing, speed, showFx, walking, volume, dirty: true, controls: null as OrbitControls | null, camera: null as THREE.PerspectiveCamera | null });
   const callbacks = useRef({ onReady });
   callbacks.current = { onReady };
 
@@ -87,8 +98,8 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
 
   useEffect(() => {
     const st = state.current;
-    Object.assign(st, { playing, speed, showFx, volume, dirty: true });
-  }, [playing, speed, showFx, volume]);
+    Object.assign(st, { playing, speed, showFx, walking, volume, dirty: true });
+  }, [playing, speed, showFx, walking, volume]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -144,11 +155,90 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
     const factory = new VotFactory({ objects, baseUrl: fxUrl, disposables, anisotropy: () => renderer?.capabilities?.getMaxAnisotropy?.() ?? 1,
       lifetimes: true, continuousParticles: true });
 
+    // Marche : distance parcourue sur le cercle, clip de déplacement, composants d'état (empreintes),
+    // semeurs et leurs empreintes posées dans le monde (réserve réutilisée).
+    let holderNode: THREE.Object3D | null = null;
+    let walkClips: Record<string, number> | undefined;
+    let walkDistance = 0;
+    let moving: string | null = null;
+    const gates = new Map<VotInstance, { states: string[] | null; level: number; fadeIn: number; fadeOut: number; since: number }>();
+    type Seeder = { inst: VotInstance; node: THREE.Object3D; emitter: NonNullable<FatalityObject['emitters']>[number] };
+    const seeders: Seeder[] = [];
+    type Print = { inst: VotInstance; life: number; busy: boolean };
+    const prints = new Map<string, Print[]>();
+    let fxScene: { scene: THREE.Object3D; animations: THREE.AnimationClip[] } | null = null;
+    let lastSeed = 0;
+    const scratch = { m: new THREE.Matrix4(), t: new THREE.Matrix4(), inv: new THREE.Matrix4(), v: new THREE.Vector3(), prev: new THREE.Vector3(), now: new THREE.Vector3() };
+    const printOf = (vot: string, t: number): Print | null => {
+      if (!fxScene) return null;
+      const info = objects[vot];
+      const life = (info?.duration || 2) + (info?.fadeOut || 0) + 0.05;
+      const pool = prints.get(vot) ?? [];
+      prints.set(vot, pool);
+      let free = pool.find(p => !p.busy || t - p.inst.start > p.life);
+      if (!free) {
+        const proto = findVot(fxScene.scene, vot);
+        if (!proto || !info) return null;
+        const inst = factory.instantiate(proto, fxScene.animations, t, Infinity, info.fadeIn, info.fadeOut);
+        world.add(inst.root);
+        instances.push(inst);
+        free = { inst, life, busy: false };
+        pool.push(free);
+      }
+      free.busy = true;
+      free.inst.start = t;
+      return free;
+    };
+    const seed = (from: number, to: number) => {
+      world.updateMatrixWorld(true);
+      scratch.inv.copy(world.matrixWorld).invert();
+      for (const sd of seeders) {
+        const gate = gates.get(sd.inst);
+        if (gate && gate.level < 0.5) continue;
+        const origin = gate ? gate.since : 0;
+        for (const at of seedTimes(from, to, origin, sd.emitter.start, sd.emitter.rate)) {
+          for (const vot of sd.emitter.vots) {
+            const pr = printOf(vot, at);
+            if (!pr) continue;
+            const [px, py, pz] = sd.emitter.point;
+            const s = (objects[vot]?.scale || 1) * (sd.emitter.scale?.[0] || 1);
+            scratch.t.makeTranslation(px, py, pz).multiply(new THREE.Matrix4().makeScale(s, s, s));
+            scratch.m.multiplyMatrices(scratch.inv, sd.node.matrixWorld).multiply(scratch.t);
+            scratch.m.decompose(pr.inst.root.position, pr.inst.root.quaternion, pr.inst.root.scale);
+          }
+        }
+      }
+    };
+    const setWalk = (t: number, dt: number) => {
+      moving = st.walking && walkClips ? moveClip(walkClips) : null;
+      if (holderNode && moving) {
+        walkDistance += dt * (walk?.speed || WALK_SPEED);
+        const pose = walkPose(walkDistance);
+        holderNode.getWorldPosition(scratch.prev);
+        holderNode.position.set(pose.x, pose.y, 0);
+        holderNode.rotation.set(0, 0, pose.rz);
+        holderNode.updateMatrixWorld(true);
+        holderNode.getWorldPosition(scratch.now);
+        // La caméra suit l'avatar (même écart, orbite libre).
+        scratch.v.subVectors(scratch.now, scratch.prev);
+        camera.position.add(scratch.v);
+        orbit.add(scratch.v);
+        st.controls?.target.add(scratch.v);
+      }
+      for (const [inst, gate] of gates) {
+        const want = stateShown(gate.states, moving) ? 1 : 0;
+        if (want && gate.level <= 0) gate.since = t;
+        const rate = want ? (gate.fadeIn > 0 ? dt / gate.fadeIn : 1) : (gate.fadeOut > 0 ? dt / gate.fadeOut : 1);
+        gate.level = want ? Math.min(1, gate.level + rate) : Math.max(0, gate.level - rate);
+        void inst;
+      }
+    };
+
     let firstFrame = true;
     const applyTime = (t: number) => {
       for (const body of bodies) {
         for (const [name, action] of body.actions) {
-          const on = IDLE.test(name);
+          const on = moving ? name === moving : IDLE.test(name);
           action.enabled = on;
           action.setEffectiveWeight(on ? 1 : 0);
           if (on) action.time = objectClipTime(t, body.durations.get(name) ?? action.getClip().duration, true);
@@ -159,7 +249,8 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
         const local = t - inst.start;
         const fx = (inst.root.userData as { appearance?: boolean }).appearance ? true : st.showFx;
         const entry = inst.fadeIn > 0 ? Math.min(1, Math.max(0, local / inst.fadeIn)) : 1;
-        updateInstance(inst, local, fx ? entry : 0, camera, fx);
+        const gate = gates.get(inst);
+        updateInstance(inst, local, fx ? entry * (gate ? gate.level : 1) : 0, camera, fx && (!gate || gate.level > 0.001));
       }
       for (const audio of sounds) {
         audio.volume = Math.max(0, Math.min(1, st.volume));
@@ -174,7 +265,14 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
       const now = performance.now();
       const delta = previous ? Math.min((now - previous) / 1000, 0.25) : 0;
       previous = now;
-      if (st.playing) { time += delta * st.speed; st.dirty = true; }
+      if (st.playing) {
+        const dt = delta * st.speed;
+        time += dt;
+        st.dirty = true;
+        setWalk(time, dt);
+        if (time > lastSeed) seed(lastSeed, time);
+      }
+      lastSeed = time;
       if (camera.position.equals(shown)) camera.position.copy(orbit);
       const moved = st.controls?.update() ?? false;
       orbit.copy(camera.position);
@@ -186,6 +284,7 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
         skyNode.position.set(eye.x, eye.y, 0);
       }
       if (!st.dirty && !moved && !settling && !instances.some(i => i.billboards.length && i.root.visible)) return;
+      for (const pool of prints.values()) for (const p of pool) if (p.busy && time - p.inst.start > p.life) { p.busy = false; p.inst.root.visible = false; }
       applyTime(time);
       if (!renderer) return;
       terrainExtras?.update(renderer, scene, camera, time);
@@ -197,7 +296,8 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
     const stop = () => { if (frame) { cancelAnimationFrame(frame); frame = 0; } for (const a of sounds) a.pause(); };
     const onVisibility = () => (document.hidden ? stop() : start());
 
-    const loader = createLoader ? createLoader() : new GLTFLoader();
+    // Carapaces : tampons compressés `EXT_meshopt_compression` (`tools/compress_glb.mjs`).
+    const loader = createLoader ? createLoader() : new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
     const load = (url: string) => new Promise<LoadedScene>((resolve, reject) => loader.load(url, resolve, undefined, reject));
     const warnLoad = (error: unknown) => { if (import.meta.env.DEV) console.warn('[AuraViewer] chargement impossible', error); return null; };
 
@@ -218,11 +318,12 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
       frameAura(camera, controls, height, orbitMax);
       try {
         const tpl = !appearance && dress ? dress.data.templates[dress.template] : null;
-        const [fx, decor, model, rig] = await Promise.all([
+        const [fx, decor, model, rig, walkGltf] = await Promise.all([
           fxUrl ? load(fxUrl).catch(warnLoad) : Promise.resolve(null),
           sceneUrl ? load(sceneUrl).catch(warnLoad) : Promise.resolve(null),
           appearance ? load(appearance.url).catch(warnLoad) : Promise.resolve(null),
           tpl?.glb && dress ? load(`${dress.base}${tpl.glb}`).catch(warnLoad) : Promise.resolve(null),
+          walk && !appearance && dress ? load(walk.url).catch(warnLoad) : Promise.resolve(null),
         ]);
         if (!alive) return;
         if (decor) {
@@ -267,6 +368,7 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
         // Porteur de l'aura : modèle d'apparence (gabarit du client, sa propre animation) ou avatar.
         const holder = new THREE.Group();
         world.add(holder);
+        holderNode = holder;
         let anchor: THREE.Object3D = holder;
         let prefix = '';
         if (model && appearance) {
@@ -279,7 +381,9 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
             anchor = inst.root;
           }
         } else if (dress && rig) {
-          const dressed = await dressedBodies(dress, dress.template, rig.animations.filter(c => IDLE.test(c.name)),
+          const moves = walkGltf?.animations ?? [];
+          if (moves.length && walk) walkClips = walk.clips;
+          const dressed = await dressedBodies(dress, dress.template, [...rig.animations.filter(c => IDLE.test(c.name)), ...moves],
             url => load(url) as Promise<GLTF>, holder).catch(warnLoad);
           if (!alive) return;
           if (dressed) {
@@ -308,6 +412,26 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
             locate(item.locator).add(inst.root);
             instances.push(inst);
           }
+          fxScene = fx;
+          for (const item of timeline.stateAttached ?? []) {
+            const proto = findVot(fx.scene, item.vot);
+            const info = objects[item.vot];
+            if (!proto || !info) continue;
+            const inst = factory.instantiate(proto, fx.animations, 0, Infinity, 0, 0);
+            const [x, y, z] = item.offset ?? [0, 0, 0];
+            inst.root.position.set(x, y, z);
+            inst.root.scale.setScalar((item.scale || 1) * (info.scale || 1));
+            locate(item.locator).add(inst.root);
+            instances.push(inst);
+            gates.set(inst, { states: item.states, level: 0, fadeIn: info.fadeIn, fadeOut: info.fadeOut, since: 0 });
+          }
+          // Semeurs des gabarits posés (empreintes) : nœud du gabarit qui porte `emitters`.
+          for (const inst of instances) {
+            inst.root.traverse(node => {
+              const vot = (node.userData as { vot?: string }).vot;
+              for (const emitter of (vot ? objects[vot]?.emitters : undefined) ?? []) seeders.push({ inst, node, emitter });
+            });
+          }
           for (const spawn of timeline.spawns) {
             const proto = findVot(fx.scene, spawn.vot);
             const info = objects[spawn.vot];
@@ -335,7 +459,9 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
         if (import.meta.env.DEV) console.warn('[AuraViewer] chargement impossible', error);
         return;
       }
-      if (import.meta.env.DEV) (window as Window & { __auraViewer?: unknown }).__auraViewer = { THREE, scene, world, instances, bodies, renderer, camera, state: st };
+      // Crochet de développement : captures pilotées dans le temps (`setTime(120)`).
+      if (import.meta.env.DEV) (window as Window & { __auraViewer?: unknown }).__auraViewer = { THREE, scene, world, instances, bodies, renderer, camera, state: st,
+        time: () => time, setTime: (t: number) => { time = t; lastSeed = t; st.dirty = true; } };
       document.addEventListener('visibilitychange', onVisibility);
       if (!document.hidden) start();
     };
@@ -359,7 +485,7 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
       renderer = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fxUrl, sceneUrl, timeline, appearance?.url, createLoader, createRenderer, dressKey(dress)]);
+  }, [fxUrl, sceneUrl, timeline, appearance?.url, walk?.url, createLoader, createRenderer, dressKey(dress)]);
 
   return <canvas ref={canvasRef} className={`${s.canvas} ${className ?? ''}`} data-testid="aura-viewer" aria-hidden="true" />;
 });
