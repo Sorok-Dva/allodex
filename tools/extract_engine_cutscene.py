@@ -1326,7 +1326,9 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
     tl = x70.simulate(root, spec.get("first_buff"), trigger=spec.get("trigger"), trigger_effect=spec.get("trigger_effect"),
                       owner=spec.get("trigger_owner", "player"), trigger_tag=spec.get("trigger_tag"), until_last=open_end)
     map_name = spec.get("map") or sorted(tl.maps)[0]
-    spawns = x70.find_spawns(root, map_name, tl.scripts | set(spec.get("states", {})) |
+    # PNJ posés : ceux du déroulé, les stèles et les PNJ que le manifeste place (`start_at`, laissés là
+    # par une zone ou une quête précédente, même si le déroulé ne les nomme pas)
+    spawns = x70.find_spawns(root, map_name, tl.scripts | set(spec.get("states", {})) | set(spec.get("start_at", {})) |
                              {v["locator"] for v in spec.get("start_at", {}).values()})
     inter = spec.get("interlocutor")
     if inter:
