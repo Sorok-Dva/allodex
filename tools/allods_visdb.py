@@ -139,6 +139,10 @@ COMP_VISOBJECT = 0x88
 STATE_ANIMS = 0x68
 STATE_CHILD = 0x88
 STATE_STOP_OTHER = 0x99
+# `ListComponent` : vecteur de pointeurs vers des composants (+0x48), tous montrés ensemble —
+# relevé sur les exosquelettes du 17.0 (« Нефалион » : 15 `AttachedVisObjectComponent`, dont
+# l'étoile au sol).
+LIST_COMPONENTS = 0x48
 
 # --- VisActions -------------------------------------------------------------------------------
 
@@ -389,6 +393,9 @@ def read_visobject(db: PackDB, cat: PakCatalog, off: int) -> VisObject:
             child = db.ptr(comp + STATE_CHILD)
             if child is not None:
                 visit(child, delay, ident, random_delay, (ids, bool(db.u8(comp + STATE_STOP_OTHER))))
+        elif kind == "ListComponent":
+            for child in db.pointers(comp + LIST_COMPONENTS):
+                visit(child, delay, ident, random_delay, state)
         elif kind == "StopVisObjectComponents":
             v = db.vec(comp + STOP_IDS)
             ids = [db.string(v[0] + 24 * k) or "" for k in range(v[1] // 24)] if v else []
