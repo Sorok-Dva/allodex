@@ -14,6 +14,14 @@
    },
    "version": "4.0"
   },
+  "pride-start": {
+   "title": {
+    "fr": "La zone de départ des Pridiens",
+    "en": "The Priden starting zone"
+   },
+   "version": "7.0",
+   "_note": "Les Pridiens sont une faction à part à la création (chargen.json) ; leur départ (PridensStart) se clôt sur « Присяга Лиге » (Pride_7_8_L : aller à Novograd voir Aidenus), où ils rejoignent le film de la Ligue, au même point que la zone de départ de la Ligue (qui sort aussi vers Novograd) : l'arc suit donc « La zone de départ de la Ligue »."
+  },
   "empire-start": {
    "title": {
     "fr": "La zone de départ de l’Empire",
@@ -472,7 +480,7 @@
    },
    "chronology": "Instance de départ de la Ligue (Inst_LeagueStart, voix « patch403 ») : première scène jouée, au sommet de la tour, pendant les quêtes « Аудиенция у Великого мага » ; après le prologue de faction.",
    "bonus": false,
-   "duration": 42.5,
+   "duration": 52.574,
    "files": {
     "poster": "engine/league-klement-death/poster.jpg"
    },
@@ -587,6 +595,91 @@
    "subtitles": {
     "status": "official",
     "lines": 5,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "pride-cinema",
+   "arc": "pride-start",
+   "version": "7.0",
+   "faction": "league",
+   "order": 130,
+   "event": "Pride_1_9",
+   "title": {
+    "fr": "Ah, le cinéma !",
+    "en": "Ah, the Cinema!"
+   },
+   "chronology": "Zone de départ des Pridiens (PridensStart) : début de la quête « Ах, синема, синема! » (Pride_1_9, après Pride_1_8) ; avant « Спектакль » (Pride_1_11).",
+   "bonus": false,
+   "duration": 12.0,
+   "files": {
+    "poster": "engine/pride-cinema/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/pride-cinema/scene.json"
+   },
+   "tracks": [],
+   "subtitles": {
+    "status": "official",
+    "lines": 0,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "pride-performance",
+   "arc": "pride-start",
+   "version": "7.0",
+   "faction": "league",
+   "order": 132,
+   "event": "Pride_1_11",
+   "title": {
+    "fr": "Le spectacle",
+    "en": "The Performance"
+   },
+   "chronology": "Zone de départ des Pridiens : début de la quête « Спектакль » (Pride_1_11), jusqu'au moment où le joueur reçoit ses émotes de scène (13 s : la suite est jouée par lui).",
+   "bonus": false,
+   "duration": 11.0,
+   "files": {
+    "poster": "engine/pride-performance/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/pride-performance/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/pride-performance/fr.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/pride-performance/en.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/pride-performance/ru.vtt",
+     "lines": 2
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 2,
     "timing": "server",
     "audio": {
      "language": "ru"
