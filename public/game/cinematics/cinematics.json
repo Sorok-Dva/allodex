@@ -1765,7 +1765,26 @@
    "engine": {
     "scene": "engine/isa-unn-trance/scene.json"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-unn-trance/fr.vtt",
+     "lines": 12
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-unn-trance/en.vtt",
+     "lines": 12
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-unn-trance/ru.vtt",
+     "lines": 12
+    }
+   ],
    "subtitles": {
     "status": "official",
     "lines": 12,
@@ -1798,7 +1817,26 @@
    "engine": {
     "scene": "engine/isa-arrival/scene.json"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-arrival/fr.vtt",
+     "lines": 7
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-arrival/en.vtt",
+     "lines": 7
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-arrival/ru.vtt",
+     "lines": 7
+    }
+   ],
    "subtitles": {
     "status": "official",
     "lines": 7,
@@ -1836,19 +1874,19 @@
      "lang": "fr",
      "label": "Français",
      "src": "engine/isa-fighting-pit/fr.vtt",
-     "lines": 1
+     "lines": 6
     },
     {
      "lang": "en",
      "label": "English",
      "src": "engine/isa-fighting-pit/en.vtt",
-     "lines": 1
+     "lines": 6
     },
     {
      "lang": "ru",
      "label": "Русский",
      "src": "engine/isa-fighting-pit/ru.vtt",
-     "lines": 1
+     "lines": 6
     }
    ],
    "subtitles": {
@@ -1987,7 +2025,26 @@
    "engine": {
     "scene": "engine/isa-captain-journal/scene.json"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-captain-journal/fr.vtt",
+     "lines": 12
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-captain-journal/en.vtt",
+     "lines": 12
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-captain-journal/ru.vtt",
+     "lines": 12
+    }
+   ],
    "subtitles": {
     "status": "official",
     "lines": 12,

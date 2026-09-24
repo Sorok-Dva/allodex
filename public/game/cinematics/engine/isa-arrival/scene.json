@@ -85,7 +85,7 @@
   {
    "n": 1,
    "start": 0.8,
-   "duration": 0.0,
+   "duration": 3.832,
    "speaker": "hauk",
    "voice": {
     "event": "Cutscenes/Isa/Isa_Arrival_1_Hauk_Replika",
@@ -107,7 +107,7 @@
   {
    "n": 2,
    "start": 5.232,
-   "duration": 0.0,
+   "duration": 2.437,
    "speaker": "trand",
    "voice": {
     "event": "Cutscenes/Isa/Isa_Arrival_1_Trand_Replika",
@@ -133,7 +133,7 @@
   {
    "n": 3,
    "start": 8.269,
-   "duration": 0.0,
+   "duration": 3.422,
    "speaker": "unn",
    "voice": {
     "event": "Cutscenes/Isa/Isa_Arrival_1_Unn_Replika",
@@ -159,7 +159,7 @@
   {
    "n": 4,
    "start": 12.291,
-   "duration": 0.0,
+   "duration": 3.286,
    "speaker": "hauk",
    "voice": {
     "event": "Cutscenes/Isa/Isa_Arrival_1_Hauk_Replika_02",
@@ -181,7 +181,7 @@
   {
    "n": 5,
    "start": 16.5,
-   "duration": 0.0,
+   "duration": 1.793,
    "speaker": "trand",
    "voice": {
     "event": "Cutscenes/Isa/Isa_Arrival_Trand",
@@ -207,7 +207,7 @@
   {
    "n": 6,
    "start": 18.893,
-   "duration": 0.0,
+   "duration": 9.177,
    "speaker": "mrak",
    "voice": {
     "event": "Cutscenes/Isa/Isa_Arrival_Mrak",
@@ -233,7 +233,7 @@
   {
    "n": 7,
    "start": 28.67,
-   "duration": 0.0,
+   "duration": 4.236,
    "speaker": "unn",
    "voice": {
     "event": "Cutscenes/Isa/Isa_Arrival_Unn",

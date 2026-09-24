@@ -85,7 +85,7 @@
   {
    "n": 1,
    "start": 0.8,
-   "duration": 0.0,
+   "duration": 1.945,
    "speaker": null,
    "voice": {
     "event": "Cutscenes/Isa/Isa_Town_1_Replica",
@@ -107,7 +107,7 @@
   {
    "n": 2,
    "start": 3.045,
-   "duration": 0.0,
+   "duration": 1.846,
    "speaker": null,
    "voice": {
     "event": "Cutscenes/Isa/Isa_Town_1_Replica_02",
@@ -129,7 +129,7 @@
   {
    "n": 3,
    "start": 5.191,
-   "duration": 0.0,
+   "duration": 2.717,
    "speaker": null,
    "voice": {
     "event": "Cutscenes/Isa/Isa_Town_1_Replica_03",
@@ -151,7 +151,7 @@
   {
    "n": 4,
    "start": 8.208,
-   "duration": 0.0,
+   "duration": 2.111,
    "speaker": null,
    "voice": {
     "event": "Cutscenes/Isa/Isa_Town_1_Replica_04",
@@ -173,7 +173,7 @@
   {
    "n": 5,
    "start": 10.619,
-   "duration": 0.0,
+   "duration": 3.357,
    "speaker": null,
    "voice": {
     "event": "Cutscenes/Isa/Isa_Town_1_Replica_05",
