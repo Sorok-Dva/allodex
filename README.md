@@ -1542,6 +1542,80 @@ blanc plein à des effets lisibles, un bloom le resaturerait. Effets des tenues 
 (`growths.fx`) non joués. La durée affichée est celle du script : certaines fatalités (11 Carnage,
 23 Rituel squelettique) finissent par plusieurs secondes vides.
 
+## Auras
+
+La page `/auras` (entrée « Auras » de l'accueil, active en production, non indexée comme les
+fatalités) montre les **55 auras de la garde-robe** du client 17.0 — catégorie « Дары » (FR
+« Cadeaux »), collection « Ауры » (« Auras ») — aux pieds d'un avatar habillé de la création de
+personnage, dans la clairière des Prés bénis des fatalités (même `scene.glb`, même lumière, même
+orbite bornée à 45 m), et **quatre apparences à aura** (lots qui donnent une aura avec une peau
+d'exosquelette, de monture, ou un costume).
+
+    python3 tools/extract_auras.py                  # tout (≈ 3 min, 9 clients)
+    python3 tools/extract_auras.py --no-versions    # sans relire les anciens clients
+
+**Chaîne de données** (`tools/extract_auras.py`, pointeurs du `pack.bin`, rien de deviné) :
+
+1. `LifestyleCategory` → `LifestyleCollection` (nom `+0x80`) ; la collection « Ауры » est un vecteur
+   (`+0x88`) d'entrées de 56 octets dont `+0x08` pointe un `Spell` : l'aptitude de l'infobulle de
+   la garde-robe (nom `+0x108`, description `+0xE8`, icône `+0x150`, conditions `+0x168` :
+   `PredicateUnlock` ou clé de contenu Premium) ;
+2. le sort pose un **buff** côté serveur (lien absent du client) ; le buff porte **la même icône**
+   (`+0xD8`). Buff retenu : celui du même nom (même sans script — l'icône d'« Аура Покровителя »
+   sert aussi à trois buffs « Уро-Борос слышит », étrangers), sinon le premier scripté ;
+3. script visuel `+0x148` → `BuffVisScripts` → `+0x48` : arbre de `VisAction`
+   (`CreatureEffectsAction`, locator `Global` ou `Slot_Global` : aux pieds), aplati par
+   `fatality_script.flatten`, gabarits exportés par `allods_fx.FxBuild` (`fx/<id>.glb`) ;
+4. **obtention** : description de la capacité débloquée (`UnlockResource` de même icône, `+0x48`),
+   c'est le texte « Sources » de la garde-robe (« s'achète avec des devises Emblèmes des Aventures
+   héroïques Astrales auprès de Gerasim Rivin dans la capitale de faction ») ; si elle ne fait que
+   renvoyer à l'objet (« Accordé par l'Aura de Marquis. ») ou répète le nom, la phrase d'obtention
+   de l'objet (`ItemResource` de même icône, `+0x150` : « Reçu en récompense durant l'événement
+   Trésors de Marquis. ») ; sinon **« Source inconnue »** ;
+5. textes : russe et anglais du 17.0 (langue de chaque `.loc` vérifiée, mise à jour du 23-24/09),
+   français du client FR 16.0 par `resourceId` ; références en ligne résolues (`<t href>` indice
+   de texte petit-boutiste, `<o id>` nom de l'objet de ce `resourceId`). Une langue sans texte
+   officiel est absente (liste en italique, texte d'une autre langue du client).
+
+**Version d'apparition** : premier client archivé qui contient l'aura — par `resourceId` du sort
+dans les clients 64 bits (15.0, 16.0, 17.0), par le **nom de fichier de son icône**
+(`…/<icône>.(UITexture).xdb` parmi les chemins du `pack.bin`) dans les clients 32 bits (3.0 à 11.0),
+seul repère commun ; ces versions-là sont signalées « repérée par son icône » (une icône peut
+précéder l'aura). `previous` = dernier client lu sans elle : « 15.0 (absente de la 11.0) » veut dire
+entre 11.0 et 15.0. La date n'est pas dans le client : « Date inconnue ».
+
+**Effets absents du client** : dix auras n'ont aucun buff scripté (trois auras Premium de 8.0 et
+la royale de 17.0, six auras de guilde de la Vallée d'ambroisie) : l'avatar est montré seul, avec
+« Aucun effet visuel pour cette aura dans les données du client ».
+
+**Exosquelettes.** Les 107 peaux d'exosquelette (`MountSkin` dont le gabarit est `MountExoskeleton`,
+`MountExo8`, `MountExo9` ou `MEV*`) ont été passées au crible : leur visuel propre (gabarit,
+composants, objets portés, script de la peau, `IfAction` compris) ne pose **aucun effet au sol**
+autre que les socles de présentation de la boutique (`MountExoskeleton_Platform*`, composants du
+mannequin `KaniaMale`). Le lien exosquelette ↔ aura est un **lot** : l'objet « Цветовая схема
+мистической брони «Пожиратель» » (FR « Couleur de robe pour la Carapace mystique : Dévoreur »)
+donne la peau et deux auras (« Astral Azur / violet brillant »). La page liste ces lots
+(`appearances`) : exosquelette ou monture (modèle du gabarit du `VisualMount` de la peau,
+`models/<id>.glb`, sa propre animation), costume (l'avatar garde sa tenue de classe : les costumes
+de la garde-robe ne sont pas encore portables par `resolveLook`).
+
+**Lecteur** (`src/components/scene/AuraViewer/`) : temps continu, sans fin ni barre de lecture
+(pause, vitesse, effets). Il réutilise les briques des fatalités — `VotFactory` (vies propres des
+gabarits), `dressedBodies` (avatar habillé, attente `idle` du modèle de création), décor, herbe,
+`CameraCollider`, `skyBehindEverything`. Deux règles propres au lecteur, nommées :
+
+- **particules en boucle continue** (`continuousFrames`, option `continuousParticles`) : après
+  `endFrame`, reprise à `loopFrame`, et les particules du tour précédent encore vivantes restent
+  dessinées ; l'amorce (avant `loopFrame`) ne renaît pas. Le client ne publie pas sa règle ;
+- **cadrage** `AURA_FRAME` : trois quarts face, plongée ≈ 27°, visée à mi-hauteur, au moins 6,5 m.
+
+Les images propres aux systèmes de particules (texture entière, pas un élément de
+`Client/Render/ParticleAtlas` : runes, cercles) sont désormais rangées dans l'atlas réduit
+(`allods_fx.whole_texture_rect`, 256 px au plus) — les fatalités en profiteront à leur prochain
+export.
+
+Poids : `public/game/auras/` ≈ 21 Mo (modèle de la monture « Молния » 12 Mo, particules et atlas 2048 × 4096 ≈ 7 Mo, effets 0,3 Mo, icônes 0,2 Mo). Le décor est celui des fatalités, partagé (aucun octet de plus).
+
 ## Création de personnage (développement)
 
 La page `/character` (entrée « Personnage » de l'accueil, désactivée et absente du build de
@@ -2593,3 +2667,21 @@ Reprise des deux écrans pour qu'ils soient visuellement identiques au jeu, à p
   1. Copier `tools/capture_game.ps1` côté Windows (p. ex. dans `C:\Users\<vous>\allodex-captures\`), client `AOgame` ouvert sur l'écran voulu.
   2. Lancer depuis WSL : `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Users\<vous>\allodex-captures\capture_game.ps1" -Out "C:\Users\<vous>\allodex-captures\x.png"`, puis copier le PNG dans `refs/` du projet.
   3. Découper les sprites : `python3 tools/cut_sprites.py` (lit `tools/sprites_manifest.json`, écrit `public/game/sprites/*.png` et `public/game/sprites.json`).
+
+## Licence
+
+Le code, les outils et les textes d'Allodex sont publiés sous la **Licence Allodex 1.0** (fichier
+[`LICENSE`](LICENSE), en anglais et en français) :
+
+- **permis** : utiliser, modifier et partager le site, des bouts de code, les scripts Python et les
+  outils, y compris dans d'autres projets Allods Online (visionneuses WebGL, sites de fans,
+  outils), **à condition de créditer** « Basé sur Allodex par Sorok-Dva — https://allodex.eu » ;
+- **interdit** : vendre ou monétiser tout ou partie du contenu (accès payant, publicité, dons liés
+  au contenu repris…), et republier le site entier ou une part substantielle comme site de
+  substitution (miroir, clone, copie sous un autre nom), même gratuitement.
+
+Ce n'est pas une licence « open source » au sens de l'OSI (clauses non commerciale et anti-clone).
+Elle ne couvre **ni le contenu d'Allods Online** (marques, assets du client, même convertis par
+les outils du dépôt), qui reste la propriété de ses ayants droit (Astrum Entertainment,
+MY.GAMES / VK), **ni les composants et contenus de tiers** (dépendances, polices, atlas-ao, images
+de la communauté), qui gardent leurs propres licences et crédits.

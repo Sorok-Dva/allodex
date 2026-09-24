@@ -1,0 +1,150 @@
+Allodex License 1.0
+
+Copyright (c) 2026 Sorok-Dva — https://allodex.eu
+
+The French version follows the English one. Both have the same value; in case of
+doubt, the English version prevails.
+
+1. Scope
+
+"The Work" means everything in this repository that Sorok-Dva authored: the website
+and its source code, the Python tools and scripts, the file formats and pipelines,
+the documentation, the texts and translations written for Allodex, and the files the
+tools produce from the game client, to the extent the author holds any right in them.
+
+This license does not cover:
+  a. Allods Online and everything that belongs to its rights holders (Astrum
+     Entertainment, MY.GAMES / VK and their licensors): names, trademarks, logos,
+     artwork, models, textures, animations, music, sounds, videos, texts and all
+     other assets of the game client, including when they are converted, re-encoded
+     or re-packed by the tools of this repository (see section 5);
+  b. third-party components and content, which keep their own licenses and credits
+     (npm and Python dependencies, fonts, the atlas-ao data and texts, community
+     images; see the README and the credit files).
+
+2. What you may do
+
+Subject to the conditions below, you may, free of charge, use, copy, modify and
+share the Work or parts of it — for example a component, a piece of code, a Python
+script or a tool — including in your own projects about Allods Online (WebGL
+viewers, fan sites, tools, research), provided those projects are non-commercial.
+
+3. Conditions
+
+  a. Attribution. Any project that uses the Work or a part of it must credit, in a
+     place visible to its users (credits page, footer, README, about box):
+       "Based on Allodex by Sorok-Dva — https://allodex.eu"
+     and keep this license notice with the code you reuse.
+  b. Non-commercial use only. You may not sell the Work or any part of it, nor use
+     it to earn money, directly or indirectly: no paid access, subscriptions,
+     advertising, sponsorships, donations tied to the reused content, paid
+     services, sale of files or tools, or inclusion in a paid product.
+  c. No substitute site. You may not publish the Work as a whole, or a substantial
+     part of the website, as a public website or application that reproduces or
+     imitates Allodex — a mirror, a clone, a copy under another name or domain, or
+     a site offering essentially the same pages — including a non-commercial one.
+     Reusing individual components, pages or tools inside a project that is
+     clearly your own is allowed under section 2.
+  d. No confusion. You may not present your project as Allodex, as endorsed by
+     Allodex or its author, or use the Allodex name or logo other than to give the
+     credit above.
+  e. Changes. If you share a modified version of a part of the Work, state that you
+     changed it.
+
+Any use outside these terms requires the prior written permission of the author.
+
+4. Termination
+
+Any breach of these terms ends your rights under this license automatically. They
+are restored if you stop the breach within 30 days after being notified of it for
+the first time.
+
+5. Game content
+
+The author cannot and does not grant any right on the content of Allods Online. The
+extraction tools are shared for study, preservation and fan projects. Whoever reuses
+game content, raw or converted, does so under their own responsibility and must
+respect the rights and terms of its owners.
+
+6. No warranty
+
+The Work is provided "as is", without warranty of any kind. The author is not
+liable for any damage arising from its use.
+
+────────────────────────────────────────────────────────────────────────────────────
+
+Licence Allodex 1.0
+
+Copyright (c) 2026 Sorok-Dva — https://allodex.eu
+
+1. Champ
+
+« L'Œuvre » désigne tout ce que Sorok-Dva a créé dans ce dépôt : le site et son code
+source, les outils et scripts Python, les formats et chaînes de traitement, la
+documentation, les textes et traductions rédigés pour Allodex, ainsi que les fichiers
+que les outils produisent à partir du client du jeu, dans la mesure où l'auteur y
+détient un droit.
+
+Cette licence ne couvre pas :
+  a. Allods Online et tout ce qui appartient à ses ayants droit (Astrum
+     Entertainment, MY.GAMES / VK et leurs concédants) : noms, marques, logos,
+     illustrations, modèles, textures, animations, musiques, sons, vidéos, textes et
+     tous les autres assets du client du jeu, y compris convertis, réencodés ou
+     réempaquetés par les outils de ce dépôt (voir l'article 5) ;
+  b. les composants et contenus de tiers, qui gardent leurs propres licences et
+     crédits (dépendances npm et Python, polices, données et textes d'atlas-ao,
+     images de la communauté ; voir le README et les fichiers de crédits).
+
+2. Ce qui est permis
+
+Sous les conditions ci-dessous, vous pouvez gratuitement utiliser, copier, modifier
+et partager l'Œuvre ou des parties de celle-ci — par exemple un composant, un bout de
+code, un script Python ou un outil —, y compris dans vos propres projets consacrés à
+Allods Online (visionneuses WebGL, sites de fans, outils, recherche), à condition que
+ces projets soient non commerciaux.
+
+3. Conditions
+
+  a. Crédit. Tout projet qui utilise l'Œuvre ou une partie de celle-ci doit
+     indiquer, à un endroit visible de ses utilisateurs (page de crédits, pied de
+     page, README, fenêtre « à propos ») :
+       « Basé sur Allodex par Sorok-Dva — https://allodex.eu »
+     et conserver la présente notice de licence avec le code repris.
+  b. Usage non commercial uniquement. Il est interdit de vendre l'Œuvre ou une
+     partie de celle-ci, ou de s'en servir pour gagner de l'argent, directement ou
+     indirectement : accès payant, abonnement, publicité, parrainage, dons liés au
+     contenu repris, prestation payante, vente de fichiers ou d'outils, intégration
+     à un produit payant.
+  c. Pas de site de substitution. Il est interdit de publier l'Œuvre dans son
+     ensemble, ou une part substantielle du site, sous la forme d'un site ou d'une
+     application publique qui reproduit ou imite Allodex — miroir, clone, copie sous
+     un autre nom ou domaine, site proposant pour l'essentiel les mêmes pages —, même
+     à titre non commercial. Reprendre des composants, des pages ou des outils isolés
+     dans un projet qui est clairement le vôtre reste permis par l'article 2.
+  d. Pas de confusion. Il est interdit de présenter votre projet comme étant
+     Allodex, comme approuvé par Allodex ou son auteur, ou d'utiliser le nom ou le
+     logo d'Allodex autrement que pour le crédit ci-dessus.
+  e. Modifications. Si vous partagez une version modifiée d'une partie de l'Œuvre,
+     indiquez que vous l'avez modifiée.
+
+Tout usage hors de ces conditions requiert l'autorisation écrite préalable de
+l'auteur.
+
+4. Résiliation
+
+Tout manquement à ces conditions met fin automatiquement aux droits accordés par la
+présente licence. Ils sont rétablis si le manquement cesse dans les 30 jours suivant
+la première notification.
+
+5. Contenu du jeu
+
+L'auteur ne peut accorder, et n'accorde, aucun droit sur le contenu d'Allods Online.
+Les outils d'extraction sont partagés à des fins d'étude, de préservation et de
+projets de fans. Quiconque réutilise du contenu du jeu, brut ou converti, le fait
+sous sa propre responsabilité et doit respecter les droits et conditions de ses
+titulaires.
+
+6. Absence de garantie
+
+L'Œuvre est fournie « telle quelle », sans garantie d'aucune sorte. L'auteur ne
+saurait être tenu responsable d'aucun dommage résultant de son utilisation.

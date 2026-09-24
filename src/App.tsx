@@ -11,6 +11,7 @@ import { ChroniclesScreen } from '@/screens/ChroniclesScreen/ChroniclesScreen';
 import { MusicScreen } from '@/screens/MusicScreen/MusicScreen';
 import { LegalScreen } from '@/screens/LegalScreen/LegalScreen';
 import { FatalitiesScreen } from '@/screens/FatalitiesScreen/FatalitiesScreen';
+import { AurasScreen } from '@/screens/AurasScreen/AurasScreen';
 import { TalentsScreen } from '@/screens/TalentsScreen/TalentsScreen';
 
 // Création de personnage : fonction de test, absente du build de production (la condition
@@ -50,6 +51,7 @@ export default function App() {
        path === '/chronicles' || path === '/chroniques' ? <ChroniclesScreen /> :
        path === '/music' || path === '/musiques' ? <MusicScreen /> :
        path === '/fatalities' || path === '/fatalites' ? <FatalitiesScreen /> :
+       path === '/auras' ? <AurasScreen /> :
        CharacterCreationScreen && (path === '/character' || path === '/personnage') ? <Suspense fallback={null}><CharacterCreationScreen /></Suspense> :
        path === '/talents' ? <TalentsScreen /> :
        path === '/lorebook' || path.startsWith('/lorebook/') ? <LorebookScreen /> :

@@ -459,6 +459,7 @@ class ParticleEmitterInfo:
     looping: bool
     world_space: bool
     flip: tuple[bool, bool]
+    decal: bool = False                   # `decalEmitter` : particules plaquées au sol (auras)
 
 
 @dataclass
@@ -483,7 +484,7 @@ def read_particle_animation(db: PackDB, cat: PakCatalog, off: int) -> ParticleIn
             color=((argb >> 16) & 255, (argb >> 8) & 255, argb & 255, (argb >> 24) & 255),
             render=db.u32(e + EM_RENDER), pivot=tuple(float(v) for v in db.floats(e + EM_PIVOT, 2)),
             virtual_offset=db.f32(e + EM_VIRTUAL_OFFSET), looping=bool(flags[0]), world_space=bool(flags[1]),
-            flip=(bool(flags[5]), bool(flags[6]))))
+            flip=(bool(flags[5]), bool(flags[6])), decal=bool(flags[2])))
     textures = []
     v = db.vec(off + PART_TEXTURES)
     if v is not None:
