@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { archiveFile, gameLogo, latestArchiveEntry, T, tex, video, type ArchiveEntry } from '@/lib/assets';
+import { archiveFile, auraFile, gameLogo, latestArchiveEntry, T, tex, video, type ArchiveEntry } from '@/lib/assets';
 import { hasWebGL } from '@/lib/webgl';
 import { Link, navigate } from '@/lib/router';
 import { LanguageSwitcher } from '@/components/controls/LanguageSwitcher';
@@ -87,6 +87,7 @@ export function OpeningScreen() {
     { id: 'music', base: `${T.pinMenu}/ButtonMedals`, image: 'Official/media_player', label: t('music.title'), hint: t('home.musicHint'), onClick: () => navigate('/music') },
     { id: 'cinematics', base: `${T.pinMenu}/ButtonMedals`, image: T.videoIcon, label: t('home.cinematics'), hint: t('home.cinematicsHint'), onClick: () => navigate('/cinematics') },
     { id: 'fatalities', base: T.spells, image: `${T.spells}/FatalityLotus`, label: t('home.fatalities'), hint: t('home.fatalitiesHint'), onClick: () => navigate('/fatalities') },
+    { id: 'auras', base: T.spells, imageUrl: auraFile('icons/HeroHalo06.webp'), label: t('home.auras'), hint: t('home.aurasHint'), onClick: () => navigate('/auras') },
     { id: 'talents', base: `${T.pinMenu}/ButtonTalents`, label: t('home.talents'), hint: t('home.talentsHint'), onClick: () => navigate('/talents') },
     { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: t('home.medals'), hint: t('home.medalsHint'), onClick: () => navigate('/achievements') },
     { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: t('home.character'), hint: t('home.characterHint'), disabled: import.meta.env.PROD, onClick: () => navigate('/character') },
