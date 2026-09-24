@@ -1,5 +1,5 @@
 {
-  "_note": "Écran « Fatalités ». Source : le dernier client (RU 17.x, `client_root`) — géométries, textures, animations, sons ET métadonnées (compilées dans Bin/pack.bin, lues par tools/allods_packdb.py). `server_root` (arbre serveur 7.0) ne sert plus qu'à la lumière de zone du décor (ZoneLights pas encore décodé dans pack.bin) et aux comparaisons ; l'apparence des personnages est lue dans pack.bin (tools/allods_characters.py). `type` = valeur de FatalityType dans le SlonRoot du client (1-10 classes, 11-26 boutique) ; l'association type → effets, animations, délais vient des données. Les libellés sont bilingues ; ceux de la boutique sont des noms d'usage (le client RU ne donne que des noms internes).",
+  "_note": "Écran « Fatalités ». Source : le dernier client (RU 17.x, `client_root`) — géométries, textures, animations, sons ET métadonnées (compilées dans Bin/pack.bin, lues par tools/allods_packdb.py). `server_root` (arbre serveur 7.0) ne sert plus qu'à la lumière de zone du décor (ZoneLights pas encore décodé dans pack.bin) et aux comparaisons ; l'apparence des personnages est lue dans pack.bin (tools/allods_characters.py). `type` = valeur de FatalityType dans le SlonRoot du client (1-10 classes, 11-26 boutique) ; l'association type → effets, animations, délais vient des données. Les libellés sont bilingues ; ceux de la boutique sont des noms d'usage (identifiants du site) : les noms officiels (fatalité, objet qui l'apprend) viennent de tools/fatality_items.py (`items`).",
   "client_root": "/mnt/h/MyGames/AllodsRU",
   "server_root": "/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data",
   "characters": [
@@ -486,10 +486,10 @@
     }
   ],
   "scene": {
-    "_note": "Décor : un coin des Prés bénis (Kania). Textures de terrain et ornements tirés du client (World/Kvatoh/BlessedMeadows) ; ciel = SkyMesh du client dont la première partie est Kvatoh_Day (ciel de jour de Kvatoh, la région des Prés bénis) ; lumière = ZoneLights 7.0 BlessedMeadowsDefault à midi (le ZoneLights compilé du client n'est pas décodé). Le sol est celui de la carte Kania (scene.terrain) ; la disposition des ornements est une mise en scène, posée sur ce sol.",
+    "_note": "Décor : COMPOSITION ASSUMÉE sur un vrai lieu, pas la reproduction d'une scène du jeu. Site = une clairière de bouleaux des Prés bénis (carte Kania, centre (13452, 6192), 540 m à l'ouest-sud-ouest de l'ancien pré), choisie par balayage de la carte (voir README « Fatalités », « Décor ») : aucun objet posé à moins de 38 m, montagnes de 100 à 200 m au sud et au sud-ouest à 200-300 m. Retouches (mise en scène) : sol aplani au centre (`terrain.flatten` : altitude médiane du disque de 30 m, fondu jusqu'à 50 m ; relief réel de 6 m sur ce disque) et disque de `site.clear` m sans objet ; au-delà de `site.detail` m, seuls les objets d'au moins `site.farMinSize` m. Tout le reste vient du client : sol, calques, lumière cuite du sol (`terrain.lightmap`), herbe, eau, objets posés par la carte à leur place, ciel SkyMesh Sky01_Day (première partie Kvatoh_Day) ; lumière = ZoneLights 7.0 BlessedMeadowsDefault à midi (le ZoneLights compilé du client n'est pas décodé par zone).",
     "label": {
-      "fr": "Prés bénis (Kania)",
-      "en": "Blessed Meadows (Kania)"
+      "fr": "Clairière des Prés bénis (Kania)",
+      "en": "Blessed Meadows glade (Kania)"
     },
     "zoneLights": "Maps/Kania/ZoneLights/BlessedMeadows/BlessedMeadowsDefault.(ZoneLights).xdb",
     "time": 12,
@@ -497,212 +497,35 @@
     "ground": {
       "texture": "World/Kvatoh/BlessedMeadows/Terrain/BM_Grass.(Texture).bin",
       "radius": 90,
-      "tile": 5,
-      "patch": {
-        "texture": "World/Kvatoh/BlessedMeadows/Terrain/BM_Grass_Trample.(Texture).bin",
-        "radius": 9,
-        "tile": 4
-      }
+      "tile": 5
     },
-    "props": [
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Birch_Big_01.(Geometry).bin",
-        "at": [
-          -22,
-          30
-        ],
-        "yaw": 20,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Pine_Big_01.(Geometry).bin",
-        "at": [
-          -9,
-          38
-        ],
-        "yaw": 75,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Birch_Big_02.(Geometry).bin",
-        "at": [
-          6,
-          33
-        ],
-        "yaw": 140,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Fir_04.(Geometry).bin",
-        "at": [
-          20,
-          29
-        ],
-        "yaw": 200,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Pine_Big_01.(Geometry).bin",
-        "at": [
-          34,
-          42
-        ],
-        "yaw": 10,
-        "scale": 1.1
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Birch_Big_02.(Geometry).bin",
-        "at": [
-          -36,
-          20
-        ],
-        "yaw": 250,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Birch_small_1.(Geometry).bin",
-        "at": [
-          29,
-          13
-        ],
-        "yaw": 300,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Birch_small_2.(Geometry).bin",
-        "at": [
-          -29,
-          5
-        ],
-        "yaw": 110,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Fir_04.(Geometry).bin",
-        "at": [
-          -44,
-          38
-        ],
-        "yaw": 60,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_DeadTree_01.(Geometry).bin",
-        "at": [
-          40,
-          22
-        ],
-        "yaw": 30,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Birch_small_3.(Geometry).bin",
-        "at": [
-          14,
-          40
-        ],
-        "yaw": 170,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Stones/Models/BM_Rock_01.(Geometry).bin",
-        "at": [
-          -13,
-          11
-        ],
-        "yaw": 30,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Stones/Models/BM_DeadTree_Stone_03.(Geometry).bin",
-        "at": [
-          15,
-          14
-        ],
-        "yaw": 160,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Stones/Models/BM_Pile_01.(Geometry).bin",
-        "at": [
-          -18,
-          -6
-        ],
-        "yaw": 80,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Bushes/Models/BM_Bush_Blueberries.(Geometry).bin",
-        "at": [
-          11,
-          20
-        ],
-        "yaw": 0,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Bushes/Models/BM_Bush_10.(Geometry).bin",
-        "at": [
-          -7,
-          22
-        ],
-        "yaw": 45,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Bushes/Models/BM_Bush_Small_01.(Geometry).bin",
-        "at": [
-          19,
-          2
-        ],
-        "yaw": 90,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Bushes/Models/BM_Bush_05.(Geometry).bin",
-        "at": [
-          -21,
-          15
-        ],
-        "yaw": 120,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_DeadTree_02.(Geometry).bin",
-        "at": [
-          24,
-          -8
-        ],
-        "yaw": 0,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Bushes/Models/BM_Bush_Small_02.(Geometry).bin",
-        "at": [
-          -12,
-          -14
-        ],
-        "yaw": 200,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_ElmDry_Crack.(Geometry).bin",
-        "at": [
-          -30,
-          -16
-        ],
-        "yaw": 40,
-        "scale": 1.0
-      }
-    ],
     "terrain": {
-      "_note": "Sol réel : terrainDump de la carte Kania (17.0) autour d'un pré plat des Prés bénis, choisi pour ses calques d'herbe (BM_Grass_Dark) et son relief doux (5 m sur 120 m) ; le centre est l'origine de la scène.",
+      "_note": "Sol réel : terrainDump de la carte Kania (17.0) ; `radius` = étendue du sol (fin jusqu'à 90 m, grossier au-delà), `grass_radius` = herbe du terrainDump, `flatten` = aplanissement du centre (mise en scène), `lightmap` = lumière cuite des régions (<région>_lightmap.bin). `short_grass` = herbe rase au centre (mise en scène : échelle des touffes × `scale` jusqu'à `radius` m, entière à `fade` m).",
       "map": "Kania",
       "center": [
-        13988,
-        6140
+        13452,
+        6192
       ],
-      "radius": 300
+      "radius": 450,
+      "grass_radius": 100,
+      "flatten": {
+        "inner": 30,
+        "outer": 50
+      },
+      "lightmap": true,
+      "short_grass": {
+        "radius": 22,
+        "fade": 40,
+        "scale": 0.35
+      }
+    },
+    "site": {
+      "_note": "Objets posés par la carte Kania (MapRegion) autour du centre : écartés à moins de `clear` m (mise en scène : on ne garde que le décor lointain ; 25 objets entre 38 et 60 m, bouleaux et buissons, retirés pour ouvrir la vue sur les collines), au-delà de `radius` m, et entre `detail` et `radius` m ceux de moins de `farMinSize` m (buissons, fougères). `orbit` = distance d'orbite maximale de la caméra (couronnes des bouleaux à partir de ≈ 50 m).",
+      "clear": 60,
+      "radius": 420,
+      "detail": 200,
+      "farMinSize": 5,
+      "orbit": 45
     }
   },
   "staging": {
