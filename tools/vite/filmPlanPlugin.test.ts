@@ -30,45 +30,47 @@ beforeAll(async () => {
 afterAll(() => { server.close(); rmSync(dir, { recursive: true, force: true }); });
 beforeEach(() => { writeFileSync(file, serializePlan(PLAN)); writes.length = 0; });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const json = async (res: Response): Promise<any> => res.json();
 const put = (body: unknown) => fetch(base, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 
 describe('greffon du plan du film', () => {
   it('sert le plan et sa révision', async () => {
     const res = await fetch(base);
     expect(res.status).toBe(200);
-    const body = await res.json();
+    const body = await json(res);
     expect(body.plan).toEqual(PLAN);
     expect(body.revision).toBe(revisionOf(serializePlan(PLAN)));
     expect(body.errors).toEqual([]);
   });
 
   it('enregistre un plan valide de façon atomique', async () => {
-    const { revision } = await (await fetch(base)).json();
+    const { revision } = await json(await fetch(base));
     const next = { ...PLAN, entries: [{ ...PLAN.entries[0], status: 'todo' }] };
     const res = await put({ baseRevision: revision, plan: next });
     expect(res.status).toBe(200);
     const text = readFileSync(file, 'utf8');
     expect(JSON.parse(text).entries[0].status).toBe('todo');
-    expect((await res.json()).revision).toBe(revisionOf(text));
+    expect((await json(res)).revision).toBe(revisionOf(text));
     expect(writes).toEqual([revisionOf(text)]);
     expect(readdirSync(dir)).toEqual(['film_plan.json']);   // pas de fichier temporaire laissé
   });
 
   it('refuse un plan invalide sans toucher au fichier', async () => {
-    const { revision } = await (await fetch(base)).json();
+    const { revision } = await json(await fetch(base));
     const res = await put({ baseRevision: revision, plan: { ...PLAN, entries: [{ ...PLAN.entries[0], chapter: 'zz' }] } });
     expect(res.status).toBe(422);
-    expect((await res.json()).errors.join()).toMatch(/chapitre inconnu/);
+    expect((await json(res)).errors.join()).toMatch(/chapitre inconnu/);
     expect(readFileSync(file, 'utf8')).toBe(serializePlan(PLAN));
   });
 
   it('refuse d’écraser un fichier modifié sur disque depuis la lecture', async () => {
-    const { revision } = await (await fetch(base)).json();
+    const { revision } = await json(await fetch(base));
     const edited = serializePlan({ ...PLAN, targetMinutes: 100 });
     writeFileSync(file, edited);   // un agent édite le fichier
     const res = await put({ baseRevision: revision, plan: PLAN });
     expect(res.status).toBe(409);
-    expect((await res.json()).revision).toBe(revisionOf(edited));
+    expect((await json(res)).revision).toBe(revisionOf(edited));
     expect(readFileSync(file, 'utf8')).toBe(edited);
   });
 
