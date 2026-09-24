@@ -7,7 +7,8 @@ entête de 68 octets propre au jeu. Format lu (recoupé sur `Music.bev`, `Ambien
 - `RIFF` `FEV ` : `FMT ` (version `0x00450000`), `LIST` `PROJ` avec `LGCY` (le contenu de
   l'ancien format `FEV1`) et `STRR` (table des noms : `u32` nombre, `u32` décalages, chaînes) ;
 - `LGCY` : `u32`, `u32`, nom du projet (chaîne longueur + texte), `u32` nombre de banques,
-  `u32`, puis par banque `u32` mode, `u32` flux, 8 octets, `u32`, nom ; l'indice de banque des ondes compte
+  `u32` nombre de langues (1, ou 5 pour les projets de voix), puis par banque `u32` mode, `u32`
+  flux, par langue 8 octets et `u32`, nom (sans suffixe : `Voice_IE1_3D` → `…_rus.bsb`) ; l'indice de banque des ondes compte
   à partir de la première banque ;
 - événement : `u32` type (8 complexe, 16 simple), `u32` nom (indice `STRR`), GUID, `f32`
   volume… ; à `+0xA8`, un événement simple porte `u32` 1 et `u32` l'indice de sa définition de
@@ -31,6 +32,7 @@ import zlib
 from dataclasses import dataclass, field
 
 _INSTANCE_TAIL = struct.pack("<ffII", -1.0, -1.0, 2, 2)
+_PARSED: dict[str, "Project"] = {}   # projets lus, par chemin (un seul client par exécution)
 
 
 @dataclass
@@ -139,11 +141,11 @@ def parse_bev(raw: bytes) -> Project:
     s0, s1 = chunks["STRR"]
     strs = _strings(raw[s0:s1])
     name, p = _cstr(raw, lo + 8)
-    nbanks = struct.unpack_from("<I", raw, p)[0]
+    nbanks, nlang = struct.unpack_from("<II", raw, p)
     p += 8
     banks = []
     for _ in range(nbanks):
-        bank, p = _cstr(raw, p + 20)
+        bank, p = _cstr(raw, p + 8 + 12 * nlang)
         banks.append(bank)
     sdefs = _sounddefs(raw, p, hi, strs, banks)
     # événements : entête (type 8 complexe ou 16 simple, nom, GUID, volume)
@@ -152,7 +154,7 @@ def parse_bev(raw: bytes) -> Project:
         t, n = struct.unpack_from("<II", raw, i)
         if t in (8, 16) and 0 < n < len(strs) and not strs[n].startswith("/"):
             vol = struct.unpack_from("<f", raw, i + 24)[0]
-            if 0 < vol <= 1.0 and raw[i + 8:i + 24].count(0) < 6:
+            if 0 < vol <= 4.0 and raw[i + 8:i + 24].count(0) < 6:   # volume jusqu’à +12 dB (1,07 : IE1/08-10)
                 heads.append((i, t, strs[n]))
     events = []
     for (i, kind, ename), nxt in zip(heads, heads[1:] + [(hi, 0, "")]):
@@ -220,25 +222,47 @@ class FevResolver:
         self._streams_of = streams_of  # chemin de banque → noms des sous-pistes (0 = première)
         self._projects: dict = {}
 
+    def _bevs(self) -> list[str]:
+        """Fichiers d'événements, voix anglaises (`SFX/Voice_english/`) écartées : mêmes projets."""
+        return sorted(n for n in self._names if n.lower().endswith(".bev") and "voice_english/" not in n.lower())
+
+    def _load(self, path: str):
+        if path not in self._projects:
+            key = f"{path}:{id(self._get)}"
+            if key not in _PARSED:
+                _PARSED[key] = parse_bev(self._get(path))
+            self._projects[path] = _PARSED[key]
+        return self._projects[path]
+
     def project(self, name: str):
-        key = name.lower()
-        if key not in self._projects:
-            paths = sorted((n for n in self._names if n.lower().endswith(".bev")
-                            and n.rsplit("/", 1)[-1][:-4].lower() == key), key=lambda n: ("english" in n.lower(), n))
-            self._projects[key] = (paths[0], parse_bev(self._get(paths[0]))) if paths else None
-        return self._projects[key]
+        paths = [n for n in self._bevs() if n.rsplit("/", 1)[-1][:-4].lower() == name.lower()]
+        return (paths[0], self._load(paths[0])) if paths else None
+
+    def find_event(self, event: str):
+        """Projet d'un événement : celui qui porte le nom de son premier segment (`Music/…`, `World/…`),
+        sinon le seul projet qui a un événement de ce nom (voix : `IE1/13_Master_07`, groupe `IE1` du
+        projet `VoiceDialogs*` que nomme la ressource, absente d'ici)."""
+        found = self.project(event.split("/")[0])
+        if found is not None and found[1].find(event.split("/")[-1]):
+            return found
+        tail = event.split("/")[-1]
+        hits = [(p, self._load(p)) for p in self._bevs()]
+        hits = [(p, pr) for p, pr in hits if pr.find(tail)]
+        return hits[0] if len(hits) == 1 else found
 
     def bank_path(self, bank: str, near: str) -> str | None:
+        """Banque `bank` : `<bank>.fsb|bsb`, ou la version russe `<bank>_rus` des banques de voix."""
         folder = near.rsplit("/", 1)[0].lower()
+        stems = (bank.lower(), bank.lower() + "_rus")
         hits = [n for n in self._names if n.lower().endswith((".fsb", ".bsb"))
-                and n.rsplit("/", 1)[-1][:-4].lower() == bank.lower()]
+                and n.rsplit("/", 1)[-1][:-4].lower() in stems]
         hits.sort(key=lambda n: (n.rsplit("/", 1)[0].lower() != folder, n))
         return hits[0] if hits else None
 
     def waves(self, event: str) -> tuple[list[dict], str | None]:
         """Ondes vérifiées d'un événement : `bank` (chemin du pak), `sub` (sous-piste vgmstream,
         depuis 1), `stream`, `param` (paramètre du calque, −1 : aucun), `bev`, `file`."""
-        found = self.project(event.split("/")[0])
+        found = self.find_event(event)
         if found is None:
             return [], "pas de fichier .bev pour ce projet"
         path, project = found

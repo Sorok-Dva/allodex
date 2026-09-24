@@ -13,12 +13,13 @@ def _chunk(tag: bytes, body: bytes) -> bytes:
     return tag + struct.pack("<I", len(body)) + body + (b"\0" if len(body) & 1 else b"")
 
 
-def _bev(strings: list[str], event: int, sounddef_name: int, param: int = -1, simple: bool = False) -> bytes:
+def _bev(strings: list[str], event: int, sounddef_name: int, param: int = -1, simple: bool = False,
+         nlang: int = 1, volume: float = 0.25) -> bytes:
     """Projet FMOD minimal comme ceux du client : banque `Music_StartZones`, une définition de
     son (`adaptivemusic/Conquer_high.wav`, sous-piste 1), un événement complexe à un calque."""
-    lg = struct.pack("<II", 0, 0) + _cstr("Music") + struct.pack("<II", 1, 1)
-    lg += struct.pack("<II", 0x80, 8) + b"\x11" * 8 + struct.pack("<I", 0) + _cstr("Music_StartZones")
-    head = struct.pack("<II", 16 if simple else 8, event) + bytes(range(1, 17)) + struct.pack("<f", 0.25)
+    lg = struct.pack("<II", 0, 0) + _cstr("Music") + struct.pack("<II", 1, nlang)
+    lg += struct.pack("<II", 0x80, 8) + (b"\x11" * 8 + struct.pack("<I", 0)) * nlang + _cstr("Music_StartZones")
+    head = struct.pack("<II", 16 if simple else 8, event) + bytes(range(1, 17)) + struct.pack("<f", volume)
     head += b"\0" * (0xA8 - len(head))
     instance = struct.pack("<H", 0) + struct.pack("<ffIHHiIIIIf", 0, 1, 0, 0, 0, -1, 0, 0, 0, 0, 1)
     instance += struct.pack("<ffII", -1, -1, 2, 2)
@@ -66,3 +67,21 @@ def test_simple_event_names_its_sound_definition_after_the_header():
     strings = ["", "World", "IE1", "IE1_ShipDestroy", "/Zones/IE1/IE1_ShipDestroy"]
     project = parse_bev(_bev(strings, 3, 4, simple=True))
     assert [(e.name, e.layers) for e in project.events] == [("IE1_ShipDestroy", [(-1, [0])])]
+
+
+def test_voice_projects_list_one_hash_per_language_and_louder_events():
+    strings = ["", "VoiceDialogs01", "IE1", "13_Master_07", "/IE1/13_Master_07"]
+    project = parse_bev(_bev(strings, 3, 4, nlang=5, volume=1.0116))
+    assert project.banks == ["Music_StartZones"]
+    assert [(e.name, e.layers) for e in project.events] == [("13_Master_07", [(-1, [0])])]
+
+
+def test_resolver_finds_a_group_event_in_the_only_project_that_has_it():
+    voice = _bev(["", "VoiceDialogs01", "IE1", "13_Master_07", "/IE1/13_Master_07"], 3, 4, nlang=5)
+    music = _bev(["", "Music", "ZonesMusic", "IE1_main", "/Music/Conquer_high"], 3, 4)
+    files = {"SFX/Voice/VoiceDialogs01.bev": voice, "SFX/Music/Music.bev": music}
+    names = [*files, "SFX/Voice/Music_StartZones_rus.bsb"]
+    res = FevResolver(names, files.get, lambda bank: ["Conquer_adaptive", "Conquer_high"])
+    waves, why = res.waves("IE1/13_Master_07")
+    assert why is None and waves[0]["bev"] == "SFX/Voice/VoiceDialogs01.bev"
+    assert waves[0]["bank"] == "SFX/Voice/Music_StartZones_rus.bsb"
