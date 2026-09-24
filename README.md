@@ -1573,6 +1573,11 @@ gabarits), `dressedBodies` (avatar habillé, attente `idle` du modèle de créat
 - **particules en boucle continue** (`continuousFrames`, option `continuousParticles`) : après
   `endFrame`, reprise à `loopFrame`, et les particules du tour précédent encore vivantes restent
   dessinées ; l'amorce (avant `loopFrame`) ne renaît pas. Le client ne publie pas sa règle ;
+- **émetteurs non bouclés** (`UseLooping` faux, `oncePeriod`) : les 245 des auras portent chacun
+  une seule particule née à l'image 0 qui vit une période (`loopFrame`, ou la fin) — les
+  décalques des cercles et des runes. Leur piste se rejoue sur cette période (rotation du
+  décalque de Marquis : un tour en 300 images, sans saut) ; sans cette règle, le cercle au sol
+  s'éteignait au bout d'une période (25 s pour Marquis), vérifié à 0, 30 et 120 s ;
 - **cadrage** `AURA_FRAME` : trois quarts face, plongée ≈ 27°, visée à mi-hauteur, au moins 6,5 m.
 
 Les images propres aux systèmes de particules (texture entière, pas un élément de

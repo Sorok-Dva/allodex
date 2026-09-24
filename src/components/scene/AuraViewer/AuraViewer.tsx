@@ -335,7 +335,9 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
         if (import.meta.env.DEV) console.warn('[AuraViewer] chargement impossible', error);
         return;
       }
-      if (import.meta.env.DEV) (window as Window & { __auraViewer?: unknown }).__auraViewer = { THREE, scene, world, instances, bodies, renderer, camera, state: st };
+      // Crochet de développement : captures pilotées dans le temps (`setTime(120)`).
+      if (import.meta.env.DEV) (window as Window & { __auraViewer?: unknown }).__auraViewer = { THREE, scene, world, instances, bodies, renderer, camera, state: st,
+        time: () => time, setTime: (t: number) => { time = t; st.dirty = true; } };
       document.addEventListener('visibilitychange', onVisibility);
       if (!document.hidden) start();
     };
