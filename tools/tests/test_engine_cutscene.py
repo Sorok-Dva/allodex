@@ -432,6 +432,65 @@ def test_merge_bubbles_gives_a_voice_its_bubble_and_drops_twin_chats():
         (12.0, "IL1/15_Amanda_04", "Портал открыт!"), (20.0, None, "Прыгай!")]
 
 
+def test_map_doors_reads_door_devices_of_the_regions_and_their_state_animations(tmp_path):
+    door_dir = tmp_path / "Items" / "Door"
+    door_dir.mkdir(parents=True)
+    (door_dir / "Door.(DeviceVisScripts).xdb").write_text("""<DeviceVisScripts><states>
+      <Item><action type="DeviceVisActionList"><elements>
+        <Item type="DeviceAnimationAction"><mode>CLAMP</mode><animations><Item>special</Item></animations></Item>
+      </elements></action></Item>
+      <Item><action type="DeviceVisActionList"><elements>
+        <Item type="DeviceAnimationAction"><mode>CLAMP</mode><animations><Item>special01</Item></animations></Item>
+      </elements></action></Item></states></DeviceVisScripts>""")
+    (door_dir / "Door.(DoorResource).xdb").write_text("""<DoorResource><visScripts href="Door.(DeviceVisScripts).xdb" />
+      <isOpen>false</isOpen><closedVisState>2</closedVisState><openVisState>1</openVisState></DoorResource>""")
+    region = tmp_path / "Maps" / "M" / "010_000"
+    region.mkdir(parents=True)
+    (region / "0_5_MapRegion.xdb").write_text("""<MapRegion><Objects>
+      <Item><Position X="102.5" Y="113.7" Z="10.8" /><serverStatic type="gameMechanics.map.spawn.StaticDevice">
+        <scriptID>FinalDoor</scriptID><device href="/Items/Door/Door.(DoorResource).xdb#xpointer(/DoorResource)" />
+      </serverStatic></Item>
+      <Item><Position X="1" Y="2" Z="3" /></Item></Objects></MapRegion>""")
+    (door,) = cutscene_xdb70.map_doors(tmp_path, "M")
+    assert door["script"] == "FinalDoor" and door["p"] == [2662.5, 1393.7, 10.8] and not door["isOpen"]
+    assert door["open"] == {"clips": ["special"], "mode": "CLAMP"}
+    assert door["closed"] == {"clips": ["special01"], "mode": "CLAMP"}
+
+
+def test_xdb70_door_switches_are_recorded_on_their_spawn(tmp_path):
+    def switch(script: str, kind: str) -> str:
+        return (f'<Item type="gameMechanics.elements.impacts.ImpactsToSingleSpawn"><spawn><scriptID>{script}</scriptID>'
+                f'</spawn><impacts><Item type="gameMechanics.elements.device.DoorSwitch"><switchType>{kind}</switchType>'
+                f'</Item></impacts></Item>')
+    (tmp_path / "Z.(ScriptZone).xdb").write_text(f"""<ScriptZone><impactsIn>{switch('D1', 'Close')}
+      <Item type="gameMechanics.elements.impacts.ImpactsDeferred"><delay>1500</delay><impacts>{switch('D2', 'Open')}
+      </impacts></Item></impactsIn></ScriptZone>""")
+    tl = cutscene_xdb70.simulate(tmp_path, trigger="Z.(ScriptZone).xdb")
+    assert tl.doors == [{"t": 0.0, "spawn": "D1", "open": False}, {"t": 1.5, "spawn": "D2", "open": True}]
+
+
+def test_door_states_hold_the_starting_state_then_follow_the_switches():
+    from tools.extract_engine_cutscene import DOOR_BEFORE, door_states
+    door = {"script": "D1", "isOpen": False, "open": "Door@special", "closed": "Door@special01"}
+    assert door_states(door, {}, []) == [{"t": DOOR_BEFORE, "vot": "Door@special01"}]
+    switches = [{"t": 0.0, "spawn": "D1", "open": False}, {"t": 2.0, "spawn": "D2", "open": True}]
+    assert door_states(door, {"D1": True}, switches) == [{"t": DOOR_BEFORE, "vot": "Door@special"},
+                                                         {"t": 0.0, "vot": "Door@special01"}]
+
+
+def test_server_yaw_is_a_heading_turned_to_the_minus_y_model_axis():
+    from tools.extract_engine_cutscene import heading, model_yaw
+    # stèle League_Ship_Final (3,26141) et sa collision posée dans la région (4,82951)
+    assert abs(model_yaw(3.26141) - 4.82951) < 0.01
+    assert heading([0, 0, 0], [0, 5, 0]) == round(math.pi / 2, 4)
+    assert abs(model_yaw(heading([0, 0, 0], [3, 4, 0])) - face_yaw([0, 0, 0], [3, 4, 0])) < 1e-3
+
+
+def test_move_clip_runs_a_model_without_a_walk():
+    from tools.extract_engine_cutscene import move_clip
+    assert move_clip("Walk", {"Idle": 1, "Run": 1}) == "Run"
+    assert move_clip("Walk", {"Walk": 1, "Run": 1}) == "Walk"
+    assert move_clip("Run", {"Run": 1}) == "Run" and move_clip(None, {}) is None
 def test_xdb70_trigger_reads_vis_lists_switch_off_teleports_and_shakes(tmp_path):
     """Déroulé d'un déclencheur : `VisActionList` lue dans l'ordre (délai, arrêt), `postAction` et
     `impactsOff` au retrait du buff, téléportation sur la carte même (pas une sortie), secousse."""

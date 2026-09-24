@@ -116,6 +116,8 @@ class Timeline:
     flags: list[dict] = field(default_factory=list)
     # Tables d'apparition posées par le déroulé (`SpawnTableObjects`, retirées par `ResetSpawnTable`).
     tables: list[dict] = field(default_factory=list)
+    # Portes ouvertes ou fermées par le déroulé (`DoorSwitch` sur une `StaticDevice`) : {t, spawn, open}.
+    doors: list[dict] = field(default_factory=list)
 
 
 def read_client_data(tree: Tree, path: Path) -> dict:
@@ -400,6 +402,10 @@ class Simulator:
                 self.tl.scripts.add(loc.findtext("scriptID") or "")
             else:
                 self.tl.exit = t if self.tl.exit is None else min(self.tl.exit, t)
+        elif self.extended and kind == "DoorSwitch" and target != "player":
+            switch = (node.findtext("switchType") or "").strip()
+            if switch in ("Open", "Close"):
+                self.tl.doors.append({"t": round(t, 3), "spawn": target, "open": switch == "Open"})
         elif self.extended and kind == "ImpactSetVisualState" and target != "player":
             self.tl.states.append({"t": round(t, 3), "spawn": target, "state": int(_f(node, "visualState"))})
             self.tl.scripts.add(target)
@@ -672,6 +678,68 @@ def region_origin(path: str) -> tuple[float, float]:
         return 0.0, 0.0
     bx, by, i, j = (int(g) for g in m.groups())
     return (bx + i) * REGION_SIZE, (by + j) * REGION_SIZE
+
+
+def region_file_origin(path: str) -> tuple[float, float]:
+    """Origine d'une région (`…/010_000/0_5_MapRegion.xdb` : bloc 10, 0 ; région 0, 5)."""
+    m = re.search(r"/(\d+)_(\d+)/(\d+)_(\d+)_", path)
+    if not m:
+        return 0.0, 0.0
+    bx, by, i, j = (int(g) for g in m.groups())
+    return (bx + i) * REGION_SIZE, (by + j) * REGION_SIZE
+
+
+def device_action(tree: Tree, scripts: Path, state: int) -> dict | None:
+    """Animation d'un état (1 = premier) d'un `DeviceVisScripts` : `DeviceAnimationAction`, seule ou
+    dans une `DeviceVisActionList` ; `{clips, mode}`."""
+    doc = _read(scripts)
+    items = doc.findall("states/Item") if doc is not None else []
+    if not 1 <= state <= len(items):
+        return None
+    for action in items[state - 1].iter():
+        if (action.get("type") or "") == "DeviceAnimationAction":
+            clips = [x.text.strip() for x in action.findall("animations/Item") if x.text and x.text.strip()]
+            if clips:
+                return {"clips": clips, "mode": (action.findtext("mode") or "").strip() or "DIE"}
+    return None
+
+
+def map_doors(root: Path, map_name: str) -> list[dict]:
+    """Portes posées sur la carte : objets des régions (`MapRegion`) portant une `StaticDevice` dont
+    le dispositif est une `DoorResource` — `scriptID`, place, porte ouverte au départ (`isOpen`) et
+    animation de ses états ouverte (`openVisState`) et fermée (`closedVisState`). Le client ne les
+    connaît pas : c'est le serveur qui envoie l'état de la porte ; sans lui, le modèle jouerait en
+    boucle l'animation de son premier état (ouverture)."""
+    tree = Tree(Path(root))
+    out = []
+    for path in sorted((tree.root / "Maps" / map_name).glob("*/*_MapRegion.xdb")):
+        raw = path.read_bytes()
+        if b"DoorResource" not in raw:
+            continue
+        doc = _read(path)
+        if doc is None:
+            continue
+        ox, oy = region_file_origin(tree.rel(path))
+        for item in doc.findall("Objects/Item"):
+            dev = item.find("serverStatic")
+            href = dev.find("device") if dev is not None else None
+            if href is None or "DoorResource" not in (href.get("href") or ""):
+                continue
+            door_path = tree.resolve(path, href.get("href"))
+            door = _read(door_path)
+            pos = item.find("Position")
+            if door is None or pos is None:
+                continue
+            vis = door.find("visScripts")
+            scripts = tree.resolve(door_path, vis.get("href")) if vis is not None and vis.get("href") else None
+            states = {}
+            for key, tag in (("open", "openVisState"), ("closed", "closedVisState")):
+                n = int(_f(door, tag, 0))
+                states[key] = device_action(tree, scripts, n) if scripts is not None and n else None
+            out.append({"script": dev.findtext("scriptID") or "", "door": tree.rel(door_path),
+                        "p": [float(pos.get("X", 0)) + ox, float(pos.get("Y", 0)) + oy, float(pos.get("Z", 0))],
+                        "isOpen": (door.findtext("isOpen") or "").strip() == "true", **states})
+    return out
 
 
 def walk_speed(mob: Path) -> float:

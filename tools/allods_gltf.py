@@ -86,6 +86,8 @@ class TexturePool:
         self.dir = out_dir / "textures"
         self.done: dict[tuple[str, int], str | None] = {}
         self.has_alpha: dict[str, bool] = {}
+        # Format décodé de chaque texture (`DXT1`, `DXT5`, `RGBA`…) : l'alpha d'un DXT1 est d'un bit.
+        self.formats: dict[str, str] = {}
         self.by_name: dict[str, list[int]] = {}
         for kind in ("Texture", "IndexedTexture"):
             for off in db.resources(kind):
@@ -127,6 +129,7 @@ class TexturePool:
         for fmt, width, height in dict.fromkeys(candidates):
             img = self._decode(mips, fmt, width, height, max_size)
             if img is not None:
+                self.formats[name] = fmt
                 return img
         return None
 

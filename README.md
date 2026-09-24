@@ -96,7 +96,12 @@ s'enchaînent dans l'ordre chronologique, avec un carton de titre à chaque chap
 liste des chapitres (vignettes, navigation), une barre de progression sur la durée du
 film (repères de chapitres) et les sous-titres officiels en `<track>` WebVTT (FR, EN, RU
 ou aucun). Deux lecteurs se relaient : pendant qu'un chapitre joue, l'autre, caché et
-muet, précharge le suivant, d'où un passage sans attente. `?faction=league|empire` ouvre
+muet, précharge le suivant, d'où un passage sans attente ; après un changement de chapitre, le
+lecteur libéré attend 1,5 s avant de précharger (la lecture des modèles d'une scène moteur ne tombe
+pas pendant le fondu). **Fondus** : un voile noir ferme chaque chapitre et ouvre le suivant (0,6 s,
+vidéo comme scène moteur) et reste posé tant que le lecteur montré n'est pas prêt ; une scène moteur
+n'est prête qu'une fois préparée (programmes compilés, textures envoyées quelques-unes par image,
+premier rendu), et son horloge ne part qu'ensuite. `?faction=league|empire` ouvre
 directement un film. Clavier : espace (lecture/pause), Maj+←/→ (chapitre), F (plein écran),
 Échap (quitte le plein écran, sinon retour au choix de faction).
 
@@ -205,7 +210,7 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Zone de départ des Pridiens · « Ah, le cinéma ! » (`pride-cinema`, quête `Pride_1_9`) | serveur 7.0 (déclencheur) | `PridensStart` | 12 s |
 | Zone de départ des Pridiens · « Le spectacle » (`pride-performance`, quête `Pride_1_11`) | serveur 7.0 (déclencheur) | `PridensStart` | 11 s |
 
-**Zone de départ de l’Empire** (arc `empire-start`, juste après le prologue de l’Empire) : dans le
+**Zone de départ de l’Empire** (arc `empire-start`, en tête du film de l’Empire ; le prologue de l’Empire vient juste après sa fin, choix de l’utilisateur) : dans le
 17.0, les trois races de l’Empire (Xadaganiens, Orcs, Arisen) commencent au même tutoriel,
 `Inst_EmpireStart` (navire astral attaqué par la Ligue), qui sort vers `Hadagan_Sanatorium` (Igsh,
 d’après l’`ImpactTeleport` du 7.0) ; Pridiens et Aoidoi, factions à part à la création
@@ -231,6 +236,50 @@ Stèle du 17.0 retrouvée par sa place (`SpawnLocation` : case de 32 m en `+0x30
 `+0x24`) ; lacet propre d’un PNJ de `GameViewScene` en `+0xB8` ; délai `delayBefore` d’une action de
 `GameViewScript` en `+0x2C` (recoupés sur le 7.0).
 
+Corrections du tutoriel de l’Empire (toutes génériques, règles tirées des données) :
+
+- **Composants d’état** (`StateComponent` : indices d’animations en `+0x68`, composant porté en
+  `+0x88`, `stopForOtherAnimation` en `+0x99`, recoupés sur `KaniaShip` 7.0) : un composant montré tant
+  que le gabarit joue l’une de ces animations. Le modèle de la stèle `League_Ship_Final`, `KaniaShip`,
+  n’est qu’une boîte invisible : la coque du navire kanien (`KaniaShip_Clear` en `idle`,
+  `KaniaShip_Break` en flammes en `idle01`, `KaniaShip_Part01` en `special`) et le Спрутоглав qui
+  l’enserre (`AstralCtulhuShip`, `idle01`/`special`, à (100, −35, 0), échelle 0,75) sont ses
+  composants d’état ; ils sont posés comme effets accrochés à la stèle, pendant les états qui les
+  montrent (d’où les combattants kaniens qui flottaient : leur pont n’était pas dessiné). Le décor et
+  les effets ne les posent pas (aucun ne les pilote).
+- **Échelle de la `VisualMob`** (`+0xB4`, f32 ; 12 066 `VisualMob`, 8 971 à 1) appliquée aux acteurs :
+  le Спрутоглав est à 0,4 (`AstralCthulhu_Inst`) ; à l’échelle 1 il traversait le navire. Il se
+  déplace à sa `walkSpeed` (8 m/s) sur son chemin serveur, 14 m sous le pont (`z` 0,889 des
+  `ServerObjects`) ; son modèle n’a pas de marche : il court (`Run`), choix documenté.
+- **Portes** : un objet du décor qui porte une `StaticDevice` à `DoorResource` dans l’arbre 7.0 (le
+  17.0 ne le dit pas : le serveur envoie l’état) est une porte. Elle est montrée dans l’état de sa
+  ressource (`isOpen`, `openVisState`/`closedVisState` → animation `CLAMP` du `DeviceVisScripts`),
+  ou dans celui que le tutoriel lui a laissé (`"doors"` du manifeste, justifié), puis suit les
+  `DoorSwitch` du déroulé ; chaque état est une variante du gabarit (`IH1_Door_01@special01`) tenue sur
+  sa dernière image. Sans cela, le modèle jouait en boucle son premier état (l’ouverture).
+- **Ciel du pont** (`"sky"` du manifeste) : dans le 7.0, le pont (région 0_5, zone `FinalZone`) a
+  l’éclairage `AstralShip_Tubes` et son ciel astral `Astral_Sky` ; le 17.0 ne relie plus le pont à
+  aucun éclairage, et le premier de la carte (`AstralShip`) n’a que le dôme de nuit gris et les
+  étoiles. Le `SkyMesh` 103155 du 17.0 a les trois mêmes calques qu’`Astral_Sky`. Non repris : ses
+  animations, le plancton (`AreaEffect` `Plankton_Tubes`) et l’ombrage astral (`AstralShadingParams`).
+- **Lacet des `ServerObjects`** : c’est un cap (direction de l’axe X tourné, comme le lacet d’une
+  téléportation) ; un modèle, dont l’avant est −Y, tourne de ce cap + π/2 (`model_yaw`). Prouvé sur le
+  navire kanien : stèle `League_Ship_Final` à 3,26141, sa collision posée dans la région au même point
+  à 4,82951. Appliqué aux PNJ posés, aux stèles et au donneur de quête ; pas aux invocations
+  (`ImpactSummon`), non vérifiées. Avant, le navire kanien était tourné d’un quart de tour (ses voiles
+  barraient le pont impérial) et le second tournait le dos au joueur.
+- **Orientations** : un PNJ que le manifeste replace (`start_at`, `"yaw": "walk"`) garde le cap de
+  la marche qui l’y a mené ; un donneur de quête (`"interlocutor"`, `"face": "player"`) se tourne
+  vers le joueur qui lui parle (comportement du client, non tiré des fichiers), à la place que donne
+  `"player"` (centre de la zone `Lazor`, où le joueur rend la quête).
+- **Composants d’état du décor** : un objet posé ne montre que ceux de son état par défaut (animation
+  de son premier état, `FxBuild.default_state`) ; un objet fait seulement de composants d’état n’est
+  plus invisible (lacune relevée côté Ligue).
+- **Découpe par l’alpha** (`cutout`) désactivée pour `Inst_EmpireStart` (`"decor_cutout": false`) :
+  le 17.0 ne marque pas les matériaux découpés, et l’alpha des textures opaques du navire y est un
+  masque (`Hadagan_Inst_Board`, les planches du pont : alpha sous 0,5 sur 80 % ; `Heraldic_Base` :
+  nul partout) ; la découpe creusait le pont.
+
 **Tutoriel de l’Empire, scènes doublées** (étape 2) : comme pour la Ligue, les enchaînements doublés des
 zones de script et des quêtes d’`Inst_EmpireStart` qui mettent en scène plusieurs répliques sont montés,
 dans l’ordre des quêtes : zone `ComanadPost` (le second et le capitaine au poste de commandement,
@@ -247,8 +296,12 @@ alignés (écart −6149, relus réplique par réplique). Musique `IE1_main` (bu
 données ; point de vue fixe du manifeste, justifié : centre de la zone de script atteinte, à 2 m
 (`ComanadPost`, `TeleportPaladin` : 2 m au-dessus du centre de la zone, en bas de la rampe du pont),
 salle du réacteur (centre de la zone `Lazor`) pour les deux scènes de quête ; regard vers le locuteur
-ou la place d’où il part. Lacet du capitaine à l’ordre d’abordage : sens de sa marche précédente (choix
-documenté). **Non repris** : l’annonce du navigateur n’a ni bulle ni sous-titre (voix seule) ; les
+ou la place d’où il part. Points de vue retouchés (choix, non tirés des données) : au poste de
+commandement, avancé de 2,5 m (au centre de la zone, la caméra est dans l’encadrement de la porte
+`ES_Door7_2`, que la zone ouvre) ; « L’artefact perdu », depuis la salle du réacteur vers son entrée
+(savant, capitaine, second et techniciens dans le champ ; au centre de `Lazor`, le savant était à
+1,5 m et les techniciens derrière la caméra) ; « L’ordre d’abordage », derrière le joueur, reculé à
+4,5 m, les deux officiers tournés vers lui. **Non repris** : l’annonce du navigateur n’a ni bulle ni sous-titre (voix seule) ; les
 lampes d’alerte (`IE1_Lamp*`, stèles absentes du 17.0) ; les répliques isolées (sergent `EnemyAtack`,
 canonnier `Fire`, savant `Lazor`, annonces `StartBuff`, `Quest1_2`, `LastEventStart`, ordre `Quest3_2`) :
 une voix sur un PNJ immobile, sans enchaînement. **Zones suivantes** (`Hadagan`, `Hadagan_AE1…3`,
@@ -259,7 +312,7 @@ autres cartes (`Ferris4`, `ZC12`, `Eden`…), leurs voisins de ressource désign
 Isa, Eden) : aucune scène attribuable, rien n’est monté. `AstralHangarHadagan` et `Inst_Empire1End`
 n’ont que des `Tour` (trajet du navire à la sortie du hangar, avec son son) : du transport, pas une scène.
 
-**Zone de départ de la Ligue** (arc `league-start`, juste après le prologue de la Ligue) : Kanians,
+**Zone de départ de la Ligue** (arc `league-start`, en tête du film de la Ligue ; le prologue de la Ligue vient juste après sa fin) : Kanians,
 elfes et gibberlings commencent au même tutoriel, `Inst_LeagueStart` (la tour du Grand Mage Klement
 attaquée par les démons ; `CharacterType` de la Ligue du 7.0 : `LeagueStartOrdinary`, voix
 enregistrées au 4.0.3, `patch403`), qui sort vers Novograd (quête « Дорога в Новоград »). Le client

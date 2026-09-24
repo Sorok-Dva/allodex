@@ -21,11 +21,13 @@ from PIL import Image
 
 from tools.allods_gltf import Exporter, TexturePool, load_animation, load_geometry, reduce_keys
 from tools.allods_packdb import PackDB, PakCatalog
-from tools.allods_visdb import animation_bounds, read_visobject
+from tools.allods_visdb import STATE_ANIMATION, STATE_STRIDE, VOT_STATES, animation_bounds, read_visobject
 from tools.extract_menu_scene import BinSource, read_chunks
 
 
 # --- effets ------------------------------------------------------------------------------------
+
+_ANIM_NAMES: dict[int, dict[int, str]] = {}
 
 @dataclass
 class FxBuild:
@@ -49,12 +51,54 @@ class FxBuild:
             self.names[off] = name
         return self.names[off]
 
-    def emit(self, off: int, depth: int = 0) -> int | None:
-        """Nœud d'un gabarit : géométrie skinnée animée, composants accrochés."""
+    def default_state(self, state_ids: tuple[int, ...], animation: int | None) -> bool:
+        """Un `StateComponent` est-il montré dans l'état par défaut du gabarit : l'une de ses
+        animations (énumération `Animations`) est celle du premier état (`KaniaShip.Idle` → `idle`) ;
+        sans animation, l'état `idle`."""
+        from tools.allods_visdb import animation_names
+        root = getattr(self.db, "parent", None) or self.db
+        names = _ANIM_NAMES.get(id(root))
+        if names is None:
+            names = _ANIM_NAMES[id(root)] = {k: v.lower() for k, v in animation_names(root).items()}
+        file = self.cat.name(self.db.binary_ref(animation)) if animation is not None else None
+        clip = file.rsplit("/", 1)[-1].split(".(")[0].rsplit(".", 1)[-1].lower() if file and "." in file.rsplit("/", 1)[-1].split(".(")[0] else "idle"
+        return any(names.get(i) == clip for i in state_ids)
+
+    def state_animation(self, off: int, clip: str) -> int | None:
+        """Animation de l'état du gabarit dont le fichier porte le clip `clip` (`special01` →
+        `IH1_Door_01.Special01.(SkeletalAnimation).bin`), sans égard à la casse."""
+        wanted = f".{clip.lower()}.("
+        for e in self.db.elements(off + VOT_STATES, STATE_STRIDE):
+            anim = self.db.ptr(e + STATE_ANIMATION)
+            name = self.cat.name(self.db.binary_ref(anim)) if anim is not None else None
+            if name and wanted in name.lower():
+                return anim
+        return None
+
+    def emit_state(self, off: int, clip: str) -> str | None:
+        """Variante `<gabarit>@<clip>` d'un gabarit : son modèle, l'animation de l'état `clip`, jouée
+        une fois puis tenue (`CLAMP` des états d'un dispositif : porte ouverte ou fermée)."""
+        anim = self.state_animation(off, clip)
+        if anim is None:
+            return None
+        name = f"{self.name_of(off)}@{clip}"
+        if name not in self.meta:
+            node = self.emit(off, animation=anim, variant=name)
+            if node is None:
+                return None
+            self.roots.append(node)
+            self.meta[name]["loop"] = False
+        return name
+
+    def emit(self, off: int, depth: int = 0, animation: int | None = None, variant: str | None = None) -> int | None:
+        """Nœud d'un gabarit : géométrie skinnée animée, composants accrochés. `animation`,
+        `variant` : autre animation (celle d'un état) sous un autre nom (`emit_state`)."""
         if depth > 8:
             return None
         vot = read_visobject(self.db, self.cat, off)
-        name = self.name_of(off)
+        if animation is not None:
+            vot.animation = animation
+        name = variant or self.name_of(off)
         ex = self.exporter
         children: list[int] = []
         joint_nodes: list[int] = []
@@ -122,6 +166,11 @@ class FxBuild:
         attached = []
         for comp in vot.components:
             if comp.visobject is None:
+                continue
+            if comp.state_ids is not None and not self.default_state(comp.state_ids, vot.animation):
+                # `StateComponent` d'un autre état que celui du gabarit posé (son animation par défaut) :
+                # rien ne le pilote dans le décor (les stèles posent les leurs, `stele_components`).
+                self.exporter.notes.append(f"{name} : composant d'état {self.name_of(comp.visobject)} hors de l'état par défaut")
                 continue
             if comp.cancelled:
                 self.exporter.notes.append(f"{name} : composant {comp.ident} annulé (arrêté avant son échéance)")

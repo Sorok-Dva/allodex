@@ -1,12 +1,5 @@
 {
  "arcs": {
-  "prologue": {
-   "title": {
-    "fr": "Prologue de faction",
-    "en": "Faction prologue"
-   },
-   "version": "16.0"
-  },
   "league-start": {
    "title": {
     "fr": "La zone de départ de la Ligue",
@@ -28,6 +21,13 @@
     "en": "The Empire starting zone"
    },
    "version": "7.0"
+  },
+  "prologue": {
+   "title": {
+    "fr": "Prologue de faction",
+    "en": "Faction prologue"
+   },
+   "version": "16.0"
   },
   "ferris": {
    "title": {
@@ -123,110 +123,6 @@
  },
  "cinematics": [
   {
-   "id": "empire-intro",
-   "title": {
-    "fr": "Prologue de l’Empire",
-    "en": "Empire prologue"
-   },
-   "faction": "empire",
-   "order": 100,
-   "arc": "prologue",
-   "version": "16.0",
-   "duration": 78.711,
-   "files": {
-    "webm": "empire-intro/video.webm",
-    "mp4": "empire-intro/video.mp4",
-    "poster": "empire-intro/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "empire-intro/fr.vtt",
-     "lines": 7
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "empire-intro/en.vtt",
-     "lines": 6
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "empire-intro/ru.vtt",
-     "lines": 7
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 7,
-    "timing": "measured"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/16_0Events/FactionsIntro/ImperiaIntro.ogv",
-    "event": "FactionsIntro/ImperiaIntro"
-   },
-   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de l’Empire ; placée en tête du film."
-  },
-  {
-   "id": "league-intro",
-   "title": {
-    "fr": "Prologue de la Ligue",
-    "en": "League prologue"
-   },
-   "faction": "league",
-   "order": 100,
-   "arc": "prologue",
-   "version": "16.0",
-   "duration": 74.474,
-   "files": {
-    "webm": "league-intro/video.webm",
-    "mp4": "league-intro/video.mp4",
-    "poster": "league-intro/poster.jpg"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "league-intro/fr.vtt",
-     "lines": 13
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "league-intro/en.vtt",
-     "lines": 12
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "league-intro/ru.vtt",
-     "lines": 13
-    }
-   ],
-   "audio": {
-    "language": "ru"
-   },
-   "subtitles": {
-    "status": "official",
-    "lines": 13,
-    "timing": "measured"
-   },
-   "source": {
-    "client": "17.0",
-    "pak": "data/Packs/Video.pak",
-    "entry": "Video/16_0Events/FactionsIntro/LeagueIntro.ogv",
-    "event": "FactionsIntro/LeagueIntro"
-   },
-   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de la Ligue ; placée en tête du film."
-  },
-  {
    "id": "empire-start-command-post",
    "arc": "empire-start",
    "version": "7.0",
@@ -237,7 +133,7 @@
     "fr": "Au poste de commandement",
     "en": "At the command post"
    },
-   "chronology": "Tutoriel de l’Empire (Inst_EmpireStart, voix « patch403 ») : zone ComanadPost, entre les quêtes des canons (« Пострелять из корабельной пушки ») et « Реакторная », dont elle fait le capitaine donneur ; première scène doublée à plusieurs voix du tutoriel, après le prologue de l’Empire.",
+   "chronology": "Tutoriel de l’Empire (Inst_EmpireStart, voix « patch403 ») : zone ComanadPost, entre les quêtes des canons (« Пострелять из корабельной пушки ») et « Реакторная », dont elle fait le capitaine donneur ; première scène doublée à plusieurs voix du tutoriel ; ouvre le film de l’Empire.",
    "bonus": false,
    "duration": 12.0,
    "files": {
@@ -445,7 +341,7 @@
     "fr": "L’abordage",
     "en": "Boarding the enemy ship"
    },
-   "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; juste après le prologue de l’Empire. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
+   "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; après la montée sur le pont. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
    "bonus": false,
    "duration": 14.0,
    "files": {
@@ -688,6 +584,110 @@
    "audio": {
     "language": "ru"
    }
+  },
+  {
+   "id": "empire-intro",
+   "title": {
+    "fr": "Prologue de l’Empire",
+    "en": "Empire prologue"
+   },
+   "faction": "empire",
+   "order": 149,
+   "arc": "prologue",
+   "version": "16.0",
+   "duration": 78.711,
+   "files": {
+    "webm": "empire-intro/video.webm",
+    "mp4": "empire-intro/video.mp4",
+    "poster": "empire-intro/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "empire-intro/fr.vtt",
+     "lines": 7
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "empire-intro/en.vtt",
+     "lines": 6
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "empire-intro/ru.vtt",
+     "lines": 7
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 7,
+    "timing": "measured"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/16_0Events/FactionsIntro/ImperiaIntro.ogv",
+    "event": "FactionsIntro/ImperiaIntro"
+   },
+   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de l’Empire ; placée en tête du film."
+  },
+  {
+   "id": "league-intro",
+   "title": {
+    "fr": "Prologue de la Ligue",
+    "en": "League prologue"
+   },
+   "faction": "league",
+   "order": 149,
+   "arc": "prologue",
+   "version": "16.0",
+   "duration": 74.474,
+   "files": {
+    "webm": "league-intro/video.webm",
+    "mp4": "league-intro/video.mp4",
+    "poster": "league-intro/poster.jpg"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "league-intro/fr.vtt",
+     "lines": 13
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "league-intro/en.vtt",
+     "lines": 12
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "league-intro/ru.vtt",
+     "lines": 13
+    }
+   ],
+   "audio": {
+    "language": "ru"
+   },
+   "subtitles": {
+    "status": "official",
+    "lines": 13,
+    "timing": "measured"
+   },
+   "source": {
+    "client": "17.0",
+    "pak": "data/Packs/Video.pak",
+    "entry": "Video/16_0Events/FactionsIntro/LeagueIntro.ogv",
+    "event": "FactionsIntro/LeagueIntro"
+   },
+   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de la Ligue ; placée en tête du film."
   },
   {
    "id": "ferris-retrospective",

@@ -69,9 +69,22 @@ export type EngineLight = {
 /** `tilt` : (roulis X, tangage Y) des objets inclinés, composés `Rz(yaw)·Ry·Rx` (Euler `ZYX`). */
 /** `hold` : jouée une fois puis tenue sur sa dernière image (`CLAMP` du jeu : mort, navire parti). */
 export type ActorAction = { t: number; until: number; clips: string[]; loop: boolean; hold?: boolean };
+/**
+ * État d'un objet du décor piloté par le serveur (porte : `DoorResource`) : à partir de `t`, le
+ * gabarit `vot` (le même modèle, animé par le clip de l'état) joue son clip depuis `t`, une fois
+ * puis tenu (`CLAMP`). Un état posé avant la scène (`t` très négatif) est montré à sa fin.
+ */
+export type DecorState = { t: number; vot: string };
 /** `t`/`until` : modèle posé par une stèle pendant un état ; `hidden` : intervalles où l'objet est retiré. */
 export type DecorInstance = { vot: string; p: Vec3; yaw: number; tilt?: [number, number]; scale?: number; light?: [number, number]; ambient?: Vec3;
-  t?: number; until?: number; hidden?: [number, number][] };
+  t?: number; until?: number; hidden?: [number, number][]; states?: DecorState[] };
+
+/** Fenêtres `[début, fin)` des états d'un objet du décor ; sans états, le gabarit joue dès 0. */
+export function decorWindows(item: Pick<DecorInstance, 'vot' | 'states'>): { vot: string; start: number; until: number }[] {
+  const states = [...(item.states ?? [])].sort((a, b) => a.t - b.t);
+  if (!states.length) return [{ vot: item.vot, start: 0, until: Infinity }];
+  return states.map((s, k) => ({ vot: s.vot, start: s.t, until: k + 1 < states.length ? states[k + 1].t : Infinity }));
+}
 /** Secousse de caméra (`ShakeAction`) : décalages `keys` (m, repère caméra) à `fps`, dès `t`. */
 export type CameraShake = { t: number; fps: number; amplitude: number; timeScale: number; keys: Vec3[] };
 /** Rayon : de `locator` de l'acteur `from` jusqu'au point `to`, gabarit modelé sur `length` m. */
