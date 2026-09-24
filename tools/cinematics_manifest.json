@@ -351,24 +351,6 @@
    }
   },
   {
-   "id": "invasion-engineer-kania",
-   "kind": "engine",
-   "source": "main",
-   "event": "CutScene_EngineerDeathKania",
-   "arc": "invasion",
-   "version": "7.0",
-   "faction": "league",
-   "order": 225,
-   "title": {
-    "fr": "La mort de l’ingénieur",
-    "en": "The Engineer’s Death"
-   },
-   "chronology": "Scène moteur de l’instance de départ de l’Invasion (Inst_ZoneContested12_Start, 7.0, version de la Ligue) : l’ingénieur Luka tombe sous les coups de trois assassins colosses ; entre le navire astral et la métamorphose.",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
    "id": "invasion-kursk-1",
    "entry": "Video/7_0Events/Invasion/Kursk_1_HD.ogv",
    "source": "main",
@@ -459,7 +441,7 @@
    },
    "chronology": "Groupe « Raid7_2 » du registre : raid de la mise à jour 7.2, après l’Invasion (7.0).",
    "audio": {
-    "language": null
+    "language": "ru"
    }
   },
   {
@@ -1600,6 +1582,25 @@
     "audio": {
      "language": "ru"
     }
+   },
+   {
+    "id": "invasion-engineer-kania",
+    "kind": "engine",
+    "source": "main",
+    "event": "CutScene_EngineerDeathKania",
+    "arc": "invasion",
+    "version": "7.0",
+    "faction": "league",
+    "order": 225,
+    "title": {
+     "fr": "La mort de l’ingénieur",
+     "en": "The Engineer’s Death"
+    },
+    "chronology": "Scène moteur de l’instance de départ de l’Invasion (Inst_ZoneContested12_Start, 7.0, version de la Ligue) : l’ingénieur Luka tombe sous les coups de trois assassins colosses ; entre le navire astral et la métamorphose.",
+    "audio": {
+     "language": "ru"
+    },
+    "_held_note": "Retiré du film le 24/09/2026 à la demande : doublon de la fin de la vidéo « Le navire astral » (invasion-astral-ship)."
    }
   ]
  },

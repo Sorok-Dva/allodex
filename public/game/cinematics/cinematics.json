@@ -920,39 +920,6 @@
    "note": "Version HD de la cinématique moteur ShipExplosion : le client en avait deux variantes (Kania / Hadagan) mais n’a qu’une vidéo et un seul événement ; le visuel et les sous-titres sont ceux de la variante Ligue (Ship_explosion_L)."
   },
   {
-   "id": "invasion-engineer-kania",
-   "arc": "invasion",
-   "version": "7.0",
-   "faction": "league",
-   "order": 225,
-   "event": "CutScene_EngineerDeathKania",
-   "title": {
-    "fr": "La mort de l’ingénieur",
-    "en": "The Engineer’s Death"
-   },
-   "chronology": "Scène moteur de l’instance de départ de l’Invasion (Inst_ZoneContested12_Start, 7.0, version de la Ligue) : l’ingénieur Luka tombe sous les coups de trois assassins colosses ; entre le navire astral et la métamorphose.",
-   "bonus": false,
-   "duration": 13.433,
-   "files": {
-    "poster": "engine/invasion-engineer-kania/poster.jpg"
-   },
-   "engine": {
-    "scene": "engine/invasion-engineer-kania/scene.json"
-   },
-   "tracks": [],
-   "subtitles": {
-    "status": "official",
-    "lines": 0,
-    "timing": "client",
-    "audio": {
-     "language": "ru"
-    }
-   },
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
    "id": "invasion-kursk-1",
    "title": {
     "fr": "La métamorphose",
@@ -1104,14 +1071,38 @@
     "mp4": "raid72-boss-death/video.mp4",
     "poster": "raid72-boss-death/poster.jpg"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français (auto)",
+     "src": "raid72-boss-death/fr.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "en",
+     "label": "English (auto)",
+     "src": "raid72-boss-death/en.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "ru",
+     "label": "Русский (авто)",
+     "src": "raid72-boss-death/ru.vtt",
+     "lines": 2
+    }
+   ],
    "audio": {
-    "language": null
+    "language": "ru"
    },
    "subtitles": {
-    "status": "none",
-    "lines": 0,
-    "timing": null
+    "status": "transcribed",
+    "lines": 2,
+    "timing": "transcribed",
+    "reviewed": true,
+    "model": "faster-whisper medium, int8, sans VAD (voix sous la musique, écartées par le filtre)",
+    "audio": {
+     "language": "ru"
+    }
    },
    "source": {
     "client": "17.0",

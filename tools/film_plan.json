@@ -1107,7 +1107,7 @@
       "note": "Chronologie : Registre vidéo du client (groupe « Invasion ») : événements listés dans cet ordre, qui est aussi celui de l’histoire (la bannière de la victoire clôt la série). Zone disputée ZC12, jouée par les deux factions."
     },
     {
-      "status": "film",
+      "status": "discarded",
       "priority": "none",
       "siteChapter": "invasion-engineer-kania",
       "id": "invasion-engineer-kania",
@@ -1123,7 +1123,7 @@
       "subtitles": "official",
       "trigger": "CutScene_EngineerDeathKania",
       "source": "Scène moteur recréée (engine_scenes « invasion-engineer-kania » du manifeste) ; GameViewScene 438509 (CutScene_EngineerDeathKania, Inst_ZoneContested12_Start) jouée par le ShowSceneAction de la stèle 438512 : trois assassins colosses (special03, 04, 05) et Luka (special08) à la place de la scène, caméra au cameraPlacement. Caméra : le cameraPlacement (drapeau use) pose le spect",
-      "note": "Chronologie : Scène moteur de l’instance de départ de l’Invasion (Inst_ZoneContested12_Start, 7.0, version de la Ligue) : l’ingénieur Luka tombe sous les coups de trois assassins colosses ; entre le navire astral et la métamorphose."
+      "note": "Chronologie : Scène moteur de l’instance de départ de l’Invasion (Inst_ZoneContested12_Start, 7.0, version de la Ligue) : l’ingénieur Luka tombe sous les coups de trois assassins colosses ; entre le navire astral et la métamorphose. — Retirée du film le 24/09/2026 : doublon de la fin de la vidéo « Le navire astral »."
     },
     {
       "status": "film",
