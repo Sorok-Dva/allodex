@@ -1,5 +1,5 @@
 {
-  "_note": "Écran « Fatalités ». Source : le dernier client (RU 17.x, `client_root`) — géométries, textures, animations, sons ET métadonnées (compilées dans Bin/pack.bin, lues par tools/allods_packdb.py). `server_root` (arbre serveur 7.0) ne sert plus qu'à la lumière de zone du décor (ZoneLights pas encore décodé dans pack.bin) et aux comparaisons ; l'apparence des personnages est lue dans pack.bin (tools/allods_characters.py). `type` = valeur de FatalityType dans le SlonRoot du client (1-10 classes, 11-26 boutique) ; l'association type → effets, animations, délais vient des données. Les libellés sont bilingues ; ceux de la boutique sont des noms d'usage (le client RU ne donne que des noms internes).",
+  "_note": "Écran « Fatalités ». Source : le dernier client (RU 17.x, `client_root`) — géométries, textures, animations, sons ET métadonnées (compilées dans Bin/pack.bin, lues par tools/allods_packdb.py). `server_root` (arbre serveur 7.0) ne sert plus qu'à la lumière de zone du décor (ZoneLights pas encore décodé dans pack.bin) et aux comparaisons ; l'apparence des personnages est lue dans pack.bin (tools/allods_characters.py). `type` = valeur de FatalityType dans le SlonRoot du client (1-10 classes, 11-26 boutique) ; l'association type → effets, animations, délais vient des données. Les libellés sont bilingues ; ceux de la boutique sont des noms d'usage (identifiants du site) : les noms officiels (fatalité, objet qui l'apprend) viennent de tools/fatality_items.py (`items`).",
   "client_root": "/mnt/h/MyGames/AllodsRU",
   "server_root": "/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data",
   "characters": [
@@ -256,6 +256,13 @@
       "label": {
         "fr": "Occultiste",
         "en": "Warlock"
+      },
+      "date": {
+        "value": "2015-03-26",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex",
+        "quote": "« Amenez ce document au Banquier gobelin pour apprendre une nouvelle aptitude JcJ - Fatalité ! » (Code du Carnifex)"
       }
     },
     {
@@ -265,6 +272,13 @@
       "label": {
         "fr": "Universelle",
         "en": "Universal"
+      },
+      "date": {
+        "value": "2019-07-12",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-120719",
+        "quote": "Passionate Speech of the Carnifex annoncé comme nouveau"
       }
     },
     {
@@ -274,6 +288,13 @@
       "label": {
         "fr": "Universelle (nouvelle)",
         "en": "Universal (new)"
+      },
+      "date": {
+        "value": "2020-08-06",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex-060820",
+        "quote": "« Le nouveau Discours Impie du Carnifex a été ajouté à la Boutique »"
       }
     },
     {
@@ -283,6 +304,13 @@
       "label": {
         "fr": "Coffre du bourreau",
         "en": "Executioner's chest"
+      },
+      "date": {
+        "value": "2021-07-22",
+        "kind": "attested",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-220721",
+        "quote": "Ruthless Speech déjà en vente (absent de la vente du 06/08/2020)"
       }
     },
     {
@@ -292,6 +320,13 @@
       "label": {
         "fr": "Runes (2021)",
         "en": "Runes (2021)"
+      },
+      "date": {
+        "value": "2021-07-22",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-220721",
+        "quote": "Savage Speech of the Carnifex annoncé comme nouveau"
       }
     },
     {
@@ -301,6 +336,13 @@
       "label": {
         "fr": "Bourreau (2021)",
         "en": "Executioner (2021)"
+      },
+      "date": {
+        "value": "2023-08-18",
+        "kind": "attested",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-1",
+        "quote": "Lunar Speech dans la liste de la vente (absent de celle du 22/07/2021)"
       }
     },
     {
@@ -310,6 +352,13 @@
       "label": {
         "fr": "Chaînes (2022)",
         "en": "Chains (2022)"
+      },
+      "date": {
+        "value": "2023-08-18",
+        "kind": "attested",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-1",
+        "quote": "Deadly Speech dans la liste de la vente (absent de celle du 22/07/2021)"
       }
     },
     {
@@ -319,6 +368,13 @@
       "label": {
         "fr": "Lotus",
         "en": "Lotus"
+      },
+      "date": {
+        "value": "2023-02-24",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex-1",
+        "quote": "« Le Discours florissant du Carnifex a été ajouté à la Cassette Radiante du Carnifex »"
       }
     },
     {
@@ -328,6 +384,13 @@
       "label": {
         "fr": "Phénix",
         "en": "Phoenix"
+      },
+      "date": {
+        "value": "2023-08-18",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-1",
+        "quote": "« The Incinerating Speech of the Carnifex has been added to the Radiant Strongbox »"
       }
     },
     {
@@ -337,6 +400,13 @@
       "label": {
         "fr": "Avatar (2023)",
         "en": "Avatar (2023)"
+      },
+      "date": {
+        "value": "2024-02-24",
+        "kind": "attested",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-2",
+        "quote": "Staggering Speech dans la liste (absent de celle du 18/08/2023)"
       }
     },
     {
@@ -346,6 +416,13 @@
       "label": {
         "fr": "Avril 2024",
         "en": "April 2024"
+      },
+      "date": {
+        "value": "2024-08-09",
+        "kind": "attested",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-3",
+        "quote": "Spiritistic Speech dans la liste (absent de celle du 24/02/2024)"
       }
     },
     {
@@ -364,6 +441,13 @@
       "label": {
         "fr": "Crâne (2024)",
         "en": "Skull (2024)"
+      },
+      "date": {
+        "value": "2025-08-01",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex-5",
+        "quote": "« Le Discours squelettique du Carnifex a été ajouté à la Cassette Radiante du Carnifex »"
       }
     },
     {
@@ -373,6 +457,13 @@
       "label": {
         "fr": "Baudroie",
         "en": "Monkfish"
+      },
+      "date": {
+        "value": "2026-04-24",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex-6",
+        "quote": "« Discours abyssaux du Carnifex » ajouté à la Cassette radiante"
       }
     },
     {
@@ -395,10 +486,10 @@
     }
   ],
   "scene": {
-    "_note": "Décor : un coin des Prés bénis (Kania). Textures de terrain et ornements tirés du client (World/Kvatoh/BlessedMeadows) ; ciel = SkyMesh du client dont la première partie est Kvatoh_Day (ciel de jour de Kvatoh, la région des Prés bénis) ; lumière = ZoneLights 7.0 BlessedMeadowsDefault à midi (le ZoneLights compilé du client n'est pas décodé). Le sol est celui de la carte Kania (scene.terrain) ; la disposition des ornements est une mise en scène, posée sur ce sol.",
+    "_note": "Décor : COMPOSITION ASSUMÉE sur un vrai lieu, pas la reproduction d'une scène du jeu. Site = une clairière de bouleaux des Prés bénis (carte Kania, centre (13452, 6192), 540 m à l'ouest-sud-ouest de l'ancien pré), choisie par balayage de la carte (voir README « Fatalités », « Décor ») : aucun objet posé à moins de 38 m, montagnes de 100 à 200 m au sud et au sud-ouest à 200-300 m. Retouches (mise en scène) : sol aplani au centre (`terrain.flatten` : altitude médiane du disque de 30 m, fondu jusqu'à 50 m ; relief réel de 6 m sur ce disque) et disque de `site.clear` m sans objet ; au-delà de `site.detail` m, seuls les objets d'au moins `site.farMinSize` m. Tout le reste vient du client : sol, calques, lumière cuite du sol (`terrain.lightmap`), herbe, eau, objets posés par la carte à leur place, ciel SkyMesh Sky01_Day (première partie Kvatoh_Day) ; lumière = ZoneLights 7.0 BlessedMeadowsDefault à midi (le ZoneLights compilé du client n'est pas décodé par zone).",
     "label": {
-      "fr": "Prés bénis (Kania)",
-      "en": "Blessed Meadows (Kania)"
+      "fr": "Clairière des Prés bénis (Kania)",
+      "en": "Blessed Meadows glade (Kania)"
     },
     "zoneLights": "Maps/Kania/ZoneLights/BlessedMeadows/BlessedMeadowsDefault.(ZoneLights).xdb",
     "time": 12,
@@ -406,212 +497,36 @@
     "ground": {
       "texture": "World/Kvatoh/BlessedMeadows/Terrain/BM_Grass.(Texture).bin",
       "radius": 90,
-      "tile": 5,
-      "patch": {
-        "texture": "World/Kvatoh/BlessedMeadows/Terrain/BM_Grass_Trample.(Texture).bin",
-        "radius": 9,
-        "tile": 4
-      }
+      "tile": 8
     },
-    "props": [
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Birch_Big_01.(Geometry).bin",
-        "at": [
-          -22,
-          30
-        ],
-        "yaw": 20,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Pine_Big_01.(Geometry).bin",
-        "at": [
-          -9,
-          38
-        ],
-        "yaw": 75,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Birch_Big_02.(Geometry).bin",
-        "at": [
-          6,
-          33
-        ],
-        "yaw": 140,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Fir_04.(Geometry).bin",
-        "at": [
-          20,
-          29
-        ],
-        "yaw": 200,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Pine_Big_01.(Geometry).bin",
-        "at": [
-          34,
-          42
-        ],
-        "yaw": 10,
-        "scale": 1.1
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Birch_Big_02.(Geometry).bin",
-        "at": [
-          -36,
-          20
-        ],
-        "yaw": 250,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Birch_small_1.(Geometry).bin",
-        "at": [
-          29,
-          13
-        ],
-        "yaw": 300,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Birch_small_2.(Geometry).bin",
-        "at": [
-          -29,
-          5
-        ],
-        "yaw": 110,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Fir_04.(Geometry).bin",
-        "at": [
-          -44,
-          38
-        ],
-        "yaw": 60,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_DeadTree_01.(Geometry).bin",
-        "at": [
-          40,
-          22
-        ],
-        "yaw": 30,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_Birch_small_3.(Geometry).bin",
-        "at": [
-          14,
-          40
-        ],
-        "yaw": 170,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Stones/Models/BM_Rock_01.(Geometry).bin",
-        "at": [
-          -13,
-          11
-        ],
-        "yaw": 30,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Stones/Models/BM_DeadTree_Stone_03.(Geometry).bin",
-        "at": [
-          15,
-          14
-        ],
-        "yaw": 160,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Stones/Models/BM_Pile_01.(Geometry).bin",
-        "at": [
-          -18,
-          -6
-        ],
-        "yaw": 80,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Bushes/Models/BM_Bush_Blueberries.(Geometry).bin",
-        "at": [
-          11,
-          20
-        ],
-        "yaw": 0,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Bushes/Models/BM_Bush_10.(Geometry).bin",
-        "at": [
-          -7,
-          22
-        ],
-        "yaw": 45,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Bushes/Models/BM_Bush_Small_01.(Geometry).bin",
-        "at": [
-          19,
-          2
-        ],
-        "yaw": 90,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Bushes/Models/BM_Bush_05.(Geometry).bin",
-        "at": [
-          -21,
-          15
-        ],
-        "yaw": 120,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_DeadTree_02.(Geometry).bin",
-        "at": [
-          24,
-          -8
-        ],
-        "yaw": 0,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Bushes/Models/BM_Bush_Small_02.(Geometry).bin",
-        "at": [
-          -12,
-          -14
-        ],
-        "yaw": 200,
-        "scale": 1.0
-      },
-      {
-        "geometry": "World/Kvatoh/BlessedMeadows/Flora/Trees/Models/BM_ElmDry_Crack.(Geometry).bin",
-        "at": [
-          -30,
-          -16
-        ],
-        "yaw": 40,
-        "scale": 1.0
-      }
-    ],
     "terrain": {
-      "_note": "Sol réel : terrainDump de la carte Kania (17.0) autour d'un pré plat des Prés bénis, choisi pour ses calques d'herbe (BM_Grass_Dark) et son relief doux (5 m sur 120 m) ; le centre est l'origine de la scène.",
+      "_note": "Sol réel : terrainDump de la carte Kania (17.0) ; `radius` = étendue du sol (fin jusqu'à 90 m, grossier au-delà), `grass_radius` = herbe du terrainDump, `flatten` = aplanissement du centre (mise en scène), `lightmap` = lumière cuite des régions (<région>_lightmap.bin). `short_grass` = herbe rase au centre (mise en scène : échelle des touffes × `scale` jusqu'à `radius` m, entière à `fade` m).",
       "map": "Kania",
       "center": [
-        13988,
-        6140
+        13452,
+        6192
       ],
-      "radius": 300
+      "radius": 450,
+      "grass_radius": 100,
+      "flatten": {
+        "inner": 30,
+        "outer": 50
+      },
+      "lightmap": true,
+      "short_grass": {
+        "radius": 22,
+        "fade": 40,
+        "scale": 0.35
+      }
+    },
+    "site": {
+      "_note": "Objets posés par la carte Kania (MapRegion) autour du centre : écartés à moins de `clear` m (mise en scène : on ne garde que le décor lointain ; 25 objets entre 38 et 60 m, bouleaux et buissons, retirés pour ouvrir la vue sur les collines), au-delà de `radius` m, et entre `detail` et `radius` m ceux de moins de `farMinSize` m (buissons, fougères). `orbit` = distance d'orbite maximale de la caméra (couronnes des bouleaux à partir de ≈ 50 m).",
+      "clear": 60,
+      "radius": 420,
+      "detail": 200,
+      "farMinSize": 5,
+      "textureMax": 512,
+      "orbit": 45
     }
   },
   "staging": {
@@ -627,6 +542,91 @@
         0.75,
         0.45
       ]
+    ]
+  },
+  "items": {
+    "_note": "tools/fatality_items.py : objets qui apprennent chaque fatalité (chaîne type → buff → icône → UnlockResource → ItemResource, voir sa docstring), noms officiels (ru/en : `latest` ; fr : client FR 16.0, même resourceId), icônes (public/game/fatalities/icons/) et version d'apparition (premier des `clients` archivés, dans l'ordre, qui contient le type ; `previous` = dernier client vérifié sans lui). Les versions 5.0, 6.0, 10.0, 12.0-14.0 ne sont pas vérifiables (archives sans Bin/pack.bin, ou sans l'action de fatalité). `date` de chaque fatalité (plus haut) : pas dans les données du client ; page d'actualité officielle MY.GAMES (serveurs européens, FR/EN), `announced` = annoncé comme nouveau, `attested` = première liste de vente relevée qui le contient (date au plus tard).",
+    "latest": {
+      "version": "17.0",
+      "root": "/mnt/h/MyGames/AllodsRU",
+      "pak": "BaseLocall_x64.pak",
+      "texts": {
+        "ru": [
+          "Texts_x64.pak",
+          "Bin/pack.rus.loc"
+        ],
+        "en": [
+          "Texts_x64.pak",
+          "Bin/pack.eng_eu.loc"
+        ]
+      }
+    },
+    "fr": {
+      "version": "16.0",
+      "root": "/mnt/h/MyGames/Allods Online FR (FR)",
+      "pak": "BaseLocfra_x64.pak",
+      "texts": {
+        "fr": [
+          "Texts_x64.pak",
+          "Bin/pack.loc"
+        ]
+      }
+    },
+    "clients": [
+      {
+        "version": "3.0",
+        "game_version": "3.0.02.19",
+        "root": "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsOnline3.0.2.19[5.12GB]-20200522T111620Z-001/AllodsOnline3.0.2.19[5.12GB]",
+        "pak": "BaseLocrus.pak"
+      },
+      {
+        "version": "4.0",
+        "game_version": "4.0.02.42",
+        "root": "/mnt/f/ALLODS ONLINE SERVER/Allods 4.2/Allods Nova/Allods Nova",
+        "pak": "BaseLoceng.pak"
+      },
+      {
+        "version": "7.0",
+        "game_version": "7.0.00.00",
+        "root": "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0",
+        "pak": "Bin.pak"
+      },
+      {
+        "version": "8.0",
+        "game_version": "8.0.02.61.1",
+        "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0",
+        "pak": "BaseLocfra.pak"
+      },
+      {
+        "version": "9.0",
+        "game_version": "9.0.01.89",
+        "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 9.0.01.89",
+        "pak": "BaseLocfra.pak"
+      },
+      {
+        "version": "11.0",
+        "game_version": "11.0.00.12.1",
+        "root": "/home/llyam/allods-clients/11.0-steam/Allods Online EN",
+        "pak": "BaseLoceng_eu.pak"
+      },
+      {
+        "version": "15.0",
+        "game_version": "15.0.03.23.2",
+        "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR (FR) 15.0.03.23.2 (end of patch)",
+        "pak": "BaseLocfra_x64.pak"
+      },
+      {
+        "version": "16.0",
+        "game_version": "16.0.01.78.2",
+        "root": "/mnt/h/MyGames/Allods Online FR (FR)",
+        "pak": "BaseLocfra_x64.pak"
+      },
+      {
+        "version": "17.0",
+        "game_version": "17.0.01.64",
+        "root": "/mnt/h/MyGames/AllodsRU",
+        "pak": "BaseLocall_x64.pak"
+      }
     ]
   }
 }

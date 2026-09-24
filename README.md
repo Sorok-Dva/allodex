@@ -509,7 +509,11 @@ c'est le serveur qui enchaîne les buffs.
   8 m — sommets de 4 octets (normale, indice dans la grille 9 × 9), puis une hauteur `f32` par
   sommet, triangles `u8`, jeux de trois calques ; hauteurs identiques **au centimètre** à la carte
   de hauteurs de l'arbre serveur 7.0 (`terrain.bin`, carreaux 8 × 8 sur 33 × 33). Plusieurs couches
-  superposées par région (`FerrisRaid`). Calques : `TerraLayers` (texture, répétition en mètres) ;
+  superposées par région (`FerrisRaid`). Calques : `TerraLayers` (texture) ; toute texture de
+  calque se répète tous les **8 m** : le vertex shader du terrain du client
+  (`Material/terrain-dx11.bin`) écrit `TEXCOORD0 = −position · 0,125`, sans facteur par calque ; le
+  flottant `+0x10` des calques (30, 40), lu autrefois comme une répétition en mètres, est
+  l'exposant spéculaire `DirectionalExponent` (recoupé champ à champ avec le `layers.xdb` 7.0) ;
   poids des calques lus dans les `SplatMap` (voir « Sol mélangé ») ;
 - décor opaque rendu **d'une seule face**, comme le jeu : l'ouverture de `ferris-locus-fall`, caméra
   sous la plateforme du Locus, montre alors le Cœur au-dessus ; les cristaux du portail
@@ -589,7 +593,7 @@ dégradé selon la profondeur, reflet (caméra miroir, demi-résolution), réfra
 Fresnel, alpha `sat(8B − 4)/(N·V + 0,01)`. Supposés : l'unité du temps
 (`s × waterSpeedMultiply / 1000`) et les textures de repli (`WaterFresnel`, `WaterNoise`) des types
 sans Fresnel ou sans relief (`Kania_River`, `Ferris4`). Aucune scène actuelle ne voit d'eau (la plus
-proche est à 157 m de la caméra de `ferris-retrospective`) ; la fatalité (Prés bénis) en a à 277 m.
+proche est à 157 m de la caméra de `ferris-retrospective`) ; le décor des fatalités en a 52 carrés, loin du centre.
 
 **Occulteurs** : un par carreau de 32 m (56 o) : `xmin` (4 hauteurs, à 96 % égales à une hauteur de
 sommet du carreau), `xmax` (`−FLT_MAX` dans 89 % des cas), boîte haute de 1 024 m ; avec
@@ -1036,7 +1040,8 @@ un ciel plus sombre que dans le client (luminance 107 contre 143 en haut à gauc
 ## Fatalités
 
 La page `/fatalities` (désactivée en production) rejoue les 26 fatalités du jeu — 10 de classe,
-16 de la boutique — sur les seize personnages jouables, dans un coin des Prés bénis.
+16 de la boutique — sur les seize personnages jouables, dans une clairière des Prés bénis
+(composition sur un vrai lieu, voir « Décor »).
 
 **Source : le dernier client** (RU 17.x, `/mnt/h/MyGames/AllodsRU`). Il ne livre plus aucun
 `.xdb` : tout ce que l'arbre serveur 7.0 décrit en XML est compilé dans `Bin/pack.bin`
@@ -1065,6 +1070,7 @@ son (événement FMOD dont l'onde porte le même nom dans `SFX/Spells/Fatality*.
 
     python3 tools/extract_fatalities.py              # tout (≈ 3 min)
     python3 tools/extract_fatalities.py --only-fx phoenix --no-characters
+    python3 tools/fatality_items.py                  # objets, noms, icônes, versions (≈ 5 min, 9 clients)
 
 **Règles établies sur les données** (chacune testée) :
 
@@ -1088,6 +1094,92 @@ son (événement FMOD dont l'onde porte le même nom dans `SFX/Spells/Fatality*.
   l'identique, allégés des clés redondantes (tolérance nommée) ;
 - sons : événement ↔ onde par nom, casse et soulignés ignorés (`FatalityUniversal` →
   `fatality_universal`).
+
+**Objets, noms officiels et apparition** (`tools/fatality_items.py`, `tools/fatality_items.json`).
+Le script fusionne ces données dans `fatalities.json` : champs `name`, `items`, `itemLink` et
+`since`. Pour chaque type de fatalité, la chaîne suit des pointeurs du `pack.bin` et ne devine
+aucun nom :
+
+1. `CreatureFatalityAbilityAction` porte le type (`fatalityType`, énumération 7.0
+   `client.SLON.FatalityType`) dans son seul champ propre. Ce champ est à `+0x44` en 17.0 et à
+   `+0x24` en 4.0 : on le repère comme le champ dont les valeurs sont toutes distinctes d'une action
+   à l'autre ;
+2. le `BuffVisScripts` qui contient cette action est le script d'un ou plusieurs **buffs**. Leur
+   nom (`+0x68`) est le **nom en jeu de la fatalité** : « Rituel lunaire », « Géhenne »,
+   « Peine de mort »… ;
+3. pour les fatalités de boutique, l'icône du buff (`UISingleTexture`) est pointée aussi par une
+   `UnlockResource` (la capacité apprise, « Guerrier lunaire »). Les dix fatalités de classe et la
+   11 partagent l'icône générique `Fatality` et n'ont pas de capacité propre ;
+4. un **objet** (`ItemResource`, nom en `+0x228`) apprend la fatalité quand une de ses conditions
+   d'emploi (`PredicateUnlock`) pointe cette capacité. Un objet peut en apprendre plusieurs : la
+   Collection du Carnifex apprend 11 et 12. Une fatalité peut venir de plusieurs objets : les
+   versions boutique, échange et temporaire sont regroupées quand elles ont les mêmes nom et icône
+   (`resourceIds`).
+
+Aucun sort ni effet serveur (ceux qui posent les buffs) n'est dans le client. La fatalité 11
+(« Carnage », chemin `Mechanics/Fatality/ClassFatalityWarlock` en 11.0) n'a ni icône ni capacité
+propres. Elle est rattachée **par le nom** (`itemLink: "name"`, établi sur le russe) : le Code du
+Carnifex apprend `Умение «Расправа»` (FR « Aptitude Fatalité », EN « Fatality ability »), et le buff
+de la fatalité 11 s'appelle `Расправа` (FR « Carnage »). Chaque Discours « modifie l'effet visuel
+de Fatalité » (description FR) : le Carnage est donc l'effet par défaut de l'aptitude.
+
+Noms :
+
+- russe et anglais : textes du client 17.0 (`pack.rus.loc`, `pack.eng_eu.loc`). Un anglais resté
+  en cyrillique compte comme absent ;
+- français : client FR 16.0, même objet d'un client à l'autre par le `resourceId` (table `0x30`
+  de l'entête v2, `resource_keys`) ;
+- icônes : fichiers `UITexture` du client 17.0, recadrés sur leur zone utile
+  (`public/game/fatalities/icons/`).
+
+La **version d'apparition** est le premier client archivé qui contient le type. `previous` est le
+dernier client archivé vérifié sans lui. Clients lus : 3.0, 4.0.02.42, 7.0, 8.0.02.61.1, 9.0.01.89,
+11.0.00.12.1, 15.0.03.23.2, 16.0.01.78.2 et 17.0.01.64. Les versions 5.0, 6.0, 10.0 et 12.0 à 14.0
+ne sont pas vérifiables : leurs archives n'ont pas de `Bin/pack.bin` ou pas l'action de fatalité.
+Une apparition « 15.0 » veut donc dire « entre 11.0 et 15.0 ».
+
+La **date** n'est pas dans les données du client. Elle vient des pages d'actualité officielles
+MY.GAMES des serveurs européens (`date` du manifeste, source citée). `announced` veut dire annoncé
+comme nouveau. `attested` veut dire au plus tard : c'est la première liste de vente relevée qui
+contient l'objet. Le serveur russe les reçoit plus tôt.
+
+| Type | Fatalité (FR) | Objet (FR) | Icône | Version | Date (EU) |
+|---|---|---|---|---|---|
+| 1-9 | classe | — | — | 4.0 (absente de 3.0) | inconnue |
+| 10 | Désintégration (Ingénieur) | — | — | 7.0 (absente de 4.0) | inconnue |
+| 11 | Carnage | Code du Carnifex (+ Collection, Manuel du Carnifex) | `IMFatalityLotteryScroll_04` | 9.0 (absente de 8.0) | 26.03.2015, [annonce](https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex) |
+| 12 | Géhenne | Discours enflammé du Carnifex (+ Collection) | `Fatality` | 11.0 (absente de 9.0) | 12.07.2019, [annonce](https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-120719) |
+| 13 | Mâchoires démoniaques | Discours impie du Carnifex | `FatalityDemonScroll` | 15.0 | 06.08.2020, [annonce](https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex-060820) |
+| 14 | Rituel impitoyable | Discours impitoyable du Carnifex | `FatalityBatScroll` | 15.0 | ≤ 22.07.2021 |
+| 15 | Rituel astral | Discours sauvage du Carnifex | `MagicCirclesScroll` | 15.0 | 22.07.2021, [annonce](https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-220721) |
+| 16 | Rituel lunaire | Discours lunaire du Carnifex | `Scroll_Fatality_Black_Hole` | 15.0 | ≤ 18.08.2023 |
+| 17 | Rituel mortel | Discours mortel du Carnifex | `Scroll_Fatality_Banshee_2022` | 15.0 | ≤ 18.08.2023 |
+| 18 | Rituel naturel | Discours florissant du Carnifex | `FatalityLotus_Scroll` | 15.0 | 24.02.2023, [annonce](https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex-1) |
+| 19 | Rituel enflammé | Discours incinérant du Carnifex | `FatalityPhoenix_Scroll` | 15.0 | 18.08.2023, [annonce](https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-1) |
+| 20 | Rituel sidérant | Discours sidérant du Carnifex | `Fatality_FireFist_Scroll` | 15.0 | ≤ 24.02.2024 |
+| 21 | Rituel spiritiste | Discours de spirite du Carnifex | `ScrollFatality_Skull24` | 15.0 | ≤ 09.08.2024 |
+| 22 | Rituel fou | Discours fou / Discours béni du Carnifex | `Fatality_squirrel_scroll` | 15.0 | inconnue |
+| 23 | Rituel squelettique | Discours squelettique du Carnifex | `ScrollFatality_Puppet24` | 15.0 | 01.08.2025, [annonce](https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex-5) |
+| 24 | Rituel abyssal | Discours abyssaux du Carnifex | `FatalityScroll_AnglerFish25` | 16.0 | 24.04.2026, [annonce](https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex-6) |
+| 25 | Rituel corrompu | Discours déformé du Carnifex | `FatalityScroll_Tree` | 16.0 | inconnue |
+| 26 | *(RU seulement : Змеиный ритуал)* | *(Змеиные Речи Палача)* | `ScrollFatality_Snake26` | 17.0 | inconnue |
+
+Les noms **non prouvés** gardent le libellé du site, en italique dans la liste :
+
+- 26 n'a ni texte français ni texte anglais ;
+- 24 et 25 n'ont pas de texte anglais (« Monkfish », « Tree (2025) ») ;
+- le nom anglais de 24 dans l'encart retombe sur le français.
+
+Les libellés du site (`label` : « Occultiste », « Phénix »…) restent les identifiants d'URL. La
+Voix du Carnifex n'apprend pas de fatalité : elle apprend l'aptitude « Voix du Carnifex », un court
+message envoyé sur la discussion à la mort de la proie.
+
+L'écran montre ces données à deux endroits :
+
+- la liste « Fatalités de la boutique » montre l'icône et le nom officiel de l'objet principal ;
+  l'infobulle du jeu y ajoute le nom de la fatalité ;
+- l'encart de droite (`FatalityInfo`, au cadre et aux couleurs de l'infobulle du jeu) montre le
+  nom en jeu, les objets, la version et la date avec le lien vers sa source, ou « Date inconnue ».
 
 **Personnages** (`tools/allods_characters.py`, module réutilisable — future page de création de
 personnage). Tout vient du client 17.0 : le constructeur visuel compilé (`VisCharacterTemplate`,
@@ -1133,18 +1225,62 @@ drapeaux `FatalityWings*` achetés en boutique) ne sont pas jouées. Mise en sc�
 lecteur) : le tueur se tient à **17 m** (distance de sort, 15 à 20 m, validée), à 55° de l'avant de la victime côté −X, posé sur le terrain et tourné vers elle ; le rayon s'étire donc à 1,7 fois sa longueur modelée, fondus inchangés ; le tueur n'entre pas dans le cadrage (voir « Lecteur ») ; il
 se choisit dans le panneau (défaut : même sexe, première race de l'autre faction, URL `k=`).
 
-**Décor** (`scene/scene.glb`) : **sol réel** de la carte `Kania` (`tools/allods_terrain.py` :
-`terrainDump` du client 17.0, hauteurs vérifiées sur 7.0), un pré des Prés bénis (13 988, 6 140)
-choisi pour ses calques d'herbe et son relief doux (5 m sur 120 m) — niveau de détail fin jusqu'à
-90 m, grossier jusqu'à 300 m ; chaque sous-carreau prend le premier calque de sa première passe (le
-mélange du `SplatMap` n'est pas élucidé), terre battue redessinée au centre ; bouleaux, pins,
-rochers et buissons de la zone posés sur ce sol (disposition mise en scène, `scene.props`) ; ciel
-`Sky01_Day*`, dessiné avant tout le reste sans test de profondeur (ses calques de nuages, à
-100 m de la caméra, passaient devant les arbres lointains quand elle reculait : cadrage du
-Prêtre et du Mage) ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi. Herbe du
-`terrainDump` jusqu'à 110 m du centre et eau jusqu'à 300 m, rendues par le code commun aux
-cinématiques moteur (`vot/terrainExtras.ts`, voir « Herbe » et « Eau »), éclairées par la lumière de
-la zone (pas de lumière cuite ici) ; ni l'une ni l'autre n'arrête la caméra.
+**Décor** (`scene/scene.glb`) — **composition assumée sur un vrai lieu**, pas la reproduction d'une
+scène du jeu (le client n'a pas d'arène de fatalité). Le site est une **clairière de bouleaux des
+Prés bénis**, carte `Kania`, centre (13 452, 6 192), à 540 m de l'ancien pré. Il a été choisi par
+balayage de la carte : grille de 8 m, distance au plus proche des 27 320 objets posés
+(`MapRegion`), relief du `terrainDump` dans un disque de 30 m (plat) et dans les couronnes de
+60 à 200 m et de 200 à 400 m (collines, montagnes). La clairière n'a **aucun objet à moins de
+38 m**. Au sud et au sud-ouest, des montagnes culminent 100 à 200 m plus haut, à 200-300 m. Les
+autres sites bien dégagés sont des places de village (fortin kanien) ou des pentes.
+
+Ce qui vient du client :
+
+- **sol** : `terrainDump` 17.0 sur 450 m, fin jusqu'à 90 m, grossier au-delà. Chaque sous-carreau
+  prend le premier calque de sa première passe (le mélange du `SplatMap` n'est pas élucidé). Les
+  22 calques de la zone sont `BM_Grass*`, `BM_Ground*`, `BM_Stone*`, `Mountain_*`, `Quarry_Sand*`,
+  `Astral_Sand*`… ;
+- **lumière cuite du sol** : `<région>_lightmap.bin` (R = ciel, G = soleil et ombres). Elle est
+  appliquée en couleur de sommet, comme facteur `jeu / lecteur` de la formule
+  `ambiante · (f + (1 − f) · ciel) + soleil · N·S · ombre` (`baked_light`), avec la lumière de la
+  zone ;
+- **herbe** du `terrainDump` jusqu'à 100 m, **eau** jusqu'à 450 m (52 carrés, loin du centre),
+  rendues par `vot/terrainExtras.ts` ;
+- **objets posés par la carte, à leur place** (position, orientation, échelle,
+  `tools/allods_scenes.read_regions`, `site_decor`) jusqu'à 420 m. Cela fait 827 objets de 57
+  géométries, chacune émise une fois et partagée par ses instances. Les plus nombreux :
+  `BM_Birch_Big_01/02`, `BM_Birch_small_1/2/3` et `BM_Bush_*` (Prés bénis,
+  `World/Kvatoh/BlessedMeadows`), `Elf_Crystal_*`, la carrière (`Quarry_WoodenTrunk`,
+  `Quarry_Boarding01`, `Quarry_Stone*`, `Sawmill_*`), le camp kanien (`Kania_WarCamp_*`,
+  `K_Fence_*`, `Kania_Hospital_Tent`), le lieu de résurrection kanien (`Kania_ResurrectPlace`),
+  `Elf_House_02`, des rochers `BM_Rock_02/03` et des pins `BM_Pine_Small_*`, `BM_Fir_01` ;
+- **ciel** `SkyMesh` `Sky01_Day*` (première partie `Kvatoh_Day`), dessiné avant tout le reste sans
+  test de profondeur (ses nuages, à 100 m de la caméra, passaient devant les arbres lointains), et
+  **lumière et brouillard** du
+  `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi (le `ZoneLights` compilé n'est pas lu par zone).
+
+Ce qui est de la mise en scène (manifeste, `scene.terrain` et `scene.site`) :
+
+- le **sol du centre est aplani** à l'altitude médiane du disque de 30 m, puis raccordé au relief
+  réel par un fondu jusqu'à 50 m (`Flatten`). Le relief réel varie de 6 m sur ce disque. L'herbe,
+  l'eau et les objets posés dans le fondu suivent le sol ;
+- le **disque de 60 m est vidé** : 25 bouleaux et buissons entre 38 et 60 m sont retirés, ce qui
+  ouvre la vue sur les collines. Seul le décor lointain est gardé ;
+- au-delà de 200 m, seuls les objets d'au moins 5 m restent (333 petits buissons et fougères
+  écartés) ;
+- l'**herbe est rase au centre** : l'échelle des touffes y est multipliée par 0,35 jusqu'à 22 m,
+  puis rendue entière à 40 m. Les touffes du pré montaient au genou et masquaient les pieds ;
+- l'**orbite de la caméra est bornée à 45 m** (`site.orbit`, prop `orbitMax` du lecteur) : les
+  couronnes des bouleaux commencent vers 50 m ;
+- les textures des objets du site et des calques de sol lointains (au-delà de 90 m) sont à
+  512 px. Le sol proche garde 1024 px.
+
+Poids : `scene.glb` 10,6 Mo et 232 textures (26,2 Mo), soit **≈ 37 Mo** pour le décor, sous les
+50 Mo (l'ancien pré faisait 3,4 Mo et une vingtaine de textures). Le lecteur découpe les objets du
+site par le champ de la caméra (`frustumCulled`), contrairement aux effets. Ni l'herbe ni l'eau
+n'arrêtent la caméra.
+
+    python3 tools/extract_fatalities.py --no-fx --no-characters --no-sounds   # décor seul (≈ 2 min)
 
 **Table des paks** (`tools/allods_packdb.vote_pak_codes`) : le vote « l'entrée au rang indiqué
 finit par `(Texture).bin` » ne départage pas deux paks de textures (n'importe quel rang y tombe
@@ -1257,8 +1393,8 @@ apparitions et disparitions tombent à ±0,25 s près, sauf mention :
 **Manques.** `ProceduralEffect` (effet `Empty`) ignoré. Particules : `WorldSpaceEmitter` et `Z_BOX`
 traités comme locales / face caméra. Pas de bloom : la géométrie douce a ramené le Prêtre d'un
 blanc plein à des effets lisibles, un bloom le resaturerait. Effets des tenues de création
-(`growths.fx`) non joués. La durée affichée est celle
-du script : certaines fatalités (Occultiste, Crâne 2024) finissent par plusieurs secondes vides.
+(`growths.fx`) non joués. La durée affichée est celle du script : certaines fatalités (11 Carnage,
+23 Rituel squelettique) finissent par plusieurs secondes vides.
 
 ## Création de personnage (développement)
 

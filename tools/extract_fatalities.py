@@ -77,6 +77,8 @@ from tools.uitexture import build_dds  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_MANIFEST = HERE / "fatalities_manifest.json"
+# Objets, noms officiels, icônes et versions (`tools/fatality_items.py`).
+DEFAULT_ITEMS = HERE / "fatality_items.json"
 DEFAULT_OUT = HERE.parent / "public" / "game" / "fatalities"
 
 # Côté maximal des textures exportées : 512 pour les effets (quads additifs flous, jamais vus de
@@ -222,29 +224,91 @@ def zone_light(server_root: Path, path: str, time: float) -> dict | None:
 # Terrain : sous-carreaux de 8 m au niveau de détail fin jusqu'à `TERRAIN_FINE` m du centre, puis
 # grossier jusqu'au rayon du manifeste (le brouillard du jeu commence à 80 m).
 TERRAIN_FINE = 90.0
+# Côté maximal des textures des calques qui ne couvrent que le sol lointain (au-delà de
+# `TERRAIN_FINE`) : 512, écart assumé pour le poids du décor (les calques proches restent à 1024).
+FAR_TERRAIN_TEXTURE_MAX = 512
 # Rayon de l'herbe autour du centre (m) : la caméra orbite près de la victime et l'herbe se dissout
 # à 70 m de la caméra (`GRASS_FADE_FAR` du lecteur).
 GRASS_RADIUS = 110.0
+# Lumière cuite du sol (`<région>_lightmap.bin`, 512² dont deux texels de bordure : voir
+# `tools/extract_engine_cutscene.lightmap_uv`) : R = visibilité du ciel, G = soleil (ombres portées).
+LIGHTMAP_TEXELS = 512
+LIGHTMAP_MARGIN = 2
 
 
-def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: dict | None) -> tuple[list[int], object]:
+def smoothstep(e0: float, e1: float, x):
+    t = np.clip((np.asarray(x, dtype=np.float64) - e0) / max(e1 - e0, 1e-9), 0.0, 1.0)
+    return t * t * (3 - 2 * t)
+
+
+@dataclass
+class Flatten:
+    """Aplanissement du centre (**mise en scène**, `scene.terrain.flatten`) : le sol réel est
+    ramené à l'altitude médiane du disque intérieur (`inner` m), raccordé au relief réel par un
+    fondu en `smoothstep` jusqu'à `outer` m. `shift(x, y)` : décalage vertical du sol à cet
+    endroit (les objets posés dans le fondu le suivent)."""
+    cx: float
+    cy: float
+    inner: float
+    outer: float
+    level: float = 0.0
+
+    def weight(self, x, y):
+        """0 au centre (sol aplani), 1 au-delà de `outer` (sol réel)."""
+        return smoothstep(self.inner, self.outer, np.hypot(np.asarray(x) - self.cx, np.asarray(y) - self.cy))
+
+    def apply(self, pts: np.ndarray, normals: np.ndarray) -> None:
+        w = self.weight(pts[:, 0], pts[:, 1])
+        pts[:, 2] = self.level + (pts[:, 2] - self.level) * w
+        normals[:] = normals * w[:, None] + np.array([0.0, 0.0, 1.0]) * (1 - w[:, None])
+        normals /= np.maximum(np.linalg.norm(normals, axis=1, keepdims=True), 1e-9)
+
+    def shift(self, x: float, y: float, z: float) -> float:
+        w = float(self.weight(x, y))
+        return (self.level + (z - self.level) * w) - z
+
+
+def baked_light(image, local: np.ndarray, normals: np.ndarray, light: dict | None) -> np.ndarray:
+    """Facteur (RGB) qui ramène l'éclairage du lecteur (`ambiante + soleil · N·S`, lumière de la
+    zone) à celui du jeu avec la lumière cuite du sol : `ambiante · (f + (1 − f) · ciel) +
+    soleil · N·S · ombre` (formule de `tools/extract_engine_cutscene.vertex_light`), `ciel` et
+    `ombre` lus dans la `lightmap` de la région aux sommets (mètres locaux à la région)."""
+    if image is None or light is None:
+        return np.ones((len(local), 3))
+    rgb = np.asarray(image.convert("RGB").resize((LIGHTMAP_TEXELS,) * 2), np.float64) / 255.0
+    span = (LIGHTMAP_TEXELS - 2 * LIGHTMAP_MARGIN)
+    u = LIGHTMAP_MARGIN + span * np.clip(local[:, 0] / 256.0, 0, 1)
+    v = LIGHTMAP_MARGIN + span * np.clip(1.0 - local[:, 1] / 256.0, 0, 1)
+    px = np.clip(np.round(u - 0.5).astype(int), 0, LIGHTMAP_TEXELS - 1)
+    py = np.clip(np.round(v - 0.5).astype(int), 0, LIGHTMAP_TEXELS - 1)
+    sky, sun = rgb[py, px, 0], rgb[py, px, 1]
+    a, f = np.array(light["ambient"]), float(light.get("ambientFactor", 0.5))
+    d, s = np.array(light["sun"]), np.array(light["sunDirection"])
+    ns = np.clip(normals @ s, 0.0, None)[:, None]
+    game = a[None, :] * (f + (1 - f) * sky[:, None]) + d[None, :] * ns * sun[:, None]
+    viewer = a[None, :] + d[None, :] * ns
+    return np.clip(game / np.maximum(viewer, 1e-3), 0.0, 1.0)
+
+
+def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: dict | None,
+                   light: dict | None = None) -> tuple[list[int], object, Flatten | None, float]:
     """Sol réel d'un coin de carte (`tools/allods_terrain.py`, `terrainDump` de 17.0, hauteurs
     vérifiées sur 7.0) centré sur `spec.center` : nœuds glTF (un primitif par calque, marqués
-    `ground`) et fonction de hauteur `z(x, y)` du sol dans le repère du décor (centre à z = 0).
+    `ground`), fonction de hauteur `z(x, y)` du sol dans le repère du décor (centre à z = 0),
+    aplanissement du centre (`spec.flatten`, facultatif) et altitude du centre dans la carte.
     Chaque sous-carreau prend le premier calque de sa première passe (le mélange du `SplatMap`
-    n'est pas élucidé) ; la tache de terre battue (`trample`) est redessinée par-dessus le terrain
-    au centre, son bord estompé par l'alpha des sommets."""
+    n'est pas élucidé) ; `spec.lightmap` : la lumière cuite des régions assombrit les sommets
+    (ombres du relief et du décor, `baked_light`). La tache de terre battue (`trample`) est
+    redessinée par-dessus le terrain au centre, son bord estompé par l'alpha des sommets."""
     from tools.allods_packdb import open_map
     from tools.allods_scenes import region_origin
-    from tools.allods_terrain import region_patches, terrain_layers
+    from tools.allods_terrain import layer_uv, region_patches, terrain_layers
     mp = open_map(db, client, spec["map"])
     cat = open_catalog(mp, client)
     packs = packs_path(client / "data" / "Packs")
     bins = BinSource([], [str(packs / f"{spec['map']}_000_000_512_512.Client.pak")])
     cx, cy = spec["center"]
     radius = float(spec.get("radius", 300.0))
-    groups: dict[str, list] = {}
-    grid: dict[tuple[int, int], float] = {}
     regions: list = []
     for path, region in sorted(mp.paths.items()):
         if not path.endswith("_MapRegion.xdb"):
@@ -253,11 +317,31 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
         if not (ox - radius <= cx <= ox + 256 + radius and oy - radius <= cy <= oy + 256 + radius):
             continue
         parsed = region_patches(bins.get, spec["map"], path)
-        if parsed is None:
-            continue
-        layer_sets, patches = parsed
+        if parsed is not None:
+            regions.append((path, region, (ox, oy), *parsed))
+    flat = None
+    if spec.get("flatten"):
+        fl = spec["flatten"]
+        flat = Flatten(cx, cy, float(fl["inner"]), float(fl["outer"]))
+        inner = [p.points[:, 2][np.hypot(p.points[:, 0] + ox - cx, p.points[:, 1] + oy - cy) <= flat.inner]
+                 for _path, _r, (ox, oy), _sets, patches in regions for p in patches if not p.level]
+        flat.level = float(np.median(np.concatenate(inner)))
+        # Sommets en place (mètres de la carte) : l'herbe et l'eau (`ExtrasBuilder`) suivent.
+        for _path, _r, (ox, oy), _sets, patches in regions:
+            for p in patches:
+                world = p.points + np.array([ox, oy, 0.0])
+                if float(flat.weight(world[:, 0], world[:, 1]).min()) < 1.0:
+                    flat.apply(world, p.normals)
+                    p.points[:, 2] = world[:, 2]
+    lightmaps = None
+    if spec.get("lightmap"):
+        from tools.allods_gltf import TexturePool as _Pool
+        lightmaps = _Pool(mp, cat, bins, Path(tempfile.gettempdir()))
+    groups: dict[str, list] = {}
+    grid: dict[tuple[int, int], float] = {}
+    for path, region, (ox, oy), layer_sets, patches in regions:
         layers = terrain_layers(mp, cat, mp.ptr(region + 0x98))
-        regions.append((path, mp.ptr(region + 0x98), (ox, oy), patches))
+        image = lightmaps.image(path.replace("_MapRegion.xdb", "_lightmap.bin"), 512) if lightmaps else None
         for patch in patches:
             if patch.level:
                 continue
@@ -265,10 +349,12 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
             if d > radius:
                 continue
             ids = layer_sets[patch.passes[0][1]] if patch.passes and patch.passes[0][1] < len(layer_sets) else ()
-            layer = layers[ids[0]] if ids and ids[0] < len(layers) else (None, 30.0)
+            layer = layers[ids[0]] if ids and ids[0] < len(layers) else None
             pts = patch.points + np.array([ox - cx, oy - cy, 0.0])
             tris = patch.triangles if d <= TERRAIN_FINE or not len(patch.coarse) else patch.coarse
-            groups.setdefault(layer[0] or "", []).append((pts, patch.normals, tris, layer[1], d))
+            shade = baked_light(image, patch.points, patch.normals, light) if image is not None else None
+            # UV du shader du terrain, depuis la position dans la région (même phase que la carte).
+            groups.setdefault(layer or "", []).append((pts, patch.normals, tris, layer_uv(patch.points[:, :2]), d, shade))
             for x, y, z in pts:
                 grid[(round(x), round(y))] = float(z)
     if not grid:
@@ -288,22 +374,29 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
 
     def emit(name: str, parts: list, texture: str | None, fade: float | None) -> None:
         pos, nor, uv, idx, rgba, count = [], [], [], [], [], 0
-        for pts, normals, tris, tiling, _d in parts:
+        for pts, normals, tris, uvs, _d, shade in parts:
             p = pts - np.array([0.0, 0.0, base])
-            # Couleurs de sommet toujours présentes (le lecteur multiplie par elles) : blanc, et
-            # l'alpha du bord estompé pour la tache de terre battue.
+            # Couleurs de sommet toujours présentes (le lecteur multiplie par elles) : blanc (ou la
+            # lumière cuite), et l'alpha du bord estompé pour la tache de terre battue.
             a = np.ones(len(p))
             if fade is not None:
                 p = p + np.array([0.0, 0.0, 0.02])
                 dist = np.linalg.norm(p[:, :2], axis=1)
                 a = np.clip((trample["radius"] - dist) / max(trample["radius"] - fade, 1e-3), 0, 1)
-            rgba.append(np.column_stack([np.full((len(p), 3), 255), np.round(a * 255)]).astype(np.uint8))
+            col = np.full((len(p), 3), 255.0) if shade is None else np.round(shade * 255)
+            rgba.append(np.column_stack([col, np.round(a * 255)]).astype(np.uint8))
             pos.append(p.astype(np.float32))
             nor.append(normals.astype(np.float32))
-            uv.append((pts[:, :2] / tiling).astype(np.float32))
+            uv.append(uvs)
             idx.append((tris + count).astype(np.uint32))
             count += len(p)
+        # Calque vu seulement de loin (aucun sous-carreau à moins de `TERRAIN_FINE` m) : texture
+        # réduite de moitié, pour le poids du décor.
+        full = ex.texture_max
+        if min(part[4] for part in parts) > TERRAIN_FINE:
+            ex.texture_max = min(full, FAR_TERRAIN_TEXTURE_MAX)
         tex = ex.texture(texture) if texture else None
+        ex.texture_max = full
         mat = ex.gltf.add_material(name, tex, "BLEND" if fade is not None else "OPAQUE", True, False)
         ex.gltf.json["materials"][mat].setdefault("extras", {}).update({"lit": True, "terrain": True})
         attrs = {"POSITION": ex.gltf.add_accessor(np.concatenate(pos), "VEC3", "f32", target=34962, minmax=True),
@@ -319,30 +412,131 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
     for layer, parts in sorted(groups.items()):
         emit(f"ground {Path(layer).stem if layer else 'nu'}", parts, layer or None, None)
     if trample:
-        near = [(pts, n, t, trample.get("tile", 4.0), d) for parts in groups.values() for pts, n, t, _tl, d in parts
-                if d <= trample["radius"] + 8]
+        tile = float(trample.get("tile", 4.0))
+        near = [(pts, n, t, (pts[:, :2] / tile).astype(np.float32), d, None) for parts in groups.values()
+                for pts, n, t, _uv, d, _s in parts if d <= trample["radius"] + 8]
         emit("ground_patch", near, trample["texture"], trample["radius"] * 0.45)
     # Herbe (autour du centre : l'orbite de la caméra y reste) et eau du `terrainDump`, sans lumière
     # cuite (le sol des fatalités est éclairé par la lumière de la zone).
     from tools.allods_terrain_extras import ExtrasBuilder
     extras = ExtrasBuilder(mp, cat, ex.textures, lambda name, size: ex.textures.uri(name, size, ex.texture_prefix))
     grass_radius = min(radius, float(spec.get("grass_radius", GRASS_RADIUS)))
-    for path, terra, origin, patches in regions:
-        extras.add_region(bins.get, path, terra, origin, patches,
+    for path, region, origin, _sets, patches in regions:
+        extras.add_region(bins.get, path, mp.ptr(region + 0x98), origin, patches,
                           lambda x, y: math.hypot(x - cx, y - cy) <= grass_radius, shift=(-cx, -cy, -base),
                           keep_water=lambda x, y: math.hypot(x - cx, y - cy) <= radius)
+    # Herbe rase au centre (**mise en scène**, `spec.short_grass`) : les touffes du pré montent au
+    # genou et masquaient les pieds des personnages ; leur échelle y est réduite à `scale`, rendue
+    # entière de `radius` à `fade` m. Places, sortes et orientations restent celles du client.
+    short = spec.get("short_grass")
+    if short:
+        for cell in extras.cells.values():
+            d = np.hypot(cell["p"][:, 0], cell["p"][:, 1])
+            k = float(short["scale"]) + (1 - float(short["scale"])) * smoothstep(short["radius"], short["fade"], d)
+            cell["g"][:, 2] = cell["g"][:, 2] * k.astype(np.float32)
     nodes += extras.emit(ex)
     ex.notes.append(f"sol : {sum(len(v) for v in groups.values())} sous-carreaux, {len(groups)} calques ({spec['map']}), "
-                    f"{extras.tufts} touffes d'herbe ({len(extras.kinds)} sortes), {extras.water_elements // 64} carrés d'eau")
-    return nodes, height
+                    f"{extras.tufts} touffes d'herbe ({len(extras.kinds)} sortes), {extras.water_elements // 64} carrés d'eau"
+                    + (f", centre aplani à {flat.level:.2f} m ({flat.inner:g} → {flat.outer:g} m)" if flat else ""))
+    return nodes, height, flat, base
+
+
+def _quaternion(m: np.ndarray) -> list[float]:
+    """Matrice de rotation 3×3 → quaternion glTF `[x, y, z, w]`."""
+    t = np.trace(m)
+    if t > 0:
+        s = math.sqrt(t + 1.0) * 2
+        q = [(m[2, 1] - m[1, 2]) / s, (m[0, 2] - m[2, 0]) / s, (m[1, 0] - m[0, 1]) / s, 0.25 * s]
+    else:
+        i = int(np.argmax(np.diag(m)))
+        j, k = (i + 1) % 3, (i + 2) % 3
+        s = math.sqrt(1.0 + m[i, i] - m[j, j] - m[k, k]) * 2
+        q = [0.0, 0.0, 0.0, (m[k, j] - m[j, k]) / s]
+        q[i] = 0.25 * s
+        q[j] = (m[j, i] + m[i, j]) / s
+        q[k] = (m[k, i] + m[i, k]) / s
+    n = math.sqrt(sum(v * v for v in q)) or 1.0
+    return [round(v / n, 6) for v in q]
+
+
+def site_decor(ex: Exporter, spec: dict, terrain: dict, db: PackDB, cat: PakCatalog, client: Path,
+               base: float, flat: "Flatten | None", mesh_of) -> tuple[list[int], dict]:
+    """Décor **réel** d'un site de carte (`scene.site`) : les objets que la carte pose autour du
+    centre (`MapRegion`, `tools/allods_scenes.read_regions`), à leur place, orientation et échelle,
+    **sauf** ceux du disque dégagé (`clear` m, écartés : c'est la seule retouche) et au-delà de
+    `radius` ; entre `detail` m et `radius`, seuls les objets d'au moins `farMinSize` m (arbres,
+    rochers, bâtisses) sont gardés, pour le poids et le nombre d'appels de dessin. Un objet posé
+    dans le fondu de l'aplanissement suit le sol. Les gabarits sans géométrie (sons, particules
+    seules) ne sont pas rendus. Une géométrie = un maillage, partagé par ses instances."""
+    from tools.allods_packdb import open_map
+    from tools.allods_scenes import read_regions, static_visobject
+    mp = open_map(db, client, terrain["map"])
+    mcat = open_catalog(mp, client)
+    packs = packs_path(client / "data" / "Packs")
+    mbins = BinSource([], [str(packs / p) for p in sorted(cat.names)] + [str(packs / "Maps.*.pak"),
+                           str(packs / f"{terrain['map']}_000_000_512_512.Client.pak")])
+    cx, cy = terrain["center"]
+    clear, radius = float(spec["clear"]), float(spec["radius"])
+    detail, far_min = float(spec.get("detail", radius)), float(spec.get("farMinSize", 0.0))
+    exclude = [re.compile(p) for p in spec.get("exclude", [])]
+    nodes: list[int] = []
+    kept: dict[str, int] = {}
+    stats = {"objects": 0, "cleared": 0, "small": 0, "excluded": 0, "nearest": None}
+    sizes: dict[int, float] = {}
+    for obj in read_regions(mp):
+        x, y, z = obj.position
+        d = math.hypot(x - cx, y - cy)
+        if d > radius:
+            continue
+        vot = static_visobject(mp, obj.static_object)
+        if vot is None:
+            continue
+        vis = read_visobject(mp, mcat, vot)
+        if vis.geometry is None:
+            continue
+        name = mcat.name(mp.binary_ref(vis.geometry)) or f"geometry-{vis.geometry}"
+        if d < clear:
+            stats["cleared"] += 1
+            continue
+        if any(p.search(name) for p in exclude):
+            stats["excluded"] += 1
+            continue
+        mesh, size = mesh_of(name, mp, mcat, mbins, vis.geometry)
+        if mesh is None:
+            continue
+        scale = (obj.scale if obj.scale > 0 else 1.0) * vis.scale
+        if d > detail and size * scale < far_min:
+            stats["small"] += 1
+            continue
+        dz = flat.shift(x, y, z) if flat is not None else 0.0
+        node = {"name": f"decor:{Path(name).name.split('.(')[0]}", "mesh": mesh,
+                "translation": [round(x - cx, 3), round(y - cy, 3), round(z + dz - base, 3)],
+                "rotation": _quaternion(obj.matrix())}
+        if abs(scale - 1) > 1e-6:
+            node["scale"] = [round(scale, 5)] * 3
+        nodes.append(ex.gltf.add_node(node))
+        key = Path(name).name.split(".(")[0]
+        kept[key] = kept.get(key, 0) + 1
+        stats["objects"] += 1
+        stats["nearest"] = round(d, 2) if stats["nearest"] is None else min(stats["nearest"], round(d, 2))
+    ex.notes.append(f"site : {stats['objects']} objets de la carte gardés ({len(kept)} géométries), "
+                    f"{stats['cleared']} écartés du disque de {clear:g} m, {stats['small']} petits au-delà de {detail:g} m, "
+                    f"{stats['excluded']} exclus ; le plus proche à {stats['nearest']} m")
+    return nodes, {"objects": stats["objects"], "nearest": stats["nearest"],
+                   "geometries": dict(sorted(kept.items(), key=lambda kv: -kv[1]))}
 
 
 def build_scene(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, textures: TexturePool,
                 server_root: Path, client: Path | None = None) -> tuple[bytes, dict, list[str]]:
-    """Petit décor : sol réel d'un coin des Prés bénis (`scene.terrain` : carte, centre), à
-    défaut un disque texturé ; ornements (arbres, rochers, buissons de la zone, à leur pose de
-    bind, posés sur le sol) ; dôme de ciel du client. Tout vient du client ; seule la disposition
-    des ornements (manifeste, `scene.props`) est une mise en scène."""
+    """Décor de la scène. Deux formes :
+
+    * **site** (`scene.site`, forme actuelle) : un vrai lieu d'une carte — sol réel
+      (`scene.terrain`), centre aplani (`terrain.flatten`) et dégagé, et **tous les objets que la
+      carte y pose** au-delà du disque dégagé, à leur place (`site_decor`) ; lumière cuite du sol ;
+    * **mise en scène** (`scene.props`) : ornements choisis posés à la main sur le sol.
+
+    Dans les deux cas : dôme de ciel du client (`scene.sky`), lumière de la zone (`zoneLights`
+    7.0 à l'heure `time`)."""
     ex = Exporter(textures, CHARACTER_TEXTURE_MAX, cutout=True)
     roots: list[int] = []
     geometries: dict[str, int] = {}
@@ -350,10 +544,11 @@ def build_scene(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, textur
         name = cat.name(db.binary_ref(off))
         if name:
             geometries.setdefault(name, off)
+    light = zone_light(server_root, spec["zoneLights"], spec.get("time", 12)) if spec.get("zoneLights") else None
 
     # Sol : disque maillé en anneaux, UV répétées tous les `tile` mètres, et une tache de terre
     # battue au centre dont le bord s'estompe (alpha de sommet).
-    ground = spec["ground"]
+    ground = spec.get("ground") or {}
 
     def disc(radius: float, tile: float, texture: str, fade: float | None, z: float, name: str) -> int | None:
         rings, sectors = 24, 64
@@ -388,8 +583,9 @@ def build_scene(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, textur
         return ex.gltf.add_node({"name": name, "mesh": len(ex.gltf.json["meshes"]) - 1})
 
     height = lambda x, y: 0.0  # noqa: E731
+    flat, base = None, 0.0
     if spec.get("terrain") and client is not None:
-        nodes, height = terrain_ground(ex, spec["terrain"], db, client, ground.get("patch"))
+        nodes, height, flat, base = terrain_ground(ex, spec["terrain"], db, client, ground.get("patch"), light)
         roots.extend(nodes)
     else:
         roots.append(disc(ground["radius"], ground["tile"], ground["texture"], None, 0.0, "ground"))
@@ -398,11 +594,17 @@ def build_scene(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, textur
             roots.append(disc(patch["radius"], patch.get("tile", ground["tile"]), patch["texture"], patch["radius"] * 0.45,
                               0.01, "ground_patch"))
 
-    def static_object(name: str, off: int) -> int | None:
-        loaded = load_geometry(db, cat, bins, off)
+    meshes: dict[str, tuple[int | None, float]] = {}
+
+    def mesh_of(name: str, source_db, source_cat, source_bins, off: int) -> tuple[int | None, float]:
+        """Maillage d'une géométrie de décor à sa pose de bind (émis une fois) et son rayon."""
+        if name in meshes:
+            return meshes[name]
+        loaded = load_geometry(source_db, source_cat, source_bins, off)
         if loaded is None:
             ex.notes.append(f"décor illisible : {name}")
-            return None
+            meshes[name] = (None, 0.0)
+            return meshes[name]
         vertices = dict(loaded.vertices)
         if loaded.skeleton is not None and "indices" in vertices and "weights" in vertices:
             static = np.zeros(len(vertices["position"]), bool)
@@ -414,7 +616,25 @@ def build_scene(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, textur
         elements = [e for e in loaded.geo.doc.elements if e.material.visible and e.material.texture
                     and ex.texture(e.material.texture) is not None]
         mesh, _ = ex.emit_mesh(Path(name).stem, loaded.geo, vertices, loaded.indices, elements, None)
+        p = np.asarray(vertices["position"], np.float64)
+        size = float(np.max(np.linalg.norm(p[:, :2], axis=1)) * 2 + 0) if len(p) else 0.0
+        size = max(size, float(p[:, 2].max() - p[:, 2].min())) if len(p) else 0.0
+        meshes[name] = (mesh, size)
+        return meshes[name]
+
+    def static_object(name: str, off: int) -> int | None:
+        mesh, _ = mesh_of(name, db, cat, bins, off)
         return None if mesh is None else ex.gltf.add_node({"name": Path(name).stem, "mesh": mesh})
+
+    meta_site = None
+    if spec.get("site") and spec.get("terrain") and client is not None:
+        # Objets du site vus de loin (≥ `clear` m) : textures réduites (`site.textureMax`), pour le
+        # poids du décor ; le sol garde les siennes (`CHARACTER_TEXTURE_MAX`).
+        full, ex.texture_max = ex.texture_max, int(spec["site"].get("textureMax", ex.texture_max))
+        nodes, meta_site = site_decor(ex, spec["site"], spec["terrain"], db, cat, client, base, flat, mesh_of)
+        ex.texture_max = full
+        if nodes:
+            roots.append(ex.gltf.add_node({"name": "site", "children": nodes}))
 
     for prop in spec.get("props", []):
         off = geometries.get(prop["geometry"])
@@ -452,14 +672,18 @@ def build_scene(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, textur
                 for p, n in zip(parts, names):
                     child = static_object(n, p)
                     if child is not None:
+                        # Nœud propre au ciel (le maillage peut être partagé) : marqué `sky`.
                         ex.gltf.json["nodes"][child]["extras"] = {"sky": True}
                         sky_nodes.append(child)
                 break
     if sky_nodes:
         roots.append(ex.gltf.add_node({"name": "sky", "children": sky_nodes, "extras": {"sky": True}}))
     glb = ex.finish([r for r in roots if r is not None])
-    light = zone_light(server_root, spec["zoneLights"], spec.get("time", 12)) if spec.get("zoneLights") else None
     meta = {"glb": "scene/scene.glb", "label": spec.get("label")}
+    if spec.get("site"):
+        meta["site"] = {"map": spec["terrain"]["map"], "center": spec["terrain"]["center"],
+                        "clear": spec["site"]["clear"], "orbit": spec["site"].get("orbit"), **(meta_site or {})}
+        meta["site"].pop("geometries", None)
     if light:
         meta["environment"] = light
     return glb, meta, ex.notes
@@ -495,7 +719,7 @@ def collect_animations(node: dict | None, names: dict[int, str], out: set[str]) 
 
 def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = None,
         only_fx: list[str] | None = None, characters: bool = True, sounds: bool = True,
-        report: list[str] | None = None, scene: bool = True) -> dict:
+        report: list[str] | None = None, scene: bool = True, items_path: Path = DEFAULT_ITEMS) -> dict:
     report = report if report is not None else []
     server_root = Path(manifest["server_root"])
     db = open_pack(client)
@@ -604,6 +828,7 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
             if info.get("sound") in sound_files:
                 info["sfx"] = sound_files[info["sound"]]
 
+    apply_items(entries, manifest, items_path)
     index = {"races": manifest["races"], "characters": chars, "fatalities": entries}
     if manifest.get("scene") and scene:
         glb, meta, notes = build_scene(manifest["scene"], db, cat, bins, textures, server_root, client)
@@ -624,6 +849,40 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
     index_path.write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"textures : {textures.bytes_written / 1024:.0f} Kio écrits")
     return index
+
+
+def apply_items(entries: list[dict], manifest: dict, items_path: Path) -> None:
+    """Noms officiels, objets, icônes et apparition de chaque fatalité (`tools/fatality_items.py`,
+    `tools/fatality_items.json`), plus la date d'une page d'actualité officielle (`date` du
+    manifeste, qui n'est pas dans les données du client) :
+
+    * `name` — nom en jeu de la fatalité (buff : « Rituel lunaire ») ;
+    * `items` — objets qui l'apprennent, dans l'ordre des `resourceId` (le premier est l'objet
+      de boutique principal) : `name` (fr/en/ru, absent = pas de texte officiel), `icon`
+      (`icons/<fichier>.png`), `resourceIds` ; `itemLink` : `icon` (pointeurs) ou `name` ;
+    * `since` — `version` (premier client archivé qui la contient), `client`, `previous`
+      (dernier client vérifié sans elle), `date` (`value`, `kind`, `source`…) s'il y a lieu."""
+    if not items_path.is_file():
+        return
+    data = json.loads(items_path.read_text(encoding="utf-8")).get("fatalities", {})
+    dates = {f["type"]: f["date"] for f in manifest["fatalities"] if f.get("date")}
+    for entry in entries:
+        info = data.get(str(entry["type"]))
+        for key in ("name", "items", "itemLink", "since"):
+            entry.pop(key, None)
+        if not info:
+            continue
+        if info.get("name"):
+            entry["name"] = info["name"]
+        if info.get("items"):
+            entry["items"] = [{"name": it["name"], "icon": f"icons/{it['icon']}.png" if it.get("icon") else None,
+                               "resourceIds": it["resourceIds"]} for it in info["items"]]
+            entry["itemLink"] = info.get("link")
+        since = dict(info.get("since") or {})
+        if entry["type"] in dates:
+            since["date"] = dates[entry["type"]]
+        if since:
+            entry["since"] = since
 
 
 def bound_loops(tl, fade_end: float) -> None:

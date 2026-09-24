@@ -90,7 +90,6 @@ export function OpeningScreen() {
     { id: 'talents', base: `${T.pinMenu}/ButtonTalents`, label: t('home.talents'), hint: t('home.talentsHint'), onClick: () => navigate('/talents') },
     { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: t('home.medals'), hint: t('home.medalsHint'), onClick: () => navigate('/achievements') },
     { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: t('home.character'), hint: t('home.characterHint'), disabled: import.meta.env.PROD, onClick: () => navigate('/character') },
-    { id: 'discord', base: `${T.pinMenu}/ButtonMedals`, src: '/icons/discord.svg', label: t('home.discord'), hint: t('home.discordHint'), href: DISCORD_URL },
   ];
   const latest = latestArchiveEntry();
   const hasIntro = latest ? Boolean(latest.intro) : true;
@@ -184,6 +183,9 @@ export function OpeningScreen() {
               <span>{t('home.disclaimer')}</span>
               <span>{t('home.copyright', { year: new Date().getFullYear() })} <a href="https://p-42.fr/allodex-developer" target="_blank" rel="noopener noreferrer">Sorok-Dva</a> · <Link to="/terms">{t('legal.shortTitle')}</Link></span>
             </div>
+            <a className={s.discord} href={DISCORD_URL} target="_blank" rel="noopener noreferrer" aria-label={t('home.discordHint')} title={t('home.discordHint')}>
+              <img src="/icons/discord.svg" alt="" />
+            </a>
             <SpeakerToggle className={s.speaker} />
           </div>
         </>

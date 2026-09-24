@@ -101,9 +101,13 @@ async function warmUp(renderer: THREE.WebGLRenderer, view: THREE.Scene, camera: 
 
 const TERRAIN_SIZE = 512;
 const TERRAIN_MAX_LAYERS = 32;
+/** Répétition des textures de calque, en mètres : le vertex shader du terrain du client
+ *  (`Material/terrain-dx11.bin`) écrit `TEXCOORD0 = −position · 0,125`, sans facteur par calque
+ *  (`tools/allods_terrain.py`, `LAYER_REPEAT`). */
+export const TERRAIN_LAYER_REPEAT = 8;
 
 /** Charge les calques du sol dans un tableau de textures (512², répétées, mipmaps). */
-export async function terrainMaterial(meta: { texture: string | null; tiling: number }[], lightmapUri: string | null,
+export async function terrainMaterial(meta: { texture: string | null }[], lightmapUri: string | null,
   glbUrl: URL, light: EngineScene['light']): Promise<THREE.ShaderMaterial> {
   const count = Math.max(1, Math.min(meta.length, TERRAIN_MAX_LAYERS));
   const data = new Uint8Array(TERRAIN_SIZE * TERRAIN_SIZE * 4 * count).fill(128);
@@ -127,8 +131,6 @@ export async function terrainMaterial(meta: { texture: string | null; tiling: nu
   layers.colorSpace = THREE.NoColorSpace;
   layers.flipY = false;
   layers.needsUpdate = true;
-  const tiling = new Array(TERRAIN_MAX_LAYERS).fill(30);
-  meta.slice(0, count).forEach((layer, k) => { tiling[k] = layer.tiling || 30; });
   const dir = light.sunDirection ?? [0.5, 0.5, 0.7];
   // Lumière cuite du sol (atlas des lightmap des régions) : R ciel, G soleil (ombres), B ponctuelles.
   let lightmap: THREE.Texture | null = null;
@@ -147,7 +149,7 @@ export async function terrainMaterial(meta: { texture: string | null; tiling: nu
     fog: true,
     side: THREE.DoubleSide,
     uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, {
-      layers: { value: null }, tiling: { value: tiling },
+      layers: { value: null },
       ambient: { value: new THREE.Color(...argb(light.ambient, GAME_UNIT)) },
       sunColor: { value: new THREE.Color(...argb(light.diffuse, GAME_UNIT)) },
       sunDir: { value: new THREE.Vector3(dir[0], dir[1], dir[2]).normalize() },
@@ -170,7 +172,7 @@ export async function terrainMaterial(meta: { texture: string | null; tiling: nu
       precision highp sampler2DArray;
       layout(location = 0) out vec4 terrainColor;
       #define gl_FragColor terrainColor
-      uniform sampler2DArray layers; uniform float tiling[${TERRAIN_MAX_LAYERS}];
+      uniform sampler2DArray layers;
       uniform vec3 ambient; uniform vec3 sunColor; uniform vec3 sunDir; uniform vec3 pointColor;
       uniform float ambientFactor; uniform sampler2D lightmap; uniform int hasLightmap;
       in vec3 vL0; in vec3 vW0; in vec3 vL1; in vec3 vW1; in vec2 vXY; in vec3 vN; in vec2 vLM;
@@ -178,7 +180,7 @@ export async function terrainMaterial(meta: { texture: string | null; tiling: nu
       vec3 tap(float id, float w) {
         if (w <= 0.002) return vec3(0.0);
         int i = int(id + 0.5);
-        return w * texture(layers, vec3(vXY / tiling[i], float(i))).rgb;
+        return w * texture(layers, vec3(vXY * ${(-1 / TERRAIN_LAYER_REPEAT).toFixed(3)}, float(i))).rgb;
       }
       void main() {
         vec3 albedo = tap(vL0.x, vW0.x) + tap(vL0.y, vW0.y) + tap(vL0.z, vW0.z)
@@ -600,7 +602,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         const terrainUrl = new URL(base + data.decor.terrainGlb, window.location.href);
         const terrainNode = terrainGlb.scene.getObjectByName('terrain');
         const extras = terrainNode?.userData as {
-          terrainLayers?: { texture: string | null; tiling: number }[]; terrainLightmap?: string | null } | undefined;
+          terrainLayers?: { texture: string | null }[]; terrainLightmap?: string | null } | undefined;
         const material = await terrainMaterial(extras?.terrainLayers ?? [], extras?.terrainLightmap ?? null, terrainUrl, data.light);
         if (!alive) return;
         disposables.push(material);
