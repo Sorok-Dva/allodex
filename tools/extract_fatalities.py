@@ -77,6 +77,8 @@ from tools.uitexture import build_dds  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_MANIFEST = HERE / "fatalities_manifest.json"
+# Objets, noms officiels, icônes et versions (`tools/fatality_items.py`).
+DEFAULT_ITEMS = HERE / "fatality_items.json"
 DEFAULT_OUT = HERE.parent / "public" / "game" / "fatalities"
 
 # Côté maximal des textures exportées : 512 pour les effets (quads additifs flous, jamais vus de
@@ -495,7 +497,7 @@ def collect_animations(node: dict | None, names: dict[int, str], out: set[str]) 
 
 def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = None,
         only_fx: list[str] | None = None, characters: bool = True, sounds: bool = True,
-        report: list[str] | None = None, scene: bool = True) -> dict:
+        report: list[str] | None = None, scene: bool = True, items_path: Path = DEFAULT_ITEMS) -> dict:
     report = report if report is not None else []
     server_root = Path(manifest["server_root"])
     db = open_pack(client)
@@ -604,6 +606,7 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
             if info.get("sound") in sound_files:
                 info["sfx"] = sound_files[info["sound"]]
 
+    apply_items(entries, manifest, items_path)
     index = {"races": manifest["races"], "characters": chars, "fatalities": entries}
     if manifest.get("scene") and scene:
         glb, meta, notes = build_scene(manifest["scene"], db, cat, bins, textures, server_root, client)
@@ -624,6 +627,40 @@ def run(manifest: dict, out_dir: Path, client: Path, only: list[str] | None = No
     index_path.write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"textures : {textures.bytes_written / 1024:.0f} Kio écrits")
     return index
+
+
+def apply_items(entries: list[dict], manifest: dict, items_path: Path) -> None:
+    """Noms officiels, objets, icônes et apparition de chaque fatalité (`tools/fatality_items.py`,
+    `tools/fatality_items.json`), plus la date d'une page d'actualité officielle (`date` du
+    manifeste, qui n'est pas dans les données du client) :
+
+    * `name` — nom en jeu de la fatalité (buff : « Rituel lunaire ») ;
+    * `items` — objets qui l'apprennent, dans l'ordre des `resourceId` (le premier est l'objet
+      de boutique principal) : `name` (fr/en/ru, absent = pas de texte officiel), `icon`
+      (`icons/<fichier>.png`), `resourceIds` ; `itemLink` : `icon` (pointeurs) ou `name` ;
+    * `since` — `version` (premier client archivé qui la contient), `client`, `previous`
+      (dernier client vérifié sans elle), `date` (`value`, `kind`, `source`…) s'il y a lieu."""
+    if not items_path.is_file():
+        return
+    data = json.loads(items_path.read_text(encoding="utf-8")).get("fatalities", {})
+    dates = {f["type"]: f["date"] for f in manifest["fatalities"] if f.get("date")}
+    for entry in entries:
+        info = data.get(str(entry["type"]))
+        for key in ("name", "items", "itemLink", "since"):
+            entry.pop(key, None)
+        if not info:
+            continue
+        if info.get("name"):
+            entry["name"] = info["name"]
+        if info.get("items"):
+            entry["items"] = [{"name": it["name"], "icon": f"icons/{it['icon']}.png" if it.get("icon") else None,
+                               "resourceIds": it["resourceIds"]} for it in info["items"]]
+            entry["itemLink"] = info.get("link")
+        since = dict(info.get("since") or {})
+        if entry["type"] in dates:
+            since["date"] = dates[entry["type"]]
+        if since:
+            entry["since"] = since
 
 
 def bound_loops(tl, fade_end: float) -> None:

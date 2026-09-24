@@ -256,6 +256,13 @@
       "label": {
         "fr": "Occultiste",
         "en": "Warlock"
+      },
+      "date": {
+        "value": "2015-03-26",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex",
+        "quote": "« Amenez ce document au Banquier gobelin pour apprendre une nouvelle aptitude JcJ - Fatalité ! » (Code du Carnifex)"
       }
     },
     {
@@ -265,6 +272,13 @@
       "label": {
         "fr": "Universelle",
         "en": "Universal"
+      },
+      "date": {
+        "value": "2019-07-12",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-120719",
+        "quote": "Passionate Speech of the Carnifex annoncé comme nouveau"
       }
     },
     {
@@ -274,6 +288,13 @@
       "label": {
         "fr": "Universelle (nouvelle)",
         "en": "Universal (new)"
+      },
+      "date": {
+        "value": "2020-08-06",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex-060820",
+        "quote": "« Le nouveau Discours Impie du Carnifex a été ajouté à la Boutique »"
       }
     },
     {
@@ -283,6 +304,13 @@
       "label": {
         "fr": "Coffre du bourreau",
         "en": "Executioner's chest"
+      },
+      "date": {
+        "value": "2021-07-22",
+        "kind": "attested",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-220721",
+        "quote": "Ruthless Speech déjà en vente (absent de la vente du 06/08/2020)"
       }
     },
     {
@@ -292,6 +320,13 @@
       "label": {
         "fr": "Runes (2021)",
         "en": "Runes (2021)"
+      },
+      "date": {
+        "value": "2021-07-22",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-220721",
+        "quote": "Savage Speech of the Carnifex annoncé comme nouveau"
       }
     },
     {
@@ -301,6 +336,13 @@
       "label": {
         "fr": "Bourreau (2021)",
         "en": "Executioner (2021)"
+      },
+      "date": {
+        "value": "2023-08-18",
+        "kind": "attested",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-1",
+        "quote": "Lunar Speech dans la liste de la vente (absent de celle du 22/07/2021)"
       }
     },
     {
@@ -310,6 +352,13 @@
       "label": {
         "fr": "Chaînes (2022)",
         "en": "Chains (2022)"
+      },
+      "date": {
+        "value": "2023-08-18",
+        "kind": "attested",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-1",
+        "quote": "Deadly Speech dans la liste de la vente (absent de celle du 22/07/2021)"
       }
     },
     {
@@ -319,6 +368,13 @@
       "label": {
         "fr": "Lotus",
         "en": "Lotus"
+      },
+      "date": {
+        "value": "2023-02-24",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex-1",
+        "quote": "« Le Discours florissant du Carnifex a été ajouté à la Cassette Radiante du Carnifex »"
       }
     },
     {
@@ -328,6 +384,13 @@
       "label": {
         "fr": "Phénix",
         "en": "Phoenix"
+      },
+      "date": {
+        "value": "2023-08-18",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-1",
+        "quote": "« The Incinerating Speech of the Carnifex has been added to the Radiant Strongbox »"
       }
     },
     {
@@ -337,6 +400,13 @@
       "label": {
         "fr": "Avatar (2023)",
         "en": "Avatar (2023)"
+      },
+      "date": {
+        "value": "2024-02-24",
+        "kind": "attested",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-2",
+        "quote": "Staggering Speech dans la liste (absent de celle du 18/08/2023)"
       }
     },
     {
@@ -346,6 +416,13 @@
       "label": {
         "fr": "Avril 2024",
         "en": "April 2024"
+      },
+      "date": {
+        "value": "2024-08-09",
+        "kind": "attested",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-3",
+        "quote": "Spiritistic Speech dans la liste (absent de celle du 24/02/2024)"
       }
     },
     {
@@ -364,6 +441,13 @@
       "label": {
         "fr": "Crâne (2024)",
         "en": "Skull (2024)"
+      },
+      "date": {
+        "value": "2025-08-01",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex-5",
+        "quote": "« Le Discours squelettique du Carnifex a été ajouté à la Cassette Radiante du Carnifex »"
       }
     },
     {
@@ -373,6 +457,13 @@
       "label": {
         "fr": "Baudroie",
         "en": "Monkfish"
+      },
+      "date": {
+        "value": "2026-04-24",
+        "kind": "announced",
+        "region": "EU (MY.GAMES)",
+        "source": "https://allods.my.games/fr/news/sales/vente-cassette-radiante-du-carnifex-6",
+        "quote": "« Discours abyssaux du Carnifex » ajouté à la Cassette radiante"
       }
     },
     {
@@ -627,6 +718,91 @@
         0.75,
         0.45
       ]
+    ]
+  },
+  "items": {
+    "_note": "tools/fatality_items.py : objets qui apprennent chaque fatalité (chaîne type → buff → icône → UnlockResource → ItemResource, voir sa docstring), noms officiels (ru/en : `latest` ; fr : client FR 16.0, même resourceId), icônes (public/game/fatalities/icons/) et version d'apparition (premier des `clients` archivés, dans l'ordre, qui contient le type ; `previous` = dernier client vérifié sans lui). Les versions 5.0, 6.0, 10.0, 12.0-14.0 ne sont pas vérifiables (archives sans Bin/pack.bin, ou sans l'action de fatalité). `date` de chaque fatalité (plus haut) : pas dans les données du client ; page d'actualité officielle MY.GAMES (serveurs européens, FR/EN), `announced` = annoncé comme nouveau, `attested` = première liste de vente relevée qui le contient (date au plus tard).",
+    "latest": {
+      "version": "17.0",
+      "root": "/mnt/h/MyGames/AllodsRU",
+      "pak": "BaseLocall_x64.pak",
+      "texts": {
+        "ru": [
+          "Texts_x64.pak",
+          "Bin/pack.rus.loc"
+        ],
+        "en": [
+          "Texts_x64.pak",
+          "Bin/pack.eng_eu.loc"
+        ]
+      }
+    },
+    "fr": {
+      "version": "16.0",
+      "root": "/mnt/h/MyGames/Allods Online FR (FR)",
+      "pak": "BaseLocfra_x64.pak",
+      "texts": {
+        "fr": [
+          "Texts_x64.pak",
+          "Bin/pack.loc"
+        ]
+      }
+    },
+    "clients": [
+      {
+        "version": "3.0",
+        "game_version": "3.0.02.19",
+        "root": "/mnt/f/ALLODS ONLINE SERVER/Clients/AllodsOnline3.0.2.19[5.12GB]-20200522T111620Z-001/AllodsOnline3.0.2.19[5.12GB]",
+        "pak": "BaseLocrus.pak"
+      },
+      {
+        "version": "4.0",
+        "game_version": "4.0.02.42",
+        "root": "/mnt/f/ALLODS ONLINE SERVER/Allods 4.2/Allods Nova/Allods Nova",
+        "pak": "BaseLoceng.pak"
+      },
+      {
+        "version": "7.0",
+        "game_version": "7.0.00.00",
+        "root": "/mnt/f/ALLODS ONLINE SERVER/Clients/Allods Revelation 7.0",
+        "pak": "Bin.pak"
+      },
+      {
+        "version": "8.0",
+        "game_version": "8.0.02.61.1",
+        "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 8.0",
+        "pak": "BaseLocfra.pak"
+      },
+      {
+        "version": "9.0",
+        "game_version": "9.0.01.89",
+        "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR 9.0.01.89",
+        "pak": "BaseLocfra.pak"
+      },
+      {
+        "version": "11.0",
+        "game_version": "11.0.00.12.1",
+        "root": "/home/llyam/allods-clients/11.0-steam/Allods Online EN",
+        "pak": "BaseLoceng_eu.pak"
+      },
+      {
+        "version": "15.0",
+        "game_version": "15.0.03.23.2",
+        "root": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/Allods Online FR (FR) 15.0.03.23.2 (end of patch)",
+        "pak": "BaseLocfra_x64.pak"
+      },
+      {
+        "version": "16.0",
+        "game_version": "16.0.01.78.2",
+        "root": "/mnt/h/MyGames/Allods Online FR (FR)",
+        "pak": "BaseLocfra_x64.pak"
+      },
+      {
+        "version": "17.0",
+        "game_version": "17.0.01.64",
+        "root": "/mnt/h/MyGames/AllodsRU",
+        "pak": "BaseLocall_x64.pak"
+      }
     ]
   }
 }
