@@ -1307,14 +1307,35 @@
     "mp4": "warp-prologue/video.mp4",
     "poster": "warp-prologue/poster.jpg"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français (auto)",
+     "src": "warp-prologue/fr.vtt",
+     "lines": 18
+    },
+    {
+     "lang": "en",
+     "label": "English (auto)",
+     "src": "warp-prologue/en.vtt",
+     "lines": 18
+    },
+    {
+     "lang": "ru",
+     "label": "Русский (авто)",
+     "src": "warp-prologue/ru.vtt",
+     "lines": 18
+    }
+   ],
    "audio": {
     "language": "ru"
    },
    "subtitles": {
-    "status": "none",
-    "lines": 0,
-    "timing": null
+    "status": "transcribed",
+    "lines": 18,
+    "timing": "transcribed",
+    "reviewed": true,
+    "model": "faster-whisper medium, int8, VAD"
    },
    "source": {
     "client": "10.0-warp",
@@ -1439,14 +1460,35 @@
     "mp4": "awakening-not-by-plan/video.mp4",
     "poster": "awakening-not-by-plan/poster.jpg"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français (auto)",
+     "src": "awakening-not-by-plan/fr.vtt",
+     "lines": 8
+    },
+    {
+     "lang": "en",
+     "label": "English (auto)",
+     "src": "awakening-not-by-plan/en.vtt",
+     "lines": 8
+    },
+    {
+     "lang": "ru",
+     "label": "Русский (авто)",
+     "src": "awakening-not-by-plan/ru.vtt",
+     "lines": 8
+    }
+   ],
    "audio": {
     "language": "ru"
    },
    "subtitles": {
-    "status": "none",
-    "lines": 0,
-    "timing": null
+    "status": "transcribed",
+    "lines": 8,
+    "timing": "transcribed",
+    "reviewed": true,
+    "model": "faster-whisper medium, int8, VAD"
    },
    "source": {
     "client": "17.0",

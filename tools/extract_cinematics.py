@@ -478,6 +478,14 @@ def run(manifest: dict, out_dir: Path, sync: dict, only: list[str] | None = None
                         "lines": len(lines),
                         "timing": "client" if len(lines) == 1 else ("measured" if starts else "sequential"),
                     })
+            if sub_meta["status"] == "none" and sub_meta["audio"].get("language"):
+                # Voix sans sous-titres du jeu : transcription relue (tools/transcribe_cinematics.py), marquée
+                # `transcribed`, jamais par-dessus des sous-titres officiels.
+                from tools.transcribe_cinematics import transcribed_tracks
+                found = transcribed_tracks(cid, out_dir, cid, duration)
+                if found:
+                    tracks, meta = found
+                    sub_meta.update(meta)
         entries.append(output_entry(spec, manifest, files, duration, tracks, sub_meta))
     return entries, sync, report
 

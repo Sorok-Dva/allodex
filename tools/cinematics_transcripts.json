@@ -1,0 +1,283 @@
+{
+ "_note": "Transcriptions automatiques (faster-whisper, local) des chapitres doublés sans sous-titres dans le jeu, relues à la main : `ru` = texte russe corrigé (noms propres compris), `en`/`fr` = traductions de relecture, avec les noms officiels des textes du client et du lorebook ; `whisper` = sortie brute ; `rejected` = segments écartés (hallucinations, musique). Ce ne sont pas des données du jeu : le site les marque « transcription automatique ». Un chapitre `reviewed` n'est pas réécrit par tools/transcribe_cinematics.py (sa nouvelle sortie va dans `draft`).",
+ "chapters": {
+  "awakening-not-by-plan": {
+   "audio": "awakening-not-by-plan",
+   "model": "faster-whisper medium, int8, VAD",
+   "lines": [
+    {
+     "start": 0.95,
+     "end": 3.96,
+     "ru": "Объект за невидимостью. Стоп машина.",
+     "en": "Object behind an invisibility screen. All stop.",
+     "fr": "Objet derrière un écran d'invisibilité. Stoppez les machines.",
+     "whisper": "Объект за невидимостью, в стоп-нашина.",
+     "confidence": 0.78,
+     "word_min": 0.33
+    },
+    {
+     "start": 4.92,
+     "end": 6.64,
+     "ru": "Двигатели остановлены.",
+     "en": "Engines stopped.",
+     "fr": "Moteurs arrêtés.",
+     "whisper": "Двигатели остановлены.",
+     "confidence": 0.78,
+     "word_min": 0.91
+    },
+    {
+     "start": 7.0,
+     "end": 9.62,
+     "ru": "Готовы к активации исследовательского дрона.",
+     "en": "Ready to activate the research drone.",
+     "fr": "Prêts à activer le drone de recherche.",
+     "whisper": "Готовы к активации исследовательского дрона.",
+     "confidence": 0.78,
+     "word_min": 0.88
+    },
+    {
+     "start": 10.47,
+     "end": 11.87,
+     "ru": "Запуск разрешаю.",
+     "en": "Launch approved.",
+     "fr": "Lancement autorisé.",
+     "whisper": "Забудка разрешаю.",
+     "confidence": 0.78,
+     "word_min": 0.6
+    },
+    {
+     "start": 13.81,
+     "end": 14.45,
+     "ru": "Активирован.",
+     "en": "Activated.",
+     "fr": "Activé.",
+     "whisper": "Активирован.",
+     "confidence": 0.78,
+     "word_min": 0.97
+    },
+    {
+     "start": 19.99,
+     "end": 21.27,
+     "ru": "Поток данных пошёл.",
+     "en": "Data stream coming in.",
+     "fr": "Le flux de données arrive.",
+     "whisper": "Данных пошел.",
+     "confidence": 0.78,
+     "word_min": 0.8
+    },
+    {
+     "start": 28.96,
+     "end": 30.52,
+     "ru": "Похоже, мы её пробудили.",
+     "en": "Looks like we woke her up.",
+     "fr": "On dirait qu'on l'a réveillée.",
+     "whisper": "Позже мы ее пробудили.",
+     "confidence": 0.78,
+     "word_min": 0.79
+    },
+    {
+     "start": 31.63,
+     "end": 32.57,
+     "ru": "Это не по плану!",
+     "en": "This wasn't part of the plan!",
+     "fr": "Ce n'était pas prévu au plan !",
+     "whisper": "Это не по плану?",
+     "confidence": 0.78,
+     "word_min": 0.76
+    }
+   ],
+   "rejected": [],
+   "reviewed": true,
+   "note": "Échanges radio d'un équipage, voix filtrées : lecture difficile ; small insuffisant, medium retenu. Douteux : réplique 1 (« Объект за невидимостью » : medium et small s'accordent, wav2vec2 entend « объектва не видимо… » ; « в зоне видимости » n'apparaît qu'amorcé, à 0,06) ; réplique 4 (« Заблок / Забудка / Заботка разрешаю » : « Запуск разрешаю », seule lecture sensée, confirmée par l'amorce à 0,31) ; réplique 6 (« От данных пошёл », wav2vec2 « то тан их пошёл » : « Поток данных пошёл »). Sûres : 2, 3, 5, 7 (wav2vec2 « похоже мы её пробудили »), 8. Aucun nom propre."
+  },
+  "warp-prologue": {
+   "audio": "warp-prologue",
+   "model": "faster-whisper medium, int8, VAD",
+   "lines": [
+    {
+     "start": 2.06,
+     "end": 5.18,
+     "ru": "1179 год Эры Аллодов.",
+     "en": "The year 1179 of the Allods Era.",
+     "fr": "L'an 1179 de l'Ère des allods.",
+     "whisper": "1179 год, эры Аллодов.",
+     "confidence": 0.88,
+     "word_min": 0.81
+    },
+    {
+     "start": 5.76,
+     "end": 7.9,
+     "ru": "Город Вышеград на краю мира.",
+     "en": "Hightown, a city in Horizon.",
+     "fr": "Hauteville, une ville d'Horizon.",
+     "whisper": "Город Вышеград, на краю мира.",
+     "confidence": 0.88,
+     "word_min": 0.93
+    },
+    {
+     "start": 8.92,
+     "end": 11.18,
+     "ru": "Как тёмная река, струится время,",
+     "en": "Time flows like a dark river,",
+     "fr": "Le temps s'écoule comme une rivière sombre,",
+     "whisper": "Как тёмная река струится время,",
+     "confidence": 0.88,
+     "word_min": 0.8
+    },
+    {
+     "start": 11.62,
+     "end": 14.88,
+     "ru": "и начало истории скрыто в её глубинах.",
+     "en": "and the beginning of history lies hidden in its depths.",
+     "fr": "et le commencement de l'histoire est caché dans ses profondeurs.",
+     "whisper": "и начало истории скрыто в её глубинах.",
+     "confidence": 0.88,
+     "word_min": 0.89
+    },
+    {
+     "start": 15.44,
+     "end": 18.62,
+     "ru": "Никто из нас не был готов к пришествию тьмы,",
+     "en": "None of us was ready for the coming of the darkness",
+     "fr": "Aucun de nous n'était prêt à la venue des ténèbres",
+     "whisper": "Никто из нас не был готов к пришествию тьмы,",
+     "confidence": 0.88,
+     "word_min": 0.88
+    },
+    {
+     "start": 18.94,
+     "end": 21.86,
+     "ru": "которая накрыла аллоды один за другим.",
+     "en": "that engulfed the allods one after another.",
+     "fr": "qui ont englouti les allods l'un après l'autre.",
+     "whisper": "которая накрыла Аллоды один за другим.",
+     "confidence": 0.88,
+     "word_min": 0.9
+    },
+    {
+     "start": 22.42,
+     "end": 25.06,
+     "ru": "Нашим обиталищем на долгие годы стал Ковчег,",
+     "en": "For many long years, our home was the Ark,",
+     "fr": "Pendant de longues années, notre demeure fut l'Arche,",
+     "whisper": "Нашим обиталищем на долгие годы стал ковчег,",
+     "confidence": 0.88,
+     "word_min": 0.8
+    },
+    {
+     "start": 25.68,
+     "end": 29.64,
+     "ru": "отправившийся в путешествие по бесконечному астралу.",
+     "en": "which set out on a journey through the endless Astral.",
+     "fr": "partie pour un voyage à travers l'Astral infini.",
+     "whisper": "отправившийся в путешествие по бесконечному астралу.",
+     "confidence": 0.88,
+     "word_min": 0.85
+    },
+    {
+     "start": 30.26,
+     "end": 36.62,
+     "ru": "Спустя полторы сотни лет здесь, на краю мира, нам удалось найти свой новый дом.",
+     "en": "A century and a half later, here in Horizon, we found our new home.",
+     "fr": "Un siècle et demi plus tard, ici, à Horizon, nous avons trouvé notre nouvelle maison.",
+     "whisper": "Спустя полторы сотни лет, здесь, на краю мира, нам удалось найти свой новый дом.",
+     "confidence": 0.84,
+     "word_min": 0.94
+    },
+    {
+     "start": 37.62,
+     "end": 43.66,
+     "ru": "Вместе, преодолевая все трудности, отныне мы живём, забыв старую вражду.",
+     "en": "Together, overcoming every hardship, we now live as one, our old enmity forgotten.",
+     "fr": "Ensemble, surmontant toutes les épreuves, nous vivons désormais unis, nos vieilles inimitiés oubliées.",
+     "whisper": "Вместе, преодолевая все трудности, отныне мы живем, забыв старого вражду.",
+     "confidence": 0.84,
+     "word_min": 0.83
+    },
+    {
+     "start": 44.59,
+     "end": 50.85,
+     "ru": "Построив свой город, мы сделали всё, чтобы возродить хотя бы часть былого величия.",
+     "en": "Having built our city, we did everything we could to revive at least part of our former glory.",
+     "fr": "Après avoir bâti notre ville, nous avons tout fait pour ranimer au moins une part de notre grandeur passée.",
+     "whisper": "Построив свой город, мы сделали все, чтобы возродить хотя бы часть былого величия.",
+     "confidence": 0.84,
+     "word_min": 0.5
+    },
+    {
+     "start": 51.84,
+     "end": 54.78,
+     "ru": "Но эти земли не назовёшь спокойными.",
+     "en": "But these lands can hardly be called peaceful.",
+     "fr": "Mais ces terres sont loin d'être paisibles.",
+     "whisper": "Но эти земли не назовешь спокойными.",
+     "confidence": 0.84,
+     "word_min": 0.89
+    },
+    {
+     "start": 54.83,
+     "end": 62.41,
+     "ru": "Нас окружают мрачные леса, полные злобных существ, чуждых и опасных.",
+     "en": "We are surrounded by gloomy forests, full of vicious creatures, alien and dangerous.",
+     "fr": "Nous sommes entourés de sombres forêts, peuplées de créatures malfaisantes, étrangères et dangereuses.",
+     "whisper": "Нас окружают мрачные леса, полные злобных существ, чуждых и опасных.",
+     "confidence": 0.91,
+     "word_min": 0.69
+    },
+    {
+     "start": 62.71,
+     "end": 65.85,
+     "ru": "И всё же мы готовы к борьбе за выживание.",
+     "en": "And yet we are ready to fight for our survival.",
+     "fr": "Et pourtant, nous sommes prêts à lutter pour notre survie.",
+     "whisper": "И все же мы готовы к борьбе за выживание.",
+     "confidence": 0.91,
+     "word_min": 0.77
+    },
+    {
+     "start": 67.06,
+     "end": 71.64,
+     "ru": "Не все из нас разделили ответственность за сложный выбор.",
+     "en": "Not all of us shared the responsibility for a difficult choice.",
+     "fr": "Nous n'avons pas tous partagé la responsabilité d'un choix difficile.",
+     "whisper": "Не все из нас разделили ответственность за сложный выбор.",
+     "confidence": 0.91,
+     "word_min": 0.98
+    },
+    {
+     "start": 72.28,
+     "end": 78.48,
+     "ru": "Сейчас эти отступники стали ещё одной угрозой, которая нависла над мирным Вышеградом.",
+     "en": "Now these renegades have become yet another threat hanging over peaceful Hightown.",
+     "fr": "Aujourd'hui, ces renégats sont devenus une menace de plus qui plane sur la paisible Hauteville.",
+     "whisper": "Сейчас эти отступники стали еще одной угрозой, которая нависла над мирным Вышеградом.",
+     "confidence": 0.91,
+     "word_min": 0.85
+    },
+    {
+     "start": 79.2,
+     "end": 83.54,
+     "ru": "И вновь перед нами стоит необходимость трудных решений.",
+     "en": "And once again, we must make hard decisions.",
+     "fr": "Et une fois de plus, nous voilà contraints à des décisions difficiles.",
+     "whisper": "И вновь перед нами стоит необходимость трудных решений.",
+     "confidence": 0.91,
+     "word_min": 0.98
+    },
+    {
+     "start": 83.54,
+     "end": 89.78,
+     "ru": "И лишь время покажет, сможем ли мы устоять перед лицом врага.",
+     "en": "And only time will tell whether we can stand firm before the enemy.",
+     "fr": "Et seul le temps dira si nous saurons tenir bon face à l'ennemi.",
+     "whisper": "И лишь время покажет, сможем ли мы устоять перед лицом врага.",
+     "confidence": 0.83,
+     "word_min": 0.69
+    }
+   ],
+   "rejected": [],
+   "reviewed": true,
+   "note": "Narrateur seul, sur la musique ; medium très sûr (confiance 0,83 à 0,91), recoupé par wav2vec2 (jonatasgrosman/wav2vec2-large-xlsr-53-russian, sans modèle de langue) : mêmes mots. Corrections : « забыв старого вражду » (entendu ainsi par les deux modèles) écrit « старую вражду » ; ponctuation, ё, « Ковчег » en capitale (le vaisseau des survivants). Noms officiels du client 17.0 (EN) et 16.0 (FR) : Вышеград = Hightown / Hauteville (« Red Hightown wine », « Vin rouge de Hauteville ») ; « на краю мира » = Horizon, comme dans la prophétie de la Ligue (« find a new home in Horizon », « nouvelle maison à Horizon ») ; Ковчег = the Ark / l'Arche ; эра Аллодов = the Allods Era / l'Ère des allods ; астрал = the Astral / l'Astral ; отступник = renegade / renégat."
+  }
+ }
+}

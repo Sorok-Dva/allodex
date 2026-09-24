@@ -2995,6 +2995,13 @@ def update_index(manifest: dict, out_root: Path, entries: list[dict]) -> None:
             "subtitles": {"status": "official", "lines": e["lines"], "timing": e.get("timing", "estimated"), "audio": {"language": "ru"}},
             "audio": {"language": "ru"},
         }
+        if not e["lines"]:
+            # Voix sans sous-titres du jeu : transcription relue (tools/transcribe_cinematics.py), `transcribed`.
+            from tools.transcribe_cinematics import transcribed_tracks
+            found = transcribed_tracks(spec["id"], out_root, f"engine/{spec['id']}", e["duration"])
+            if found:
+                entry["tracks"], meta = found
+                entry["subtitles"] = {**meta, "audio": {"language": "ru"}}
         index["cinematics"] = [c for c in index["cinematics"] if c["id"] != spec["id"]] + [entry]
     index["arcs"] = manifest["arcs"]
     index["cinematics"].sort(key=lambda c: (c["order"], c["id"]))
