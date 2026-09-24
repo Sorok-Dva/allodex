@@ -6,7 +6,7 @@ import { clearLoreCache } from './lorebook.data';
 import { shardKey } from './lorebook.logic';
 
 const credit = { line: 'Allods atlas and community lore material compiled by Makar Terentiev (DarkyAndSparky), https://github.com/DarkyAndSparky/atlas-ao', url: 'https://github.com/DarkyAndSparky/atlas-ao' };
-const sections = Object.fromEntries(['timeline', 'atlas', 'library', 'characters', 'secrets', 'quests'].map(s => [s, { count: 1, chunks: 1, groups: [] }]));
+const sections = Object.fromEntries(['timeline', 'atlas', 'library', 'characters', 'secrets', 'quests', 'gallery'].map(s => [s, { count: 1, chunks: 1, groups: [] }]));
 const files: Record<string, unknown> = {
   'meta.json': { sections, credit, translated_by: 'Community text, translated by Allodex', entries: 3, dir_block: 64, token_min: 3, stopwords: ['the'] },
   'list/en/quests.json': { groups: [{ id: 'zone-Kania', label: 'Kania', count: 1 }], rows: [['r10', 0, 0, 2, 'Wolf Threat', '']] },
@@ -19,6 +19,13 @@ const files: Record<string, unknown> = {
   [`search/en/${shardKey('wolf')}.json`]: { wolf: '0|0', wolves: '1' },
   'list/dialogues-index.json': { first: [31] },
   'text/en/dialogues-0.json': { r31: { t: [['text', 'The wolves are coming back.', 0]], n: 'The wolves are coming back.', g: 0, l: { quests: [['quests/r10', 'Wolf Threat']] } } },
+  'list/en/atlas.json': { groups: [{ id: 'allods-story-allod', key: 'lore.group.allods-story-allod', count: 1 }], rows: [['a-a001', 0, 0, 1, 'Kania', 'Story allod']] },
+  'text/en/atlas-0.json': { 'a-a001': {
+    t: [['atlasDescription', 'The land of the League.', 0, { md: true, img: [['cc00', 1600, 900]] }]],
+    p: Array.from({ length: 30 }, (_, i) => [`im${i}`, 800, 600]),
+    l: { albums: [['gallery/g-kaniya', 'Kania']] },
+    m: { credit: credit.line, translated: 'x' },
+  } },
   'dir/en/0.json': [['quests', 'r10', 'Wolf Threat', 2], ['characters', 'r21', 'Wolves of Kania', 0]],
 };
 
@@ -85,6 +92,26 @@ describe('LorebookScreen', () => {
     await waitFor(() => expect(page.getByRole('heading', { name: 'The wolves are coming back.' })).toBeTruthy());
     expect(page.getByRole('link', { name: 'Wolf Threat' }).getAttribute('href')).toBe('/lorebook/quests/r10');
     expect(page.queryByTestId('lore-list')).toBeNull();
+  });
+
+  it('affiche la galerie d’un allod et ouvre la visionneuse au clavier', async () => {
+    go('/lorebook/atlas/a-a001');
+    const page = mount();
+    await waitFor(() => expect(page.getAllByTestId('lore-gallery').length).toBe(2));
+    const [inText, gallery] = page.getAllByTestId('lore-gallery');
+    expect(inText.querySelector('img')!.getAttribute('src')).toBe('/game/lorebook-media/cc00-t.webp');
+    expect(gallery.querySelectorAll('img').length).toBe(24);
+    fireEvent.click(page.getByRole('button', { name: 'Show all (30 images)' }));
+    expect(gallery.querySelectorAll('img').length).toBe(30);
+    expect(page.getByRole('link', { name: 'Kania' }).getAttribute('href')).toBe('/lorebook/gallery/g-kaniya');
+    fireEvent.click(gallery.querySelectorAll('button')[29]);
+    const box = page.getByTestId('lore-lightbox');
+    expect(box.querySelector('img')!.getAttribute('src')).toBe('/game/lorebook-media/im29.webp');
+    fireEvent.keyDown(window, { key: 'ArrowRight' });
+    expect(page.getByTestId('lore-lightbox').querySelector('img')!.getAttribute('src')).toBe('/game/lorebook-media/im0.webp');
+    expect(page.getByText('1 / 30')).toBeTruthy();
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(page.queryByTestId('lore-lightbox')).toBeNull();
   });
 
   it('prend la langue du contenu dans l’URL, puis le choix mémorisé, anglais par défaut', () => {
