@@ -562,3 +562,17 @@ def test_real_element_transparency_hides_frozen_parts(real):
     assert at("FatalityMage", "Meteor_Big_mesh", 5.0) == 0 and at("FatalityMage", "Meteor_Big_mesh", 7.5) == 1
     assert at("FatalityDruid", "Liana_01_middle_00", 2.0) == 1 and at("FatalityDruid", "Liana_01_middle_00", 3.5) == 0
     assert at("FatalityDruid", "Liana_01_bottom", 4.5) == 1 and at("FatalityDruid", "Liana_01_bottom", 5.0) == 0
+
+
+@client
+def test_real_stop_before_delay_cancels_the_component(real):
+    """`MuseL` du Barde : arrêté à 7,85 s, son `DelayComponent` échoit à 7,87 s — annulé (la vidéo
+    ne montre jamais la Muse de lumière) ; `Muse`, apparue à 4,33 s, s'arrête à 7,8 s."""
+    db, cat = real
+    for off in db.resources("VisObjectTemplate"):
+        vot = vis.read_visobject(db, cat, off)
+        if vot.name == "FatalityBard":
+            break
+    by_id = {c.ident: c for c in vot.components if c.ident}
+    assert by_id["MuseL"].cancelled and by_id["MuseL"].stop is None
+    assert not by_id["Muse"].cancelled and by_id["Muse"].stop == 7.8

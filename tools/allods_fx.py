@@ -123,6 +123,9 @@ class FxBuild:
         for comp in vot.components:
             if comp.visobject is None:
                 continue
+            if comp.cancelled:
+                self.exporter.notes.append(f"{name} : composant {comp.ident} annulé (arrêté avant son échéance)")
+                continue
             child = self.emit(comp.visobject, depth + 1)
             if child is None:
                 continue
