@@ -955,14 +955,23 @@ caméra, particules en quads instanciés (`particles.ts`), sons calés sur la ch
 - **Vie propre de chaque gabarit** (`VotPart`, `votInstances.ts`, option `lifetimes`) : la racine
   et chaque composant accroché ont leur fenêtre — apparition au retard du `DelayComponent` avec son
   `fadeInMS`, fin à l'arrêt (`StopVisObjectComponents`) ou **au bout de son clip s'il ne boucle pas**
-  (`SkeletalAnimation.looped` faux), avec son `fadeOutMS` ; un composant s'éteint avec son parent.
-  Preuve sur le Barde : `FatalityBardMuseLight` (clip de 1,5 s posé à 7,87 s, `fadeOutMS` 800) n'est
-  visé par aucun arrêt (celui de 7,85 s le précède) et son parent meurt sans fondu à 11,6 s : ce
-  fondu n'a de sens que si l'objet s'éteint seul à la fin de son clip ; de même le rayon et son
-  étincelle (ci-dessus). Avant, la dernière pose était tenue jusqu'à la fin de vie de l'instance :
-  67 gabarits figés dans 25 fatalités (Muse de lumière et neuf `FatalityBard_Lines` du Barde, dôme
-  `FatalityDruid_Explosion01` du Tribaliste, chauves-souris de l'Invocateur, rayon partout…). Les
-  cinématiques moteur gardent l'ancien comportement (règle non vérifiée sur leur décor) ;
+  (`SkeletalAnimation.looped` faux), avec son `fadeOutMS` (le rayon et son étincelle, ci-dessus).
+  Avant, la dernière pose était tenue jusqu'à la fin de vie de l'instance : 67 gabarits figés dans
+  25 fatalités (neuf `FatalityBard_Lines` du Barde, dôme `FatalityDruid_Explosion01` du
+  Tribaliste, chauves-souris de l'Invocateur, rayon partout…). Trois précisions **établies sur la
+  vidéo de référence** (voir « Comparaison à la vidéo ») :
+  - un composant **meurt au plus tard avec son parent, mais s'efface à son propre rythme** : la
+    fumée de `FatalityMage_Meteor` (`fadeOutMS` 3 500) survit au socle `FatalityMage` (vie 7,6 s,
+    800 ms) et se voit jusqu'à 10 s ; l'ange `FatalityPriest` (1 200 ms) est effacé à 10 s, avant
+    son socle `Fatality_Priest_Basis` (vie 8,8 s, 2 000 ms). Les fondus d'entrée, eux, se
+    multiplient (le socle du Mage entre en 3 s avec son météore) ;
+  - l'identifiant d'un composant est celui du `DelayComponent` qui le porte : **l'arrêter avant
+    son échéance l'annule**. Seul cas : `MuseL` du Barde, arrêté à 7,85 s pour une apparition à
+    7,87 s — la Muse de lumière (1,5 s de clip, dorée, à 2–5 m) n'apparaît jamais dans la vidéo ;
+  - un matériau opaque passe en mélange le temps d'un fondu (sinon l'ange du Prêtre surgissait
+    d'un bloc malgré ses 6,5 s d'entrée).
+
+  Les cinématiques moteur gardent l'ancien comportement (règles non vérifiées sur leur décor) ;
 - **Transparence des éléments** (`ElementTrack`, `tools/extract_menu_scene.py`) : le blob d'une
   `SkeletalAnimation` porte un **second jeu de pistes, une par élément de géométrie**, que rien ne
   lisait. L'entête est une suite de couples (pointeur auto-relatif, nombre) : +4 descripteurs des

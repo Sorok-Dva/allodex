@@ -342,7 +342,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       for (const inst of instances) {
         const local = t - inst.start;
         const fade = st.showFx ? spawnOpacity(local, inst.lifeTime, inst.fadeIn, inst.fadeOut) : 0;
-        updateInstance(inst, local, fade, camera);
+        updateInstance(inst, local, fade, camera, st.showFx);
       }
     };
 

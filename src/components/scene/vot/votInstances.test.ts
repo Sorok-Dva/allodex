@@ -62,6 +62,49 @@ describe('VotFactory lifetimes', () => {
   });
 });
 
+describe('component death', () => {
+  it('lets a component outlive its parent by its own fade-out, not the parent one', () => {
+    // Mage : socle `FatalityMage` (vie 7,6 s, fadeOutMS 800), météore accroché (fadeOutMS 3500).
+    const root = new THREE.Group();
+    root.userData = { vot: 'Base' };
+    root.add(new THREE.Mesh(new THREE.PlaneGeometry(), new THREE.MeshBasicMaterial({ transparent: true })));
+    const child = new THREE.Group();
+    child.userData = { vot: 'Meteor' };
+    child.add(new THREE.Mesh(new THREE.PlaneGeometry(), new THREE.MeshBasicMaterial({ transparent: true })));
+    root.add(child);
+    const objects = { Base: object({ duration: 11.6667, fadeOut: 0.8 }), Meteor: object({ duration: 13.3333, fadeOut: 3.5 }) };
+    const inst = new VotFactory({ objects, baseUrl: null, disposables: [], lifetimes: true }).instantiate(root, [], 0, 7.6, 3, 0.8);
+    const camera = new THREE.PerspectiveCamera();
+    const base = (inst.root.children[0] as THREE.Mesh).material as THREE.Material;
+    const meteor = (inst.root.children[1].children[0] as THREE.Mesh).material as THREE.Material;
+    // L'entrée de l'action (3 s) vaut pour tout le gabarit.
+    updateInstance(inst, 1.5, 0.5, camera);
+    expect(meteor.opacity).toBeCloseTo(0.5, 5);
+    updateInstance(inst, 9.35, 0, camera);
+    expect(inst.root.visible).toBe(true);
+    expect(base.opacity).toBe(0);
+    expect(meteor.opacity).toBeCloseTo(0.5, 5);
+    updateInstance(inst, 11.2, 0, camera);
+    expect(inst.root.visible).toBe(false);
+    updateInstance(inst, 5, 1, camera, false);
+    expect(inst.root.visible).toBe(false);
+  });
+
+  it('blends an opaque material while it fades', () => {
+    const root = new THREE.Group();
+    root.userData = { vot: 'Angel' };
+    root.add(new THREE.Mesh(new THREE.PlaneGeometry(), new THREE.MeshBasicMaterial()));
+    const inst = new VotFactory({ objects: { Angel: object({}) }, baseUrl: null, disposables: [], lifetimes: true }).instantiate(root, [], 0, 5, 0, 1);
+    const material = (inst.root.children[0] as THREE.Mesh).material as THREE.Material;
+    const camera = new THREE.PerspectiveCamera();
+    updateInstance(inst, 2, 1, camera);
+    expect(material.transparent).toBe(false);
+    updateInstance(inst, 5.5, 0.5, camera);
+    expect(material.transparent).toBe(true);
+    expect(material.opacity).toBeCloseTo(0.5, 5);
+  });
+});
+
 describe('element transparency tracks', () => {
   it('hides a frozen element outside its keys and fades it with the clip time', () => {
     // Instruments du Barde : pleins jusqu'à 5,7 s, fondus jusqu'à 5,9 s ; clip bouclé de 11,67 s.
