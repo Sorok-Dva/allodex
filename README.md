@@ -1622,7 +1622,9 @@ la future page :
 Les textes du client appartiennent à l'éditeur (Astrum / My.Games) — comme les autres assets de
 `public/game/`. L'atlas et les récits de Makar Terentiev sont repris avec son accord et le crédit
 ci-dessus. Les autres travaux de fans ou de tiers du corpus (« Энциклопедия Сарнаута », billet de
-blog, artbook) ne sont pas repris ; les images du corpus ne sont pas utilisables (droits inconnus).
+blog, artbook) ne sont pas repris. **Toutes les images du corpus** (captures, cartes, concepts,
+logos, interface, illustrations des `.docx`) sont reprises : l'auteur l'a autorisé (septembre 2026) ;
+elles portent le même crédit (galerie ci-dessous).
 
 ### Page Lorebook (`/lorebook`)
 
@@ -1645,6 +1647,7 @@ colonne de lecture de 72 caractères, une seule page à la fois sur mobile.
 | Characters | 3 640 PNJ nommés (homonymes fusionnés) avec leurs dialogues, 403 factions/races/classes | 4 043 |
 | World Secrets | 50 secrets, leurs étapes et les quêtes de chaque étape | 50 |
 | Quests | 6 962 quêtes par région | 6 962 |
+| Gallery | 169 albums de dossiers du corpus et 6 albums des documents de l'atlas : 3 319 images de Makar Terentiev | 175 |
 | *(Dialogues)* | 10 517 répliques qu'aucun PNJ ne rattache : **sans onglet ni liste**, atteintes par la recherche et par le lien de leur quête (1 801 ont une quête) | 10 517 |
 
 Les répliques non rattachées vivent dans une section cachée (`/lorebook/dialogues/<id>`) : leurs
@@ -1692,6 +1695,34 @@ glossaire et des textes parallèles du client), dans `tools/lorebook/` :
 
 Tout le matériel de Makar Terentiev est désormais traduit. Non repris : le billet de blog tiers
 « Край мира с форума АО », l'artbook de Fardreamer et l'« Энциклопедия Сарнаута » (droits de tiers).
+
+**Galerie** (section « Gallery », `/lorebook/gallery/<album>`) : toutes les images du corpus de
+Makar Terentiev, avec son accord.
+
+    python3 tools/build_lore_media.py   # ≈ 25 min la première fois (reprise incrémentale), écrit
+                                        # public/game/lorebook-media/ et public/game/lore/media.json
+
+L'outil lit les 3 330 fichiers image du corpus (PNG, JPEG, WebP, GIF, DDS, PSD, ORA recomposé
+depuis ses calques, vignette pleine taille des `.pdn`) et les 987 illustrations des six `.docx` de
+l'atlas, chacune rattachée au dernier intertitre qui la précède (« Раздел N » + numéro, ou titre gras
+des documents des îles astrales). Il écrit une WebP de 1 600 px (4 096 px pour les cartes du monde
+de 18 000 à 23 000 px) et une vignette de 480 px par image distincte (SHA-1 : **3 319 images,
+353 Mo**) ; les cartes géantes (> 60 Mpx, ~4 Go de pic) sont converties seules dans le processus
+principal, et un processus de conversion tué est repris image par image. `build_lorebook.py` en
+fait :
+
+- **175 albums** : un par dossier du corpus (titre anglais officiel de l'allod ou de la région du
+  même nom, sinon `tools/lorebook/media-albums.json`), liés à leur album parent et à leurs
+  sous-albums, groupés par dossier de premier niveau ; un par document `.docx`, par intertitre ;
+- des **galeries sur 269 fiches de l'atlas** : images du dossier au nom de l'allod (ou d'un
+  sous-dossier), des fichiers à son nom (« Чумной Город 2.jpg ») et des intertitres à son nom ;
+  les **720 illustrations** des rubriques traduites de l'atlas s'affichent sous le texte de leur
+  rubrique (même partie et même numéro, sinon même nom). Dans une fiche, une copie visuelle
+  (empreinte dHash à 4 bits près : la même carte dans le dossier et dans le `.docx`) n'est montrée
+  qu'une fois ; les albums gardent tout.
+
+Vignettes à chargement différé (24 affichées, puis « Show all »), visionneuse plein écran (flèches,
+Échap, lien vers l'image).
 
 **Noms propres** : alignés sur le client anglais officiel (textes parallèles russe/anglais de
 `public/game/lore/`). Quelques arbitrages, avec le nombre de textes du client qui les emploient :

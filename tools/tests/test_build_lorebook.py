@@ -176,3 +176,52 @@ def test_unattached_dialogues_leave_the_characters_list(tmp_path):
         ids.append(acc)
     rows = [load(out, f"dir/en/{g // 64}.json")[g % 64][:2] for g in ids]
     assert ["dialogues", "r31"] in rows
+
+
+def test_images_join_the_atlas_and_the_gallery(tmp_path):
+    root, src, corpus = make_lore(tmp_path)
+    # dossier au nom de l'allod, fichier à son nom ailleurs, illustration d'une rubrique de l'atlas
+    write(root / "media.json", {"images": {"aa": [800, 600], "bb": [640, 480], "cc": [1600, 900], "dd": [300, 300]},
+                                "files": [["Мир/Кания/1.png", "aa"], ["Разное/Кания 2 old.jpg", "bb"],
+                                          ["Разное/logo.png", "dd"]],
+                                "docs": [{"doc": "ATLAS ALLODS.docx", "images": [["cc", "2", "1", "Кания"],
+                                                                                   ["dd", "", "", ""]]}]})
+    write(src / "media-albums.json", {"albums": {"Разное": "Miscellaneous"},
+                                      "groups": {"Мир": {"en": "World", "fr": "Monde", "ru": "Мир"}}})
+    b = lb.Builder(lb.Lore(root), src, corpus)
+    b.build()
+    out = tmp_path / "out"
+    report = b.write(out)
+    assert report["sections"]["gallery"] == 3          # Мир/Кания, Разное, document (Мир n'a pas d'image)
+    allod = load(out, "text/en/atlas-0.json")["a-a001"]
+    desc = next(t for t in allod["t"] if t[0] == "atlasDescription")
+    assert desc[3]["img"] == [["cc", 1600, 900]]        # dans le texte de sa rubrique
+    assert allod["p"] == [["aa", 800, 600], ["bb", 640, 480]]
+    assert [x[0] for x in allod["l"]["albums"]] == ["gallery/g-mir-kaniya"]
+    gallery = load(out, "list/en/gallery.json")
+    rows = {r[0]: r for r in gallery["rows"]}
+    assert rows["g-mir-kaniya"][4] == "Kania" and rows["g-raznoe"][4] == "Miscellaneous"
+    assert rows["g-mir-kaniya"][3] & lb.FLAG_COMMUNITY and gallery["groups"][rows["g-mir-kaniya"][1]]["label"] == "World"
+    album = load(out, f"text/en/gallery-{rows['g-mir-kaniya'][2]}.json")["g-mir-kaniya"]
+    assert album["p"] == [["aa", 800, 600]] and album["l"]["atlas"] == [["atlas/a-a001", "Kania"]]
+    assert album["m"]["credit"] == "Atlas: M. T." and "album" not in album["l"]
+    doc = load(out, f"text/en/gallery-{rows['g-doc-atlas-allods'][2]}.json")["g-doc-atlas-allods"]
+    assert [it["p"] for it in doc["i"]] == [[["cc", 1600, 900]], [["dd", 300, 300]]]
+    assert doc["i"][0]["h"][1] == "Kania" and doc["i"][0]["l"]["atlas"][0][0] == "atlas/a-a001"
+
+
+def test_image_stem_key_drops_numbers_and_old_suffixes():
+    assert lb.image_stem_key("Чумной Город 2.jpg") == lb.atlas_key("Чумной Город")
+    assert lb.image_stem_key("Гробница ОЛД.png") == lb.atlas_key("Гробница")
+    assert lb.image_stem_key("Остров (3).png") == lb.atlas_key("Остров")
+    assert lb.translit_slug("Mdrn world/Даян") == "mdrn-world-dayan"
+
+
+def test_perceptual_copies_are_shown_once_per_entry(tmp_path):
+    root, src, corpus = make_lore(tmp_path)
+    write(root / "media.json", {"images": {"aa": [800, 600], "bb": [640, 480], "cc": [10, 10]},
+                                "hash": {"aa": "ffff0000ffff0000", "bb": "ffff0000ffff0001", "cc": "0123456789abcdef"}})
+    b = lb.Builder(lb.Lore(root), src, corpus)
+    assert [x[0] for x in b.imgs(["aa", "bb", "cc"])] == ["aa", "bb", "cc"]
+    assert [x[0] for x in b.imgs(["aa", "bb", "cc"], perceptual=True)] == ["aa", "cc"]
+    assert [x[0] for x in b.imgs(["bb", "cc"], ["aa"], perceptual=True)] == ["cc"]
