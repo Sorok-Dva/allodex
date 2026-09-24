@@ -133,6 +133,8 @@ export type FatalitySince = {
 export type FatalityScene = {
   glb: string;
   label?: { fr: string; en: string };
+  /** Lieu réel du décor (`scene.site`) : carte, centre, rayon dégagé, orbite maximale de la caméra. */
+  site?: { map: string; center: [number, number]; clear: number; orbit?: number | null; objects?: number; nearest?: number | null };
   environment?: FatalityEnvironment;
 };
 export type FatalitiesIndex = {

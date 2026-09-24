@@ -271,8 +271,8 @@ export function FatalitiesScreen() {
           onMouseLeave={() => setHover(null)}
         >
           <span className={s.pillSkin} aria-hidden="true" style={nineSlice(current ? 'pill-full-open' : 'pill-full', PILL_SLICE)} />
-          {shown.icon && <img className={s.pillIcon} src={fatalityFile(shown.icon)} alt="" aria-hidden="true" width={22} height={22} />}
-          <span className={`${s.pillLabel} ${shown.icon ? s.pillLabelIcon : ''} ${shown.official ? '' : s.pillLabelUnofficial}`}>{shown.text}</span>
+          {shown.icon && <img className={s.pillIcon} src={fatalityFile(shown.icon)} alt="" aria-hidden="true" width={20} height={20} />}
+          <span className={`${s.pillLabel} ${shown.icon ? s.pillLabelIcon : ''} ${shown.official ? '' : s.pillLabelUnofficial}`}><span className={s.pillText}>{shown.text}</span></span>
         </button>
       </li>
     );
@@ -297,6 +297,7 @@ export function FatalitiesScreen() {
             fadeDuration={fatality.fadeDuration ?? 0}
             sceneUrl={sceneUrl}
             environment={index?.scene?.environment ?? null}
+            orbitMax={index?.scene?.site?.orbit ?? null}
             soundUrl={muted ? null : fatalityFile}
             assetUrl={fatalityFile}
             particleAtlas={index?.particleAtlas ?? null}
