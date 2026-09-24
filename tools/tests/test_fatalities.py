@@ -295,6 +295,53 @@ def test_clean_animation_drops_static_copies_of_the_bind():
     assert clean_animation(skeleton, animation) == ["j"] and animation.tracks == []
 
 
+def _element_blob(frames: int, elements: list[tuple[str, int, list[list[int]]]]) -> bytes:
+    """Blob d'animation réduit à son second jeu de pistes (éléments) : couples (pointeur, nombre)
+    de l'entête en +28 et +36, descripteurs de 20 octets, octets entrelacés par image."""
+    n = len(elements)
+    p_desc, p_names = 44, 44 + 20 * n
+    body = bytearray()
+    data_at, name_at = [], []
+    base = p_names + 8 * n
+    for name, kind, values in elements:
+        raw = name.encode() + b"\0"
+        name_at.append(base + len(body))
+        body += raw + b"\0" * ((4 - len(raw) % 4) % 4)
+        data_at.append(base + len(body))
+        flat = bytes(v for frame in values for v in frame)
+        body += flat + b"\0" * ((4 - len(flat) % 4) % 4)
+    buf = bytearray(base) + body
+    struct.pack_into("<HH", buf, 0, 30, frames)
+    struct.pack_into("<II", buf, 28, p_desc - 28, n)
+    struct.pack_into("<II", buf, 36, p_names - 36, n)
+    for i, (name, kind, values) in enumerate(elements):
+        d = p_desc + 20 * i
+        struct.pack_into("<HHIIII", buf, d, kind, len(values[0]), data_at[i] - (d + 4), frames * len(values[0]), 0, 0)
+        o = p_names + 8 * i
+        struct.pack_into("<II", buf, o, name_at[i] - o, len(name) + 1)
+    return bytes(buf)
+
+
+def test_element_tracks_read_transparency_bytes():
+    """Piste d'élément : 0 = plein, 255 = caché ; le masque 1 | 4 ajoute deux canaux (non lus)."""
+    from tools.allods_fx import element_alpha
+    from tools.extract_menu_scene import _read_element_tracks
+    blob = _element_blob(4, [("Drum_mesh", 1, [[0], [0], [128], [255]]),
+                             ("Glow", 5, [[255, 1, 2], [0, 3, 4], [0, 5, 6], [0, 7, 8]]),
+                             ("Solid", 1, [[0], [0], [0], [0]])])
+    tracks = _read_element_tracks(blob, 4)
+    assert [t.name for t in tracks] == ["Drum_mesh", "Glow", "Solid"]
+    assert np.allclose(tracks[0].alpha, [1, 1, 1 - 128 / 255, 0])
+    assert np.allclose(tracks[1].alpha, [0, 1, 1, 1]) and tracks[1].values.shape == (4, 3)
+    keys = element_alpha(SkeletalAnimation(30, 4, [], elements=tracks), {"Drum_mesh", "Glow", "Solid"}, speed=2.0)
+    # Pleine d'un bout à l'autre : aucune clé ; temps à la vitesse du clip (×2).
+    assert set(keys) == {"Drum_mesh", "Glow"}
+    assert keys["Drum_mesh"][:2] == [0.0, 1.0] and keys["Drum_mesh"][-2:] == [0.05, 0.0]
+    # Blob sans second jeu (anciens formats, blobs des tests de scènes) : rien.
+    assert _read_element_tracks(blob[:40], 4) == []
+    assert _read_element_tracks(b"\0" * 64, 4) == []
+
+
 def test_zone_light_reads_the_requested_hour(tmp_path):
     xml = """<ZoneLights><instantLights><Item><time>12</time><light><AmbientColor>5657187</AmbientColor>
     <DiffuseColor>8388608</DiffuseColor><FogColor>0</FogColor><FogStart>80</FogStart><FogEnd>700</FogEnd>
@@ -491,3 +538,27 @@ def test_real_color_and_shake_actions(real):
     assert find(fatalities[25].offender, "CreatureColorAction")[0]["blend"] == "OVERLAY"
     shake = find(fatalities[17].offender, "ShakeAction")[0]
     assert shake["amplitude"] == 5.0 and shake["radius"] == [20.0, 50.0] and len(shake["curve"]) == 183
+
+
+@client
+def test_real_element_transparency_hides_frozen_parts(real):
+    """Pistes de transparence des éléments, vérifiées sur la vidéo de référence : instruments du
+    Barde fondus à 5,7–5,9 s, météores du Mage révélés un à un à leur chute (5,3 à 7,2 s),
+    lianes du Tribaliste rentrées à l'explosion (3 s) puis leur base (4,7 s)."""
+    from tools.extract_menu_scene import BinSource, parse_skeletal_animation, read_chunks
+    db, cat = real
+    packs = packs_path(CLIENT / "data" / "Packs")
+    bins = BinSource([], [str(packs / p) for p in sorted(cat.names)])
+    wanted = {"FatalityBard", "FatalityMage", "FatalityDruid"}
+    alpha = {}
+    for off in db.resources("VisObjectTemplate"):
+        vot = vis.read_visobject(db, cat, off)
+        if vot.name in wanted and vot.name not in alpha:
+            blob = read_chunks(bins.get(cat.name(db.binary_ref(vot.animation))))[0]
+            alpha[vot.name] = {t.name: t.alpha for t in parse_skeletal_animation(blob).elements}
+    at = lambda name, element, t: alpha[name][element][round(t * 30)]
+    for element in ("Guitar_mesh", "Drum_mesh", "Mandolin_mesh"):
+        assert at("FatalityBard", element, 5.6) == 1 and at("FatalityBard", element, 6.0) == 0
+    assert at("FatalityMage", "Meteor_Big_mesh", 5.0) == 0 and at("FatalityMage", "Meteor_Big_mesh", 7.5) == 1
+    assert at("FatalityDruid", "Liana_01_middle_00", 2.0) == 1 and at("FatalityDruid", "Liana_01_middle_00", 3.5) == 0
+    assert at("FatalityDruid", "Liana_01_bottom", 4.5) == 1 and at("FatalityDruid", "Liana_01_bottom", 5.0) == 0
