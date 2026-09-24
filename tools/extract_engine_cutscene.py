@@ -786,14 +786,19 @@ def resolve_refs(spec: dict, db: PackDB) -> dict:
     if "lines" in out:
         out["lines"] = [resource_ref(db, r["ref"] if isinstance(r, dict) else r, f"{spec['id']} : réplique")
                         for r in out["lines"]]
+    for seg in out.get("cameras", []):
+        if seg.get("buff") is not None:
+            seg["buff"] = resource_ref(db, seg["buff"], f"{spec['id']} : caméra")
     for actor in out.get("actors", []):
         if actor.get("mob") is not None:
             actor["mob"] = resource_ref(db, actor["mob"], f"{spec['id']} : acteur {actor.get('id')}")
     for item in out.get("spawns", []):
-        for key in ("mob", "buff", "vot"):
+        for key in ("mob", "buff", "vot", "stele"):
             if item.get(key) is not None:
                 item[key] = resource_ref(db, item[key], f"{spec['id']} : effet {key}")
     out["_refs"] = {k: spec[k] for k in ("buff", "scene", "script", "lines") if spec.get(k) is not None}
+    if spec.get("cameras"):
+        out["_refs"]["cameras"] = [seg.get("buff") or "manifest" for seg in spec["cameras"]]
     return out
 
 
@@ -806,7 +811,10 @@ def pack_offset(db: PackDB, rid) -> int | None:
 
 def spawn_template(db: PackDB, spawn: dict) -> int | None:
     """Gabarit d'un effet du manifeste : `vot` (ressource), `mob` (PNJ d'effet : son gabarit visuel),
-    `buff` (premier gabarit des effets du script du buff)."""
+    `buff` (premier gabarit des effets du script du buff), `stele` (gabarit visuel d'une stèle posée)."""
+    if "stele" in spawn:
+        stele = pack_offset(db, spawn["stele"])
+        return db.ptr(stele + STELE_VISOBJ) if stele is not None else None
     if "vot" in spawn:
         return pack_offset(db, spawn["vot"])
     if "mob" in spawn:
@@ -860,8 +868,11 @@ def build_fx(spawns: list[dict], db: PackDB, cat, bins, textures: TexturePool, p
             node = fx.emit(vot)
             if node is not None:
                 fx.roots.append(node)
-        entry = {k: v for k, v in spawn.items() if k not in ("vot", "mob", "buff", "_note", "_source")}
+        entry = {k: v for k, v in spawn.items() if k not in ("vot", "mob", "buff", "stele", "_note", "_source")}
         entry["vot"] = name
+        if "stele" in spawn and "p" not in entry:
+            # stèle posée par le client (`SpawnLocation`) : à sa place
+            entry["p"] = [round(v, 4) for v in stele_position(db, pack_offset(db, spawn["stele"]))]
         if entry.get("until") is None and "t" in entry:
             # Effet ponctuel (explosion d'un `ClientData`) : il dure le temps de son gabarit.
             entry["until"] = round(entry["t"] + max(fx_length(fx.meta, name), 0.5), 3)
@@ -1099,7 +1110,7 @@ def schedule_lines(spec: dict, camera: dict, voices: list[dict | None], lines: l
     times = [k["t"] for k in camera["points"]]
     lead, gap = spec["timing"].get("lead", 0.5), spec["timing"].get("gap", 0.6)
     for group in spec["timing"]["groups"]:
-        t = times[group["segment"]] + lead
+        t = (group["t"] if "t" in group else times[group["segment"]]) + lead
         for n in group["lines"]:
             i = n - 1
             starts[i] = round(t, 3)
@@ -1195,7 +1206,7 @@ class Texts:
             raise LookupError(f"« {prefix} » ({lang}) : aucun texte ne commence ainsi")
         return min(hits, key=lambda i: (abs(i - near) if near is not None else 0, i))
 
-    def official(self, prefixes: list[str], fr_pair: dict | None) -> tuple[dict, list[int]]:
+    def official(self, prefixes: list[str], fr_pair: dict | None, first: int | None = None) -> tuple[dict, list[int]]:
         """Texte officiel d'une réplique désignée par le début de son (ou ses) texte(s) russe(s) :
         RU/EN du 17.0 au même indice ; FR du 16.0 à l'indice décalé de l'écart d'une paire de textes
         connus (`fr_pair` : début du texte russe et du texte français d'une même réplique), vérifié
@@ -1205,7 +1216,8 @@ class Texts:
             ru_at = self.find_text("ru", fr_pair["ru"])
             delta = ru_at - self.find_text("fr", fr_pair["fr"], near=ru_at - fr_pair.get("near_delta", 0))
         near = None if not fr_pair else self.find_text("ru", fr_pair["ru"])
-        idx = [self.find_text("ru", p, near) for p in prefixes]
+        # `first` : indice lu dans la ressource (bulle du `ClientData`) — il prime sur la recherche
+        idx = [first if (k == 0 and first is not None) else self.find_text("ru", p, near) for k, p in enumerate(prefixes)]
         text: dict[str, str] = {"ru": "\n".join(clean_text(self.main.texts["ru"][i]) for i in idx)}
         en = "\n".join(clean_text(self.main.texts["en"][i]) for i in idx)
         if en and not has_cyrillic(en):
@@ -2656,12 +2668,16 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
     plans de caméra enchaînés (coupes franches), voix off (`Sound2DAction` d'un événement
     `Cutscenes/…`), autres sons, voiles noirs (`PostEffectVisAction`). Sinon, seul le premier trajet
     de caméra du buff est lu (pilote). `timing.starts` : départs des répliques mesurés (voir le
-    manifeste), à la place des groupes estimés."""
+    manifeste), à la place des groupes estimés.
+
+    `"cameras"` : scène faite de plusieurs moments — plans des buffs de caméra du client (`buff`, à
+    l'instant `t` de la scène) et points de vue fixes du manifeste (`p`, `look` : vue du joueur quand
+    le client n'a pas de caméra, choix justifié par le manifeste) ; la scène dure jusqu'à la fin des voix."""
     from tools import cutscene_xdb70 as x70
     from tools.cutscene_client import buff_timeline
     buff_ref = spec.get("_refs", {}).get("buff", spec.get("buff"))
     client = buff_timeline(db, db.ids[int(spec["buff"])]) if spec.get("buff_script") else None
-    fixed = spec.get("buff") is None
+    fixed = spec.get("buff") is None and not spec.get("cameras")
     plan_lines = []
     post = list(spec.get("post", []))
     sfx: list[dict] = []
@@ -2685,6 +2701,26 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
                 sfx.append({"event": snd["event"], "t": snd["t"], "until": None})
         if client.ignored:
             report.append(f"{spec['id']} : actions du script non reprises : {', '.join(sorted(set(client.ignored)))}")
+    elif spec.get("cameras"):
+        shots, ends = [], [0.0]
+        for seg in spec["cameras"]:
+            t0 = float(seg.get("t", 0.0))
+            if seg.get("buff") is not None:
+                tl = buff_timeline(db, db.ids[int(seg["buff"])])
+                ends.append(t0 + tl.end)
+                for sh in tl.shots:
+                    # plan sans borne : ses durées en secondes (durée = somme des poids, échelle 1)
+                    dur = (sh["until"] - sh["t"]) if sh["until"] is not None else (sum(d for d, _ in sh["points"][:-1]) or None)
+                    shots.append({"t": round(t0 + sh["t"], 3), "duration": dur, "points": sh["points"], "targets": sh["targets"]})
+                    ends.append(t0 + sh["t"] + (dur if dur is not None else sum(d for d, _ in sh["points"])))
+                for veil in tl.veils:
+                    post.append({"t": round(t0 + veil["t"], 3), "until": round(t0 + (veil["until"] or tl.end), 3),
+                                 "kind": "veil", "fadeIn": veil["fadeIn"], "fadeOut": veil["fadeOut"]})
+            else:
+                shots.append({"t": t0, "duration": None, "points": [(0.0, tuple(seg["p"]))],
+                              "targets": [(0.0, tuple(seg["look"]))]})
+        camera = x70.camera_keys(shots)
+        camera["duration"] = round(max(ends), 3)
     elif fixed:
         # Scène jouée dans la vue du joueur (buff de cinématique sans trajet, ou aucun) : point de vue
         # du manifeste, justifié par lui ; durée : celle du buff, sinon jusqu'à la fin des voix.
@@ -2698,15 +2734,21 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
     refs = spec.get("_refs", {}).get("lines", spec["lines"])
     for n, (rid, ref) in enumerate(zip(spec["lines"], refs), 1):
         official = None
-        if isinstance(ref, dict):
-            # réplique doublée dont le texte officiel est ailleurs (bulle, message) : désigné par son début
-            prefixes = ref["ru"] if isinstance(ref["ru"], list) else [ref["ru"]]
-            official, _ = texts.official(prefixes, spec.get("fr_pair"))
-            ref = ref["ref"]
         cd = db.ids.get(int(rid))
         if cd is None:
-            raise ValueError(f"ClientData {ref} introuvable")
+            raise ValueError(f"ClientData {ref['ref'] if isinstance(ref, dict) else ref} introuvable")
         cl = read_client_line(db, cd)
+        if isinstance(ref, dict):
+            # réplique doublée sans sous-titre : texte officiel de sa bulle (`ENUM_SHOW_BUBBLE`), le début
+            # russe du manifeste le vérifie (et désigne les textes suivants d'une réplique en plusieurs bulles)
+            from tools.extract_cinematics import norm_key
+            prefixes = ref["ru"] if isinstance(ref["ru"], list) else [ref["ru"]]
+            official, idx = texts.official(prefixes, spec.get("fr_pair"), cl.bubble_index)
+            if not norm_key(texts.main.texts["ru"][idx[0]]).startswith(norm_key(prefixes[0])):
+                report.append(f"{spec['id']} : réplique {n} : la bulle ne commence pas par « {prefixes[0]} »")
+            ref = ref["ref"]
+        elif cl.text_index is None and cl.bubble_index is not None:
+            official, _ = texts.official([""], spec.get("fr_pair"), cl.bubble_index)
         if anchor is None and spec.get("fr_anchor") and texts.fr is not None and cl.text_index is not None:
             anchor = cl.text_index - texts.fr.find("fr", spec["fr_anchor"])
         if anchor is None and not spec.get("fr_anchor") and texts.fr is not None and cl.text_index is not None and cl.voice:
@@ -2716,9 +2758,17 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
             if cl.voice in texts.fr_voice:
                 anchor = cl.text_index - texts.fr_voice[cl.voice][0]
         text = official if official is not None else texts.line(cl.text_index, cl.voice, cl.delay_ms, anchor)
+        if "fr" not in text and spec.get("fr_pair") and cl.text_index is not None:
+            # sous-titre du 17.0 que la voix ne relie pas au client FR : écart de la paire de textes
+            fr = texts.official([""], spec["fr_pair"], cl.text_index)[0].get("fr")
+            if fr:
+                text["fr"] = fr
         speaker = spec.get("speakers", {}).get(str(n)) or next((a["id"] for a in spec["actors"] if any(text.get("ru", "").startswith(p) for p in a.get("speaker_prefixes", []))), None)
         actor = next((a for a in spec["actors"] if a["id"] == speaker), None)
         clips = [actor["talk"]] if actor and actor.get("talk") and cl.animations else []
+        if spec.get("line_animations") and actor is not None and cl.animations:
+            # animation que le `ClientData` donne au locuteur (`emoteTalkExcited`…), à la place de `talk`
+            clips = [clip_name(anim_names[a]) for a in cl.animations if anim_names.get(a)] or clips
         plan_lines.append({"start": None, "duration": cl.delay_ms / 1000.0, "voice_event": cl.voice, "speaker": speaker,
                            "clips": clips, "text": text, "source": f"ClientData {ref}"})
     starts = spec.get("timing", {}).get("starts")
@@ -2731,15 +2781,18 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
     actors = []
     for a in spec["actors"]:
         entry = dict(a)
+        spoken = sorted({c for l in plan_lines if l["speaker"] == a["id"] for c in l["clips"]})
+        entry["animations"] = sorted(set(a.get("animations", [])) | set(spoken))
         entry["mob_offset"] = pack_offset(db, a["mob"])
         entry["path"] = a.get("path") or [{"t": 0, "p": a["position"], "face": a.get("face")}]
         actors.append(entry)
     timing = "measured" if starts is not None else ("client" if client is not None and not spec["lines"] else "estimated")
     return {"map": spec["map"], "camera": camera, "lines": plan_lines, "actors": actors, "weather": None,
-            **({"duration_from_voices": True} if fixed and not camera["duration"] else {}),
+            **({"duration_from_voices": True} if (fixed and not camera["duration"]) or spec.get("cameras") else {}),
             "sounds": {"music": [], "ambience": [], "sfx": sfx}, "post": post,
             "decor_center": spec.get("decor_center"), "timing": timing,
-            "sources": {**({"buff": buff_ref} if buff_ref else {"camera": "manifest"}),
+            "sources": {**({"buff": buff_ref} if buff_ref else {"cameras": spec["_refs"]["cameras"]} if spec.get("cameras")
+                           else {"camera": "manifest"}),
                         **({"buff_script": True} if client is not None else {}), **spec.get("sources", {})}}
 
 
@@ -2863,7 +2916,8 @@ def build_map(map_name: str, specs: list[dict], plans: dict[str, dict], db: Pack
         sky_glb, sky_meta = build_sky(mp, cat, bins, textures, light, prefix, report)
         sky[spec["id"]] = (sky_glb, sky_meta)
         (out / "sky.glb").write_bytes(sky_glb) if sky_glb else (out / "sky.glb").unlink(missing_ok=True)
-        fx_glb, fx_objects, fx_sounds, spawns = build_fx(spec.get("spawns", []) + plans[spec["id"]].get("spawns", []), mp, cat,
+        manual = resolve_refs(spec, db).get("spawns", []) if spec.get("spawns") else []
+        fx_glb, fx_objects, fx_sounds, spawns = build_fx(manual + plans[spec["id"]].get("spawns", []), mp, cat,
                                                          bins, textures, particles, report, texture_prefix=prefix)
         fx[spec["id"]] = (fx_glb, fx_objects, fx_sounds, spawns)
         (out / "fx.glb").write_bytes(fx_glb) if fx_glb else (out / "fx.glb").unlink(missing_ok=True)

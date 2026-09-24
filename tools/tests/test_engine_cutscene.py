@@ -603,3 +603,21 @@ def test_stele_position_counts_the_vertical_cell():
                          i32=lambda off: words[off - 1000])
     x, y, z = stele_position(db, 0)
     assert (round(x, 2), round(y, 2), round(z, 2)) == (13350.33, 12534.71, 104.57)   # terrain d'Isa : 104,3–104,6
+
+
+def test_read_client_line_finds_the_bubble_and_the_voice_inside_an_action_list():
+    # voix d'Isa : bulle ENUM_SHOW_BUBBLE (texte officiel), voix Sound3DAction dans une VisActionList
+    from tools.allods_scenes import (BUBBLE_KIND, BUBBLE_TEXT, CLIENT_DATA_LIST, LIST_ELEMENTS, SOUND2D_NAME,
+                                     SOUND_NAME, VIS_ACTION_DATA_ACTION, VIS_LIST_ELEMENTS, read_client_line)
+    types = {10: "CustomClientDataList", 20: "InterfaceAction", 30: "CreatureVisActionData", 40: "VisActionList",
+             50: "Sound3DAction", 60: "CreatureVisActionData", 70: "Sound2DAction"}
+    ptrs = {0 + CLIENT_DATA_LIST: 10, 30 + VIS_ACTION_DATA_ACTION: 40, 60 + VIS_ACTION_DATA_ACTION: 70}
+    lists = {10 + LIST_ELEMENTS: [20, 30, 60], 40 + VIS_LIST_ELEMENTS: [50]}
+    strings = {20 + BUBBLE_KIND: "ENUM_SHOW_BUBBLE", 50 + SOUND_NAME: "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_01",
+               70 + SOUND2D_NAME: "Cutscenes/Isa/autre"}
+    db = SimpleNamespace(ptr=ptrs.get, vtype=types.get, pointers=lambda off: lists.get(off, []),
+                         string=strings.get, u32=lambda off: 229774 if off == 20 + BUBBLE_TEXT else 0,
+                         elements=lambda off, stride: [], vec=lambda off: None)
+    line = read_client_line(db, 0)
+    assert line.bubble_index == 229774 and line.text_index is None
+    assert line.voice == "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_01"     # la première voix

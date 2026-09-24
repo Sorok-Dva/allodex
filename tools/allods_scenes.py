@@ -11,7 +11,10 @@ des `.xdb` de l'arbre serveur 7.0 :
 * `ClientData` → `+0x28` `CustomClientDataList` → `+0x30` éléments : `CreatureVisActionData`
   (`+0x30` → action : `CreatureAnimationAction`, `Sound2DAction`, `Sound3DAction`…) et
   `UISubtitleShow` (`+0x30`, éléments de 40 o : `+0x04` durée d'affichage en ms, `+0x20` indice
-  du texte dans `pack.*.loc`) ; `Sound2DAction`/`Sound3DAction` : `+0x78` événement FMOD ;
+  du texte dans `pack.*.loc`) ; `Sound3DAction` : `+0x78` événement FMOD, `Sound2DAction` : `+0xA0`
+  (`+0x78` dans les `ClientData` d'avant 14.0) ; l'action peut être une `VisActionList` (`+0x48`
+  éléments : animation, son — les voix d'Isa) ; `InterfaceAction` `ENUM_SHOW_BUBBLE` : bulle, indice
+  du texte en `+0x78` (le texte officiel des répliques d'Isa, qui n'ont presque jamais de sous-titre) ;
 * `MobWorld` : `+0x68` indice du nom, `+0xF8` `VisualMob` ; `VisualMob` : `+0x28` gabarit
   (`VisCharacterTemplate`), `+0x60` objets portés (24 o : `+0x08` `VisualItem`), `+0xD8`
   variation en ligne (`CharacterVariation` : visage, pilosité, couleur et coiffure, peau) ;
@@ -51,6 +54,10 @@ SUBTITLE_STRIDE = 40
 SUBTITLE_DELAY = 0x04
 SUBTITLE_TEXT = 0x20
 SOUND_NAME = 0x78
+SOUND2D_NAME = 0xA0
+VIS_LIST_ELEMENTS = 0x48
+BUBBLE_KIND = 0x48
+BUBBLE_TEXT = 0x78
 ANIM_LIST = 0xE0
 MOB_NAME = 0x68
 MOB_VISUAL = 0xF8
@@ -130,6 +137,15 @@ class ClientLine:
     delay_ms: int
     voice: str | None
     animations: list[int]
+    bubble_index: int | None = None
+
+
+def _sound_name(db: PackDB, action: int) -> str | None:
+    for rel in (SOUND_NAME, SOUND2D_NAME):
+        name = db.string(action + rel)
+        if name and "/" in name and name.isprintable():
+            return name
+    return None
 
 
 def read_client_line(db: PackDB, off: int) -> ClientLine:
@@ -151,14 +167,20 @@ def read_client_line(db: PackDB, off: int) -> ClientLine:
             if items:
                 line.delay_ms = db.u32(items[0] + SUBTITLE_DELAY)
                 line.text_index = db.u32(items[0] + SUBTITLE_TEXT)
+        elif kind == "InterfaceAction" and db.string(element + BUBBLE_KIND) == "ENUM_SHOW_BUBBLE":
+            line.bubble_index = db.u32(element + BUBBLE_TEXT)
         elif kind == "CreatureVisActionData":
-            action = db.ptr(element + VIS_ACTION_DATA_ACTION)
-            akind = db.vtype(action) if action is not None else None
-            if akind == "CreatureAnimationAction":
-                v = db.vec(action + ANIM_LIST)
-                line.animations += [db.u32(v[0] + 4 * k) for k in range(v[1] // 4)] if v else []
-            elif akind in ("Sound2DAction", "Sound3DAction"):
-                line.voice = db.string(action + SOUND_NAME)
+            stack = [db.ptr(element + VIS_ACTION_DATA_ACTION)]
+            while stack:
+                action = stack.pop(0)
+                akind = db.vtype(action) if action is not None else None
+                if akind == "VisActionList":
+                    stack[:0] = db.pointers(action + VIS_LIST_ELEMENTS)
+                elif akind == "CreatureAnimationAction":
+                    v = db.vec(action + ANIM_LIST)
+                    line.animations += [db.u32(v[0] + 4 * k) for k in range(v[1] // 4)] if v else []
+                elif akind in ("Sound2DAction", "Sound3DAction") and line.voice is None:
+                    line.voice = _sound_name(db, action)
     return line
 
 
