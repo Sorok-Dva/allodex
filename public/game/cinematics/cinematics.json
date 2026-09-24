@@ -7,6 +7,13 @@
    },
    "version": "16.0"
   },
+  "league-start": {
+   "title": {
+    "fr": "La zone de départ de la Ligue",
+    "en": "The League starting zone"
+   },
+   "version": "4.0"
+  },
   "empire-start": {
    "title": {
     "fr": "La zone de départ de l’Empire",
@@ -245,6 +252,58 @@
    }
   },
   {
+   "id": "league-klement-death",
+   "arc": "league-start",
+   "version": "4.0",
+   "faction": "league",
+   "order": 110,
+   "event": "PaladinQuest",
+   "title": {
+    "fr": "La mort du Grand Mage",
+    "en": "The Great Mage’s Death"
+   },
+   "chronology": "Instance de départ de la Ligue (Inst_LeagueStart, voix « patch403 ») : première scène jouée, au sommet de la tour, pendant les quêtes « Аудиенция у Великого мага » ; après le prologue de faction.",
+   "bonus": false,
+   "duration": 42.5,
+   "files": {
+    "poster": "engine/league-klement-death/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/league-klement-death/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/league-klement-death/fr.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/league-klement-death/en.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/league-klement-death/ru.vtt",
+     "lines": 2
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 3,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "empire-start-knight-defeated",
    "arc": "empire-start",
    "version": "7.0",
@@ -268,6 +327,58 @@
    "subtitles": {
     "status": "official",
     "lines": 0,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "league-evacuation",
+   "arc": "league-start",
+   "version": "4.0",
+   "faction": "league",
+   "order": 120,
+   "event": "Quest_4_30",
+   "title": {
+    "fr": "L’évacuation",
+    "en": "The Evacuation"
+   },
+   "chronology": "Instance de départ de la Ligue : quête « Эвакуация » (Quest_4_30), au pied de la tour, avant « Дорога в Новоград » qui clôt l’instance ; suit la mort du Grand Mage.",
+   "bonus": false,
+   "duration": 81.0,
+   "files": {
+    "poster": "engine/league-evacuation/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/league-evacuation/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/league-evacuation/fr.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/league-evacuation/en.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/league-evacuation/ru.vtt",
+     "lines": 4
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 5,
     "timing": "server",
     "audio": {
      "language": "ru"

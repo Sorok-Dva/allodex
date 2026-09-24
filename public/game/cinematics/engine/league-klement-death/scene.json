@@ -1,0 +1,4077 @@
+{
+ "id": "league-klement-death",
+ "map": "Inst_LeagueStart",
+ "up": [
+  0,
+  0,
+  1
+ ],
+ "mirror": true,
+ "duration": 42.5,
+ "timing": "server",
+ "camera": {
+  "points": [
+   {
+    "t": 0,
+    "p": [
+     325.5767,
+     5791.775,
+     158.614
+    ]
+   }
+  ],
+  "targets": [
+   {
+    "t": 0,
+    "p": [
+     298.79,
+     5800.45,
+     158.4
+    ]
+   }
+  ],
+  "duration": 42.5,
+  "fov": 45
+ },
+ "lines": [
+  {
+   "n": 1,
+   "start": 0.0,
+   "duration": 21.898,
+   "speaker": "greatmage",
+   "voice": {
+    "event": "IL1/02_GreatMageKlement_02",
+    "wave": "02_GreatMageKlement_02_patch403",
+    "bank": "SFX/Voice/Voice_IL1_3D_rus.bsb",
+    "ogg": "voice/01.ogg",
+    "mp3": "voice/01.mp3",
+    "duration": 21.898
+   },
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Теперь, когда демоническая угроза ликвидирована, а Лига стала общим домом для людей, эльфов и гибберлингов...",
+    "en": "Now that the demonic threat is eliminated and the League has become a common home for people, Elves, and Gibberlings...",
+    "fr": "Maintenant que la menace de l'invasion des démons a disparu et que la Ligue est devenue un foyer pour les humains, les elfes et les gibberlings..."
+   },
+   "source": "Mechanics/Spells/QuestSpells/SFX_ClientData/MageSpeech02.(ClientData).xdb + Mechanics/Spells/QuestSpells/SFX_ClientData/MageSpeech02_Bubble.(ClientData).xdb"
+  },
+  {
+   "n": 2,
+   "start": 5.0,
+   "duration": 5.0,
+   "speaker": "greatmage",
+   "voice": null,
+   "clips": [],
+   "animations": [],
+   "text": {
+    "ru": "Пришёл наш час, час торжества Света! И когда астральные корабли бороздят просторы...",
+    "en": "The time has come, the time of the triumph of the Light! That is one giant leap!",
+    "fr": "Le moment est venu... Le moment du triomphe de la Lumière ! Ça, c'est un grand pas !"
+   },
+   "source": "Mechanics/Spells/QuestSpells/SFX_ClientData/MageSpeech02a_Bubble.(ClientData).xdb"
+  },
+  {
+   "n": 3,
+   "start": 21.0,
+   "duration": 0.0,
+   "speaker": "greatmage",
+   "voice": {
+    "event": "IL1/02_GreatMageKlement_Death",
+    "wave": "02_GreatMageKlement_Death_patch403",
+    "bank": "SFX/Voice/Voice_IL1_3D_rus.bsb",
+    "ogg": "voice/03.ogg",
+    "mp3": "voice/03.mp3",
+    "duration": 3.785
+   },
+   "clips": [],
+   "animations": [],
+   "text": {},
+   "source": "Mechanics/Spells/QuestSpells/SFX_ClientData/MageDeath.(ClientData).xdb"
+  }
+ ],
+ "actors": [
+  {
+   "id": "kaniapaladin",
+   "glb": "../shared/actors/mob-ca07998.glb",
+   "name": {
+    "ru": "Светобор Ратнев",
+    "en": "Svetobor Ratnev"
+   },
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      319.7723,
+      5792.682,
+      156.142
+     ],
+     "yaw": 1.05673
+    },
+    {
+     "t": 33.5,
+     "p": [
+      319.7723,
+      5792.682,
+      156.142
+     ],
+     "yaw": 4.3801
+    },
+    {
+     "t": 36.26,
+     "p": [
+      302.8162,
+      5798.534,
+      156.39
+     ],
+     "yaw": 4.3801
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": "Run",
+   "appear": 0.0,
+   "actions": [
+    {
+     "t": 25.5,
+     "until": 33.5,
+     "clips": [
+      "DeathOverkill"
+     ],
+     "loop": false
+    },
+    {
+     "t": 25.5,
+     "until": 33.5,
+     "clips": [
+      "DeadOverkill"
+     ],
+     "loop": true
+    },
+    {
+     "t": 39.5,
+     "until": 42.5,
+     "clips": [
+      "Loot"
+     ],
+     "loop": false
+    },
+    {
+     "t": 39.5,
+     "until": 42.5,
+     "clips": [
+      "EmoteCry"
+     ],
+     "loop": false
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Kania_male/KaniaMale.(Geometry).bin",
+   "height": 1.867,
+   "animations": {
+    "DeadOverkill": 1.0,
+    "DeathOverkill": 2.0,
+    "EmoteCry": 4.0,
+    "Idle": 5.9667,
+    "Idle01": 3.0,
+    "Loot": 0.6,
+    "Run": 0.5667
+   }
+  },
+  {
+   "id": "greatmage",
+   "glb": "../shared/actors/mob-1603fa18.glb",
+   "name": {
+    "ru": "Клемент ди Дазирэ",
+    "en": "Clement de Desirae"
+   },
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      298.7882,
+      5800.448,
+      156.646
+     ],
+     "yaw": 6.17979
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "actions": [
+    {
+     "t": 21.0,
+     "until": 1000000.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Elf_male/ElfMale.(Geometry).bin",
+   "height": 2.381,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 3.9333,
+    "Idle01": 6.0
+   }
+  },
+  {
+   "id": "kis",
+   "glb": "../shared/actors/mob-605f4c0.glb",
+   "name": {
+    "ru": "Тень",
+    "en": "Twilight Shadow"
+   },
+   "path": [
+    {
+     "t": 16.0,
+     "p": [
+      296.7485,
+      5800.44,
+      156.39
+     ],
+     "yaw": 0.0
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": "Walk",
+   "appear": 0.0,
+   "presence": [
+    [
+     16.0,
+     21.5
+    ]
+   ],
+   "actions": [
+    {
+     "t": 16.5,
+     "until": 46.5,
+     "clips": [
+      "Special"
+     ],
+     "loop": false
+    },
+    {
+     "t": 20.0,
+     "until": 50.0,
+     "clips": [
+      "SpecialAttack"
+     ],
+     "loop": false
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Creatures/Shadow/Shadow.(Geometry).bin",
+   "height": 3.291,
+   "animations": {
+    "Idle": 1.9667,
+    "Special": 3.5,
+    "SpecialAttack": 2.0,
+    "Walk": 1.9667
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan05",
+   "glb": "../shared/actors/vis-16836e48.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      311.0707,
+      5798.3896,
+      155.4454
+     ],
+     "yaw": 3.00041
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Kania_male/KaniaMale.(Geometry).bin",
+   "height": 1.867,
+   "animations": {
+    "Death": 2.5,
+    "Idle": 5.9667,
+    "Idle01": 3.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan01",
+   "glb": "../shared/actors/vis-16837090.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      315.1749,
+      5799.2473,
+      156.142
+     ],
+     "yaw": 2.82611
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Gibberlings/GibberlingFemale.(Geometry).bin",
+   "height": 1.314,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 4.1333,
+    "Idle01": 2.5
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan04",
+   "glb": "../shared/actors/vis-161b88b0.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      313.7634,
+      5793.6822,
+      156.142
+     ],
+     "yaw": 2.81755
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Kania_female/KaniaFemale.(Geometry).bin",
+   "height": 1.835,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 3.0,
+    "Idle01": 3.3333
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan21",
+   "glb": "../shared/actors/vis-168372d0.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      310.6889,
+      5805.008,
+      155.4451
+     ],
+     "yaw": 3.24538
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Elf_female/ElfFemale.(Geometry).bin",
+   "height": 2.189,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 5.9667,
+    "Idle01": 3.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan20",
+   "glb": "../shared/actors/vis-16837500.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      316.2869,
+      5799.974,
+      156.142
+     ],
+     "yaw": 2.82611
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Kania_male/KaniaMale.(Geometry).bin",
+   "height": 1.867,
+   "animations": {
+    "Death": 2.5,
+    "Idle": 5.9667,
+    "Idle01": 3.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan19",
+   "glb": "../shared/actors/vis-16837760.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      313.7439,
+      5789.743,
+      156.2189
+     ],
+     "yaw": 2.82611
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Kania_female/KaniaFemale.(Geometry).bin",
+   "height": 1.835,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 3.0,
+    "Idle01": 3.3333
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan11",
+   "glb": "../shared/actors/vis-16837960.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      309.5723,
+      5794.08,
+      155.4564
+     ],
+     "yaw": 2.92183
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Gibberlings/GibberlingFemale.(Geometry).bin",
+   "height": 1.314,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 4.1333,
+    "Idle01": 2.5
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan10",
+   "glb": "../shared/actors/vis-16837b90.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      305.0935,
+      5789.5792,
+      155.4451
+     ],
+     "yaw": 2.18296
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Gibberlings/GibberlingFemale.(Geometry).bin",
+   "height": 1.314,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 4.1333,
+    "Idle01": 2.5
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan09",
+   "glb": "../shared/actors/vis-16837dd8.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      308.136,
+      5792.1639,
+      155.5577
+     ],
+     "yaw": 2.82611
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Kania_female/KaniaFemale.(Geometry).bin",
+   "height": 1.835,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 3.0,
+    "Idle01": 3.3333
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan08",
+   "glb": "../shared/actors/vis-16838008.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      314.127,
+      5792.433,
+      156.142
+     ],
+     "yaw": 2.82611
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Elf_female/ElfFemale.(Geometry).bin",
+   "height": 2.189,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 5.9667,
+    "Idle01": 3.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan07",
+   "glb": "../shared/actors/vis-16838220.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      314.9537,
+      5797.6488,
+      156.142
+     ],
+     "yaw": 2.82611
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Kania_female/KaniaFemale.(Geometry).bin",
+   "height": 1.835,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 3.0,
+    "Idle01": 3.3333
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan06",
+   "glb": "../shared/actors/vis-168330c8.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      310.4905,
+      5796.1878,
+      155.4454
+     ],
+     "yaw": 2.82611
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Elf_female/ElfFemale.(Geometry).bin",
+   "height": 2.189,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 5.9667,
+    "Idle01": 3.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan03",
+   "glb": "../shared/actors/vis-16838448.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      311.2422,
+      5802.8639,
+      155.4768
+     ],
+     "yaw": 3.14652
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Elf_female/ElfFemale.(Geometry).bin",
+   "height": 2.189,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 5.9667,
+    "Idle01": 3.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan18",
+   "glb": "../shared/actors/vis-16838648.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      316.6483,
+      5801.9515,
+      156.142
+     ],
+     "yaw": 2.81755
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Elf_female/ElfFemale.(Geometry).bin",
+   "height": 2.189,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 5.9667,
+    "Idle01": 3.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan17",
+   "glb": "../shared/actors/vis-16838860.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      315.1854,
+      5801.5404,
+      156.142
+     ],
+     "yaw": 2.81755
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Gibberlings/GibberlingFemale.(Geometry).bin",
+   "height": 1.314,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 4.1333,
+    "Idle01": 2.5
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan16",
+   "glb": "../shared/actors/vis-16835248.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      310.8278,
+      5788.3543,
+      156.142
+     ],
+     "yaw": 2.53167
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Kania_male/KaniaMale.(Geometry).bin",
+   "height": 1.867,
+   "animations": {
+    "Death": 2.5,
+    "Idle": 5.9667,
+    "Idle01": 3.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan15",
+   "glb": "../shared/actors/vis-161bb040.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      311.7174,
+      5790.3737,
+      156.142
+     ],
+     "yaw": 2.81755
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Gibberlings/GibberlingMale.(Geometry).bin",
+   "height": 1.284,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 4.1333,
+    "Idle01": 2.5
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan14",
+   "glb": "../shared/actors/vis-16838af0.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      312.4974,
+      5791.4671,
+      156.2222
+     ],
+     "yaw": 2.81755
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Kania_female/KaniaFemale.(Geometry).bin",
+   "height": 1.835,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 3.0,
+    "Idle01": 3.3333
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan13",
+   "glb": "../shared/actors/vis-16838cf0.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      306.4446,
+      5791.039,
+      155.4542
+     ],
+     "yaw": 2.43987
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Elf_male/ElfMale.(Geometry).bin",
+   "height": 2.381,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 3.9333,
+    "Idle01": 6.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan12",
+   "glb": "../shared/actors/vis-16838f38.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      311.7431,
+      5800.515,
+      155.4452
+     ],
+     "yaw": 2.81755
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Kania_male/KaniaMale.(Geometry).bin",
+   "height": 1.867,
+   "animations": {
+    "Death": 2.5,
+    "Idle": 5.9667,
+    "Idle01": 3.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan02",
+   "glb": "../shared/actors/vis-16839180.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      315.3706,
+      5794.5668,
+      156.1485
+     ],
+     "yaw": 2.81755
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Elf_male/ElfMale.(Geometry).bin",
+   "height": 2.381,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 3.9333,
+    "Idle01": 6.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan22",
+   "glb": "../shared/actors/vis-168393b0.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      312.7799,
+      5788.246,
+      156.2176
+     ],
+     "yaw": 2.81755
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Gibberlings/GibberlingMale.(Geometry).bin",
+   "height": 1.284,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 4.1333,
+    "Idle01": 2.5
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan23",
+   "glb": "../shared/actors/vis-16839580.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      300.2257,
+      5804.8214,
+      156.39
+     ],
+     "yaw": 5.83178
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Gibberlings/GibberlingMale.(Geometry).bin",
+   "height": 1.284,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 4.1333,
+    "Idle01": 2.5
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan24",
+   "glb": "../shared/actors/vis-16839810.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      297.2473,
+      5795.9624,
+      156.39
+     ],
+     "yaw": 6.06844
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Kania_male/KaniaMale.(Geometry).bin",
+   "height": 1.867,
+   "animations": {
+    "Death": 2.5,
+    "Idle": 5.9667,
+    "Idle01": 3.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan25",
+   "glb": "../shared/actors/vis-16839aa0.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      318.3812,
+      5796.0482,
+      156.1485
+     ],
+     "yaw": 2.81755
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Kania_male/KaniaMale.(Geometry).bin",
+   "height": 1.867,
+   "animations": {
+    "Death": 2.5,
+    "Idle": 5.9667,
+    "Idle01": 3.0
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan26",
+   "glb": "../shared/actors/vis-161b9260.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      317.7732,
+      5800.9286,
+      156.1485
+     ],
+     "yaw": 3.0303
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Gibberlings/GibberlingMale.(Geometry).bin",
+   "height": 1.284,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 4.1333,
+    "Idle01": 2.5
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan27",
+   "glb": "../shared/actors/vis-161b94a8.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      317.4463,
+      5793.3221,
+      156.1485
+     ],
+     "yaw": 2.81755
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Gibberlings/GibberlingMale.(Geometry).bin",
+   "height": 1.284,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 4.1333,
+    "Idle01": 2.5
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan28",
+   "glb": "../shared/actors/vis-16839cf0.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      318.1173,
+      5798.9974,
+      156.142
+     ],
+     "yaw": 2.82611
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Gibberlings/GibberlingMale.(Geometry).bin",
+   "height": 1.284,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 4.1333,
+    "Idle01": 2.5
+   }
+  },
+  {
+   "id": "device-floor6-gamescene-padavan29",
+   "glb": "../shared/actors/vis-16839f08.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      315.4992,
+      5791.551,
+      156.2017
+     ],
+     "yaw": 2.67819
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle01",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     23.0
+    ],
+    [
+     23.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 24.0,
+     "until": 600.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "Characters/Gibberlings/GibberlingMale.(Geometry).bin",
+   "height": 1.284,
+   "animations": {
+    "Death": 3.0,
+    "Idle": 4.1333,
+    "Idle01": 2.5
+   }
+  }
+ ],
+ "decor": {
+  "glb": "../maps/Inst_LeagueStart/decor.glb",
+  "light": "decor-light.bin",
+  "instances": [
+   {
+    "vot": "InstLeague1_Floor1_Trash_03",
+    "p": [
+     231.223,
+     5810.207,
+     18.1464
+    ],
+    "yaw": 3.09707,
+    "light": [
+     0,
+     352
+    ]
+   },
+   {
+    "vot": "A_Stones",
+    "p": [
+     311.2301,
+     5788.724,
+     64.0453
+    ],
+    "yaw": 3.61235,
+    "tilt": [
+     1.23569,
+     0.25465
+    ],
+    "scale": 0.63992,
+    "light": [
+     352,
+     6592
+    ]
+   },
+   {
+    "vot": "InstLeague1_Floor1_Trash_03",
+    "p": [
+     360.663,
+     5830.805,
+     17.9959
+    ],
+    "yaw": 4.56219,
+    "tilt": [
+     0.0,
+     6.13117
+    ],
+    "scale": 0.61348,
+    "light": [
+     6944,
+     352
+    ]
+   },
+   {
+    "vot": "InstLeague1_Floor5_Intact",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     7296,
+     10081
+    ]
+   },
+   {
+    "vot": "InstLeague1_Floor3_Intact",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     17377,
+     17484
+    ]
+   },
+   {
+    "vot": "InstLeague1_Floor1_Intact",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     34861,
+     11924
+    ]
+   },
+   {
+    "vot": "InstLeague1_Floor6_Intact",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     46785,
+     16417
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     63202,
+     152
+    ]
+   },
+   {
+    "vot": "InstLeague1_Floor5_1",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     63354,
+     8915
+    ]
+   },
+   {
+    "vot": "InstLeague1_Balk_01",
+    "p": [
+     304.5084,
+     5801.176,
+     26.9883
+    ],
+    "yaw": 4.49105,
+    "tilt": [
+     0.00786,
+     0.01074
+    ],
+    "light": [
+     72269,
+     27
+    ]
+   },
+   {
+    "vot": "InstLeague1_Corridor1",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     72296,
+     32672
+    ]
+   },
+   {
+    "vot": "InstLeague1_Corridor2",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     104968,
+     5672
+    ]
+   },
+   {
+    "vot": "InstLeague1_Corridor3",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     110640,
+     5444
+    ]
+   },
+   {
+    "vot": "InstLeague1_Corridor4",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     116084,
+     3728
+    ]
+   },
+   {
+    "vot": "InstLeague1_Corridor6",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     119812,
+     6067
+    ]
+   },
+   {
+    "vot": "Kania_Portal_New",
+    "p": [
+     299.9951,
+     5800.086,
+     32.5266
+    ],
+    "yaw": 4.49105,
+    "tilt": [
+     0.00786,
+     0.01074
+    ],
+    "light": [
+     125879,
+     2737
+    ]
+   },
+   {
+    "vot": "InstLeague1_Floor4_Destroyed",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     128616,
+     24409
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     319.2996,
+     5784.532,
+     48.7652
+    ],
+    "yaw": 0.94055,
+    "scale": 5.22974,
+    "light": [
+     153025,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     307.127,
+     5829.47,
+     31.5057
+    ],
+    "yaw": 1.28743,
+    "scale": 7.15586,
+    "light": [
+     153049,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     321.2773,
+     5816.369,
+     35.3142
+    ],
+    "yaw": 2.46973,
+    "scale": 7.15586,
+    "light": [
+     153073,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     276.9895,
+     5812.987,
+     41.7094
+    ],
+    "yaw": 0.7613,
+    "scale": 6.2118,
+    "light": [
+     153097,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     338.7108,
+     5838.338,
+     133.619
+    ],
+    "yaw": 2.23021,
+    "tilt": [
+     0.0,
+     4.71239
+    ],
+    "scale": 1.4706,
+    "light": [
+     153121,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     344.7315,
+     5854.436,
+     133.773
+    ],
+    "yaw": 2.23021,
+    "tilt": [
+     0.0,
+     4.71239
+    ],
+    "scale": 1.4706,
+    "light": [
+     153145,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     322.6046,
+     5850.323,
+     134.494
+    ],
+    "yaw": 2.78446,
+    "tilt": [
+     0.0,
+     4.71239
+    ],
+    "scale": 1.4706,
+    "light": [
+     153169,
+     24
+    ]
+   },
+   {
+    "vot": "Level_A",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     153193,
+     24
+    ]
+   },
+   {
+    "vot": "Level_B",
+    "p": [
+     300.7426,
+     5798.625,
+     0.4379
+    ],
+    "yaw": 0.0,
+    "light": [
+     153217,
+     24
+    ]
+   },
+   {
+    "vot": "Level_C",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     153241,
+     24
+    ]
+   },
+   {
+    "vot": "Level_D",
+    "p": [
+     300.0,
+     5800.0,
+     0.0
+    ],
+    "yaw": 0.0,
+    "light": [
+     153265,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     280.912,
+     5791.199,
+     52.8649
+    ],
+    "yaw": 0.62101,
+    "scale": 2.56681,
+    "light": [
+     153289,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     283.6933,
+     5787.353,
+     52.8649
+    ],
+    "yaw": 0.62101,
+    "scale": 2.56681,
+    "light": [
+     153313,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     287.2489,
+     5783.79,
+     52.8649
+    ],
+    "yaw": 0.9382,
+    "scale": 2.56681,
+    "light": [
+     153337,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     291.5762,
+     5781.279,
+     52.8649
+    ],
+    "yaw": 1.16357,
+    "scale": 2.56681,
+    "light": [
+     153361,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     296.4471,
+     5779.904,
+     52.8649
+    ],
+    "yaw": 1.42805,
+    "scale": 2.56681,
+    "light": [
+     153385,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     301.4733,
+     5779.715,
+     52.8649
+    ],
+    "yaw": 1.65045,
+    "scale": 2.56681,
+    "light": [
+     153409,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     306.3793,
+     5780.698,
+     52.8649
+    ],
+    "yaw": 1.89355,
+    "scale": 2.56681,
+    "light": [
+     153433,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     310.9497,
+     5782.906,
+     52.8649
+    ],
+    "yaw": 2.15349,
+    "scale": 2.56681,
+    "light": [
+     153457,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     314.7611,
+     5785.953,
+     52.8649
+    ],
+    "yaw": 2.36815,
+    "scale": 2.56681,
+    "light": [
+     153481,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     317.7511,
+     5789.389,
+     51.0426
+    ],
+    "yaw": 2.63423,
+    "scale": 2.56681,
+    "light": [
+     153505,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     319.5614,
+     5793.225,
+     49.2888
+    ],
+    "yaw": 2.78064,
+    "scale": 2.56681,
+    "light": [
+     153529,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     320.6852,
+     5797.468,
+     46.3244
+    ],
+    "yaw": 3.01173,
+    "scale": 2.56681,
+    "light": [
+     153553,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     320.7901,
+     5802.173,
+     44.0309
+    ],
+    "yaw": 3.26341,
+    "scale": 2.56681,
+    "light": [
+     153577,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     319.9559,
+     5806.133,
+     42.1181
+    ],
+    "yaw": 3.44163,
+    "scale": 2.56681,
+    "light": [
+     153601,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_AI_2X2",
+    "p": [
+     318.2674,
+     5810.094,
+     39.4968
+    ],
+    "yaw": 3.68007,
+    "scale": 2.56681,
+    "light": [
+     153625,
+     24
+    ]
+   },
+   {
+    "vot": "InstLeague1_Lamp",
+    "p": [
+     371.619,
+     5810.598,
+     156.173
+    ],
+    "yaw": 0.0,
+    "light": [
+     153649,
+     188
+    ]
+   },
+   {
+    "vot": "InstLeague1_Lamp",
+    "p": [
+     371.746,
+     5801.426,
+     156.179
+    ],
+    "yaw": 0.0,
+    "light": [
+     153837,
+     188
+    ]
+   },
+   {
+    "vot": "InstLeague1_Lamp",
+    "p": [
+     386.233,
+     5810.206,
+     156.174
+    ],
+    "yaw": 0.0,
+    "light": [
+     154025,
+     188
+    ]
+   },
+   {
+    "vot": "InstLeague1_Lamp",
+    "p": [
+     385.961,
+     5801.942,
+     156.154
+    ],
+    "yaw": 0.0,
+    "light": [
+     154213,
+     188
+    ]
+   },
+   {
+    "vot": "InstLeague1_Lamp",
+    "p": [
+     343.5862,
+     5802.017,
+     156.222
+    ],
+    "yaw": 0.0,
+    "light": [
+     154401,
+     188
+    ]
+   },
+   {
+    "vot": "InstLeague1_Lamp",
+    "p": [
+     335.1907,
+     5801.302,
+     156.169
+    ],
+    "yaw": 0.0,
+    "light": [
+     154589,
+     188
+    ]
+   },
+   {
+    "vot": "InstLeague1_Lamp",
+    "p": [
+     334.963,
+     5811.296,
+     156.169
+    ],
+    "yaw": 0.0,
+    "light": [
+     154777,
+     188
+    ]
+   },
+   {
+    "vot": "InstLeague1_Lamp",
+    "p": [
+     343.6918,
+     5810.618,
+     156.169
+    ],
+    "yaw": 0.0,
+    "light": [
+     154965,
+     188
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_02",
+    "p": [
+     338.2895,
+     5806.377,
+     170.574
+    ],
+    "yaw": 0.0,
+    "light": [
+     155153,
+     668
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_02",
+    "p": [
+     378.958,
+     5806.234,
+     170.639
+    ],
+    "yaw": 0.0,
+    "light": [
+     155821,
+     668
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_02",
+    "p": [
+     336.0432,
+     5787.791,
+     169.62
+    ],
+    "yaw": 0.0,
+    "light": [
+     156489,
+     668
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_Animation",
+    "p": [
+     289.2822,
+     5765.617,
+     160.478
+    ],
+    "yaw": 0.0,
+    "light": [
+     157157,
+     940
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_Animation",
+    "p": [
+     311.9316,
+     5765.182,
+     166.021
+    ],
+    "yaw": 0.0,
+    "light": [
+     158097,
+     940
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_Animation",
+    "p": [
+     271.8531,
+     5779.391,
+     156.149
+    ],
+    "yaw": 0.0,
+    "light": [
+     159037,
+     940
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_Animation",
+    "p": [
+     281.4832,
+     5824.717,
+     146.88
+    ],
+    "yaw": 0.0,
+    "light": [
+     159977,
+     940
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_Animation",
+    "p": [
+     331.0347,
+     5799.836,
+     119.283
+    ],
+    "yaw": 0.0,
+    "light": [
+     160917,
+     940
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_Animation",
+    "p": [
+     318.2464,
+     5775.096,
+     118.075
+    ],
+    "yaw": 0.0,
+    "light": [
+     161857,
+     940
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_Animation",
+    "p": [
+     300.1414,
+     5768.776,
+     113.146
+    ],
+    "yaw": 0.0,
+    "light": [
+     162797,
+     940
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_Animation",
+    "p": [
+     275.842,
+     5817.76,
+     98.3588
+    ],
+    "yaw": 0.0,
+    "light": [
+     163737,
+     940
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_Animation",
+    "p": [
+     317.0838,
+     5828.247,
+     86.8021
+    ],
+    "yaw": 0.0,
+    "light": [
+     164677,
+     940
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_Animation",
+    "p": [
+     332.2839,
+     5811.912,
+     81.6867
+    ],
+    "yaw": 0.0,
+    "light": [
+     165617,
+     940
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_Animation",
+    "p": [
+     322.204,
+     5771.045,
+     70.643
+    ],
+    "yaw": 0.0,
+    "light": [
+     166557,
+     940
+    ]
+   },
+   {
+    "vot": "InstLeague1_Luster_Animation",
+    "p": [
+     291.1451,
+     5765.233,
+     66.7566
+    ],
+    "yaw": 0.0,
+    "light": [
+     167497,
+     940
+    ]
+   }
+  ],
+  "sky": {
+   "radius": 736.2,
+   "parts": 3
+  },
+  "skyGlb": "sky.glb",
+  "terrainGlb": "../maps/Inst_LeagueStart/terrain.glb",
+  "oneSided": true
+ },
+ "fx": {
+  "glb": "fx.glb",
+  "spawns": [
+   {
+    "p": [
+     299.117,
+     5800.388,
+     156.376
+    ],
+    "t": 23.2,
+    "until": 48.2,
+    "vot": "HitManaball"
+   },
+   {
+    "p": [
+     298.7352,
+     5800.269,
+     158.43
+    ],
+    "t": 21.0,
+    "until": 24.0,
+    "vot": "Mage.Death"
+   }
+  ]
+ },
+ "objects": {
+  "InstLeague1_Floor1_Trash_03": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.261,
+    -1.11,
+    5.493,
+    9.366,
+    19.044,
+    7.166
+   ]
+  },
+  "A_Stones": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 50.0,
+   "loop": true,
+   "bounds": [
+    -24.675,
+    -4.809,
+    51.984,
+    199.438,
+    273.474,
+    231.147
+   ]
+  },
+  "InstLeague1_Floor5_Intact": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    140.864,
+    23.174,
+    23.734,
+    10.911
+   ]
+  },
+  "InstLeague1_Floor3_Intact": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.002,
+    -0.005,
+    92.263,
+    22.004,
+    22.362,
+    10.153
+   ]
+  },
+  "InstLeague1_Floor1_Intact": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    7.455,
+    40.236,
+    50.963,
+    37.438,
+    70.25,
+    26.645
+   ]
+  },
+  "InstLeague1_Floor6_Intact": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    184.495,
+    30.412,
+    30.412,
+    29.421
+   ]
+  },
+  "InstLeague1_AI": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    26.532,
+    13.639,
+    103.468,
+    63.771,
+    56.284,
+    52.674
+   ]
+  },
+  "InstLeague1_Floor5_1": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    31.61,
+    41.556,
+    138.411,
+    19.703,
+    23.337,
+    8.219
+   ]
+  },
+  "InstLeague1_Balk_01": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    0.566,
+    0.57,
+    4.827,
+    0.549
+   ]
+  },
+  "InstLeague1_Corridor1": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    18.095,
+    0.0,
+    126.659,
+    73.553,
+    58.506,
+    290.486
+   ]
+  },
+  "InstLeague1_Corridor2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -13.355,
+    -1.326,
+    141.995,
+    24.615,
+    37.42,
+    19.639
+   ]
+  },
+  "InstLeague1_Corridor3": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    8.326,
+    -11.946,
+    106.162,
+    28.792,
+    24.033,
+    13.031
+   ]
+  },
+  "InstLeague1_Corridor4": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    -26.032,
+    -0.133,
+    95.87,
+    10.628,
+    28.207,
+    12.976
+   ]
+  },
+  "InstLeague1_Corridor6": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    8.813,
+    -2.263,
+    72.421,
+    32.226,
+    38.738,
+    20.836
+   ]
+  },
+  "Kania_Portal_New": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 2.0,
+   "loop": true,
+   "bounds": [
+    -0.002,
+    0.0,
+    -1.445,
+    4.224,
+    4.224,
+    1.803
+   ]
+  },
+  "InstLeague1_Floor4_Destroyed": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.625,
+    0.0,
+    115.603,
+    24.359,
+    23.176,
+    12.342
+   ]
+  },
+  "InstLeague1_AI_2X2": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.0,
+    -0.857,
+    -310.401,
+    0.119,
+    0.119,
+    0.119
+   ]
+  },
+  "Level_A": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    9.55,
+    33.482,
+    54.832,
+    43.188,
+    78.779,
+    24.389
+   ]
+  },
+  "Level_B": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    2.801,
+    -0.171,
+    100.068,
+    43.012,
+    41.296,
+    23.985
+   ]
+  },
+  "Level_C": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    17.242,
+    9.308,
+    138.391,
+    57.826,
+    58.079,
+    15.725
+   ]
+  },
+  "Level_D": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    26.459,
+    0.0,
+    182.509,
+    65.339,
+    48.747,
+    30.059
+   ]
+  },
+  "Lamp02_Yelow": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Inst_LeagueStart/particles/Lamp02_Yelow.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 151,
+    "loopFrame": 121,
+    "frames": [
+     0,
+     1
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.4609,
+       1.2891,
+       0.0703
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 1.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.6719,
+       1.6719,
+       0.3203
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.8047,
+       1.4375,
+       0.9844
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false
+  },
+  "InstLeague1_Lamp": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 8.0,
+   "loop": true,
+   "bounds": [
+    0.0,
+    0.0,
+    1.973,
+    0.392,
+    0.392,
+    1.804
+   ],
+   "components": [
+    {
+     "vot": "Lamp02_Yelow",
+     "locator": "Slot_Special01"
+    }
+   ]
+  },
+  "InstLeague1_Luster_02": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 8.3333,
+   "loop": true,
+   "bounds": [
+    0.115,
+    -0.063,
+    -1.545,
+    3.476,
+    3.474,
+    6.637
+   ]
+  },
+  "InstLeague1_Luster_Animation": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "World/Zones/IL1/LusterLoop",
+   "duration": 3.3333,
+   "loop": true,
+   "bounds": [
+    0.269,
+    0.105,
+    -4.408,
+    2.975,
+    2.762,
+    4.516
+   ]
+  },
+  "HitManaball": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 3.0,
+   "sound": "World/Zones/IL1/MageDeath/MageDeath_part2",
+   "particles": {
+    "file": "../maps/Inst_LeagueStart/particles/HitManaball.bin",
+    "speed": 1.0,
+    "loop": false,
+    "endFrame": 376,
+    "loopFrame": 376,
+    "frames": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0938,
+       0.8516,
+       1.1406
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.3359,
+       0.3359,
+       1.2109
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 25.0,
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    5.089,
+    18.346,
+    18.346,
+    5.089
+   ],
+   "sfx": "sfx/MageDeath_part2"
+  },
+  "Mage.Death": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 5.0,
+   "sound": "World/Zones/IL1/MageDeath/MageDeath_part1",
+   "particles": {
+    "file": "../maps/Inst_LeagueStart/particles/Mage.Death.bin",
+    "speed": 1.0,
+    "loop": false,
+    "endFrame": 91,
+    "loopFrame": 91,
+    "frames": [
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 6.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 6.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 6.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0938,
+       1.0938,
+       1.0938
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 8.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.25,
+       1.25,
+       1.25
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 2.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 2.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       0.4531,
+       0.4531,
+       0.4531
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 2.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": false,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 3.0,
+   "loop": false,
+   "bounds": [
+    -0.1,
+    -0.446,
+    0.637,
+    5.308,
+    5.568,
+    1.092
+   ],
+   "sfx": "sfx/MageDeath_part1"
+  }
+ },
+ "particleAtlas": {
+  "file": "../maps/Inst_LeagueStart/particles/atlas.png",
+  "width": 1024,
+  "height": 512,
+  "rects": [
+   [
+    544,
+    256,
+    64,
+    64
+   ],
+   [
+    256,
+    0,
+    128,
+    128
+   ],
+   [
+    608,
+    256,
+    64,
+    64
+   ],
+   [
+    672,
+    256,
+    64,
+    64
+   ],
+   [
+    736,
+    256,
+    64,
+    64
+   ],
+   [
+    800,
+    256,
+    64,
+    64
+   ],
+   [
+    864,
+    256,
+    64,
+    64
+   ],
+   [
+    928,
+    256,
+    64,
+    64
+   ],
+   [
+    384,
+    0,
+    128,
+    128
+   ],
+   [
+    384,
+    384,
+    32,
+    32
+   ],
+   [
+    0,
+    384,
+    64,
+    64
+   ],
+   [
+    64,
+    384,
+    64,
+    64
+   ],
+   [
+    512,
+    0,
+    128,
+    128
+   ],
+   [
+    128,
+    384,
+    64,
+    64
+   ],
+   [
+    192,
+    384,
+    64,
+    64
+   ],
+   [
+    640,
+    0,
+    256,
+    128
+   ],
+   [
+    896,
+    0,
+    128,
+    128
+   ],
+   [
+    0,
+    256,
+    128,
+    128
+   ],
+   [
+    128,
+    256,
+    128,
+    128
+   ],
+   [
+    256,
+    384,
+    64,
+    64
+   ],
+   [
+    256,
+    256,
+    128,
+    128
+   ],
+   [
+    384,
+    256,
+    32,
+    128
+   ],
+   [
+    416,
+    256,
+    128,
+    128
+   ],
+   [
+    320,
+    384,
+    64,
+    64
+   ],
+   [
+    0,
+    0,
+    256,
+    256
+   ]
+  ],
+  "sources": [
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1440,
+    1152,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1024,
+    768,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1824,
+    1216,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    64,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1440,
+    1216,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1792,
+    64,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1664,
+    1792,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    640,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1024,
+    0,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1920,
+    192,
+    32,
+    32
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1664,
+    704,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1536,
+    640,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    640,
+    1792,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1760,
+    960,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1536,
+    320,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    256,
+    1920,
+    256,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    512,
+    640,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1152,
+    1408,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1024,
+    1408,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1568,
+    1152,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    768,
+    1664,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1408,
+    1152,
+    32,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    640,
+    512,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    320,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    256,
+    256,
+    256,
+    256
+   ]
+  ]
+ },
+ "light": {
+  "ambient": 2015437136,
+  "ambientFactor": 1.0,
+  "diffuse": 2015839606,
+  "fog": 2013989933,
+  "fogEnd": 935.0,
+  "fogStart": 10.0,
+  "pointLight": 2018783645,
+  "selfIllum": 2013315521,
+  "specular": 3158064,
+  "sunPitch": 30.0,
+  "sunYaw": 280.0,
+  "waterSpecular": 8421504,
+  "waterGradientStart": 838860800,
+  "waterGradientEnd": 4116010329,
+  "sunDirection": [
+   0.1504,
+   -0.8529,
+   0.5
+  ]
+ },
+ "pointLights": [],
+ "sounds": {
+  "music": [],
+  "ambience": [],
+  "sfx": [
+   {
+    "file": "sfx/ShadowSpawned",
+    "t": 17.0,
+    "until": 24.822
+   },
+   {
+    "file": "sfx/ShadowSpawned",
+    "t": 16.0,
+    "until": 23.822
+   },
+   {
+    "file": "sfx/RoomDestruction",
+    "t": 25.5,
+    "until": 30.461
+   }
+  ],
+  "events": {
+   "music": [],
+   "ambience": []
+  },
+  "waves": {
+   "World/Zones/IL1/MageDeath/MageDeath_part1": {
+    "file": "sfx/MageDeath_part1",
+    "wave": "MageDeath_part1",
+    "bank": "SFX/World/World_IL1_3D.bsb",
+    "duration": 3.467
+   },
+   "World/Zones/IL1/MageDeath/MageDeath_part2": {
+    "file": "sfx/MageDeath_part2",
+    "wave": "MageDeath_part2",
+    "bank": "SFX/World/World_IL1_3D.bsb",
+    "duration": 7.333
+   },
+   "World/Zones/IL1/RoomDestruction": {
+    "file": "sfx/RoomDestruction",
+    "wave": "RoomDestruction",
+    "bank": "SFX/World/World_IL1_2D.bsb",
+    "duration": 4.961
+   },
+   "World/Zones/IL1/ShadowSpawned": {
+    "file": "sfx/ShadowSpawned",
+    "wave": "ShadowSpawned",
+    "bank": "SFX/World/World_IL1_2D.bsb",
+    "duration": 7.822
+   }
+  },
+  "volume": {}
+ },
+ "post": [],
+ "sources": {
+  "timeline": "Maps/Inst_LeagueStart/ScriptZones/PaladinQuest.(ScriptZone).xdb",
+  "buffs": [
+   "Mechanics/Spells/QuestSpells/IL_QuestSpells/NoQuest1_Buff.(BuffResource).xdb",
+   "Mechanics/Spells/QuestSpells/IL_QuestSpells/PaladinCry.(BuffResource).xdb",
+   "Maps/Inst_LeagueStart/ScriptZones/PaladinKnockDown.(BuffResource).xdb",
+   "Mechanics/Spells/QuestSpells/IL_QuestSpells/PlayerFall_GM.(BuffResource).xdb",
+   "Mechanics/Spells/QuestSpells/IL_QuestSpells/PlayerFall1.(BuffResource).xdb",
+   "Mechanics/Spells/QuestSpells/IL_QuestSpells/PlayerFall2.(BuffResource).xdb",
+   "Mechanics/Spells/QuestSpells/IL_QuestSpells/PlayerFall3.(BuffResource).xdb",
+   "Mechanics/Spells/QuestSpells/IL_QuestSpells/PlayerFall4.(BuffResource).xdb",
+   "Mechanics/Spells/QuestSpells/IL_QuestSpells/Music_Buff.(BuffResource).xdb"
+  ],
+  "spawns": [
+   "Maps/Inst_LeagueStart/000_020/1_2_ServerObjects.xdb"
+  ]
+ }
+}
