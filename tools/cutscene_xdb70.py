@@ -104,14 +104,24 @@ class Timeline:
     spawn_moves: dict[str, list[dict]] = field(default_factory=dict)
     spawn_until: dict[str, float] = field(default_factory=dict)
     exit: float | None = None
+    # PNJ posés tués par le déroulé (`ImpactKill`) : scriptID → t ; messages de PNJ (`ImpactMobChat`
+    # → `TextMessage`) : {t, speaker, ru, message}.
+    kills: dict[str, float] = field(default_factory=dict)
+    chats: list[dict] = field(default_factory=list)
 
 
 def read_client_data(tree: Tree, path: Path) -> dict:
-    """Réplique d'un `ClientData` 7.0 : texte russe, durée, voix, animations."""
+    """Réplique d'un `ClientData` 7.0 : texte russe, durée, voix, animations ; bulle au-dessus du
+    PNJ (`InterfaceAction` `ENUM_SHOW_BUBBLE` : `bubble`, texte russe)."""
     doc = _read(path)
     out = {"clientdata": tree.rel(path), "ru": "", "delay_ms": 0, "voice": None, "animations": []}
     if doc is None:
         return out
+    for data in doc.iter("customData"):
+        if (data.get("type") or "").endswith("InterfaceAction") and data.findtext("sysId") == "ENUM_SHOW_BUBBLE":
+            href = data.find("text")
+            if href is not None and href.get("href"):
+                out["bubble"] = clean(_text(tree.resolve(path, href.get("href"))))
     for item in doc.iter("subtitles"):
         for sub in item:
             href = sub.find("text")
@@ -235,10 +245,27 @@ class Simulator:
                     self.tl.maps.add(m.group(1))
             for sub in node.findall("impacts/Item"):
                 self.impact(base, sub, t, script or target)
-        elif kind == "ImpactsDeferred":
+        elif kind in ("ImpactsDeferred", "DeviceImpactsDeferred"):
             delay = _f(node, "delay") / 1000.0
             for sub in node.findall("impacts/Item"):
                 self.impact(base, sub, t + delay, target)
+        elif self.extended and kind == "ImpactsToInterlocutor":
+            # PNJ à qui parle le joueur (le donneur de la quête) : « interlocutor », que le manifeste
+            # rattache à un PNJ.
+            for sub in node.findall("impacts/Item"):
+                self.impact(base, sub, t, "interlocutor")
+        elif self.extended and kind == "ImpactKill" and target != "player":
+            self.tl.kills.setdefault(target, round(t, 3))
+            self.tl.scripts.add(target)
+        elif self.extended and kind == "ImpactMobChat":
+            msg = node.find("msg")
+            doc = _read(self.tree.resolve(base, msg.get("href"))) if msg is not None and msg.get("href") else None
+            href = next((e.get("href") for e in doc.iter() if e.tag.lower() == "text" and e.get("href")), None) \
+                if doc is not None else None
+            if href:
+                path = self.tree.resolve(base, msg.get("href"))
+                self.tl.chats.append({"t": round(t, 3), "speaker": target, "message": self.tree.rel(path),
+                                      "ru": clean(_text(self.tree.resolve(path, href)))})
         elif kind == "ImpactSummon":
             self.summon(base, node, t)
         elif kind == "ImpactFindSpawnTable":
@@ -258,8 +285,10 @@ class Simulator:
                     summon["moves"].append({"t": round(t, 3), "locator": locator})
                     self.tl.scripts.add(locator)
                 elif self.extended and locator and target != "player":
-                    # PNJ posé sur la carte (`ImpactsToSingleSpawn`) qui suit un chemin.
-                    self.tl.spawn_moves.setdefault(target, []).append({"t": round(t, 3), "locator": locator})
+                    # PNJ posé sur la carte (`ImpactsToSingleSpawn`) qui suit un chemin (`runningMode` : en courant).
+                    run = (node.findtext("runningMode") or "").strip() == "true"
+                    self.tl.spawn_moves.setdefault(target, []).append({"t": round(t, 3), "locator": locator,
+                                                                       **({"run": True} if run else {})})
                     self.tl.scripts.update({target, locator})
         elif kind == "ImpactGoTo":
             summon = self.summon_by_id(target)
@@ -267,6 +296,9 @@ class Simulator:
             if summon is not None and locator:
                 summon["moves"].append({"t": round(t, 3), "locator": locator})
                 self.tl.scripts.add(locator)
+            elif self.extended and locator and target != "player":
+                self.tl.spawn_moves.setdefault(target, []).append({"t": round(t, 3), "locator": locator})
+                self.tl.scripts.update({target, locator})
         elif kind == "Disintegrate":
             summon = self.summon_by_id(target)
             if summon is not None and summon.get("until") is None:
@@ -278,7 +310,7 @@ class Simulator:
             # cible avatar…) ; `impactsElse` est le cas hors cinématique.
             for sub in node.findall("impactsIf/Item"):
                 self.impact(base, sub, t, target)
-        elif self.extended and kind == "ImpactInstantiating":
+        elif self.extended and kind in ("ImpactInstantiating", "ImpactInstantiatingWithAddressee"):
             for sub in node.findall("impacts/Item"):
                 self.impact(base, sub, t, target)
         elif self.extended and kind == "ImpactCreaturesAround":
@@ -312,10 +344,10 @@ class Simulator:
                     if target != "player":
                         self.tl.scripts.add(target)
                     return
-                if line["ru"] or line["voice"] or line["animations"]:
+                if line["ru"] or line["voice"] or line["animations"] or line.get("bubble"):
                     line.update({"t": round(t, 3), "speaker": target})
                     self.tl.lines.append(line)
-                    if target != "player" and not target.startswith("summon"):
+                    if target not in ("player", "interlocutor") and not target.startswith("summon"):
                         self.tl.scripts.add(target)
 
     def locator(self, dest: ET.Element | None) -> str | None:
@@ -418,9 +450,12 @@ class Simulator:
                 self.tl.effects.append(entry)
 
 
-def trigger_impacts(doc: ET.Element, effect: str | None = None) -> list[ET.Element]:
+def trigger_impacts(doc: ET.Element, effect: str | None = None, tag: str | None = None) -> list[ET.Element]:
     """Impacts d'un déclencheur : `impactsIn` d'une zone de script (`ScriptZone`, à l'entrée du
-    joueur), ou `impactsOn` de l'effet `effect` (`HealthTrigger`…) d'une capacité (`AbilityResource`)."""
+    joueur), ou `impactsOn` de l'effet `effect` (`HealthTrigger`…) d'une capacité (`AbilityResource`) ;
+    ou la liste nommée `tag` (`startImpacts` d'une quête, `impactsOut` d'une zone)."""
+    if tag:
+        return doc.findall(f"{tag}/Item")
     if doc.find("impactsIn") is not None:
         return doc.findall("impactsIn/Item")
     out: list[ET.Element] = []
@@ -431,19 +466,26 @@ def trigger_impacts(doc: ET.Element, effect: str | None = None) -> list[ET.Eleme
 
 
 def simulate(root: Path, first_buff: str | None = None, horizon: float = 600.0, trigger: str | None = None,
-             trigger_effect: str | None = None, owner: str = "player") -> Timeline:
+             trigger_effect: str | None = None, owner: str = "player", trigger_tag: str | None = None,
+             until_last: bool = False) -> Timeline:
     """Déroulé depuis un premier buff (`first_buff`, posé sur le joueur) ou depuis un déclencheur
     (`trigger` : zone de script ou capacité ; `owner` : `scriptID` du porteur de la capacité, cible
-    de ses impacts directs)."""
+    de ses impacts directs ; `trigger_tag` : liste d'impacts nommée). `until_last` : scène sans buff
+    qui la borne (quête, zone du tutoriel), jusqu'au dernier événement du déroulé — l'extraction la
+    prolonge de ce qu'il montre (voix, scènes du client, marches)."""
     tree = Tree(Path(root))
     sim = Simulator(tree, horizon, extended=trigger is not None)
     if trigger is not None:
         path = tree.root / trigger
         doc = _read(path)
-        for impact in trigger_impacts(doc, trigger_effect) if doc is not None else []:
+        for impact in trigger_impacts(doc, trigger_effect, trigger_tag) if doc is not None else []:
             sim.impact(path, impact, 0.0, owner)
         if owner != "player":
             sim.tl.scripts.add(owner)
+        if until_last:
+            # Rien ne borne la scène ici : tout est gardé jusqu'à l'horizon ; l'extraction la coupe à la
+            # fin de ce qu'elle montre.
+            sim.tl.duration = horizon
     root_doc = None
     if first_buff is not None:
         sim.attach(tree.root / first_buff, 0.0)
@@ -455,6 +497,9 @@ def simulate(root: Path, first_buff: str | None = None, horizon: float = 600.0, 
         entry.setdefault("until", round(sim.tl.duration, 3))
     for summon in sim.tl.summons:
         summon["moves"].sort(key=lambda m: m["t"])
+    for moves in sim.tl.spawn_moves.values():
+        moves.sort(key=lambda m: m["t"])
+    sim.tl.chats.sort(key=lambda c: c["t"])
     if sim.tl.exit is not None:
         # Le joueur quitte la carte : la scène s'arrête là (ses buffs locaux tombent avec elle).
         sim.tl.duration = min(sim.tl.duration, sim.tl.exit) if sim.tl.duration else sim.tl.exit
@@ -552,6 +597,21 @@ def find_spawns(root: Path, map_name: str, scripts: set[str]) -> dict[str, dict]
                            "visual": mob_visual(tree, mob) if mob is not None and mob.is_file() else None,
                            "file": tree.rel(path)}
     return out
+
+
+def read_game_scene(root: Path, path: str) -> dict:
+    """`GameViewScene` 7.0 : place (x, y, z) et `scriptID` de ses PNJ — de quoi retrouver celle du 17.0."""
+    doc = _read(Path(root) / path)
+    place = doc.find("place") if doc is not None else None
+    p = [_f(place, k) for k in ("x", "y", "z")] if place is not None else None
+    mobs = [m.findtext("scriptID") for m in doc.findall("mobs/Item")] if doc is not None else []
+    return {"place": p, "mobs": mobs}
+
+
+def script_actions(root: Path, path: str | None) -> int:
+    """Nombre d'actions d'un `GameViewScript` 7.0."""
+    doc = _read(Path(root) / path) if path else None
+    return len(doc.findall("actions/Item")) if doc is not None else 0
 
 
 def track_keys(src: list, t0: float, duration: float | None) -> list[dict]:

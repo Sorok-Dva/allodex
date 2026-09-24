@@ -808,6 +808,12 @@ def find_wave(event: str, index: dict, prefer: str = "") -> tuple[str, int, str]
         if hits:
             hits = sorted(hits, key=lambda h: (prefer not in h[0], h[0]))
             return hits[0]
+    # Voix enregistrées en variantes et reprises (`IL1/15_Amanda_04` → `15_amanda_04_v1_patch403`,
+    # `_v2`, `_v3` : l'événement en tire une au hasard) : la première variante.
+    variants = sorted((h for k, hs in index.items() if k.startswith(tail) and re.fullmatch(r"(v\d+)?(patch\d+)?", k[len(tail):])
+                       for h in hs), key=lambda h: (prefer not in h[0], _key(h[2]), h[0]))
+    if tail and variants:
+        return variants[0]
     grouped = grouped_wave(event, index, prefer)
     if grouped is not None:
         return grouped
@@ -1039,6 +1045,60 @@ class ClientLines:
         return None
 
 
+# Textes posés dans une ressource plutôt que dans un sous-titre : bulle au-dessus d'un PNJ
+# (`InterfaceAction` `ENUM_SHOW_BUBBLE`, indice du texte en +0x78, sous le `customData` d'un
+# `ClientData`) et message de PNJ (`TextMessage`, +0x40) — recoupés sur les textes 7.0 de
+# `Inst_LeagueStart` (« Портал открыт, заходите! »).
+OWNED_TEXT = {"InterfaceAction": 0x78, "TextMessage": 0x40}
+
+
+class ResourceTexts:
+    """Texte d'une bulle ou d'un message de PNJ : RU/EN du 17.0 par l'indice que porte la ressource.
+    FR : les identifiants de ces ressources diffèrent entre le 16.0 FR et le 17.0 (`PackBinView` ne
+    s'applique pas ici) et l'écart d'indice change d'un bloc à l'autre ; le manifeste donne les blocs
+    alignés (`fr_blocks` : `{ru, fr, count}`, relus réplique par réplique)."""
+
+    def __init__(self, db: PackDB, texts: Texts) -> None:
+        from tools.extract_cinematics import norm_key
+        self.db, self.texts = db, texts
+        self.words = np.frombuffer(db.raw, dtype="<u4", count=(len(db.raw) - db.data) // 4, offset=db.data)
+        self.by_ru: dict[str, list[int]] = {}
+        for i, t in enumerate(texts.main.texts["ru"]):
+            if t:
+                self.by_ru.setdefault(norm_key(clean_text(t)), []).append(i)
+
+    def owned(self, idx: int) -> list[str]:
+        """Types des structures (bulle, message) qui portent l'indice de texte `idx`."""
+        out = []
+        for hit in np.where(self.words == idx)[0]:
+            loc = int(hit) * 4
+            j = int(np.searchsorted(self.db.vt_loc, loc, side="right")) - 1
+            owner = int(self.db.vt_loc[j])
+            kind = self.db.vtype(owner)
+            if OWNED_TEXT.get(kind) == loc - owner:
+                out.append(kind)
+        return out
+
+    def find(self, ru: str, prefer: str = "InterfaceAction", fr_blocks: list[dict] | None = None) -> dict:
+        from tools.extract_cinematics import norm_key
+        candidates = [i for i in self.by_ru.get(norm_key(ru), []) if self.owned(i)]
+        candidates.sort(key=lambda i: prefer not in self.owned(i))
+        text: dict[str, str] = {"ru": ru}
+        for idx in candidates:
+            text["ru"] = clean_text(self.texts.main.texts["ru"][idx])
+            en = clean_text(self.texts.main.texts["en"][idx])
+            if en and not has_cyrillic(en):
+                text["en"] = en
+            block = next((b for b in fr_blocks or [] if b["ru"] <= idx < b["ru"] + b["count"]), None)
+            if block is not None and self.texts.fr is not None:
+                j = block["fr"] + idx - block["ru"]
+                if j < len(self.texts.fr.texts["fr"]) and self.texts.fr.texts["fr"][j]:
+                    text["fr"] = clean_text(self.texts.fr.texts["fr"][j])
+            if "fr" in text or not fr_blocks:
+                break
+        return text
+
+
 def find_mob_by_name(db: PackDB, cat, texts: Texts, name: str, model_hint: str) -> int | None:
     """`MobWorld` du 17.0 au nom russe `name` ; entre plusieurs, celui dont le modèle vient du même
     dossier que le `MobWorld` 7.0 (`Characters/Hadagan_male/…`)."""
@@ -1148,16 +1208,104 @@ def voice_speaker(line: dict, summoned: dict[str, dict], spec: dict) -> str | No
     return best
 
 
+# Vitesse des PNJ du serveur qui courent (`GoThroughPath.runningMode`) : le `MobWorld` ne donne que
+# `walkSpeed` ; la course est prise à la vitesse des foules qui courent dans les `GameViewScript`
+# de la même instance (6,5 m/s, `Device_Floor1_*` de `Inst_LeagueStart`) — approximation documentée.
+RUN_SPEED = 6.5
+# Durée d'affichage d'une bulle non doublée (`ENUM_SHOW_BUBBLE` ne la porte pas) : choix documenté,
+# coupée au départ de la réplique suivante.
+BUBBLE_SECONDS = 5.0
+
+
+def find_game_scene(db: PackDB, place: list[float] | None, mobs: list[str]) -> int | None:
+    """`GameViewScene` du 17.0 à la place (au millimètre) et aux PNJ (`scriptID`) de celle du 7.0."""
+    if place is None:
+        return None
+    for off in db.resources("GameViewScene"):
+        p, _ = _placement(db, off + GVS_PLACE)
+        if max(abs(a - b) for a, b in zip(p, place)) > 5e-3:
+            continue
+        names = [db.string(e + GVS_MOB_SCRIPT) for e in db.elements(off + GVS_MOBS, GVS_MOB_STRIDE)]
+        if names == mobs or not mobs:
+            return off
+    return None
+
+
+def find_game_script(db: PackDB, scene: int, count: int) -> int | None:
+    """`GameViewScript` qu'un `ShowSceneAction` du 17.0 joue avec `scene`, au même nombre d'actions que
+    celui du 7.0 (une scène a souvent deux scripts : PNJ debout, PNJ qui meurent)."""
+    scripts = []
+    for i in np.where((db.rtgt == scene) & (db.rkind == 0))[0]:
+        loc = int(db.rloc[i])
+        j = int(np.searchsorted(db.vt_loc, loc, side="right")) - 1
+        owner = int(db.vt_loc[j])
+        if db.vtype(owner) == "ShowSceneAction" and loc - owner == SHOW_SCENE:
+            script = db.ptr(owner + SHOW_SCRIPT)
+            if script is not None and script not in scripts:
+                scripts.append(script)
+    return next((s for s in scripts if len(db.pointers(s + GVSCRIPT_ACTIONS)) == count), None)
+
+
+def merge_bubbles(lines: list[dict], chats: list[dict]) -> list[dict]:
+    """Voix et bulle d'une même réplique (deux `ClientData` posés au même instant sur le même PNJ :
+    `15_Elf01` et `15_Elf01_Bubble`) → une réplique, la voix sous-titrée par la bulle ; message de PNJ
+    (`ImpactMobChat`) au même texte : la même réplique (fenêtre de discussion), sinon une réplique."""
+    out: list[dict] = []
+    for line in lines:
+        if line.get("bubble"):
+            twin = next((o for o in out if o["t"] == line["t"] and o["speaker"] == line["speaker"] and o["voice"]
+                         and not o.get("bubble") and not o["ru"]), None)
+            if twin is not None and not twin["voice"].startswith("World/"):
+                twin["bubble"] = line["bubble"]
+                twin["clientdata"] += " + " + line["clientdata"]
+                continue
+        elif line["voice"] and not line["ru"]:
+            twin = next((o for o in out if o["t"] == line["t"] and o["speaker"] == line["speaker"]
+                         and o.get("bubble") and not o["voice"]), None)
+            if twin is not None and not line["voice"].startswith("World/"):
+                twin["voice"] = line["voice"]
+                twin["clientdata"] = line["clientdata"] + " + " + twin["clientdata"]
+                continue
+        out.append(dict(line))
+    from tools.extract_cinematics import norm_key
+    for chat in chats:
+        if any(norm_key(o.get("bubble") or o["ru"]) == norm_key(chat["ru"]) and abs(o["t"] - chat["t"]) < 2.5 for o in out):
+            continue
+        out.append({"t": chat["t"], "speaker": chat["speaker"], "ru": "", "bubble": chat["ru"], "voice": None,
+                    "animations": [], "delay_ms": 0, "clientdata": chat["message"]})
+    out.sort(key=lambda l: l["t"])
+    return out
+
+
 def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: ClientLines, anim_names: dict,
-               report: list[str]) -> dict:
+               report: list[str], rtexts: "ResourceTexts | None" = None) -> dict:
     """Plan d'une scène de 7.0 ou d'avant : déroulé serveur de l'arbre 7.0 (`tools/cutscene_xdb70.py`)
     rapporté aux ressources du 17.0 (répliques, PNJ)."""
     from tools import cutscene_xdb70 as x70
+    open_end = bool(spec.get("until_last"))
     tl = x70.simulate(root, spec.get("first_buff"), trigger=spec.get("trigger"), trigger_effect=spec.get("trigger_effect"),
-                      owner=spec.get("trigger_owner", "player"))
+                      owner=spec.get("trigger_owner", "player"), trigger_tag=spec.get("trigger_tag"), until_last=open_end)
     map_name = spec.get("map") or sorted(tl.maps)[0]
-    spawns = x70.find_spawns(root, map_name, tl.scripts | set(spec.get("states", {})))
-    camera = x70.camera_keys(tl.shots)
+    spawns = x70.find_spawns(root, map_name, tl.scripts | set(spec.get("states", {})) |
+                             {v["locator"] for v in spec.get("start_at", {}).values()})
+    inter = spec.get("interlocutor")
+    if inter:
+        # Donneur de la quête (`ImpactsToInterlocutor`) : PNJ qui accompagne le joueur, sans place fixe
+        # sur la carte ; le manifeste donne son `MobWorld` 7.0 et sa place.
+        tree = x70.Tree(Path(root))
+        spawns["interlocutor"] = {"p": inter["p"], "yaw": inter.get("yaw", 0.0), "mob": inter["mob"],
+                                  "name": x70.mob_name(tree, tree.root / inter["mob"]),
+                                  "visual": x70.mob_visual(tree, tree.root / inter["mob"]), "file": "manifest"}
+    for script, start in spec.get("start_at", {}).items():
+        # PNJ déplacé avant le déroulé (par une zone voisine, justifié par le manifeste) : il part de là.
+        if script in spawns and start["locator"] in spawns:
+            spawns[script] = {**spawns[script], "p": spawns[start["locator"]]["p"]}
+    if tl.shots:
+        camera = x70.camera_keys(tl.shots)
+    else:
+        # Aucune caméra dans le déroulé (scène jouée dans la vue du joueur) : vue donnée par le manifeste.
+        cam = spec.get("camera") or {}
+        camera = {"points": [dict(k) for k in cam.get("points", [])], "targets": [dict(k) for k in cam.get("targets", [])]}
     camera["duration"] = round(tl.duration, 3)
     actors: dict[str, dict] = {}
     for script, sp in spawns.items():
@@ -1174,9 +1322,9 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
     summoned = summon_actors(spec, tl, spawns, db, cat, texts, report)
     for key, info in summoned.items():
         actors[key] = info
-    plan_lines = []
-    for line in tl.lines:
-        if not line["ru"] and not line["voice"]:
+    plan_lines, content = [], [0.0]
+    for line in merge_bubbles(tl.lines, tl.chats):
+        if not line["ru"] and not line["voice"] and not line.get("bubble"):
             # `ClientData` d'animation seule (`Modif1_go`) : une action jouée une fois par le PNJ visé.
             info = actors.get(line["speaker"]) or next((a for a in summoned.values() if line["speaker"] in a["summons"]), None)
             if info is not None and line["animations"]:
@@ -1185,16 +1333,23 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
             continue
         if line["speaker"] == "player":
             line["speaker"] = voice_speaker(line, summoned, spec) or "player"
-        cl = lines17.find(line["voice"], line["ru"])
-        idx = cl.text_index if cl is not None else None
-        text = texts.line(idx, line["voice"], line["delay_ms"], None, lines17.same_voice(line["voice"]))
-        if "ru" not in text and line["ru"]:
-            text["ru"] = line["ru"]
+        if line.get("bubble"):
+            # Bulle (ou message) du PNJ : son texte officiel, RU/EN du 17.0, FR par bloc aligné.
+            text = rtexts.find(line["bubble"], fr_blocks=spec.get("fr_blocks")) if rtexts is not None else {"ru": line["bubble"]}
+        else:
+            cl = lines17.find(line["voice"], line["ru"])
+            idx = cl.text_index if cl is not None else None
+            text = texts.line(idx, line["voice"], line["delay_ms"], None, lines17.same_voice(line["voice"]))
+            if "ru" not in text and line["ru"]:
+                text["ru"] = line["ru"]
         speaker = actors.get(line["speaker"], {}).get("id") or \
             next((a["id"] for a in summoned.values() if line["speaker"] in a["summons"]), None)
-        plan_lines.append({"start": line["t"], "duration": line["delay_ms"] / 1000.0, "voice_event": line["voice"],
+        # Une bulle reste affichée le temps de sa voix (posé à l'extraction), sinon `BUBBLE_SECONDS`.
+        duration = line["delay_ms"] / 1000.0 or (BUBBLE_SECONDS if line.get("bubble") else 0.0)
+        plan_lines.append({"start": line["t"], "duration": duration, "voice_event": line["voice"],
                            "speaker": speaker, "clips": [clip_name(a) for a in line["animations"]], "text": text,
-                           "source": line["clientdata"]})
+                           "source": line["clientdata"], **({"bubble": True} if line.get("bubble") else {})})
+        content.append(line["t"] + duration)
     # Animations posées par buff sur un PNJ (`CreatureAnimationAction` : `LOOP`, sinon une fois).
     for effect in tl.effects:
         if effect["kind"] != "CreatureAnimationAction" or not effect.get("animations"):
@@ -1224,6 +1379,24 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
                         "spawns": sorted({sp["file"] for sp in spawns.values()})}}
     if spec.get("trigger"):
         trigger_extras(spec, plan, tl, spawns, root, db, cat, anim_names, report)
+    if open_end:
+        # Déroulé sans buff qui le borne (quête, zone du tutoriel) : jusqu'à la fin de ce qu'il montre —
+        # répliques (prolongées par la durée de leur voix à l'extraction), marches, animations posées
+        # par buff (jusqu'à la fin du buff quand il a une durée), scripts des scènes du client ; pas
+        # les remises à zéro des stèles des minutes suivantes.
+        content += [a.get("walk_end", 0.0) for a in plan["actors"]]
+        content += [e["until"] if e["until"] < tl.duration - 1e-3 else e["t"] for e in tl.effects]
+        content += [s["t"] for s in tl.summons] + [s["t"] for s in plan.get("spawns", [])]
+        switches = {round(c["t"], 3) for c in tl.states}
+        for actor in plan["actors"]:
+            if actor.get("visual") is not None and actor.get("presence"):
+                # PNJ d'une scène du client : fin de son script (trajet, animations, disparition), pas
+                # le changement d'état de la stèle qui la retire des minutes plus tard.
+                ends = [k["t"] for k in actor["path"]] + [a["t"] for a in actor.get("actions", [])]
+                ends += [b for _, b in actor["presence"] if b not in switches and b < tl.duration - 1e-3]
+                content.append(max(ends))
+        plan["camera"]["duration"] = round(max(content), 3)
+        plan["duration_from_voices"] = True
     return plan
 
 
@@ -1292,14 +1465,30 @@ def gameview_script(db: PackDB, script: int | None, anim_names: dict) -> dict[st
     disparition (`CreatureSetTransparencyAction` à 0)."""
     out: dict[str, list[dict]] = {}
     for action in (db.pointers(script + GVSCRIPT_ACTIONS) if script is not None else []):
+        kind = db.vtype(action)
+        delay = max(0, db.i32(action + GVSCRIPT_DELAY)) / 1000.0
+        if kind == "GameViewActionMoveCreature":
+            # Marche le long d'un chemin de la scène (`pathID`) à sa vitesse (`speed`, m/s).
+            mob = db.string(action + GVA_MOVE_MOB)
+            if mob:
+                out.setdefault(mob, []).append({"delay": delay, "move": db.string(action + GVA_MOVE_PATH) or "",
+                                                "speed": max(db.f32(action + GVA_MOVE_SPEED), 0.1)})
+            continue
         creature = db.string(action + GVACTION_CREATURE)
         if not creature:
             continue
-        delay = max(0, db.i32(action + GVSCRIPT_DELAY)) / 1000.0
-        kind = db.vtype(action)
         steps = out.setdefault(creature, [])
         if kind == "GameViewActionCreatureDeath":
             steps.append({"delay": delay, "clips": ["Death"], "loop": False, "hold": True})
+            continue
+        if kind == "GameViewActionClientData":
+            for akind, act in client_data_actions(db, db.ptr(action + GVA_DATA)):
+                if akind in ("CreatureScaleAction", "CreatureSetTransparencyAction"):
+                    steps.append({"delay": delay, "hide": True})     # échelle 0, transparence 0 : seules valeurs employées
+                elif akind == "CreatureEffectsAction":
+                    for fx in db.elements(act + CVA_EFFECTS, CVA_EFFECT_STRIDE):
+                        if db.ptr(fx + CVA_EFFECT_FX) is not None:
+                            steps.append({"delay": delay, "fx": db.ptr(fx + CVA_EFFECT_FX)})
             continue
         if kind != "GameViewActionCreatureVisScript":
             continue            # `GameViewActionCreatureEmote` (`idle`) : l'attente du modèle
@@ -1367,6 +1556,8 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
             speed = x70.walk_speed(root / actor["server"]["mob"])
             path, t, here = actor["path"], 0.0, np.array(actor["path"][0]["p"], float)
             for move in moves:
+                # course (`runningMode`) : le `MobWorld` ne donne que `walkSpeed` (voir `RUN_SPEED`)
+                pace = RUN_SPEED if move.get("run") else speed
                 dest = spawns.get(move["locator"])
                 if dest is None:
                     report.append(f"{spec['id']} : repère introuvable : {move['locator']}")
@@ -1375,10 +1566,16 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
                 start = max(move["t"], t)
                 heading = face_yaw(list(here), list(there))
                 path.append({"t": round(start, 3), "p": path[-1]["p"], "yaw": heading})
-                t = start + float(np.linalg.norm(there[:2] - here[:2])) / max(speed, 0.1)
+                t = start + float(np.linalg.norm(there[:2] - here[:2])) / max(pace, 0.1)
                 path.append({"t": round(t, 3), "p": [round(float(v), 4) for v in there], "yaw": heading})
                 here = there
-            actor["move"] = "Walk"
+            actor["move"] = "Run" if any(m.get("run") for m in moves) else "Walk"
+            actor["walk_end"] = round(t, 3)
+        if script in tl.kills:
+            actor.setdefault("actions", []).append({"t": tl.kills[script], "until": 1e6, "clips": ["Death"], "loop": False,
+                                                    "hold": True})
+            actor["animations"] = sorted(set(actor.get("animations", [])) | {"Death"})
+            actor["clips_wanted"] = actor["animations"]
         if script in tl.spawn_until:
             actor["presence"] = [[-1e6, tl.spawn_until[script]]]
         if script == spec.get("trigger_owner") and spec.get("trigger_effect") == "HealthTrigger":
@@ -1388,6 +1585,7 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
             actor["clips_wanted"] = actor["animations"]
     # Stèles : états visuels.
     initial = spec.get("states", {})
+    scene_fx: list[dict] = []
     for script, sp in spawns.items():
         if not (sp["mob"] or "").endswith(".(SteleResource).xdb"):
             continue
@@ -1395,10 +1593,14 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
         if not changes and script not in initial:
             continue
         stele = find_stele(db, sp["p"])
-        if stele is None:
-            report.append(f"{spec['id']} : stèle {script} absente du 17.0 (aucune stèle en {sp['p']})")
-            continue
-        default, states = device_states(db, stele, anim_names)
+        if stele is not None:
+            default, states = device_states(db, stele, anim_names)
+        else:
+            default, states = None, stele_states_70(root, sp, db)
+            if not any(states):
+                report.append(f"{spec['id']} : stèle {script} absente du 17.0 (aucune stèle en {sp['p']})")
+                continue
+            report.append(f"{spec['id']} : stèle {script} sans place dans le 17.0 : états relus dans l'arbre 7.0")
         windows = state_windows(int(initial.get(script, 0)), changes, horizon)
         ident = re.sub(r"[^a-z0-9]+", "-", script.lower()).strip("-")
         scene_states = [st for st in states if st and st["kind"] == "scene"]
@@ -1407,6 +1609,7 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
             place, place_yaw = _placement(db, scene + GVS_PLACE)
             c, s_ = math.cos(place_yaw), math.sin(place_yaw)
             scripts = [gameview_script(db, st["script"], anim_names) if st and st["kind"] == "scene" else {} for st in states]
+            routes = scene_paths(db, scene)
             for e in db.elements(scene + GVS_MOBS, GVS_MOB_STRIDE):
                 visual, name = db.ptr(e + GVS_MOB_VISUAL), db.string(e + GVS_MOB_SCRIPT) or ""
                 if visual is None:
@@ -1414,14 +1617,38 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
                 ox, oy, oz = db.floats(e + GVS_MOB_OFFSET, 3)
                 pos = [round(place[0] + ox * c - oy * s_, 4), round(place[1] + ox * s_ + oy * c, 4), round(place[2] + oz, 4)]
                 actions, presence, clips = [], [], set()
+                path = [{"t": 0, "p": pos, "yaw": round(place_yaw + db.f32(e + GVS_MOB_YAW), 5)}]
+                move = None
                 for t0, t1, state in windows:
-                    if not 1 <= state <= len(states) or not states[state - 1] or states[state - 1]["kind"] != "scene":
-                        continue        # état sans scène : les créatures du client ne sont pas montrées
+                    if not 1 <= state <= len(states) or not states[state - 1] or states[state - 1]["kind"] != "scene" \
+                            or states[state - 1]["scene"] != scene:
+                        continue        # état sans scène (ou `NoScene`) : les créatures du client ne sont pas montrées
                     shown = [t0, t1]
                     for step in scripts[state - 1].get(name, []):
                         at = t0 + step["delay"] if t0 > -1e5 else -1e5 + step["delay"]
                         if step.get("hide"):
                             shown[1] = min(shown[1], max(t0, at))
+                            continue
+                        if "move" in step:
+                            # le long du chemin de la scène, depuis la place où il se trouve
+                            start = max(at, path[-1]["t"])
+                            here = path[-1]["p"]
+                            if start - path[-1]["t"] > 2e-3:
+                                path.append({"t": round(start, 3), "p": here, "yaw": path[-1]["yaw"]})
+                            for q in routes.get(step["move"], []):
+                                if math.dist(here[:2], q[:2]) < 0.05:
+                                    continue
+                                heading = face_yaw(here, q)
+                                start = start + math.dist(here[:2], q[:2]) / step["speed"]
+                                path.append({"t": round(start, 3), "p": q, "yaw": heading})
+                                here = q
+                            move = "Run" if step["speed"] >= RUN_SPEED_MIN else "Walk"
+                            continue
+                        if "fx" in step:
+                            if step["fx"] in rev:
+                                key = max((k for k in path if k["t"] <= at + 1e-6), key=lambda k: k["t"], default=path[0])
+                                scene_fx.append({"vot": rev[step["fx"]], "p": key["p"], "t": round(at, 3), "until": None,
+                                                 "_source": f"GameViewScript {rev.get(states[state - 1]['script'])}"})
                             continue
                         actions.append({"t": round(at, 3), "until": round(t1, 3), "clips": step["clips"], "loop": step["loop"],
                                         **({"hold": True} if step.get("hold") else {})})
@@ -1431,7 +1658,7 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
                 if not presence:
                     continue
                 actors.append({"id": f"{ident}-{name.lower()}", "mob_offset": None, "visual": visual,
-                               "path": [{"t": 0, "p": pos, "yaw": round(place_yaw + db.f32(e + GVS_MOB_YAW), 5)}],
+                               "path": path, **({"move": move} if move else {}),
                                "animations": sorted(clips), "clips_wanted": sorted(clips), "actions": actions,
                                "presence": presence, "name": {}})
             report.append(f"{spec['id']} : stèle {script} → GameViewScene {rev.get(scene)}, états {windows}")
@@ -1468,7 +1695,7 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
                           f"{item['throw']} s, theGe {item['theGe']}) ; explosion à l'arrivée")
         fx.append({"vot": rev[vot], "p": end["p"], "t": round(item["t"] + item["throw"], 3), "until": None,
                    "_source": item["clientdata"]})
-    plan["spawns"] = fx
+    plan["spawns"] = fx + scene_fx
     plan["sounds"]["sfx"] = [{"event": s["name"], "t": s["t"]} for s in tl.sfx]
     # Fenêtre : du premier plan de caméra à la fin de la scène.
     t0 = min((k["t"] for k in plan["camera"]["points"]), default=0.0)
@@ -1534,6 +1761,81 @@ def _placement(db: PackDB, off: int) -> tuple[list[float], float]:
     x, y = struct.unpack_from("<2d", db.raw, db.data + off)
     z, = struct.unpack_from("<d", db.raw, db.data + off + 0x18)
     return [round(x, 4), round(y, 4), round(z, 4)], db.f32(off + 0x10)
+
+
+# `GameViewScript` : actions recoupées sur les `.xdb` 7.0 de `Inst_LeagueStart` (`Device_Floor1_*`).
+GVS_PATHS = 0xC0             # chemins de la scène (72 o : +0x08 points f32 x, y, z relatifs, +0x28 scriptID)
+GVS_PATH_STRIDE = 72
+GVS_PATH_POINTS = 0x08
+GVS_PATH_ID = 0x28
+GVA_MOVE_MOB = 0xC0          # `GameViewActionMoveCreature` : mobID, pathID, speed (m/s)
+GVA_MOVE_PATH = 0xD8
+GVA_MOVE_SPEED = 0xF0
+GVA_DATA = 0xC0              # `GameViewActionClientData` : creature en +0xA0, `ClientData` en +0xC0
+CLIENT_DATA = 0x28           # `ClientData.customData` : une action (`CreatureVisActionData`) ou une liste
+CVA_ACTION = 0x30
+CVA_EFFECTS = 0x48           # `CreatureEffectsAction.visualEffects` (176 o : +0x40 `effectFx`)
+CVA_EFFECT_STRIDE = 176
+CVA_EFFECT_FX = 0x40
+# Allure d'un PNJ de scène qui suit un chemin : course au-delà de 4 m/s (les scènes de
+# `Inst_LeagueStart` font courir leurs foules à 6,5 m/s, la marche des PNJ est à 2 m/s) ; choix documenté.
+RUN_SPEED_MIN = 4.0
+
+
+def client_data_actions(db: PackDB, cd: int | None) -> list[tuple[str, int]]:
+    """Actions visuelles d'un `ClientData` (`CreatureVisActionData` seule ou dans une liste)."""
+    data = db.ptr(cd + CLIENT_DATA) if cd is not None else None
+    if data is None:
+        return []
+    elements = db.pointers(data + 0x30) if db.vtype(data) == "CustomClientDataList" else [data]
+    out = []
+    for el in elements:
+        act = db.ptr(el + CVA_ACTION) if db.vtype(el) == "CreatureVisActionData" else None
+        if act is not None and db.vtype(act):
+            out.append((db.vtype(act), act))
+    return out
+
+
+def scene_paths(db: PackDB, scene: int) -> dict[str, list[list[float]]]:
+    """Chemins d'une `GameViewScene` (points relatifs à sa place, tournés par son lacet)."""
+    place, yaw = _placement(db, scene + GVS_PLACE)
+    c, s_ = math.cos(yaw), math.sin(yaw)
+    out = {}
+    for e in db.elements(scene + GVS_PATHS, GVS_PATH_STRIDE):
+        v = db.vec(e + GVS_PATH_POINTS)
+        pts = [db.floats(v[0] + 12 * i, 3) for i in range(v[1] // 12)] if v else []
+        out[db.string(e + GVS_PATH_ID) or ""] = [[round(place[0] + x * c - y * s_, 4), round(place[1] + x * s_ + y * c, 4),
+                                                   round(place[2] + z, 4)] for x, y, z in pts]
+    return out
+
+
+def stele_states_70(root: Path, sp: dict, db: PackDB) -> list[dict | None]:
+    """États d'une stèle relus dans l'arbre 7.0 (`SteleResource.visScripts` → `states`) quand le 17.0
+    n'a pas de stèle à sa place (`Device_Floor6_GameScene`, posée par une table d'apparition) : chaque
+    `ShowSceneAction` rapportée au 17.0 par la place et les PNJ de sa `GameViewScene`, et par le nombre
+    d'actions de son `GameViewScript`."""
+    from tools import cutscene_xdb70 as x70
+    tree = x70.Tree(Path(root))
+    stele = tree.root / sp["mob"]
+    doc = x70._read(stele)
+    vis = doc.find("visScripts") if doc is not None else None
+    vdoc = x70._read(tree.resolve(stele, vis.get("href"))) if vis is not None and vis.get("href") else None
+    out: list[dict | None] = []
+    for item in (vdoc.findall("states/Item") if vdoc is not None else []):
+        action = item.find("action")
+        if action is None or not (action.get("type") or "").endswith("ShowSceneAction"):
+            out.append(None)
+            continue
+        base = tree.resolve(stele, vis.get("href"))
+        scene_href = action.find("scene").get("href", "")
+        script = action.find("script")
+        info = x70.read_game_scene(root, tree.rel(tree.resolve(base, scene_href)))
+        scene = find_game_scene(db, info["place"], info["mobs"])
+        count = x70.script_actions(root, tree.rel(tree.resolve(base, script.get("href")))) \
+            if script is not None and script.get("href") else 0
+        out.append({"kind": "scene", "scene": scene, "script": find_game_script(db, scene, count) if scene else None}
+                   if scene is not None else None)
+    return out
 
 
 CAMMOVES_GROUPS = 0x48
@@ -1757,6 +2059,13 @@ def scene_area(spec: dict, plan: dict) -> tuple[list[float] | None, float]:
 def scene_light(spec: dict, plan: dict, mp: PackDB, cat, root: Path, report: list[str]) -> dict:
     """Éclairage d'une scène : celui de la zone, remplacé par le temps du déroulé s'il en pose un."""
     light = read_zone_light(mp)
+    if not light and spec.get("zone_lights"):
+        # Base de carte sans éclairage propre : la `ZoneLights` de `pack.bin` que le manifeste désigne
+        # (reconnue à ses couleurs, égales à celles de la zone de la carte dans l'arbre 7.0).
+        off = pack_offset(mp, spec["zone_lights"])
+        light = read_zone_light(mp, off) if off is not None else {}
+        if not light:
+            report.append(f"{spec['id']} : ZoneLights {spec['zone_lights']} illisible")
     if plan["weather"]:
         light = weather_light(plan["weather"], light)
         if plan["weather"].get("sky"):
@@ -1819,6 +2128,7 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     texts = Texts(manifest, report)
     anim_names = animation_names(db)
     lines17 = ClientLines(db, texts)
+    rtexts = ResourceTexts(db, texts)
     root = Path(server_root or manifest.get("server_root") or "/mnt/f/ALLODS ONLINE SERVER/Allods 7.0/game/data")
     index = sound_index(bins, Path(os.environ.get("ALLODEX_CACHE") or Path.home() / ".cache" / "allodex"))
     entries = []
@@ -1828,7 +2138,8 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     plans: dict[str, dict] = {}
     for spec in manifest["engine_scenes"]:
         source = spec.get("source")
-        plans[spec["id"]] = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report) if source == "xdb70" \
+        plans[spec["id"]] = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report, rtexts) \
+            if source == "xdb70" \
             else plan_gameview(spec, db, texts, anim_names, report) if source == "gameview" \
             else plan_manual(spec, db, texts, lines17, anim_names, report)
     # Une scène sans chapitre dans le film (en attente) ne s'extrait que demandée (`--only`).
@@ -1883,6 +2194,12 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
             starts = schedule_lines(spec, camera, voice_meta, plan["lines"])
             for line, t in zip(plan["lines"], starts):
                 line["start"] = t
+        for line, meta in zip(plan["lines"], voice_meta):
+            if line.get("bubble") and meta:
+                line["duration"] = meta["duration"]      # bulle doublée : le temps de sa voix
+        if plan.get("duration_from_voices"):
+            camera["duration"] = round(max([camera["duration"]] + [l["start"] + (m["duration"] if m else 0.0)
+                                                                   for l, m in zip(plan["lines"], voice_meta)]), 3)
 
         actors_meta = []
         shutil.rmtree(out / "actors", ignore_errors=True)
