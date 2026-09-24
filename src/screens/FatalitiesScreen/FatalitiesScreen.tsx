@@ -3,10 +3,12 @@ import { fatalitiesIndex, fatalityFile, sprite, type FatalityCharacter, type Fat
 import { navigate, useRoute } from '@/lib/router';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
 import { pick, useI18n } from '@/lib/i18n';
+import type { Lang } from '@/lib/i18n/messages';
 import { hasWebGL } from '@/lib/webgl';
 import { nineSlice } from '@/lib/nineSlice';
 import { GameStrip } from '@/components/ui/GameStrip';
 import { GameDropdown } from '@/components/ui/GameDropdown';
+import { GameTooltip } from '@/components/ui/GameTooltip';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SpeakerToggle } from '@/components/controls/SpeakerToggle';
 import { FullscreenToggle } from '@/components/controls/FullscreenToggle';
@@ -31,6 +33,25 @@ export function victimSummary(character: FatalityCharacter, fatality: FatalityEn
   return names.length ? names.join(' → ') : null;
 }
 
+/**
+ * Nom affiché d'une fatalité de la liste : pour la boutique, le nom officiel de l'objet qui
+ * l'apprend (premier de `items`) dans la langue de l'interface ; à défaut de texte officiel dans
+ * cette langue (Serpent 2026 en français, Baudroie et Arbre en anglais), le libellé du site,
+ * signalé par `official: false`.
+ */
+export function fatalityListName(f: FatalityEntry, lang: Lang): { text: string; official: boolean; icon: string | null } {
+  const item = f.kind === 'shop' ? f.items?.[0] : undefined;
+  const name = item?.name[lang];
+  if (name) return { text: name, official: true, icon: item?.icon ?? null };
+  return { text: pick(f.label, lang) ?? f.id, official: f.kind === 'class', icon: item?.icon ?? null };
+}
+
+/** Date ISO (`2023-08-18`) au format du jeu (`18.08.2023`). */
+export function gameDate(iso: string): string {
+  const [y, m, d] = iso.split('-');
+  return d && m && y ? `${d}.${m}.${y}` : iso;
+}
+
 /** Racine des fichiers de la création de personnage (modèles habillés, `chargen.json`). */
 export const CHARGEN_BASE = '/game/character/';
 
@@ -46,6 +67,58 @@ export function defaultAttacker(characters: FatalityCharacter[], races: Record<s
   const foes = characters.filter(c => races[c.race]?.faction && races[c.race]?.faction !== faction);
   const casters = foes.filter(c => canCast(c.race));
   return casters.find(c => c.sex === victim.sex) ?? foes.find(c => c.sex === victim.sex) ?? foes[0] ?? victim;
+}
+
+/**
+ * Encart d'information de la fatalité choisie, au cadre d'infobulle du jeu (titre et date en
+ * vert, description en jaune) : nom en jeu, objets qui l'apprennent (icône, nom officiel),
+ * version d'apparition (premier client archivé qui la contient) et date d'une actualité
+ * officielle quand elle est connue (lien vers la source).
+ */
+export function FatalityInfo({ fatality, lang }: { fatality: FatalityEntry; lang: Lang }) {
+  const { t } = useI18n();
+  const since = fatality.since;
+  const title = pick(fatality.name, lang) ?? pick(fatality.label, lang) ?? fatality.id;
+  const items = fatality.kind === 'shop' ? fatality.items ?? [] : [];
+  const date = since?.date;
+  return (
+    <section className={`${s.info} ${s.hud}`} style={nineSlice('tooltip-frame', [4, 4, 4, 4])} aria-label={t('fatalities.info')}>
+      <div className={s.infoTitle}>{title}</div>
+      {fatality.kind === 'class' && fatality.name && <div className={s.infoSub}>{pick(fatality.label, lang)}</div>}
+      {since && (
+        <div className={s.infoDate}>
+          {t('fatalities.since', { version: since.version })}
+          {since.client && <span className={s.infoMuted}> ({t('fatalities.sinceClient', { client: since.client })}{since.previous ? `, ${t('fatalities.absentFrom', { version: since.previous })}` : ''})</span>}
+        </div>
+      )}
+      <div className={s.infoDate}>
+        {date
+          ? <>{t(date.kind === 'attested' ? 'fatalities.dateAttested' : 'fatalities.date', { date: gameDate(date.value) })}{' '}
+            <a className={s.infoLink} href={date.source} target="_blank" rel="noreferrer">({t('fatalities.dateSource')})</a></>
+          : <span className={s.infoMuted}>{t('fatalities.dateUnknown')}</span>}
+      </div>
+      {items.length > 0 && (
+        <>
+          <div className={s.infoSep} />
+          <div className={s.infoGroup}>{t(items.length > 1 ? 'fatalities.items' : 'fatalities.item')}</div>
+          <ul className={s.infoItems}>
+            {items.map(item => {
+              const name = item.name[lang];
+              return (
+                <li key={item.resourceIds[0]} className={s.infoItem}>
+                  {item.icon ? <img src={fatalityFile(item.icon)} alt="" width={32} height={32} /> : <span className={s.infoNoIcon} />}
+                  <span className={name ? s.infoItemName : `${s.infoItemName} ${s.infoMuted}`} title={name ? undefined : t('fatalities.nameUnproven')}>
+                    {name ?? pick(fatality.label, lang) ?? item.name.ru}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+          {fatality.itemLink === 'name' && <div className={s.infoNote}>{t('fatalities.linkName')}</div>}
+        </>
+      )}
+    </section>
+  );
 }
 
 /**
@@ -179,8 +252,13 @@ export function FatalitiesScreen() {
   const handleClose = () => { playSfx('medals-close'); navigate('/'); };
   const webgl = hasWebGL();
 
+  // Survol d'une ligne de la liste : infobulle du jeu (nom complet de l'objet, de la fatalité).
+  const [hover, setHover] = useState<{ id: string; anchor: DOMRect } | null>(null);
+  const hovered = hover ? fatalities.find(f => f.id === hover.id) : undefined;
+
   const list = (kind: FatalityEntry['kind']) => fatalities.filter(f => f.kind === kind).map(f => {
     const current = f.id === fatality?.id;
+    const shown = fatalityListName(f, lang);
     return (
       <li key={f.id} role="presentation">
         <button
@@ -189,9 +267,12 @@ export function FatalitiesScreen() {
           aria-selected={current}
           className={`${s.pill} ${current ? s.pillActive : ''}`}
           onClick={() => { playSfx('ui-click'); select({ f: f.id }); }}
+          onMouseEnter={e => setHover({ id: f.id, anchor: e.currentTarget.getBoundingClientRect() })}
+          onMouseLeave={() => setHover(null)}
         >
           <span className={s.pillSkin} aria-hidden="true" style={nineSlice(current ? 'pill-full-open' : 'pill-full', PILL_SLICE)} />
-          <span className={s.pillLabel}>{pick(f.label, lang) ?? f.id}</span>
+          {shown.icon && <img className={s.pillIcon} src={fatalityFile(shown.icon)} alt="" aria-hidden="true" width={22} height={22} />}
+          <span className={`${s.pillLabel} ${shown.icon ? s.pillLabelIcon : ''} ${shown.official ? '' : s.pillLabelUnofficial}`}>{shown.text}</span>
         </button>
       </li>
     );
@@ -292,6 +373,12 @@ export function FatalitiesScreen() {
             {fatality.note && <div className={s.warn}>{pick(fatality.note, lang)}</div>}
           </div>
         </aside>
+      )}
+
+      {index && fatality && <FatalityInfo fatality={fatality} lang={lang} />}
+      {hovered && hover && (
+        <GameTooltip anchor={hover.anchor} align="cursor" title={fatalityListName(hovered, lang).text}
+          hint={pick(hovered.name, lang) ?? hovered.name?.ru} />
       )}
 
       {index && character && fatality && (

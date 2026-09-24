@@ -103,3 +103,33 @@
   .transport { flex-wrap: wrap; bottom: 12px; }
   .seek { min-width: 160px; }
 }
+
+/* Liste de la boutique : icône de l'objet (22 px, à gauche dans la pilule) et son nom officiel. */
+.pillIcon { position: absolute; left: 14px; top: 3px; width: 22px; height: 22px; pointer-events: none; }
+.pillLabel.pillLabelIcon { justify-content: flex-start; padding: 0 16px 0 42px; font-size: 12px; }
+.pillLabelUnofficial { font-style: italic; }
+
+/* Encart d'information (droite) : couleurs et filet de l'infobulle du jeu (GameTooltip). */
+.info {
+  position: absolute; right: 24px; top: 64px; width: 300px; max-width: calc(100vw - 48px);
+  padding: 8.5px 13px 12px; border-style: solid; border-color: transparent;
+  background: rgba(0, 0, 0, 0.67); color: #ffdc00; font-size: 13px; line-height: 16px;
+}
+.infoTitle { color: #00ea38; font-size: 16px; line-height: 18px; }
+.infoSub { color: #b0d9be; font-size: 13px; }
+.infoDate { color: #00ea38; font-size: 13px; margin-top: 3px; }
+.infoMuted { color: #b0d9be; }
+.infoLink { color: #b0d9be; text-decoration: underline; cursor: inherit; }
+.infoLink:hover { color: #ffeb73; }
+.infoSep { height: 1px; margin: 8px 0 6px; background: #445f4a; }
+.infoGroup { color: #b0d9be; font-size: 12px; margin-bottom: 4px; }
+.infoItems { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.infoItem { display: flex; align-items: center; gap: 8px; }
+.infoItem img { flex: none; display: block; }
+.infoNoIcon { flex: none; width: 32px; height: 32px; }
+.infoItemName { color: #ffdc00; }
+.infoNote { margin-top: 5px; color: #b0d9be; font-size: 11px; line-height: 13px; }
+
+@media (max-width: 900px) {
+  .info { top: auto; bottom: 150px; right: 16px; width: min(300px, calc(100vw - 32px)); }
+}
