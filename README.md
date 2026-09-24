@@ -175,7 +175,7 @@ ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le rest
 
 ### Cinématiques moteur recréées en 3D
 
-Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Dix-sept
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Vingt et une
 sont **recréées dans three.js** avec les données du dernier client et jouées dans le film comme
 des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix russes) :
 
@@ -194,6 +194,10 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Ferris 6.0 · « La chute du Locus » (`ferris-locus-fall`) | serveur 7.0 | `FerrisRaid` | 122 s |
 | Invasion 7.0 · « La mort de l’ingénieur » (`invasion-engineer-kania`, Ligue) | client (`GameViewScene`) | `Inst_ZoneContested12_Start` | 13 s |
 | Citadelle de Nihaz 12.0 · « Le monde caché » (`ao12-prologue04`, pilote) | manifeste | `AO12_PrologueInst` | 82 s |
+| Zone de départ de l’Empire · « Au poste de commandement » (`empire-start-command-post`, zone `ComanadPost`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 12 s |
+| Zone de départ de l’Empire · « L’artefact perdu » (`empire-start-lost-artifact`, récompense de `Quest4_1`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 28 s |
+| Zone de départ de l’Empire · « L’ordre d’abordage » (`empire-start-boarding-order`, début de `Quest4_4`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 9 s |
+| Zone de départ de l’Empire · « L’appareil volé » (`empire-start-stolen-device`, zone `TeleportPaladin`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 7 s |
 | Zone de départ de l’Empire · « L’abordage » (`empire-start-boarding`, zone `Jump`, quête `Quest4_4`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 14 s |
 | Zone de départ de l’Empire · « Le chevalier vaincu » (`empire-start-knight-defeated`, `DeathTriggerPaladinFinal`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 15 s |
 | Zone de départ de la Ligue · « La mort du Grand Mage » (`league-klement-death`, zone `PaladinQuest`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 43 s |
@@ -225,6 +229,34 @@ Stèle du 17.0 retrouvée par sa place (`SpawnLocation` : case de 32 m en `+0x30
 `+0x24`) ; lacet propre d’un PNJ de `GameViewScene` en `+0xB8` ; délai `delayBefore` d’une action de
 `GameViewScript` en `+0x2C` (recoupés sur le 7.0).
 
+**Tutoriel de l’Empire, scènes doublées** (étape 2) : comme pour la Ligue, les enchaînements doublés des
+zones de script et des quêtes d’`Inst_EmpireStart` qui mettent en scène plusieurs répliques sont montés,
+dans l’ordre des quêtes : zone `ComanadPost` (le second et le capitaine au poste de commandement,
+dialogue `IE1/08-10`, bulles, bombardement), récompense de « Сердце корабля » (`Quest4_1.rewardImpacts` :
+le capitaine et le second montent au réacteur, techniciens aux machines, ordres doublés, annonce du
+navigateur), début de « Схватка с витязем » (`Quest4_4.startImpacts` : l’ordre d’abordage, capitaine
+changé en donneur de quête par `ImpactMobMorph`, second laissé là par la scène précédente :
+`"start_at"`, que le déroulé ne nomme pas), zone `TeleportPaladin` (Градимир Белов, le « прибор » en main,
+sur le pont, 9 s avant `Jump`). Voix d’après les `.bev` (`IE1/13_Master_07` →
+`13_Master_07_Captain_StartTheReactor_patch403` ; `IE1/22_Gradimir_Paluba` →
+`02-Gradimir_No_04-Gradimir_StopThem03`) ; bulles et messages RU/EN du 17.0, FR du 16.0 par deux blocs
+alignés (écart −6149, relus réplique par réplique). Musique `IE1_main` (buff `MusicBuff` de la zone
+`EnemyAtack`), ambiance `4Layer_3Tier` seulement après `LastEventStart`. **Caméra** : aucune dans les
+données ; point de vue fixe du manifeste, justifié : centre de la zone de script atteinte, à 2 m
+(`ComanadPost`, `TeleportPaladin` : 2 m au-dessus du centre de la zone, en bas de la rampe du pont),
+salle du réacteur (centre de la zone `Lazor`) pour les deux scènes de quête ; regard vers le locuteur
+ou la place d’où il part. Lacet du capitaine à l’ordre d’abordage : sens de sa marche précédente (choix
+documenté). **Non repris** : l’annonce du navigateur n’a ni bulle ni sous-titre (voix seule) ; les
+lampes d’alerte (`IE1_Lamp*`, stèles absentes du 17.0) ; les répliques isolées (sergent `EnemyAtack`,
+canonnier `Fire`, savant `Lazor`, annonces `StartBuff`, `Quest1_2`, `LastEventStart`, ordre `Quest3_2`) :
+une voix sur un PNJ immobile, sans enchaînement. **Zones suivantes** (`Hadagan`, `Hadagan_AE1…3`,
+`Inst_Empire1End`, `AstralHangarHadagan`) : l’arbre 7.0 n’y a ni `CameraTrackAction`, ni `ShowSceneAction`,
+ni buff de cinématique, ni banque de voix ; le 17.0 n’y pose aucune `GameViewScene`, et ses 48 trajets de
+caméra « 17.0 seul » dont les points tombent dans leurs régions tombent aussi dans celles de 8 à 75
+autres cartes (`Ferris4`, `ZC12`, `Eden`…), leurs voisins de ressource désignant d’autres zones (Ferris,
+Isa, Eden) : aucune scène attribuable, rien n’est monté. `AstralHangarHadagan` et `Inst_Empire1End`
+n’ont que des `Tour` (trajet du navire à la sortie du hangar, avec son son) : du transport, pas une scène.
+
 **Zone de départ de la Ligue** (arc `league-start`, juste après le prologue de la Ligue) : Kanians,
 elfes et gibberlings commencent au même tutoriel, `Inst_LeagueStart` (la tour du Grand Mage Klement
 attaquée par les démons ; `CharacterType` de la Ligue du 7.0 : `LeagueStartOrdinary`, voix
@@ -255,8 +287,10 @@ première. Éclairage : la base de carte n'a pas de `ZoneLights` ; celle de `pac
 de `AstralCoast_Tubes` (7.0) est désignée par `"zone_lights"`. **Caméra** : aucune dans les données
 (scènes vues par le joueur) ; point de vue fixe du manifeste, justifié : centre de la zone
 `PaladinQuest` vers le Grand Mage ; centre de la zone `FinalGibberlingMorph` (où le joueur retrouve
-le gibberling qui lui donne la quête) vers la place du combat. **Non repris** : la musique adaptative `Siege_warfare` (aucune
-onde), la poussière (`Dust_enlarge`, projectile sans gabarit retrouvé), le rayon du champ
+le gibberling qui lui donne la quête) vers la place du combat. **Musique** : `Siege_warfare` (buff `Music_Buff`, sans durée,
+posé par `PaladinQuest` à 25,5 s, retiré par la récompense de « Эвакуация ») : onde
+`Siege_warfare_adaptive` d'après `Music.bev` ; ses enveloppes adaptatives ne sont pas reproduites.
+**Non repris** : la poussière (`Dust_enlarge`, projectile sans gabarit retrouvé), le rayon du champ
 protecteur d'Amanda, les secousses de caméra, les vagues de démons de combat (tables d'apparition
 du jeu) et les cris aléatoires des réfugiés (`NPC_Ask` : `RandomImpact`), les paladins
 `Paladin_live1…4` (`MobWorld` sans nom, introuvable dans le 17.0). Non montées : la foule immobile
@@ -443,16 +477,30 @@ sommet du carreau), `xmax` (`−FLT_MAX` dans 89 % des cas), boîte haute de 1 0
 d'occlusion du sol (culling). Invisibles, non rendus ni exploités : three.js ne fait que du
 culling par frustum et nos décors sont petits.
 
+**Événements FMOD** (`tools/allods_fev.py`) : les `SFX/**/*.bev` du client sont des projets FMOD
+Designer 4.44 compilés (zlib, entête de 68 octets, `RIFF` `FEV ` version `0x00450000`), dont le
+bloc `LGCY` garde l'ancien format `FEV1` et `STRR` les noms. On en lit les banques, les
+définitions de sons (ondes : fichier source, banque, sous-piste, durée) et, pour chaque
+événement (simple : l'indice de sa définition à `+0xA8` ; complexe : ses calques, puis ses sons
+de 58 octets), la définition jouée : `Music/ZonesMusic/IE1_main` → `/Music/Conquer_high` →
+`adaptivemusic/Conquer_high.wav`, sous-piste 2 de `Music_StartZones.fsb`. La sous-piste n'est
+retenue que si la banque FSB lui donne le nom de l'onde (onze définitions du menu pointent des
+ondes retirées) ; sinon, et pour un nom d'événement ambigu dans son projet, l'appariement par le
+nom reste le repli (`match` : `bev` ou `name` dans `scene.json`). Un événement à plusieurs sons
+joue le premier (les autres sont signalés : `4Layer_3Tier` en a trois, pilotés par un
+paramètre) ; les voix (`Voice*.bev`, entête de projet différent) restent appariées par le nom.
+
 **Manques** : `ferris-sarcophagus` reste sombre même lu en entier (zone violette, aucune lumière
 ponctuelle ; octets 0-1 pleins) ; le fichier
-d'événements FMOD `.bev` (sons appariés par nom : quelques ambiances introuvables) ; les effets de
+d'événements FMOD `.bev` n'est lu que pour ses calques et définitions de sons (voir « Événements FMOD ») :
+enveloppes, paramètres et effets DSP non interprétés ; les effets de
 sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce que montre
 « Оглянитесь ! » ; les drapeaux visuels (`CreatureSetFlagVisAction`) ; les scènes faites de
 `GameViewScene` (`Swarm_CutScene`) ; le joueur, absent.
 
 ### Ce qui manque
 
-- **Cinématiques moteur** : quinze sont recréées (voir plus haut). Liste dans
+- **Cinématiques moteur** : vingt et une sont recréées (voir plus haut). Liste dans
   `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
   (7_0Events), extraites ici.
 - **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et

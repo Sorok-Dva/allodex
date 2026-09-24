@@ -219,6 +219,214 @@
    "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de la Ligue ; placée en tête du film."
   },
   {
+   "id": "empire-start-command-post",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 104,
+   "event": "ComanadPost",
+   "title": {
+    "fr": "Au poste de commandement",
+    "en": "At the command post"
+   },
+   "chronology": "Tutoriel de l’Empire (Inst_EmpireStart, voix « patch403 ») : zone ComanadPost, entre les quêtes des canons (« Пострелять из корабельной пушки ») et « Реакторная », dont elle fait le capitaine donneur ; première scène doublée à plusieurs voix du tutoriel, après le prologue de l’Empire.",
+   "bonus": false,
+   "duration": 12.0,
+   "files": {
+    "poster": "engine/empire-start-command-post/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/empire-start-command-post/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/empire-start-command-post/fr.vtt",
+     "lines": 3
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/empire-start-command-post/en.vtt",
+     "lines": 3
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/empire-start-command-post/ru.vtt",
+     "lines": 3
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 3,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "empire-start-lost-artifact",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 106,
+   "event": "Quest4_1",
+   "title": {
+    "fr": "L’artefact perdu",
+    "en": "The lost artifact"
+   },
+   "chronology": "Tutoriel de l’Empire : récompense de « Сердце корабля » (Quest4_1), dans la salle du réacteur ; après « Реакторная », avant « Канийский вор » (Quest4_3) et « Схватка с витязем ».",
+   "bonus": false,
+   "duration": 28.303,
+   "files": {
+    "poster": "engine/empire-start-lost-artifact/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/empire-start-lost-artifact/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/empire-start-lost-artifact/fr.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/empire-start-lost-artifact/en.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/empire-start-lost-artifact/ru.vtt",
+     "lines": 4
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 5,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "empire-start-boarding-order",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 107,
+   "event": "Quest4_4",
+   "title": {
+    "fr": "L’ordre d’abordage",
+    "en": "The boarding order"
+   },
+   "chronology": "Tutoriel de l’Empire : début de « Схватка с витязем » (Quest4_4), donnée par le capitaine que la scène précédente a amené au réacteur ; précède la montée sur le pont.",
+   "bonus": false,
+   "duration": 8.609,
+   "files": {
+    "poster": "engine/empire-start-boarding-order/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/empire-start-boarding-order/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/empire-start-boarding-order/fr.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/empire-start-boarding-order/en.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/empire-start-boarding-order/ru.vtt",
+     "lines": 2
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 2,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "empire-start-stolen-device",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 108,
+   "event": "TeleportPaladin",
+   "title": {
+    "fr": "L’appareil volé",
+    "en": "The stolen device"
+   },
+   "chronology": "Tutoriel de l’Empire : zone TeleportPaladin, sur le pont, pendant « Схватка с витязем » ; après LastEventStart, 9 s avant la zone Jump (« L’abordage »).",
+   "bonus": false,
+   "duration": 7.0,
+   "files": {
+    "poster": "engine/empire-start-stolen-device/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/empire-start-stolen-device/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/empire-start-stolen-device/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/empire-start-stolen-device/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/empire-start-stolen-device/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 1,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "empire-start-boarding",
    "arc": "empire-start",
    "version": "7.0",
