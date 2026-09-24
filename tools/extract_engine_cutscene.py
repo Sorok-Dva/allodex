@@ -2059,6 +2059,13 @@ def scene_area(spec: dict, plan: dict) -> tuple[list[float] | None, float]:
 def scene_light(spec: dict, plan: dict, mp: PackDB, cat, root: Path, report: list[str]) -> dict:
     """Éclairage d'une scène : celui de la zone, remplacé par le temps du déroulé s'il en pose un."""
     light = read_zone_light(mp)
+    if not light and spec.get("zone_lights"):
+        # Base de carte sans éclairage propre : la `ZoneLights` de `pack.bin` que le manifeste désigne
+        # (reconnue à ses couleurs, égales à celles de la zone de la carte dans l'arbre 7.0).
+        off = pack_offset(mp, spec["zone_lights"])
+        light = read_zone_light(mp, off) if off is not None else {}
+        if not light:
+            report.append(f"{spec['id']} : ZoneLights {spec['zone_lights']} illisible")
     if plan["weather"]:
         light = weather_light(plan["weather"], light)
         if plan["weather"].get("sky"):

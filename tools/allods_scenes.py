@@ -274,9 +274,10 @@ def read_lightvrt(db: PackDB, map_name: str, get) -> dict[tuple[str, int], np.nd
     return out
 
 
-def read_zone_light(db: PackDB) -> dict:
-    """Premier éclairage de la zone de la carte (+ le ciel)."""
-    local = [z for z in db.resources("ZoneLights") if not z & (1 << 40)]
+def read_zone_light(db: PackDB, zone: int | None = None) -> dict:
+    """Premier éclairage de la zone de la carte (+ le ciel). `zone` : `ZoneLights` donnée (carte dont
+    la base ne porte pas d'éclairage propre : celui de `pack.bin`, `Inst_LeagueStart`)."""
+    local = [zone] if zone is not None else [z for z in db.resources("ZoneLights") if not z & (1 << 40)]
     zones = [z for z in local if db.elements(z + ZONE_LIGHTS, ZONE_LIGHT_STRIDE)]
     if zones:
         e = db.elements(zones[0] + ZONE_LIGHTS, ZONE_LIGHT_STRIDE)[0]
