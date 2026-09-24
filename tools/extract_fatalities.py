@@ -224,6 +224,9 @@ def zone_light(server_root: Path, path: str, time: float) -> dict | None:
 # Terrain : sous-carreaux de 8 m au niveau de détail fin jusqu'à `TERRAIN_FINE` m du centre, puis
 # grossier jusqu'au rayon du manifeste (le brouillard du jeu commence à 80 m).
 TERRAIN_FINE = 90.0
+# Côté maximal des textures des calques qui ne couvrent que le sol lointain (au-delà de
+# `TERRAIN_FINE`) : 512, écart assumé pour le poids du décor (les calques proches restent à 1024).
+FAR_TERRAIN_TEXTURE_MAX = 512
 # Rayon de l'herbe autour du centre (m) : la caméra orbite près de la victime et l'herbe se dissout
 # à 70 m de la caméra (`GRASS_FADE_FAR` du lecteur).
 GRASS_RADIUS = 110.0
@@ -386,7 +389,13 @@ def terrain_ground(ex: Exporter, spec: dict, db: PackDB, client: Path, trample: 
             uv.append((pts[:, :2] / tiling).astype(np.float32))
             idx.append((tris + count).astype(np.uint32))
             count += len(p)
+        # Calque vu seulement de loin (aucun sous-carreau à moins de `TERRAIN_FINE` m) : texture
+        # réduite de moitié, pour le poids du décor.
+        full = ex.texture_max
+        if min(part[4] for part in parts) > TERRAIN_FINE:
+            ex.texture_max = min(full, FAR_TERRAIN_TEXTURE_MAX)
         tex = ex.texture(texture) if texture else None
+        ex.texture_max = full
         mat = ex.gltf.add_material(name, tex, "BLEND" if fade is not None else "OPAQUE", True, False)
         ex.gltf.json["materials"][mat].setdefault("extras", {}).update({"lit": True, "terrain": True})
         attrs = {"POSITION": ex.gltf.add_accessor(np.concatenate(pos), "VEC3", "f32", target=34962, minmax=True),
@@ -617,7 +626,11 @@ def build_scene(spec: dict, db: PackDB, cat: PakCatalog, bins: BinSource, textur
 
     meta_site = None
     if spec.get("site") and spec.get("terrain") and client is not None:
+        # Objets du site vus de loin (≥ `clear` m) : textures réduites (`site.textureMax`), pour le
+        # poids du décor ; le sol garde les siennes (`CHARACTER_TEXTURE_MAX`).
+        full, ex.texture_max = ex.texture_max, int(spec["site"].get("textureMax", ex.texture_max))
         nodes, meta_site = site_decor(ex, spec["site"], spec["terrain"], db, cat, client, base, flat, mesh_of)
+        ex.texture_max = full
         if nodes:
             roots.append(ex.gltf.add_node({"name": "site", "children": nodes}))
 

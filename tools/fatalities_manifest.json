@@ -525,6 +525,7 @@
       "radius": 420,
       "detail": 200,
       "farMinSize": 5,
+      "textureMax": 512,
       "orbit": 45
     }
   },
