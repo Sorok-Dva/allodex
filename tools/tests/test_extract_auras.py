@@ -117,3 +117,37 @@ def test_export_has_the_tooltip_example_of_the_fr_client():
     assert rune["visual"] and rune["timeline"]["attached"][0]["locator"] == "Global"
     hickut = next(a for a in data["auras"] if a["id"] == "a740215542")
     assert "Gerasim Rivin" in hickut["obtain"]["fr"]
+
+
+@pytest.mark.skipif(not EXPORT.is_file(), reason="auras.json non extrait")
+def test_export_has_the_premium_footprints_and_the_ambrosia_auras():
+    data = json.loads(EXPORT.read_text(encoding="utf-8"))
+    by_id = {a["id"]: a for a in data["auras"]}
+    # Saint Patron : buff visuel voisin (740017010), empreintes pendant la course et la marche.
+    patron = by_id["a740017009"]
+    assert patron["visual"] and patron["visualBuff"] == {"resourceId": 740017010, "link": "rid"}
+    states = {tuple(s["states"]) for s in patron["timeline"]["stateAttached"]}
+    assert states == {("run",), ("walk",)}
+    step = patron["objects"][patron["timeline"]["stateAttached"][0]["vot"]]
+    assert [e["rate"] for e in step["emitters"]] == [2.0, 2.0] and [e["start"] for e in step["emitters"]] == [0.0, 0.25]
+    assert all(e["fixedPoint"] for e in step["emitters"])
+    # Vallée d'ambroisie : décors verts puis jaunes, rangs 1 à 3.
+    assert by_id["a740165958"]["visualBuff"]["resourceId"] == 740165975
+    assert by_id["a740166010"]["timeline"]["attached"][0]["vot"].startswith("Aura_AmbrosiaWar_13_Yel_03")
+    # La royale 17.0 n'a pas de buff visuel voisin : pas d'effet.
+    assert by_id["a740240326"]["visual"] is False
+
+
+@pytest.mark.skipif(not EXPORT.is_file(), reason="auras.json non extrait")
+def test_export_has_the_shell_color_patterns_with_a_ground_aura():
+    data = json.loads(EXPORT.read_text(encoding="utf-8"))
+    skins = {a["resourceId"]: a for a in data["appearances"] if a["kind"] == "exoskin"}
+    assert len(skins) == 31
+    neph, destroyer, div = skins[740178049], skins[740155286], skins[740165114]
+    assert neph["name"]["en"] == "Nephalion" and "Angelion" in neph["description"]["en"]
+    assert neph["timeline"]["attached"][0] == {"t": 0.0, "vot": "MEV16Hunter_Dec", "locator": "Slot_Global", "scale": 1.0}
+    assert destroyer["timeline"]["attached"][0]["vot"] == "MEV13_Com_Dec"
+    assert div["timeline"]["attached"][0]["vot"].startswith("MEV15Base_Dec")
+    assert "Summer 2021" in destroyer["obtain"]["en"]
+    # La couleur de base de la Faucheuse n'a pas de pièce au sol : absente.
+    assert 740153299 not in skins

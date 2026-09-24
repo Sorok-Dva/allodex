@@ -22,9 +22,17 @@ Chaîne établie sur le client 17.0 (septembre 2026), par pointeurs du `pack.bin
    auprès de Gerasim Rivin dans la capitale de faction ») ; à défaut, la phrase de source de
    l'objet (`ItemResource` de même icône, `+0x150`), sinon « Source inconnue » ;
 5. **apparences à aura** : objets du client (`ItemResource`) qui donnent à la fois un objet d'aura
-   et une apparence (peau d'exosquelette ou de monture `MountSkin`, pièces de costume) — le visuel
-   propre des 107 peaux d'exosquelette (gabarits `MountExo*`, `MEV*`) ne porte aucun effet au sol ;
-   leur aura est celle du lot (« Цветовая схема мистической брони «Пожиратель» » → deux auras).
+   et une apparence (peau d'exosquelette ou de monture `MountSkin`, pièces de costume) : leur aura
+   est celle du lot (« Цветовая схема мистической брони «Пожиратель» » → deux auras) ;
+6. **couleurs de robe de carapace à aura au sol** (`exo_skin_auras`, 31 peaux) : l'aura n'est ni
+   dans la peau ni dans son modèle de vitrine, mais dans les **objets visuels que la carapace fait
+   porter à l'avatar** — branche du script des carapaces gardée par un `PredicateVisualMountAction`
+   sur le `VisualMount` de la peau → `CreatureChangeVisItemsAction` → `VisualItem` → pièce
+   accrochée à `Slot_Global` (`MEV16Hunter_Dec` pour Néphalion, `MEV13_Com_Dec` pour Destructeur
+   des mondes, `MEV15Base_Dec` pour Div ; aucune pour « Жнец », la couleur de base du Faucheur) ;
+7. **auras sans buff scripté de même icône** : le visuel est le buff sans nom créé juste après le
+   sort (`link_visual_buffs`) — empreintes des auras premium (`CreatureVisObjectComponentsAction`
+   pendant `run`/`walk`, `EmitterVisObjComponent`), décors de la Vallée d'ambroisie.
 
 Textes : russe et anglais du client 17.0 (`pack.rus.loc`, `pack.eng_eu.loc`, langue vérifiée),
 français du client FR 16.0, même objet par son `resourceId` (tables 0x30/0x38 de l'entête). Les
@@ -301,6 +309,8 @@ class AuraRecord:
     items: list[int] = field(default_factory=list)
     containers: list[int] = field(default_factory=list)
     content_key: bool = False
+    buff_link: str | None = None       # "icon" (même icône) ou "rid" (buff visuel voisin, sans nom)
+    visual_buff: int | None = None
 
 
 def link_aura(client: Client, spell: int) -> AuraRecord:
@@ -341,6 +351,62 @@ def link_aura(client: Client, spell: int) -> AuraRecord:
             if cont not in rec.items and cont not in rec.containers:
                 rec.containers.append(cont)
     return rec
+
+
+# Buff visuel voisin : premier `BuffResource` **sans nom** à script visuel qui suit le sort de
+# l'aura dans l'ordre des `resourceId`, avant la ressource d'une autre aura (sort, objet, capacité).
+RID_WINDOW = 24
+
+
+def rid_visual_buff(client: Client, spell_rid: int | None, stops: set[int]) -> tuple[int | None, int | None]:
+    """(buff, action) du buff visuel créé avec le sort (voir `link_visual_buffs`), ou (None, None)."""
+    if spell_rid is None:
+        return None, None
+    pb = client.pb
+    lang = next(iter(client.locs), "ru")
+    for rid in range(spell_rid + 1, spell_rid + RID_WINDOW + 1):
+        if rid in stops:
+            break
+        off = client.by_key.get(rid)
+        if off is None or pb.type_at(off) != "BuffResource" or client.text_ref(off, BUFF_NAME, lang):
+            continue
+        script = pb.ptr(off + BUFF_SCRIPT)
+        action = pb.ptr(script + VIS_SCRIPT_ACTION) if script is not None else None
+        if action is not None:
+            return off, action
+    return None, None
+
+
+def link_visual_buffs(client: Client, records: list[AuraRecord]) -> None:
+    """Auras dont le buff de même icône n'a pas de script : le visuel est un buff **sans nom ni
+    icône**, créé juste après le sort (resourceId suivant). Établi sur le 17.0 :
+
+    * Aura de Saint Patron / Fondateur / Magnat (sorts 740017009, …016, …023) → buffs 740017010,
+      …017, …024 : `CreatureVisObjectComponentsAction` (empreintes `PremiumTrace_Step_01All` /
+      `_02All` pendant `run` et `walk`) ; l'arbre serveur 7.0 nomme ces mêmes scripts
+      `Items/VisualItems/Pet/PremiumTrace01.(BuffVisScripts).xdb` (…02, …03), du nom de l'icône des
+      auras (`PremiumTrace01`…), à l'identique champ pour champ ;
+    * six auras de la Vallée d'ambroisie (740165958 → 740165975 `Aura_AmbrosiaWar_13_Gr_01`, …) :
+      rangs 1-2-3, vert pour la forêt, jaune pour le progrès, dans l'ordre des sorts.
+
+    Le lien sort → buff est côté serveur : ce voisinage est le seul repère du client (signalé
+    `buffLink: "rid"`)."""
+    stops = set()
+    for rec in records:
+        for o in [rec.spell] + rec.unlocks + rec.items:
+            k = client.keys.get(o)
+            if k is not None:
+                stops.add(k)
+    for rec in records:
+        if rec.script is not None:
+            rec.buff_link = "icon"
+            continue
+        own = {client.keys.get(o) for o in [rec.spell] + rec.unlocks + rec.items}
+        buff, action = rid_visual_buff(client, rec.rid, stops - own)
+        if action is not None:
+            rec.script = action
+            rec.buff_link = "rid"
+            rec.visual_buff = buff
 
 
 def texts_of(latest: Client, fr: Client | None, obj: int, off: int, kind: str = "text") -> dict[str, str]:
@@ -427,6 +493,41 @@ def aura_timeline(script: dict | None, names: dict[int, str], anim_names: dict[i
     return out
 
 
+# `CreatureVisObjectComponentsAction` : composant ajouté au gabarit du porteur (+0x70), ici un
+# `StateComponent` (montré pendant ses animations) qui porte un `AttachedVisObjectComponent`.
+# Champs nommés par l'arbre serveur 7.0 (`PremiumTrace01.(BuffVisScripts).xdb` : `visObjComponents`,
+# `StateComponent.animations`, `component.locatorName`/`offset`/`scale`/`visObject`).
+VIS_COMPONENTS_ACTION_COMPONENT = 0x70
+
+
+def state_components(db, script: dict | None, anim_names: dict[int, str]) -> list[dict]:
+    """Composants d'état posés sur le porteur par le script (`CreatureVisObjectComponentsAction`) :
+    `{visObject, locator, offset, scale, states}` — `states` : animations du porteur pendant
+    lesquelles il est montré (`run`, `walk` pour les empreintes)."""
+    from tools.allods_visdb import COMP_LOCATOR, COMP_OFFSET, COMP_SCALE, COMP_VISOBJECT, STATE_ANIMS, STATE_CHILD
+    out: list[dict] = []
+
+    def walk(node: dict | None, states: list[str] | None = None) -> None:
+        if not node:
+            return
+        if node.get("type") == "CreatureVisObjectComponentsAction":
+            comp = db.ptr(node["offset"] + VIS_COMPONENTS_ACTION_COMPONENT)
+            shown: list[str] | None = None
+            while comp is not None and db.vtype(comp) == "StateComponent":
+                v = db.vec(comp + STATE_ANIMS)
+                ids = [db.u32(v[0] + 4 * k) for k in range(v[1] // 4)] if v else []
+                shown = [anim_names.get(i, str(i)) for i in ids]
+                comp = db.ptr(comp + STATE_CHILD)
+            if comp is not None and db.vtype(comp) == "AttachedVisObjectComponent" and db.ptr(comp + COMP_VISOBJECT) is not None:
+                out.append({"visObject": db.ptr(comp + COMP_VISOBJECT), "locator": db.string(comp + COMP_LOCATOR) or "Global",
+                            "offset": [round(float(x), 4) for x in db.floats(comp + COMP_OFFSET, 3)],
+                            "scale": round(float(db.f32(comp + COMP_SCALE)), 4), "states": shown})
+        for child in node.get("elements", []):
+            walk(child)
+    walk(script)
+    return out
+
+
 def first_version(presence: list[tuple[str, str | None, bool | None]]) -> dict | None:
     """`since` d'après la présence dans les clients archivés, dans l'ordre des versions :
     `[(version, client, présent)]` (`None` = client illisible). `previous` = dernier client lu sans
@@ -455,6 +556,7 @@ def run(manifest: dict, out_dir: Path, versions: bool = True, fx: bool = True, s
     spells = aura_spells(latest)
     print(f"{len(spells)} auras dans la garde-robe du {manifest['latest']['version']}")
     records = [link_aura(latest, sp) for sp in spells]
+    link_visual_buffs(latest, records)
     taken: set[str] = set()
     auras: list[dict] = []
     for rec in records:
@@ -509,12 +611,15 @@ def run(manifest: dict, out_dir: Path, versions: bool = True, fx: bool = True, s
             items.append({"name": names, "icon": f"icons/{k}.webp" if k else None, "resourceIds": [latest.keys.get(it)]})
         if items:
             entry["items"] = items
+        if rec.buff_link == "rid" and rec.visual_buff is not None:
+            entry["visualBuff"] = {"resourceId": latest.keys.get(rec.visual_buff), "link": "rid"}
         if rec.content_key:
             entry["contentKey"] = True
         auras.append(entry)
     index = {"schema": 1, "client": manifest["latest"]["version"], "auras": auras}
 
     bundles = appearance_bundles(latest, fr, records, auras, icons, report)
+    bundles += exo_skin_auras(latest, fr, icons, report)
     index["appearances"] = bundles
     # Mémoire : les deux bases (≈ 1,2 Go) sont libérées avant d'ouvrir celle des effets.
     del latest, fr
@@ -525,6 +630,8 @@ def run(manifest: dict, out_dir: Path, versions: bool = True, fx: bool = True, s
         atlas = export_fx(manifest, out_dir, records, auras, bundles, sounds, report)
         if atlas is not None:
             index["particleAtlas"] = atlas
+    if fx:
+        index["walks"] = export_walks(manifest, out_dir, report)
     if versions:
         apply_versions(manifest, records, auras, bundles, report)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -594,6 +701,127 @@ def appearance_bundles(latest: Client, fr: Client | None, records: list[AuraReco
     return out
 
 
+# --- carapaces : couleurs de robe à aura au sol ------------------------------------------------------
+
+SKIN_VISUAL_MOUNT = 0xE8            # MountSkin.visualMount (7.0 : `visualMount`)
+VISUAL_MOUNT_STABLE = 0x90          # VisualMount.mountForStable (7.0) : la carapace de la fenêtre
+PREDICATE_MOUNTS = 0x48             # PredicateVisualMountAction : vecteur de VisualMount
+LIST_PLAY_WHILE = 0x70              # VisActionList.playWhile
+COMPONENT_LOCATOR, COMPONENT_OFFSET, COMPONENT_SCALE, COMPONENT_VISOBJECT = 0x48, 0x60, 0x80, 0x88
+GROUND_LOCATORS = ("Slot_Global", "Global")
+# Socle et lueurs de la vitrine (`mountForStable`), absents du monde : écartés du modèle.
+STALL_PARTS = re.compile(r"^MountExoskeleton_(Platform|Suit_Stall)")
+# 31 carapaces : textures ramenées à 512 px (comme les effets, `FX_TEXTURE_MAX`) et tampons compressés
+# sans perte (`tools/compress_glb.mjs`, `EXT_meshopt_compression`) — 94 Mo bruts sinon.
+EXO_TEXTURE_MAX = 512
+
+
+def compress_models(files: list[Path], report: list[str]) -> None:
+    import subprocess
+    if not files:
+        return
+    try:
+        subprocess.run(["node", str(HERE / "compress_glb.mjs"), *map(str, files)], check=True, cwd=HERE.parent)
+    except (OSError, subprocess.CalledProcessError) as error:
+        report.append(f"AVERTISSEMENT : compression des carapaces impossible — {error}")
+
+
+def _closure(client: Client, start: int, stop: tuple[str, ...]) -> list[int]:
+    pb, g = client.pb, client.graph
+    seen: set[int] = set()
+    todo, out = [start], []
+    while todo:
+        o = todo.pop()
+        if o in seen:
+            continue
+        seen.add(o)
+        out.append(o)
+        if o != start and (client.keys.get(o) is not None or pb.type_at(o) in stop):
+            continue
+        todo.extend(g.pointers_from(o, g.object_end(o)))
+    return out
+
+
+def exo_skin_branches(client: Client) -> dict[int, list[int]]:
+    """`VisualMount` → branches (`VisActionList`) du script des carapaces dont le `playWhile` est un
+    `PredicateVisualMountAction` qui ne vise que cette monture (la branche la plus intérieure)."""
+    import numpy as np
+    pb, g = client.pb, client.graph
+    found: dict[int, list[tuple[int, int]]] = {}
+    for pred in pb.objects_of("PredicateVisualMountAction"):
+        vec, size = pb.vector(pred + PREDICATE_MOUNTS)
+        mounts = [pb.ptr(vec + 8 * k) for k in range(size // 8)] if vec is not None else []
+        for loc in g.referrers(pred, pred + 8):
+            owner = int(g.bounds[int(np.searchsorted(g.bounds, loc, "right")) - 1])
+            if pb.type_at(owner) == "VisActionList" and loc - owner == LIST_PLAY_WHILE:
+                for m in mounts:
+                    if m is not None:
+                        found.setdefault(m, []).append((owner, len(mounts)))
+    out = {}
+    for m, cands in found.items():
+        least = min(n for _, n in cands)
+        out[m] = [b for b, n in cands if n == least]
+    return out
+
+
+def exo_skin_auras(latest: Client, fr: Client | None, icons: Path, report: list[str]) -> list[dict]:
+    """Couleurs de robe de carapace qui posent une aura au sol. Chaîne (17.0, pointeurs ; noms des
+    champs par l'arbre 7.0) : `MountSkin +0xE8` → `VisualMount` ; le buff des carapaces (script
+    commun, `CreatureRunVisActionResource`) a une branche par monture, gardée par un
+    `PredicateVisualMountAction` (+0x48 → ce `VisualMount`) ; la branche change les objets visuels
+    du porteur (`CreatureChangeVisItemsAction` → `VisualItem`, pièces par personnage,
+    `VICSelectComponentByChar`) ; parmi ces pièces, celle accrochée à `Slot_Global` est l'aura au sol
+    (`MEV16Hunter_Dec` pour Néphalion). Le modèle montré est la carapace de la fenêtre
+    (`VisualMount +0x90`, `mountForStable`), sans son socle."""
+    pb = latest.pb
+    branches = exo_skin_branches(latest)
+    out: list[dict] = []
+    for skin in pb.objects_of("MountSkin"):
+        vm = pb.ptr(skin + SKIN_VISUAL_MOUNT)
+        items: list[int] = []
+        for b in branches.get(vm, []):
+            for o in _closure(latest, b, ("VisObjectTemplate", "VisualMount", "PredicateVisualMountAction", "VisualItem")):
+                if pb.type_at(o) == "VisualItem" and o not in items:
+                    items.append(o)
+        ground: list[dict] = []
+        for it in items:
+            for o in _closure(latest, it, ("VisObjectTemplate", "VisualItem")):
+                if pb.type_at(o) != "AttachedVisObjectComponent":
+                    continue
+                loc = pb.string(o + COMPONENT_LOCATOR) or ""
+                vo = pb.ptr(o + COMPONENT_VISOBJECT)
+                if vo is None or loc not in GROUND_LOCATORS or any(g["_vot"] == vo for g in ground):
+                    continue
+                ground.append({"_vot": vo, "locator": loc, "scale": round(float(pb.f32(o + COMPONENT_SCALE)), 4),
+                               "offset": [round(float(pb.f32(o + COMPONENT_OFFSET + 4 * k)), 4) for k in range(3)]})
+        if not ground:
+            continue
+        stable_mob = pb.ptr(vm + VISUAL_MOUNT_STABLE) if vm is not None else None
+        tpl = pb.ptr(stable_mob + VISUAL_MOB_TEMPLATE) if stable_mob is not None else None
+        stable = pb.ptr(tpl + TEMPLATE_VISOBJECT) if tpl is not None else None
+        mounts = latest.referrers(skin, "MountResource")
+        if not mounts:
+            # La liste de peaux la plus courte est celle de la carapace (740050173 les liste toutes).
+            lists = sorted(latest.referrers(skin, "SkinListResource"),
+                           key=lambda sl: len(latest.pointers(sl, "MountSkin", nested=False)))
+            for sl in lists:
+                mounts += [m for m in latest.referrers(sl, "MountResource") if m not in mounts]
+        rid = latest.keys.get(skin)
+        k = export_icon(latest, skin, icons)
+        name = plain_texts(texts_of(latest, fr, skin, SKIN_NAME))
+        entry = {"id": f"s{rid}", "resourceId": rid, "kind": "exoskin", "name": name,
+                 "description": plain_texts(texts_of(latest, fr, skin, SKIN_DESC)),
+                 "obtain": plain_texts(texts_of(latest, fr, skin, SKIN_SOURCE)),
+                 "icon": f"icons/{k}.webp" if k else None, "iconKey": k, "auras": [],
+                 "skin": {"resourceId": rid, "name": name,
+                          "mount": plain_texts(texts_of(latest, fr, mounts[0], MOUNT_NAME)) if mounts else {}},
+                 "visualItems": [latest.keys.get(i) for i in items],
+                 "_stable": stable, "_ground": ground}
+        out.append(entry)
+    print(f"{len(out)} couleurs de robe de carapace à aura au sol")
+    return out
+
+
 def export_fx(manifest: dict, out_dir: Path, records: list[AuraRecord], auras: list[dict], bundles: list[dict],
               sounds: bool, report: list[str]) -> dict | None:
     """Gabarits d'effet de chaque aura (`fx/<id>.glb`) et modèles des apparences
@@ -626,10 +854,13 @@ def export_fx(manifest: dict, out_dir: Path, records: list[AuraRecord], auras: l
         build = FxBuild(Exporter(textures, FX_TEXTURE_MAX), db, cat, bins, particles=particles, report=report)
         roots: set[int] = set()
         collect_vots(script, roots)
+        states = state_components(db, script, anim_names)
+        roots |= {st["visObject"] for st in states}
         for off in sorted(roots):
             node = build.emit(off)
             if node is not None:
                 build.roots.append(node)
+        emit_seeded(build)
         if not build.roots:
             entry["visual"] = False
             report.append(f"AVERTISSEMENT : {entry['id']} — script sans gabarit exportable")
@@ -641,10 +872,51 @@ def export_fx(manifest: dict, out_dir: Path, records: list[AuraRecord], auras: l
         entry["fx"] = f"fx/{entry['id']}.glb"
         entry["objects"] = build.meta
         entry["timeline"] = aura_timeline(script, build.names, anim_names)
+        if states:
+            entry["timeline"]["stateAttached"] = [
+                {"vot": build.names[st["visObject"]], "locator": st["locator"], "scale": st["scale"], "states": st["states"],
+                 **({"offset": st["offset"]} if any(abs(v) > 1e-6 for v in st["offset"]) else {})}
+                for st in states if st["visObject"] in build.names]
         report.extend(f"AVERTISSEMENT : {entry['id']} — {n}" for n in build.exporter.notes)
         all_sounds |= build.sounds
         builds.append((entry, build))
         print(f"{entry['id']:>12}  fx {len(glb) / 1024:.0f} Kio  {len(build.meta)} gabarits  {entry['name'].get('ru')}")
+    for bundle in bundles:
+        if bundle.get("kind") != "exoskin":
+            continue
+        stable, ground = bundle.pop("_stable", None), bundle.pop("_ground", [])
+        if stable is not None:
+            build = FxBuild(Exporter(textures, EXO_TEXTURE_MAX), db, cat, bins, particles=particles, report=report,
+                            skip=lambda n: bool(STALL_PARTS.match(n)))
+            node = build.emit(stable)
+            if node is not None:
+                build.roots.append(node)
+                glb = build.exporter.finish(build.roots)
+                (out_dir / "models").mkdir(parents=True, exist_ok=True)
+                (out_dir / "models" / f"{bundle['id']}.glb").write_bytes(glb)
+                bundle["model"] = {"glb": f"models/{bundle['id']}.glb", "vot": build.names[stable], "objects": build.meta}
+                print(f"{bundle['id']:>12}  modèle {len(glb) / 1024:.0f} Kio  {build.names[stable]}")
+        build = FxBuild(Exporter(textures, FX_TEXTURE_MAX), db, cat, bins, particles=particles, report=report)
+        attached = []
+        for gr in ground:
+            node = build.emit(gr["_vot"])
+            if node is None:
+                continue
+            build.roots.append(node)
+            item = {"t": 0.0, "vot": build.names[gr["_vot"]], "locator": gr["locator"], "scale": gr["scale"]}
+            if any(abs(v) > 1e-6 for v in gr["offset"]):
+                item["offset"] = gr["offset"]
+            attached.append(item)
+        if build.roots:
+            glb = build.exporter.finish(build.roots)
+            (out_dir / "fx").mkdir(parents=True, exist_ok=True)
+            (out_dir / "fx" / f"{bundle['id']}.glb").write_bytes(glb)
+            bundle.update({"visual": True, "fx": f"fx/{bundle['id']}.glb", "objects": build.meta,
+                           "timeline": {"attached": attached, "spawns": []}})
+            all_sounds |= build.sounds
+            builds.append((bundle, build))
+            print(f"{bundle['id']:>12}  aura {len(glb) / 1024:.0f} Kio  {', '.join(a['vot'] for a in attached)}")
+    compress_models([out_dir / b["model"]["glb"] for b in bundles if b.get("kind") == "exoskin" and b.get("model")], report)
     for bundle in bundles:
         tpl = bundle.get("skin", {}).pop("_template", None)
         if tpl is None:
@@ -685,6 +957,96 @@ def export_fx(manifest: dict, out_dir: Path, records: list[AuraRecord], auras: l
         atlas["file"] = atlas["file"][:-4] + ".webp"
     print(f"textures : {textures.bytes_written / 1024:.0f} Kio, particules : {particles.bytes_written / 1024:.0f} Kio")
     return atlas
+
+
+def emit_seeded(build) -> None:
+    """Gabarits semés (`EmitterVisObjComponent`, empreintes) : racines à part du `.glb`, posées dans
+    le monde par le lecteur."""
+    done: set[int] = set()
+    while True:
+        todo = [v for v in build.emitted if v not in done]
+        if not todo:
+            return
+        for v in todo:
+            done.add(v)
+            node = build.emit(v)
+            if node is not None:
+                build.roots.append(node)
+
+
+# --- marche de l'avatar ------------------------------------------------------------------------------
+
+CHARGEN_INDEX = HERE.parent / "public" / "game" / "character" / "chargen.json"
+# Animations de déplacement du client : `<dossier>/Animations/<gabarit>.Walk|Run.(SkeletalAnimation).bin`
+# (mêmes noms que l'énumération `Animations` : `walk`, `run`), celles que les empreintes attendent.
+WALK_CLIPS = {"walk": "Walk", "run": "Run"}
+VCT_ANIMATION_PROPERTIES = 0x88
+# `AnimationProperties.walkForward` (7.0 : 3.5 pour KaniaMale, même valeur en +0x124 du 17.0) : vitesse
+# (m/s) à laquelle l'animation de course avance d'elle-même.
+ANIMPROPS_WALK_FORWARD = 0x124
+
+
+def export_walks(manifest: dict, out_dir: Path, report: list[str]) -> dict:
+    """Clips `walk` et `run` des gabarits de la création (`walk/<gabarit>.glb` : squelette et clips,
+    sans maillage ; mêmes noms de nœuds que `public/game/character/models/<gabarit>.glb`) et vitesse
+    de course du gabarit. Le lecteur les ajoute aux clips de l'avatar pour la boucle de marche."""
+    from tools.allods_gltf import Exporter, load_animation, load_geometry
+    from tools.allods_packdb import open_catalog, open_pack, packs_path
+    from tools.chargen_scene import WebpTexturePool
+    from tools.extract_menu_scene import BinSource
+    import numpy as np
+    chargen = json.loads(CHARGEN_INDEX.read_text(encoding="utf-8"))
+    client = Path(manifest["latest"]["root"])
+    db = open_pack(client)
+    cat = open_catalog(db, client)
+    packs = packs_path(client / "data" / "Packs")
+    bins = BinSource([], [str(packs / p) for p in sorted(cat.names)])
+    textures = WebpTexturePool(db, cat, bins, out_dir)
+    wanted = {t["binary"]: name for name, t in chargen["templates"].items() if t.get("binary")}
+    geometries: dict[str, int] = {}
+    for g in db.resources("Geometry") + db.structs("Geometry"):
+        n = cat.name(db.binary_ref(g))
+        if n in wanted and n not in geometries:
+            geometries[n] = g
+    speeds: dict[str, float] = {}
+    for vct in db.resources("VisCharacterTemplate") + db.structs("VisCharacterTemplate"):
+        vo = db.ptr(vct + TEMPLATE_VISOBJECT)
+        geo = db.ptr(vo + 0xC0) if vo is not None else None
+        n = cat.name(db.binary_ref(geo)) if geo is not None else None
+        props = db.ptr(vct + VCT_ANIMATION_PROPERTIES)
+        if n in wanted and n not in speeds and props is not None:
+            v = float(db.f32(props + ANIMPROPS_WALK_FORWARD))
+            if 0.5 < v < 20:
+                speeds[n] = round(v, 3)
+    out: dict[str, dict] = {}
+    for binary, name in sorted(wanted.items(), key=lambda x: x[1]):
+        g = geometries.get(binary)
+        loaded = load_geometry(db, cat, bins, g) if g is not None else None
+        if loaded is None or loaded.skeleton is None:
+            report.append(f"AVERTISSEMENT : marche de {name} — géométrie introuvable")
+            continue
+        folder, stem = binary.rsplit("/", 1)
+        stem = stem.split(".")[0]
+        ex = Exporter(textures, 256)
+        joints = ex.emit_skeleton(loaded.skeleton, name)
+        span = float(np.max(np.abs(loaded.vertices["position"])) * 4.0)
+        clips = {}
+        for clip, suffix in WALK_CLIPS.items():
+            anim = load_animation(bins, f"{folder}/Animations/{stem}.{suffix}.(SkeletalAnimation).bin", loaded.skeleton, span)
+            if anim is None:
+                report.append(f"AVERTISSEMENT : {name} — animation {suffix} absente")
+                continue
+            clips[clip] = round(ex.emit_clip(clip, loaded.skeleton, joints, anim), 4)
+        if not clips:
+            continue
+        roots = [joints[i] for i in range(len(loaded.skeleton)) if not (0 <= loaded.skeleton.parents[i] < len(loaded.skeleton))]
+        root = ex.gltf.add_node({"name": name, "children": roots})
+        glb = ex.finish([root])
+        (out_dir / "walk").mkdir(parents=True, exist_ok=True)
+        (out_dir / "walk" / f"{name}.glb").write_bytes(glb)
+        out[name] = {"glb": f"walk/{name}.glb", "clips": clips, **({"speed": speeds[binary]} if binary in speeds else {})}
+        print(f"marche {name:>18}  {len(glb) / 1024:.0f} Kio  {clips}  vitesse {speeds.get(binary)}")
+    return out
 
 
 def icon_present(pb: PackBin, key: str) -> bool:
@@ -732,10 +1094,16 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-versions", action="store_true")
     ap.add_argument("--no-fx", action="store_true")
     ap.add_argument("--no-sounds", action="store_true")
+    ap.add_argument("--walks-only", action="store_true", help="seulement les clips de marche (walk/), dans auras.json")
     args = ap.parse_args(argv)
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     report: list[str] = []
-    run(manifest, args.out, not args.no_versions, not args.no_fx, not args.no_sounds, report)
+    if args.walks_only:
+        index = json.loads((args.out / "auras.json").read_text(encoding="utf-8"))
+        index["walks"] = export_walks(manifest, args.out, report)
+        (args.out / "auras.json").write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+    else:
+        run(manifest, args.out, not args.no_versions, not args.no_fx, not args.no_sounds, report)
     for line in report:
         print(line, file=sys.stderr)
     return 0
