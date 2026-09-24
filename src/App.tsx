@@ -18,6 +18,11 @@ import { TalentsScreen } from '@/screens/TalentsScreen/TalentsScreen';
 const CharacterCreationScreen = import.meta.env.DEV
   ? lazy(() => import('@/screens/CharacterCreationScreen/CharacterCreationScreen'))
   : null;
+// Plan du film des cinématiques : outil de développement, absent du build de production (même
+// mécanisme ; son greffon Vite d'enregistrement, `tools/vite/filmPlanPlugin.ts`, ne sert qu'en `vite`).
+const FilmPlanScreen = import.meta.env.DEV
+  ? lazy(() => import('@/screens/FilmPlanScreen/FilmPlanScreen'))
+  : null;
 import { LorebookScreen } from '@/screens/LorebookScreen/LorebookScreen';
 import { CinematicsScreen } from '@/screens/CinematicsScreen/CinematicsScreen';
 
@@ -50,6 +55,7 @@ export default function App() {
        path === '/lorebook' || path.startsWith('/lorebook/') ? <LorebookScreen /> :
        path === '/cinematics' || path === '/cinematiques' ? <CinematicsScreen /> :
        path === '/stats' ? <Suspense fallback={null}><StatsScreen /></Suspense> :
+       FilmPlanScreen && path === '/dev/film' ? <Suspense fallback={null}><FilmPlanScreen /></Suspense> :
        <OpeningScreen />}
     </AudioProvider>
     </I18nProvider>

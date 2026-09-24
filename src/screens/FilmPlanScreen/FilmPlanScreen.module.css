@@ -1,0 +1,115 @@
+/* Page de développement « plan du film » : frise verticale des chapitres, aux couleurs du site
+   (encre verte, or, parchemin) ; pilules, plaque de titre, menus déroulants et fenêtre du jeu. */
+.screen {
+  position: fixed; inset: 0; overflow: hidden auto; background: radial-gradient(circle at 50% 0, #1d2a1f 0, #0b100c 70%);
+  color: var(--paper); font-family: var(--font-serif); font-size: 14px; line-height: 19px;
+  scrollbar-width: thin; scrollbar-color: #849361 transparent;
+}
+.fatal { margin: 120px auto; max-width: 640px; text-align: center; color: var(--gold); }
+
+/* En-tête collé en haut : titre, vues, totaux, jauge, état de l'enregistrement. */
+.head {
+  position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: auto auto 1fr auto; align-items: center;
+  gap: 8px 22px; padding: 18px 24px 10px; background: linear-gradient(#0b100cf2 80%, #0b100c00);
+}
+.plate { position: relative; width: 250px; height: 44px; }
+.title { position: absolute; inset: 0; margin: 0; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: normal; color: #ffeb73; text-shadow: 0 1px 2px #000; }
+.views { display: flex; gap: 4px; }
+.totals { display: flex; flex-wrap: wrap; gap: 4px 22px; margin: 0; justify-self: end; }
+.totals div { display: flex; flex-direction: column; align-items: flex-end; }
+.totals dt { font-size: 12px; color: #b0bf88; }
+.totals dd { margin: 0; font-size: 17px; color: var(--gold); white-space: nowrap; }
+.totals small { font-size: 12px; color: #b0bf88; }
+.gauge { grid-column: 1 / -1; position: relative; height: 6px; border-radius: 3px; background: #ffffff14; overflow: hidden; }
+.gaugePlanned, .gaugeCurrent { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; }
+.gaugePlanned { background: #b9923f66; }
+.gaugeCurrent { background: #3fae4a; }
+.saveState { grid-column: 1 / -1; margin: 0; font-size: 12px; color: #b0bf88; text-align: right; }
+.saveError { color: #ff8f7a; }
+
+.banner { margin: 0 24px 10px; padding: 8px 12px; border: 1px solid #b9923f; background: #3a2a12cc; color: #fff3c4; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+
+/* Pilules du jeu (`pill-full`, 28 px) : filtres et vues. */
+.pill { position: relative; display: block; width: 118px; height: 28px; flex: none; cursor: inherit; }
+.pillSkin { position: absolute; inset: 0; display: block; pointer-events: none; border-color: transparent; transition: filter 80ms linear; }
+.pill:hover .pillSkin { filter: brightness(1.12); }
+.pillLabel { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding-bottom: 1px; font-size: 13px; color: #b0bf88; text-shadow: 0 1px 1px #0008; white-space: nowrap; }
+.pillActive .pillSkin { filter: brightness(1.22) drop-shadow(0 0 3px #e8c87780); }
+.pillActive .pillLabel { color: var(--gold); }
+.pill:focus-visible { outline: 1px solid #ffe77b; outline-offset: 1px; }
+
+.filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 4px 24px 14px; }
+.search { width: 280px; height: 24px; padding: 0 8px; border: 1px solid #658e7c; background: #0008; color: #e6f3e6; font: inherit; }
+.dd { position: relative; display: inline-block; height: 24px; flex: none; }
+
+/* Frise : un fil vertical, un nœud par chapitre. */
+.timeline { list-style: none; margin: 0; padding: 0 24px 80px 44px; position: relative; }
+.timeline::before { content: ''; position: absolute; left: 31px; top: 0; bottom: 60px; width: 2px; background: linear-gradient(#b9923f, #658e7c); }
+.chapter { position: relative; margin: 0 0 18px; }
+.chapterHead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; padding: 4px 0; }
+.node { position: absolute; left: -18px; top: 9px; width: 12px; height: 12px; border-radius: 50%; background: #e8c877; box-shadow: 0 0 6px #e8c877aa; }
+.chapterGap .node { background: #0b100c; border: 2px solid #d9644c; box-shadow: 0 0 6px #d9644c88; }
+.version { min-width: 44px; font-size: 13px; color: #b0bf88; }
+.chapterTitle { margin: 0; font-size: 18px; font-weight: normal; color: #ffeb73; text-shadow: 0 1px 2px #000; }
+.tag { padding: 0 6px; border: 1px solid #658e7c; border-radius: 3px; font-size: 12px; color: #c2cfb2; }
+.gapBadge { padding: 0 8px; border-radius: 3px; background: #7a1f12; color: #ffd8cc; font-size: 12px; }
+.chapterTime { font-size: 12px; color: #3fae4a; }
+.summary { margin: 0 0 6px 56px; max-width: 1100px; font-size: 13px; color: #c2cfb2; }
+.chapterSource { color: #8f9d7c; font-size: 12px; }
+
+.entries { list-style: none; margin: 0 0 0 56px; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.entry { border: 1px solid #658e7c44; border-left: 4px solid #658e7c; background: #10181299; }
+.status_film { border-left-color: #3fae4a; }
+.status_pending { border-left-color: #e8c877; }
+.status_todo { border-left-color: #d9644c; }
+.status_discarded { border-left-color: #555; opacity: .6; }
+.dragging { opacity: .35; }
+.dropBefore { box-shadow: 0 -3px 0 #e8c877; }
+.dropEnd { padding: 6px 10px; border: 1px dashed #658e7c; color: #8f9d7c; font-size: 12px; }
+.dropActive { border-color: #e8c877; color: #e8c877; }
+
+.row { display: flex; align-items: center; gap: 10px; min-height: 34px; padding: 3px 8px; }
+.handle { color: #658e7c; cursor: grab; letter-spacing: -2px; user-select: none; }
+/* Flèches de l'ascenseur du jeu (`scroll-up` / `scroll-down`, 22 × 23), réduites. */
+.arrows { display: flex; flex-direction: column; gap: 1px; }
+.arrow { width: 15px; height: 15px; background: center / contain no-repeat; }
+.arrow:disabled { opacity: .45; }
+.arrow:not(:disabled):hover { filter: brightness(1.2); }
+.entryTitle { flex: 1 1 260px; min-width: 0; text-align: left; color: #fff3c4; font-size: 15px; display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entryTitle:hover { color: var(--gold); }
+.kind { flex: none; padding: 0 5px; border-radius: 3px; font-size: 11px; line-height: 16px; color: #0b100c; background: #b0bf88; }
+.kind_video { background: #7fb0d9; }
+.kind_engine { background: #e8c877; }
+.kind_free { background: #d9a0d0; }
+.meta { flex: 0 1 220px; min-width: 0; color: #8f9d7c; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.duration { flex: none; width: 92px; text-align: right; color: #e9dcbf; font-size: 13px; }
+.importance { flex: none; width: 128px; font-size: 12px; color: #c2cfb2; }
+.priority { position: relative; display: flex; align-items: center; gap: 4px; flex: none; width: 170px; }
+.proposed { font-size: 11px; color: #b9923f; font-style: italic; }
+.link { flex: none; width: 36px; font-size: 13px; color: #7fb0d9; }
+.details { padding: 4px 12px 10px 64px; font-size: 13px; color: #c2cfb2; }
+.details p { margin: 2px 0; }
+.details b { font-weight: normal; color: #b0bf88; margin-right: 4px; }
+.source { color: #8f9d7c; word-break: break-word; }
+.noteLabel { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; color: #b0bf88; }
+.note { width: 100%; max-width: 900px; padding: 4px 6px; border: 1px solid #658e7c; background: #0008; color: #e6f3e6; font: inherit; resize: vertical; }
+
+.textButton { padding: 0 8px; height: 22px; border: 1px solid #b9923f; border-radius: 3px; background: #3a2a1266; color: var(--gold); font-size: 12px; }
+.textButton:hover { background: #5a3d1299; }
+
+/* Ajout d'une entrée libre : fenêtre du jeu, en superposition. */
+.overlay { position: fixed; inset: 0; z-index: 50; background: #000a; }
+.dialogHolder { position: absolute; left: 50%; top: calc(50% + 7px); transform-origin: center; }
+.dialogLead { margin: 0; font-size: 16px; color: #e9dcbf; text-shadow: 0 1px 3px #000; }
+.dialogFoot { margin: 0; font-size: 12px; color: #c2cfb2; }
+.form { position: absolute; inset: 8px 24px; display: flex; flex-direction: column; gap: 10px; color: #e9dcbf; }
+.form label { display: flex; flex-direction: column; gap: 3px; }
+.form input, .form textarea { padding: 3px 6px; border: 1px solid #658e7c; background: #0008; color: #e6f3e6; font: inherit; }
+.formRow { display: flex; align-items: center; gap: 10px; }
+.formActions { display: flex; justify-content: flex-end; gap: 10px; }
+
+@media (max-width: 900px) {
+  .head { grid-template-columns: 1fr; }
+  .totals { justify-self: start; }
+  .meta, .importance { display: none; }
+}

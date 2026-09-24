@@ -88,6 +88,15 @@ describe('CinematicsScreen — film', () => {
     expect(HTMLMediaElement.prototype.play).toHaveBeenCalled();
   });
 
+  it('ouvre le film au chapitre demandé par `?chapter=`', async () => {
+    search = 'faction=league&chapter=plague';
+    const page = renderScreen();
+    const v0 = await page.findByTestId('film-video-0') as HTMLVideoElement;
+    expect(v0.dataset.chapter).toBe('plague');
+    expect((page.getByTestId('film-video-1') as HTMLVideoElement).dataset.chapter).toBe('bridge');
+    expect(page.getByTestId('chapter-plague').getAttribute('aria-current')).toBe('true');
+  });
+
   it('saute à un chapitre choisi dans la liste et termine sur l’écran de fin', async () => {
     search = 'faction=league';
     const page = renderScreen();

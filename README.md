@@ -679,6 +679,46 @@ sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce
 - Vidéos de menu (Intro/MainMenu 9.0 → 17.0) exclues : déjà dans les Chroniques ; clip de
   test `Raid7_2Events/TestClip.ogv` (1 s, client 8.0 seulement) exclu.
 
+### Plan du film (page de développement)
+
+`/dev/film` (serveur de développement seulement : route chargée sous `import.meta.env.DEV`, absente du
+build) organise les scènes à recréer pour un film continu. **Source de vérité unique :
+`tools/film_plan.json`**, versionné, que la page et les agents éditent tous deux :
+
+- la page lit et enregistre le fichier par le greffon Vite `tools/vite/filmPlanPlugin.ts` (`apply: 'serve'`,
+  route `/__film-plan`) : chaque écriture est validée (`validatePlan`, `src/screens/FilmPlanScreen/filmPlan.ts`),
+  refusée si le fichier a changé depuis sa lecture (révision SHA-1), puis faite de façon atomique (fichier
+  temporaire + `rename`) ; les modifications partent 0,6 s après la dernière action ;
+- un agent édite le fichier directement (JSON indenté de deux espaces, fin de ligne finale ; le test
+  `tools/vite/filmPlanFile.test.ts` vérifie validité et format) ; le greffon le surveille et la page se recharge
+  (événement HMR `film-plan:changed`), ou signale le conflit si des modifications locales attendent ;
+- le plan **ne modifie pas le film** : passer une scène en production reste une étape séparée
+  (`tools/cinematics_manifest.json`, `extract_engine_cutscene.py`).
+
+Contenu : `chapters`, la frise de l'histoire A → Z (ordre du tableau = ordre du film ; une vue de faction garde ses
+chapitres et les communs), et `entries`, les scènes dans l'ordre du film : zone, version, type (vidéo, moteur,
+libre), durée (mesurée pour les chapitres du site, sinon estimée : `durationEstimated`), statut (`film`,
+`pending`, `todo`, `discarded`), priorité (`priorityProposed` : proposée par l'inventaire, pas décidée), note,
+lien vers le chapitre du site (`/cinematics?faction=…&chapter=<id>`, que le lecteur ouvre directement) et
+`source` (ressources qui attestent la scène). Un chapitre sans scène « dans le film » est un **trou**. Page :
+vues Ligue / Empire / Tout, totaux (film actuel, film visé, objectif `targetMinutes`), filtres (statut, type,
+priorité, texte, trous seulement), glisser-déposer ou flèches, menus de statut et de priorité, note, entrée
+libre (fenêtre du jeu).
+
+**Inventaire du 24/09/2026** (pré-remplissage) :
+
+- **Vidéos** : les 18 clients lisibles (1.0 → 17.0, dont 7.0 ADC, Divinity et Revelation, 8.0, 9.0, 15.0 et 16.0 FR,
+  Warp 11.0) et les arbres serveur 1.0, 3.0 et 7.0 (`Packs`, `Packs_old`, client personnalisé) ont 53 vidéos
+  distinctes, identiques (CRC) d'un client à l'autre : les 34 cinématiques du site (dont les 4 vidéos 10.0
+  retirées, du seul client Warp), 18 vidéos de menu (Intro/MainMenu 9.0 → 17.0) et le clip de test 7.2. Aucune
+  cinématique vidéo ne manque. Les clients 1.x → 6.0 et 7.0 Revelation n'ont aucune vidéo.
+- **Scènes moteur** : les 25 recréées (13 dans le film, 10 des zones de départ retenues, 2 en attente), les
+  8 scènes refaites en vidéo HD (écartées, doublons), et les candidates non recréées relevées dans l'arbre 7.0
+  (`engine_cutscenes.scenes`), les buffs de caméra du 17.0 voisins de répliques (`client_17`) et les événements
+  vocaux du projet FMOD `VoiceDialogsCutScenes` (durées lues dans les `.bev`). Les zones d'avant Ferris (Kania,
+  Xadagan, terres disputées, archipel, secrets, Umoir) n'ont aucune caméra ni `ShowSceneAction` scénarisés :
+  ce sont les trous de l'histoire, relevés par les intrigues (`<plotline>`) de leurs quêtes.
+
 ## Audio du site
 
 Musique de menu, musique d'ambiance et sons d'interface (ouverture/fermeture de la

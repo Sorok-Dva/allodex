@@ -77,7 +77,7 @@ export function CinematicsScreen({ loader = loadCinematics }: { loader?: () => P
     return (
       <main className={s.screen} aria-label={t('cinematics.title')}>
         <FilmPlayer key={faction} film={films[faction]} arcs={index.arcs} faction={faction}
-          initialLang={defaultSubtitleLang(films[faction], lang)} onBack={back} onClose={close} />
+          initialLang={defaultSubtitleLang(films[faction], lang)} initialChapter={query.get('chapter')} onBack={back} onClose={close} />
       </main>
     );
   }
