@@ -1564,7 +1564,7 @@
       "note": "Trajets de caméra de carte, déclencheur non relevé."
     },
     {
-      "status": "todo",
+      "status": "discarded",
       "priority": "low",
       "siteChapter": null,
       "id": "rift-dungeon-1",
@@ -1585,7 +1585,7 @@
       "note": "Plans scriptés sans réplique dans une aventure solo."
     },
     {
-      "status": "todo",
+      "status": "discarded",
       "priority": "low",
       "siteChapter": null,
       "id": "rift-dungeon-2",
@@ -1606,7 +1606,7 @@
       "note": "Plans scriptés sans réplique dans une aventure solo."
     },
     {
-      "status": "todo",
+      "status": "discarded",
       "priority": "low",
       "siteChapter": null,
       "id": "rift-dungeon-3",
@@ -1627,7 +1627,7 @@
       "note": "Plans scriptés sans réplique dans une aventure solo."
     },
     {
-      "status": "todo",
+      "status": "discarded",
       "priority": "low",
       "siteChapter": null,
       "id": "rift-dungeon-5",
