@@ -3,7 +3,7 @@ import struct
 
 import numpy as np
 
-from tools.allods_terrain import parse_terrain_dump, splat_weights
+from tools.allods_terrain import LAYER_REPEAT, layer_uv, parse_terrain_dump, splat_weights
 
 
 def _dump() -> bytes:
@@ -225,3 +225,11 @@ def test_terrain_foliage_and_water_layers_read_the_17_0_layouts():
     assert w["name"] == "Kania_River" and w["textures"]["bump"].endswith("WaterNoise.(Texture).bin")
     assert (w["alpha"], w["reflection"], w["specular"], w["speed"]) == (1.0, 1.0, 0.0, 16)
     assert w["textures"]["fresnelDown"] is None
+
+
+def test_layer_uv_follows_the_terrain_shader_one_repeat_per_8_m():
+    """`terrain-dx11` : `TEXCOORD0 = −position · 0,125`, pour tous les calques."""
+    assert LAYER_REPEAT == 8.0
+    uv = layer_uv(np.array([[0.0, 0.0], [8.0, 4.0], [256.0, -16.0]]))
+    assert uv.dtype == np.float32
+    assert np.allclose(uv, [[0, 0], [-1, -0.5], [-32, 2]])

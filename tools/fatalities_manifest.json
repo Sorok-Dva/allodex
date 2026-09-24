@@ -497,7 +497,7 @@
     "ground": {
       "texture": "World/Kvatoh/BlessedMeadows/Terrain/BM_Grass.(Texture).bin",
       "radius": 90,
-      "tile": 5
+      "tile": 8
     },
     "terrain": {
       "_note": "Sol réel : terrainDump de la carte Kania (17.0) ; `radius` = étendue du sol (fin jusqu'à 90 m, grossier au-delà), `grass_radius` = herbe du terrainDump, `flatten` = aplanissement du centre (mise en scène), `lightmap` = lumière cuite des régions (<région>_lightmap.bin). `short_grass` = herbe rase au centre (mise en scène : échelle des touffes × `scale` jusqu'à `radius` m, entière à `fade` m).",

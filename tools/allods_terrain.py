@@ -25,8 +25,16 @@ Structures recoupées avec les patterns ImHex de Paulus (`tools/reverse/terrain.
 `splatmap.hexpat`).
 
 Calques : `TerraLayers` de la région (`MapRegion +0x98`) : 256 entrées de 376 o à partir de `+0xB0`
-(texture en `+0x08`, taille de répétition en mètres en `+0x10`), indexées directement par les
-identifiants des jeux de calques (l'entrée 0 est vide en 7.0 et dans `Ferris4`, pas partout). Poids : les `SplatMap_0…2` de la région (256², R5G6B5) sont des
+(texture en `+0x08`), indexées directement par les identifiants des jeux de calques (l'entrée 0 est
+vide en 7.0 et dans `Ferris4`, pas partout). Les calques n'ont **pas** de répétition propre : le
+vertex shader du terrain (`Material/terrain-dx11.bin`, les 24 variantes du sol) écrit
+`TEXCOORD0 = −position · 0,125` (position dans la région, en mètres) et les pixel shaders
+échantillonnent `tex0…tex3` à ces coordonnées (plans xy, xz, yz), sans constante par calque : toute
+texture de calque se répète tous les **8 m**, un sous-carreau (`LAYER_REPEAT`, `layer_uv`). Les
+flottants `+0x10` (30, 40…) et `+0x18` sont les exposants spéculaires, recoupés champ à champ avec
+le `layers.xdb` 7.0 de `Kania` : `+0x10` `DirectionalExponent`, `+0x14`
+`DirectionalSpeculatLightColor`, `+0x18` `EyeExponent`, `+0x1C` `EyeSpecularLightColor`, `+0x20`
+`LayerColor`. Poids : les `SplatMap_0…2` de la région (256², R5G6B5) sont des
 **atlas de blocs** de 8 × 8 texels, un par passe (`c`, `d`), distribués dans l'ordre de dessin (le
 `_0` plein, 1 024 blocs, puis le `_1`, puis le `_2`) ; le jeu de calques nomme le sien — lu dans le
 `_0` par erreur, un bloc du `_1` met du poids sur un calque absent (63 % des passes de
@@ -49,7 +57,8 @@ LAYER_TABLE = 0x30        # vecteur des entrées de calque, la première en `+0x
 LAYER_ENTRY0 = 0xB0
 LAYER_STRIDE = 376
 LAYER_TEXTURE = 0x08
-LAYER_TILING = 0x10
+# Répétition des textures de calque, fixée par le shader du terrain (`TEXCOORD0 = −position / 8`).
+LAYER_REPEAT = 8.0
 SPLAT_MAPS = 3
 # Touffes d'herbe d'un calque (`foliage0…3`, 72 o chacune depuis `+0x48` de l'entrée ; recoupé sur
 # `Ferris4` 7.0 ↔ 17.0, calque 21 `ZC10_Grass_04`) : `bottom` (hauteur, décalage, largeur) `+0x00`,
@@ -227,14 +236,14 @@ def splat_weights(raw: bytes) -> np.ndarray:
     return w
 
 
-def terrain_layers(db, cat, terra: int | None) -> list[tuple[str | None, float]]:
-    """Calques de `TerraLayers`, indexés par l'identifiant des jeux de calques : (nom de la texture,
-    taille de répétition en mètres). Le tableau (vecteur en `+0x30`, entrées de 376 o, texture en
-    `+0x08`, répétition en `+0x10`) a 256 entrées fixes, avec des trous ; l'entrée 0 compte :
-    `Inst_ZoneContested12_Start` la nomme (répétition 40 m) et 1 629 de ses jeux y renvoient, comme
-    aux calques 54 à 121 — la liste commençait à l'entrée 1 et s'arrêtait au premier trou après la
-    40ᵉ, ces sous-carreaux prenaient un calque sans texture."""
-    out: list[tuple[str | None, float]] = []
+def terrain_layers(db, cat, terra: int | None) -> list[str | None]:
+    """Calques de `TerraLayers`, indexés par l'identifiant des jeux de calques : nom de la texture.
+    Le tableau (vecteur en `+0x30`, entrées de 376 o, texture en `+0x08`) a 256 entrées fixes, avec
+    des trous ; l'entrée 0 compte : `Inst_ZoneContested12_Start` la nomme et 1 629 de ses jeux y
+    renvoient, comme aux calques 54 à 121 — la liste commençait à l'entrée 1 et s'arrêtait au premier
+    trou après la 40ᵉ, ces sous-carreaux prenaient un calque sans texture. La répétition ne se lit
+    pas ici : elle est la même pour tous (`layer_uv`)."""
+    out: list[str | None] = []
     if terra is None:
         return out
     table = db.vec(terra + LAYER_TABLE)
@@ -242,10 +251,14 @@ def terrain_layers(db, cat, terra: int | None) -> list[tuple[str | None, float]]
     for k in range(count):
         entry = first + LAYER_STRIDE * k
         tex = db.ptr(entry + LAYER_TEXTURE)
-        name = cat.name(db.binary_ref(tex)) if tex is not None and db.vtype(tex) == "Texture" else None
-        tiling = db.f32(entry + LAYER_TILING) if name else 0.0
-        out.append((name, tiling if tiling > 0 else 30.0))
+        out.append(cat.name(db.binary_ref(tex)) if tex is not None and db.vtype(tex) == "Texture" else None)
     return out
+
+
+def layer_uv(xy: np.ndarray) -> np.ndarray:
+    """Coordonnées de texture d'un calque, comme le shader du terrain : `−(x, y) / 8` (mètres, dans
+    la région ou la carte : les régions font 32 répétitions, la phase ne change pas)."""
+    return (-np.asarray(xy, np.float64) / LAYER_REPEAT).astype(np.float32)
 
 
 def _dump_chunk(get, region_path: str) -> bytes | None:
