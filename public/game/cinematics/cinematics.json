@@ -264,7 +264,7 @@
    },
    "chronology": "Instance de départ de la Ligue (Inst_LeagueStart, voix « patch403 ») : première scène jouée, au sommet de la tour, pendant les quêtes « Аудиенция у Великого мага » ; après le prologue de faction.",
    "bonus": false,
-   "duration": 42.5,
+   "duration": 52.574,
    "files": {
     "poster": "engine/league-klement-death/poster.jpg"
    },

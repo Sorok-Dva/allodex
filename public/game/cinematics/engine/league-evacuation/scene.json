@@ -274,6 +274,24 @@
       32.2789
      ],
      "yaw": 3.1414
+    },
+    {
+     "t": 9.0,
+     "p": [
+      304.67,
+      5827.883,
+      32.2789
+     ],
+     "yaw": 2.8678
+    },
+    {
+     "t": 76.808,
+     "p": [
+      323.0048,
+      5893.1649,
+      32.2909
+     ],
+     "yaw": 2.8678
     }
    ],
    "scale": 1.0,
@@ -281,6 +299,12 @@
    "talk": null,
    "move": "Run",
    "appear": 0.0,
+   "presence": [
+    [
+     -1000000.0,
+     49.0
+    ]
+   ],
    "actions": [
     {
      "t": 3.0,
@@ -289,6 +313,15 @@
       "EmoteCallout"
      ],
      "loop": false
+    },
+    {
+     "t": 39.0,
+     "until": 1000000.0,
+     "clips": [
+      "Death"
+     ],
+     "loop": false,
+     "hold": true
     }
    ],
    "light": [
@@ -299,6 +332,7 @@
    "geometry": "Characters/Gibberlings/GibberlingMale.(Geometry).bin",
    "height": 1.284,
    "animations": {
+    "Death": 3.0,
     "EmoteCallout": 2.5,
     "Idle": 4.1333,
     "Idle01": 2.5,
@@ -5740,6 +5774,54 @@
     "Idle": 5.9667,
     "Idle01": 3.0
    }
+  },
+  {
+   "id": "kaniaportal",
+   "glb": "../shared/actors/vot-15f21478.glb",
+   "name": {},
+   "path": [
+    {
+     "t": 0,
+     "p": [
+      299.9951,
+      5800.086,
+      32.5266
+     ],
+     "yaw": 4.49105
+    }
+   ],
+   "scale": 1.0,
+   "idle": "Idle",
+   "talk": null,
+   "move": null,
+   "appear": 0.0,
+   "presence": [
+    [
+     5.0,
+     600.0
+    ]
+   ],
+   "actions": [
+    {
+     "t": 5.0,
+     "until": 600.0,
+     "clips": [
+      "Special"
+     ],
+     "loop": true
+    }
+   ],
+   "light": [
+    0.2578,
+    0.2578,
+    0.625
+   ],
+   "geometry": "World/Races/Kania/Buildings/Models/Kania_Portal_New/Kania_Portal_New.(Geometry).bin",
+   "height": 0.358,
+   "animations": {
+    "Idle": 2.0,
+    "Special": 5.0
+   }
   }
  ],
  "decor": {
@@ -5966,6 +6048,12 @@
     "tilt": [
      0.00786,
      0.01074
+    ],
+    "hidden": [
+     [
+      5.0,
+      600.0
+     ]
     ],
     "light": [
      125879,
@@ -7198,6 +7286,57 @@
     4.516
    ]
   },
+  "InstLeague1_Floor6_Destroyed_Details": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.183,
+    -0.145,
+    176.862,
+    30.358,
+    30.32,
+    22.416
+   ]
+  },
+  "InstLeague1_Floor6_Destroyed": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    0.064,
+    -0.027,
+    180.302,
+    30.476,
+    30.439,
+    25.856
+   ],
+   "components": [
+    {
+     "vot": "InstLeague1_Floor6_Destroyed_Details",
+     "locator": ""
+    }
+   ]
+  },
+  "InstLeague1_Corridor1_Destroyed": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "duration": 0.0,
+   "loop": false,
+   "bounds": [
+    38.989,
+    -12.533,
+    158.891,
+    50.65,
+    29.415,
+    13.014
+   ]
+  },
   "MageTeleportAbility_End": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -7210,12 +7349,12 @@
     "endFrame": 201,
     "loopFrame": 101,
     "frames": [
-     19,
-     20,
-     21,
-     22,
      23,
-     24
+     24,
+     25,
+     26,
+     27,
+     28
     ],
     "emitters": [
      {
@@ -7453,7 +7592,7 @@
     128
    ],
    [
-    384,
+    640,
     384,
     32,
     32
@@ -7519,6 +7658,30 @@
     64
    ],
    [
+    320,
+    384,
+    64,
+    64
+   ],
+   [
+    384,
+    384,
+    64,
+    64
+   ],
+   [
+    448,
+    384,
+    64,
+    64
+   ],
+   [
+    512,
+    384,
+    64,
+    64
+   ],
+   [
     256,
     256,
     128,
@@ -7537,7 +7700,7 @@
     128
    ],
    [
-    320,
+    576,
     384,
     64,
     64
@@ -7685,6 +7848,34 @@
    ],
    [
     "Client/Render/ParticleAtlas.(Texture).bin",
+    1600,
+    768,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1504,
+    1088,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1888,
+    896,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1472,
+    768,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
     1568,
     1152,
     64,
@@ -7779,7 +7970,9 @@
    "World/Quests/InstLeague1/Quest_4_30/NPC_Ask.(BuffResource).xdb"
   ],
   "spawns": [
+   "Maps/Inst_LeagueStart/000_020/1_2_MapRegion.xdb",
    "Maps/Inst_LeagueStart/000_020/1_2_ServerObjects.xdb",
+   "Maps/Inst_LeagueStart/000_020/1_3_ServerObjects.xdb",
    "manifest"
   ]
  }
