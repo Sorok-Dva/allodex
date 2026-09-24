@@ -1512,6 +1512,9 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
         # par buff (jusqu'à la fin du buff quand il a une durée), scripts des scènes du client ; pas
         # les remises à zéro des stèles des minutes suivantes.
         content += [a.get("walk_end", 0.0) for a in plan["actors"]]
+        # plans de caméra du déroulé (cinéma pridien : le travelling vers l'écran)
+        content += [k["t"] + plan["sources"].get("window", [0.0])[0] for k in plan["camera"]["points"] if tl.shots]
+        content += [s["t"] + (s["duration"] or 0.0) for s in tl.shots if s["t"] + (s["duration"] or 0.0) < tl.duration - 1e-3]
         content += [e["until"] if e["until"] < tl.duration - 1e-3 else e["t"] for e in tl.effects]
         content += [s["t"] for s in tl.summons] + [s["t"] for s in plan.get("spawns", [])]
         switches = {round(c["t"], 3) for c in tl.states}
@@ -1522,7 +1525,8 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
                 ends = [k["t"] for k in actor["path"]] + [a["t"] for a in actor.get("actions", [])]
                 ends += [b for _, b in actor["presence"] if b not in switches and b < tl.duration - 1e-3]
                 content.append(max(ends))
-        plan["camera"]["duration"] = round(max(content), 3)
+        # temps du déroulé ; la scène filmée commence au premier plan de caméra (`window`)
+        plan["camera"]["duration"] = round(max(content) - plan["sources"].get("window", [0.0])[0], 3)
         plan["duration_from_voices"] = True
     return plan
 
@@ -1759,6 +1763,65 @@ def static_device_extras(spec: dict, plan: dict, script: str, sp: dict, windows:
             report.append(f"{spec['id']} : stèle {script} (objet {base}) → animation {st['clips']} de {t0} à {t1} s")
 
 
+def channel_spawn(spec: dict, plan: dict, item: dict, spawns: dict, db: PackDB, cat, rev: dict,
+                  report: list[str]) -> dict | None:
+    """Rayon canalisé (`CreatureChannelDirectAction`) d'un PNJ vers un repère : gabarit du 17.0 au nom
+    du `channelingFx` 7.0, longueur modelée (`fxLength`) et fondus de l'action du client qui le tire ;
+    départ au locator de l'acteur, arrivée au repère ; jusqu'à son arrêt (`VisActionStopAction`)."""
+    from tools.allods_visdb import vot_name
+    ch = item["channel"]
+    want = Path((ch.get("fx") or "").split("#")[0]).name.split(".(")[0]
+    actor = next((a for a in plan["actors"] if a.get("server") is spawns.get(item["owner"])), None)
+    end = spawns.get(item["locators"][0]) if item["locators"] else None
+    found = {}
+    for off in db.structs("CreatureChannelDirectAction"):
+        node = read_action(db, off)
+        vis = node.get("visObject") if node else None
+        if vis is not None and vot_name(db, cat, vis) == want:
+            found.setdefault((vis, round(node.get("length") or 0.0, 3)), node)
+    if actor is None or end is None or len({k[0] for k in found}) != 1 or found and next(iter(found))[0] not in rev:
+        report.append(f"{spec['id']} : rayon non rendu ({item['clientdata']} : gabarit {want}, "
+                      f"{len(found)} actions du 17.0, acteur {'trouvé' if actor else 'absent'})")
+        return None
+    (vis, length), node = next(iter(found.items()))
+    if len(found) > 1:
+        report.append(f"{spec['id']} : rayon {want} : longueurs {sorted(k[1] for k in found)} dans le 17.0, la première")
+    return {"vot": rev[vis], "t": item["t"], "until": item["until"] if item["until"] is not None else item["t"] + 600,
+            "channel": {"from": actor["id"], "locator": ch.get("locator") or "Global", "to": end["p"], "length": length},
+            "_source": item["clientdata"]}
+
+
+def table_steles(spec: dict, tl, spawns: dict, root: Path, db: PackDB, cat, rev: dict, horizon: float,
+                 report: list[str]) -> list[dict]:
+    """Tables d'apparition posées par le déroulé (`SpawnTableObjects`) dont l'objet est une stèle d'effet
+    (mur magique de `Floor_Firewall`) : son gabarit (`visObj`, à son `scale`) à la place de la table."""
+    from tools import cutscene_xdb70 as x70
+    tree = x70.Tree(Path(root))
+    out = []
+    for item in tl.tables:
+        path = tree.root / item["table"]
+        doc = x70._read(path)
+        objs = [o.get("href") for o in (doc.iter("object") if doc is not None else []) if o.get("href")]
+        steles = [tree.resolve(path, h) for h in objs if ".(SteleResource)" in h]
+        if not steles:
+            report.append(f"{spec['id']} : table {Path(item['table']).name} ({len(objs)} PNJ du jeu) non montée")
+            continue
+        sp = spawns.get("table:" + item["table"])
+        sdoc = x70._read(steles[0])
+        vis = sdoc.find("visObj") if sdoc is not None else None
+        name = Path((vis.get("href") or "").split("#")[0]).name.split(".(")[0] if vis is not None else ""
+        found = vots_named(db, cat, name) if name else []
+        if sp is None or len(found) != 1 or found[0] not in rev:
+            report.append(f"{spec['id']} : stèle de table {Path(item['table']).name} non posée (gabarit {name or '—'}, "
+                          f"{len(found)} au 17.0, place {'trouvée' if sp else 'absente'})")
+            continue
+        out.append({"vot": rev[found[0]], "p": sp["p"], "yaw": round(sp["yaw"], 5), "scale": x70._f(sdoc, "scale", 1.0),
+                    "t": item["t"], "until": item["until"] if item["until"] is not None else horizon,
+                    "_source": item["table"]})
+        report.append(f"{spec['id']} : table {Path(item['table']).name} → gabarit {name} de {item['t']} s")
+    return out
+
+
 def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: PackDB, cat, anim_names: dict,
                    report: list[str]) -> None:
     """Scène ouverte par un déclencheur (zone de script, capacité) : stèles et leurs états (scènes du
@@ -1908,8 +1971,10 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
     # Explosions posées aux repères (`CreatureFixedPointProjectileAction`, à l'arrivée du projectile).
     fx = []
     for item in tl.fx:
-        if item.get("channel"):
-            report.append(f"{spec['id']} : rayon canalisé non rendu ({item['clientdata']}, {item['owner']} → {item['locators']})")
+        if item.get("channel") is not None and not isinstance(item["channel"], bool):
+            spawn = channel_spawn(spec, plan, item, spawns, db, cat, rev, report)
+            if spawn is not None:
+                fx.append(spawn)
             continue
         locs = item["locators"]
         end = spawns.get(locs[min(item["end"], len(locs) - 1)]) if locs else None
@@ -1922,6 +1987,29 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
                           f"{item['throw']} s, theGe {item['theGe']}) ; explosion à l'arrivée")
         fx.append({"vot": rev[vot], "p": end["p"], "t": round(item["t"] + item["throw"], 3), "until": None,
                    "_source": item["clientdata"]})
+    fx += table_steles(spec, tl, spawns, root, db, cat, rev, horizon, report)
+    # Stèles du décor qui lisent un drapeau posé sur le joueur (`CreatureSetFlagVisAction`) : animées
+    # tant qu'il est posé (cinéma pridien : `special` en boucle).
+    for dev in x70.flag_devices(root, plan["map"], {f["flag"] for f in tl.flags}):
+        base = Path(dev["static"] or "").name.split(".(")[0]
+        found = vots_named(db, cat, base)
+        if len(found) != 1:
+            report.append(f"{spec['id']} : stèle à drapeau {base} : gabarit {'introuvable' if not found else 'ambigu'}")
+            continue
+        for branch in dev["branches"]:
+            for f in (f for f in tl.flags if f["flag"] == branch["flag"]):
+                t0, t1 = f["t"], f["until"] if f["until"] is not None else horizon
+                clips = [clip_name(c) for c in branch["clips"]]
+                plan.setdefault("decor_windows", []).append({"hide": base, "p": dev["p"], "t": t0, "until": t1})
+                plan["actors"].append({"id": re.sub(r"[^a-z0-9]+", "-", base.lower()).strip("-"), "mob_offset": None,
+                                       "visual": None, "vot": found[0], "scale": round(dev["scale"], 5),
+                                       "path": [{"t": 0, "p": dev["p"], "yaw": round(dev["yaw"], 5)}],
+                                       "presence": [[round(t0, 3), round(t1, 3)]], "animations": clips,
+                                       "clips_wanted": clips, "idle": None, "name": {},
+                                       "actions": [{"t": round(t0, 3), "until": round(t1, 3), "clips": clips,
+                                                    "loop": branch["mode"] == "LOOP"}]})
+                report.append(f"{spec['id']} : stèle {base} ({dev['file']}) : {clips} tant que {Path(f['flag']).name} "
+                              f"est posé ({t0} à {t1} s)")
     plan["spawns"] = fx + scene_fx
     plan["sounds"]["sfx"] = [{"event": s["name"], "t": s["t"]} for s in tl.sfx]
     # Fenêtre : du premier plan de caméra à la fin de la scène.
