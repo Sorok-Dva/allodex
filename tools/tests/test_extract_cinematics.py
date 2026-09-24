@@ -281,6 +281,9 @@ def test_engine_chapters_have_an_extraction_spec(manifest):
             assert len(spec["timing"]["starts"]) == len(spec["lines"])
             assert spec["timing"]["starts"] == sorted(spec["timing"]["starts"])
             continue
+        if "reading" in spec["timing"]:                                 # dialogue lu (textes de Cue)
+            assert all(isinstance(r, dict) and r.get("cue") in ("npc", "player") for r in spec["lines"]), spec["id"]
+            continue
         numbered = sorted(n for g in spec["timing"]["groups"] for n in g["lines"])
         assert numbered == list(range(1, len(spec["lines"]) + 1))
 
