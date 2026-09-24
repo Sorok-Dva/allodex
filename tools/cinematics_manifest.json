@@ -15,6 +15,14 @@
    },
    "version": "4.0"
   },
+  "pride-start": {
+   "title": {
+    "fr": "La zone de départ des Pridiens",
+    "en": "The Priden starting zone"
+   },
+   "version": "7.0",
+   "_note": "Les Pridiens sont une faction à part à la création (chargen.json) ; leur départ (PridensStart) se clôt sur « Присяга Лиге » (Pride_7_8_L : aller à Novograd voir Aidenus), où ils rejoignent le film de la Ligue, au même point que la zone de départ de la Ligue (qui sort aussi vers Novograd) : l'arc suit donc « La zone de départ de la Ligue »."
+  },
   "empire-start": {
    "title": {
     "fr": "La zone de départ de l’Empire",
@@ -1477,6 +1485,42 @@
     "en": "The Evacuation"
    },
    "chronology": "Instance de départ de la Ligue : quête « Эвакуация » (Quest_4_30), au pied de la tour, avant « Дорога в Новоград » qui clôt l’instance ; suit la mort du Grand Mage.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "pride-cinema",
+   "kind": "engine",
+   "source": "main",
+   "event": "Pride_1_9",
+   "arc": "pride-start",
+   "version": "7.0",
+   "faction": "league",
+   "order": 130,
+   "title": {
+    "fr": "Ah, le cinéma !",
+    "en": "Ah, the Cinema!"
+   },
+   "chronology": "Zone de départ des Pridiens (PridensStart) : début de la quête « Ах, синема, синема! » (Pride_1_9, après Pride_1_8) ; avant « Спектакль » (Pride_1_11).",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "pride-performance",
+   "kind": "engine",
+   "source": "main",
+   "event": "Pride_1_11",
+   "arc": "pride-start",
+   "version": "7.0",
+   "faction": "league",
+   "order": 132,
+   "title": {
+    "fr": "Le spectacle",
+    "en": "The Performance"
+   },
+   "chronology": "Zone de départ des Pridiens : début de la quête « Спектакль » (Pride_1_11), jusqu'au moment où le joueur reçoit ses émotes de scène (13 s : la suite est jouée par lui).",
    "audio": {
     "language": "ru"
    }
@@ -23335,6 +23379,32 @@
    "_note": "Début de la quête « Эвакуация » (Quest_4_30.startImpacts, 7.0) : le gibberling court vers le front et appelle, Amanda ouvre le portail et lève son champ protecteur ; trois GameViewScene de l’étage 1 posées par leurs stèles (état 1) — combat des civils et des démons (1 s), civils qui fuient par le portail (4 s), démons (15 s). La scène dure jusqu’à la fin du plus long de leurs scripts.",
    "zone_lights": 200291,
    "zone_lights_note": "La base de carte Maps_Inst_LeagueStart.bin ne porte aucune ZoneLights : celle de pack.bin (200291) dont le premier éclairage a les couleurs de AstralCoast_Tubes.(ZoneLights), éclairage des zones InstLeague1 de l’arbre 7.0 (AmbientColor 2015437136, DiffuseColor 2015839606, brouillard 10–935 m)."
+  },
+  {
+   "id": "pride-cinema",
+   "source": "xdb70",
+   "trigger": "World/Quests/PridensStart/Pride_1_9/Pride_1_9.xdb",
+   "trigger_tag": "startImpacts",
+   "until_last": true,
+   "map": "PridensStart",
+   "_note": "Début de la quête « Ах, синема, синема! » (Pride_1_9.startImpacts, 7.0) : buff Pride_1_9_Fade (15 s) — voile noir 3 s (Black_Long, arrêté par VisActionStopAction), puis travelling de caméra vers l'écran et musique Music/Ingame/Cinema ; à 1,5 s, Pride_Cinema_state2 pose le drapeau visuel que lit le cinéma hadagan (stèle Priden_Hadagan_Cinema du décor : « special » en boucle). La scène filmée commence au premier plan de caméra (3 s)."
+  },
+  {
+   "id": "pride-performance",
+   "source": "xdb70",
+   "trigger": "World/Quests/PridensStart/Pride_1_11/Pride_1_11.xdb",
+   "trigger_tag": "startImpacts",
+   "until_last": true,
+   "map": "PridensStart",
+   "_note": "Début de la quête « Спектакль » (Pride_1_11.startImpacts, 7.0) : buff Pride_1_11_Performance1 — voile noir 3 s, travelling vers la scène, joueur déplacé sur la scène (2 s, Pride_1_11_Performance) ; Эстель (5 s) puis l'acteur (9 s) parlent (bulles), les spectateurs de la table Pride_1_11_Spectators applaudissent 2 s après chacun ; à 13 s le joueur reçoit ses émotes (suite jouée par lui).",
+   "fr_blocks": [
+    {
+     "ru": 247738,
+     "fr": 235435,
+     "count": 26,
+     "_note": "Textes de Pride_1_11 : « Oh my love, I'd leave the world… » (247742) ↔ « Ô mon amour, je laisserai le monde derrière moi… » (235439), « Remember: theater is your second life » (247763) ↔ « N'oubliez pas que le théâtre est votre seconde vie » (235460) : écart constant de 12 303 sur le bloc."
+    }
+   ]
   }
  ]
 }
