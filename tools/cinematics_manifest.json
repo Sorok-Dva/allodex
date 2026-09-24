@@ -23204,20 +23204,37 @@
   {
    "id": "isa-fishers-legend",
    "_note": "Pilote d'Isa (14.0), seule cinématique d'Isa entièrement écrite dans le client : le script visuel du buff de caméra enchaîne un voile noir, six plans de caméra (la mer, puis sous l'eau, les épaves au fond) et la voix off du conteur, Isa_Fishers_1_Cutscene (39,6 s), qui dit mot pour mot les six sous-titres rangés avec le buff. Tout vient du client 17.0 (script du buff, décor, sous-titres RU/EN, FR du 16.0) ; seul l'instant de chaque sous-titre est mesuré sur la voix (timing.starts). Aucun PNJ : le script n'en pose aucun, Lyngbakr n'apparaît pas.",
-   "script": "client",
+   "buff_script": true,
    "map": "Isa",
    "buff": "res:740170090",
    "buff_note": "BuffResource res:740170090 (volatil 520623 au 23/09/2026, 520579 avant) → BuffVisScripts : liste simultanée de trois branches — délai 3 s puis Sound2DAction « /Cutscenes/Isa/Isa_Fishers_1_Cutscene » ; voile noir (UserPostEffect res:… volatil 499520, carré noir, fondus 0,5 s) borné à 2,5 s puis six plans en séquence, chacun borné par un délai (5,5 ; 8 ; 9 ; 7 ; 3,5 ; 9 s) ; délai 44 s puis voile noir de fin. Voir tools/cutscene_client.py.",
    "lines": [
-    "res:740170091",
-    "res:740170092",
-    "res:740170093",
-    "res:740170094",
-    "res:740170095",
-    "res:740170096"
+    {
+     "ref": "res:740170091",
+     "ru": "Мудрые говорят"
+    },
+    {
+     "ref": "res:740170092",
+     "ru": "Бескрайним было море-окиян"
+    },
+    {
+     "ref": "res:740170093",
+     "ru": "Но в глубокой бездне"
+    },
+    {
+     "ref": "res:740170094",
+     "ru": "Сия рыба была огромна"
+    },
+    {
+     "ref": "res:740170095",
+     "ru": "Но горе тому"
+    },
+    {
+     "ref": "res:740170096",
+     "ru": "Почуяв живых"
+    }
    ],
-   "lines_note": "ClientData de sous-titre seul rangés avec le buff (resourceId 740170091 à 740170096, suivant le buff 740170090) ; leur ordre est celui de la voix, relevé par reconnaissance vocale (« Мудрые говорят… », « Бескрайним было море-окиян… », « Но в глубокой бездне… », « Сия рыба… », « Но горе тому… », « Почуяв живых… »). Aucune ressource du client ne relie ces ClientData au buff : c'est le script serveur ; le texte, lui, est celui que dit la voix.",
-   "fr_anchor": "Mais il y a des monstres dans les profondeurs abyssales",
+   "lines_note": "ClientData de sous-titre seul rangés avec le buff (resourceId 740170091 à 740170096, suivant le buff 740170090) ; leur ordre est celui de la voix, relevé par reconnaissance vocale (« Мудрые говорят… », « Бескрайним было море-окиян… », « Но в глубокой бездне… », « Сия рыба… », « Но горе тому… », « Почуяв живых… »). Aucune ressource du client ne relie ces ClientData au buff : c'est le script serveur ; le texte, lui, est celui que dit la voix. Chaque réplique porte aussi le début de son texte russe (`ru`) : texte officiel RU/EN du 17.0, FR du 16.0 par l'écart de `fr_pair`.",
    "narrator": null,
    "fov": 45,
    "timing": {
@@ -23242,6 +23259,11 @@
     "ambience": 0.5,
     "sfx": 0.8,
     "voice": 1.0
+   },
+   "fr_pair": {
+    "ru": "Но в глубокой бездне водятся чудовища",
+    "fr": "Mais il y a des monstres dans les profondeurs abyssales",
+    "_note": "Paire de textes d'une même réplique (légende des pêcheurs) : l'écart d'indice entre le 17.0 et le client FR 16.0 qu'elle donne (7 285 au 24/09/2026) est le même sur tout le bloc des textes d'Isa, vérifié réplique par réplique de l'arrivée (« Морозец пробирает до костей ») au journal du capitaine (« Но какой ценой? Череп снова будет свободен! »)."
    }
   },
   {

@@ -273,7 +273,8 @@ def test_engine_chapters_have_an_extraction_spec(manifest):
             assert spec["scene"].startswith("stele:res:")              # GameViewScene jouée par une stèle
             continue
         # références persistantes (resourceId), jamais l'identifiant volatil de pack.bin
-        refs = [spec["buff"], *spec["lines"], *(a["mob"] for a in spec["actors"])]
+        refs = [spec["buff"]] if spec.get("buff") else []
+        refs += [r["ref"] if isinstance(r, dict) else r for r in spec["lines"]] + [a["mob"] for a in spec["actors"]]
         refs += [sp[k] for sp in spec.get("spawns", []) for k in ("mob", "buff", "vot") if k in sp]
         assert all(isinstance(r, str) and r.startswith("res:") for r in refs), spec["id"]
         if "starts" in spec["timing"]:                                  # départs mesurés sur la voix

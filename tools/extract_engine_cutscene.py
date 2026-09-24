@@ -784,7 +784,8 @@ def resolve_refs(spec: dict, db: PackDB) -> dict:
         if out.get(key) is not None:
             out[key] = resource_ref(db, out[key], f"{spec['id']} : {key}")
     if "lines" in out:
-        out["lines"] = [resource_ref(db, r, f"{spec['id']} : réplique") for r in out["lines"]]
+        out["lines"] = [resource_ref(db, r["ref"] if isinstance(r, dict) else r, f"{spec['id']} : réplique")
+                        for r in out["lines"]]
     for actor in out.get("actors", []):
         if actor.get("mob") is not None:
             actor["mob"] = resource_ref(db, actor["mob"], f"{spec['id']} : acteur {actor.get('id')}")
@@ -1176,6 +1177,44 @@ class Texts:
             if cl.voice and cl.text_index is not None:
                 self.fr_voice.setdefault(cl.voice, (cl.text_index, cl.delay_ms))
                 self.fr_voice_all.setdefault(cl.voice, []).append(cl.text_index)
+
+    def find_text(self, lang: str, prefix: str, near: int | None = None) -> int:
+        """Indice du texte (`lang`, du 17.0 ou `fr` du 16.0) qui commence par `prefix`, parmi tous les
+        textes du client (bulles, messages, dialogues : les voix d'Isa ont leur texte officiel là, pas
+        dans un sous-titre). Égalité d'abord ; entre plusieurs, le plus proche de `near`."""
+        from tools.extract_cinematics import norm_key
+        source = self.fr.texts["fr"] if lang == "fr" else self.main.texts[lang]
+        cache = self.__dict__.setdefault("_keys_all", {})
+        keys = cache.get(lang)
+        if keys is None:
+            keys = cache[lang] = [norm_key(t) if t else "" for t in source]
+        want = norm_key(prefix)
+        hits = [i for i, k in enumerate(keys) if k.startswith(want)] if want else []
+        hits = [i for i in hits if keys[i] == want] or hits
+        if not hits:
+            raise LookupError(f"« {prefix} » ({lang}) : aucun texte ne commence ainsi")
+        return min(hits, key=lambda i: (abs(i - near) if near is not None else 0, i))
+
+    def official(self, prefixes: list[str], fr_pair: dict | None) -> tuple[dict, list[int]]:
+        """Texte officiel d'une réplique désignée par le début de son (ou ses) texte(s) russe(s) :
+        RU/EN du 17.0 au même indice ; FR du 16.0 à l'indice décalé de l'écart d'une paire de textes
+        connus (`fr_pair` : début du texte russe et du texte français d'une même réplique), vérifié
+        constant sur tout le bloc des textes d'Isa (écart 7 285 au 24/09/2026)."""
+        delta = None
+        if fr_pair and self.fr is not None:
+            ru_at = self.find_text("ru", fr_pair["ru"])
+            delta = ru_at - self.find_text("fr", fr_pair["fr"], near=ru_at - fr_pair.get("near_delta", 0))
+        near = None if not fr_pair else self.find_text("ru", fr_pair["ru"])
+        idx = [self.find_text("ru", p, near) for p in prefixes]
+        text: dict[str, str] = {"ru": "\n".join(clean_text(self.main.texts["ru"][i]) for i in idx)}
+        en = "\n".join(clean_text(self.main.texts["en"][i]) for i in idx)
+        if en and not has_cyrillic(en):
+            text["en"] = en
+        if delta is not None:
+            fr = [self.fr.texts["fr"][i - delta] if 0 <= i - delta < len(self.fr.texts["fr"]) else "" for i in idx]
+            if all(fr):
+                text["fr"] = "\n".join(clean_text(t) for t in fr)
+        return text, idx
 
     def line(self, idx: int | None, voice: str | None, delay_ms: int, anchor_delta: int | None,
              same_voice: list[int] | None = None) -> dict:
@@ -2613,15 +2652,16 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
     """Plan d'une scène sans déroulé serveur connu (après 7.0) : ressources du 17.0 nommées par le
     manifeste, mise en scène et minutage du manifeste.
 
-    `"script": "client"` : le **script visuel du buff** est lu en entier (`tools/cutscene_client.py`) :
+    `"buff_script": true` : le **script visuel du buff** est lu en entier (`tools/cutscene_client.py`) :
     plans de caméra enchaînés (coupes franches), voix off (`Sound2DAction` d'un événement
     `Cutscenes/…`), autres sons, voiles noirs (`PostEffectVisAction`). Sinon, seul le premier trajet
     de caméra du buff est lu (pilote). `timing.starts` : départs des répliques mesurés (voir le
     manifeste), à la place des groupes estimés."""
     from tools import cutscene_xdb70 as x70
     from tools.cutscene_client import buff_timeline
-    buff_ref = spec.get("_refs", {}).get("buff", spec["buff"])
-    client = buff_timeline(db, db.ids[int(spec["buff"])]) if spec.get("script") == "client" else None
+    buff_ref = spec.get("_refs", {}).get("buff", spec.get("buff"))
+    client = buff_timeline(db, db.ids[int(spec["buff"])]) if spec.get("buff_script") else None
+    fixed = spec.get("buff") is None
     plan_lines = []
     post = list(spec.get("post", []))
     sfx: list[dict] = []
@@ -2645,12 +2685,24 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
                 sfx.append({"event": snd["event"], "t": snd["t"], "until": None})
         if client.ignored:
             report.append(f"{spec['id']} : actions du script non reprises : {', '.join(sorted(set(client.ignored)))}")
+    elif fixed:
+        # Scène jouée dans la vue du joueur (buff de cinématique sans trajet, ou aucun) : point de vue
+        # du manifeste, justifié par lui ; durée : celle du buff, sinon jusqu'à la fin des voix.
+        cam = spec["camera"]
+        camera = {"points": [dict(k) for k in cam["points"]], "targets": [dict(k) for k in cam["targets"]],
+                  "duration": float(cam.get("duration", 0.0))}
     else:
         track = buff_camera_track(db, db.ids[int(spec["buff"])])
         camera = camera_keys(track)
     anchor = None
     refs = spec.get("_refs", {}).get("lines", spec["lines"])
     for n, (rid, ref) in enumerate(zip(spec["lines"], refs), 1):
+        official = None
+        if isinstance(ref, dict):
+            # réplique doublée dont le texte officiel est ailleurs (bulle, message) : désigné par son début
+            prefixes = ref["ru"] if isinstance(ref["ru"], list) else [ref["ru"]]
+            official, _ = texts.official(prefixes, spec.get("fr_pair"))
+            ref = ref["ref"]
         cd = db.ids.get(int(rid))
         if cd is None:
             raise ValueError(f"ClientData {ref} introuvable")
@@ -2663,8 +2715,8 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
             texts.load_fr_voices()
             if cl.voice in texts.fr_voice:
                 anchor = cl.text_index - texts.fr_voice[cl.voice][0]
-        text = texts.line(cl.text_index, cl.voice, cl.delay_ms, anchor)
-        speaker = next((a["id"] for a in spec["actors"] if any(text.get("ru", "").startswith(p) for p in a.get("speaker_prefixes", []))), None)
+        text = official if official is not None else texts.line(cl.text_index, cl.voice, cl.delay_ms, anchor)
+        speaker = spec.get("speakers", {}).get(str(n)) or next((a["id"] for a in spec["actors"] if any(text.get("ru", "").startswith(p) for p in a.get("speaker_prefixes", []))), None)
         actor = next((a for a in spec["actors"] if a["id"] == speaker), None)
         clips = [actor["talk"]] if actor and actor.get("talk") and cl.animations else []
         plan_lines.append({"start": None, "duration": cl.delay_ms / 1000.0, "voice_event": cl.voice, "speaker": speaker,
@@ -2684,9 +2736,11 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
         actors.append(entry)
     timing = "measured" if starts is not None else ("client" if client is not None and not spec["lines"] else "estimated")
     return {"map": spec["map"], "camera": camera, "lines": plan_lines, "actors": actors, "weather": None,
+            **({"duration_from_voices": True} if fixed and not camera["duration"] else {}),
             "sounds": {"music": [], "ambience": [], "sfx": sfx}, "post": post,
             "decor_center": spec.get("decor_center"), "timing": timing,
-            "sources": {"buff": buff_ref, **({"script": "client"} if client is not None else {}), **spec.get("sources", {})}}
+            "sources": {**({"buff": buff_ref} if buff_ref else {"camera": "manifest"}),
+                        **({"buff_script": True} if client is not None else {}), **spec.get("sources", {})}}
 
 
 def weather_light(weather: dict, base: dict) -> dict:

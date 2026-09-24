@@ -1707,6 +1707,58 @@
    "chronology": "Groupe « AllMother » du registre (13.0), fin de l’arc d’Eden."
   },
   {
+   "id": "isa-fishers-legend",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1260,
+   "event": "Isa_Fishers_1_Cutscene",
+   "title": {
+    "fr": "La légende de Lyngbakr",
+    "en": "The legend of Lyngbakr"
+   },
+   "chronology": "Isa (14.0), série des pêcheurs (voix Cutscenes/Isa/Isa_Fishers_*, première du rang : Isa_Fishers_1_Cutscene) : le conteur dit la légende de Lyngbakr, le poisson-île qui noie ceux qui s'y posent, avant la prophétie (Isa_Fishers_2d) et la chasse (Isa_Fishers_3 à 5, « Убедить старосту клана рыбаков поймать Лингбакра »). Ordre des séries d'Isa : celui du plan du film (tools/film_plan.json), d'après les noms des voix. Recréée en 3D, voir engine_scenes.",
+   "bonus": false,
+   "duration": 44.5,
+   "files": {
+    "poster": "engine/isa-fishers-legend/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/isa-fishers-legend/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-fishers-legend/fr.vtt",
+     "lines": 6
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-fishers-legend/en.vtt",
+     "lines": 6
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-fishers-legend/ru.vtt",
+     "lines": 6
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 7,
+    "timing": "measured",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "boss-armand",
    "title": {
     "fr": "Armand de Douceur",
