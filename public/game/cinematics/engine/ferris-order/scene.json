@@ -213,7 +213,8 @@
    "clips": [],
    "animations": [],
    "text": {
-    "ru": "А я предпочитаю простые и надёжные решения!"
+    "ru": "А я предпочитаю простые и надёжные решения!",
+    "en": "And I prefer simple and safe solutions!"
    },
    "source": "Mechanics/RaidInstances/FerrisRaid/CutScene/General_text_4.(ClientData).xdb"
   },
@@ -243,7 +244,7 @@
  "actors": [
   {
    "id": "boss",
-   "glb": "../shared/actors/mob-8c7ef98.glb",
+   "glb": "../shared/actors/mob-95cd500.glb",
    "name": {
     "ru": "Колосс",
     "en": "Colossus"
@@ -259,7 +260,7 @@
      "yaw": 3.12414
     }
    ],
-   "scale": 1.0,
+   "scale": 1.7,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -285,21 +286,19 @@
     0.8047,
     1.0234
    ],
-   "geometry": "Creatures/Colossus/Colossus.(Geometry).bin",
-   "height": 6.331,
+   "geometry": "Creatures/Colossus/ColossusGeneral.(Geometry).bin",
+   "height": 8.148,
    "animations": {
-    "ChannelCastDirected": 1.6667,
-    "Idle": 6.6667,
-    "Walk": 6.6333
+    "Idle": 6.0,
+    "ReadySpellOmni": 3.1,
+    "Run": 1.7333,
+    "Walk": 5.0
    }
   },
   {
    "id": "genera",
-   "glb": "../shared/actors/mob-85ca3e0.glb",
-   "name": {
-    "ru": "",
-    "en": ""
-   },
+   "glb": "../shared/actors/vis-1b1feef0.glb",
+   "name": {},
    "path": [
     {
      "t": 19.0,
@@ -311,7 +310,7 @@
      "yaw": 2.26893
     }
    ],
-   "scale": 1.0,
+   "scale": 1.5,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -327,25 +326,18 @@
     0.8047,
     1.0234
    ],
-   "geometry": "Creatures/GolemJunes/GolemJunes.(Geometry).bin",
-   "height": 3.433,
+   "geometry": "Creatures/ArchitectBot/ArchitectBot.(Geometry).bin",
+   "height": 0.738,
    "animations": {
-    "Attack": 1.7,
-    "Attack01": 1.8,
-    "Death": 4.0,
-    "HitCritical": 1.1,
-    "Idle": 2.6333,
-    "Ready": 1.9667,
-    "Walk": 1.3
+    "Idle": 5.3333,
+    "Run": 2.6667,
+    "Walk": 5.3333
    }
   },
   {
    "id": "genera-2",
-   "glb": "../shared/actors/mob-85ca3e0.glb",
-   "name": {
-    "ru": "",
-    "en": ""
-   },
+   "glb": "../shared/actors/vis-1b1feef0.glb",
+   "name": {},
    "path": [
     {
      "t": 19.0,
@@ -357,7 +349,7 @@
      "yaw": 2.26893
     }
    ],
-   "scale": 1.0,
+   "scale": 1.5,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -373,25 +365,18 @@
     0.8047,
     1.0234
    ],
-   "geometry": "Creatures/GolemJunes/GolemJunes.(Geometry).bin",
-   "height": 3.433,
+   "geometry": "Creatures/ArchitectBot/ArchitectBot.(Geometry).bin",
+   "height": 0.738,
    "animations": {
-    "Attack": 1.7,
-    "Attack01": 1.8,
-    "Death": 4.0,
-    "HitCritical": 1.1,
-    "Idle": 2.6333,
-    "Ready": 1.9667,
-    "Walk": 1.3
+    "Idle": 5.3333,
+    "Run": 2.6667,
+    "Walk": 5.3333
    }
   },
   {
    "id": "genera-3",
-   "glb": "../shared/actors/mob-85ca3e0.glb",
-   "name": {
-    "ru": "",
-    "en": ""
-   },
+   "glb": "../shared/actors/vis-1b1feef0.glb",
+   "name": {},
    "path": [
     {
      "t": 19.0,
@@ -403,7 +388,7 @@
      "yaw": 2.26893
     }
    ],
-   "scale": 1.0,
+   "scale": 1.5,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -419,25 +404,18 @@
     0.8047,
     1.0234
    ],
-   "geometry": "Creatures/GolemJunes/GolemJunes.(Geometry).bin",
-   "height": 3.433,
+   "geometry": "Creatures/ArchitectBot/ArchitectBot.(Geometry).bin",
+   "height": 0.738,
    "animations": {
-    "Attack": 1.7,
-    "Attack01": 1.8,
-    "Death": 4.0,
-    "HitCritical": 1.1,
-    "Idle": 2.6333,
-    "Ready": 1.9667,
-    "Walk": 1.3
+    "Idle": 5.3333,
+    "Run": 2.6667,
+    "Walk": 5.3333
    }
   },
   {
    "id": "genera-4",
-   "glb": "../shared/actors/mob-85ca3e0.glb",
-   "name": {
-    "ru": "",
-    "en": ""
-   },
+   "glb": "../shared/actors/vis-1b1feef0.glb",
+   "name": {},
    "path": [
     {
      "t": 19.0,
@@ -449,7 +427,7 @@
      "yaw": 2.26893
     }
    ],
-   "scale": 1.0,
+   "scale": 1.5,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -465,25 +443,18 @@
     0.8047,
     1.0234
    ],
-   "geometry": "Creatures/GolemJunes/GolemJunes.(Geometry).bin",
-   "height": 3.433,
+   "geometry": "Creatures/ArchitectBot/ArchitectBot.(Geometry).bin",
+   "height": 0.738,
    "animations": {
-    "Attack": 1.7,
-    "Attack01": 1.8,
-    "Death": 4.0,
-    "HitCritical": 1.1,
-    "Idle": 2.6333,
-    "Ready": 1.9667,
-    "Walk": 1.3
+    "Idle": 5.3333,
+    "Run": 2.6667,
+    "Walk": 5.3333
    }
   },
   {
    "id": "genera-5",
-   "glb": "../shared/actors/mob-85ca3e0.glb",
-   "name": {
-    "ru": "",
-    "en": ""
-   },
+   "glb": "../shared/actors/vis-1b1feef0.glb",
+   "name": {},
    "path": [
     {
      "t": 19.0,
@@ -495,7 +466,7 @@
      "yaw": 2.26893
     }
    ],
-   "scale": 1.0,
+   "scale": 1.5,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -511,21 +482,17 @@
     0.8047,
     1.0234
    ],
-   "geometry": "Creatures/GolemJunes/GolemJunes.(Geometry).bin",
-   "height": 3.433,
+   "geometry": "Creatures/ArchitectBot/ArchitectBot.(Geometry).bin",
+   "height": 0.738,
    "animations": {
-    "Attack": 1.7,
-    "Attack01": 1.8,
-    "Death": 4.0,
-    "HitCritical": 1.1,
-    "Idle": 2.6333,
-    "Ready": 1.9667,
-    "Walk": 1.3
+    "Idle": 5.3333,
+    "Run": 2.6667,
+    "Walk": 5.3333
    }
   },
   {
    "id": "rysina",
-   "glb": "../shared/actors/mob-56721a8.glb",
+   "glb": "../shared/actors/mob-56723b8.glb",
    "name": {
     "ru": "Елизавета Рысина",
     "en": "Elizaveta Rysina"
@@ -565,6 +532,7 @@
     "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
     "ReadySpellDirected": 1.3333,
+    "Run": 0.5667,
     "Special": 12.0,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.3333,
@@ -573,7 +541,7 @@
   },
   {
    "id": "diarder",
-   "glb": "../shared/actors/mob-56747f0.glb",
+   "glb": "../shared/actors/mob-5674a00.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -642,6 +610,7 @@
     "Idle02": 4.1,
     "Ready": 2.6667,
     "ReadySpellDirected": 2.6667,
+    "Run": 0.6,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.5,
     "Walk": 1.0
@@ -1385,7 +1354,8 @@
      "vot": "Architect_Kernel_Big_01",
      "locator": "Slot_Special01"
     }
-   ]
+   ],
+   "sfx": "sfx/BigKernel_lp"
   },
   "Architect_Rock_Lantern": {
    "fadeIn": 0.0,
@@ -1673,7 +1643,8 @@
     2.946,
     2.896,
     0.0
-   ]
+   ],
+   "sfx": "sfx/idle01"
   },
   "Architect_Portal_Big_In": {
    "fadeIn": 0.5,
@@ -1764,7 +1735,8 @@
      "vot": "Architect_Big_Portal_02",
      "locator": "Slot_Special01"
     }
-   ]
+   ],
+   "sfx": "sfx/Ready_Spell_FettersFrost_Decal"
   },
   "Architect_Big_Portal#2": {
    "fadeIn": 0.0,
@@ -2061,7 +2033,8 @@
      "vot": "Carrier_Arena_Ray",
      "locator": "Slot_Special01"
     }
-   ]
+   ],
+   "sfx": "sfx/Ready_Spell_FettersFrost_Decal"
   },
   "Carrier_Arena_Sky": {
    "fadeIn": 0.0,
@@ -2560,7 +2533,9 @@
     "until": 51.0
    }
   ],
-  "ambience": [],
+  "ambience": [
+   "sfx/FerrisWinter_drone"
+  ],
   "sfx": [],
   "events": {
    "music": [],
@@ -2569,11 +2544,40 @@
    ]
   },
   "waves": {
+   "Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1": {
+    "file": "sfx/FerrisWinter_drone",
+    "wave": "FerrisWinter_drone",
+    "bank": "SFX/Ambience/Ambience_Ferris.bsb",
+    "duration": 20.0,
+    "match": "bev"
+   },
    "Music/ZonesMusic/UmoirAwry_I_adaptive": {
     "file": "sfx/UmoirAwry_I_adaptive",
     "wave": "UmoirAwry_I_adaptive",
     "bank": "SFX/Music/Music_Zone.fsb",
-    "duration": 52.0
+    "duration": 52.0,
+    "match": "bev"
+   },
+   "World/Races/Architectors/Kernel": {
+    "file": "sfx/BigKernel_lp",
+    "wave": "BigKernel_lp",
+    "bank": "SFX/World/World_Races.bsb",
+    "duration": 7.837,
+    "match": "bev"
+   },
+   "spells/FX/Mobs/ArchitectFX/ArchitectBigPortal": {
+    "file": "sfx/Ready_Spell_FettersFrost_Decal",
+    "wave": "Ready_Spell_FettersFrost_Decal",
+    "bank": "SFX/Spells/Spells_FX2.bsb",
+    "duration": 2.549,
+    "match": "bev"
+   },
+   "spells/World/UI04/idle01": {
+    "file": "sfx/idle01",
+    "wave": "idle01",
+    "bank": "SFX/Creatures/BasiliskPet.bsb",
+    "duration": 0.916,
+    "match": "name"
    }
   },
   "volume": {}

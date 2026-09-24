@@ -402,7 +402,7 @@
  "actors": [
   {
    "id": "diarder",
-   "glb": "../shared/actors/mob-56747f0.glb",
+   "glb": "../shared/actors/mob-5674a00.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -487,6 +487,7 @@
     "Idle02": 4.1,
     "Ready": 2.6667,
     "ReadySpellDirected": 2.6667,
+    "Run": 0.6,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.5,
     "Walk": 1.0
@@ -494,7 +495,7 @@
   },
   {
    "id": "rysina",
-   "glb": "../shared/actors/mob-56721a8.glb",
+   "glb": "../shared/actors/mob-56723b8.glb",
    "name": {
     "ru": "Елизавета Рысина",
     "en": "Elizaveta Rysina"
@@ -552,6 +553,7 @@
     "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
     "ReadySpellDirected": 1.3333,
+    "Run": 0.5667,
     "Special": 12.0,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.3333,
@@ -560,7 +562,7 @@
   },
   {
    "id": "arch",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -594,7 +596,7 @@
      "yaw": 3.5873
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -614,12 +616,13 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   },
   {
    "id": "rysina-2",
-   "glb": "../shared/actors/mob-56721a8.glb",
+   "glb": "../shared/actors/mob-56723b8.glb",
    "name": {
     "ru": "Елизавета Рысина",
     "en": "Elizaveta Rysina"
@@ -693,6 +696,7 @@
     "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
     "ReadySpellDirected": 1.3333,
+    "Run": 0.5667,
     "Special": 12.0,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.3333,
@@ -701,11 +705,8 @@
   },
   {
    "id": "swarm",
-   "glb": "../shared/actors/mob-85ca3e0.glb",
-   "name": {
-    "ru": "",
-    "en": ""
-   },
+   "glb": "../shared/actors/vis-95ddaf8.glb",
+   "name": {},
    "path": [
     {
      "t": 30.5,
@@ -717,7 +718,7 @@
      "yaw": 2.63545
     }
    ],
-   "scale": 1.0,
+   "scale": 1.5,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -759,21 +760,23 @@
     0.8047,
     1.0234
    ],
-   "geometry": "Creatures/GolemJunes/GolemJunes.(Geometry).bin",
-   "height": 3.433,
+   "geometry": "Creatures/Colossus/Colossus.(Geometry).bin",
+   "height": 6.331,
    "animations": {
-    "Attack": 1.7,
-    "Attack01": 1.8,
-    "Death": 4.0,
-    "HitCritical": 1.1,
-    "Idle": 2.6333,
-    "Ready": 1.9667,
-    "Walk": 1.3
+    "Attack": 1.3333,
+    "Attack01": 1.3333,
+    "Attack02": 1.5,
+    "Death": 8.3333,
+    "HitCritical": 0.8333,
+    "Idle": 6.6667,
+    "Ready": 6.6667,
+    "Run": 0.8333,
+    "Walk": 6.6333
    }
   },
   {
    "id": "arch-2",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -807,7 +810,7 @@
      "yaw": 3.4994
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -827,12 +830,13 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   },
   {
    "id": "arch-3",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -866,7 +870,7 @@
      "yaw": 3.682
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -886,12 +890,13 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   },
   {
    "id": "arch-4",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -925,7 +930,7 @@
      "yaw": 3.7239
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -945,12 +950,13 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   },
   {
    "id": "arch-5",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -984,7 +990,7 @@
      "yaw": 3.4378
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -1004,12 +1010,13 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   },
   {
    "id": "arch-6",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -1043,7 +1050,7 @@
      "yaw": 3.599
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -1063,12 +1070,13 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   },
   {
    "id": "arch-7",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -1102,7 +1110,7 @@
      "yaw": 3.4799
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -1122,12 +1130,13 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   },
   {
    "id": "arch-8",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -1161,7 +1170,7 @@
      "yaw": 3.8439
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -1181,12 +1190,13 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   },
   {
    "id": "arch-9",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -1220,7 +1230,7 @@
      "yaw": 3.3783
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -1240,12 +1250,13 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   },
   {
    "id": "arch-10",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -1279,7 +1290,7 @@
      "yaw": 3.7472
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -1299,12 +1310,13 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   },
   {
    "id": "arch-11",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -1338,7 +1350,7 @@
      "yaw": 3.7472
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -1358,12 +1370,13 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   },
   {
    "id": "arch-12",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -1397,7 +1410,7 @@
      "yaw": 3.6142
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -1417,12 +1430,13 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   },
   {
    "id": "arch-13",
-   "glb": "../shared/actors/mob-1b08b148.glb",
+   "glb": "../shared/actors/mob-1b088788.glb",
    "name": {
     "ru": "Архитектор",
     "en": "Architect"
@@ -1456,7 +1470,7 @@
      "yaw": 3.3828
     }
    ],
-   "scale": 1.0,
+   "scale": 0.6,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -1476,6 +1490,7 @@
    "height": 0.738,
    "animations": {
     "Idle": 5.3333,
+    "Run": 2.6667,
     "Walk": 5.3333
    }
   }
@@ -2948,7 +2963,7 @@
      "locator": "Slot_Special01"
     }
    ],
-   "sfx": "sfx/Kernel"
+   "sfx": "sfx/BigKernel_lp"
   },
   "Architect_Rock_Lantern": {
    "fadeIn": 0.0,
@@ -3328,7 +3343,8 @@
      "vot": "Architect_Big_Portal_02",
      "locator": "Slot_Special01"
     }
-   ]
+   ],
+   "sfx": "sfx/Ready_Spell_FettersFrost_Decal"
   },
   "Architect_Big_Portal#2": {
    "fadeIn": 0.0,
@@ -3625,7 +3641,8 @@
      "vot": "Carrier_Arena_Ray",
      "locator": "Slot_Special01"
     }
-   ]
+   ],
+   "sfx": "sfx/Ready_Spell_FettersFrost_Decal"
   },
   "Carrier_Arena_Sky": {
    "fadeIn": 0.0,
@@ -4124,7 +4141,9 @@
     "until": 71.5
    }
   ],
-  "ambience": [],
+  "ambience": [
+   "sfx/FerrisWinter_drone"
+  ],
   "sfx": [],
   "events": {
    "music": [],
@@ -4133,23 +4152,40 @@
    ]
   },
   "waves": {
+   "Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1": {
+    "file": "sfx/FerrisWinter_drone",
+    "wave": "FerrisWinter_drone",
+    "bank": "SFX/Ambience/Ambience_Ferris.bsb",
+    "duration": 20.0,
+    "match": "bev"
+   },
    "Music/ZonesMusic/UmoirAwry_I_adaptive": {
     "file": "sfx/UmoirAwry_I_adaptive",
     "wave": "UmoirAwry_I_adaptive",
     "bank": "SFX/Music/Music_Zone.fsb",
-    "duration": 72.5
+    "duration": 72.5,
+    "match": "bev"
    },
    "World/Races/Architectors/Kernel": {
-    "file": "sfx/Kernel",
-    "wave": "Kernel",
-    "bank": "SFX/Creatures/ArchitectSiegeHeavyArtillery.bsb",
-    "duration": 7.776
+    "file": "sfx/BigKernel_lp",
+    "wave": "BigKernel_lp",
+    "bank": "SFX/World/World_Races.bsb",
+    "duration": 7.837,
+    "match": "bev"
+   },
+   "spells/FX/Mobs/ArchitectFX/ArchitectBigPortal": {
+    "file": "sfx/Ready_Spell_FettersFrost_Decal",
+    "wave": "Ready_Spell_FettersFrost_Decal",
+    "bank": "SFX/Spells/Spells_FX2.bsb",
+    "duration": 2.549,
+    "match": "bev"
    },
    "spells/World/UI04/idle01": {
     "file": "sfx/idle01",
     "wave": "idle01",
     "bank": "SFX/Creatures/BasiliskPet.bsb",
-    "duration": 0.916
+    "duration": 0.916,
+    "match": "name"
    }
   },
   "volume": {}

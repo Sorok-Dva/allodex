@@ -634,7 +634,8 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
             raise ValueError(f"{actor['id']} : MobWorld {actor['mob']} introuvable")
         # Acteur d'une `GameViewScene` : sa `VisualMob` est donnée directement (pas de `MobWorld`).
         visual = actor["visual"] if actor.get("visual") is not None else mob_visual(db, mob)
-        tpl_off = visual_template(db, visual) if visual is not None else None
+        troop = actor.get("troop")
+        tpl_off = troop["template"] if troop else visual_template(db, visual) if visual is not None else None
         if tpl_off is None:
             raise ValueError(f"{actor['id']} : gabarit visuel introuvable")
         template = read_character_template(db, cat, tpl_off)
@@ -661,8 +662,10 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
     if template is not None and (template.default_dress is not None or (template.variations is not None and untextured)):
         # Personnage, ou PNJ unique habillé comme un personnage (`Creatures/Mirianna` : géosets
         # sans texture, peau et tenue données par la `VisualMob`).
-        variation = read_variation(db, cat, visual + VM_VARIATION)
-        items = [read_visual_item(db, cat, off) for off in visual_dress(db, visual)]
+        variation = read_variation(db, cat, troop["variation"] if troop else visual + VM_VARIATION)
+        # membre d'une troupe : les objets portés de la `VisualMob`, sauf les armes des autres membres
+        items = [read_visual_item(db, cat, off) for off, slot in visual_dress_slots(db, visual)
+                 if not troop or slot not in TROOP_WEAPON_SLOTS or slot == troop.get("weapon")]
         skin = template.main_texture or (template.variations.main_textures[0]
                                          if template.variations and template.variations.main_textures else None)
         appearance = resolve_appearance(template, [e.name for e in geo_elements],
@@ -690,6 +693,21 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
                       f"{len(attachments)} objets accrochés")
     else:
         elements = [e for e in geo_elements if e.material.visible and e.material.texture]
+        # Créature (gabarit sans tenue) habillée par sa `VisualMob` : armes et objets accrochés de ses
+        # objets portés (`items`), comme un personnage (les archers de la Семейка Драчунов d'Isa).
+        if visual is not None and template is not None:
+            for off in visual_dress(db, visual):
+                for shape in read_visual_item(db, cat, off).shapes_for(template.gender):
+                    if shape.scene is not None and shape.locator:
+                        attachments.append((shape.locator, shape.scene, shape.shape, shape.replacement))
+    attachments = [a if len(a) == 4 else (*a, None) for a in attachments]
+    # Objets tenus du modèle lui-même : composants `AttachedVisObjectComponent` de son gabarit visuel
+    # (`VisObjectTemplate.components`), montrés hors de tout état — le bâton d'Унн (`Prophetess` :
+    # `TikuaniChieftainItem` sur `Slot_Hand_R`), la queue des Pridiens (`PraidenMaleTail`). Ceux d'un
+    # `StateComponent` (bouteille d'une émote, canne à pêche) ne paraissent que pendant leurs
+    # animations : non posés (aucune scène ne les joue), signalés.
+    held = [c for c in vot.components if c.visobject is not None and c.state_ids is None and not c.cancelled
+            and c.start <= 0 and c.stop is None]
     mesh, skinned = ex.emit_mesh(actor["id"], loaded.geo, loaded.vertices, loaded.indices, elements, loaded.skeleton, override)
     skeleton = loaded.skeleton
     joints = ex.emit_skeleton(skeleton, actor["id"])
@@ -698,22 +716,45 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
     mesh_node = {"name": f"{actor['id']}_mesh", "mesh": mesh} if mesh is not None else {"name": f"{actor['id']}_mesh"}
     if skinned and mesh is not None:
         mesh_node["skin"] = ex.skin(actor["id"], skeleton, joints, static_node)
-    for locator, scene, shape_name in attachments:
+    def attach(locator: str, scene: int, shape_name: str, replacement: str | None, transform: dict) -> bool:
         if locator not in skeleton.names:
             report.append(f"{actor['id']} : locator absent du squelette {locator}")
-            continue
+            return False
         vis = read_visobject(db, cat, scene)
         att = load_geometry(db, cat, bins, vis.geometry) if vis.geometry is not None else None
         if att is None:
-            continue
+            report.append(f"{actor['id']} : objet accroché {vis.name} sans géométrie (non posé)")
+            return False
         # la géométrie accrochée porte souvent les deux côtés (« L », « R ») ou un élément par
         # gabarit (casques) : le nom de la forme choisit l'élément dessiné
         chosen = [e for e in att.geo.doc.elements if e.name == shape_name] or \
             [e for e in att.geo.doc.elements if e.material.visible and e.material.texture]
-        index, _ = ex.emit_mesh(f"{actor['id']}:{locator}", att.geo, att.vertices, att.indices, chosen, None)
-        if index is not None:
-            node = ex.gltf.add_node({"name": f"attach:{locator}", "mesh": index})
-            ex.gltf.json["nodes"][joints[skeleton.names.index(locator)]].setdefault("children", []).append(node)
+        # texture de remplacement de la forme (`armorShapes.replacement` : teinte de l'arme)
+        retex = {e.name: replacement for e in chosen} if replacement else {}
+        index, _ = ex.emit_mesh(f"{actor['id']}:{locator}:{vis.name}", att.geo, att.vertices, att.indices, chosen, None,
+                                retex)
+        if index is None:
+            return False
+        node = ex.gltf.add_node({"name": f"attach:{locator}", "mesh": index, **transform})
+        ex.gltf.json["nodes"][joints[skeleton.names.index(locator)]].setdefault("children", []).append(node)
+        return True
+
+    for locator, scene, shape_name, replacement in attachments:
+        attach(locator, scene, shape_name, replacement, {})
+    for comp in held:
+        # place du composant dans le repère du locator (décalage, quaternion x, y, z, w, échelle ×
+        # échelle propre du gabarit accroché), comme les composants du décor (`allods_fx`)
+        transform: dict = {}
+        if any(abs(v) > 1e-9 for v in comp.offset):
+            transform["translation"] = [float(v) for v in comp.offset]
+        if abs(comp.rotation[3] - 1) > 1e-9 or any(abs(v) > 1e-9 for v in comp.rotation[:3]):
+            transform["rotation"] = [float(v) for v in comp.rotation]
+        s = (comp.scale if comp.scale > 0 else 1.0) * (read_visobject(db, cat, comp.visobject).scale or 1.0)
+        if abs(s - 1) > 1e-6:
+            transform["scale"] = [float(s)] * 3
+        if attach(comp.locator, comp.visobject, "", None, transform):
+            report.append(f"{actor['id']} : objet tenu du modèle {read_visobject(db, cat, comp.visobject).name} "
+                          f"sur {comp.locator}")
     roots = [joints[i] for i in range(len(skeleton)) if not (0 <= skeleton.parents[i] < len(skeleton))]
     span = float(np.max(np.abs(loaded.vertices["position"])) * 4.0)
     durations = {}
@@ -739,6 +780,11 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
 
 
 # --- effets de scène ------------------------------------------------------------------------------
+
+# `Cue` (dialogue d'un PNJ, 17.0) : réponse du joueur (indice de texte en `+0x88`), texte du PNJ
+# (`+0xC8`), réponses suivantes en `+0x90` (relevé sur le dialogue de Герда au festin de Skalgard).
+CUE_PLAYER = 0x88
+CUE_TEXT = 0xC8
 
 RESOURCE_REF = "res:"
 STELE_SCENE_REF = "stele:"
@@ -1341,16 +1387,29 @@ class ResourceTexts:
         return text
 
 
-def find_mob_by_name(db: PackDB, cat, texts: Texts, name: str, model_hint: str) -> int | None:
+def visual_scale_70(root: Path | None, visual: str | None) -> float | None:
+    """Échelle (`scale`) d'une `VisualMob` de l'arbre 7.0, `None` si illisible."""
+    if root is None or not visual:
+        return None
+    from tools import cutscene_xdb70 as x70
+    doc = x70._read(Path(root) / visual.lstrip("/"))
+    return _f70(doc, "scale", 1.0) if doc is not None else None
+
+
+def find_mob_by_name(db: PackDB, cat, texts: Texts, name: str, model_hint: str, scale: float | None = None) -> int | None:
     """`MobWorld` du 17.0 au nom russe `name` ; entre plusieurs, celui dont le modèle vient du même
-    dossier que le `MobWorld` 7.0 (`Characters/Hadagan_male/…`)."""
+    dossier que le `MobWorld` 7.0 (`Characters/Hadagan_male/…`) et, si elle est connue (`scale`), dont la
+    `VisualMob` a l'échelle de celle du 7.0 : « Негус Джиг » a cinq `MobWorld` au 17.0, dont celui du
+    boss du raid à l'échelle 2 (le PNJ de la rétrospective de Ferris, à 1 au 7.0, sortait géant depuis
+    que l'échelle des `VisualMob` est appliquée)."""
     from tools.extract_cinematics import norm_key
     want = norm_key(name)
     if not want:
         return None         # PNJ sans nom (paladins `KIS_NoobPaladin_live`) : le nom ne départage rien
     ru = texts.main.texts["ru"]
     hint = "/".join(model_hint.split("/")[:2]).lower() if model_hint else ""
-    best = None
+    # rang : même dossier et même échelle, même dossier, même échelle, premier au nom
+    ranked: dict[int, int] = {}
     for off in db.resources("MobWorld"):
         idx = mob_name_index(db, off)
         if idx >= len(ru) or norm_key(ru[idx]) != want:
@@ -1359,13 +1418,16 @@ def find_mob_by_name(db: PackDB, cat, texts: Texts, name: str, model_hint: str) 
         tpl = visual_template(db, visual) if visual is not None else None
         if tpl is None:
             continue
-        best = best or off
         vot = db.ptr(tpl + 0x90)
         geo = db.ptr(vot + 0xC0) if vot is not None else None
         path = (cat.name(db.binary_ref(geo)) or "").lower() if geo is not None else ""
-        if hint and path.startswith(hint):
-            return off
-    return best
+        same_dir = bool(hint) and path.startswith(hint)
+        same_scale = scale is not None and abs(db.f32(visual + VM_SCALE) - scale) <= 1e-3
+        rank = 0 if same_dir and (same_scale or scale is None) else 1 if same_dir else 2 if same_scale else 3
+        ranked.setdefault(rank, off)
+        if rank == 0:
+            break
+    return ranked[min(ranked)] if ranked else None
 
 
 def _stem(name: str | None) -> str:
@@ -1422,11 +1484,60 @@ def find_visual_by_content(db: PackDB, cat, root: Path, visual: str | None) -> t
     return scored[0][1], f"couleurs {skin}/{hair}, textures de tenue {scored[0][0]:.2f} ({len(scored)} candidates)"
 
 
+def creature_signature_70(root: Path, visual: str) -> tuple[str, float] | None:
+    """Signature d'une `VisualMob` 7.0 de créature (sans tenue ni couleurs) : chemin de la géométrie
+    de son gabarit (`character` → `VisCharacterTemplate` → `VisObjectTemplate` → `Geometry`, en
+    minuscules, sans suffixe) et son échelle (`scale`)."""
+    from tools import cutscene_xdb70 as x70
+    tree = x70.Tree(Path(root))
+    path = tree.root / visual.lstrip("/")
+    doc = x70._read(path)
+    char = doc.find("character") if doc is not None else None
+    if char is None or not char.get("href"):
+        return None
+    tpl_path = tree.resolve(path, char.get("href"))
+    tpl = x70._read(tpl_path)
+    vot_href = next((n.get("href") for n in (tpl.iter() if tpl is not None else []) if "(VisObjectTemplate)" in (n.get("href") or "")), None)
+    if vot_href is None:
+        return None
+    vot_path = tree.resolve(tpl_path, vot_href)
+    vot = x70._read(vot_path)
+    geo = next((n.get("href") for n in (vot.iter() if vot is not None else []) if "(Geometry)" in (n.get("href") or "")), None)
+    if geo is None:
+        return None
+    geo_rel = tree.rel(tree.resolve(vot_path, geo)).split(".(")[0].lstrip("/").lower()
+    return geo_rel, _f70(doc, "scale", 1.0)
+
+
+def find_creature_visual(db: PackDB, cat, root: Path, visual: str | None) -> tuple[int | None, str]:
+    """`VisualMob` du 17.0 d'une créature sans nom (drones de Genera, essaim du raid de Ferris) : sans
+    tenue, gabarit à la même géométrie que la `VisualMob` 7.0 (`creature_signature_70`) et même échelle.
+    Entre plusieurs (copies d'une même créature), la première par offset, signalée."""
+    sig = creature_signature_70(root, visual) if visual else None
+    if sig is None:
+        return None, "VisualMob 7.0 sans gabarit lisible"
+    geo_want, scale = sig
+    found = []
+    for off in db.resources("VisualMob"):
+        if visual_dress(db, off) or abs(db.f32(off + VM_SCALE) - scale) > 1e-3:
+            continue
+        tpl = visual_template(db, off)
+        vot = db.ptr(tpl + 0x90) if tpl is not None else None
+        geo = db.ptr(vot + 0xC0) if vot is not None else None
+        name = (cat.name(db.binary_ref(geo)) or "").lower() if geo is not None else ""
+        if name and name.split(".(")[0].split("@")[0].lstrip("/") == geo_want:
+            found.append(off)
+    if not found:
+        return None, f"aucune VisualMob sans tenue de géométrie {geo_want} à l'échelle {scale}"
+    return found[0], f"géométrie {geo_want}, échelle {scale} ({len(found)} candidates, première prise)"
+
+
 # Mots des noms de `MobWorld` qui ne désignent pas le PNJ (`CutScene_BossLast`, `Cut_Scene_Boss`).
 GENERIC_TOKENS = {"cutscene", "cut", "scene", "cs", "mob", "npc"}
 
 
-def summon_actors(spec: dict, tl, spawns: dict, db: PackDB, cat, texts: Texts, report: list[str]) -> dict[str, dict]:
+def summon_actors(spec: dict, tl, spawns: dict, db: PackDB, cat, texts: Texts, report: list[str],
+                  root: Path | None = None) -> dict[str, dict]:
     """PNJ invoqués par le déroulé (`ImpactSummon`) → acteurs, un par nom : chaque invocation le
     (ré)apparaît sur son repère, `ImpactGoTo` le fait marcher (à la `walkSpeed` du `MobWorld`)
     jusqu'au repère visé, `Disintegrate` le retire (`presence`)."""
@@ -1442,8 +1553,15 @@ def summon_actors(spec: dict, tl, spawns: dict, db: PackDB, cat, texts: Texts, r
         twins = [a for a in groups.values() if a["name"] == name]
         actor = next((a for a in twins if a["presence"][-1][1] <= summon["t"] + 1e-3), None)
         if actor is None:
-            mob = find_mob_by_name(db, cat, texts, summon["name"], summon.get("visual") or summon["mob"] or "")
-            if mob is None:
+            mob = find_mob_by_name(db, cat, texts, summon["name"], summon.get("visual") or summon["mob"] or "",
+                                   visual_scale_70(root, summon.get("visual")))
+            visual = None
+            if mob is None and not summon["name"] and summon.get("visual") and root is not None:
+                # créature sans nom (drones de Genera, essaim) : sa `VisualMob` par gabarit et échelle
+                visual, why = find_creature_visual(db, cat, root, summon["visual"])
+                report.append(f"{spec['id']} : invocation sans nom {summon['mob']} : VisualMob "
+                              f"{'introuvable' if visual is None else 'retrouvée'} ({summon['visual']} ; {why})")
+            if mob is None and visual is None:
                 report.append(f"{spec['id']} : PNJ invoqué introuvable dans le 17.0 : {summon['name']}")
                 continue
             tokens = [t for t in Path(summon["mob"] or "x").name.split(".")[0].lower().split("_") if t not in GENERIC_TOKENS]
@@ -1455,7 +1573,8 @@ def summon_actors(spec: dict, tl, spawns: dict, db: PackDB, cat, texts: Texts, r
                 n += 1
                 ident = f"{base}-{n}"
             actor = {"id": ident, "name": name, "mob_offset": mob,
-                     "path": [], "presence": [], "move": "Walk", "voice_key": stem, "summons": [], "server": summon}
+                     "path": [], "presence": [], "move": "Walk", "voice_key": stem, "summons": [], "server": summon,
+                     **({"visual": visual} if visual is not None else {})}
             groups[summon["id"]] = actor
         actor["summons"].append(summon["id"])
         path = actor["path"]
@@ -1638,7 +1757,8 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
             continue
         if sp["mob"].endswith(".(SteleResource).xdb"):   # stèle : ses états visuels (voir trigger_extras)
             continue
-        mob = find_mob_by_name(db, cat, texts, sp["name"], sp.get("visual") or sp["mob"] or "")
+        mob = find_mob_by_name(db, cat, texts, sp["name"], sp.get("visual") or sp["mob"] or "",
+                               visual_scale_70(root, sp.get("visual")))
         visual = None
         if mob is None and not sp["name"] and sp.get("visual"):
             # `MobWorld` sans nom (paladins `Paladin_live1…4`) : sa `VisualMob` retrouvée par son contenu.
@@ -1651,7 +1771,7 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
         actors[script] = {"id": re.sub(r"[^a-z0-9]+", "-", script.lower()).strip("-"), "mob_offset": mob,
                           "path": [{"t": 0, "p": sp["p"], "yaw": model_yaw(sp["yaw"])}], "server": sp,
                           **({"visual": visual, "name": {}} if visual is not None else {})}
-    summoned = summon_actors(spec, tl, spawns, db, cat, texts, report)
+    summoned = summon_actors(spec, tl, spawns, db, cat, texts, report, root)
     for key, info in summoned.items():
         actors[key] = info
     plan_lines, content = [], [0.0]
@@ -2425,16 +2545,113 @@ def move_clip(move: str | None, animations: dict) -> str | None:
     return move
 
 
-def actor_model_key(actor: dict) -> int:
+def actor_model_key(actor: dict):
     if actor.get("vot") is not None:
         return actor["vot"]
-    return actor["visual"] if actor.get("visual") is not None else actor["mob_offset"]
+    base = actor["visual"] if actor.get("visual") is not None else actor["mob_offset"]
+    return (base, actor["troop"]["index"]) if actor.get("troop") else base
 
 
 def actor_file_key(actor: dict) -> str:
     if actor.get("vot") is not None:
         return f"vot-{actor['vot']:x}"
-    return f"mob-{actor['mob_offset']:x}" if actor.get("visual") is None else f"vis-{actor['visual']:x}"
+    key = f"mob-{actor['mob_offset']:x}" if actor.get("visual") is None else f"vis-{actor['visual']:x}"
+    return f"{key}-t{actor['troop']['index'] + 1}" if actor.get("troop") else key
+
+
+# Troupe (`VisualMobTroopExtension` de la `VisualMob`, `+0x90`) : les « Семейка » d'Isa et de Skalgard
+# sont des trios de gibberlings, comme les gibberlings joueurs. Le gabarit de la `VisualMob`
+# (`GiberlingGroup`) n'est qu'un squelette de places (`Slot_Defender`, `Slot_Caster`,
+# `Slot_Assaulter`) sans corps ni mains : chaque membre (152 o : `+0x08` gabarit, `+0x10` variation,
+# mêmes champs que celle d'une `VisualMob`) est un personnage, posé à sa place. Les objets portés de la
+# `VisualMob` habillent les trois ; ses armes (emplacements 14 main droite, 15 main gauche, 16 distance :
+# l'axe, le bouclier et l'arc de Герда) vont chacune à un membre, dans l'ordre des places du
+# squelette — répartition et ordre des places sont un choix (le client ne les écrit pas).
+VM_TROOP = 0x90
+TROOP_MEMBERS = 0x30
+TROOP_MEMBER_STRIDE = 152
+TROOP_MEMBER_TEMPLATE = 0x08
+TROOP_MEMBER_VARIATION = 0x10
+TROOP_SLOTS = ("Slot_Defender", "Slot_Caster", "Slot_Assaulter")
+TROOP_WEAPON_SLOTS = (14, 15, 16)
+VM_DRESS_SLOT = 0x10
+
+
+def visual_dress_slots(db: PackDB, visual: int) -> list[tuple[int, int]]:
+    """Objets portés de la `VisualMob` avec leur emplacement (`+0x10` de l'élément de 24 o)."""
+    from tools.allods_scenes import VM_DRESS, VM_DRESS_STRIDE
+    out = []
+    for e in db.elements(visual + VM_DRESS, VM_DRESS_STRIDE):
+        item = db.ptr(e + 8)
+        if item is not None and db.vtype(item) == "VisualItem":
+            out.append((item, db.u32(e + VM_DRESS_SLOT)))
+    return out
+
+
+def troop_members(db: PackDB, visual: int | None) -> list[tuple[int, int]]:
+    """(gabarit, variation) des membres d'une troupe, ou [] pour un PNJ seul."""
+    ext = db.ptr(visual + VM_TROOP) if visual is not None else None
+    if ext is None or db.vtype(ext) != "VisualMobTroopExtension":
+        return []
+    out = []
+    for m in db.elements(ext + TROOP_MEMBERS, TROOP_MEMBER_STRIDE):
+        tpl = db.ptr(m + TROOP_MEMBER_TEMPLATE)
+        if tpl is not None and db.vtype(tpl) == "VisCharacterTemplate":
+            out.append((tpl, m + TROOP_MEMBER_VARIATION))
+    return out
+
+
+def troop_offset(offset, key: dict) -> tuple[float, float]:
+    """Décalage (repère du modèle, avant −Y) d'un membre, tourné au lacet du modèle posé."""
+    yaw = face_yaw(key["p"], key["face"]) if key.get("face") else float(key.get("yaw", 0.0))
+    c, s = math.cos(yaw), math.sin(yaw)
+    return offset[0] * c - offset[1] * s, offset[0] * s + offset[1] * c
+
+
+def expand_troops(plans: dict[str, dict], db: PackDB, cat, bins, report: list[str]) -> None:
+    """Chaque acteur troupe devient ses membres (le premier garde l'identifiant : répliques et actions
+    le visent), décalés de la place de leur `Slot_*` dans le squelette du gabarit, tournée au cap de
+    l'acteur."""
+    from tools.extract_menu_scene import rest_world_matrices
+    slots_of: dict[int, dict] = {}
+    for sid, plan in plans.items():
+        out = []
+        for a in plan.get("actors", []):
+            mob = a.get("mob_offset")
+            visual = a.get("visual") if a.get("visual") is not None else (mob_visual(db, mob) if mob is not None else None)
+            members = troop_members(db, visual) if a.get("vot") is None and not a.get("troop") else []
+            if not members:
+                out.append(a)
+                continue
+            tpl = visual_template(db, visual)
+            if tpl not in slots_of:
+                slots_of[tpl] = {}
+                vot = read_visobject(db, cat, read_character_template(db, cat, tpl).visobject)
+                loaded = load_geometry(db, cat, bins, vot.geometry) if vot.geometry is not None else None
+                if loaded is not None and loaded.skeleton is not None:
+                    world = rest_world_matrices(loaded.skeleton, None)
+                    slots_of[tpl] = {n: np.asarray(world[i], float)[:3, 3] for i, n in enumerate(loaded.skeleton.names)}
+            slots = slots_of[tpl]
+            weapons = {slot for _, slot in visual_dress_slots(db, visual) if slot in TROOP_WEAPON_SLOTS}
+            for k, (m_tpl, m_var) in enumerate(members):
+                entry = dict(a)
+                entry["id"] = a["id"] if k == 0 else f"{a['id']}-{k + 1}"
+                weapon = TROOP_WEAPON_SLOTS[k] if k < len(TROOP_WEAPON_SLOTS) else None
+                entry["troop"] = {"index": k, "template": m_tpl, "variation": m_var,
+                                  "weapon": weapon if weapon in weapons else None}
+                offset = slots.get(TROOP_SLOTS[k] if k < len(TROOP_SLOTS) else "", np.zeros(3))
+                path = []
+                for key in a["path"]:
+                    dx, dy = troop_offset(offset, key)
+                    moved = dict(key)
+                    moved["p"] = [key["p"][0] + dx, key["p"][1] + dy] + list(key["p"][2:])
+                    if key.get("face"):
+                        moved["face"] = [key["face"][0] + dx, key["face"][1] + dy]
+                    path.append(moved)
+                entry["path"] = path
+                out.append(entry)
+            report.append(f"{sid} : {a['id']} : troupe de {len(members)} membres ({', '.join(TROOP_SLOTS[:len(members)])})")
+        plan["actors"] = out
 
 
 # `GameViewScene` (17.0) : place et placement de caméra en doubles x, y, puis f32 lacet, puis double z.
@@ -2681,6 +2898,7 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
     plan_lines = []
     post = list(spec.get("post", []))
     sfx: list[dict] = []
+    travellings: list[dict] = []
     if client is not None:
         shots = [{"t": sh["t"], "duration": (sh["until"] - sh["t"]) if sh["until"] is not None else None,
                   "points": sh["points"], "targets": sh["targets"]} for sh in client.shots]
@@ -2719,6 +2937,14 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
             else:
                 shots.append({"t": t0, "duration": None, "points": [(0.0, tuple(seg["p"]))],
                               "targets": [(0.0, tuple(seg["look"]))]})
+                if seg.get("until") is not None:
+                    ends.append(float(seg["until"]))     # fin du moment (scène sans voix : dialogue lu)
+                if seg.get("travelling") is not None:
+                    # point de vue du manifeste devenu travelling de mise en scène (`cutscene_travelling`),
+                    # posé à l'extraction, quand places des acteurs et instants des répliques sont connus
+                    later = [float(s.get("t", 0.0)) for s in spec["cameras"] if float(s.get("t", 0.0)) > t0 + 1e-6]
+                    travellings.append({"t": t0, "until": min(later) if later else None, "p": seg["p"],
+                                        "look": seg["look"], "params": seg["travelling"]})
         camera = x70.camera_keys(shots)
         camera["duration"] = round(max(ends), 3)
     elif fixed:
@@ -2737,6 +2963,22 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
         cd = db.ids.get(int(rid))
         if cd is None:
             raise ValueError(f"ClientData {ref['ref'] if isinstance(ref, dict) else ref} introuvable")
+        if isinstance(ref, dict) and ref.get("cue"):
+            # Réplique d'un dialogue de PNJ (`Cue` : `+0xC8` texte du PNJ, `+0x88` réponse du joueur) :
+            # sans voix ni durée (temps de lecture) ; texte officiel RU/EN du 17.0, FR par `fr_pair`.
+            from tools.extract_cinematics import norm_key
+            idx = db.u32(cd + (CUE_PLAYER if ref["cue"] == "player" else CUE_TEXT))
+            text, _ = texts.official([ref.get("ru", "")], spec.get("fr_pair"), idx)
+            if ref.get("ru") and not norm_key(text["ru"]).startswith(norm_key(ref["ru"])):
+                report.append(f"{spec['id']} : réplique {n} : le dialogue ne commence pas par « {ref['ru']} »")
+            speaker = spec.get("speakers", {}).get(str(n))
+            parts = split_line_text(text, int(ref["chunk"])) if ref.get("chunk") else [text]
+            for k, part in enumerate(parts):
+                plan_lines.append({"start": None, "duration": 0.0, "voice_event": None, "speaker": speaker,
+                                   "clips": [], "text": part,
+                                   "source": f"ClientData Cue {ref['ref']} ({ref['cue']}"
+                                             f"{f', {k + 1}/{len(parts)}' if len(parts) > 1 else ''})"})
+            continue
         cl = read_client_line(db, cd)
         if isinstance(ref, dict):
             # réplique doublée sans sous-titre : texte officiel de sa bulle (`ENUM_SHOW_BUBBLE`), le début
@@ -2772,7 +3014,18 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
         plan_lines.append({"start": None, "duration": cl.delay_ms / 1000.0, "voice_event": cl.voice, "speaker": speaker,
                            "clips": clips, "text": text, "source": f"ClientData {ref}"})
     starts = spec.get("timing", {}).get("starts")
-    if starts is not None:
+    reading = spec.get("timing", {}).get("reading")
+    if reading is not None:
+        # Dialogue sans voix (textes de `Cue`) : répliques à la suite, chacune le temps de sa voix, sinon
+        # de la lecture de son texte (le plus long des trois, `cps` caractères par seconde) — estimé.
+        t = float(reading.get("t0", 0.5))
+        for line in plan_lines:
+            longest = max((len(v) for v in line["text"].values() if v), default=0)
+            line["start"] = round(t, 3)
+            line["duration"] = round(max(float(reading.get("min", READING_MIN)),
+                                         longest / float(reading.get("cps", READING_CPS))), 3)
+            t += line["duration"] + float(reading.get("gap", 0.5))
+    elif starts is not None:
         # départs mesurés (reconnaissance vocale sur la voix officielle, voir le manifeste)
         official = [l for l in plan_lines if l["source"].startswith("ClientData")]
         for line, t in zip(official, starts):
@@ -2786,14 +3039,44 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
         entry["mob_offset"] = pack_offset(db, a["mob"])
         entry["path"] = a.get("path") or [{"t": 0, "p": a["position"], "face": a.get("face")}]
         actors.append(entry)
-    timing = "measured" if starts is not None else ("client" if client is not None and not spec["lines"] else "estimated")
+    timing = "reading" if reading is not None else "measured" if starts is not None else ("client" if client is not None and not spec["lines"] else "estimated")
     return {"map": spec["map"], "camera": camera, "lines": plan_lines, "actors": actors, "weather": None,
             **({"duration_from_voices": True} if (fixed and not camera["duration"]) or spec.get("cameras") else {}),
             "sounds": {"music": [], "ambience": [], "sfx": sfx}, "post": post,
             "decor_center": spec.get("decor_center"), "timing": timing,
+            **({"travellings": travellings} if travellings else {}),
             "sources": {**({"buff": buff_ref} if buff_ref else {"cameras": spec["_refs"]["cameras"]} if spec.get("cameras")
                            else {"camera": "manifest"}),
                         **({"buff_script": True} if client is not None else {}), **spec.get("sources", {})}}
+
+
+def split_line_text(text: dict[str, str], chunk: int) -> list[dict[str, str]]:
+    """Réplique trop longue pour un sous-titre (texte de dialogue : 600 caractères) coupée en autant de
+    parts dans chaque langue (celles du texte le plus long, `chunk` caractères au plus), aux fins de
+    vers ou de phrase, sinon aux mots, de longueurs voisines. Choix de présentation : le texte est entier."""
+    count = max(1, math.ceil(max(len(v) for v in text.values()) / chunk))
+    if count == 1:
+        return [dict(text)]
+
+    def cut(value: str) -> list[str]:
+        units = [u for u in re.split(r"(?<=[.!?…])\s+|\s*\n\s*", value.strip()) if u]
+        if len(units) < count:
+            units = value.split()
+        if len(units) < count:
+            return units + [""] * (count - len(units))
+        cum = np.cumsum([len(u) + 1 for u in units])
+        cuts, lo = [], 1
+        for j in range(1, count):
+            hi = len(units) - (count - j)
+            ideal = cum[-1] * j / count
+            b = min(range(lo, hi + 1), key=lambda i: abs(cum[i - 1] - ideal))
+            cuts.append(b)
+            lo = b + 1
+        bounds = [0] + cuts + [len(units)]
+        return [" ".join(units[a:b]).strip() for a, b in zip(bounds, bounds[1:])]
+
+    split = {lang: cut(value) for lang, value in text.items()}
+    return [{lang: parts[k] for lang, parts in split.items() if parts[k]} for k in range(count)]
 
 
 def weather_light(weather: dict, base: dict) -> dict:
@@ -2962,6 +3245,7 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                 raise
             report.append(f"{spec['id']} : plan illisible, scène ignorée, décor de sa carte sans ses zones "
                           f"({type(err).__name__}: {err})")
+    expand_troops(plans, db, pack_cat, bins, report)
     wanted_maps = {plans[s["id"]]["map"] for s in selected}
     maps: dict[str, dict] = {}
     for map_name in sorted(wanted_maps):
@@ -3035,6 +3319,7 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
             else:
                 spec_actor["visual"] = actor.get("visual")
                 spec_actor["vot"] = actor.get("vot")
+                spec_actor["troop"] = actor.get("troop")
                 data, meta = build_actor_offset(spec_actor, actor["mob_offset"], db, pack_cat, bins, shared_tex, report)
                 (shared / "actors").mkdir(parents=True, exist_ok=True)
                 (shared / "actors" / f"{key}.glb").write_bytes(data)
@@ -3056,7 +3341,7 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
             name_idx = meta.pop("name_index")
             visual_scale = meta.pop("visual_scale", 1.0)
             name = {"ru": clean_text(texts.main.texts["ru"][name_idx]), "en": clean_text(texts.main.texts["en"][name_idx])} \
-                if name_idx is not None else actor.get("name", {})
+                if name_idx is not None else (actor["name"] if isinstance(actor.get("name"), dict) else {})
             actors_meta.append({"id": actor["id"], "glb": glb,
                                 "name": name,
                                 "path": path, "scale": round(actor.get("scale", 1.0) * visual_scale, 4), "idle": idle,
@@ -3065,6 +3350,19 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                                 **({"actions": sorted(actor["actions"], key=lambda a: a["t"])} if actor.get("actions") else {}),
                                 "light": light_at(path[0]["p"], decor["pointLights"], light), **meta})
 
+        if plan.get("travellings"):
+            # Travellings de mise en scène (choix documenté, voir `tools/cutscene_travelling.py`) : sur
+            # les places posées des acteurs et les instants des répliques (départ → fin de la voix).
+            from tools.cutscene_travelling import splice, travelling_keys
+            spoken = [{"start": l["start"], "end": l["start"] + ((m or {}).get("duration") or l["duration"] or 0.0),
+                       "speaker": l["speaker"]} for l, m in zip(plan["lines"], voice_meta)]
+            for tr in plan["travellings"]:
+                t1 = tr["until"] if tr["until"] is not None else camera["duration"]
+                pts, tgts = travelling_keys(tr["t"], t1, tr["p"], tr["look"], actors_meta, spoken, tr["params"],
+                                            lambda x, y, z: ground_z(solids, x, y, z))
+                camera["points"] = splice(camera["points"], pts, tr["t"], t1)
+                camera["targets"] = splice(camera["targets"], tgts, tr["t"], t1)
+            plan["sources"]["travelling"] = "mise en scène (tools/cutscene_travelling.py)"
         if plan.get("duration_from_clips"):
             # Scène du client : elle dure le temps de la plus longue animation jouée.
             camera["duration"] = round(max([sum(a["animations"].get(c, 0) for c in (act["clips"] if act else []))
@@ -3077,18 +3375,10 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         sky_glb, sky = ctx["sky"][spec["id"]]
         objects = rebase_objects({**decor["objects"], **fx_objects}, prefix)
 
-        cue_lines = [Line(l["duration"], l["text"]) for l in plan["lines"]]
-        cues = build_cues(cue_lines, [l["start"] for l in plan["lines"]], camera["duration"])
-        tracks = []
-        for lang in LANGS:
-            vtt = to_vtt(cues, lang)
-            path = out / f"{lang}.vtt"
-            if vtt:
-                path.write_text(vtt, encoding="utf-8")
-                tracks.append({"lang": lang, "label": LANG_LABELS[lang], "src": f"engine/{spec['id']}/{lang}.vtt",
-                               "lines": sum(1 for c in cues if lang in c[2])})
-            elif path.exists():
-                path.unlink()
+        filled = fill_line_durations(plan["lines"], voice_meta, camera["duration"])
+        if filled:
+            report.append(f"{spec['id']} : {filled} réplique(s) sans durée : temps de la voix, sinon de lecture")
+        tracks = write_tracks(out, spec["id"], plan["lines"], camera["duration"])
 
         audio = map_sounds(mp)
         timed = plan["sounds"]
@@ -3163,6 +3453,72 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     return report
 
 
+# Réplique sans durée ni voix : temps de lecture de son texte, 15 caractères par seconde (règle
+# courante des sous-titres), au moins 1,5 s — choix documenté, le client ne donne rien.
+READING_CPS = 15.0
+READING_MIN = 1.5
+
+
+def fill_line_durations(lines: list[dict], voices: list[dict | None], total: float) -> int:
+    """Durée d'affichage des répliques qui n'en ont pas (texte d'une bulle ou d'un `ClientData` sans
+    sous-titre : `delay_ms` nul) : celle de leur voix, sinon le temps de lecture de leur texte (le plus
+    long des trois), bornée par le départ de la réplique suivante et la fin de la scène. Sans elle, la
+    réplique n'avait ni sous-titre ni piste (Isa). Renvoie le nombre de répliques complétées."""
+    filled = 0
+    for i, (line, voice) in enumerate(zip(lines, voices)):
+        texts = [t for t in (line.get("text") or {}).values() if t]
+        if (line.get("duration") or 0) > 0 or not texts or line.get("start") is None:
+            continue
+        length = voice["duration"] if voice and voice.get("duration") else \
+            max(READING_MIN, max(len(t) for t in texts) / READING_CPS)
+        end = line["start"] + length
+        later = [l["start"] for l in lines[i + 1:] if l.get("start") is not None and l["start"] > line["start"]]
+        if later:
+            end = min(end, later[0])
+        if total:
+            end = min(end, total)
+        line["duration"] = round(max(end - line["start"], 0.0), 3)
+        filled += 1
+    return filled
+
+
+def write_tracks(out: Path, scene_id: str, lines: list[dict], duration: float) -> list[dict]:
+    """Pistes WebVTT d'une scène (`<lang>.vtt`, retirées quand la langue manque) ; leurs entrées d'index."""
+    cues = build_cues([Line(l["duration"], l["text"]) for l in lines], [l["start"] for l in lines], duration)
+    tracks = []
+    for lang in LANGS:
+        vtt = to_vtt(cues, lang)
+        path = out / f"{lang}.vtt"
+        if vtt:
+            path.write_text(vtt, encoding="utf-8")
+            tracks.append({"lang": lang, "label": LANG_LABELS[lang], "src": f"engine/{scene_id}/{lang}.vtt",
+                           "lines": sum(1 for c in cues if lang in c[2])})
+        elif path.exists():
+            path.unlink()
+    return tracks
+
+
+def retrack(manifest: dict, out_root: Path, only: list[str]) -> list[str]:
+    """Pistes et index refaits depuis le `scene.json` déjà extrait (`--tracks-only`), sans réextraire :
+    seules les durées des répliques qui n'en avaient pas changent (`fill_line_durations`)."""
+    report, entries = [], []
+    for scene_id in only:
+        out = out_root / "engine" / scene_id
+        path = out / "scene.json"
+        scene = json.loads(path.read_text(encoding="utf-8"))
+        lines = scene["lines"]
+        filled = fill_line_durations(lines, [l.get("voice") for l in lines], scene["duration"])
+        if filled:
+            path.write_text(json.dumps(scene, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        tracks = write_tracks(out, scene_id, lines, scene["duration"])
+        entries.append({"spec": {"id": scene_id}, "duration": scene["duration"], "tracks": tracks,
+                        "lines": len(lines), "timing": scene.get("timing", "estimated")})
+        summary = ", ".join(f"{t['lang']} {t['lines']}" for t in tracks) or "aucune"
+        report.append(f"{scene_id} : {filled} réplique(s) complétée(s), pistes {summary}")
+    update_index(manifest, out_root, entries)
+    return report
+
+
 def prune_shared_actors(engine: Path) -> None:
     """Retire les modèles communs qu'aucune scène ne cite plus."""
     used = set()
@@ -3226,8 +3582,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--only", action="append")
     p.add_argument("--no-voices", action="store_true", help="garde les voix et les sons déjà extraits")
     p.add_argument("--vgmstream", type=Path, default=DEFAULT_VGMSTREAM)
+    p.add_argument("--tracks-only", action="store_true",
+                   help="refait pistes et index depuis le scene.json extrait (avec --only), sans réextraire")
     args = p.parse_args(argv)
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    if args.tracks_only:
+        if not args.only:
+            p.error("--tracks-only demande --only")
+        print("\n".join(retrack(manifest, args.out, args.only)))
+        return 0
     report = run(manifest, args.out, args.client, args.only, not args.no_voices, args.vgmstream)
     print("\n".join(report))
     return 0

@@ -613,7 +613,8 @@
    "clips": [],
    "animations": [],
    "text": {
-    "ru": "Тварь! Ты обманул нас! Завёл в ловушку!"
+    "ru": "Тварь! Ты обманул нас! Завёл в ловушку!",
+    "en": "You wretch! You lied to us! You lured us into a trap!"
    },
    "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastDie_Sub17.(ClientData).xdb"
   },
@@ -626,7 +627,8 @@
    "clips": [],
    "animations": [],
    "text": {
-    "ru": "Мы уничтожим тебя! Уничтожим всех вас, одного за другим!"
+    "ru": "Мы уничтожим тебя! Уничтожим всех вас, одного за другим!",
+    "en": "We will destroy you! Destroy all of you, one after another!"
    },
    "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastDie_Sub18.(ClientData).xdb"
   },
@@ -693,7 +695,7 @@
  "actors": [
   {
    "id": "rysina",
-   "glb": "../shared/actors/mob-56721a8.glb",
+   "glb": "../shared/actors/mob-56723b8.glb",
    "name": {
     "ru": "Елизавета Рысина",
     "en": "Elizaveta Rysina"
@@ -800,6 +802,7 @@
     "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
     "ReadySpellDirected": 1.3333,
+    "Run": 0.5667,
     "Special": 12.0,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.3333,
@@ -808,7 +811,7 @@
   },
   {
    "id": "diarder",
-   "glb": "../shared/actors/mob-56747f0.glb",
+   "glb": "../shared/actors/mob-5674a00.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -876,6 +879,7 @@
     "Idle02": 4.1,
     "Ready": 2.6667,
     "ReadySpellDirected": 2.6667,
+    "Run": 0.6,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.5,
     "Walk": 1.0
@@ -883,7 +887,7 @@
   },
   {
    "id": "rysina-2",
-   "glb": "../shared/actors/mob-56721a8.glb",
+   "glb": "../shared/actors/mob-56723b8.glb",
    "name": {
     "ru": "Елизавета Рысина",
     "en": "Elizaveta Rysina"
@@ -951,6 +955,7 @@
     "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
     "ReadySpellDirected": 1.3333,
+    "Run": 0.5667,
     "Special": 12.0,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.3333,
@@ -959,7 +964,7 @@
   },
   {
    "id": "diarder-2",
-   "glb": "../shared/actors/mob-56747f0.glb",
+   "glb": "../shared/actors/mob-5674a00.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -1010,6 +1015,7 @@
     "Idle02": 4.1,
     "Ready": 2.6667,
     "ReadySpellDirected": 2.6667,
+    "Run": 0.6,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.5,
     "Walk": 1.0
@@ -1017,7 +1023,7 @@
   },
   {
    "id": "colossus",
-   "glb": "../shared/actors/mob-8c7ef98.glb",
+   "glb": "../shared/actors/mob-1b1a16c0.glb",
    "name": {
     "ru": "Колосс",
     "en": "Colossus"
@@ -1060,7 +1066,7 @@
      "yaw": 2.7997
     }
    ],
-   "scale": 1.0,
+   "scale": 0.9,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -1081,12 +1087,13 @@
    "animations": {
     "ChannelCastDirected": 1.6667,
     "Idle": 6.6667,
+    "Run": 0.8333,
     "Walk": 6.6333
    }
   },
   {
    "id": "bosslast",
-   "glb": "../shared/actors/mob-95c47f0.glb",
+   "glb": "../shared/actors/mob-1b2db200.glb",
    "name": {
     "ru": "Сердце Локуса",
     "en": "Locus' Heart"
@@ -1932,7 +1939,8 @@
      "vot": "Architect_Kernel_Big_01",
      "locator": "Slot_Special01"
     }
-   ]
+   ],
+   "sfx": "sfx/BigKernel_lp"
   },
   "Architect_Rock_Lantern": {
    "fadeIn": 0.0,
@@ -2220,7 +2228,8 @@
     2.946,
     2.896,
     0.0
-   ]
+   ],
+   "sfx": "sfx/idle01"
   },
   "Architect_Portal_Big_In": {
    "fadeIn": 0.5,
@@ -2311,7 +2320,8 @@
      "vot": "Architect_Big_Portal_02",
      "locator": "Slot_Special01"
     }
-   ]
+   ],
+   "sfx": "sfx/Ready_Spell_FettersFrost_Decal"
   },
   "Architect_Big_Portal#2": {
    "fadeIn": 0.0,
@@ -2608,7 +2618,8 @@
      "vot": "Carrier_Arena_Ray",
      "locator": "Slot_Special01"
     }
-   ]
+   ],
+   "sfx": "sfx/Ready_Spell_FettersFrost_Decal"
   },
   "Carrier_Arena_Sky": {
    "fadeIn": 0.0,
@@ -3124,13 +3135,36 @@
     "file": "sfx/Last_End",
     "wave": "Last_End",
     "bank": "SFX/Ambience/Ferris_Raid_LastEnd_Cutscene.bsb",
-    "duration": 55.582
+    "duration": 55.582,
+    "match": "bev"
    },
    "Music/ZonesMusic/UmoirAwry_I_adaptive": {
     "file": "sfx/UmoirAwry_I_adaptive",
     "wave": "UmoirAwry_I_adaptive",
     "bank": "SFX/Music/Music_Zone.fsb",
-    "duration": 123.5
+    "duration": 123.5,
+    "match": "bev"
+   },
+   "World/Races/Architectors/Kernel": {
+    "file": "sfx/BigKernel_lp",
+    "wave": "BigKernel_lp",
+    "bank": "SFX/World/World_Races.bsb",
+    "duration": 7.837,
+    "match": "bev"
+   },
+   "spells/FX/Mobs/ArchitectFX/ArchitectBigPortal": {
+    "file": "sfx/Ready_Spell_FettersFrost_Decal",
+    "wave": "Ready_Spell_FettersFrost_Decal",
+    "bank": "SFX/Spells/Spells_FX2.bsb",
+    "duration": 2.549,
+    "match": "bev"
+   },
+   "spells/World/UI04/idle01": {
+    "file": "sfx/idle01",
+    "wave": "idle01",
+    "bank": "SFX/Creatures/BasiliskPet.bsb",
+    "duration": 0.916,
+    "match": "name"
    }
   },
   "volume": {}
