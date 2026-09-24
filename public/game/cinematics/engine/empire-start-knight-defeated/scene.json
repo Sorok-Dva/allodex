@@ -1326,7 +1326,8 @@
     7.276,
     3.5,
     6.286
-   ]
+   ],
+   "sfx": "sfx/TorchBlue2_lp"
   },
   "Cannon_01": {
    "fadeIn": 0.0,
@@ -2173,7 +2174,15 @@
     "file": "sfx/4Layer_3Tier_BGR_lp",
     "wave": "4Layer_3Tier_BGR_lp",
     "bank": "SFX/Ambience/Ambience_Astral.bsb",
-    "duration": 11.996
+    "duration": 11.996,
+    "match": "bev"
+   },
+   "World/Flame/DrakonidFire": {
+    "file": "sfx/TorchBlue2_lp",
+    "wave": "TorchBlue2_lp",
+    "bank": "SFX/World/World_AC6_3D.bsb",
+    "duration": 4.5,
+    "match": "bev"
    }
   },
   "volume": {}

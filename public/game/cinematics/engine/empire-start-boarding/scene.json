@@ -1969,7 +1969,8 @@
     7.276,
     3.5,
     6.286
-   ]
+   ],
+   "sfx": "sfx/TorchBlue2_lp"
   },
   "Cannon_01": {
    "fadeIn": 0.0,
@@ -2652,7 +2653,8 @@
     1.083,
     0.284,
     1.083
-   ]
+   ],
+   "sfx": "sfx/Shieldhit"
   },
   "SummonUndead": {
    "fadeIn": 0.0,
@@ -3595,7 +3597,9 @@
  },
  "pointLights": [],
  "sounds": {
-  "music": [],
+  "music": [
+   "sfx/Conquer_high"
+  ],
   "ambience": [
    "sfx/4Layer_3Tier_BGR_lp"
   ],
@@ -3624,25 +3628,50 @@
     "file": "sfx/4Layer_3Tier_BGR_lp",
     "wave": "4Layer_3Tier_BGR_lp",
     "bank": "SFX/Ambience/Ambience_Astral.bsb",
-    "duration": 11.996
+    "duration": 11.996,
+    "match": "bev"
+   },
+   "Music/ZonesMusic/IE1_main": {
+    "file": "sfx/Conquer_high",
+    "wave": "Conquer_high",
+    "bank": "SFX/Music/Music_StartZones.fsb",
+    "duration": 15.0,
+    "match": "bev"
+   },
+   "Ships/SieldHit": {
+    "file": "sfx/Shieldhit",
+    "wave": "Shieldhit",
+    "bank": "SFX/Ships/Ships.bsb",
+    "duration": 1.365,
+    "match": "bev"
+   },
+   "World/Flame/DrakonidFire": {
+    "file": "sfx/TorchBlue2_lp",
+    "wave": "TorchBlue2_lp",
+    "bank": "SFX/World/World_AC6_3D.bsb",
+    "duration": 4.5,
+    "match": "bev"
    },
    "World/Zones/IE1/IE1_ShipDestroy": {
     "file": "sfx/IE1_ShipDestroy",
     "wave": "IE1_ShipDestroy",
     "bank": "SFX/World/World_IE1_2D.bsb",
-    "duration": 16.726
+    "duration": 16.726,
+    "match": "bev"
    },
    "World/Zones/IL1/MageDeath/MageDeath_part2": {
     "file": "sfx/MageDeath_part2",
     "wave": "MageDeath_part2",
     "bank": "SFX/World/World_IL1_3D.bsb",
-    "duration": 7.333
+    "duration": 7.333,
+    "match": "bev"
    },
    "spells/SummonUndead": {
     "file": "sfx/SummonUndead",
     "wave": "SummonUndead",
     "bank": "SFX/Spells/Spells.bsb",
-    "duration": 2.032
+    "duration": 2.032,
+    "match": "name"
    }
   },
   "volume": {}
