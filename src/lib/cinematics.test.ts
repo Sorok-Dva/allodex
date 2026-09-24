@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
-  bonusStart, chapterAt, chaptersOf, splitBonus, defaultSubtitleLang, filmDuration, filmFor, filmTime, formatDuration, groupByArc,
+  bonusStart, chapterAt, chapterVeil, chaptersOf, splitBonus, defaultSubtitleLang, filmDuration, filmFor, filmTime, formatDuration, groupByArc,
   isFaction, loadCinematics, nextIndex, subtitleLangs, trackFor, type Cinematic,
 } from './cinematics';
 
@@ -119,5 +119,17 @@ describe('divers', () => {
     expect(await loadCinematics(ok as unknown as typeof fetch)).toEqual({ arcs: {}, cinematics: [] });
     const missing = vi.fn(async () => new Response('', { status: 404 }));
     expect(await loadCinematics(missing as unknown as typeof fetch)).toBeNull();
+  });
+});
+
+describe('chapterVeil', () => {
+  it('keeps the screen black until the player is ready, then fades in and out at the chapter edges', () => {
+    expect(chapterVeil(5, 10, false)).toBe(1);
+    expect(chapterVeil(0, 10, true)).toBe(1);
+    expect(chapterVeil(0.3, 10, true)).toBeCloseTo(0.5);
+    expect(chapterVeil(5, 10, true)).toBe(0);
+    expect(chapterVeil(9.7, 10, true)).toBeCloseTo(0.5);
+    expect(chapterVeil(10, 10, true)).toBe(1);
+    expect(chapterVeil(5, NaN, true)).toBe(0);
   });
 });

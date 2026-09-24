@@ -102,6 +102,22 @@ export function chaptersOf(film: readonly Cinematic[]): Chapter[] {
 
 export const filmDuration = (film: readonly Cinematic[]) => film.reduce((sum, c) => sum + c.duration, 0);
 
+/** Durée des fondus au noir entre deux chapitres (s) : sortie du chapitre, entrée du suivant. */
+export const CHAPTER_FADE = 0.6;
+
+/**
+ * Opacité du voile noir des changements de chapitre à l'instant `t` d'un chapitre de durée
+ * `duration` : noir tant que le lecteur n'est pas prêt (chargement, préparation de la scène
+ * moteur), fondu d'entrée au début, fondu de sortie à la fin.
+ */
+export function chapterVeil(t: number, duration: number, ready: boolean, fade = CHAPTER_FADE): number {
+  if (!ready) return 1;
+  const edge = (x: number) => 1 - Math.min(1, Math.max(0, x));
+  const enter = edge(t / fade);
+  const leave = Number.isFinite(duration) && duration > 0 ? edge((duration - t) / fade) : 0;
+  return Math.max(enter, leave);
+}
+
 /** Chapitre suivant, `null` à la fin du film. */
 export const nextIndex = (film: readonly unknown[], index: number): number | null =>
   index + 1 < film.length ? index + 1 : null;
