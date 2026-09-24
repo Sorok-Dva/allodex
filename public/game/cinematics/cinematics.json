@@ -1076,33 +1076,33 @@
      "lang": "fr",
      "label": "Français (auto)",
      "src": "raid72-boss-death/fr.vtt",
-     "lines": 2
+     "lines": 4
     },
     {
      "lang": "en",
      "label": "English (auto)",
      "src": "raid72-boss-death/en.vtt",
-     "lines": 2
+     "lines": 4
     },
     {
      "lang": "ru",
      "label": "Русский (авто)",
      "src": "raid72-boss-death/ru.vtt",
-     "lines": 2
+     "lines": 4
     }
    ],
    "audio": {
     "language": "ru"
    },
    "subtitles": {
-    "status": "transcribed",
-    "lines": 2,
-    "timing": "transcribed",
-    "reviewed": true,
-    "model": "faster-whisper medium, int8, sans VAD (voix sous la musique, écartées par le filtre)",
     "audio": {
      "language": "ru"
-    }
+    },
+    "status": "transcribed",
+    "lines": 4,
+    "timing": "transcribed",
+    "reviewed": true,
+    "model": "faster-whisper large-v3/medium/small, int8, voix isolée par Demucs (htdemucs) ; 0-12 s : medium sans VAD"
    },
    "source": {
     "client": "17.0",

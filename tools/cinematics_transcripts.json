@@ -281,10 +281,10 @@
   },
   "raid72-boss-death": {
    "audio": "raid72-boss-death",
-   "model": "faster-whisper medium, int8, sans VAD (voix sous la musique, écartées par le filtre)",
+   "model": "faster-whisper large-v3/medium/small, int8, voix isolée par Demucs (htdemucs) ; 0-12 s : medium sans VAD",
    "rejected": [],
    "reviewed": true,
-   "note": "Deux répliques russes sous la musique, déclarées à tort « sans voix » ; aucun sous-titre officiel dans le client (textes 17.0 et 16.0 FR parcourus). La première est une incantation, gardée telle quelle (translittérée), sans traduction ; le reste de la bande (12-61 s) n'est que musique et effets (Whisper y hallucine « ДИНАМИЧНАЯ МУЗЫКА », « Редактор субтитров… »). « прав » (confiance 0,17) lu « прах », seule lecture qui ait du sens avec « Скорее в портал ».",
+   "note": "Deux répliques russes sous la musique, déclarées à tort « sans voix » ; aucun sous-titre officiel dans le client (textes 17.0 et 16.0 FR parcourus). La première est une incantation, gardée telle quelle (translittérée), sans traduction ; le reste de la bande (12-61 s) n'est que musique et effets (Whisper y hallucine « ДИНАМИЧНАЯ МУЗЫКА », « Редактор субтитров… »). « прав » (confiance 0,17) lu « прах », seule lecture qui ait du sens avec « Скорее в портал ». Seconde passe (24/09) : la voix isolée par Demucs a deux autres passages, 26,3-28,5 s et 32,1-35,0 s (détection de silence), que les trois modèles entendent comme des mots magiques, sans accord entre eux : transcrits en translittération, sans traduction, et marqués douteux. « Скорее в портал! » (9,9-11,5 s), entendu par medium sur le mixage, n'est pas redonné par large-v3 sur la voix isolée : gardé.",
    "lines": [
     {
      "start": 0.0,
@@ -306,6 +306,28 @@
      "whisper": "Сейчас здесь все превратится в прав! Скорее в портал!",
      "confidence": 0.57,
      "word_min": 0.17
+    },
+    {
+     "start": 26.2,
+     "end": 28.5,
+     "ru": "Васион!",
+     "en": "Vasion!",
+     "fr": "Vasion !",
+     "whisper": "large-v3 : « Ва-си-он! » / « Господи! » ; medium : « Ва-си-я! » ; small : « Восемь! »",
+     "confidence": 0.4,
+     "word_min": 0.4,
+     "doubtful": true
+    },
+    {
+     "start": 32.1,
+     "end": 35.0,
+     "ru": "Спацио, крикитако, суверен!",
+     "en": "Spatio, krikitako, suveren!",
+     "fr": "Spatio, krikitako, suveren !",
+     "whisper": "large-v3 : « Спасио Крикитако Суверен! » ; medium : « Спаси он! Регистрато! Суверен! » ; small : « Свачьё! Трифако! Сверан! »",
+     "confidence": 0.4,
+     "word_min": 0.4,
+     "doubtful": true
     }
    ]
   }
