@@ -23294,7 +23294,7 @@
   },
   {
    "id": "isa-arrival",
-   "_note": "Arrivée des héros sur Isa (série Isa_Arrival) : Hauk, Trand et Unn découvrent l'île, puis Mrak et, près de lui, un bloc de glace (Осколок льда, où Gerda est prise). Deux moments : les répliques Isa_Arrival_1 (sans caméra dans le client) puis le buff de caméra res:740170126 (9 s, deux points : descente vers le bloc de glace), rangé juste après les trois répliques qu'il accompagne (resourceId 740170122–124). Places des PNJ : leur SpawnLocation du 17.0 (MobWorld). Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "_note": "Arrivée des héros sur Isa (série Isa_Arrival) : Hauk, Trand et Unn découvrent l'île, puis Mrak et, près de lui, un bloc de glace (Осколок льда, où Gerda est prise). Deux moments : les répliques Isa_Arrival_1 (sans caméra dans le client) puis le buff de caméra res:740170126 (9 s, deux points : descente vers le bloc de glace), rangé juste après les trois répliques qu'il accompagne (resourceId 740170122–124). Places des PNJ : leur SpawnLocation du 17.0 (MobWorld). Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; petit travelling de mise en scène (tools/cutscene_travelling.py : arc lent autour des locuteurs, visée sur le locuteur au fil des répliques), choix documenté, pas une donnée.",
    "map": "Isa",
    "cameras": [
     {
@@ -23309,7 +23309,20 @@
       11840.43,
       6.5
      ],
-     "_note": "Vue du joueur arrivé avec les héros : 5 m derrière eux, à hauteur d'œil (1,8 m au-dessus de leur place), vers le bloc de glace qu'ils regardent, sur la butte à 65 m (choix)."
+     "_note": "Point de vue de départ (repli) : 5 m derrière les héros vers le bloc de glace (choix).",
+     "travelling": {
+      "subjects": [
+       "hauk",
+       "trand",
+       "unn"
+      ],
+      "bearing": 200,
+      "distance": 5.0,
+      "height": 0.2,
+      "arc": 18,
+      "dolly": 0.12,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : devant les trois héros (cap 200° depuis leur centre : ils regardent la butte, à 187°), à 5 m, arc de 18° ; visée sur le locuteur de chaque réplique ; le buff de caméra du client prend le relais à 16 s."
+     }
     },
     {
      "t": 16.0,
@@ -23475,7 +23488,7 @@
   },
   {
    "id": "isa-fighting-pit",
-   "_note": "Skalgard (série Isa_Town, quête « Спасти Мрака из бойцовой ямы ») : les gibberlings ont jeté Mrak, le « урун noir », dans la fosse contre la Семейка Драчунов ; la foule l'encourage (Isa_Town_1_Replica*), puis Броди Задира arrête le combat (Isa_Town_ElderBullyClan, sous-titre officiel). Le buff de caméra res:740170162 (9 s) suit la réplique de Броди (resourceId 740170159, juste avant) : il finit sur lui. Places : SpawnLocation des MobWorld. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "_note": "Skalgard (série Isa_Town, quête « Спасти Мрака из бойцовой ямы ») : les gibberlings ont jeté Mrak, le « урун noir », dans la fosse contre la Семейка Драчунов ; la foule l'encourage (Isa_Town_1_Replica*), puis Броди Задира arrête le combat (Isa_Town_ElderBullyClan, sous-titre officiel). Le buff de caméra res:740170162 (9 s) suit la réplique de Броди (resourceId 740170159, juste avant) : il finit sur lui. Places : SpawnLocation des MobWorld. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; petit travelling de mise en scène (tools/cutscene_travelling.py : arc lent autour des locuteurs, visée sur le locuteur au fil des répliques), choix documenté, pas une donnée.",
    "map": "Isa",
    "cameras": [
     {
@@ -23490,7 +23503,20 @@
       12900.0,
       98.8
      ],
-     "_note": "Au bord de la fosse, à hauteur d'œil à la place d'une habitante de Skalgard (res:740172838), vers Mrak au fond (choix : le client ne filme pas la foule)."
+     "_note": "Au bord de la fosse, à hauteur d'œil à la place d'une habitante de Skalgard (res:740172838), vers Mrak au fond (choix : le client ne filme pas la foule).",
+     "travelling": {
+      "subjects": [
+       "mrak",
+       "brawlers",
+       "broddi"
+      ],
+      "arc": 20,
+      "dolly": 0.1,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : dans la fosse, du côté de la foule d'où regardait le point de vue d'avant (cap 135° depuis le centre des combattants), à 9 m et 4 m au-dessus des têtes, arc de 20° autour de Mrak, de la Семейка Драчунов et de Броди ; cris de la foule en voix off (pas de locuteur) ; le buff de caméra du client prend le relais à 14 s.",
+      "bearing": 135,
+      "distance": 9.0,
+      "height": 4.0
+     }
     },
     {
      "t": 14.0,
@@ -23684,31 +23710,8 @@
   },
   {
    "id": "isa-unn-trance",
-   "_note": "Prologue d'Isa sur Olm (série Isa_Prologue, carte Isa_Prologue) : Unn, en transe, appelle les esprits gardés dans l'Arbre (Val, Orn), sent une Nit vivante et réveille Ratatosk, l'écureuil du Frêne, avant de conclure qu'on peut parler à la déesse. Voix Isa_Prologue_4_UnnTranceSay_01…08, _UnnTranceGotHelpSay_01…03 (les « GotHelp » suivent l'aide du joueur), Isa_Prologue_Unn_TranceEnd ; textes officiels (bulles). Places : SpawnLocation d'Унн res:740169449 et de Рататоск res:740169482. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "_note": "Prologue d'Isa sur Olm (série Isa_Prologue, carte Isa_Prologue) : Unn, en transe, appelle les esprits gardés dans l'Arbre (Val, Orn), sent une Nit vivante et réveille Ratatosk, l'écureuil du Frêne, avant de conclure qu'on peut parler à la déesse. Voix Isa_Prologue_4_UnnTranceSay_01…08, _UnnTranceGotHelpSay_01…03 (les « GotHelp » suivent l'aide du joueur), Isa_Prologue_Unn_TranceEnd ; textes officiels (bulles). Places : SpawnLocation d'Унн res:740169449 et de Рататоск res:740169482. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; petit travelling de mise en scène (tools/cutscene_travelling.py : arc lent autour des locuteurs, visée sur le locuteur au fil des répliques), choix documenté, pas une donnée.",
    "map": "Isa_Prologue",
-   "camera": {
-    "points": [
-     {
-      "t": 0,
-      "p": [
-       13103.8,
-       13745.2,
-       55.8
-      ]
-     }
-    ],
-    "targets": [
-     {
-      "t": 0,
-      "p": [
-       13099.3,
-       13750.4,
-       54.8
-      ]
-     }
-    ],
-    "_note": "Face à Unn, à 5,5 m, Ratatosk dans le champ (choix)."
-   },
    "lines": [
     {
      "ref": "res:740169543",
@@ -23846,11 +23849,39 @@
     "ambience": 0.5,
     "sfx": 0.8,
     "voice": 1.0
-   }
+   },
+   "cameras": [
+    {
+     "t": 0.0,
+     "p": [
+      13103.8,
+      13745.2,
+      55.8
+     ],
+     "look": [
+      13099.3,
+      13750.4,
+      54.8
+     ],
+     "_note": "Point de vue de départ : face à Unn, à 5,5 m (choix).",
+     "travelling": {
+      "subjects": [
+       "unn",
+       "ratatosk"
+      ],
+      "bearing": -40,
+      "distance": 4.5,
+      "height": 0.25,
+      "arc": 40,
+      "dolly": 0.15,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : départ face à Unn (cap −40°, celui du point de vue d'avant : Unn tournée vers lui), à 4,5 m et 0,25 m au-dessus de sa tête, arc de 40° et rapprochement de 15 % sur les 91 s de la transe ; Ratatosk entre dans le cadre à son apparition (67,1 s), la visée glisse alors entre eux."
+     }
+    }
+   ]
   },
   {
    "id": "isa-freya",
-   "_note": "La découverte de la Freya (série Isa_Ship, voix Isa_Ship_7_FinalScene_Subtitle_1 et _2, deux répliques de plus sans voix) : l'épave du navire astral du capitaine Колль Фитилёк, AstralShipKaniaGroupBroken, posée dans le décor d'Isa (région 050_050/3_2, seul navire astral de la carte), entourée des pages du journal du capitaine (stèles Offhand_Book_D_03, quête « Разыскать и прочесть обрывки журнала ») ; Хаук Фитилёк res:740171495 et Герда res:740168263 y ont leur SpawnLocation. Voile d'ouverture : buff res:740171413 (21 s, voile noir 1 s, caméra sans point : vue du joueur), rangé juste avant les quatre répliques. Remplace la première version (buff de caméra res:740171462, 19 s, qui regarde le ciel au-dessus du plateau de Skalgard, à 1 km de l'épave : non retenu, rattachement non établi). Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "_note": "La découverte de la Freya (série Isa_Ship, voix Isa_Ship_7_FinalScene_Subtitle_1 et _2, deux répliques de plus sans voix) : l'épave du navire astral du capitaine Колль Фитилёк, AstralShipKaniaGroupBroken, posée dans le décor d'Isa (région 050_050/3_2, seul navire astral de la carte), entourée des pages du journal du capitaine (stèles Offhand_Book_D_03, quête « Разыскать и прочесть обрывки журнала ») ; Хаук Фитилёк res:740171495 et Герда res:740168263 y ont leur SpawnLocation. Voile d'ouverture : buff res:740171413 (21 s, voile noir 1 s, caméra sans point : vue du joueur), rangé juste avant les quatre répliques. Remplace la première version (buff de caméra res:740171462, 19 s, qui regarde le ciel au-dessus du plateau de Skalgard, à 1 km de l'épave : non retenu, rattachement non établi). Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; petit travelling de mise en scène (tools/cutscene_travelling.py : arc lent autour des locuteurs, visée sur le locuteur au fil des répliques), choix documenté, pas une donnée.",
    "map": "Isa",
    "cameras": [
     {
@@ -23865,7 +23896,23 @@
       13437.64,
       69.42
      ],
-     "_note": "Derrière les héros, 7,5 m en retrait et 2 m au-dessus d'eux, vers l'épave (choix)."
+     "_note": "Derrière les héros, 7,5 m en retrait et 2 m au-dessus d'eux, vers l'épave (choix).",
+     "travelling": {
+      "subjects": [
+       "hauk",
+       "gerda",
+       "trand"
+      ],
+      "focus": [
+       13670.72,
+       13437.64,
+       72.0
+      ],
+      "focus_weight": 0.45,
+      "arc": 16,
+      "dolly": 0.15,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : derrière les héros, arc de 16° et rapprochement de 15 % ; visée partagée entre le locuteur et l'épave (focus, 45 %)."
+     }
     },
     {
      "t": 0.0,
@@ -23960,31 +24007,8 @@
   },
   {
    "id": "isa-captain-journal",
-   "_note": "Le journal du capitaine (série Isa_Ship, voix Isa_Ship_8b_CapitanDiary_AssistantSay_* puis Isa_Ship_8b_FinalScene_Say_*) : près de l'épave de la Freya, Hauk, Trand et Gerda commentent les pages du journal de Колль Фитилёк (le pacte avec les orcs, l'esprit du Crâne libéré, Isa cachée par les Держащие Нить, Колль ancêtre de Gerda), puis se demandent s'il faut rendre Isa au monde. Textes officiels (bulles) ; page du journal : stèle Offhand_Book_D_03 res:740171431 à sa place. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "_note": "Le journal du capitaine (série Isa_Ship, voix Isa_Ship_8b_CapitanDiary_AssistantSay_* puis Isa_Ship_8b_FinalScene_Say_*) : près de l'épave de la Freya, Hauk, Trand et Gerda commentent les pages du journal de Колль Фитилёк (le pacte avec les orcs, l'esprit du Crâne libéré, Isa cachée par les Держащие Нить, Колль ancêtre de Gerda), puis se demandent s'il faut rendre Isa au monde. Textes officiels (bulles) ; page du journal : stèle Offhand_Book_D_03 res:740171431 à sa place. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; petit travelling de mise en scène (tools/cutscene_travelling.py : arc lent autour des locuteurs, visée sur le locuteur au fil des répliques), choix documenté, pas une donnée.",
    "map": "Isa",
-   "camera": {
-    "points": [
-     {
-      "t": 0,
-      "p": [
-       13639.2,
-       13440.2,
-       75.2
-      ]
-     }
-    ],
-    "targets": [
-     {
-      "t": 0,
-      "p": [
-       13635.0,
-       13437.6,
-       72.2
-      ]
-     }
-    ],
-    "_note": "Sur le pont de l'épave, 4,5 m à l'est des trois gibberlings et au-dessus de la rambarde, tourné vers eux et la page du journal (choix)."
-   },
    "lines": [
     {
      "ref": "res:740171524",
@@ -24146,7 +24170,29 @@
     "ambience": 0.5,
     "sfx": 0.8,
     "voice": 1.0
-   }
+   },
+   "cameras": [
+    {
+     "t": 0.0,
+     "p": [
+      13639.2,
+      13440.2,
+      75.2
+     ],
+     "look": [
+      13635.0,
+      13437.6,
+      72.2
+     ],
+     "_note": "Point de vue de départ : sur le pont de l'épave, 4,5 m à l'est des trois gibberlings, au-dessus de la rambarde (choix).",
+     "travelling": {
+      "arc": 24,
+      "dolly": 0.1,
+      "lean": 0.6,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : arc de 24° autour de Hauk, Trand et Gerda ; la visée va au locuteur de chaque réplique (places SpawnLocation, instants des répliques)."
+     }
+    }
+   ]
   },
   {
    "id": "isa-fishers-legend",
