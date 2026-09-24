@@ -839,9 +839,11 @@ def fev_resolver(bins, index: dict) -> FevResolver:
     return FevResolver(bins._pak_index().keys(), bins.get, streams_of)
 
 
-def resolve_wave(event: str, index: dict, fev: FevResolver, report: list[str]) -> tuple[tuple[str, int, str] | None, str]:
+def resolve_wave(event: str, index: dict, fev: FevResolver, report: list[str], prefer: str | None = None,
+                 voice: bool = False) -> tuple[tuple[str, int, str] | None, str]:
     """Onde d'un événement : celle que nomme son `.bev` (définition de son du premier son de son
-    premier calque), sinon l'appariement par le nom (`find_wave`). Deuxième valeur : la source."""
+    premier calque), sinon l'appariement par le nom (`find_wave`). Deuxième valeur : la source.
+    Voix : le paramètre de leurs calques (la distance des sons 3D) n'est pas signalé."""
     waves, why = fev.waves(event)
     if waves:
         first = waves[0]
@@ -849,11 +851,13 @@ def resolve_wave(event: str, index: dict, fev: FevResolver, report: list[str]) -
         if rest:
             report.append(f"{event} : {len(waves)} sons dans le .bev, le premier joué ({first['stream']}) ; "
                           f"non repris : {', '.join(rest)}")
-        if first["param"] >= 0:
+        if first["param"] >= 0 and not voice:
             report.append(f"{event} : calque piloté par un paramètre du jeu (enveloppes non reproduites)")
         return (first["bank"], first["sub"], first["stream"]), "bev"
     report.append(f"{event} : .bev sans onde ({why}), appariement par le nom")
-    return find_wave(event, index, "Music" if event.startswith("Music/") else ""), "name"
+    if prefer is None:
+        prefer = "Music" if event.startswith("Music/") else ""
+    return find_wave(event, index, prefer), "name"
 
 
 def export_waves(events: set[str], bins, out_dir: Path, vgmstream: Path, report: list[str],
@@ -898,13 +902,15 @@ def export_waves(events: set[str], bins, out_dir: Path, vgmstream: Path, report:
 
 def export_voices(events: list[str | None], bins, out_dir: Path, vgmstream: Path, report: list[str],
                   index: dict) -> list[dict | None]:
-    """Voix des répliques : onde nommée comme la fin de l'événement (`Cutscenes/Eden2/Prologue04_Cutscene_1`
-    → `Prologue04_Cutscene_1`), cherchée dans les banques `SFX/Voice/*` d'abord."""
+    """Voix des répliques : onde que nomme le `.bev` de l'événement (`IE1/13_Master_07` →
+    `13_Master_07_Captain_StartTheReactor_patch403`), sinon onde nommée comme la fin de l'événement
+    (`Cutscenes/Eden2/Prologue04_Cutscene_1` → `Prologue04_Cutscene_1`), banques `SFX/Voice/*` d'abord."""
     out_dir.mkdir(parents=True, exist_ok=True)
     result: list[dict | None] = []
+    fev = fev_resolver(bins, index)
     with tempfile.TemporaryDirectory(prefix="allodex-voice-") as tmp:
         for n, event in enumerate(events, 1):
-            hit = find_wave(event, index, "SFX/Voice/") if event else None
+            hit = resolve_wave(event, index, fev, report, "SFX/Voice/", voice=True)[0] if event else None
             if hit is None:
                 if event:
                     report.append(f"voix introuvable : {event}")
