@@ -143,6 +143,13 @@ STATE_STOP_OTHER = 0x99
 # relevé sur les exosquelettes du 17.0 (« Нефалион » : 15 `AttachedVisObjectComponent`, dont
 # l'étoile au sol).
 LIST_COMPONENTS = 0x48
+# `EmitterVisObjComponent` (locator en +0x48 comme les composants accrochés).
+EMIT_MAX_SCALE = 0x6C
+EMIT_MIN_SCALE = 0x7C
+EMIT_OFFSET = 0x80
+EMIT_RATE = 0x90
+EMIT_VISOBJECTS = 0x98
+EMIT_FIXED_POINT = 0xB8
 
 # --- VisActions -------------------------------------------------------------------------------
 
@@ -345,6 +352,22 @@ class Component:
 
 
 @dataclass
+class Emitter:
+    """`EmitterVisObjComponent` : gabarits semés au rythme `rate` (par seconde) au locator + `offset`,
+    laissés sur place si `fixed_point` (empreintes des auras « Премиальная аура »). Champs nommés par
+    le `.xdb` 7.0 de `PremiumTrace_Step_01All` (`locatorName`, `offset`, `rate`, `visObjects`,
+    `fixedPoint`, `minScale`, `maxScale`), décalages relevés sur le 17.0."""
+    locator: str
+    offset: tuple[float, float, float]
+    rate: float
+    visobjects: list[int]
+    fixed_point: bool
+    min_scale: float
+    max_scale: float
+    start: float = 0.0                 # `DelayComponent` qui le porte (s)
+
+
+@dataclass
 class VisObject:
     offset: int
     name: str
@@ -356,6 +379,7 @@ class VisObject:
     fade_out_ms: int
     sound: str | None
     components: list[Component]
+    emitters: list["Emitter"] = field(default_factory=list)
 
 
 def vot_name(db: PackDB, cat: PakCatalog, off: int) -> str:
@@ -377,6 +401,7 @@ def read_visobject(db: PackDB, cat: PakCatalog, off: int) -> VisObject:
     if animation is None and geometry is not None:
         animation = db.ptr(geometry + GEO_SKELETAL_ANIMATION)
     components = []
+    emitters: list[Emitter] = []
     stops: list[tuple[float, list[str]]] = []
 
     def visit(comp: int, delay: float, ident: str, random_delay: bool, state: tuple | None = None) -> None:
@@ -393,6 +418,11 @@ def read_visobject(db: PackDB, cat: PakCatalog, off: int) -> VisObject:
             child = db.ptr(comp + STATE_CHILD)
             if child is not None:
                 visit(child, delay, ident, random_delay, (ids, bool(db.u8(comp + STATE_STOP_OTHER))))
+        elif kind == "EmitterVisObjComponent":
+            emitters.append(Emitter(locator=db.string(comp + COMP_LOCATOR) or "", offset=_vec3(db, comp + EMIT_OFFSET),
+                                    rate=db.f32(comp + EMIT_RATE), visobjects=db.pointers(comp + EMIT_VISOBJECTS),
+                                    fixed_point=bool(db.u8(comp + EMIT_FIXED_POINT)), min_scale=db.f32(comp + EMIT_MIN_SCALE),
+                                    max_scale=db.f32(comp + EMIT_MAX_SCALE), start=round(delay, 4)))
         elif kind == "ListComponent":
             for child in db.pointers(comp + LIST_COMPONENTS):
                 visit(child, delay, ident, random_delay, state)
@@ -424,7 +454,7 @@ def read_visobject(db: PackDB, cat: PakCatalog, off: int) -> VisObject:
                 c.stop = round(when, 4)
     return VisObject(off, vot_name(db, cat, off), geometry, db.ptr(off + VOT_PARTICLE), animation,
                      db.f32(off + VOT_SCALE), db.i32(off + VOT_FADE_IN), db.i32(off + VOT_FADE_OUT),
-                     db.string(off + VOT_SOUND_NAME), components)
+                     db.string(off + VOT_SOUND_NAME), components, emitters)
 
 
 # --- particules -------------------------------------------------------------------------------
