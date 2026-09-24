@@ -41,11 +41,11 @@
    "speaker": "elfyoungsorceress",
    "voice": {
     "event": "World/Zones/IL1/CameraShake",
-    "wave": "CameraShake1",
+    "wave": "CameraShake3",
     "bank": "SFX/World/World_IL1_2D.bsb",
     "ogg": "voice/01.ogg",
     "mp3": "voice/01.mp3",
-    "duration": 5.326
+    "duration": 6.003
    },
    "clips": [],
    "animations": [],
@@ -6757,6 +6757,45 @@
   "glb": "fx.glb",
   "spawns": [
    {
+    "t": 20.0,
+    "until": 21.5,
+    "channel": {
+     "from": "elfyoungsorceress",
+     "locator": "Slot_Hand_R",
+     "to": [
+      306.745,
+      5830.664,
+      32.2787
+     ],
+     "length": 2.0
+    },
+    "vot": "MagePrismaticRayAbility_RayBlue"
+   },
+   {
+    "p": [
+     307.8567,
+     5829.169,
+     32.2712
+    ],
+    "yaw": 4.44941,
+    "scale": 0.35,
+    "t": 20.0,
+    "until": 600.0,
+    "vot": "Magic_Wall"
+   },
+   {
+    "p": [
+     317.1128,
+     5873.054,
+     56.4219
+    ],
+    "yaw": 6.00588,
+    "scale": 1.8,
+    "t": 0.0,
+    "until": 600.0,
+    "vot": "Descending_Dust_Small_loop"
+   },
+   {
     "p": [
      299.9614,
      5800.1182,
@@ -7338,6 +7377,267 @@
     13.014
    ]
   },
+  "MagePrismaticRayAbility_RayBlue": {
+   "fadeIn": 0.1,
+   "fadeOut": 0.2,
+   "scale": 1.0,
+   "particles": {
+    "file": "../maps/Inst_LeagueStart/particles/MagePrismaticRayAbility_RayBlue.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 71,
+    "loopFrame": 61,
+    "frames": [
+     23
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       0.1016,
+       0.25,
+       0.6328
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 2.0,
+   "loop": true,
+   "bounds": [
+    0.0,
+    -1.001,
+    -0.0,
+    0.783,
+    1.004,
+    0.783
+   ]
+  },
+  "Magic_Wall": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.0,
+   "scale": 1.0,
+   "sound": "World/Zones/Domination03/Magic_Wall_lp",
+   "particles": {
+    "file": "../maps/Inst_LeagueStart/particles/Magic_Wall.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 283,
+    "loopFrame": 241,
+    "frames": [
+     24,
+     25,
+     0
+    ],
+    "emitters": [
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": true,
+      "tint": [
+       1.0625,
+       0.1172,
+       0.5156
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.1,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 16.0,
+   "loop": true,
+   "bounds": [
+    0.569,
+    -0.0,
+    0.132,
+    26.306,
+    15.801,
+    0.0
+   ]
+  },
+  "Descending_Dust_Small_loop": {
+   "fadeIn": 0.0,
+   "fadeOut": 0.5,
+   "scale": 1.0,
+   "sound": "World/Zones/AI19/AI19_StoneTrap_lp",
+   "particles": {
+    "file": "../maps/Inst_LeagueStart/particles/Descending_Dust_Small_loop.bin",
+    "speed": 1.0,
+    "loop": true,
+    "endFrame": 221,
+    "loopFrame": 101,
+    "frames": [
+     19,
+     26,
+     21,
+     22
+    ],
+    "emitters": [
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     },
+     {
+      "additive": false,
+      "tint": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "render": 0,
+      "pivot": [
+       0.0,
+       0.0
+      ],
+      "virtualOffset": 0.0,
+      "looping": true,
+      "worldSpace": false,
+      "flip": [
+       false,
+       false
+      ]
+     }
+    ]
+   },
+   "duration": 0.0,
+   "loop": false,
+   "sfx": "sfx/AI19_StoneTrap_lp"
+  },
   "MageTeleportAbility_End": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
@@ -7351,11 +7651,11 @@
     "loopFrame": 101,
     "frames": [
      23,
-     24,
-     25,
-     26,
      27,
-     28
+     28,
+     29,
+     30,
+     31
     ],
     "emitters": [
      {
@@ -7539,7 +7839,7 @@
   "height": 512,
   "rects": [
    [
-    544,
+    800,
     256,
     64,
     64
@@ -7549,30 +7849,6 @@
     0,
     128,
     128
-   ],
-   [
-    608,
-    256,
-    64,
-    64
-   ],
-   [
-    672,
-    256,
-    64,
-    64
-   ],
-   [
-    736,
-    256,
-    64,
-    64
-   ],
-   [
-    800,
-    256,
-    64,
-    64
    ],
    [
     864,
@@ -7587,18 +7863,6 @@
     64
    ],
    [
-    384,
-    0,
-    128,
-    128
-   ],
-   [
-    640,
-    384,
-    32,
-    32
-   ],
-   [
     0,
     384,
     64,
@@ -7606,6 +7870,42 @@
    ],
    [
     64,
+    384,
+    64,
+    64
+   ],
+   [
+    128,
+    384,
+    64,
+    64
+   ],
+   [
+    192,
+    384,
+    64,
+    64
+   ],
+   [
+    384,
+    0,
+    128,
+    128
+   ],
+   [
+    960,
+    384,
+    32,
+    32
+   ],
+   [
+    256,
+    384,
+    64,
+    64
+   ],
+   [
+    320,
     384,
     64,
     64
@@ -7617,13 +7917,13 @@
     128
    ],
    [
-    128,
+    384,
     384,
     64,
     64
    ],
    [
-    192,
+    448,
     384,
     64,
     64
@@ -7653,55 +7953,73 @@
     128
    ],
    [
-    256,
-    384,
-    64,
-    64
-   ],
-   [
-    320,
-    384,
-    64,
-    64
-   ],
-   [
-    384,
-    384,
-    64,
-    64
-   ],
-   [
-    448,
-    384,
-    64,
-    64
-   ],
-   [
     512,
     384,
     64,
     64
    ],
    [
+    576,
+    384,
+    64,
+    64
+   ],
+   [
+    640,
+    384,
+    64,
+    64
+   ],
+   [
+    704,
+    384,
+    64,
+    64
+   ],
+   [
+    768,
+    384,
+    64,
+    64
+   ],
+   [
     256,
     256,
     128,
     128
    ],
    [
+    832,
     384,
+    64,
+    64
+   ],
+   [
+    384,
+    256,
+    128,
+    128
+   ],
+   [
+    512,
+    256,
+    128,
+    128
+   ],
+   [
+    640,
     256,
     32,
     128
    ],
    [
-    416,
+    672,
     256,
     128,
     128
    ],
    [
-    576,
+    896,
     384,
     64,
     64
@@ -7884,6 +8202,27 @@
    ],
    [
     "Client/Render/ParticleAtlas.(Texture).bin",
+    1152,
+    1664,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1792,
+    192,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    768,
+    1024,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
     768,
     1664,
     128,
@@ -7961,6 +8300,13 @@
     "duration": 82.0,
     "match": "bev"
    },
+   "World/Zones/AI19/AI19_StoneTrap_lp": {
+    "file": "sfx/AI19_StoneTrap_lp",
+    "wave": "AI19_StoneTrap_lp",
+    "bank": "SFX/World/World_AI19.bsb",
+    "duration": 6.676,
+    "match": "bev"
+   },
    "World/Zones/IL1/LusterLoop": {
     "file": "sfx/Luster_lp",
     "wave": "Luster_lp",
@@ -7973,7 +8319,7 @@
     "wave": "MageTeleportAbility_End",
     "bank": "SFX/Spells/MageV2.bsb",
     "duration": 4.0,
-    "match": "name"
+    "match": "bev"
    }
   },
   "volume": {}

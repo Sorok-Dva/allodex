@@ -3195,6 +3195,18 @@
     "t": 32.001,
     "until": 38.001,
     "vot": "Descending_Dust"
+   },
+   {
+    "p": [
+     337.8184,
+     5799.862,
+     156.045
+    ],
+    "yaw": 6.1895,
+    "scale": 5.0,
+    "t": 0.0,
+    "until": 25.5,
+    "vot": "InstLeague1_AI_2X2"
    }
   ]
  },
@@ -4280,7 +4292,8 @@
     12.509,
     15.779,
     34.541
-   ]
+   ],
+   "sfx": "sfx/IL1Dust1"
   }
  },
  "particleAtlas": {
@@ -4289,7 +4302,7 @@
   "height": 512,
   "rects": [
    [
-    544,
+    800,
     256,
     64,
     64
@@ -4299,30 +4312,6 @@
     0,
     128,
     128
-   ],
-   [
-    608,
-    256,
-    64,
-    64
-   ],
-   [
-    672,
-    256,
-    64,
-    64
-   ],
-   [
-    736,
-    256,
-    64,
-    64
-   ],
-   [
-    800,
-    256,
-    64,
-    64
    ],
    [
     864,
@@ -4337,18 +4326,6 @@
     64
    ],
    [
-    384,
-    0,
-    128,
-    128
-   ],
-   [
-    640,
-    384,
-    32,
-    32
-   ],
-   [
     0,
     384,
     64,
@@ -4356,6 +4333,42 @@
    ],
    [
     64,
+    384,
+    64,
+    64
+   ],
+   [
+    128,
+    384,
+    64,
+    64
+   ],
+   [
+    192,
+    384,
+    64,
+    64
+   ],
+   [
+    384,
+    0,
+    128,
+    128
+   ],
+   [
+    960,
+    384,
+    32,
+    32
+   ],
+   [
+    256,
+    384,
+    64,
+    64
+   ],
+   [
+    320,
     384,
     64,
     64
@@ -4367,13 +4380,13 @@
     128
    ],
    [
-    128,
+    384,
     384,
     64,
     64
    ],
    [
-    192,
+    448,
     384,
     64,
     64
@@ -4403,55 +4416,73 @@
     128
    ],
    [
-    256,
-    384,
-    64,
-    64
-   ],
-   [
-    320,
-    384,
-    64,
-    64
-   ],
-   [
-    384,
-    384,
-    64,
-    64
-   ],
-   [
-    448,
-    384,
-    64,
-    64
-   ],
-   [
     512,
     384,
     64,
     64
    ],
    [
+    576,
+    384,
+    64,
+    64
+   ],
+   [
+    640,
+    384,
+    64,
+    64
+   ],
+   [
+    704,
+    384,
+    64,
+    64
+   ],
+   [
+    768,
+    384,
+    64,
+    64
+   ],
+   [
     256,
     256,
     128,
     128
    ],
    [
+    832,
     384,
+    64,
+    64
+   ],
+   [
+    384,
+    256,
+    128,
+    128
+   ],
+   [
+    512,
+    256,
+    128,
+    128
+   ],
+   [
+    640,
     256,
     32,
     128
    ],
    [
-    416,
+    672,
     256,
     128,
     128
    ],
    [
-    576,
+    896,
     384,
     64,
     64
@@ -4634,6 +4665,27 @@
    ],
    [
     "Client/Render/ParticleAtlas.(Texture).bin",
+    1152,
+    1664,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    1792,
+    192,
+    64,
+    64
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
+    768,
+    1024,
+    128,
+    128
+   ],
+   [
+    "Client/Render/ParticleAtlas.(Texture).bin",
     768,
     1664,
     128,
@@ -4699,7 +4751,13 @@
     "until": 600.0
    }
   ],
-  "ambience": [],
+  "ambience": [
+   {
+    "file": "sfx/RandomRocks501",
+    "t": 25.5,
+    "until": 600.0
+   }
+  ],
   "sfx": [
    {
     "file": "sfx/ShadowSpawned",
@@ -4722,11 +4780,25 @@
    "ambience": []
   },
   "waves": {
+   "Ambience/IndoorAmbience/Zones/IL1/Castle_AfterSabotage": {
+    "file": "sfx/RandomRocks501",
+    "wave": "RandomRocks501",
+    "bank": "SFX/Ambience/Ambience_IL1.bsb",
+    "duration": 2.206,
+    "match": "bev"
+   },
    "Music/AdaptiveMusic/Siege_warfare": {
     "file": "sfx/Siege_warfare_adaptive",
     "wave": "Siege_warfare_adaptive",
     "bank": "SFX/Music/Music_Ingame.fsb",
     "duration": 43.5,
+    "match": "bev"
+   },
+   "World/Zones/AI19/AI19_StoneFall": {
+    "file": "sfx/IL1Dust1",
+    "wave": "IL1Dust1",
+    "bank": "SFX/World/World_AI19.bsb",
+    "duration": 6.995,
     "match": "bev"
    },
    "World/Zones/IL1/LusterLoop": {
