@@ -276,6 +276,8 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
             continue
         inst = {"vot": name, "p": [round(v, 4) for v in extra["p"]], "yaw": extra["yaw"], "_only": extra["only"],
                 "_t": extra["t"], "_until": extra["until"]}
+        if abs(extra.get("scale", 1.0) - 1) > 1e-6:
+            inst["scale"] = extra["scale"]
         if vis.geometry is not None:
             if vis.geometry not in geometries:
                 geometries[vis.geometry] = load_geometry(mp, cat, bins, vis.geometry)
@@ -1745,6 +1747,52 @@ def vots_named(db: PackDB, cat, name: str) -> list[int]:
     return index.get(name.lower(), [])
 
 
+def pick_vot_70(db: PackDB, root: Path, template: str | None, found: list[int]) -> list[int]:
+    """Entre des gabarits du 17.0 homonymes, ceux qui ont les fondus (`fadeInMS`/`fadeOutMS`) et
+    l'échelle du gabarit 7.0 `template` (chemin `.xdb` de l'arbre)."""
+    from tools import cutscene_xdb70 as x70
+    from tools.allods_visdb import VOT_FADE_IN, VOT_FADE_OUT, VOT_GEOMETRY, VOT_PARTICLE, VOT_SCALE
+    doc = x70._read(Path(root) / template.split("#")[0].lstrip("/")) if template else None
+    if doc is None or len(found) < 2:
+        return found
+    want = (int(x70._f(doc, "fadeInMS")), int(x70._f(doc, "fadeOutMS")), x70._f(doc, "scale", 1.0))
+    kept = [off for off in found if (db.i32(off + VOT_FADE_IN), db.i32(off + VOT_FADE_OUT)) == want[:2]
+            and abs(db.f32(off + VOT_SCALE) - want[2]) < 1e-4]
+
+    def content(off: int) -> tuple:
+        geo = db.ptr(off + VOT_GEOMETRY)
+        return (db.binary_ref(geo) if geo is not None else None, db.ptr(off + VOT_PARTICLE),
+                db.bytes(off, 0x140))
+    if len(kept) > 1 and len({content(off) for off in kept}) == 1:
+        # doublons du 17.0 (`Magic_Wall` : même binaire de géométrie, mêmes particules, octets égaux)
+        return [min(kept)]
+    return kept
+
+
+VOT_COMPONENTS_17 = 0x138     # composants du gabarit (pointeurs)
+STATECOMP_ANIMS = 0x68         # `StateComponent` : animations (u32 de l'énumération)
+STATECOMP_COMPONENT = 0x88     # composant joué (`AttachedVisObjectComponent`)
+ATTACHED_VISOBJECT = 0x88      # `AttachedVisObjectComponent.visObject` (recoupé sur les trois états du cinéma pridien)
+
+
+def state_components_17(db: PackDB, vot: int, anim_names: dict) -> dict[str, int]:
+    """Composants d'état d'un gabarit du 17.0 : animation (minuscules) → gabarit accroché."""
+    out: dict[str, int] = {}
+    for sc in db.pointers(vot + VOT_COMPONENTS_17):
+        if db.vtype(sc) != "StateComponent":
+            continue
+        comp = db.ptr(sc + STATECOMP_COMPONENT)
+        target = db.ptr(comp + ATTACHED_VISOBJECT) if comp is not None and db.vtype(comp) == "AttachedVisObjectComponent" else None
+        if target is None or db.vtype(target) != "VisObjectTemplate":
+            continue
+        v = db.vec(sc + STATECOMP_ANIMS)
+        for k in range(v[1] // 4 if v else 0):
+            name = anim_names.get(db.u32(v[0] + 4 * k))
+            if name:
+                out[name.lower()] = target
+    return out
+
+
 def static_device_states(root: Path, sp: dict) -> list[dict | None]:
     """États (7.0) d'une stèle posée sur un objet du décor (`StaticDevice`) : changement de modèle
     (`DeviceVisActionChangeModel` : nom du gabarit) ou animation (`DeviceAnimationAction`)."""
@@ -1797,6 +1845,9 @@ def static_device_extras(spec: dict, plan: dict, script: str, sp: dict, windows:
             if len(found) != 1:
                 report.append(f"{spec['id']} : stèle {script} : gabarit {base} {'introuvable' if not found else 'ambigu'}")
                 continue
+            if read_visobject(db, cat, found[0]).components:
+                report.append(f"{spec['id']} : stèle {script} : gabarit {base} à composants, animation d'état non jouée")
+                continue
             plan.setdefault("decor_windows", []).append({"hide": base, "p": sp["p"], "t": t0, "until": t1})
             plan["actors"].append({"id": ident, "mob_offset": None, "visual": None, "vot": found[0],
                                    "path": [{"t": 0, "p": sp["p"], "yaw": round(sp["yaw"], 5)}],
@@ -1807,7 +1858,7 @@ def static_device_extras(spec: dict, plan: dict, script: str, sp: dict, windows:
             report.append(f"{spec['id']} : stèle {script} (objet {base}) → animation {st['clips']} de {t0} à {t1} s")
 
 
-def channel_spawn(spec: dict, plan: dict, item: dict, spawns: dict, db: PackDB, cat, rev: dict,
+def channel_spawn(spec: dict, plan: dict, item: dict, spawns: dict, db: PackDB, cat, rev: dict, root: Path,
                   report: list[str]) -> dict | None:
     """Rayon canalisé (`CreatureChannelDirectAction`) d'un PNJ vers un repère : gabarit du 17.0 au nom
     du `channelingFx` 7.0, longueur modelée (`fxLength`) et fondus de l'action du client qui le tire ;
@@ -1823,13 +1874,24 @@ def channel_spawn(spec: dict, plan: dict, item: dict, spawns: dict, db: PackDB, 
         vis = node.get("visObject") if node else None
         if vis is not None and vot_name(db, cat, vis) == want:
             found.setdefault((vis, round(node.get("length") or 0.0, 3)), node)
+    if len(found) > 1 and ch.get("locator"):
+        # plusieurs actions du 17.0 tirent ce gabarit : celles qui partent du même locator que la 7.0
+        same = {k: v for k, v in found.items() if (v.get("start") or {}).get("locator") == ch["locator"]}
+        report.append(f"{spec['id']} : rayon {want} : départs du 17.0 "
+                      f"{sorted((k[1], (v.get('start') or {}).get('locator')) for k, v in found.items())}")
+        found = same or found
+    if len({k[0] for k in found}) > 1:
+        keep = set(pick_vot_70(db, root, ch.get("fx"), sorted({k[0] for k in found})))
+        found = {k: v for k, v in found.items() if k[0] in keep}
     if actor is None or end is None or len({k[0] for k in found}) != 1 or found and next(iter(found))[0] not in rev:
         report.append(f"{spec['id']} : rayon non rendu ({item['clientdata']} : gabarit {want}, "
                       f"{len(found)} actions du 17.0, acteur {'trouvé' if actor else 'absent'})")
         return None
     (vis, length), node = next(iter(found.items()))
     if len(found) > 1:
-        report.append(f"{spec['id']} : rayon {want} : longueurs {sorted(k[1] for k in found)} dans le 17.0, la première")
+        report.append(f"{spec['id']} : rayon {want} non rendu : longueurs {sorted(k[1] for k in found)} dans le 17.0, "
+                      f"aucune établie pour cette action")
+        return None
     return {"vot": rev[vis], "t": item["t"], "until": item["until"] if item["until"] is not None else item["t"] + 600,
             "channel": {"from": actor["id"], "locator": ch.get("locator") or "Global", "to": end["p"], "length": length},
             "_source": item["clientdata"]}
@@ -1855,6 +1917,7 @@ def table_steles(spec: dict, tl, spawns: dict, root: Path, db: PackDB, cat, rev:
         vis = sdoc.find("visObj") if sdoc is not None else None
         name = Path((vis.get("href") or "").split("#")[0]).name.split(".(")[0] if vis is not None else ""
         found = vots_named(db, cat, name) if name else []
+        found = pick_vot_70(db, root, vis.get("href") if vis is not None else None, found)
         if sp is None or len(found) != 1 or found[0] not in rev:
             report.append(f"{spec['id']} : stèle de table {Path(item['table']).name} non posée (gabarit {name or '—'}, "
                           f"{len(found)} au 17.0, place {'trouvée' if sp else 'absente'})")
@@ -2016,7 +2079,7 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
     fx = []
     for item in tl.fx:
         if item.get("channel") is not None and not isinstance(item["channel"], bool):
-            spawn = channel_spawn(spec, plan, item, spawns, db, cat, rev, report)
+            spawn = channel_spawn(spec, plan, item, spawns, db, cat, rev, root, report)
             if spawn is not None:
                 fx.append(spawn)
             continue
@@ -2040,10 +2103,33 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
         if len(found) != 1:
             report.append(f"{spec['id']} : stèle à drapeau {base} : gabarit {'introuvable' if not found else 'ambigu'}")
             continue
+        if read_visobject(db, cat, found[0]).components:
+            # gabarit fait de composants (cinéma : écran animé + bâtiment) : l'acteur n'exporte que la
+            # géométrie squelettique ; l'objet du décor reste, son animation d'état n'est pas jouée
+            report.append(f"{spec['id']} : stèle à drapeau {base} : gabarit à composants, animation d'état non jouée "
+                          f"(l'objet du décor reste tel quel)")
+            continue
+        states = state_components_17(db, found[0], anim_names)
         for branch in dev["branches"]:
             for f in (f for f in tl.flags if f["flag"] == branch["flag"]):
                 t0, t1 = f["t"], f["until"] if f["until"] is not None else horizon
                 clips = [clip_name(c) for c in branch["clips"]]
+                if states:
+                    # Gabarit à composants d'état (`StateComponent` : un modèle accroché par animation ; le
+                    # cinéma : `idle` → Hadagan_Cinema_Priden, `special` → Hadagan_Cinema_PridenReview du
+                    # 7.0) : le modèle de l'état joué est posé à la place de l'objet, le temps du drapeau
+                    # (locator `Slot_Special01` pris à la racine : le gabarit de base n'a pas de squelette).
+                    for clip in branch["clips"]:
+                        comp = states.get(clip.lower())
+                        if comp is None or comp not in rev:
+                            report.append(f"{spec['id']} : {base} : pas de composant d'état pour {clip}")
+                            continue
+                        plan.setdefault("decor_windows", []).append(
+                            {"show": comp, "name": f"{base}:{clip}", "p": dev["p"], "yaw": round(dev["yaw"], 5),
+                             "scale": round(dev["scale"], 5), "t": t0, "until": t1})
+                        report.append(f"{spec['id']} : stèle {base} : état {clip} → composant {rev[comp]} "
+                                      f"tant que {Path(f['flag']).name} est posé ({t0} à {t1} s)")
+                    continue
                 plan.setdefault("decor_windows", []).append({"hide": base, "p": dev["p"], "t": t0, "until": t1})
                 plan["actors"].append({"id": re.sub(r"[^a-z0-9]+", "-", base.lower()).strip("-"), "mob_offset": None,
                                        "visual": None, "vot": found[0], "scale": round(dev["scale"], 5),
