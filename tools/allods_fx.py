@@ -27,6 +27,8 @@ from tools.extract_menu_scene import BinSource, read_chunks
 
 # --- effets ------------------------------------------------------------------------------------
 
+_ANIM_NAMES: dict[int, dict[int, str]] = {}
+
 @dataclass
 class FxBuild:
     exporter: Exporter
@@ -48,6 +50,19 @@ class FxBuild:
                 name, k = f"{base}#{k}", k + 1
             self.names[off] = name
         return self.names[off]
+
+    def default_state(self, state_ids: tuple[int, ...], animation: int | None) -> bool:
+        """Un `StateComponent` est-il montré dans l'état par défaut du gabarit : l'une de ses
+        animations (énumération `Animations`) est celle du premier état (`KaniaShip.Idle` → `idle`) ;
+        sans animation, l'état `idle`."""
+        from tools.allods_visdb import animation_names
+        root = getattr(self.db, "parent", None) or self.db
+        names = _ANIM_NAMES.get(id(root))
+        if names is None:
+            names = _ANIM_NAMES[id(root)] = {k: v.lower() for k, v in animation_names(root).items()}
+        file = self.cat.name(self.db.binary_ref(animation)) if animation is not None else None
+        clip = file.rsplit("/", 1)[-1].split(".(")[0].rsplit(".", 1)[-1].lower() if file and "." in file.rsplit("/", 1)[-1].split(".(")[0] else "idle"
+        return any(names.get(i) == clip for i in state_ids)
 
     def state_animation(self, off: int, clip: str) -> int | None:
         """Animation de l'état du gabarit dont le fichier porte le clip `clip` (`special01` →
@@ -152,10 +167,10 @@ class FxBuild:
         for comp in vot.components:
             if comp.visobject is None:
                 continue
-            if comp.state_ids is not None:
-                # `StateComponent` : montré selon l'animation du gabarit, que le décor ne pilote pas
-                # (les stèles le posent elles-mêmes, `extract_engine_cutscene.stele_components`).
-                self.exporter.notes.append(f"{name} : composant d'état {self.name_of(comp.visobject)} non posé")
+            if comp.state_ids is not None and not self.default_state(comp.state_ids, vot.animation):
+                # `StateComponent` d'un autre état que celui du gabarit posé (son animation par défaut) :
+                # rien ne le pilote dans le décor (les stèles posent les leurs, `stele_components`).
+                self.exporter.notes.append(f"{name} : composant d'état {self.name_of(comp.visobject)} hors de l'état par défaut")
                 continue
             if comp.cancelled:
                 self.exporter.notes.append(f"{name} : composant {comp.ident} annulé (arrêté avant son échéance)")
