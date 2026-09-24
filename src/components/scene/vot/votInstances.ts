@@ -17,6 +17,24 @@ export const CUTOUT_ALPHA = 0.5;
 export type Tinted = { material: THREE.Material & { opacity: number }; base: number; transparent: boolean };
 export type Scrolling = { texture: THREE.Texture; speed: [number, number] };
 export type Gate = [number, number | null];
+/**
+ * Un gabarit de l'instance (la racine ou un composant accroché) et sa vie propre, en temps de
+ * l'instance : apparition à `start` (retard des `DelayComponent`), fin à `stop`
+ * (`StopVisObjectComponents`) ou au bout de son clip s'il ne boucle pas (`end`), fondus du
+ * gabarit (`fadeInMS`, `fadeOutMS`). Ses matériaux et particules suivent son opacité, multipliée
+ * par celle de son parent : un composant disparaît avec le gabarit qui le porte.
+ */
+export type VotPart = {
+  node: THREE.Object3D;
+  parent: VotPart | null;
+  start: number;
+  stop: number | null;
+  end: number | null;
+  fadeIn: number;
+  fadeOut: number;
+  tinted: Tinted[];
+  opacity: number;
+};
 export type VotInstance = {
   root: THREE.Object3D;
   mixer: THREE.AnimationMixer;
@@ -30,8 +48,24 @@ export type VotInstance = {
   tinted: Tinted[];
   scrolling: Scrolling[];
   billboards: { node: THREE.Object3D; mode: string; base: THREE.Quaternion }[];
-  particles: { view: ParticleSystemView; offset: number }[];
+  particles: { view: ParticleSystemView; offset: number; part?: VotPart }[];
+  /** Vies propres des gabarits (option `lifetimes` de la fabrique), racine en tête ; sinon vide. */
+  parts: VotPart[];
 };
+
+/**
+ * Opacité propre d'un gabarit au temps `local` de l'instance : fondu d'entrée depuis son
+ * apparition (sauf la racine, dont l'entrée est celle de l'action qui la pose), fondu de sortie
+ * depuis sa fin — arrêt par `StopVisObjectComponents` ou fin de son clip qui ne boucle pas.
+ */
+export function partOpacity(part: Pick<VotPart, 'start' | 'stop' | 'end' | 'fadeIn' | 'fadeOut'>, local: number, root = false): number {
+  if (local < part.start) return 0;
+  const enter = !root && part.fadeIn > 0 ? Math.min(1, (local - part.start) / part.fadeIn) : 1;
+  const death = Math.min(part.stop ?? Infinity, part.end ?? Infinity);
+  if (local <= death) return enter;
+  const leave = part.fadeOut > 0 ? 1 - (local - death) / part.fadeOut : 0;
+  return Math.max(0, Math.min(enter, leave));
+}
 
 /** Début cumulé d'un nœud de gabarit : somme des retards de ses ancêtres (lui compris). */
 export function windowOffset(node: THREE.Object3D, root: THREE.Object3D): number {
@@ -102,6 +136,13 @@ export type VotFactoryOptions = {
   baseUrl: string | null;
   disposables: { dispose(): void }[];
   anisotropy?: () => number;
+  /**
+   * Vie propre de chaque gabarit (`VotPart`) : un gabarit dont le clip ne boucle pas s'éteint au
+   * bout de son clip, avec son `fadeOutMS` ; les composants retardés ou arrêtés entrent et sortent
+   * avec leurs fondus. Règle des effets du client (fatalités) ; les cinématiques gardent l'ancien
+   * comportement (dernière pose tenue) tant qu'elle n'y est pas vérifiée.
+   */
+  lifetimes?: boolean;
 };
 
 /** Prépare les matériaux des `.glb` et clone les instances de gabarits (particules comprises). */
@@ -163,7 +204,7 @@ export class VotFactory {
   instantiate(proto: THREE.Object3D, clips: THREE.AnimationClip[], start: number, lifeTime: number, fadeIn: number, fadeOut: number): VotInstance {
     const root = cloneSkinned(proto);
     const mixer = new THREE.AnimationMixer(root);
-    const inst: VotInstance = { root, mixer, clips: [], start, lifeTime, fadeIn, fadeOut, tinted: [], scrolling: [], billboards: [], particles: [], gated: [] };
+    const inst: VotInstance = { root, mixer, clips: [], start, lifeTime, fadeIn, fadeOut, tinted: [], scrolling: [], billboards: [], particles: [], gated: [], parts: [] };
     const withParticles: [THREE.Object3D, ParticleSystemMeta][] = [];
     const { objects } = this.opts;
     root.traverse(node => {
@@ -186,13 +227,14 @@ export class VotFactory {
       if (system && typeof system === 'object') withParticles.push([node, system]);
     });
     this.prepare(root, false, inst.tinted, inst.scrolling, this.opts.baseUrl);
+    const partOf = this.opts.lifetimes ? buildParts(inst, objects) : null;
     if (this.atlasTexture && this.particleAtlas) {
       for (const [node, system] of withParticles) {
         const file = this.particleFiles.get(system.file);
         if (!file) continue;
         const view = new ParticleSystemView(file, system, this.atlasTexture, this.particleAtlas);
         node.add(view.group);
-        inst.particles.push({ view, offset: windowOffset(node, root) });
+        inst.particles.push({ view, offset: windowOffset(node, root), part: partOf?.(node) ?? undefined });
         this.opts.disposables.push(view);
       }
     }
@@ -200,17 +242,76 @@ export class VotFactory {
   }
 }
 
+/**
+ * Vies propres des gabarits d'une instance (`VotPart`, parents avant enfants) ; chaque matériau
+ * revient au gabarit le plus proche qui le porte. Renvoie la recherche du gabarit d'un nœud.
+ */
+function buildParts(inst: VotInstance, objects: Record<string, FatalityObject>): (node: THREE.Object3D) => VotPart | null {
+  const { root } = inst;
+  const byNode = new Map<THREE.Object3D, VotPart>();
+  const nearest = (node: THREE.Object3D | null): VotPart | null => {
+    for (let n = node; n && n !== root.parent; n = n.parent) {
+      const part = byNode.get(n);
+      if (part) return part;
+    }
+    return null;
+  };
+  root.traverse(node => {
+    const { vot, window } = node.userData as { vot?: string; window?: Gate };
+    if (!vot) return;
+    const info = objects[vot];
+    const start = windowOffset(node, root);
+    const parentOffset = node !== root && node.parent ? windowOffset(node.parent, root) : 0;
+    const duration = info?.duration ?? 0;
+    const part: VotPart = {
+      node,
+      parent: node === root ? null : nearest(node.parent),
+      start,
+      stop: window && window[1] !== null ? parentOffset + window[1] : null,
+      end: duration > 0 && !info?.loop ? start + duration : null,
+      fadeIn: info?.fadeIn ?? 0,
+      fadeOut: info?.fadeOut ?? 0,
+      tinted: [],
+      opacity: 1,
+    };
+    byNode.set(node, part);
+    inst.parts.push(part);
+  });
+  const records = new Map(inst.tinted.map(t => [t.material as THREE.Material, t]));
+  root.traverse(node => {
+    const mesh = node as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    const part = nearest(mesh);
+    if (!part) return;
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      const record = records.get(material);
+      if (record) part.tinted.push(record);
+    }
+  });
+  // Les fenêtres des gabarits passent par leurs vies propres (fondus compris).
+  inst.gated = inst.gated.filter(gate => !byNode.has(gate.node));
+  return nearest;
+}
+
 /** Pose une instance au temps `local` de sa vie, avec son opacité `fade` (0 = masquée). */
 export function updateInstance(inst: VotInstance, local: number, fade: number, camera: THREE.Camera): void {
-  inst.root.visible = fade > 0.001;
+  for (const part of inst.parts) {
+    part.opacity = partOpacity(part, local, part.parent === null) * (part.parent ? part.parent.opacity : 1);
+    if (part.node !== inst.root) part.node.visible = part.opacity > 0.001;
+  }
+  inst.root.visible = fade > 0.001 && (inst.parts.length === 0 || inst.parts[0].opacity > 0.001);
   if (!inst.root.visible) return;
   for (const gate of inst.gated) gate.node.visible = local >= gate.start && (gate.stop === null || local < gate.stop);
   for (const clip of inst.clips) clip.action.time = objectClipTime(Math.max(0, local - clip.offset), clip.duration, clip.loop);
   inst.mixer.update(0);
-  for (const { material, base } of inst.tinted) material.opacity = base * fade;
+  if (inst.parts.length) {
+    for (const part of inst.parts) for (const { material, base } of part.tinted) material.opacity = base * fade * part.opacity;
+  } else {
+    for (const { material, base } of inst.tinted) material.opacity = base * fade;
+  }
   for (const { texture, speed: [su, sv] } of inst.scrolling) texture.offset.set((local * su) % 1, -((local * sv) % 1));
   for (const { node, mode, base } of inst.billboards) faceCamera(node, mode, base, camera);
-  for (const { view, offset } of inst.particles) view.update(Math.max(0, local - offset), fade);
+  for (const { view, offset, part } of inst.particles) view.update(Math.max(0, local - offset), fade * (part?.opacity ?? 1));
 }
 
 /** Systèmes de particules utilisés par des gabarits (fichiers à charger). */

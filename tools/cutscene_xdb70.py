@@ -94,6 +94,16 @@ class Timeline:
     maps: set[str] = field(default_factory=set)
     # PNJ invoqués : {id, mob, name, locator, yaw (rad), t, until, moves: [{t, locator}]}
     summons: list[dict] = field(default_factory=list)
+    # Déroulé ouvert par un déclencheur (`trigger`, zone de script ou effet d'une capacité) :
+    # états visuels posés sur les stèles (`ImpactSetVisualState`), effets de `ClientData` posés sur
+    # des repères (projectile, explosion, rayon), sons ponctuels, trajets et retrait des PNJ posés,
+    # sortie du joueur de la carte (`ImpactTeleport`).
+    states: list[dict] = field(default_factory=list)
+    fx: list[dict] = field(default_factory=list)
+    sfx: list[dict] = field(default_factory=list)
+    spawn_moves: dict[str, list[dict]] = field(default_factory=dict)
+    spawn_until: dict[str, float] = field(default_factory=dict)
+    exit: float | None = None
 
 
 def read_client_data(tree: Tree, path: Path) -> dict:
@@ -116,6 +126,26 @@ def read_client_data(tree: Tree, path: Path) -> dict:
             break
     for anims in doc.iter("animations"):
         out["animations"] += [a.text for a in anims if a.text]
+    action = doc.find("customData/action")
+    kind = (action.get("type") or "").rsplit(".", 1)[-1] if action is not None else ""
+    out["kind"] = kind
+    if kind == "CreatureFixedPointProjectileAction":
+        # Projectile d'un repère à l'autre (`lines` : `endPointIndex`, `throwDuration` ms), explosion
+        # à l'arrivée : un effet posé, sans PNJ.
+        def ref(tag: str) -> str | None:
+            node = action.find(tag)
+            return tree.rel(tree.resolve(path, node.get("href"))) if node is not None and node.get("href") else None
+        line = action.find("lines/Item")
+        out["projectile"] = {"projectile": ref("projectileFx"), "explosion": ref("explosionFx"),
+                             "theGe": _f(action, "theGe"), "throw": _f(line, "throwDuration") / 1000.0,
+                             "end": int(_f(line, "endPointIndex"))}
+        out["voice"] = None
+    elif kind in ("Sound2DAction", "Sound3DAction"):
+        project = action.find("sound/project")
+        href = project.get("href", "") if project is not None else ""
+        if out["voice"] and "VoiceDialogs" not in href and not out["ru"]:
+            # Son d'effet (projet `World`, `Ambience`…) : pas une réplique.
+            out["sound"] = {"name": out["voice"], "kind": kind, "type": action.findtext("actionType") or "Simple"}
     return out
 
 
@@ -129,11 +159,15 @@ def read_camera(action: ET.Element) -> dict:
 class Simulator:
     """Déroule une chaîne de buffs à partir de son premier buff."""
 
-    def __init__(self, tree: Tree, horizon: float = 600.0) -> None:
+    def __init__(self, tree: Tree, horizon: float = 600.0, extended: bool = False) -> None:
         self.tree = tree
         self.tl = Timeline()
         self.horizon = horizon
         self.open: dict[str, dict] = {}     # buff sans durée → entrée, fermée par un BuffDetacher
+        # Déroulé d'un déclencheur (zone de script, capacité) : branches `ImpactIfTarget`, impacts
+        # instanciés ou sur les avatars voisins, états des stèles, effets et sons des `ClientData`,
+        # PNJ posés qui marchent ou disparaissent. Les chaînes de buffs gardent leur lecture.
+        self.extended = extended
 
     def attach(self, path: Path, t: float, target: str = "player") -> None:
         if t > self.horizon or len(self.tl.buffs) > 400:
@@ -223,6 +257,10 @@ class Simulator:
                 if summon is not None and locator:
                     summon["moves"].append({"t": round(t, 3), "locator": locator})
                     self.tl.scripts.add(locator)
+                elif self.extended and locator and target != "player":
+                    # PNJ posé sur la carte (`ImpactsToSingleSpawn`) qui suit un chemin.
+                    self.tl.spawn_moves.setdefault(target, []).append({"t": round(t, 3), "locator": locator})
+                    self.tl.scripts.update({target, locator})
         elif kind == "ImpactGoTo":
             summon = self.summon_by_id(target)
             locator = self.locator(node.find("destination"))
@@ -233,11 +271,47 @@ class Simulator:
             summon = self.summon_by_id(target)
             if summon is not None and summon.get("until") is None:
                 summon["until"] = round(t, 3)
+            elif summon is None and self.extended and target != "player":
+                self.tl.spawn_until[target] = min(self.tl.spawn_until.get(target, t), round(t, 3))
+        elif self.extended and kind == "ImpactIfTarget":
+            # Branche prise par la scène : celle où les conditions tiennent (joueur hors combat,
+            # cible avatar…) ; `impactsElse` est le cas hors cinématique.
+            for sub in node.findall("impactsIf/Item"):
+                self.impact(base, sub, t, target)
+        elif self.extended and kind == "ImpactInstantiating":
+            for sub in node.findall("impacts/Item"):
+                self.impact(base, sub, t, target)
+        elif self.extended and kind == "ImpactCreaturesAround":
+            flt = node.find("filter")
+            if flt is not None and (flt.get("type") or "").endswith("AvatarFilter"):   # avatars voisins : le joueur
+                for sub in node.findall("impacts/Item"):
+                    self.impact(base, sub, t, "player")
+        elif self.extended and kind == "ImpactTeleport" and target == "player":
+            self.tl.exit = t if self.tl.exit is None else min(self.tl.exit, t)
+        elif self.extended and kind == "ImpactSetVisualState" and target != "player":
+            self.tl.states.append({"t": round(t, 3), "spawn": target, "state": int(_f(node, "visualState"))})
+            self.tl.scripts.add(target)
         elif kind in ("ImpactClientDataParams", "ImpactClientData"):
             data = node.find("data")
             if data is not None and data.get("href"):
                 path = self.tree.resolve(base, data.get("href"))
                 line = read_client_data(self.tree, path)
+                locators = [x.text for x in node.findall("locators/Item/scriptID") if x.text]
+                if self.extended and line.get("projectile"):
+                    self.tl.fx.append({"t": round(t, 3), "clientdata": line["clientdata"], "locators": locators,
+                                       "owner": target, **line["projectile"]})
+                    self.tl.scripts.update(locators)
+                    return
+                if self.extended and line.get("sound"):
+                    self.tl.sfx.append({"t": round(t, 3), "clientdata": line["clientdata"], **line["sound"]})
+                    return
+                if self.extended and line.get("kind") == "CreatureChannelDirectAction":
+                    # Rayon canalisé d'un PNJ vers un repère (non rendu) : le PNJ est en scène.
+                    self.tl.fx.append({"t": round(t, 3), "clientdata": line["clientdata"], "locators": locators,
+                                       "owner": target, "channel": True})
+                    if target != "player":
+                        self.tl.scripts.add(target)
+                    return
                 if line["ru"] or line["voice"] or line["animations"]:
                     line.update({"t": round(t, 3), "speaker": target})
                     self.tl.lines.append(line)
@@ -344,11 +418,36 @@ class Simulator:
                 self.tl.effects.append(entry)
 
 
-def simulate(root: Path, first_buff: str, horizon: float = 600.0) -> Timeline:
+def trigger_impacts(doc: ET.Element, effect: str | None = None) -> list[ET.Element]:
+    """Impacts d'un déclencheur : `impactsIn` d'une zone de script (`ScriptZone`, à l'entrée du
+    joueur), ou `impactsOn` de l'effet `effect` (`HealthTrigger`…) d'une capacité (`AbilityResource`)."""
+    if doc.find("impactsIn") is not None:
+        return doc.findall("impactsIn/Item")
+    out: list[ET.Element] = []
+    for item in doc.findall("effects/Item"):
+        if effect is None or (item.get("type") or "").rsplit(".", 1)[-1] == effect:
+            out += item.findall("impactsOn/Item")
+    return out
+
+
+def simulate(root: Path, first_buff: str | None = None, horizon: float = 600.0, trigger: str | None = None,
+             trigger_effect: str | None = None, owner: str = "player") -> Timeline:
+    """Déroulé depuis un premier buff (`first_buff`, posé sur le joueur) ou depuis un déclencheur
+    (`trigger` : zone de script ou capacité ; `owner` : `scriptID` du porteur de la capacité, cible
+    de ses impacts directs)."""
     tree = Tree(Path(root))
-    sim = Simulator(tree, horizon)
-    sim.attach(tree.root / first_buff, 0.0)
-    root_doc = _read(tree.root / first_buff)
+    sim = Simulator(tree, horizon, extended=trigger is not None)
+    if trigger is not None:
+        path = tree.root / trigger
+        doc = _read(path)
+        for impact in trigger_impacts(doc, trigger_effect) if doc is not None else []:
+            sim.impact(path, impact, 0.0, owner)
+        if owner != "player":
+            sim.tl.scripts.add(owner)
+    root_doc = None
+    if first_buff is not None:
+        sim.attach(tree.root / first_buff, 0.0)
+        root_doc = _read(tree.root / first_buff)
     if root_doc is not None and _f(root_doc, "duration") and root_doc.find(".//impactsOff") is not None:
         # Buff racine à durée dont le `Switch` retire toute la chaîne à la fin : la scène s'arrête là.
         sim.tl.duration = min(sim.tl.duration, _f(root_doc, "duration") / 1000.0)
@@ -356,6 +455,9 @@ def simulate(root: Path, first_buff: str, horizon: float = 600.0) -> Timeline:
         entry.setdefault("until", round(sim.tl.duration, 3))
     for summon in sim.tl.summons:
         summon["moves"].sort(key=lambda m: m["t"])
+    if sim.tl.exit is not None:
+        # Le joueur quitte la carte : la scène s'arrête là (ses buffs locaux tombent avec elle).
+        sim.tl.duration = min(sim.tl.duration, sim.tl.exit) if sim.tl.duration else sim.tl.exit
     for bucket in (sim.tl.weather, sim.tl.sounds, sim.tl.effects, sim.tl.post):
         for item in bucket:
             if item.get("until") is None:

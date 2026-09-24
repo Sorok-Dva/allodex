@@ -175,7 +175,7 @@ ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le rest
 
 ### Cinématiques moteur recréées en 3D
 
-Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Treize
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Quinze
 sont **recréées dans three.js** avec les données du dernier client et jouées dans le film comme
 des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix russes) :
 
@@ -194,6 +194,34 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Ferris 6.0 · « La chute du Locus » (`ferris-locus-fall`) | serveur 7.0 | `FerrisRaid` | 122 s |
 | Invasion 7.0 · « La mort de l’ingénieur » (`invasion-engineer-kania`, Ligue) | client (`GameViewScene`) | `Inst_ZoneContested12_Start` | 13 s |
 | Citadelle de Nihaz 12.0 · « Le monde caché » (`ao12-prologue04`, pilote) | manifeste | `AO12_PrologueInst` | 82 s |
+| Zone de départ de l’Empire · « L’abordage » (`empire-start-boarding`, zone `Jump`, quête `Quest4_4`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 14 s |
+| Zone de départ de l’Empire · « Le chevalier vaincu » (`empire-start-knight-defeated`, `DeathTriggerPaladinFinal`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 15 s |
+
+**Zone de départ de l’Empire** (arc `empire-start`, juste après le prologue de l’Empire) : dans le
+17.0, les trois races de l’Empire (Xadaganiens, Orcs, Arisen) commencent au même tutoriel,
+`Inst_EmpireStart` (navire astral attaqué par la Ligue), qui sort vers `Hadagan_Sanatorium` (Igsh,
+d’après l’`ImpactTeleport` du 7.0) ; Pridiens et Aoidoi, factions à part à la création
+(`chargen.json`), n’en font pas partie (le départ pridien, `PridensStart`/`Inst_PridensStart`, montre
+des PNJ des deux factions). Le client 17.0 garde pour ce tutoriel deux `CameraTrackAction` (buffs 389009 et
+389797, points identiques au millième aux `JumpCameraFix` et `IE1_Teleport_Camera` du 7.0) et deux
+`GameViewScene` (389716, 389728, combattants des deux navires) ; `Hadagan_Sanatorium` n’a qu’une
+`GameViewScene` de figurants (faucons au repos, pas de caméra : une vue de jeu, pas une cinématique).
+Ces scènes ne sont pas des chaînes de buffs mais des **déclencheurs** (`"trigger"` du manifeste) :
+la zone de script `Jump` (entrée du joueur, `impactsIn`) et la capacité de mort de Gradimir Belov
+(`HealthTrigger`, porteur `trigger_owner`). Le déroulé en suit les branches `ImpactIfTarget`, les
+impacts instanciés et ceux sur les avatars voisins ; il en relève les **états des stèles**
+(`ImpactSetVisualState` : navire kanien `League_Ship_Final`, modèle `KaniaShip` et ses `idle`/
+`idle01`/`special` ; stèles `Empire_Ship_Fight1`/`League_Ship_Fight1`, dont chaque état joue un
+`GameViewScript` : combat en boucle, morts, disparition), les **explosions** des `ClientData`
+(`CreatureFixedPointProjectileAction` : gabarit d’explosion posé au repère d’arrivée, retrouvé au
+17.0 par ses gabarits et son `theGe`), les **sons** ponctuels (`Sound2DAction` des projets `World`),
+les PNJ posés qui marchent (`GoThroughPath`) ou disparaissent, et la sortie du joueur
+(`ImpactTeleport`, fin de scène). L’état de départ des stèles (laissé par le tutoriel avant le
+déclencheur) et la musique/ambiance encore actives viennent du manifeste, justifiés par les zones
+qui les posent. La scène commence au premier plan de caméra (avant, c’est la vue du joueur).
+Stèle du 17.0 retrouvée par sa place (`SpawnLocation` : case de 32 m en `+0x30`, repère local en
+`+0x24`) ; lacet propre d’un PNJ de `GameViewScene` en `+0xB8` ; délai `delayBefore` d’une action de
+`GameViewScript` en `+0x2C` (recoupés sur le 7.0).
 
 En attente, hors du film : `isa-freya` (Isa 14.0 : le navire « Freya », sujet du plan, est posé par le
 serveur et n'est pas dans le décor du client) et `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
@@ -292,7 +320,9 @@ c'est le serveur qui enchaîne les buffs.
   (`ferris-portal`, 20 à 37 s) restent : le même objet `FerrisRaid_CoreBottom` est à la même place en
   7.0 et en 17.0, rien n'autorise à déplacer la caméra ;
 - éclairage de zone : liste de `ZoneLights` (`+0x168`), ou éclairage unique en ligne (`+0x48`, cartes
-  d'intérieur comme `Ferris_indoor`) ; nuages de ciel « alpha » dont la texture n'a pas d'alpha
+  d'intérieur comme `Ferris_indoor`) ; dans l'élément, `PointLightColor` en `+0x4C` et
+  `SelfIllumColor` en `+0x50` (le champ `+0x48`, lu auparavant, vaut −1 partout : recoupé sur les 26
+  éléments 7.0 de six cartes) ; nuages de ciel « alpha » dont la texture n'a pas d'alpha
   rendus additifs.
 
 **Rendu** : décor non éclairé, couleur de sommet = ambiante + soleil (`N·S`) + octet 2 ×
@@ -331,9 +361,45 @@ voisine — 508 texels pour les 256 m —, axe Y retourné ;
 rangées dans un atlas (`terrain-light.png`, 4 096 px au plus) lu par l'attribut `_LIGHTUV`.
 
 **Formats du sol** : les patterns ImHex de **Paulus** (`tools/reverse/terrain.hexpat` pour
-`terrainDump.bin`, `tools/reverse/splatmap.hexpat` pour les `SplatMap`) décrivent aussi les champs
-que l'extraction ignore (tampons de sommets « complexes », occulteurs, herbe, eau) ; leur offset
-d'entête `0x08` compte l'entête `(niveau, taille)` que `read_chunks` retire.
+`terrainDump.bin`, `tools/reverse/splatmap.hexpat` pour les `SplatMap`) ; leur offset d'entête
+`0x08` compte l'entête `(niveau, taille)` que `read_chunks` retire. Tous les blocs sont lus
+(`parse_terrain_extras`) : tampons de sommets (taille, « complexe »), occulteurs, herbe, eau.
+
+**Herbe** (`tools/allods_terrain_extras.py`, lecteur `src/components/scene/vot/terrainExtras.ts`) :
+carreaux de 32 m, un jeu de places au mètre par (calque du sol, touffe) — l'octet « type » est
+l'entrée de `TerraLayers`, le « sous-type » sa touffe `foliage0…3` (bit 7 : jeu jumeau, mêmes places,
+toujours ; non doublé). Les nombres de touffes suivent la `probability` des touffes (7 : 30 : 27 : 2 →
+1 631 : 7 137 : 6 190 : 457 sur `Ferris4` 4_4). Touffe (72 o depuis `+0x48` de l'entrée de calque,
+recoupé sur `layers.xdb` 7.0) : `bottom`/`top` (hauteur, décalage, largeur), `min`/`maxScale`,
+`numLeaves`, `probability`, élément de l'atlas `Maps/<carte>/layers.(Texture)` (`TerraLayers +0x60`,
+sources de 48 o : x `+0x14`, y `+0x20`, largeur `+0x10`, hauteur `+0x04`). Le shader du client
+(`Material/grass-dx11.bin`, désassemblé, noms des constantes lus dans son `RDEF`) donne le reste :
+couleur = texture × lumière du sommet, test d'alpha `a × fondu < 0,02`, vent = produit complexe
+d'un coefficient par sommet (nul au pied) et d'un vecteur global. Rendu instancié (une touffe par
+instance, 24 o par touffe, un carreau de 32 m par objet, masqué au-delà de 70 m), éclairé comme le
+sol à son pied. **Choix du lecteur**, faute de données (le moteur les calcule) : répartition des
+feuilles en étoile, lacet/échelle/phase tirés au hasard, amplitude et fréquence du vent, fondu à
+45-70 m.
+
+**Eau** : carreaux de 32 m, hauteur (`Vec4`, égale aux quatre coins partout), vitesses (nulles
+partout), éléments de 8 m `(x, y, i, j)` : `(i, j)` = place dans le carreau, `(x, y)` = **bloc de
+8 × 8 texels du `SplatMap_N`** (N = texture de son matériau d'eau), alloué à la suite des passes du
+sol. Ses texels : B = 0,5 + profondeur/8, R, G = 0,5 + normale du fond/2 (corrélations 0,997 sur
+`Ferris4`). Type d'eau = entrée de `TerraLayers.waterLayers` (`+0x90`, 136 o, recoupé sur 7.0) :
+textures (relief, Fresnel), alpha, reflet, spéculaire, vitesse ; couleurs du dégradé et du
+spéculaire dans l'éclairage de zone (`WaterGradientStart/End`, `SpecularWaterColor`). Le lecteur
+porte le shader `StaticWater` du client (`Material/StaticWater-dx11.bin`) : relief défilant,
+dégradé selon la profondeur, reflet (caméra miroir, demi-résolution), réfraction (copie de l'image),
+Fresnel, alpha `sat(8B − 4)/(N·V + 0,01)`. Supposés : l'unité du temps
+(`s × waterSpeedMultiply / 1000`) et les textures de repli (`WaterFresnel`, `WaterNoise`) des types
+sans Fresnel ou sans relief (`Kania_River`, `Ferris4`). Aucune scène actuelle ne voit d'eau (la plus
+proche est à 157 m de la caméra de `ferris-retrospective`) ; la fatalité (Prés bénis) en a à 277 m.
+
+**Occulteurs** : un par carreau de 32 m (56 o) : `xmin` (4 hauteurs, à 96 % égales à une hauteur de
+sommet du carreau), `xmax` (`−FLT_MAX` dans 89 % des cas), boîte haute de 1 024 m ; avec
+`<région>_terrainDumpOcc.bin` (`extraOcclusion` de `TerrainPackInfo`), ce sont les données
+d'occlusion du sol (culling). Invisibles, non rendus ni exploités : three.js ne fait que du
+culling par frustum et nos décors sont petits.
 
 **Manques** : `ferris-sarcophagus` reste sombre même lu en entier (zone violette, aucune lumière
 ponctuelle ; octets 0-1 pleins) ; le fichier
@@ -344,7 +410,7 @@ sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce
 
 ### Ce qui manque
 
-- **Cinématiques moteur** : treize sont recréées (voir plus haut). Liste dans
+- **Cinématiques moteur** : quinze sont recréées (voir plus haut). Liste dans
   `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
   (7_0Events), extraites ici.
 - **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et
@@ -810,9 +876,11 @@ manque trois animations de sort demandées par certaines fatalités de boutique.
 (`CreatureChannelDirectAction` : gabarit `Fatality_Channel` modelé sur `fxLength` = 10 m le long de
 −Y, étiré entre ses extrémités — racine + 1 m chez le tueur et chez la victime —, fondus 0,2 s /
 0,1 s) ; le Phénix ajoute ses deux animations (`speed` 1,5) et un second rayon. Le script du client
-n'a pas de fin propre : il s'éteint avec la victime. Les ailes (`CreatureRunVisActionResource`, sous
+n'a pas de fin propre : il s'éteint avec la victime ; le rayon, lui, meurt avec son clip (4 s à
+`speed` 1,3 = 3,08 s, non bouclé), quand l'étincelle `Soul_Spark` qu'il porte (`Slot_Special01`, de
+−9,4 m à 0) atteint le tueur, avec son `fadeOutMS` (0,5 s). Les ailes (`CreatureRunVisActionResource`, sous
 drapeaux `FatalityWings*` achetés en boutique) ne sont pas jouées. Mise en scène (constantes du
-lecteur) : le tueur se tient à **17 m** (distance de sort, 15 à 20 m, validée), à 55° de l'avant de la victime côté −X, posé sur le terrain et tourné vers elle ; le rayon s'étire donc à 1,7 fois sa longueur modelée, fondus inchangés ; le cadrage initial se place face au segment victime → tueur pour voir les deux, puis l'orbite est libre ; il
+lecteur) : le tueur se tient à **17 m** (distance de sort, 15 à 20 m, validée), à 55° de l'avant de la victime côté −X, posé sur le terrain et tourné vers elle ; le rayon s'étire donc à 1,7 fois sa longueur modelée, fondus inchangés ; le tueur n'entre pas dans le cadrage (voir « Lecteur ») ; il
 se choisit dans le panneau (défaut : même sexe, première race de l'autre faction, URL `k=`).
 
 **Décor** (`scene/scene.glb`) : **sol réel** de la carte `Kania` (`tools/allods_terrain.py` :
@@ -821,7 +889,10 @@ choisi pour ses calques d'herbe et son relief doux (5 m sur 120 m) — niveau de
 90 m, grossier jusqu'à 300 m ; chaque sous-carreau prend le premier calque de sa première passe (le
 mélange du `SplatMap` n'est pas élucidé), terre battue redessinée au centre ; bouleaux, pins,
 rochers et buissons de la zone posés sur ce sol (disposition mise en scène, `scene.props`) ; ciel
-`Sky01_Day*` ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi.
+`Sky01_Day*` ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi. Herbe du
+`terrainDump` jusqu'à 110 m du centre et eau jusqu'à 300 m, rendues par le code commun aux
+cinématiques moteur (`vot/terrainExtras.ts`, voir « Herbe » et « Eau »), éclairées par la lumière de
+la zone (pas de lumière cuite ici) ; ni l'une ni l'autre n'arrête la caméra.
 
 **Table des paks** (`tools/allods_packdb.vote_pak_codes`) : le vote « l'entrée au rang indiqué
 finit par `(Texture).bin` » ne départage pas deux paks de textures (n'importe quel rang y tombe
@@ -838,6 +909,27 @@ recherche), chaque image recalculée d'après la chronologie (`timeline.ts`) ; g
 instant, fondus d'entrée/sortie des `VisObjectTemplate`, composants retardés/arrêtés
 (`DelayComponent`, `StopVisObjectComponents`), défilement UV, orientation Z_AXIS et BILLBOARD face
 caméra, particules en quads instanciés (`particles.ts`), sons calés sur la chronologie.
+
+- **Vie propre de chaque gabarit** (`VotPart`, `votInstances.ts`, option `lifetimes`) : la racine
+  et chaque composant accroché ont leur fenêtre — apparition au retard du `DelayComponent` avec son
+  `fadeInMS`, fin à l'arrêt (`StopVisObjectComponents`) ou **au bout de son clip s'il ne boucle pas**
+  (`SkeletalAnimation.looped` faux), avec son `fadeOutMS` ; un composant s'éteint avec son parent.
+  Preuve sur le Barde : `FatalityBardMuseLight` (clip de 1,5 s posé à 7,87 s, `fadeOutMS` 800) n'est
+  visé par aucun arrêt (celui de 7,85 s le précède) et son parent meurt sans fondu à 11,6 s : ce
+  fondu n'a de sens que si l'objet s'éteint seul à la fin de son clip ; de même le rayon et son
+  étincelle (ci-dessus). Avant, la dernière pose était tenue jusqu'à la fin de vie de l'instance :
+  67 gabarits figés dans 25 fatalités (Muse de lumière et neuf `FatalityBard_Lines` du Barde, dôme
+  `FatalityDruid_Explosion01` du Tribaliste, chauves-souris de l'Invocateur, rayon partout…). Les
+  cinématiques moteur gardent l'ancien comportement (règle non vérifiée sur leur décor) ;
+- **cadrage** : aucune caméra de fatalité dans le client (seules des secousses, `CameraShakerComponent`,
+  s'ajoutent à la caméra du joueur). Le cadrage initial vise l'effet principal et la victime :
+  le gabarit posé ou accroché qui porte le son de la fatalité (`FatalityBard`, `FatalityDruid`… ;
+  à défaut de son, tous ceux de la victime ; auras et fonds `Fatality_Back` écartés) et ses
+  composants, chacun par la boîte de son animation dans le client (`SkeletalAnimation.aabb`,
+  `+0x24`, à défaut celle de la géométrie ; `bounds` dans `fatalities.json`) à l'échelle et au
+  décalage du script, sous-sol retiré (os sous le terrain : lianes du Tribaliste jusqu'à −16 m) ;
+  la caméra se place de face, en légère plongée, à la distance qui fait tenir cette boîte dans le
+  champ (`EFFECT_FRAME_MARGIN`) ; le tueur peut sortir du champ ;
 
 - **Géométrie douce** (`softGeometry.ts`) : les matériaux d'effet dont la texture d'environnement
   est un `SoftGeometryGrain*` (≈ 300 éléments) la lisent à la normale vue de la caméra

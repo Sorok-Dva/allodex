@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
 import { createRef } from 'react';
 import * as THREE from 'three';
-import { FatalityViewer, toViewerMaterial, type FatalityViewerHandle } from './FatalityViewer';
+import { FatalityViewer, effectBounds, toViewerMaterial, type FatalityViewerHandle } from './FatalityViewer';
+import type { FatalityObject } from './timeline';
 import type { FatalityTimeline } from './timeline';
 import type { LoadedScene, SceneLoader } from '@/components/scene/MenuScene';
 
@@ -129,5 +130,30 @@ describe('FatalityViewer', () => {
     await act(async () => { raf!(now); });
     expect(onProgress.mock.calls.at(-1)![0]).toBeCloseTo(0.75, 2);
     expect(() => ref.current!.resetView()).not.toThrow();
+  });
+});
+
+describe('effectBounds', () => {
+  const obj = (over: Partial<FatalityObject>): FatalityObject => ({ fadeIn: 0, fadeOut: 0, scale: 1, duration: 0, loop: false, ...over });
+  const timeline = (spawns: FatalityTimeline['spawns']): FatalityTimeline => ({ end: 1, victim: [], scale: [], alpha: [], spawns, attached: [] });
+
+  it('frames the sound-bearing effect with its components, above ground, mirrored in X', () => {
+    const objects = {
+      Main: obj({ sound: 'fx/Main', bounds: [1, 0, -2, 1, 1, 4], components: [{ vot: 'Child', locator: '' }] }),
+      Child: obj({ bounds: [0, 0, 6, 1, 1, 1] }),
+      Back: obj({ bounds: [0, 6.7, 20.8, 2, 0, 2] }),
+    };
+    const box = effectBounds(timeline([
+      { t: 0, vot: 'Main', lifeTime: 5, scale: 2, offset: [0, 0, 0] },
+      { t: 0, vot: 'Back', lifeTime: 5, scale: 0.5, offset: [0, 0, 1] },
+    ]), objects, 1.8)!;
+    expect(box.min.toArray()).toEqual([-4, -2, 0]);
+    expect(box.max.toArray()).toEqual([2, 2, 14]);
+  });
+
+  it('uses every effect without a sound, and returns null without any box', () => {
+    const objects = { A: obj({ bounds: [0, 0, 1, 1, 1, 1] }), B: obj({}) };
+    expect(effectBounds(timeline([{ t: 0, vot: 'A', lifeTime: 1, scale: 1 }]), objects, 1.8)!.max.z).toBe(2);
+    expect(effectBounds(timeline([{ t: 0, vot: 'B', lifeTime: 1, scale: 1 }]), objects, 1.8)).toBeNull();
   });
 });

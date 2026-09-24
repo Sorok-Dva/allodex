@@ -1313,98 +1313,210 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    29.469,
+    5.705,
+    0.714,
+    29.469,
+    6.865
+   ]
   },
   "HG8_Platform_03_Half": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    4.012,
+    6.048,
+    6.03,
+    4.012,
+    6.069
+   ]
   },
   "HG8_Gate_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    1.014,
+    7.511,
+    13.463,
+    2.491,
+    7.566
+   ]
   },
   "HG8_Platform_01_UnRailed_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.005,
+    0.136,
+    5.124,
+    6.007,
+    5.399,
+    5.31
+   ]
   },
   "HG8_CaveRock_Wall_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    2.48,
+    4.861,
+    29.765,
+    33.376,
+    12.656,
+    31.048
+   ]
   },
   "HG8_Rock_04": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.095,
+    0.0,
+    16.096,
+    20.962,
+    12.744,
+    22.256
+   ]
   },
   "HG8_Rock_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    2.051,
+    -0.691,
+    15.843,
+    11.76,
+    7.354,
+    15.842
+   ]
   },
   "HG8_Rock_06": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.391,
+    18.717,
+    9.444,
+    5.626,
+    12.445
+   ]
   },
   "HG8_Wall_Top": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    -0.0,
+    10.62,
+    3.091,
+    0.597
+   ]
   },
   "HG8_Support": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.0,
+    -0.0,
+    7.075,
+    2.114,
+    2.327,
+    7.285
+   ]
   },
   "ZC10_Ferris_Akacia_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 10.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -1.016,
+    2.313,
+    7.373,
+    7.948,
+    11.353,
+    7.922
+   ]
   },
   "ZC10_Ferris_Props_Tubes05": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.027,
+    -0.169,
+    0.866,
+    1.094,
+    2.861,
+    0.96
+   ]
   },
   "ZC10_Bestiary_Wall": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.0,
+    0.0,
+    2.104,
+    3.124,
+    0.418,
+    2.331
+   ]
   },
   "ZC10_AkaciaBush_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 6.6667,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -0.016,
+    -0.003,
+    0.837,
+    1.169,
+    1.208,
+    1.235
+   ]
   },
   "AC5_Glow": {
    "fadeIn": 0.0,
@@ -1451,6 +1563,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    1.665,
+    0.475,
+    0.475,
+    1.702
+   ],
    "components": [
     {
      "vot": "AC5_Glow",
@@ -1463,28 +1583,60 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 10.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.855,
+    -3.263,
+    -0.245,
+    2.27,
+    3.597,
+    6.938
+   ]
   },
   "Corpse_Modificant_Male": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.017,
+    -0.014,
+    0.812,
+    0.936,
+    0.959,
+    0.969
+   ]
   },
   "ZC10_ManaTrain_Pillar_Segment_Double": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    4.804,
+    3.654,
+    3.65,
+    4.804
+   ]
   },
   "HG8_CaveRock_Ceiling_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.078,
+    -0.001,
+    2.915,
+    36.831,
+    33.18,
+    8.841
+   ]
   },
   "ForestVolumetricLight03": {
    "fadeIn": 0.0,
@@ -1563,49 +1715,105 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    5.292,
+    0.498,
+    10.843,
+    9.171,
+    4.31,
+    13.619
+   ]
   },
   "Cable_04": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.139,
+    -0.075,
+    0.088,
+    0.343,
+    3.602,
+    0.141
+   ]
   },
   "HG8_GatesArc": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.057,
+    0.0,
+    7.575,
+    13.404,
+    4.606,
+    7.615
+   ]
   },
   "ZC10_ManaTrain_Rail_LeftTurn": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -5.778,
+    29.374,
+    0.0,
+    6.492,
+    29.374,
+    1.16
+   ]
   },
   "HG8_Platform_03": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    6.048,
+    6.03,
+    8.024,
+    6.069
+   ]
   },
   "HG8_Ramp": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -13.452,
+    0.0,
+    5.787,
+    13.449,
+    5.46,
+    6.011
+   ]
   },
   "HG8_Platform_03_Corner": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.028,
+    -0.002,
+    6.1,
+    7.937,
+    7.968,
+    6.12
+   ]
   },
   "HG8_Tank_01_FX": {
    "fadeIn": 0.0,
@@ -1704,7 +1912,15 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    10.836,
+    14.577,
+    14.577,
+    6.485
+   ]
   },
   "HG8_Tank_01": {
    "fadeIn": 0.0,
@@ -1712,6 +1928,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.0,
+    -0.166,
+    12.294,
+    8.824,
+    9.194,
+    12.294
+   ],
    "components": [
     {
      "vot": "HG8_Tank_01_FX",
@@ -1724,7 +1948,15 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    7.682,
+    10.62,
+    3.509,
+    7.882
+   ]
   },
   "HG8_Tank_02_FX": {
    "fadeIn": 0.0,
@@ -1843,7 +2075,15 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    34.432,
+    16.216,
+    16.216,
+    3.505
+   ]
   },
   "HG8_Tank_02": {
    "fadeIn": 0.0,
@@ -1851,6 +2091,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.0,
+    -0.639,
+    19.673,
+    9.022,
+    9.661,
+    19.678
+   ],
    "components": [
     {
      "vot": "HG8_Tank_02_FX",
@@ -1863,63 +2111,135 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.005,
+    0.7,
+    0.529,
+    0.529,
+    0.739
+   ]
   },
   "ZC10_House_Small_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 8.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -0.211,
+    2.534,
+    19.795,
+    4.025,
+    4.356,
+    6.986
+   ]
   },
   "ZC10_House_Big_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 8.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.0,
+    4.19,
+    26.775,
+    9.861,
+    9.861,
+    11.79
+   ]
   },
   "HG8_Corner": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -2.154,
+    -1.398,
+    8.124,
+    13.246,
+    13.274,
+    8.146
+   ]
   },
   "ZC10_ManaTrain_Rail_DownStraight": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    29.587,
+    -5.027,
+    0.714,
+    29.587,
+    6.187
+   ]
   },
   "HG8_CaveRock_Wall_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    6.213,
+    3.004,
+    27.543,
+    33.063,
+    9.021,
+    28.611
+   ]
   },
   "HG8_CaveRock_Back": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -1.601,
+    4.885,
+    26.43,
+    38.433,
+    4.933,
+    26.527
+   ]
   },
   "HG8_CaveRock_Wall_03": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -2.129,
+    5.222,
+    21.378,
+    29.903,
+    9.926,
+    22.821
+   ]
   },
   "HG8_CaveRock_Ceiling_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.043,
+    -0.339,
+    0.971,
+    32.397,
+    27.443,
+    5.756
+   ]
   },
   "HG8_Terminal_01_FX": {
    "fadeIn": 0.0,
@@ -2018,7 +2338,15 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.05,
+    -0.377,
+    2.604,
+    0.482,
+    0.24,
+    0.697
+   ]
   },
   "HG8_Terminal_01": {
    "fadeIn": 0.0,
@@ -2027,6 +2355,14 @@
    "sound": "World/Zones/Ferris/HG8_Terminal_01",
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    -0.579,
+    -0.266,
+    4.959,
+    2.727,
+    3.109,
+    4.759
+   ],
    "components": [
     {
      "vot": "HG8_Terminal_01_FX",
@@ -2039,49 +2375,105 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.257,
+    -0.062,
+    15.013,
+    7.114,
+    7.042,
+    17.372
+   ]
   },
   "ZC10_Ferris_Akacia_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 10.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.327,
+    0.63,
+    5.864,
+    7.692,
+    7.378,
+    6.864
+   ]
   },
   "FerisLab_InstRightWing_Stilazh04": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.052,
+    11.172,
+    5.461,
+    5.498,
+    11.205
+   ]
   },
   "FerisLab_InstRightWing_Stilazh03": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.075,
+    -0.073,
+    11.172,
+    5.536,
+    5.534,
+    11.205
+   ]
   },
   "FerisLab_InstRightWing_Cage": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.028,
+    0.023,
+    2.194,
+    2.982,
+    2.512,
+    2.312
+   ]
   },
   "Cable_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.072,
+    -0.075,
+    0.046,
+    0.389,
+    3.602,
+    0.079
+   ]
   },
   "Hadagan_Street_Latern_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.001,
+    -0.291,
+    2.659,
+    0.324,
+    0.585,
+    2.75
+   ]
   },
   "HG8_Projector_FX": {
    "fadeIn": 0.0,
@@ -2120,7 +2512,15 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.003,
+    -6.698,
+    -5.116,
+    4.38,
+    5.186,
+    5.186
+   ]
   },
   "HG8_Wall_Projector": {
    "fadeIn": 0.0,
@@ -2128,6 +2528,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.002,
+    -1.049,
+    0.0,
+    1.076,
+    1.499,
+    0.945
+   ],
    "components": [
     {
      "vot": "HG8_Projector_FX",
@@ -2172,161 +2580,345 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    6.347,
+    1.993,
+    11.845,
+    6.528,
+    2.816,
+    10.517
+   ]
   },
   "HG8_CaveRock_Corner_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -30.067,
+    7.73,
+    31.44,
+    33.779,
+    15.58,
+    33.141
+   ]
   },
   "ZC10_Crane_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.586,
+    0.002,
+    3.827,
+    4.087,
+    3.587,
+    4.014
+   ]
   },
   "ZC10_Bestiary_Wall_End": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    2.103,
+    3.446,
+    0.418,
+    2.331
+   ]
   },
   "ZC10_MechMelee_Corrupted_Dead_Hand_Legs": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.03,
+    -0.163,
+    0.323,
+    1.935,
+    1.229,
+    0.483
+   ]
   },
   "ZC10_MechMelee_Corrupted_Dead": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.182,
+    -0.041,
+    0.907,
+    1.57,
+    1.138,
+    1.093
+   ]
   },
   "ZC10_AkaciaMedium": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 20.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.105,
+    0.392,
+    6.846,
+    12.53,
+    11.193,
+    7.477
+   ]
   },
   "FerisLab_InstRightWing_Stilazh02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.004,
+    0.007,
+    11.172,
+    5.465,
+    5.453,
+    11.205
+   ]
   },
   "Ferris_Cage_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.006,
+    0.002,
+    1.298,
+    1.762,
+    1.357,
+    1.298
+   ]
   },
   "HG8_Truss_Angled_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.077,
+    -0.42,
+    4.017,
+    1.19,
+    3.089,
+    4.065
+   ]
   },
   "HG8_Truss_Vertical_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    3.569,
+    1.628,
+    0.959,
+    3.579
+   ]
   },
   "Hadagan_Hatch_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    0.091,
+    2.031,
+    2.032,
+    0.099
+   ]
   },
   "Place_F_Hadagan_SetBox_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.305,
+    -0.013,
+    1.504,
+    2.322,
+    1.548,
+    1.507
+   ]
   },
   "Place_C_Hadagan_SetBoxes_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.406,
+    -1.463,
+    1.504,
+    2.221,
+    1.427,
+    1.507
+   ]
   },
   "Place_C_Hadagan_SetBoxes_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.084,
+    -1.682,
+    0.879,
+    2.699,
+    1.497,
+    0.896
+   ]
   },
   "Place_C_Hadagan_SetBoxes_03": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.121,
+    -1.334,
+    1.116,
+    2.413,
+    1.316,
+    1.131
+   ]
   },
   "Place_C_Hadagan_SetBoxes_04": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.097,
+    -1.678,
+    1.57,
+    2.597,
+    1.402,
+    1.579
+   ]
   },
   "Place_C_Hadagan_SetTorpedo_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.117,
+    -1.16,
+    0.959,
+    2.255,
+    1.072,
+    0.976
+   ]
   },
   "Place_D_Hadagan_Hydrant": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.167,
+    -0.507,
+    1.048,
+    0.95,
+    0.542,
+    1.064
+   ]
   },
   "Place_D_Hadagan_Monument_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.002,
+    -0.89,
+    1.808,
+    0.646,
+    0.815,
+    1.832
+   ]
   },
   "Place_D_Hadagan_SetBox_03": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.159,
+    -0.987,
+    1.124,
+    1.574,
+    0.85,
+    1.131
+   ]
   },
   "Place_D_Hadagan_SetBox_04": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -0.754,
+    0.59,
+    1.178,
+    0.721,
+    0.592
+   ]
   },
   "Place_D_Hadagan_SetBox_05": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.102,
+    -1.002,
+    0.709,
+    1.423,
+    0.977,
+    0.709
+   ]
   },
   "AC5_Glow#2": {
    "fadeIn": 0.0,
@@ -2373,6 +2965,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.0,
+    -0.129,
+    0.0,
+    0.236,
+    0.13,
+    0.673
+   ],
    "components": [
     {
      "vot": "AC5_Glow#2",
@@ -2425,6 +3025,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.002,
+    -0.216,
+    0.0,
+    0.265,
+    0.217,
+    0.233
+   ],
    "components": [
     {
      "vot": "AC5_Glow#3",
@@ -2437,56 +3045,120 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.0,
+    0.578,
+    1.562,
+    9.513,
+    9.047,
+    1.91
+   ]
   },
   "Corpse_Modificant_Female_Burnt": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.101,
+    0.039,
+    0.19,
+    0.537,
+    0.731,
+    0.226
+   ]
   },
   "Corpse_Modificant_Male_Burnt": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.017,
+    -0.014,
+    0.812,
+    0.936,
+    0.959,
+    0.969
+   ]
   },
   "FerrisRaid_InnerPortal": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    0.313,
+    3.636,
+    3.636,
+    0.306
+   ]
   },
   "InstLeague1_AI_2X2": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -0.857,
+    -310.401,
+    0.119,
+    0.119,
+    0.119
+   ]
   },
   "FerisLab_Obj_Speaker": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -0.407,
+    -0.087,
+    0.79,
+    0.407,
+    0.273
+   ]
   },
   "FerrisRaid_Core_Details_LiftRoom1": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -4.136,
+    0.012,
+    27.6,
+    18.073,
+    6.738,
+    27.6
+   ]
   },
   "FerrisRaid_Core_Portal": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -90.612,
+    -1.767,
+    142.448,
+    133.72,
+    104.569,
+    142.448
+   ]
   },
   "FerrisRaid_Core": {
    "fadeIn": 0.0,
@@ -2494,6 +3166,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    59.673,
+    0.0,
+    -48.438,
+    172.821,
+    68.635,
+    289.063
+   ],
    "components": [
     {
      "vot": "FerrisRaid_Core_Details_LiftRoom1",
@@ -2510,35 +3190,75 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.908,
+    -0.898,
+    5.804,
+    6.368,
+    6.318,
+    5.99
+   ]
   },
   "ZC10_EngineerTurret": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.104,
+    -0.355,
+    0.807,
+    1.044,
+    1.022,
+    0.921
+   ]
   },
   "FerisLab_Room_Books03": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.106,
+    -0.039,
+    1.01,
+    0.609,
+    0.559,
+    1.009
+   ]
   },
   "Hadagan_ArmorStand_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.001,
+    0.001,
+    1.547,
+    1.265,
+    0.63,
+    1.542
+   ]
   },
   "Hadagan_ArmorStand_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.096,
+    -0.032,
+    2.768,
+    2.521,
+    0.366,
+    2.768
+   ]
   },
   "Red_Omni": {
    "fadeIn": 0.0,
@@ -2676,7 +3396,15 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    2.8,
+    2.603,
+    -0.296,
+    1.772,
+    1.705,
+    0.934
+   ]
   },
   "FerrisCore_Portal": {
    "fadeIn": 0.0,
@@ -2757,7 +3485,15 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    6.97,
+    -1.164,
+    16.428,
+    17.988,
+    18.106,
+    23.933
+   ]
   },
   "FerrisCore_GunAll": {
    "fadeIn": 0.0,
@@ -2765,6 +3501,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    -12.647,
+    -17.117,
+    1.622,
+    16.183,
+    19.464,
+    1.622
+   ],
    "components": [
     {
      "vot": "FerrisCore_Gun",
@@ -2790,6 +3534,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    -23.653,
+    -31.077,
+    26.782,
+    70.356,
+    69.549,
+    36.7
+   ],
    "components": [
     {
      "vot": "Red_Omni",
@@ -2934,56 +3686,120 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.054,
+    0.272,
+    1.044,
+    1.73,
+    1.423,
+    1.19
+   ]
   },
   "FerisLab_Obj_Comp_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    1.412,
+    1.0,
+    0.673,
+    1.412
+   ]
   },
   "ZC10_Mana_Tank": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.416,
+    -0.022,
+    5.258,
+    4.327,
+    4.0,
+    5.576
+   ]
   },
   "ZC10_ManaTrain_Rail_Straight": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    30.0,
+    0.0,
+    0.714,
+    30.0,
+    1.16
+   ]
   },
   "HG8_Platform_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.008,
+    -0.012,
+    5.806,
+    6.007,
+    5.448,
+    5.992
+   ]
   },
   "HG8_Rock_03": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.29,
+    0.173,
+    15.102,
+    15.928,
+    7.868,
+    17.35
+   ]
   },
   "HG8_Platform_Big_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -1.516,
+    0.084,
+    5.81,
+    26.279,
+    24.678,
+    6.503
+   ]
   },
   "Corpse_Modificant_Female": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.101,
+    0.038,
+    0.204,
+    0.537,
+    0.731,
+    0.24
+   ]
   }
  },
  "particleAtlas": {
@@ -3067,11 +3883,14 @@
   "fog": 4279312175,
   "fogEnd": 210.0,
   "fogStart": 20.0,
-  "pointLight": 4294967295,
-  "selfIllum": 12362130,
+  "pointLight": 12362130,
+  "selfIllum": 2024878104,
   "specular": 9259293,
   "sunPitch": 35.0,
   "sunYaw": 215.0,
+  "waterSpecular": 4288820013,
+  "waterGradientStart": 4282787360,
+  "waterGradientEnd": 4279310884,
   "sunDirection": [
    -0.671,
    -0.4698,
@@ -4029,6 +4848,7 @@
    }
   ],
   "ambience": [],
+  "sfx": [],
   "events": {
    "music": [],
    "ambience": [

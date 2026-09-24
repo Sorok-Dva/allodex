@@ -360,9 +360,9 @@
     }
    ],
    "light": [
-    0.611,
-    0.8298,
-    1.0485
+    0.5859,
+    0.8047,
+    1.0234
    ],
    "geometry": "Creatures/PortalGuard/PortalGuard.(Geometry).bin",
    "height": 11.995,
@@ -420,9 +420,9 @@
     }
    ],
    "light": [
-    0.6576,
-    0.8764,
-    1.0951
+    0.5859,
+    0.8047,
+    1.0234
    ],
    "geometry": "Creatures/Mirianna/Mirianna.(Geometry).bin",
    "height": 2.34,
@@ -529,9 +529,9 @@
     }
    ],
    "light": [
-    0.6561,
-    0.8749,
-    1.0936
+    0.5859,
+    0.8047,
+    1.0234
    ],
    "geometry": "Creatures/Rysina/Rysina.(Geometry).bin",
    "height": 1.916,
@@ -950,7 +950,15 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 20.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -29.355,
+    0.104,
+    16.433,
+    14.442,
+    23.776,
+    18.16
+   ]
   },
   "Architect_Teleport_Place_FX": {
    "fadeIn": 0.0,
@@ -1282,6 +1290,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    -0.065,
+    -0.143,
+    0.116,
+    6.098,
+    6.117,
+    0.433
+   ],
    "components": [
     {
      "vot": "Architect_Teleport_Place_FX",
@@ -1306,21 +1322,45 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -0.857,
+    -310.401,
+    0.119,
+    0.119,
+    0.119
+   ]
   },
   "Architect_World_HugeStone_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    4.945,
+    1.075,
+    7.326,
+    18.192,
+    12.059,
+    13.057
+   ]
   },
   "Architect_Rock_05": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.27,
+    0.314,
+    0.833,
+    3.493,
+    2.718,
+    5.387
+   ]
   },
   "Architect_Kernel_Big_01": {
    "fadeIn": 0.0,
@@ -1360,7 +1400,15 @@
    },
    "orientation": "BILLBOARD",
    "duration": 80.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.0,
+    0.0,
+    0.0,
+    6.9,
+    2.352,
+    6.9
+   ]
   },
   "Architect_Kernel_Big": {
    "fadeIn": 0.0,
@@ -1402,6 +1450,14 @@
    "orientation": "Z_AXIS",
    "duration": 80.0,
    "loop": true,
+   "bounds": [
+    -0.0,
+    -0.006,
+    -0.0,
+    2.239,
+    2.239,
+    2.239
+   ],
    "components": [
     {
      "vot": "Architect_Kernel_Big_01",
@@ -1416,6 +1472,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    -0.552,
+    -0.499,
+    5.226,
+    5.398,
+    4.532,
+    6.466
+   ],
    "components": [
     {
      "vot": "Architect_Kernel_Big",
@@ -1428,7 +1492,15 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.044,
+    0.0,
+    -12.12,
+    3.107,
+    1.776,
+    14.292
+   ]
   },
   "Architect_Rock_02": {
    "fadeIn": 0.0,
@@ -1436,6 +1508,14 @@
    "scale": 1.0,
    "duration": 6.6667,
    "loop": true,
+   "bounds": [
+    1.248,
+    0.016,
+    20.224,
+    4.889,
+    2.402,
+    20.736
+   ],
    "components": [
     {
      "vot": "Architect_Rock_02#2",
@@ -1452,14 +1532,30 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.014,
+    -0.14,
+    5.197,
+    1.413,
+    1.579,
+    5.125
+   ]
   },
   "Arch_BigStone_03": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.006,
+    -0.328,
+    1.754,
+    3.106,
+    2.817,
+    5.956
+   ]
   },
   "Tripod_Eye": {
    "fadeIn": 0.0,
@@ -1467,7 +1563,15 @@
    "scale": 1.0,
    "orientation": "BILLBOARD",
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.001,
+    -0.019,
+    -0.001,
+    0.134,
+    0.093,
+    0.134
+   ]
   },
   "ArchitectBot_BodyFX": {
    "fadeIn": 0.0,
@@ -1527,7 +1631,15 @@
     ]
    },
    "duration": 4.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.006,
+    -0.007,
+    -0.0,
+    0.857,
+    0.858,
+    0.854
+   ]
   },
   "Architect_Flying_Bot": {
    "fadeIn": 0.0,
@@ -1535,6 +1647,14 @@
    "scale": 1.0,
    "duration": 85.8667,
    "loop": true,
+   "bounds": [
+    11.099,
+    2.309,
+    4.166,
+    47.777,
+    47.898,
+    11.805
+   ],
    "components": [
     {
      "vot": "Tripod_Eye",
@@ -1591,6 +1711,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    -0.065,
+    -0.143,
+    0.116,
+    6.098,
+    6.117,
+    0.433
+   ],
    "components": [
     {
      "vot": "ArhangelWingsGlo_2",
@@ -1617,6 +1745,14 @@
    "sound": "spells/World/UI04/idle01",
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.05,
+    0.0,
+    0.0,
+    2.946,
+    2.896,
+    0.0
+   ],
    "sfx": "sfx/idle01"
   },
   "Architect_Portal_Big_In": {
@@ -1625,6 +1761,14 @@
    "scale": 1.0,
    "duration": 50.0,
    "loop": true,
+   "bounds": [
+    -29.358,
+    -1.011,
+    9.706,
+    11.611,
+    14.755,
+    12.647
+   ],
    "components": [
     {
      "vot": "Architect_Portal_Big_In_01",
@@ -1638,7 +1782,15 @@
    "scale": 1.0,
    "orientation": "BILLBOARD",
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.378,
+    0.412,
+    0.648,
+    13.02,
+    0.956,
+    13.256
+   ]
   },
   "Architect_Big_Portal_01": {
    "fadeIn": 0.0,
@@ -1679,6 +1831,14 @@
    },
    "duration": 50.0,
    "loop": true,
+   "bounds": [
+    -0.004,
+    -0.008,
+    0.001,
+    7.465,
+    7.483,
+    7.494
+   ],
    "components": [
     {
      "vot": "Architect_Big_Portal_02",
@@ -1692,6 +1852,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    42.251,
+    6.012,
+    -32.444,
+    13.437,
+    26.779,
+    164.736
+   ],
    "components": [
     {
      "vot": "Architect_Big_Portal_01",
@@ -1705,6 +1873,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    -14.902,
+    -19.611,
+    -39.734,
+    93.707,
+    67.693,
+    162.037
+   ],
    "components": [
     {
      "vot": "Architect_Portal_Big_In",
@@ -1721,7 +1897,15 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -1.321,
+    0.396,
+    -0.274,
+    1.733,
+    2.811,
+    3.507
+   ]
   },
   "Architect_Rock_04": {
    "fadeIn": 0.0,
@@ -1729,6 +1913,14 @@
    "scale": 1.0,
    "duration": 6.6667,
    "loop": true,
+   "bounds": [
+    -0.628,
+    0.395,
+    12.978,
+    3.444,
+    3.105,
+    13.092
+   ],
    "components": [
     {
      "vot": "Architect_Kernel_Big",
@@ -1745,35 +1937,75 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.046,
+    -0.129,
+    -1.895,
+    3.247,
+    3.608,
+    2.049
+   ]
   },
   "Architect_Rock_Small_02": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.098,
+    0.113,
+    2.927,
+    2.11,
+    1.644,
+    3.077
+   ]
   },
   "Architect_Rock_Small_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.047,
+    2.364,
+    0.589,
+    0.575,
+    2.359
+   ]
   },
   "ArchitectDoor_Impost": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.197,
+    -0.376,
+    8.597,
+    3.72,
+    16.518,
+    14.707
+   ]
   },
   "Architect_Arena_FX": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.333,
+    -0.173,
+    -5.308,
+    30.502,
+    45.343,
+    6.05
+   ]
   },
   "Architect_Arena": {
    "fadeIn": 0.0,
@@ -1781,6 +2013,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    -156.496,
+    0.082,
+    -51.156,
+    199.207,
+    65.286,
+    74.597
+   ],
    "components": [
     {
      "vot": "Architect_Arena_FX",
@@ -1793,21 +2033,45 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 6.6667,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -0.628,
+    0.395,
+    12.978,
+    3.444,
+    3.105,
+    13.092
+   ]
   },
   "Architect_World_InfectedStone_01": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    0.0,
+    3.517,
+    4.157,
+    18.681
+   ]
   },
   "Architect_World_MagicStone": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.975,
+    0.188,
+    5.72,
+    5.788,
+    1.773,
+    13.204
+   ]
   },
   "Carrier_Arena_Ray": {
    "fadeIn": 0.0,
@@ -1815,7 +2079,15 @@
    "scale": 1.0,
    "orientation": "Z_AXIS",
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.05,
+    0.012,
+    29.219,
+    10.226,
+    7.42,
+    45.305
+   ]
   },
   "Carrier_Arena_Ray_Out": {
    "fadeIn": 0.0,
@@ -1856,6 +2128,14 @@
    },
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    -0.036,
+    -0.026,
+    27.244,
+    9.694,
+    9.69,
+    44.345
+   ],
    "components": [
     {
      "vot": "Carrier_Arena_Ray",
@@ -1868,35 +2148,75 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    46.083,
+    100.557,
+    100.557,
+    30.477
+   ]
   },
   "Carrier_Arena#2": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    46.366,
+    -46.651,
+    0.861,
+    31.722,
+    31.438,
+    13.472
+   ]
   },
   "Carrier_Arena_SkyRing": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    20.475,
+    115.982,
+    115.982,
+    15.714
+   ]
   },
   "Carrier_Arena_Ring": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    -5.88,
+    112.21,
+    112.21,
+    5.776
+   ]
   },
   "Carrier_Arena_Line": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    -6.543,
+    107.181,
+    107.181,
+    5.844
+   ]
   },
   "Carrier_Arena": {
    "fadeIn": 0.0,
@@ -1904,6 +2224,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    -0.001,
+    0.001,
+    27.339,
+    124.729,
+    124.729,
+    51.076
+   ],
    "components": [
     {
      "vot": "Carrier_Arena_Ray_Out",
@@ -2038,11 +2366,14 @@
   "fog": 4279245607,
   "fogEnd": 200.0,
   "fogStart": -50.0,
-  "pointLight": 4294967295,
-  "selfIllum": 2013265920,
+  "pointLight": 2013265920,
+  "selfIllum": 4282787328,
   "specular": 0,
   "sunPitch": 45.0,
   "sunYaw": 0.0,
+  "waterSpecular": 3153942,
+  "waterGradientStart": 4279649404,
+  "waterGradientEnd": 4284124132,
   "sunDirection": [
    0.7071,
    0.0,
@@ -2310,6 +2641,7 @@
    }
   ],
   "ambience": [],
+  "sfx": [],
   "events": {
    "music": [],
    "ambience": [
