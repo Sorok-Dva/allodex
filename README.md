@@ -237,7 +237,7 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Zone de départ de la Ligue · « L’évacuation » (`league-evacuation`, quête `Quest_4_30`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 81 s |
 | Zone de départ des Pridiens · « Ah, le cinéma ! » (`pride-cinema`, quête `Pride_1_9`) | serveur 7.0 (déclencheur) | `PridensStart` | 12 s |
 | Zone de départ des Pridiens · « Le spectacle » (`pride-performance`, quête `Pride_1_11`) | serveur 7.0 (déclencheur) | `PridensStart` | 11 s |
-| Isa 14.0 · six chapitres (`isa-unn-trance`, `isa-arrival`, `isa-fighting-pit`, `isa-fishers-legend`, `isa-freya`, `isa-captain-journal`) | client 17.0 (voir « Isa ») | `Isa`, `Isa_Prologue` | 21 à 91 s |
+| Isa 14.0 · dix chapitres (`isa-unn-trance`, `isa-arrival`, `isa-fighting-pit`, `isa-weavers-saga`, `isa-fishers-legend`, `isa-mountain-path`, `isa-freya`, `isa-captain-journal`, `isa-feast`, `isa-gerda-threshold`) | client 17.0 (voir « Isa ») | `Isa`, `Isa_Prologue` | 17 à 144 s |
 
 **Zone de départ de l’Empire** (arc `empire-start`, en tête du film de l’Empire ; le prologue de l’Empire vient juste après sa fin, choix de l’utilisateur) : dans le
 17.0, les trois races de l’Empire (Xadaganiens, Orcs, Arisen) commencent au même tutoriel,
@@ -456,16 +456,20 @@ et l'arbre serveur 7.0 ne les connaît pas : tout vient du 17.0. Relevé : 204 v
 (19,2 min, toutes dans des `ClientData`, 16 seulement avec un sous-titre) ; presque toutes ont leur **texte
 officiel** ailleurs, dans une bulle ou un message (appariement par reconnaissance vocale : 160 voix sur 204 à plus
 de 0,8 de ressemblance, les autres sont surtout des cris courts) ; 15 buffs de caméra dans le bloc d'Isa, dont un seul script complet (la légende des pêcheurs) et
-neuf caméras sans point (scènes vues par le joueur, avec voile noir). Six chapitres :
+neuf caméras sans point (scènes vues par le joueur, avec voile noir). Dix chapitres :
 
 | Chapitre | Source | Carte | Durée |
 |---|---|---|---|
-| « La transe d’Unn » (`isa-unn-trance`, Olm) | voix + textes officiels ; vue du joueur (choix) | `Isa_Prologue` | 91 s |
-| « L’arrivée sur Isa » (`isa-arrival`) | vue du joueur puis buff de caméra res:740170126 | `Isa` | 33 s |
-| « La fosse aux combats » (`isa-fighting-pit`, Skalgard) | vue du joueur puis buff de caméra res:740170162 | `Isa` | 21 s |
+| « La transe d’Unn » (`isa-unn-trance`, Olm) | voix + textes officiels ; travelling (choix) | `Isa_Prologue` | 91 s |
+| « L’arrivée sur Isa » (`isa-arrival`) | travelling (choix) puis buff de caméra res:740170126 | `Isa` | 33 s |
+| « La fosse aux combats » (`isa-fighting-pit`, Skalgard) | travelling (choix) puis buff de caméra res:740170162 | `Isa` | 21 s |
+| « La saga des tapisseries » (`isa-weavers-saga`, Skalgard) | voix + 14 quatrains officiels ; buff res:740170307 (la toile) puis travelling | `Isa` | 125 s |
 | « La légende de Lyngbakr » (`isa-fishers-legend`, pilote) | script complet du buff res:740170090 | `Isa` | 44 s |
-| « La Freya » (`isa-freya`) | voile du buff res:740171413 ; vue du joueur (choix) | `Isa` | 21 s |
-| « Le journal du capitaine » (`isa-captain-journal`) | voix + textes officiels ; vue du joueur (choix) | `Isa` | 64 s |
+| « Le chemin des montagnes » (`isa-mountain-path`) | voix + 4 sous-titres officiels ; voiles du buff res:740171271 ; travelling | `Isa` | 17 s |
+| « La Freya » (`isa-freya`) | voile du buff res:740171413 ; travelling (choix) | `Isa` | 21 s |
+| « Le journal du capitaine » (`isa-captain-journal`) | voix + textes officiels ; travelling (choix) | `Isa` | 64 s |
+| « Le festin de Skalgard » (`isa-feast`) | voix de Бродди + 5 sous-titres officiels, clameurs ; travelling (choix) | `Isa` | 31 s |
+| « Gerda sur le seuil » (`isa-gerda-threshold`) | dialogue de Герда (textes des `Cue`, sans voix) ; buff res:740172059 ; travelling | `Isa` | 144 s |
 
 - **Script d'un buff du 17.0** (`tools/cutscene_client.py`, `"buff_script": true` ou un moment de `"cameras"`) :
   l'arbre de `VisAction` du `BuffVisScripts` est rejoué avec les règles des fatalités — `VisActionList` en
@@ -494,6 +498,43 @@ neuf caméras sans point (scènes vues par le joueur, avec voile noir). Six chap
   et points de vue fixes du manifeste (`p`, `look`) ; groupes de répliques à un instant (`timing.groups[].t`) ;
   animation du locuteur prise dans son `ClientData` (`line_animations`, `emoteTalkExcited`, `emoteFacepalm`…) ;
   stèle posée par le client comme effet (`spawns[].stele`, gabarit et place de la stèle).
+- **Travellings de mise en scène** (`tools/cutscene_travelling.py`, `"travelling"` d'un moment de `"cameras"`) :
+  choix de l'utilisateur (septembre 2026), chaque point de vue fixe choisi faute de caméra du client devient un
+  petit travelling lent — ce n'est pas une donnée, et le manifeste le dit à chaque scène. Il est fondé sur les
+  données de la scène : places posées des acteurs (tête à 85 % de la hauteur du modèle), instants des répliques
+  (départ → fin de la voix). La visée va au locuteur de chaque réplique (tempérée vers le groupe, `lean`), au groupe
+  entre les répliques, lissée par un noyau gaussien (`smooth`) ; l'œil décrit un arc (`arc`, degrés) autour du
+  centre du groupe en se rapprochant (`dolly`), loi `smootherstep` (vitesse nulle aux bornes), départ au point du
+  manifeste ou par rapport au groupe (`bearing`, `distance`, `height`) ; il reste à 0,8 m au-dessus du décor et à
+  1,2 m de l'axe de chaque acteur ; un acteur qui paraît plus tard (`appear`) n'entre dans le cadre qu'alors. Les
+  vraies caméras du client (buffs de caméra, plans du pilote) sont gardées telles quelles.
+- **Objets tenus** : le bâton d'Унн n'était pas posé. Унн est une créature (`Creatures/Tikuani/Prophetess`), pas
+  un personnage habillé : son bâton est un composant `AttachedVisObjectComponent` de son gabarit visuel
+  (`TikuaniChieftainItem` sur `Slot_Hand_R`), alors que seuls les objets portés de la `VisualMob` étaient lus. Désormais,
+  pour tout acteur, les composants du gabarit montrés hors de tout état (ni `StateComponent`, ni délai, ni arrêt)
+  sont accrochés à leur locator avec leur décalage, rotation et échelle (la queue des Pridiens, `PraidenMaleTail`,
+  manquait aussi à Mrak) ; ceux d'un état (bouteille d'une émote, canne à pêche) ne le sont pas ; une créature
+  reçoit aussi les objets accrochés de ses objets portés.
+- **Trios de gibberlings** (`VisualMobTroopExtension`, `+0x90` de la `VisualMob`) : les « Семейка » sont des trios,
+  comme les gibberlings joueurs ; le gabarit `GiberlingGroup` n'est qu'un squelette de places (`Slot_Defender`,
+  `Slot_Caster`, `Slot_Assaulter`). Chaque membre (152 o : `+0x08` gabarit, `+0x10` variation) devient un acteur
+  habillé, posé à sa place tournée au cap du trio ; les objets portés habillent les trois, les trois armes
+  (emplacements 14, 15, 16 : main droite, main gauche, distance) vont une à chaque membre — répartition choisie.
+- **Dialogues de PNJ** (`{"ref", "cue": "npc" | "player", "ru"}`) : un `Cue` porte le texte du PNJ (`+0xC8`) et la
+  réponse du joueur qui y mène (`+0x88`), ses suites en `+0x90` ; sans voix, chaque réplique reste le temps de la
+  lire (`timing.reading` : 15 caractères par seconde, au moins 1,5 s) ; un long texte est coupé en sous-titres
+  (`chunk`, 170 caractères au plus, aux fins de vers ou de phrase). Le chemin suivi dans l'arbre est un choix.
+- **Skalgard** : la **saga des tapisseries** — dans la salle du tissage, la Семейка Шерстинок (res:740168167) récite
+  sept couplets (voix `Isa_Town_3_Que_*`, chacune dit deux quatrains : le second est la bulle du `ClientData` sans
+  voix qui la suit, placé à l'instant mesuré dans la voix) ; le seul trajet de caméra du client dans la salle,
+  res:740170307, regarde la grande toile (stèle `Isa_Gibberlings_Weave_Halll_carpet` res:740171939, posée par le
+  serveur, ajoutée comme effet) : rattachement approché, en ouverture. Le **festin** : Бродди Задира, debout sur la
+  table (sa place du client), porte le toast (une voix, cinq sous-titres officiels, dont deux rangés à part par une
+  mise à jour, res:740173619/620), les gibberlings trinquent. **Герда sur le seuil** : son dialogue (quinze `Cue`
+  rangés avec elle, res:740172039…058 : son inquiétude, la fin de la saga qu'elle compose) puis le buff
+  res:740172059 (agenouillée, voile noir à 18 s). **L'attaque** des urun n'est pas scénarisée dans le client :
+  deux alertes doublées (`Isa_Destiny_3`), des vagues et des défenseurs posés par le serveur, et un buff de 36,5 s
+  (res:740172040) sans point de caméra — non montée.
 - **La Freya** : l'épave du navire astral de Колль Фитилёк est dans le **décor** d'Isa
   (`AstralShipKaniaGroupBroken`, région 050_050/3_2, seul navire astral de la carte), entourée des pages de son
   journal (stèles `Offhand_Book_D_03`) et des places de Хаук et Герда. L'ancienne scène en attente suivait le buff de
@@ -501,10 +542,12 @@ neuf caméras sans point (scènes vues par le joueur, avec voile noir). Six chap
   rattachement à la Freya n'était pas établi, elle est remplacée.
 - **Non repris** : le voile sous-marin (brouillard et teinte sous la surface de l'eau : aucune donnée décodée) ;
   Lyngbakr lui-même (absent du script) ; les animations de combat de la fosse ; l'apparition de Ratatosk (instant
-  choisi). **Reste d'Isa** (voir `tools/film_plan.json`) : la saga récitée aux Держащие Нить (7 vers, 117 s), le défi
-  de Харысхан (61 s, Харысхан n'est pas posé dans le client), le départ par la montagne (buff res:740171271, 17 s),
-  la prophétie des os, la chasse à Lyngbakr, le cimetière (les ancêtres de Gerda, 64 s), la dimension du Destin
-  (`Isa_Destiny` : la Toute-Mère et Unn, 29 s ; ses décors sont des stèles posées par le serveur), l'adieu de Gerda.
+  choisi). **Reste d'Isa** (voir `tools/film_plan.json`) : l'attaque des urun, le discours de Харысхан
+  (`Isa_Destiny_4`), le défi de Харысхан (61 s, Харысхан n'est pas posé dans le client),
+  la prophétie des os, la chasse à Lyngbakr, le cimetière (les ancêtres de Gerda, 64 s : les tombes, stèles
+  res:740171900…911, n'ont pas de `SpawnLocation`), la dimension du Destin (`Isa_Destiny` : la Toute-Mère et Unn,
+  29 s ; ses décors sont des stèles posées par le serveur), l'adieu de Gerda (`Isa_Final_2`, aucune des seize
+  places de Герда du client ne s'y rattache).
 
 En attente, hors du film : `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
 éclairée par le seul éclairage de zone du 17.0 (violet sombre, sans lumière ponctuelle), est presque
@@ -770,7 +813,7 @@ sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce
 
 ### Ce qui manque
 
-- **Cinématiques moteur** : vingt-neuf sont recréées (voir plus haut), dont six d'Isa. Liste dans
+- **Cinématiques moteur** : trente-trois sont recréées (voir plus haut), dont dix d'Isa. Liste dans
   `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
   (7_0Events), extraites ici.
 - **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et

@@ -1508,6 +1508,78 @@
    "audio": {
     "language": "ru"
    }
+  },
+  {
+   "id": "isa-weavers-saga",
+   "kind": "engine",
+   "source": "main",
+   "event": "Isa_Town_3_Que",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1230,
+   "title": {
+    "fr": "La saga des tapisseries",
+    "en": "The saga of the tapestries"
+   },
+   "chronology": "Isa (14.0), série de la ville (Isa_Town_*), Skalgard : après la fosse, Бродди mène les héros aux Держащие Нить, qui leur récitent la saga d'Isa devant la toile du destin (quête « Узнать историю проклятия ») ; avant les pêcheurs — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-feast",
+   "kind": "engine",
+   "source": "main",
+   "event": "Isa_Destiny_2_StartScene",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1280,
+   "title": {
+    "fr": "Le festin de Skalgard",
+    "en": "The feast of Skalgard"
+   },
+   "chronology": "Isa (14.0), série du destin (Isa_Destiny_*), Skalgard : Kharyskhan chassé, les clans festoient ; juste avant l'attaque des urun (Isa_Destiny_3) — après le journal du capitaine, ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-gerda-threshold",
+   "kind": "engine",
+   "source": "main",
+   "event": "Isa_Destiny_Gerda",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1282,
+   "title": {
+    "fr": "Gerda sur le seuil",
+    "en": "Gerda on the threshold"
+   },
+   "chronology": "Isa (14.0), série du destin (Isa_Destiny_*), Skalgard : le soir du festin, seul avec Герда sur le seuil ; la nuit tombe avant l'attaque des urun (Isa_Destiny_3) — après le festin, ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-mountain-path",
+   "kind": "engine",
+   "source": "main",
+   "event": "Isa_Ship_6_StartScene",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1265,
+   "title": {
+    "fr": "Le chemin des montagnes",
+    "en": "The mountain path"
+   },
+   "chronology": "Isa (14.0), série du navire (Isa_Ship_*) : Герда mène les héros au chemin des montagnes, vers l'épave de la Freya ; après les pêcheurs, avant la Freya (Isa_Ship_7) — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "audio": {
+    "language": "ru"
+   }
   }
  ],
  "held_back": {
@@ -23314,7 +23386,7 @@
   },
   {
    "id": "isa-arrival",
-   "_note": "Arrivée des héros sur Isa (série Isa_Arrival) : Hauk, Trand et Unn découvrent l'île, puis Mrak et, près de lui, un bloc de glace (Осколок льда, où Gerda est prise). Deux moments : les répliques Isa_Arrival_1 (sans caméra dans le client) puis le buff de caméra res:740170126 (9 s, deux points : descente vers le bloc de glace), rangé juste après les trois répliques qu'il accompagne (resourceId 740170122–124). Places des PNJ : leur SpawnLocation du 17.0 (MobWorld). Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "_note": "Arrivée des héros sur Isa (série Isa_Arrival) : Hauk, Trand et Unn découvrent l'île, puis Mrak et, près de lui, un bloc de glace (Осколок льда, où Gerda est prise). Deux moments : les répliques Isa_Arrival_1 (sans caméra dans le client) puis le buff de caméra res:740170126 (9 s, deux points : descente vers le bloc de glace), rangé juste après les trois répliques qu'il accompagne (resourceId 740170122–124). Places des PNJ : leur SpawnLocation du 17.0 (MobWorld). Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; petit travelling de mise en scène (tools/cutscene_travelling.py : arc lent autour des locuteurs, visée sur le locuteur au fil des répliques), choix documenté, pas une donnée.",
    "map": "Isa",
    "cameras": [
     {
@@ -23329,7 +23401,20 @@
       11840.43,
       6.5
      ],
-     "_note": "Vue du joueur arrivé avec les héros : 5 m derrière eux, à hauteur d'œil (1,8 m au-dessus de leur place), vers le bloc de glace qu'ils regardent, sur la butte à 65 m (choix)."
+     "_note": "Point de vue de départ (repli) : 5 m derrière les héros vers le bloc de glace (choix).",
+     "travelling": {
+      "subjects": [
+       "hauk",
+       "trand",
+       "unn"
+      ],
+      "bearing": 200,
+      "distance": 5.0,
+      "height": 0.2,
+      "arc": 18,
+      "dolly": 0.12,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : devant les trois héros (cap 200° depuis leur centre : ils regardent la butte, à 187°), à 5 m, arc de 18° ; visée sur le locuteur de chaque réplique ; le buff de caméra du client prend le relais à 16 s."
+     }
     },
     {
      "t": 16.0,
@@ -23495,7 +23580,7 @@
   },
   {
    "id": "isa-fighting-pit",
-   "_note": "Skalgard (série Isa_Town, quête « Спасти Мрака из бойцовой ямы ») : les gibberlings ont jeté Mrak, le « урун noir », dans la fosse contre la Семейка Драчунов ; la foule l'encourage (Isa_Town_1_Replica*), puis Броди Задира arrête le combat (Isa_Town_ElderBullyClan, sous-titre officiel). Le buff de caméra res:740170162 (9 s) suit la réplique de Броди (resourceId 740170159, juste avant) : il finit sur lui. Places : SpawnLocation des MobWorld. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "_note": "Skalgard (série Isa_Town, quête « Спасти Мрака из бойцовой ямы ») : les gibberlings ont jeté Mrak, le « урун noir », dans la fosse contre la Семейка Драчунов ; la foule l'encourage (Isa_Town_1_Replica*), puis Броди Задира arrête le combat (Isa_Town_ElderBullyClan, sous-titre officiel). Le buff de caméra res:740170162 (9 s) suit la réplique de Броди (resourceId 740170159, juste avant) : il finit sur lui. Places : SpawnLocation des MobWorld. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; petit travelling de mise en scène (tools/cutscene_travelling.py : arc lent autour des locuteurs, visée sur le locuteur au fil des répliques), choix documenté, pas une donnée.",
    "map": "Isa",
    "cameras": [
     {
@@ -23510,7 +23595,20 @@
       12900.0,
       98.8
      ],
-     "_note": "Au bord de la fosse, à hauteur d'œil à la place d'une habitante de Skalgard (res:740172838), vers Mrak au fond (choix : le client ne filme pas la foule)."
+     "_note": "Au bord de la fosse, à hauteur d'œil à la place d'une habitante de Skalgard (res:740172838), vers Mrak au fond (choix : le client ne filme pas la foule).",
+     "travelling": {
+      "subjects": [
+       "mrak",
+       "brawlers",
+       "broddi"
+      ],
+      "arc": 20,
+      "dolly": 0.1,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : dans la fosse, du côté de la foule d'où regardait le point de vue d'avant (cap 135° depuis le centre des combattants), à 9 m et 4 m au-dessus des têtes, arc de 20° autour de Mrak, de la Семейка Драчунов et de Броди ; cris de la foule en voix off (pas de locuteur) ; le buff de caméra du client prend le relais à 14 s.",
+      "bearing": 135,
+      "distance": 9.0,
+      "height": 4.0
+     }
     },
     {
      "t": 14.0,
@@ -23704,31 +23802,8 @@
   },
   {
    "id": "isa-unn-trance",
-   "_note": "Prologue d'Isa sur Olm (série Isa_Prologue, carte Isa_Prologue) : Unn, en transe, appelle les esprits gardés dans l'Arbre (Val, Orn), sent une Nit vivante et réveille Ratatosk, l'écureuil du Frêne, avant de conclure qu'on peut parler à la déesse. Voix Isa_Prologue_4_UnnTranceSay_01…08, _UnnTranceGotHelpSay_01…03 (les « GotHelp » suivent l'aide du joueur), Isa_Prologue_Unn_TranceEnd ; textes officiels (bulles). Places : SpawnLocation d'Унн res:740169449 et de Рататоск res:740169482. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "_note": "Prologue d'Isa sur Olm (série Isa_Prologue, carte Isa_Prologue) : Unn, en transe, appelle les esprits gardés dans l'Arbre (Val, Orn), sent une Nit vivante et réveille Ratatosk, l'écureuil du Frêne, avant de conclure qu'on peut parler à la déesse. Voix Isa_Prologue_4_UnnTranceSay_01…08, _UnnTranceGotHelpSay_01…03 (les « GotHelp » suivent l'aide du joueur), Isa_Prologue_Unn_TranceEnd ; textes officiels (bulles). Places : SpawnLocation d'Унн res:740169449 et de Рататоск res:740169482. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; petit travelling de mise en scène (tools/cutscene_travelling.py : arc lent autour des locuteurs, visée sur le locuteur au fil des répliques), choix documenté, pas une donnée.",
    "map": "Isa_Prologue",
-   "camera": {
-    "points": [
-     {
-      "t": 0,
-      "p": [
-       13103.8,
-       13745.2,
-       55.8
-      ]
-     }
-    ],
-    "targets": [
-     {
-      "t": 0,
-      "p": [
-       13099.3,
-       13750.4,
-       54.8
-      ]
-     }
-    ],
-    "_note": "Face à Unn, à 5,5 m, Ratatosk dans le champ (choix)."
-   },
    "lines": [
     {
      "ref": "res:740169543",
@@ -23866,11 +23941,39 @@
     "ambience": 0.5,
     "sfx": 0.8,
     "voice": 1.0
-   }
+   },
+   "cameras": [
+    {
+     "t": 0.0,
+     "p": [
+      13103.8,
+      13745.2,
+      55.8
+     ],
+     "look": [
+      13099.3,
+      13750.4,
+      54.8
+     ],
+     "_note": "Point de vue de départ : face à Unn, à 5,5 m (choix).",
+     "travelling": {
+      "subjects": [
+       "unn",
+       "ratatosk"
+      ],
+      "bearing": -40,
+      "distance": 4.5,
+      "height": 0.25,
+      "arc": 40,
+      "dolly": 0.15,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : départ face à Unn (cap −40°, celui du point de vue d'avant : Unn tournée vers lui), à 4,5 m et 0,25 m au-dessus de sa tête, arc de 40° et rapprochement de 15 % sur les 91 s de la transe ; Ratatosk entre dans le cadre à son apparition (67,1 s), la visée glisse alors entre eux."
+     }
+    }
+   ]
   },
   {
    "id": "isa-freya",
-   "_note": "La découverte de la Freya (série Isa_Ship, voix Isa_Ship_7_FinalScene_Subtitle_1 et _2, deux répliques de plus sans voix) : l'épave du navire astral du capitaine Колль Фитилёк, AstralShipKaniaGroupBroken, posée dans le décor d'Isa (région 050_050/3_2, seul navire astral de la carte), entourée des pages du journal du capitaine (stèles Offhand_Book_D_03, quête « Разыскать и прочесть обрывки журнала ») ; Хаук Фитилёк res:740171495 et Герда res:740168263 y ont leur SpawnLocation. Voile d'ouverture : buff res:740171413 (21 s, voile noir 1 s, caméra sans point : vue du joueur), rangé juste avant les quatre répliques. Remplace la première version (buff de caméra res:740171462, 19 s, qui regarde le ciel au-dessus du plateau de Skalgard, à 1 km de l'épave : non retenu, rattachement non établi). Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "_note": "La découverte de la Freya (série Isa_Ship, voix Isa_Ship_7_FinalScene_Subtitle_1 et _2, deux répliques de plus sans voix) : l'épave du navire astral du capitaine Колль Фитилёк, AstralShipKaniaGroupBroken, posée dans le décor d'Isa (région 050_050/3_2, seul navire astral de la carte), entourée des pages du journal du capitaine (stèles Offhand_Book_D_03, quête « Разыскать и прочесть обрывки журнала ») ; Хаук Фитилёк res:740171495 et Герда res:740168263 y ont leur SpawnLocation. Voile d'ouverture : buff res:740171413 (21 s, voile noir 1 s, caméra sans point : vue du joueur), rangé juste avant les quatre répliques. Remplace la première version (buff de caméra res:740171462, 19 s, qui regarde le ciel au-dessus du plateau de Skalgard, à 1 km de l'épave : non retenu, rattachement non établi). Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; petit travelling de mise en scène (tools/cutscene_travelling.py : arc lent autour des locuteurs, visée sur le locuteur au fil des répliques), choix documenté, pas une donnée.",
    "map": "Isa",
    "cameras": [
     {
@@ -23885,7 +23988,23 @@
       13437.64,
       69.42
      ],
-     "_note": "Derrière les héros, 7,5 m en retrait et 2 m au-dessus d'eux, vers l'épave (choix)."
+     "_note": "Derrière les héros, 7,5 m en retrait et 2 m au-dessus d'eux, vers l'épave (choix).",
+     "travelling": {
+      "subjects": [
+       "hauk",
+       "gerda",
+       "trand"
+      ],
+      "focus": [
+       13670.72,
+       13437.64,
+       72.0
+      ],
+      "focus_weight": 0.45,
+      "arc": 16,
+      "dolly": 0.15,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : derrière les héros, arc de 16° et rapprochement de 15 % ; visée partagée entre le locuteur et l'épave (focus, 45 %)."
+     }
     },
     {
      "t": 0.0,
@@ -23980,31 +24099,8 @@
   },
   {
    "id": "isa-captain-journal",
-   "_note": "Le journal du capitaine (série Isa_Ship, voix Isa_Ship_8b_CapitanDiary_AssistantSay_* puis Isa_Ship_8b_FinalScene_Say_*) : près de l'épave de la Freya, Hauk, Trand et Gerda commentent les pages du journal de Колль Фитилёк (le pacte avec les orcs, l'esprit du Crâne libéré, Isa cachée par les Держащие Нить, Колль ancêtre de Gerda), puis se demandent s'il faut rendre Isa au monde. Textes officiels (bulles) ; page du journal : stèle Offhand_Book_D_03 res:740171431 à sa place. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "_note": "Le journal du capitaine (série Isa_Ship, voix Isa_Ship_8b_CapitanDiary_AssistantSay_* puis Isa_Ship_8b_FinalScene_Say_*) : près de l'épave de la Freya, Hauk, Trand et Gerda commentent les pages du journal de Колль Фитилёк (le pacte avec les orcs, l'esprit du Crâne libéré, Isa cachée par les Держащие Нить, Колль ancêtre de Gerda), puis se demandent s'il faut rendre Isa au monde. Textes officiels (bulles) ; page du journal : stèle Offhand_Book_D_03 res:740171431 à sa place. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; petit travelling de mise en scène (tools/cutscene_travelling.py : arc lent autour des locuteurs, visée sur le locuteur au fil des répliques), choix documenté, pas une donnée.",
    "map": "Isa",
-   "camera": {
-    "points": [
-     {
-      "t": 0,
-      "p": [
-       13639.2,
-       13440.2,
-       75.2
-      ]
-     }
-    ],
-    "targets": [
-     {
-      "t": 0,
-      "p": [
-       13635.0,
-       13437.6,
-       72.2
-      ]
-     }
-    ],
-    "_note": "Sur le pont de l'épave, 4,5 m à l'est des trois gibberlings et au-dessus de la rambarde, tourné vers eux et la page du journal (choix)."
-   },
    "lines": [
     {
      "ref": "res:740171524",
@@ -24166,7 +24262,29 @@
     "ambience": 0.5,
     "sfx": 0.8,
     "voice": 1.0
-   }
+   },
+   "cameras": [
+    {
+     "t": 0.0,
+     "p": [
+      13639.2,
+      13440.2,
+      75.2
+     ],
+     "look": [
+      13635.0,
+      13437.6,
+      72.2
+     ],
+     "_note": "Point de vue de départ : sur le pont de l'épave, 4,5 m à l'est des trois gibberlings, au-dessus de la rambarde (choix).",
+     "travelling": {
+      "arc": 24,
+      "dolly": 0.1,
+      "lean": 0.6,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : arc de 24° autour de Hauk, Trand et Gerda ; la visée va au locuteur de chaque réplique (places SpawnLocation, instants des répliques)."
+     }
+    }
+   ]
   },
   {
    "id": "isa-fishers-legend",
@@ -24769,6 +24887,799 @@
      "Music/RacesMusic/Priden"
     ],
     "_note": "La base de carte PridensStart porte toutes les musiques de la carte (six Sound2DTassel joués ensemble sinon) : on garde celles des cases de son de la région de la scène (7.0, 050_040/3_9_MapRegion.xdb : Muz_OlmEast → Music/RacesMusic/Priden (seule musique), Amb_OlmEast, Amb_wind → …/PridenStart/OlmEast)."
+   }
+  },
+  {
+   "id": "isa-weavers-saga",
+   "_note": "Skalgard, la salle du tissage (série Isa_Town_3, quête « Узнать историю проклятия » des Держащие Нить) : la Семейка Шерстинок, qui tisse la grande toile du destin (stèle Isa_Gibberlings_Weave_Halll_carpet res:740171939), récite la saga d'Isa en sept couplets — l'île de glace et de feu, le Frêne, les orcs, le Cataclysme, les urun, le chef immortel emprisonné par les Fileuses, et Kharyskhan libéré par les « envoyés de l'Abîme » — puis annonce qu'elle lira la suite dans les fils. Voix Isa_Town_3_Que_01_01 à 07_02 (chaque voix dit deux quatrains : le second est la bulle du ClientData sans voix qui le suit) ; textes officiels (bulles). Caméra : le buff res:740170307 (9 s : 7 s sur la toile, puis panoramique vers la salle), seul trajet de caméra du client dans la salle du tissage, regarde la toile (visée à 4,4 m derrière la stèle, 6 m au-dessus : la tapisserie tendue) — rattachement approché (le client ne relie aucune réplique à ce buff, rangé dans le même dossier que la quête), placé en ouverture ; ensuite, petit travelling de mise en scène (tools/cutscene_travelling.py), choix documenté, pas une donnée.",
+   "map": "Isa",
+   "cameras": [
+    {
+     "t": 0.0,
+     "buff": "res:740170307",
+     "_note": "BuffResource res:740170307 (volatil 520704) : caméra dans la salle du tissage, vers la toile."
+    },
+    {
+     "t": 9.0,
+     "p": [
+      12913.8,
+      12887.17,
+      108.24
+     ],
+     "look": [
+      12910.73,
+      12862.69,
+      111.81
+     ],
+     "_note": "Point de vue de départ (repli) : celui du buff du client.",
+     "travelling": {
+      "subjects": [
+       "weavers",
+       "weavers-2",
+       "weavers-3"
+      ],
+      "bearing": -50,
+      "distance": 5.5,
+      "height": 0.9,
+      "arc": 40,
+      "dolly": 0.2,
+      "lean": 0.7,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : au sud-est des Fileuses (cap −50° : Unn et les héros derrière elles, dans le champ), à 5,5 m et 0,9 m au-dessus des têtes, arc de 40° et rapprochement de 20 % pendant les sept couplets ; visée sur les Fileuses qui récitent (la toile a son plan du client en ouverture)."
+     }
+    }
+   ],
+   "lines": [
+    {
+     "ref": "res:740170390",
+     "ru": "Остров был пустынным"
+    },
+    {
+     "ref": "res:740170434",
+     "ru": "Так возникла Иса"
+    },
+    {
+     "ref": "res:740170451",
+     "ru": "Множились семейства"
+    },
+    {
+     "ref": "res:740170452",
+     "ru": "Но велел обычай"
+    },
+    {
+     "ref": "res:740170453",
+     "ru": "Орки из-за моря"
+    },
+    {
+     "ref": "res:740170454",
+     "ru": "Был союз всеобщий"
+    },
+    {
+     "ref": "res:740170455",
+     "ru": "Был покой недолгим"
+    },
+    {
+     "ref": "res:740170456",
+     "ru": "Пустоты созданья"
+    },
+    {
+     "ref": "res:740170457",
+     "ru": "Новою напастью"
+    },
+    {
+     "ref": "res:740170458",
+     "ru": "Сколько б раз ни били"
+    },
+    {
+     "ref": "res:740170459",
+     "ru": "Век за веком, тайну"
+    },
+    {
+     "ref": "res:740170460",
+     "ru": "Заточили Пряхи"
+    },
+    {
+     "ref": "res:740170461",
+     "ru": "Вы, посланцы Бездны"
+    },
+    {
+     "ref": "res:740170462",
+     "ru": "Нити мне всё скажут"
+    }
+   ],
+   "lines_note": "ClientData des voix Isa_Town_3_Que_0N_01 et de la bulle sans voix qui suit chacune (resourceId 740170390, 740170434, puis 740170451 à 740170462) ; ordre : celui des couplets (le texte suit l'histoire d'Isa) ; textes officiels désignés par leur début russe.",
+   "speakers": {
+    "1": "weavers",
+    "2": "weavers",
+    "3": "weavers",
+    "4": "weavers",
+    "5": "weavers",
+    "6": "weavers",
+    "7": "weavers",
+    "8": "weavers",
+    "9": "weavers",
+    "10": "weavers",
+    "11": "weavers",
+    "12": "weavers",
+    "13": "weavers",
+    "14": "weavers"
+   },
+   "line_animations": true,
+   "fr_pair": {
+    "ru": "Но в глубокой бездне водятся чудовища",
+    "fr": "Mais il y a des monstres dans les profondeurs abyssales",
+    "_note": "Paire de textes d'une même réplique (légende des pêcheurs) : l'écart d'indice entre le 17.0 et le client FR 16.0 qu'elle donne (7 285 au 24/09/2026) est le même sur tout le bloc des textes d'Isa, vérifié réplique par réplique de l'arrivée (« Морозец пробирает до костей ») au journal du capitaine (« Но какой ценой? Череп снова будет свободен! »)."
+   },
+   "fov": 45,
+   "timing": {
+    "starts": [
+     1.0,
+     9.28,
+     18.94,
+     26.94,
+     35.29,
+     43.29,
+     52.93,
+     61.73,
+     70.8,
+     79.08,
+     88.12,
+     96.36,
+     105.63,
+     116.52
+    ],
+    "_note": "Les voix s'enchaînent à 1 s d'écart (estimé : le serveur les joue) ; le second quatrain de chaque voix part à l'instant où la voix le dit (reconnaissance vocale mot à mot, faster-whisper : 8,28 ; 8,0 ; 8,0 ; 8,8 ; 8,28 ; 8,24 s après son départ)."
+   },
+   "decor_center": [
+    12920.0,
+    12876.0
+   ],
+   "decor_radius": 55,
+   "actors": [
+    {
+     "id": "weavers",
+     "mob": "res:740168167",
+     "position": [
+      12928.97,
+      12875.65,
+      105.78
+     ],
+     "ground": true,
+     "face": [
+      12927.0,
+      12882.4
+     ]
+    },
+    {
+     "id": "unn",
+     "mob": "res:740168277",
+     "position": [
+      12926.29,
+      12875.3,
+      105.79
+     ],
+     "ground": true,
+     "face": [
+      12928.97,
+      12875.65
+     ]
+    },
+    {
+     "id": "hauk",
+     "mob": "res:740171596",
+     "position": [
+      12926.73,
+      12882.0,
+      105.78
+     ],
+     "ground": true,
+     "face": [
+      12928.97,
+      12875.65
+     ]
+    },
+    {
+     "id": "gerda",
+     "mob": "res:740171594",
+     "position": [
+      12928.08,
+      12882.87,
+      105.78
+     ],
+     "ground": true,
+     "face": [
+      12928.97,
+      12875.65
+     ]
+    },
+    {
+     "id": "trand",
+     "mob": "res:740171595",
+     "position": [
+      12929.62,
+      12882.29,
+      105.78
+     ],
+     "ground": true,
+     "face": [
+      12928.97,
+      12875.65
+     ]
+    }
+   ],
+   "staging_note": "Places : SpawnLocation du 17.0 dans la salle du tissage — Семейка Шерстинок res:740168167 (trio de gibberlings, voir les troupes), Унн res:740168277 à côté d'elles, Хаук, Герда et Транд (res:740171596, 740171594, 740171595) en face ; caps : les Fileuses vers les héros, les autres vers les Fileuses (choix, le client ne garde pas de lacet). Hauteurs : SpawnLocation + 0,3 m, puis reposées sur le plancher (la place du client est au ras du plancher : `place` cherche la surface sous le point, et trouverait sinon le sol sous le plancher).",
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
+   },
+   "spawns": [
+    {
+     "stele": "res:740171939",
+     "t": 0,
+     "until": 600,
+     "_note": "La grande toile des Держащие Нить (stèle Isa_Gibberlings_Weave_Halll_carpet), à sa SpawnLocation : posée par le serveur, absente du décor."
+    }
+   ]
+  },
+  {
+   "id": "isa-feast",
+   "_note": "Skalgard, le festin des clans (série Isa_Destiny, voix Isa_Destiny_2_StartScene_*) : Kharyskhan chassé, Бродди Задира lève sa chope — « Что ж, победа одержана вновь! … Так поднимем же чарку мёда за это! » — et les gibberlings trinquent (« До дна! », « Гиб-гиб-гибберлинги! ») ; c'est le repas avant l'attaque des urun (Isa_Destiny_3 : « К оружию! Урун на подходе! »). Une voix de Бродди (24,5 s) dit ses cinq sous-titres officiels (ClientData res:740172195 à 197, puis 740173619 et 620, rangés à part par une mise à jour : même locuteur, suite du texte), puis trois clameurs doublées. Places : SpawnLocation des PNJ de la salle du festin (tables de Skalgard, z 130), dont les héros. Point de vue : aucun trajet de caméra dans le client pour cette scène ; petit travelling de mise en scène (tools/cutscene_travelling.py), choix documenté, pas une donnée.",
+   "map": "Isa",
+   "cameras": [
+    {
+     "t": 0.0,
+     "p": [
+      12673.0,
+      12979.0,
+      133.0
+     ],
+     "look": [
+      12663.0,
+      12980.0,
+      131.5
+     ],
+     "_note": "Point de vue de départ (repli) : à l'est des tables, vers la salle (choix).",
+     "travelling": {
+      "bearing": 0,
+      "distance": 7.0,
+      "height": 2.0,
+      "arc": 30,
+      "dolly": 0.25,
+      "lean": 0.8,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : à l'est du centre des convives (cap 0°), à 7 m et 2 m au-dessus des têtes, arc de 30° et rapprochement de 25 % ; visée sur Бродди pendant son discours, puis sur la salle pendant les clameurs (sans locuteur)."
+     }
+    }
+   ],
+   "lines": [
+    "res:740172195",
+    "res:740172196",
+    "res:740172197",
+    "res:740173619",
+    "res:740173620",
+    "res:740172199",
+    "res:740172200",
+    "res:740172201"
+   ],
+   "lines_note": "ClientData à sous-titre officiel (délais 2 ; 4,8 ; 7,7 ; 6,9 ; 2,9 s : leur somme, 24,3 s, est la voix de Бродди) ; clameurs Isa_Destiny_2_StartScene_Gibberlings_Cheers_01 (sans texte) à _03.",
+   "speakers": {
+    "1": "broddi",
+    "2": "broddi",
+    "3": "broddi",
+    "4": "broddi",
+    "5": "broddi"
+   },
+   "line_animations": true,
+   "fr_pair": {
+    "ru": "Но в глубокой бездне водятся чудовища",
+    "fr": "Mais il y a des monstres dans les profondeurs abyssales",
+    "_note": "Paire de textes d'une même réplique (légende des pêcheurs) : l'écart d'indice entre le 17.0 et le client FR 16.0 qu'elle donne (7 285 au 24/09/2026) est le même sur tout le bloc des textes d'Isa, vérifié réplique par réplique de l'arrivée (« Морозец пробирает до костей ») au journal du capitaine (« Но какой ценой? Череп снова будет свободен! »)."
+   },
+   "fov": 45,
+   "timing": {
+    "starts": [
+     0.5,
+     2.5,
+     7.3,
+     15.0,
+     21.9,
+     25.3,
+     27.3,
+     28.96
+    ],
+    "_note": "Sous-titres de Бродди enchaînés par leurs délais du client (0,5 s après l'ouverture) ; clameurs après la fin de sa voix, à 0,3 s d'écart (estimé)."
+   },
+   "decor_center": [
+    12664.0,
+    12980.0
+   ],
+   "decor_radius": 60,
+   "actors": [
+    {
+     "id": "broddi",
+     "mob": "res:740168267",
+     "position": [
+      12661.37,
+      12985.63,
+      131.29
+     ],
+     "ground": true,
+     "face": [
+      12663.0,
+      12976.0
+     ]
+    },
+    {
+     "id": "yardarri",
+     "mob": "res:740171981",
+     "position": [
+      12659.45,
+      12986.07,
+      130.88
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "hnikud",
+     "mob": "res:740171982",
+     "position": [
+      12660.16,
+      12987.16,
+      130.88
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "hauk",
+     "mob": "res:740171983",
+     "position": [
+      12661.11,
+      12971.55,
+      130.83
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "gerda",
+     "mob": "res:740171984",
+     "position": [
+      12658.25,
+      12970.57,
+      130.85
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "trand",
+     "mob": "res:740171985",
+     "position": [
+      12660.26,
+      12972.41,
+      130.83
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "mrak",
+     "mob": "res:740171986",
+     "position": [
+      12658.84,
+      12969.6,
+      130.85
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "pikes",
+     "mob": "res:740171990",
+     "position": [
+      12664.22,
+      12979.93,
+      130.79
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "roaches",
+     "mob": "res:740171991",
+     "position": [
+      12663.26,
+      12977.5,
+      130.79
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "hooks",
+     "mob": "res:740171989",
+     "position": [
+      12666.18,
+      12975.2,
+      130.83
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "chatterers",
+     "mob": "res:740171992",
+     "position": [
+      12669.21,
+      12973.36,
+      130.83
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "brawlers",
+     "mob": "res:740172004",
+     "position": [
+      12652.24,
+      12978.79,
+      130.35
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "njal",
+     "mob": "res:740172007",
+     "position": [
+      12666.52,
+      12987.26,
+      130.78
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "sigi",
+     "mob": "res:740172009",
+     "position": [
+      12667.35,
+      12989.51,
+      130.78
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    },
+    {
+     "id": "tura",
+     "mob": "res:740172012",
+     "position": [
+      12670.59,
+      12984.02,
+      130.83
+     ],
+     "ground": true,
+     "face": [
+      12661.37,
+      12985.63
+     ]
+    }
+   ],
+   "staging_note": "Бродди Задира res:740168267 et les convives : SpawnLocation du 17.0 dans la salle du festin (sous-ensemble : Бродди, ses deux frères de clan, les quatre héros, quatre familles et quatre gibberlings les plus proches ; les esprits des bois invités et les tables plus loin ne sont pas posés) ; caps : tous vers Бродди, lui vers les tables (choix). Hauteurs : SpawnLocation + 0,3 m, puis reposées sur le plancher (la place du client est au ras du plancher : `place` cherche la surface sous le point, et trouverait sinon le sol sous le plancher).",
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
+   }
+  },
+  {
+   "id": "isa-gerda-threshold",
+   "_note": "Skalgard, le soir du festin (série Isa_Destiny) : sortie de la salle, Герда se tient seule sur le seuil (MobWorld res:740172038, avec son dialogue : quinze Cue rangés avec elle, res:740172039 à 740172058). Elle avoue son inquiétude (Kharyskhan, la charge de rendre Isa au monde, ses nouveaux « frères »), puis récite la fin de la saga qu'elle compose (« Трое их стало: Транд, Хаук и Герда!… ») et propose de rester assis encore un peu (« Посидим ещё немного? ») ; le buff res:740172059, rangé dans le même bloc que la réplique de Mrak au festin (« Пр-рости, дружище, я после Айр-рина не пью… »), la fait s'agenouiller (sitKnees en boucle) et baisse le voile noir au bout de 18 s : la nuit passe, puis vient l'attaque des urun (Isa_Destiny_3). Répliques : textes officiels du dialogue (texte de Герда en +0xC8, réponse du joueur en +0x88 : RU/EN du 17.0, FR du 16.0 par fr_pair) ; le joueur n'est pas montré. Chemin du dialogue : un des huit du client (choix : réponses sans accord de genre quand il y en a). Point de vue : aucun trajet de caméra dans le client ; petit travelling de mise en scène (tools/cutscene_travelling.py), choix documenté, pas une donnée.",
+   "map": "Isa",
+   "cameras": [
+    {
+     "t": 0.0,
+     "p": [
+      12692.4,
+      12964.9,
+      131.6
+     ],
+     "look": [
+      12694.7,
+      12963.69,
+      131.1
+     ],
+     "until": 143.6,
+     "_note": "Point de vue de départ (repli) : à la place du joueur, face à Герда (choix).",
+     "travelling": {
+      "subjects": [
+       "gerda"
+      ],
+      "bearing": 152,
+      "distance": 3.4,
+      "height": 0.2,
+      "arc": 30,
+      "dolly": 0.2,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : à la place du joueur venu de la salle du festin (cap 152° : vers la salle), à 3,4 m et 0,2 m au-dessus de sa tête, arc de 30° et rapprochement de 20 % sur tout le dialogue."
+     }
+    }
+   ],
+   "lines": [
+    {
+     "ref": "res:740172039",
+     "cue": "npc",
+     "ru": "Ой, это ты"
+    },
+    {
+     "ref": "res:740172048",
+     "cue": "player",
+     "ru": "Как ты"
+    },
+    {
+     "ref": "res:740172048",
+     "cue": "npc",
+     "ru": "Я рада, что всем весело",
+     "chunk": 170
+    },
+    {
+     "ref": "res:740172050",
+     "cue": "player",
+     "ru": "Ты всегда можешь рассчитывать"
+    },
+    {
+     "ref": "res:740172050",
+     "cue": "npc",
+     "ru": "Я рада, что ты готова помочь",
+     "chunk": 170
+    },
+    {
+     "ref": "res:740172053",
+     "cue": "player",
+     "ru": "Думаю, что Судьба будет общей"
+    },
+    {
+     "ref": "res:740172053",
+     "cue": "npc",
+     "ru": "Хорошо, а то мне бы не хотелось",
+     "chunk": 170
+    },
+    {
+     "ref": "res:740172055",
+     "cue": "player",
+     "ru": "А чем же закончится твоя сага"
+    },
+    {
+     "ref": "res:740172055",
+     "cue": "npc",
+     "ru": "О! Я уже почти придумала конец",
+     "chunk": 170
+    },
+    {
+     "ref": "res:740172056",
+     "cue": "player",
+     "ru": "Обязательно"
+    },
+    {
+     "ref": "res:740172056",
+     "cue": "npc",
+     "ru": "Я рада, что ты так думаешь",
+     "chunk": 170
+    },
+    {
+     "ref": "res:740172058",
+     "cue": "player",
+     "ru": "Хорошо"
+    }
+   ],
+   "lines_note": "Dialogue de Герда (Cue du 17.0, arbre en +0x90) : « Ой, это ты… » → « Как ты? » → l'une de deux réponses → l'une de deux → « А чем же закончится твоя сага? » (la saga) → l'une de deux → « Хорошо ». Les longs textes sont coupés en sous-titres de 170 caractères au plus (`chunk`), aux fins de vers ou de phrase ; le texte est entier.",
+   "speakers": {
+    "1": "gerda",
+    "3": "gerda",
+    "5": "gerda",
+    "7": "gerda",
+    "9": "gerda",
+    "11": "gerda"
+   },
+   "fr_pair": {
+    "ru": "Но в глубокой бездне водятся чудовища",
+    "fr": "Mais il y a des monstres dans les profondeurs abyssales",
+    "_note": "Paire de textes d'une même réplique (légende des pêcheurs) : l'écart d'indice entre le 17.0 et le client FR 16.0 qu'elle donne (7 285 au 24/09/2026) est le même sur tout le bloc des textes d'Isa, vérifié réplique par réplique de l'arrivée (« Морозец пробирает до костей ») au journal du capitaine (« Но какой ценой? Череп снова будет свободен! »)."
+   },
+   "fov": 45,
+   "timing": {
+    "reading": {
+     "t0": 1.0,
+     "gap": 0.5,
+     "cps": 15,
+     "min": 1.5
+    },
+    "_note": "Dialogue sans voix : chaque réplique reste le temps de la lire (15 caractères par seconde, au moins 1,5 s ; estimé, le joueur lit à son rythme) ; à la dernière (123,1 s), Герда s'agenouille (buff res:740172059) ; voile noir 18 s plus tard, comme le buff."
+   },
+   "decor_center": [
+    12690.0,
+    12966.0
+   ],
+   "decor_radius": 50,
+   "actors": [
+    {
+     "id": "gerda",
+     "mob": "res:740172038",
+     "position": [
+      12694.7,
+      12963.69,
+      130.08
+     ],
+     "ground": true,
+     "face": [
+      12664.0,
+      12980.0
+     ],
+     "animations": [
+      "SitKnees"
+     ],
+     "actions": [
+      {
+       "t": 123.1,
+       "until": 148.6,
+       "clips": [
+        "SitKnees"
+       ],
+       "loop": true
+      }
+     ]
+    }
+   ],
+   "post": [
+    {
+     "t": 141.1,
+     "until": 143.6,
+     "kind": "veil",
+     "fadeIn": 0.5,
+     "fadeOut": 0.5,
+     "_note": "Voile noir du buff res:740172059 (délai 18 s puis PostEffectVisAction, fondus 0,5 s)."
+    }
+   ],
+   "staging_note": "Герда res:740172038 : sa SpawnLocation (+0,3 m, reposée sur le sol), à 30 m à l'est des tables du festin, sur le seuil ; cap : vers la salle d'où vient le joueur (choix).",
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
+   }
+  },
+  {
+   "id": "isa-mountain-path",
+   "_note": "Le départ par la montagne (série Isa_Ship, voix Isa_Ship_6_StartScene_Subtitle_1 à _4) : au pied du chemin des montagnes, Герда prévient — « Путь через горы очень опасен! … Но нас это не остановит, правда? ». Buff de caméra res:740171271 (17 s : voile noir 1,5 s puis caméra sans point, vue du joueur, voile de fin à 17 s), rangé juste après la Герда res:740171270 (seule PNJ posée là par le client) et juste avant les quatre ClientData à sous-titre officiel qu'il accompagne (resourceId 740171272 à 275). Locutrice : Герда (attribution approchée : le client ne nomme pas qui parle). Point de vue : petit travelling de mise en scène (tools/cutscene_travelling.py), choix documenté, pas une donnée.",
+   "map": "Isa",
+   "cameras": [
+    {
+     "t": 0.0,
+     "p": [
+      12893.0,
+      13081.0,
+      69.0
+     ],
+     "look": [
+      12896.43,
+      13083.0,
+      68.3
+     ],
+     "_note": "Point de vue de départ (repli) : face à Герда (choix).",
+     "travelling": {
+      "subjects": [
+       "gerda"
+      ],
+      "bearing": 200,
+      "distance": 3.6,
+      "height": 0.3,
+      "arc": 26,
+      "dolly": 0.15,
+      "_note": "Travelling de mise en scène (choix de l'utilisateur, sept. 2026 : un point de vue fixe faute de caméra du client devient un travelling lent) : face à Герда (cap 200°), à 3,6 m et 0,3 m au-dessus de sa tête, arc de 26° et rapprochement de 15 % pendant ses quatre répliques."
+     }
+    },
+    {
+     "t": 0.0,
+     "buff": "res:740171271",
+     "_note": "BuffResource res:740171271 (volatil 521172) : voiles d'ouverture et de fin."
+    }
+   ],
+   "lines": [
+    "res:740171272",
+    "res:740171273",
+    "res:740171274",
+    "res:740171275"
+   ],
+   "lines_note": "ClientData à sous-titre officiel rangés avec le buff (délais 5 ; 5 ; 5 ; 7 s).",
+   "speakers": {
+    "1": "gerda",
+    "2": "gerda",
+    "3": "gerda",
+    "4": "gerda"
+   },
+   "fr_pair": {
+    "ru": "Но в глубокой бездне водятся чудовища",
+    "fr": "Mais il y a des monstres dans les profondeurs abyssales",
+    "_note": "Paire de textes d'une même réplique (légende des pêcheurs) : l'écart d'indice entre le 17.0 et le client FR 16.0 qu'elle donne (7 285 au 24/09/2026) est le même sur tout le bloc des textes d'Isa, vérifié réplique par réplique de l'arrivée (« Морозец пробирает до костей ») au journal du capitaine (« Но какой ценой? Череп снова будет свободен! »)."
+   },
+   "fov": 45,
+   "timing": {
+    "starts": [
+     2.0,
+     6.0,
+     10.0,
+     14.0
+    ],
+    "_note": "Estimés : la première à la fin du voile (1,5 s) + 0,5 s, puis toutes les 4 s, pour que les quatre tiennent dans les 17 s du buff (les délais du client, 5 à 7 s, n'y tiennent pas)."
+   },
+   "decor_center": [
+    12896.0,
+    13083.0
+   ],
+   "decor_radius": 70,
+   "actors": [
+    {
+     "id": "gerda",
+     "mob": "res:740171270",
+     "position": [
+      12896.43,
+      13083.0,
+      67.21
+     ],
+     "ground": true,
+     "face": [
+      12880.0,
+      13078.0
+     ]
+    }
+   ],
+   "staging_note": "Герда res:740171270 : sa SpawnLocation (+0,3 m, reposée sur le sol) ; cap : vers l'ouest-sud-ouest, face au point de vue (choix).",
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
    }
   }
  ]
