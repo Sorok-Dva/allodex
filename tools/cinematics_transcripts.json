@@ -278,6 +278,36 @@
    "rejected": [],
    "reviewed": true,
    "note": "Narrateur seul, sur la musique ; medium très sûr (confiance 0,83 à 0,91), recoupé par wav2vec2 (jonatasgrosman/wav2vec2-large-xlsr-53-russian, sans modèle de langue) : mêmes mots. Corrections : « забыв старого вражду » (entendu ainsi par les deux modèles) écrit « старую вражду » ; ponctuation, ё, « Ковчег » en capitale (le vaisseau des survivants). Noms officiels du client 17.0 (EN) et 16.0 (FR) : Вышеград = Hightown / Hauteville (« Red Hightown wine », « Vin rouge de Hauteville ») ; « на краю мира » = Horizon, comme dans la prophétie de la Ligue (« find a new home in Horizon », « nouvelle maison à Horizon ») ; Ковчег = the Ark / l'Arche ; эра Аллодов = the Allods Era / l'Ère des allods ; астрал = the Astral / l'Astral ; отступник = renegade / renégat."
+  },
+  "raid72-boss-death": {
+   "audio": "raid72-boss-death",
+   "model": "faster-whisper medium, int8, sans VAD (voix sous la musique, écartées par le filtre)",
+   "rejected": [],
+   "reviewed": true,
+   "note": "Deux répliques russes sous la musique, déclarées à tort « sans voix » ; aucun sous-titre officiel dans le client (textes 17.0 et 16.0 FR parcourus). La première est une incantation, gardée telle quelle (translittérée), sans traduction ; le reste de la bande (12-61 s) n'est que musique et effets (Whisper y hallucine « ДИНАМИЧНАЯ МУЗЫКА », « Редактор субтитров… »). « прав » (confiance 0,17) lu « прах », seule lecture qui ait du sens avec « Скорее в портал ».",
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 3.9,
+     "ru": "Интермундос эпортос авериат!",
+     "en": "Intermundos eportos averiat!",
+     "fr": "Intermundos eportos averiat !",
+     "whisper": "Интер-мунда-сэ-порта-сэ-вэ-ри-а-т!",
+     "confidence": 0.57,
+     "word_min": 0.3,
+     "doubtful": true
+    },
+    {
+     "start": 7.36,
+     "end": 11.5,
+     "ru": "Сейчас здесь всё превратится в прах! Скорее в портал!",
+     "en": "Everything here is about to turn to dust! Quick, into the portal!",
+     "fr": "Tout ici va tomber en poussière ! Vite, dans le portail !",
+     "whisper": "Сейчас здесь все превратится в прав! Скорее в портал!",
+     "confidence": 0.57,
+     "word_min": 0.17
+    }
+   ]
   }
  }
 }
