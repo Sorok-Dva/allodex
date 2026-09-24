@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { sprite } from '@/lib/assets';
 import { nineSlice } from '@/lib/nineSlice';
 import s from './GameDropdown.module.css';
@@ -32,6 +32,9 @@ export function GameDropdown<T extends string>({ value, options, onChange, width
   const [open, setOpen] = useState(false);
   /** Option désignée au clavier ; `null` tant qu'on n'a pas navigué (ouverture à la souris). */
   const [active, setActive] = useState<number | null>(null);
+  /** Placement de la liste ouverte : sous le champ (comme le jeu) ou au-dessus quand la place manque en bas. */
+  const [place, setPlace] = useState<{ up: boolean; max: number | undefined }>({ up: false, max: undefined });
+  const listRef = useRef<HTMLUListElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listId = useId();
@@ -52,6 +55,20 @@ export function GameDropdown<T extends string>({ value, options, onChange, width
     if (option) onChange(option.value);
     close();
   };
+
+  // Une liste qui déborderait de l'écran vers le bas (barre de lecture en bas de page) s'ouvre vers
+  // le haut ; si aucun côté ne suffit, elle prend le plus grand et défile.
+  useLayoutEffect(() => {
+    if (!open) { setPlace({ up: false, max: undefined }); return; }
+    const root = rootRef.current, list = listRef.current;
+    if (!root || !list) return;
+    const r = root.getBoundingClientRect();
+    const need = list.scrollHeight + 2;
+    const below = window.innerHeight - r.bottom - 8, above = r.top - 8;
+    const up = need > below && above > below;
+    const room = up ? above : below;
+    setPlace({ up, max: need > room ? Math.max(60, room) : undefined });
+  }, [open, options.length]);
 
   useEffect(() => {
     if (!open) return;
@@ -113,7 +130,8 @@ export function GameDropdown<T extends string>({ value, options, onChange, width
         onClick={toggle}
       />
       {open && (
-        <ul id={listId} className={s.list} role="listbox" style={nineSlice('dropdown-frame', [4, 4, 4, 4])}>
+        <ul id={listId} ref={listRef} className={`${s.list} ${place.up ? s.listUp : ''}`} role="listbox"
+          style={{ ...nineSlice('dropdown-frame', [4, 4, 4, 4]), ...(place.max !== undefined ? { maxHeight: place.max, overflowY: 'auto' } : {}) }}>
           {options.map((o, i) => (
             <li key={o.value} role="presentation">
               <button
