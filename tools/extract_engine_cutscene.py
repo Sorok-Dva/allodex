@@ -387,7 +387,8 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
     """Sol des scènes (`terrain.glb` de la carte) : sous-carreaux de 8 m du `terrainDump` des
     régions (niveau de détail fin), ceux dont le centre tombe dans une zone de scène (+ 16 m). Chaque
     sommet porte les calques de ses deux passes au plus (`_LAYERS0/1`, indices dans la liste des
-    calques de la carte, `extras.terrainLayers` : texture et taille de répétition) et leurs poids lus
+    calques de la carte, `extras.terrainLayers` : texture ; la répétition, commune, est celle du
+    shader du terrain, `LAYER_REPEAT`) et leurs poids lus
     dans le `SplatMap_N` de leur jeu (`_WEIGHTS0/1`) ; le lecteur les mélange. La lumière cuite des
     `lightmap` des régions est rangée dans un atlas (`lightmap_out`, `extras.terrainLightmap`), lue
     par `_LIGHTUV`. Rend aussi les triangles du sol, pour poser les acteurs."""
@@ -396,7 +397,6 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
     from tools.allods_terrain_extras import ExtrasBuilder
     extras = ExtrasBuilder(mp, cat, textures, lambda name, size: textures.uri(name, size, "textures/"))
     palette: dict[str, int] = {}
-    tilings: list[float] = []
     pos, nor, lay0, wei0, lay1, wei1, idx, solids, lmuv = [], [], [], [], [], [], [], [], []
     lightmaps = LightmapAtlas(textures)
     base = count = 0
@@ -419,11 +419,10 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
                           light_slot=lambda: lightmaps.slot(path, 0))
 
         def slot(layer_id: int) -> int:
-            name, tiling = layers[layer_id] if layer_id < len(layers) else (None, 30.0)
+            name = layers[layer_id] if layer_id < len(layers) else None
             key = name or ""
             if key not in palette:
                 palette[key] = len(palette)
-                tilings.append(float(tiling))
             return palette[key]
         for patch in patches:
             cx, cy = ox + 8 * patch.sx + 4, oy + 8 * patch.sy + 4
@@ -466,7 +465,7 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
         else:
             lightmap_out.unlink(missing_ok=True)
     layer_meta = [{"texture": textures.uri(name, DECOR_TEXTURE_MAX, "textures/") if name else None,
-                   "tiling": round(tilings[k], 3), "name": Path(name).name if name else None} for k, name in enumerate(names)]
+                   "name": Path(name).name if name else None} for name in names]
     acc = lambda a, kind="VEC3": ex.gltf.add_accessor(np.concatenate(a), kind, "f32", target=34962)  # noqa: E731
     primitive = {"attributes": {"POSITION": ex.gltf.add_accessor(np.concatenate(pos), "VEC3", "f32", target=34962, minmax=True),
                                 "NORMAL": acc(nor), "_LAYERS0": acc(lay0), "_WEIGHTS0": acc(wei0),

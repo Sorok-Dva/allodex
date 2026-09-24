@@ -2,7 +2,7 @@ import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } fro
 import { fatalitiesIndex, fatalityFile, sprite, type FatalityCharacter, type FatalityEntry } from '@/lib/assets';
 import { navigate, useRoute } from '@/lib/router';
 import { useGameAudio } from '@/lib/audio/useGameAudio';
-import { pick, useI18n } from '@/lib/i18n';
+import { pick, useI18n, type I18n } from '@/lib/i18n';
 import type { Lang } from '@/lib/i18n/messages';
 import { hasWebGL } from '@/lib/webgl';
 import { nineSlice } from '@/lib/nineSlice';
@@ -50,6 +50,18 @@ export function fatalityListName(f: FatalityEntry, lang: Lang): { text: string; 
 export function gameDate(iso: string): string {
   const [y, m, d] = iso.split('-');
   return d && m && y ? `${d}.${m}.${y}` : iso;
+}
+
+/**
+ * Deuxième ligne de l'infobulle de la liste (verte, comme la date des infobulles du jeu) :
+ * version d'apparition et date de l'actualité officielle quand elle est connue.
+ */
+export function sinceLine(fatality: FatalityEntry, t: I18n['t']): string | undefined {
+  const since = fatality.since;
+  if (!since) return undefined;
+  const date = since.date;
+  if (!date) return t('fatalities.tipSinceOnly', { version: since.version });
+  return t(date.kind === 'attested' ? 'fatalities.tipSinceAttested' : 'fatalities.tipSince', { version: since.version, date: gameDate(date.value) });
 }
 
 /** Racine des fichiers de la création de personnage (modèles habillés, `chargen.json`). */
@@ -379,7 +391,7 @@ export function FatalitiesScreen() {
       {index && fatality && <FatalityInfo fatality={fatality} lang={lang} />}
       {hovered && hover && (
         <GameTooltip anchor={hover.anchor} align="cursor" title={fatalityListName(hovered, lang).text}
-          hint={pick(hovered.name, lang) ?? hovered.name?.ru} />
+          date={sinceLine(hovered, t)} hint={pick(hovered.name, lang) ?? hovered.name?.ru} />
       )}
 
       {index && character && fatality && (

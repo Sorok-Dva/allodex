@@ -182,11 +182,15 @@
 
 .language { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); }
 .speaker { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); }
+/* Serveur Discord : médaillon de la taille du bouton son, juste à sa gauche. */
+.discord { position: absolute; right: 56px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; display: block; }
+.discord img { width: 100%; height: 100%; display: block; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.8)); transition: filter 100ms ease-out; }
+.discord:hover img, .discord:focus-visible img { filter: drop-shadow(0 0 4px rgba(255, 233, 168, 0.7)) brightness(1.12); }
 .credits { display: flex; flex-direction: column; gap: 4px; text-align: center; padding: 0 100px; }
 .credits a { text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 640px) {
   .bottomLine { height: 112px; font-size: 12px; }
-  .credits { padding: 0 56px 0 100px; line-height: 17px; }
+  .credits { padding: 0 96px 0 100px; line-height: 17px; }
   .actionBar { bottom: 157px; right: 16px; }
   .replay { bottom: 125px; left: 16px; }
 }

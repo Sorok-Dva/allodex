@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, fireEvent, act } from '@testing-library/react';
 import type { FatalitiesIndex } from '@/lib/assets';
-import { FatalitiesScreen, defaultAttacker, fatalityListName, gameDate, victimSummary } from './FatalitiesScreen';
+import { FatalitiesScreen, defaultAttacker, fatalityListName, gameDate, sinceLine, victimSummary } from './FatalitiesScreen';
 
 const step = (anim: string, end: number, speed = 1) => ({ t: 0, end, anim, speed, mode: 'CLAMP' });
 const timeline = (anim: string, end: number, speed = 1) => ({ end, victim: [step(anim, end, speed)], scale: [], alpha: [], spawns: [], attached: [] });
@@ -74,6 +74,17 @@ describe('fatalityListName', () => {
 
   it('écrit les dates au format du jeu', () => {
     expect(gameDate('2023-08-18')).toBe('18.08.2023');
+  });
+});
+
+describe('sinceLine', () => {
+  const t = ((key: string, vars?: Record<string, string>) => `${key}|${vars?.version}|${vars?.date ?? ''}`) as never;
+  it('donne la version, puis la date officielle quand elle est connue', () => {
+    const base = { id: 'x', type: 1, kind: 'shop', label: {} } as never as Parameters<typeof sinceLine>[0];
+    expect(sinceLine(base, t)).toBeUndefined();
+    expect(sinceLine({ ...base, since: { version: '17.0' } }, t)).toBe('fatalities.tipSinceOnly|17.0|');
+    expect(sinceLine({ ...base, since: { version: '15.0', date: { value: '2025-08-01', kind: 'announced' } } } as never, t)).toBe('fatalities.tipSince|15.0|01.08.2025');
+    expect(sinceLine({ ...base, since: { version: '15.0', date: { value: '2024-02-24', kind: 'attested' } } } as never, t)).toBe('fatalities.tipSinceAttested|15.0|24.02.2024');
   });
 });
 

@@ -537,7 +537,11 @@ c'est le serveur qui enchaîne les buffs.
   8 m — sommets de 4 octets (normale, indice dans la grille 9 × 9), puis une hauteur `f32` par
   sommet, triangles `u8`, jeux de trois calques ; hauteurs identiques **au centimètre** à la carte
   de hauteurs de l'arbre serveur 7.0 (`terrain.bin`, carreaux 8 × 8 sur 33 × 33). Plusieurs couches
-  superposées par région (`FerrisRaid`). Calques : `TerraLayers` (texture, répétition en mètres) ;
+  superposées par région (`FerrisRaid`). Calques : `TerraLayers` (texture) ; toute texture de
+  calque se répète tous les **8 m** : le vertex shader du terrain du client
+  (`Material/terrain-dx11.bin`) écrit `TEXCOORD0 = −position · 0,125`, sans facteur par calque ; le
+  flottant `+0x10` des calques (30, 40), lu autrefois comme une répétition en mètres, est
+  l'exposant spéculaire `DirectionalExponent` (recoupé champ à champ avec le `layers.xdb` 7.0) ;
   poids des calques lus dans les `SplatMap` (voir « Sol mélangé ») ;
 - décor opaque rendu **d'une seule face**, comme le jeu : l'ouverture de `ferris-locus-fall`, caméra
   sous la plateforme du Locus, montre alors le Cœur au-dessus ; les cristaux du portail
