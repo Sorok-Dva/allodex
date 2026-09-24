@@ -12,10 +12,77 @@
    0.019,
    0.272
   ],
-  "light": [
-   1.1035,
-   1.2129,
-   1.1894
+  "ambient": [
+   0.6094,
+   0.7188,
+   0.6953
+  ],
+  "pointColor": [
+   1.0,
+   0.6328,
+   0.6016
+  ],
+  "pointLights": [
+   {
+    "p": [
+     -2.024,
+     4.545,
+     4.532
+    ],
+    "intensity": 2.0,
+    "radius": 4.518,
+    "attenuation": 2.0
+   },
+   {
+    "p": [
+     5.206,
+     -7.249,
+     12.524
+    ],
+    "intensity": 2.0,
+    "radius": 23.37,
+    "attenuation": 2.0
+   },
+   {
+    "p": [
+     7.137,
+     -1.148,
+     1.338
+    ],
+    "intensity": 2.0,
+    "radius": 7.87,
+    "attenuation": 2.0
+   },
+   {
+    "p": [
+     -2.85,
+     -5.814,
+     0.736
+    ],
+    "intensity": 2.0,
+    "radius": 8.731,
+    "attenuation": 2.0
+   },
+   {
+    "p": [
+     8.039,
+     0.104,
+     4.733
+    ],
+    "intensity": 2.0,
+    "radius": 10.471,
+    "attenuation": 2.0
+   },
+   {
+    "p": [
+     -4.213,
+     -6.199,
+     3.156
+    ],
+    "intensity": 2.0,
+    "radius": 8.109,
+    "attenuation": 2.0
+   }
   ]
  },
  "camera": {
@@ -95,7 +162,7 @@
    "parts": 1
   },
   "skyGlb": "scenes/Praiden-sky.glb",
-  "terrainGlb": null
+  "terrainGlb": "maps/MainMenu/terrain.glb"
  },
  "objects": {
   "Chargen_Net": {
@@ -3278,8 +3345,8 @@
   "fog": 4279977065,
   "fogEnd": 500.0,
   "fogStart": 0.0,
-  "pointLight": 4294967295,
-  "selfIllum": 4286599501,
+  "pointLight": 4286599501,
+  "selfIllum": 4279568896,
   "specular": 0,
   "sunPitch": 45.0,
   "sunYaw": 250.0,

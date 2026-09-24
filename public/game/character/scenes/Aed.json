@@ -12,11 +12,17 @@
    0.0,
    0.28
   ],
-  "light": [
+  "ambient": [
    0.2734,
    0.5312,
    0.7578
-  ]
+  ],
+  "pointColor": [
+   0.5469,
+   0.2344,
+   0.0
+  ],
+  "pointLights": []
  },
  "camera": {
   "position": [
@@ -66,7 +72,7 @@
    "parts": 4
   },
   "skyGlb": "scenes/Aed-sky.glb",
-  "terrainGlb": null
+  "terrainGlb": "maps/MainMenu/terrain.glb"
  },
  "objects": {
   "Chargen_Net": {
@@ -3249,8 +3255,8 @@
   "fog": 4282939046,
   "fogEnd": 300.0,
   "fogStart": 10.0,
-  "pointLight": 4289040963,
-  "selfIllum": 4282785280,
+  "pointLight": 4282785280,
+  "selfIllum": 2014252982,
   "specular": 4280161035,
   "sunPitch": 30.0,
   "sunYaw": 100.0,

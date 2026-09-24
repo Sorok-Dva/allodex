@@ -12,10 +12,67 @@
    -0.175,
    0.367
   ],
-  "light": [
-   0.6906,
-   0.8469,
-   1.1672
+  "ambient": [
+   0.5078,
+   0.6641,
+   0.9844
+  ],
+  "pointColor": [
+   1.1484,
+   0.8047,
+   0.0
+  ],
+  "pointLights": [
+   {
+    "p": [
+     3.146,
+     -1.058,
+     3.925
+    ],
+    "intensity": 1.0,
+    "radius": 9.046,
+    "attenuation": 4.0
+   },
+   {
+    "p": [
+     10.033,
+     11.705,
+     4.792
+    ],
+    "intensity": 1.0,
+    "radius": 15.0,
+    "attenuation": 4.0
+   },
+   {
+    "p": [
+     6.717,
+     13.921,
+     4.792
+    ],
+    "intensity": 1.0,
+    "radius": 15.0,
+    "attenuation": 4.0
+   },
+   {
+    "p": [
+     11.563,
+     9.52,
+     -0.305
+    ],
+    "intensity": 1.0,
+    "radius": 15.0,
+    "attenuation": 4.0
+   },
+   {
+    "p": [
+     -2.702,
+     -1.611,
+     3.925
+    ],
+    "intensity": 1.0,
+    "radius": 9.046,
+    "attenuation": 4.0
+   }
   ]
  },
  "camera": {
@@ -62,7 +119,7 @@
    "parts": 6
   },
   "skyGlb": "scenes/Orc-sky.glb",
-  "terrainGlb": null
+  "terrainGlb": "maps/MainMenu/terrain.glb"
  },
  "objects": {
   "Chargen_Net": {
@@ -3245,8 +3302,8 @@
   "fog": 4283578668,
   "fogEnd": 250.0,
   "fogStart": -10.0,
-  "pointLight": 4294967295,
-  "selfIllum": 4287850240,
+  "pointLight": 4287850240,
+  "selfIllum": 2017861120,
   "specular": 0,
   "sunPitch": 45.0,
   "sunYaw": 25.0,

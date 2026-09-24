@@ -12,10 +12,37 @@
    0.61,
    0.195
   ],
-  "light": [
-   2.4609,
-   2.5703,
-   2.6094
+  "ambient": [
+   0.4688,
+   0.5781,
+   0.6172
+  ],
+  "pointColor": [
+   0.7578,
+   0.6484,
+   0.3203
+  ],
+  "pointLights": [
+   {
+    "p": [
+     1.327,
+     2.372,
+     2.104
+    ],
+    "intensity": 2.0,
+    "radius": 15.0,
+    "attenuation": 2.0
+   },
+   {
+    "p": [
+     -1.294,
+     2.299,
+     2.104
+    ],
+    "intensity": 2.0,
+    "radius": 15.0,
+    "attenuation": 2.0
+   }
   ]
  },
  "camera": {
@@ -52,7 +79,7 @@
    "parts": 1
   },
   "skyGlb": "scenes/Gibberling-sky.glb",
-  "terrainGlb": null
+  "terrainGlb": "maps/MainMenu/terrain.glb"
  },
  "objects": {
   "Chargen_Net": {
@@ -3235,8 +3262,8 @@
   "fog": 4087921,
   "fogEnd": 300.0,
   "fogStart": 0.0,
-  "pointLight": 4294967295,
-  "selfIllum": 4284568361,
+  "pointLight": 4284568361,
+  "selfIllum": 2019925978,
   "specular": 13224075,
   "sunPitch": 15.0,
   "sunYaw": 225.0,
