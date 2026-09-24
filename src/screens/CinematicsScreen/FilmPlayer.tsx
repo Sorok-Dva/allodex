@@ -16,6 +16,8 @@ type Props = {
   arcs: Record<string, CinematicArc>;
   faction: Faction;
   initialLang: SubtitleLang | null;
+  /** Chapitre ouvert au départ (`?chapter=<id>`), sinon le premier. */
+  initialChapter?: string | null;
   onBack: () => void;
   onClose: () => void;
 };
@@ -51,7 +53,7 @@ const fullscreenElement = () => document.fullscreenElement ?? (document as Webki
  * Un voile noir fond chaque fin de chapitre et chaque début, et reste posé tant que le lecteur
  * montré n'est pas prêt (scène moteur en préparation) : le chargement ne se voit pas.
  */
-export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }: Props) {
+export function FilmPlayer({ film, arcs, faction, initialLang, initialChapter, onBack, onClose }: Props) {
   const { t, lang } = useI18n();
   const chapters = useMemo(() => chaptersOf(film), [film]);
   const total = useMemo(() => filmDuration(film), [film]);
@@ -59,7 +61,10 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
   const format = useMemo(preferredFormat, []);
 
   // slots[k] = index du chapitre chargé dans le lecteur k ; `active` = lecteur visible.
-  const [slots, setSlots] = useState<[number | null, number | null]>([0, nextIndex(film, 0)]);
+  const [slots, setSlots] = useState<[number | null, number | null]>(() => {
+    const start = Math.max(0, initialChapter ? film.findIndex(c => c.id === initialChapter) : 0);
+    return [start, nextIndex(film, start)];
+  });
   const [active, setActive] = useState<0 | 1>(0);
   const [time, setTime] = useState(0);
   const [paused, setPaused] = useState(false);
