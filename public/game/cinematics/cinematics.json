@@ -654,7 +654,7 @@
      "lang": "en",
      "label": "English",
      "src": "engine/ferris-order/en.vtt",
-     "lines": 4
+     "lines": 5
     },
     {
      "lang": "ru",
@@ -700,7 +700,7 @@
      "lang": "fr",
      "label": "Français",
      "src": "engine/ferris-locus/fr.vtt",
-     "lines": 7
+     "lines": 13
     },
     {
      "lang": "en",
@@ -758,7 +758,7 @@
      "lang": "en",
      "label": "English",
      "src": "engine/ferris-locus-fall/en.vtt",
-     "lines": 14
+     "lines": 16
     },
     {
      "lang": "ru",
