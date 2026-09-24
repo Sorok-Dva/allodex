@@ -1765,7 +1765,26 @@
    "engine": {
     "scene": "engine/isa-unn-trance/scene.json"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-unn-trance/fr.vtt",
+     "lines": 12
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-unn-trance/en.vtt",
+     "lines": 12
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-unn-trance/ru.vtt",
+     "lines": 12
+    }
+   ],
    "subtitles": {
     "status": "official",
     "lines": 12,
@@ -1798,7 +1817,26 @@
    "engine": {
     "scene": "engine/isa-arrival/scene.json"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-arrival/fr.vtt",
+     "lines": 7
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-arrival/en.vtt",
+     "lines": 7
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-arrival/ru.vtt",
+     "lines": 7
+    }
+   ],
    "subtitles": {
     "status": "official",
     "lines": 7,
@@ -1836,25 +1874,77 @@
      "lang": "fr",
      "label": "Français",
      "src": "engine/isa-fighting-pit/fr.vtt",
-     "lines": 1
+     "lines": 6
     },
     {
      "lang": "en",
      "label": "English",
      "src": "engine/isa-fighting-pit/en.vtt",
-     "lines": 1
+     "lines": 6
     },
     {
      "lang": "ru",
      "label": "Русский",
      "src": "engine/isa-fighting-pit/ru.vtt",
-     "lines": 1
+     "lines": 6
     }
    ],
    "subtitles": {
     "status": "official",
     "lines": 6,
     "timing": "estimated",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-weavers-saga",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1230,
+   "event": "Isa_Town_3_Que",
+   "title": {
+    "fr": "La saga des tapisseries",
+    "en": "The saga of the tapestries"
+   },
+   "chronology": "Isa (14.0), série de la ville (Isa_Town_*), Skalgard : après la fosse, Бродди mène les héros aux Держащие Нить, qui leur récitent la saga d'Isa devant la toile du destin (quête « Узнать историю проклятия ») ; avant les pêcheurs — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "bonus": false,
+   "duration": 125.242,
+   "files": {
+    "poster": "engine/isa-weavers-saga/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/isa-weavers-saga/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-weavers-saga/fr.vtt",
+     "lines": 14
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-weavers-saga/en.vtt",
+     "lines": 14
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-weavers-saga/ru.vtt",
+     "lines": 14
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 14,
+    "timing": "measured",
     "audio": {
      "language": "ru"
     }
@@ -1987,11 +2077,134 @@
    "engine": {
     "scene": "engine/isa-captain-journal/scene.json"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-captain-journal/fr.vtt",
+     "lines": 12
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-captain-journal/en.vtt",
+     "lines": 12
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-captain-journal/ru.vtt",
+     "lines": 12
+    }
+   ],
    "subtitles": {
     "status": "official",
     "lines": 12,
     "timing": "estimated",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-feast",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1280,
+   "event": "Isa_Destiny_2_StartScene",
+   "title": {
+    "fr": "Le festin de Skalgard",
+    "en": "The feast of Skalgard"
+   },
+   "chronology": "Isa (14.0), série du destin (Isa_Destiny_*), Skalgard : Kharyskhan chassé, les clans festoient ; juste avant l'attaque des urun (Isa_Destiny_3) — après le journal du capitaine, ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "bonus": false,
+   "duration": 30.94,
+   "files": {
+    "poster": "engine/isa-feast/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/isa-feast/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-feast/fr.vtt",
+     "lines": 7
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-feast/en.vtt",
+     "lines": 7
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-feast/ru.vtt",
+     "lines": 7
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 8,
+    "timing": "measured",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-gerda-threshold",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1282,
+   "event": "Isa_Destiny_Gerda",
+   "title": {
+    "fr": "Gerda sur le seuil",
+    "en": "Gerda on the threshold"
+   },
+   "chronology": "Isa (14.0), série du destin (Isa_Destiny_*), Skalgard : le soir du festin, seul avec Герда sur le seuil ; la nuit tombe avant l'attaque des urun (Isa_Destiny_3) — après le festin, ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "bonus": false,
+   "duration": 143.6,
+   "files": {
+    "poster": "engine/isa-gerda-threshold/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/isa-gerda-threshold/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-gerda-threshold/fr.vtt",
+     "lines": 18
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-gerda-threshold/en.vtt",
+     "lines": 18
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-gerda-threshold/ru.vtt",
+     "lines": 18
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 18,
+    "timing": "reading",
     "audio": {
      "language": "ru"
     }

@@ -2346,7 +2346,7 @@
       "voice": "ru",
       "subtitles": "official",
       "trigger": "Isa_Prologue_4_UnnTrance",
-      "source": "Scène moteur recréée (engine_scenes « isa-unn-trance » du manifeste) : voix Isa_Prologue_4_UnnTranceSay_01…08, _UnnTranceGotHelpSay_01…03, Isa_Prologue_Unn_TranceEnd ; textes officiels (bulles) ; places : SpawnLocation d'Унн et de Рататоск ; vue du joueur (choix).",
+      "source": "Scène moteur recréée (engine_scenes « isa-unn-trance » du manifeste) : voix Isa_Prologue_4_UnnTranceSay_01…08, _UnnTranceGotHelpSay_01…03, Isa_Prologue_Unn_TranceEnd ; textes officiels (bulles) ; places : SpawnLocation d'Унн et de Рататоск ; petit travelling de mise en scène (choix).",
       "note": "Chronologie : Isa (14.0), prologue sur Olm (Isa_Prologue_*) : la transe d'Unn éveille Ratatosk, qui mènera les héros vers Isa ; ouvre l'arc d'Isa, avant l'arrivée — ordre du plan du film. Recréée en 3D, voir engine_scenes."
     },
     {
@@ -2365,7 +2365,7 @@
       "voice": "ru",
       "subtitles": "official",
       "trigger": "Isa_Arrival",
-      "source": "Scène moteur recréée (engine_scenes « isa-arrival » du manifeste) : voix Isa_Arrival_1_* et Isa_Arrival_{Trand,Mrak,Unn} ; buff de caméra res:740170126 ; textes officiels ; places : SpawnLocation des MobWorld.",
+      "source": "Scène moteur recréée (engine_scenes « isa-arrival » du manifeste) : voix Isa_Arrival_1_* et Isa_Arrival_{Trand,Mrak,Unn} ; petit travelling de mise en scène (choix) puis buff de caméra res:740170126 ; textes officiels ; places : SpawnLocation des MobWorld.",
       "note": "Chronologie : Isa (14.0), série de l'arrivée (Isa_Arrival_*) : les héros débarquent sur Isa gelée et trouvent Mrak près d'un bloc de glace ; après le prologue d'Olm (Isa_Prologue_*), avant la ville (Isa_Town_*) — ordre du plan du film. Recréée en 3D, voir engine_scenes. Recréé : isa-arrival (arrivée, Mrak et le bloc de glace). Reste : cris des urun (Isa_Arrival_2_*), la ballade de Gerda (Isa_Arrival_4_Gerda), le feu (Isa_Arrival_5_*), le gros plan du bloc de glace (buff de caméra res:740173453, 7 s) avec « Наконец-то свобода! »."
     },
     {
@@ -2387,7 +2387,7 @@
       "subtitles": "partial",
       "trigger": "quêtes Isa_Town_* (d’après les noms)",
       "source": "Voix 17.0 Cutscenes/Isa/Isa_Town_* : 23 événements, 162.2 s de voix (projet VoiceDialogsCutScenes).",
-      "note": "Recréé : la fosse aux combats (isa-fighting-pit). Reste : la saga d'Isa récitée aux Держащие Нить (Isa_Town_3_Que_01…07, 117 s, vers officiels), le clan des bagarreurs (Isa_Town_BullyClan_*), Isa_Town_6b. Durée = somme des voix de la série (répliques isolées comprises) : à trier avant recréation."
+      "note": "Recréé : la fosse aux combats (isa-fighting-pit), la saga des tapisseries (isa-weavers-saga). Reste : le clan des bagarreurs (Isa_Town_BullyClan_*), Isa_Town_6b. Durée = somme des voix de la série (répliques isolées comprises) : à trier avant recréation."
     },
     {
       "status": "film",
@@ -2405,8 +2405,27 @@
       "voice": "ru",
       "subtitles": "official",
       "trigger": "Isa_Town_ElderBullyClan",
-      "source": "Scène moteur recréée (engine_scenes « isa-fighting-pit » du manifeste) : voix Isa_Town_1_Replica*, Isa_Town_ElderBullyClan (sous-titre officiel) ; buff de caméra res:740170162 ; places : SpawnLocation.",
+      "source": "Scène moteur recréée (engine_scenes « isa-fighting-pit » du manifeste) : voix Isa_Town_1_Replica*, Isa_Town_ElderBullyClan (sous-titre officiel) ; petit travelling de mise en scène (choix) puis buff de caméra res:740170162 ; places : SpawnLocation.",
       "note": "Chronologie : Isa (14.0), série de la ville (Isa_Town_*), Skalgard : Mrak jeté dans la fosse (« Спасти Мрака из бойцовой ямы ») ; après l'arrivée, avant la forêt — ordre du plan du film. Recréée en 3D, voir engine_scenes."
+    },
+    {
+      "status": "film",
+      "priority": "none",
+      "siteChapter": "isa-weavers-saga",
+      "id": "isa-weavers-saga",
+      "title": "La saga des tapisseries",
+      "chapter": "isa",
+      "faction": "common",
+      "zone": "Isa",
+      "version": "14.0",
+      "kind": "engine",
+      "duration": 125.2,
+      "importance": "epic",
+      "voice": "ru",
+      "subtitles": "official",
+      "trigger": "Isa_Town_3_Que",
+      "source": "Scène moteur recréée (engine_scenes « isa-weavers-saga » du manifeste) : voix Isa_Town_3_Que_01_01…07_02 et leurs bulles (textes officiels, 14 quatrains) ; buff de caméra res:740170307 (la toile, rattachement approché) puis petit travelling de mise en scène (choix) ; toile : stèle res:740171939 ; places : SpawnLocation (Семейка Шерстинок, trio).",
+      "note": "Chronologie : Isa (14.0), série de la ville (Isa_Town_*), Skalgard : Бродди mène les héros aux Держащие Нить (quête « Узнать историю проклятия »), qui récitent la saga d'Isa devant la toile du destin ; après la fosse, avant les pêcheurs. Recréée en 3D, voir engine_scenes."
     },
     {
       "status": "todo",
@@ -2548,7 +2567,7 @@
       "voice": "ru",
       "subtitles": "official",
       "trigger": "Isa_Ship_7_FinalScene",
-      "source": "Scène moteur recréée (engine_scenes « isa-freya » du manifeste) : épave AstralShipKaniaGroupBroken du décor d'Isa ; voix Isa_Ship_7_FinalScene_Subtitle_1/2 et deux sous-titres ; voile du buff res:740171413 ; vue du joueur (choix).",
+      "source": "Scène moteur recréée (engine_scenes « isa-freya » du manifeste) : épave AstralShipKaniaGroupBroken du décor d'Isa ; voix Isa_Ship_7_FinalScene_Subtitle_1/2 et deux sous-titres ; voile du buff res:740171413 ; petit travelling de mise en scène (choix).",
       "note": "Chronologie : Isa (14.0), série du navire (Isa_Ship_*) : Hauk et Trand trouvent la Freya, le navire de leur arrière-grand-père, le capitaine Koll ; avant le journal du capitaine — ordre du plan du film. Recréée en 3D, voir engine_scenes. Première version (buff de caméra res:740171462, 19 s, regard vers le ciel du plateau de Skalgard) écartée : l'épave de la Freya est dans le décor, à 1 km de là."
     },
     {
@@ -2567,8 +2586,46 @@
       "voice": "ru",
       "subtitles": "official",
       "trigger": "Isa_Ship_8b_CapitanDiary",
-      "source": "Scène moteur recréée (engine_scenes « isa-captain-journal » du manifeste) : voix Isa_Ship_8b_CapitanDiary_AssistantSay_*, Isa_Ship_8b_FinalScene_Say_* ; textes officiels ; page du journal (stèle res:740171431) ; vue du joueur (choix).",
+      "source": "Scène moteur recréée (engine_scenes « isa-captain-journal » du manifeste) : voix Isa_Ship_8b_CapitanDiary_AssistantSay_*, Isa_Ship_8b_FinalScene_Say_* ; textes officiels ; page du journal (stèle res:740171431) ; petit travelling de mise en scène (choix).",
       "note": "Chronologie : Isa (14.0), série du navire (Isa_Ship_*) : les pages du journal de Koll révèlent le pacte avec les orcs et l'esprit du Crâne ; après la découverte de la Freya. Recréée en 3D, voir engine_scenes."
+    },
+    {
+      "status": "film",
+      "priority": "none",
+      "siteChapter": "isa-feast",
+      "id": "isa-feast",
+      "title": "Le festin de Skalgard",
+      "chapter": "isa",
+      "faction": "common",
+      "zone": "Isa",
+      "version": "14.0",
+      "kind": "engine",
+      "duration": 30.9,
+      "importance": "epic",
+      "voice": "ru",
+      "subtitles": "official",
+      "trigger": "Isa_Destiny_2_StartScene",
+      "source": "Scène moteur recréée (engine_scenes « isa-feast » du manifeste) : voix Isa_Destiny_2_StartScene_ElderBullyClan_Say_01 (cinq sous-titres officiels) et Gibberlings_Cheers_01…03 ; petit travelling de mise en scène (choix) ; places : SpawnLocation de la salle du festin (Бродди debout sur la table, les héros, quatre familles).",
+      "note": "Chronologie : Isa (14.0), série du destin (Isa_Destiny_*) : Kharyskhan chassé, les clans festoient — le repas avant l'attaque des urun (Isa_Destiny_3) ; après le journal du capitaine. Recréée en 3D, voir engine_scenes."
+    },
+    {
+      "status": "film",
+      "priority": "none",
+      "siteChapter": "isa-gerda-threshold",
+      "id": "isa-gerda-threshold",
+      "title": "Gerda sur le seuil",
+      "chapter": "isa",
+      "faction": "common",
+      "zone": "Isa",
+      "version": "14.0",
+      "kind": "engine",
+      "duration": 143.6,
+      "importance": "epic",
+      "voice": "none",
+      "subtitles": "official",
+      "trigger": "dialogue de Герда (Cue res:740172039…058)",
+      "source": "Scène moteur recréée (engine_scenes « isa-gerda-threshold » du manifeste) : dialogue de Герда (textes officiels des Cue, sans voix : temps de lecture), fin de sa saga ; buff res:740172059 (agenouillée, voile à 18 s) ; petit travelling de mise en scène (choix).",
+      "note": "Chronologie : Isa (14.0), série du destin : le soir du festin, seul avec Герда sur le seuil de la salle ; la nuit tombe avant l'attaque des urun. Dialogue sans voix (sous-titres : textes du dialogue). Recréée en 3D, voir engine_scenes."
     },
     {
       "status": "todo",
@@ -2589,7 +2646,7 @@
       "subtitles": "partial",
       "trigger": "quêtes Isa_Destiny_* (d’après les noms)",
       "source": "Voix 17.0 Cutscenes/Isa/Isa_Destiny_* : 19 événements, 146.5 s de voix (projet VoiceDialogsCutScenes).",
-      "note": "Durée = somme des voix de la série (répliques isolées comprises) : à trier avant recréation."
+      "note": "Recréé : le festin (isa-feast) et le moment avec Герда sur le seuil (isa-gerda-threshold). Reste : l'attaque des urun (Isa_Destiny_3 : deux alertes doublées, « К оружию! Урун на подходе! » ; le combat est joué par le serveur — vagues d'urun, défenseurs de Skalgard sans place dans le client ; le buff res:740172040, 36,5 s, n'a que des voiles et deux plans sans point : non monté), le discours de Kharyskhan (Isa_Destiny_4, Kharyskhan non posé), le combat contre son esprit (Isa_Destiny_5), la Toute-Mère et Unn (Isa_Destiny_6, Isa_Destiny). Durée = somme des voix de la série : à trier avant recréation."
     },
     {
       "status": "todo",
