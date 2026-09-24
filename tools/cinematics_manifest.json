@@ -23728,7 +23728,13 @@
    "trigger_tag": "startImpacts",
    "until_last": true,
    "map": "PridensStart",
-   "_note": "Début de la quête « Ах, синема, синема! » (Pride_1_9.startImpacts, 7.0) : buff Pride_1_9_Fade (15 s) — voile noir 3 s (Black_Long, arrêté par VisActionStopAction), puis travelling de caméra vers l'écran et musique Music/Ingame/Cinema ; à 1,5 s, Pride_Cinema_state2 pose le drapeau visuel que lit le cinéma hadagan (stèle Priden_Hadagan_Cinema du décor : « special » en boucle). La scène filmée commence au premier plan de caméra (3 s)."
+   "_note": "Début de la quête « Ах, синема, синема! » (Pride_1_9.startImpacts, 7.0) : buff Pride_1_9_Fade (15 s) — voile noir 3 s (Black_Long, arrêté par VisActionStopAction), puis travelling de caméra vers l'écran et musique Music/Ingame/Cinema ; à 1,5 s, Pride_Cinema_state2 pose le drapeau visuel que lit le cinéma hadagan (stèle Priden_Hadagan_Cinema du décor : « special » en boucle). La scène filmée commence au premier plan de caméra (3 s).",
+   "audio": {
+    "ambience": [
+     "Ambience/OutdoorAmbience/Zones/PridenStart/OlmEast"
+    ],
+    "_note": "La base de carte PridensStart porte toutes les musiques de la carte (six Sound2DTassel joués ensemble sinon) : on garde celles des cases de son de la région de la scène (7.0, 050_050/4_1_MapRegion.xdb : Amb_OlmEast, Amb_NoCrows, Amb_wind → Ambience/OutdoorAmbience/Zones/PridenStart/OlmEast ; musique : celle du déroulé (Music/Ingame/Cinema))."
+   }
   },
   {
    "id": "pride-performance",
@@ -23745,7 +23751,16 @@
      "count": 26,
      "_note": "Textes de Pride_1_11 : « Oh my love, I'd leave the world… » (247742) ↔ « Ô mon amour, je laisserai le monde derrière moi… » (235439), « Remember: theater is your second life » (247763) ↔ « N'oubliez pas que le théâtre est votre seconde vie » (235460) : écart constant de 12 303 sur le bloc."
     }
-   ]
+   ],
+   "audio": {
+    "ambience": [
+     "Ambience/OutdoorAmbience/Zones/PridenStart/OlmEast"
+    ],
+    "music": [
+     "Music/RacesMusic/Priden"
+    ],
+    "_note": "La base de carte PridensStart porte toutes les musiques de la carte (six Sound2DTassel joués ensemble sinon) : on garde celles des cases de son de la région de la scène (7.0, 050_040/3_9_MapRegion.xdb : Muz_OlmEast → Music/RacesMusic/Priden (seule musique), Amb_OlmEast, Amb_wind → …/PridenStart/OlmEast)."
+   }
   }
  ]
 }
