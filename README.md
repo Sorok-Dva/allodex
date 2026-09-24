@@ -2676,3 +2676,21 @@ Reprise des deux écrans pour qu'ils soient visuellement identiques au jeu, à p
   1. Copier `tools/capture_game.ps1` côté Windows (p. ex. dans `C:\Users\<vous>\allodex-captures\`), client `AOgame` ouvert sur l'écran voulu.
   2. Lancer depuis WSL : `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Users\<vous>\allodex-captures\capture_game.ps1" -Out "C:\Users\<vous>\allodex-captures\x.png"`, puis copier le PNG dans `refs/` du projet.
   3. Découper les sprites : `python3 tools/cut_sprites.py` (lit `tools/sprites_manifest.json`, écrit `public/game/sprites/*.png` et `public/game/sprites.json`).
+
+## Licence
+
+Le code, les outils et les textes d'Allodex sont publiés sous la **Licence Allodex 1.0** (fichier
+[`LICENSE`](LICENSE), en anglais et en français) :
+
+- **permis** : utiliser, modifier et partager le site, des bouts de code, les scripts Python et les
+  outils, y compris dans d'autres projets Allods Online (visionneuses WebGL, sites de fans,
+  outils), **à condition de créditer** « Basé sur Allodex par Sorok-Dva — https://allodex.eu » ;
+- **interdit** : vendre ou monétiser tout ou partie du contenu (accès payant, publicité, dons liés
+  au contenu repris…), et republier le site entier ou une part substantielle comme site de
+  substitution (miroir, clone, copie sous un autre nom), même gratuitement.
+
+Ce n'est pas une licence « open source » au sens de l'OSI (clauses non commerciale et anti-clone).
+Elle ne couvre **ni le contenu d'Allods Online** (marques, assets du client, même convertis par
+les outils du dépôt), qui reste la propriété de ses ayants droit (Astrum Entertainment,
+MY.GAMES / VK), **ni les composants et contenus de tiers** (dépendances, polices, atlas-ao, images
+de la communauté), qui gardent leurs propres licences et crédits.
