@@ -3238,18 +3238,10 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         sky_glb, sky = ctx["sky"][spec["id"]]
         objects = rebase_objects({**decor["objects"], **fx_objects}, prefix)
 
-        cue_lines = [Line(l["duration"], l["text"]) for l in plan["lines"]]
-        cues = build_cues(cue_lines, [l["start"] for l in plan["lines"]], camera["duration"])
-        tracks = []
-        for lang in LANGS:
-            vtt = to_vtt(cues, lang)
-            path = out / f"{lang}.vtt"
-            if vtt:
-                path.write_text(vtt, encoding="utf-8")
-                tracks.append({"lang": lang, "label": LANG_LABELS[lang], "src": f"engine/{spec['id']}/{lang}.vtt",
-                               "lines": sum(1 for c in cues if lang in c[2])})
-            elif path.exists():
-                path.unlink()
+        filled = fill_line_durations(plan["lines"], voice_meta, camera["duration"])
+        if filled:
+            report.append(f"{spec['id']} : {filled} réplique(s) sans durée : temps de la voix, sinon de lecture")
+        tracks = write_tracks(out, spec["id"], plan["lines"], camera["duration"])
 
         audio = map_sounds(mp)
         timed = plan["sounds"]
@@ -3324,6 +3316,72 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     return report
 
 
+# Réplique sans durée ni voix : temps de lecture de son texte, 15 caractères par seconde (règle
+# courante des sous-titres), au moins 1,5 s — choix documenté, le client ne donne rien.
+READING_CPS = 15.0
+READING_MIN = 1.5
+
+
+def fill_line_durations(lines: list[dict], voices: list[dict | None], total: float) -> int:
+    """Durée d'affichage des répliques qui n'en ont pas (texte d'une bulle ou d'un `ClientData` sans
+    sous-titre : `delay_ms` nul) : celle de leur voix, sinon le temps de lecture de leur texte (le plus
+    long des trois), bornée par le départ de la réplique suivante et la fin de la scène. Sans elle, la
+    réplique n'avait ni sous-titre ni piste (Isa). Renvoie le nombre de répliques complétées."""
+    filled = 0
+    for i, (line, voice) in enumerate(zip(lines, voices)):
+        texts = [t for t in (line.get("text") or {}).values() if t]
+        if (line.get("duration") or 0) > 0 or not texts or line.get("start") is None:
+            continue
+        length = voice["duration"] if voice and voice.get("duration") else \
+            max(READING_MIN, max(len(t) for t in texts) / READING_CPS)
+        end = line["start"] + length
+        later = [l["start"] for l in lines[i + 1:] if l.get("start") is not None and l["start"] > line["start"]]
+        if later:
+            end = min(end, later[0])
+        if total:
+            end = min(end, total)
+        line["duration"] = round(max(end - line["start"], 0.0), 3)
+        filled += 1
+    return filled
+
+
+def write_tracks(out: Path, scene_id: str, lines: list[dict], duration: float) -> list[dict]:
+    """Pistes WebVTT d'une scène (`<lang>.vtt`, retirées quand la langue manque) ; leurs entrées d'index."""
+    cues = build_cues([Line(l["duration"], l["text"]) for l in lines], [l["start"] for l in lines], duration)
+    tracks = []
+    for lang in LANGS:
+        vtt = to_vtt(cues, lang)
+        path = out / f"{lang}.vtt"
+        if vtt:
+            path.write_text(vtt, encoding="utf-8")
+            tracks.append({"lang": lang, "label": LANG_LABELS[lang], "src": f"engine/{scene_id}/{lang}.vtt",
+                           "lines": sum(1 for c in cues if lang in c[2])})
+        elif path.exists():
+            path.unlink()
+    return tracks
+
+
+def retrack(manifest: dict, out_root: Path, only: list[str]) -> list[str]:
+    """Pistes et index refaits depuis le `scene.json` déjà extrait (`--tracks-only`), sans réextraire :
+    seules les durées des répliques qui n'en avaient pas changent (`fill_line_durations`)."""
+    report, entries = [], []
+    for scene_id in only:
+        out = out_root / "engine" / scene_id
+        path = out / "scene.json"
+        scene = json.loads(path.read_text(encoding="utf-8"))
+        lines = scene["lines"]
+        filled = fill_line_durations(lines, [l.get("voice") for l in lines], scene["duration"])
+        if filled:
+            path.write_text(json.dumps(scene, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        tracks = write_tracks(out, scene_id, lines, scene["duration"])
+        entries.append({"spec": {"id": scene_id}, "duration": scene["duration"], "tracks": tracks,
+                        "lines": len(lines), "timing": scene.get("timing", "estimated")})
+        summary = ", ".join(f"{t['lang']} {t['lines']}" for t in tracks) or "aucune"
+        report.append(f"{scene_id} : {filled} réplique(s) complétée(s), pistes {summary}")
+    update_index(manifest, out_root, entries)
+    return report
+
+
 def prune_shared_actors(engine: Path) -> None:
     """Retire les modèles communs qu'aucune scène ne cite plus."""
     used = set()
@@ -3387,8 +3445,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--only", action="append")
     p.add_argument("--no-voices", action="store_true", help="garde les voix et les sons déjà extraits")
     p.add_argument("--vgmstream", type=Path, default=DEFAULT_VGMSTREAM)
+    p.add_argument("--tracks-only", action="store_true",
+                   help="refait pistes et index depuis le scene.json extrait (avec --only), sans réextraire")
     args = p.parse_args(argv)
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    if args.tracks_only:
+        if not args.only:
+            p.error("--tracks-only demande --only")
+        print("\n".join(retrack(manifest, args.out, args.only)))
+        return 0
     report = run(manifest, args.out, args.client, args.only, not args.no_voices, args.vgmstream)
     print("\n".join(report))
     return 0

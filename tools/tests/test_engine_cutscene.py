@@ -621,3 +621,38 @@ def test_read_client_line_finds_the_bubble_and_the_voice_inside_an_action_list()
     line = read_client_line(db, 0)
     assert line.bubble_index == 229774 and line.text_index is None
     assert line.voice == "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_01"     # la première voix
+
+
+def test_lines_without_duration_take_their_voice_or_reading_time_up_to_the_next_line():
+    from tools.extract_engine_cutscene import READING_MIN, fill_line_durations
+    text = {"ru": "Тысячу лет назад", "en": "A thousand years ago they saved Howlem."}   # 39 caractères
+    lines = [{"start": 0.5, "duration": 0.0, "text": text},        # voix de 4,99 s
+             {"start": 6.0, "duration": 0.0, "text": text},        # sans voix : lecture, 39 / 15 = 2,6 s
+             {"start": 7.0, "duration": 0.0, "text": {"ru": "Да."}},  # 1,5 s au moins, coupée à 7,2 s
+             {"start": 7.2, "duration": 3.0, "text": text},        # durée du client : gardée
+             {"start": 7.3, "duration": 0.0, "text": {}}]          # sans texte : rien à afficher
+    voices = [{"duration": 4.994}, None, None, None, None]
+    assert fill_line_durations(lines, voices, 7.5) == 3
+    assert [l["duration"] for l in lines] == [4.994, 1.0, 0.2, 3.0, 0.0]   # 2,6 s coupées par la réplique à 7 s
+    lone = [{"start": 0.0, "duration": 0.0, "text": {"ru": "Да."}}]
+    fill_line_durations(lone, [None], 0)
+    assert lone[0]["duration"] == READING_MIN
+
+
+def test_retrack_rebuilds_tracks_and_index_from_the_extracted_scene(tmp_path):
+    import json
+    from tools.extract_engine_cutscene import retrack
+    scene_dir = tmp_path / "engine" / "isa-x"
+    scene_dir.mkdir(parents=True)
+    scene = {"id": "isa-x", "duration": 10.0, "timing": "estimated",
+             "lines": [{"n": 1, "start": 1.0, "duration": 0.0, "voice": {"duration": 2.5},
+                        "text": {"ru": "Привет", "en": "Hello", "fr": "Bonjour"}}]}
+    (scene_dir / "scene.json").write_text(json.dumps(scene), encoding="utf-8")
+    (tmp_path / "cinematics.json").write_text(json.dumps({"cinematics": []}), encoding="utf-8")
+    manifest = {"arcs": [], "cinematics": [{"id": "isa-x", "arc": "isa", "version": "14.0", "faction": "common",
+                                            "order": 1, "title": {"fr": "X", "en": "X"}, "chronology": ""}]}
+    retrack(manifest, tmp_path, ["isa-x"])
+    assert json.loads((scene_dir / "scene.json").read_text())["lines"][0]["duration"] == 2.5
+    assert "00:00:01.000 --> 00:00:03.500" in (scene_dir / "en.vtt").read_text()
+    entry = json.loads((tmp_path / "cinematics.json").read_text())["cinematics"][0]
+    assert [t["lang"] for t in entry["tracks"]] == ["fr", "en", "ru"] and entry["subtitles"]["lines"] == 1
