@@ -432,6 +432,7 @@ class Simulator:
                     # Rayon canalisé d'un PNJ vers un repère : le PNJ est en scène.
                     self.tl.fx.append({"t": round(t, 3), "clientdata": line["clientdata"], "locators": locators,
                                        "owner": target, "channel": line.get("channel") or {}, "until": None})
+                    self.tl.scripts.update(locators)
                     if target != "player":
                         self.tl.scripts.add(target)
                     return
