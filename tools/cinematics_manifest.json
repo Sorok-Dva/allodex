@@ -23319,8 +23319,8 @@
      {
       "t": 0,
       "p": [
-       1384.902,
-       1236.124,
+       1386.1,
+       1233.9,
        12.893
       ]
      }
@@ -23335,13 +23335,15 @@
       ]
      }
     ],
-    "_note": "Aucune caméra dans les données : la scène se joue dans la vue du joueur. Point de vue : centre de la zone de script ComanadPost (5_4_ServerObjects), que le joueur atteint, à 2 m ; regard vers le capitaine (IE1_Captain, même fichier)."
+    "_note": "Aucune caméra dans les données : la scène se joue dans la vue du joueur. Point de vue : centre de la zone de script ComanadPost (5_4_ServerObjects), que le joueur atteint, à 2 m ; regard vers le capitaine (IE1_Captain, même fichier). Avancé de 2,5 m vers le capitaine (choix) : au centre de la zone, la caméra est dans l’encadrement de la porte ES_Door7_2, que la zone ouvre, et son battant ouvert bouchait la vue."
    },
    "_note": "Zone de script ComanadPost (Inst_EmpireStart, 7.0) : au poste de commandement, le second Алексей Грубин (« Подача энергии падает! ») et le capitaine Казимир Саблин (« Проклятье! Что там происходит? ») ; dialogue doublé IE1/08-10_Dialogue_Mechanic-Master, bulles, gestes (emoteSpeech), bombardement (IE1_OutdoorShelling). La zone change ensuite le capitaine en donneur de la quête « Реакторная » (ImpactMobMorph → Captain_Morph).",
    "doors": {
     "ES_Door7": "open",
     "_note": "Portes (DoorResource des objets du décor, arbre 7.0) à l’entrée de la zone : la récompense de Quest3_1 (les canons, juste avant) a ouvert ES_Door7 ; ComanadPost la referme et ouvre ES_Door7_2 dans la scène ; les autres ont l’état de leur ressource (fermées ; ES_Door11 ouverte, Door_01Open)."
-   }
+   },
+   "decor_cutout": false,
+   "decor_cutout_note": "Pas de découpe par l’alpha pour Inst_EmpireStart : l’alpha des textures opaques du navire y est un masque (Hadagan_Inst_Board, planches du pont, sous 0,5 sur 80 % ; Heraldic_Base, nul partout), la découpe creusait le pont."
   },
   {
    "id": "empire-start-lost-artifact",
@@ -23393,9 +23395,9 @@
      {
       "t": 0,
       "p": [
-       1396.802,
-       1294.104,
-       18.294
+       1391.0,
+       1318.5,
+       20.3
       ]
      }
     ],
@@ -23403,13 +23405,13 @@
      {
       "t": 0,
       "p": [
-       1396.114,
-       1273.735,
-       13.648
+       1396.5,
+       1297.0,
+       16.5
       ]
      }
     ],
-    "_note": "Aucune caméra dans les données : la scène se joue dans la vue du joueur. Point de vue : centre de la zone de script Lazor (5_5_ServerObjects : la salle du réacteur, où le savant parle au joueur qui y entre), à 2 m ; regard vers la place d’où part le capitaine (IE1_Captain02, 5_4_ServerObjects)."
+    "_note": "Aucune caméra dans les données. Point de vue choisi (non tiré des données) pour montrer l’action : dans la salle du réacteur, vers l’entrée où le savant attend le joueur et où arrivent le capitaine et le second (IE1_Captain02_Path, IE1_StarPom02_Path) ; les deux techniciens courent vers leurs machines, devant la caméra. L’ancien point de vue (centre de la zone Lazor, où est le joueur) mettait le savant à 1,5 m et les techniciens derrière la caméra."
    },
    "_note": "Récompense de la quête « Сердце корабля » (Quest4_1.rewardImpacts, 7.0) : le savant (« Слава Свету! Мы успели! »), le capitaine Казимир Саблин et le second Алексей Грубин montent à la salle du réacteur (IE1_Captain02_Path, IE1_StarPom02_Path), deux techniciens courent aux machines et s’en servent ; ordres du capitaine (IE1/13_Master_07, 14_Master_08 : le « прибор » a disparu), bulles, puis l’annonce du navigateur (IE1/15_Navigator_Broadcast_01). Le capitaine devient ensuite le donneur de « Схватка с витязем » (ImpactMobMorph → Captain_3).",
    "doors": {
@@ -23418,7 +23420,15 @@
     "ES_Door10_2": "open",
     "ES_Door10_3": "open",
     "_note": "Portes à la salle du réacteur : ComanadPost a fermé ES_Door7 et ouvert ES_Door7_2 ; les zones Generator1, Generator1_2 et Generator1_3 du couloir vers le réacteur ont ouvert ES_Door10, ES_Door10_2, ES_Door10_3 (Generator1_3 ferme ES_Door9) ; les autres ont l’état de leur ressource."
-   }
+   },
+   "decor_cutout": false,
+   "decor_cutout_note": "Pas de découpe par l’alpha pour Inst_EmpireStart : l’alpha des textures opaques du navire y est un masque (Hadagan_Inst_Board, planches du pont, sous 0,5 sur 80 % ; Heraldic_Base, nul partout), la découpe creusait le pont.",
+   "player": [
+    1396.802,
+    1294.104,
+    18.294
+   ],
+   "player_note": "Place du joueur : centre de la zone Lazor (5_5_ServerObjects), la salle du réacteur où il rend la quête, à 2 m."
   },
   {
    "id": "empire-start-boarding-order",
@@ -23477,9 +23487,9 @@
      {
       "t": 0,
       "p": [
-       1396.802,
-       1294.104,
-       18.294
+       1398.6,
+       1296.2,
+       18.0
       ]
      }
     ],
@@ -23487,13 +23497,13 @@
      {
       "t": 0,
       "p": [
-       1395.306,
-       1293.0839,
-       17.328
+       1395.8,
+       1292.98,
+       17.3
       ]
      }
     ],
-    "_note": "Aucune caméra dans les données. Point de vue : le même que la scène précédente (centre de la zone Lazor, à 2 m), le joueur n’ayant pas quitté la salle ; regard vers le capitaine, à 1 m au-dessus de sa place."
+    "_note": "Aucune caméra dans les données. Point de vue choisi : derrière le joueur (centre de la zone Lazor), dans l’axe qui va du capitaine et du second vers lui, reculé à 4,5 m pour les cadrer en pied ; regard vers eux, à 1 m de haut."
    },
    "_note": "Début de la quête « Схватка с витязем » (Quest4_4.startImpacts, 7.0) : le capitaine donne l’ordre de l’abordage, dialogue doublé du capitaine et du second (IE1/16-18_Dialogue_Master-FirstMate), bulle « Приказываю вернуть артефакт. Любой ценой! », lampe d’alerte IE1_Lamp15.",
    "doors": {
@@ -23502,7 +23512,15 @@
     "ES_Door10_2": "open",
     "ES_Door10_3": "open",
     "_note": "Portes à la salle du réacteur : ComanadPost a fermé ES_Door7 et ouvert ES_Door7_2 ; les zones Generator1, Generator1_2 et Generator1_3 du couloir vers le réacteur ont ouvert ES_Door10, ES_Door10_2, ES_Door10_3 (Generator1_3 ferme ES_Door9) ; les autres ont l’état de leur ressource."
-   }
+   },
+   "decor_cutout": false,
+   "decor_cutout_note": "Pas de découpe par l’alpha pour Inst_EmpireStart : l’alpha des textures opaques du navire y est un masque (Hadagan_Inst_Board, planches du pont, sous 0,5 sur 80 % ; Heraldic_Base, nul partout), la découpe creusait le pont.",
+   "player": [
+    1396.802,
+    1294.104,
+    18.294
+   ],
+   "player_note": "Place du joueur : centre de la zone Lazor (5_5_ServerObjects), la salle du réacteur où il rend la quête, à 2 m."
   },
   {
    "id": "empire-start-stolen-device",
@@ -23564,7 +23582,9 @@
    },
    "_note": "Zone de script TeleportPaladin (Inst_EmpireStart, 7.0), sur le pont : Градимир Белов, le « прибор » volé en main, crie « Прибор у нас, задержите их! » (IE1/22_Gradimir_Paluba, bulle), marche vers le point de saut (IE1_PaladinTeleportMove) et disparaît à 6 s ; le combat du navire kanien commence (League_Ship_Fight1, état 1). La zone Jump (« L’abordage ») s’ouvre 9 s après.",
    "sky": 103155,
-   "sky_note": "Ciel du pont : dans l’arbre 7.0, la région 0_5 (le pont) est de la zone FinalZone, dont l’éclairage AstralShip_Tubes a pour ciel Astral_Sky (Astral_SkyBackGround, Astral_SkyStars, Astral_SkyForegroundGround) ; le 17.0 ne relie plus le pont à aucun éclairage (ni ZoneInfo ni grille), et le premier éclairage de la carte (AstralShip) n’a que le dôme de nuit gris et les étoiles. SkyMesh 103155 du 17.0 : le premier des huit aux trois mêmes calques qu’Astral_Sky."
+   "sky_note": "Ciel du pont : dans l’arbre 7.0, la région 0_5 (le pont) est de la zone FinalZone, dont l’éclairage AstralShip_Tubes a pour ciel Astral_Sky (Astral_SkyBackGround, Astral_SkyStars, Astral_SkyForegroundGround) ; le 17.0 ne relie plus le pont à aucun éclairage (ni ZoneInfo ni grille), et le premier éclairage de la carte (AstralShip) n’a que le dôme de nuit gris et les étoiles. SkyMesh 103155 du 17.0 : le premier des huit aux trois mêmes calques qu’Astral_Sky.",
+   "decor_cutout": false,
+   "decor_cutout_note": "Pas de découpe par l’alpha pour Inst_EmpireStart : l’alpha des textures opaques du navire y est un masque (Hadagan_Inst_Board, planches du pont, sous 0,5 sur 80 % ; Heraldic_Base, nul partout), la découpe creusait le pont."
   },
   {
    "id": "empire-start-boarding",
@@ -23588,7 +23608,9 @@
    "audio_note": "Buffs posés avant la scène et encore actifs : MusicBuff (EnemyAtack ; retiré plus tard par Key2_Spell) joue Music/ZonesMusic/IE1_main, IE1_Ships_Ambient (LastEventStart ; retiré à la mort de Gradimir) joue Ambience/AstralAmbience/4Layer_3Tier. Onde de IE1_main d'après Music.bev : définition /Music/Conquer_high (adaptivemusic/Conquer_high.wav, sous-piste 2 de Music_StartZones.fsb).",
    "_note": "Zone de script Jump du tutoriel de l’Empire (Inst_EmpireStart, quête Quest4_4 « Схватка с витязем ») : buff Jump_Camera (14 s, plan JumpCameraFix), le navire impérial touché (Shield.CanonHitFire aux repères IE_Boom_01…04, Hull.Death à IE_ShipDestroy et IE_ShipDestroy2, son IE1_ShipDestroy), les combattants de la GameViewScene IE1_EmpireShip_Fight1 tombent (état 2) puis disparaissent (état 3), le Спрутоглав (IE1_Ktulha) suit son chemin puis est retiré, débarquement (Demon_Desant : SummonUndead aux repères d’arrivée), le navire kanien (stèle League_Ship_Final) passe à idle01. Le joueur, qui saute (ShipOutJump, route FromShipFly), n’est pas montré.",
    "sky": 103155,
-   "sky_note": "Ciel du pont : dans l’arbre 7.0, la région 0_5 (le pont) est de la zone FinalZone, dont l’éclairage AstralShip_Tubes a pour ciel Astral_Sky (Astral_SkyBackGround, Astral_SkyStars, Astral_SkyForegroundGround) ; le 17.0 ne relie plus le pont à aucun éclairage (ni ZoneInfo ni grille), et le premier éclairage de la carte (AstralShip) n’a que le dôme de nuit gris et les étoiles. SkyMesh 103155 du 17.0 : le premier des huit aux trois mêmes calques qu’Astral_Sky."
+   "sky_note": "Ciel du pont : dans l’arbre 7.0, la région 0_5 (le pont) est de la zone FinalZone, dont l’éclairage AstralShip_Tubes a pour ciel Astral_Sky (Astral_SkyBackGround, Astral_SkyStars, Astral_SkyForegroundGround) ; le 17.0 ne relie plus le pont à aucun éclairage (ni ZoneInfo ni grille), et le premier éclairage de la carte (AstralShip) n’a que le dôme de nuit gris et les étoiles. SkyMesh 103155 du 17.0 : le premier des huit aux trois mêmes calques qu’Astral_Sky.",
+   "decor_cutout": false,
+   "decor_cutout_note": "Pas de découpe par l’alpha pour Inst_EmpireStart : l’alpha des textures opaques du navire y est un masque (Hadagan_Inst_Board, planches du pont, sous 0,5 sur 80 % ; Heraldic_Base, nul partout), la découpe creusait le pont."
   },
   {
    "id": "empire-start-knight-defeated",
@@ -23612,7 +23634,9 @@
    "audio_note": "MusicBuff a été retiré par Key2_Spell : pas de musique de buff ; IE1_Ships_Ambient reste jusqu’à la téléportation (retiré à 24 s).",
    "_note": "Capacité DeathTriggerPaladinFinal de Gradimir Belov (Quest4_4) : à sa mort, le joueur se téléporte (Teleport4sec, fondu au noir Effect_Avatar_Fade), à 9 s le buff Teleport4sec_Camera (17 s, plan IE1_Teleport_Camera), à 10 s le navire kanien joue « special » (League_Ship_Final, état 3) et ses combattants disparaissent (League_Ship_Fight1, état 3), à 24 s le joueur part pour Hadagan_Sanatorium (ImpactTeleport) : la scène va du premier plan (9 s) au départ (24 s). La réplique de la mort de Gradimir (IE1/24_Gradimir_Death, bulle sans sous-titre) est dite à 0 s, avant le plan : hors scène.",
    "sky": 103155,
-   "sky_note": "Ciel du pont : dans l’arbre 7.0, la région 0_5 (le pont) est de la zone FinalZone, dont l’éclairage AstralShip_Tubes a pour ciel Astral_Sky (Astral_SkyBackGround, Astral_SkyStars, Astral_SkyForegroundGround) ; le 17.0 ne relie plus le pont à aucun éclairage (ni ZoneInfo ni grille), et le premier éclairage de la carte (AstralShip) n’a que le dôme de nuit gris et les étoiles. SkyMesh 103155 du 17.0 : le premier des huit aux trois mêmes calques qu’Astral_Sky."
+   "sky_note": "Ciel du pont : dans l’arbre 7.0, la région 0_5 (le pont) est de la zone FinalZone, dont l’éclairage AstralShip_Tubes a pour ciel Astral_Sky (Astral_SkyBackGround, Astral_SkyStars, Astral_SkyForegroundGround) ; le 17.0 ne relie plus le pont à aucun éclairage (ni ZoneInfo ni grille), et le premier éclairage de la carte (AstralShip) n’a que le dôme de nuit gris et les étoiles. SkyMesh 103155 du 17.0 : le premier des huit aux trois mêmes calques qu’Astral_Sky.",
+   "decor_cutout": false,
+   "decor_cutout_note": "Pas de découpe par l’alpha pour Inst_EmpireStart : l’alpha des textures opaques du navire y est un masque (Hadagan_Inst_Board, planches du pont, sous 0,5 sur 80 % ; Heraldic_Base, nul partout), la découpe creusait le pont."
   },
   {
    "id": "league-klement-death",

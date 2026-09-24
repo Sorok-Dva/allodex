@@ -262,9 +262,23 @@ Corrections du tutoriel de l’Empire (toutes génériques, règles tirées des 
   aucun éclairage, et le premier de la carte (`AstralShip`) n’a que le dôme de nuit gris et les
   étoiles. Le `SkyMesh` 103155 du 17.0 a les trois mêmes calques qu’`Astral_Sky`. Non repris : ses
   animations, le plancton (`AreaEffect` `Plankton_Tubes`) et l’ombrage astral (`AstralShadingParams`).
+- **Lacet des `ServerObjects`** : c’est un cap (direction de l’axe X tourné, comme le lacet d’une
+  téléportation) ; un modèle, dont l’avant est −Y, tourne de ce cap + π/2 (`model_yaw`). Prouvé sur le
+  navire kanien : stèle `League_Ship_Final` à 3,26141, sa collision posée dans la région au même point
+  à 4,82951. Appliqué aux PNJ posés, aux stèles et au donneur de quête ; pas aux invocations
+  (`ImpactSummon`), non vérifiées. Avant, le navire kanien était tourné d’un quart de tour (ses voiles
+  barraient le pont impérial) et le second tournait le dos au joueur.
 - **Orientations** : un PNJ que le manifeste replace (`start_at`, `"yaw": "walk"`) garde le cap de
   la marche qui l’y a mené ; un donneur de quête (`"interlocutor"`, `"face": "player"`) se tourne
-  vers le joueur qui lui parle (comportement du client, non tiré des fichiers).
+  vers le joueur qui lui parle (comportement du client, non tiré des fichiers), à la place que donne
+  `"player"` (centre de la zone `Lazor`, où le joueur rend la quête).
+- **Composants d’état du décor** : un objet posé ne montre que ceux de son état par défaut (animation
+  de son premier état, `FxBuild.default_state`) ; un objet fait seulement de composants d’état n’est
+  plus invisible (lacune relevée côté Ligue).
+- **Découpe par l’alpha** (`cutout`) désactivée pour `Inst_EmpireStart` (`"decor_cutout": false`) :
+  le 17.0 ne marque pas les matériaux découpés, et l’alpha des textures opaques du navire y est un
+  masque (`Hadagan_Inst_Board`, les planches du pont : alpha sous 0,5 sur 80 % ; `Heraldic_Base` :
+  nul partout) ; la découpe creusait le pont.
 
 **Tutoriel de l’Empire, scènes doublées** (étape 2) : comme pour la Ligue, les enchaînements doublés des
 zones de script et des quêtes d’`Inst_EmpireStart` qui mettent en scène plusieurs répliques sont montés,
@@ -282,8 +296,12 @@ alignés (écart −6149, relus réplique par réplique). Musique `IE1_main` (bu
 données ; point de vue fixe du manifeste, justifié : centre de la zone de script atteinte, à 2 m
 (`ComanadPost`, `TeleportPaladin` : 2 m au-dessus du centre de la zone, en bas de la rampe du pont),
 salle du réacteur (centre de la zone `Lazor`) pour les deux scènes de quête ; regard vers le locuteur
-ou la place d’où il part. Lacet du capitaine à l’ordre d’abordage : sens de sa marche précédente (choix
-documenté). **Non repris** : l’annonce du navigateur n’a ni bulle ni sous-titre (voix seule) ; les
+ou la place d’où il part. Points de vue retouchés (choix, non tirés des données) : au poste de
+commandement, avancé de 2,5 m (au centre de la zone, la caméra est dans l’encadrement de la porte
+`ES_Door7_2`, que la zone ouvre) ; « L’artefact perdu », depuis la salle du réacteur vers son entrée
+(savant, capitaine, second et techniciens dans le champ ; au centre de `Lazor`, le savant était à
+1,5 m et les techniciens derrière la caméra) ; « L’ordre d’abordage », derrière le joueur, reculé à
+4,5 m, les deux officiers tournés vers lui. **Non repris** : l’annonce du navigateur n’a ni bulle ni sous-titre (voix seule) ; les
 lampes d’alerte (`IE1_Lamp*`, stèles absentes du 17.0) ; les répliques isolées (sergent `EnemyAtack`,
 canonnier `Fire`, savant `Lazor`, annonces `StartBuff`, `Quest1_2`, `LastEventStart`, ordre `Quest3_2`) :
 une voix sur un PNJ immobile, sans enchaînement. **Zones suivantes** (`Hadagan`, `Hadagan_AE1…3`,
