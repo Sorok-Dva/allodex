@@ -249,6 +249,78 @@
    }
   },
   {
+   "id": "empire-start-command-post",
+   "kind": "engine",
+   "source": "main",
+   "event": "ComanadPost",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 104,
+   "title": {
+    "fr": "Au poste de commandement",
+    "en": "At the command post"
+   },
+   "chronology": "Tutoriel de l’Empire (Inst_EmpireStart, voix « patch403 ») : zone ComanadPost, entre les quêtes des canons (« Пострелять из корабельной пушки ») et « Реакторная », dont elle fait le capitaine donneur ; première scène doublée à plusieurs voix du tutoriel, après le prologue de l’Empire.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "empire-start-lost-artifact",
+   "kind": "engine",
+   "source": "main",
+   "event": "Quest4_1",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 106,
+   "title": {
+    "fr": "L’artefact perdu",
+    "en": "The lost artifact"
+   },
+   "chronology": "Tutoriel de l’Empire : récompense de « Сердце корабля » (Quest4_1), dans la salle du réacteur ; après « Реакторная », avant « Канийский вор » (Quest4_3) et « Схватка с витязем ».",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "empire-start-boarding-order",
+   "kind": "engine",
+   "source": "main",
+   "event": "Quest4_4",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 107,
+   "title": {
+    "fr": "L’ordre d’abordage",
+    "en": "The boarding order"
+   },
+   "chronology": "Tutoriel de l’Empire : début de « Схватка с витязем » (Quest4_4), donnée par le capitaine que la scène précédente a amené au réacteur ; précède la montée sur le pont.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "empire-start-stolen-device",
+   "kind": "engine",
+   "source": "main",
+   "event": "TeleportPaladin",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 108,
+   "title": {
+    "fr": "L’appareil volé",
+    "en": "The stolen device"
+   },
+   "chronology": "Tutoriel de l’Empire : zone TeleportPaladin, sur le pont, pendant « Схватка с витязем » ; après LastEventStart, 9 s avant la zone Jump (« L’abordage »).",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
    "id": "empire-start-boarding",
    "kind": "engine",
    "source": "main",
@@ -23164,6 +23236,268 @@
    "source": "gameview",
    "scene": 438509,
    "_note": "GameViewScene 438509 (CutScene_EngineerDeathKania, Inst_ZoneContested12_Start) jouée par le ShowSceneAction de la stèle 438512 : trois assassins colosses (special03, 04, 05) et Luka (special08) à la place de la scène, caméra au cameraPlacement. Caméra : le cameraPlacement (drapeau use) pose le spectateur ; caméra à 2 m au-dessus, regard selon son lacet (vue de joueur). La version hadagane (CutScene_EngineerDeathHadagan du 7.0) n’existe plus dans le 17.0 : la GameViewScene 443968, voisine, est l’explosion du navire, déjà dans le film en vidéo."
+  },
+  {
+   "id": "empire-start-command-post",
+   "source": "xdb70",
+   "trigger": "Maps/Inst_EmpireStart/ScriptZones/ComanadPost.(ScriptZone).xdb",
+   "until_last": true,
+   "map": "Inst_EmpireStart",
+   "states": {
+    "Empire_Ship_Fight1": 0,
+    "League_Ship_Fight1": 0,
+    "League_Ship_Final": 0
+   },
+   "states_note": "États des stèles du pont avant la zone LastEventStart (arbre serveur 7.0) : aucune zone ni quête ne les a encore changés (LastEventStart met Empire_Ship_Fight1 à 1, TeleportPaladin met League_Ship_Fight1 à 1, Jump touche League_Ship_Final) : action par défaut.",
+   "audio": {
+    "music": [
+     "Music/ZonesMusic/IE1_main"
+    ],
+    "ambience": []
+   },
+   "audio_note": "MusicBuff (posé par la zone EnemyAtack, au début du tutoriel ; retiré après l’abordage par Key2_Spell) joue Music/ZonesMusic/IE1_main ; IE1_Ships_Ambient n’est posé que par LastEventStart, plus tard.",
+   "fr_blocks": [
+    {
+     "ru": 182524,
+     "fr": 176375,
+     "count": 3,
+     "_note": "Messages du capitaine (Text_CaptainSpeech1…3, TextMessage) : « Механикам запустить реактор! » ↔ « Qu’est-ce qui ne va pas ? … », « \"Прибор\" пропал?! » ↔ « L’instrument est perdu ? … », « Приказываю вернуть артефакт » ↔ « Rapportez l’artéfact à tout prix ! » ; relu réplique par réplique."
+    },
+    {
+     "ru": 182624,
+     "fr": 176475,
+     "count": 29,
+     "_note": "Messages et bulles du tutoriel (Ask_11…, Quest4_1_Finish, Ask_16/17, PaladinChat) : « Подача энергии падает! » ↔ « Les niveaux d’énergie sont en chute libre ! », « Проклятье! Что там происходит? » ↔ « Bon sang ! Que se passe-t-il ? », « Не могу знать! » ↔ « Je ne sais pas ! », « Слава Свету! Мы успели! » ↔ « Gloire à la Lumière ! Nous l’avons fait ! », « Прибор у нас, задержите их! » ↔ « Retardez le poursuivant. Je me téléporte vers notre navire ! » : écart constant (−6149, celui du bloc 182588 de la Ligue), relu réplique par réplique."
+    }
+   ],
+   "camera": {
+    "points": [
+     {
+      "t": 0,
+      "p": [
+       1384.902,
+       1236.124,
+       12.893
+      ]
+     }
+    ],
+    "targets": [
+     {
+      "t": 0,
+      "p": [
+       1393.094,
+       1221.565,
+       11.6702
+      ]
+     }
+    ],
+    "_note": "Aucune caméra dans les données : la scène se joue dans la vue du joueur. Point de vue : centre de la zone de script ComanadPost (5_4_ServerObjects), que le joueur atteint, à 2 m ; regard vers le capitaine (IE1_Captain, même fichier)."
+   },
+   "_note": "Zone de script ComanadPost (Inst_EmpireStart, 7.0) : au poste de commandement, le second Алексей Грубин (« Подача энергии падает! ») et le capitaine Казимир Саблин (« Проклятье! Что там происходит? ») ; dialogue doublé IE1/08-10_Dialogue_Mechanic-Master, bulles, gestes (emoteSpeech), bombardement (IE1_OutdoorShelling). La zone change ensuite le capitaine en donneur de la quête « Реакторная » (ImpactMobMorph → Captain_Morph)."
+  },
+  {
+   "id": "empire-start-lost-artifact",
+   "source": "xdb70",
+   "trigger": "World/Quests/InstEmpire1/Quest4_1/Quest4_1.xdb",
+   "trigger_tag": "rewardImpacts",
+   "until_last": true,
+   "map": "Inst_EmpireStart",
+   "states": {
+    "Empire_Ship_Fight1": 0,
+    "League_Ship_Fight1": 0,
+    "League_Ship_Final": 0
+   },
+   "states_note": "États des stèles du pont avant la zone LastEventStart (arbre serveur 7.0) : aucune zone ni quête ne les a encore changés (LastEventStart met Empire_Ship_Fight1 à 1, TeleportPaladin met League_Ship_Fight1 à 1, Jump touche League_Ship_Final) : action par défaut.",
+   "audio": {
+    "music": [
+     "Music/ZonesMusic/IE1_main"
+    ],
+    "ambience": []
+   },
+   "audio_note": "MusicBuff (posé par la zone EnemyAtack, au début du tutoriel ; retiré après l’abordage par Key2_Spell) joue Music/ZonesMusic/IE1_main ; IE1_Ships_Ambient n’est posé que par LastEventStart, plus tard.",
+   "interlocutor": {
+    "mob": "Characters/Hadagan_male/Instances/InstEmpire1/Mage.(MobWorld).xdb",
+    "p": [
+     1397.419,
+     1292.1164,
+     16.3284
+    ],
+    "yaw": 2.45108,
+    "_note": "Donneur de la quête « Сердце корабля » (sa MobWorld cite Quest4_1) : le savant Саранг Кафири, posé en IE1_NPC2 (5_5_ServerObjects), sa place et son lacet."
+   },
+   "fr_blocks": [
+    {
+     "ru": 182524,
+     "fr": 176375,
+     "count": 3,
+     "_note": "Messages du capitaine (Text_CaptainSpeech1…3, TextMessage) : « Механикам запустить реактор! » ↔ « Qu’est-ce qui ne va pas ? … », « \"Прибор\" пропал?! » ↔ « L’instrument est perdu ? … », « Приказываю вернуть артефакт » ↔ « Rapportez l’artéfact à tout prix ! » ; relu réplique par réplique."
+    },
+    {
+     "ru": 182624,
+     "fr": 176475,
+     "count": 29,
+     "_note": "Messages et bulles du tutoriel (Ask_11…, Quest4_1_Finish, Ask_16/17, PaladinChat) : « Подача энергии падает! » ↔ « Les niveaux d’énergie sont en chute libre ! », « Проклятье! Что там происходит? » ↔ « Bon sang ! Que se passe-t-il ? », « Не могу знать! » ↔ « Je ne sais pas ! », « Слава Свету! Мы успели! » ↔ « Gloire à la Lumière ! Nous l’avons fait ! », « Прибор у нас, задержите их! » ↔ « Retardez le poursuivant. Je me téléporte vers notre navire ! » : écart constant (−6149, celui du bloc 182588 de la Ligue), relu réplique par réplique."
+    }
+   ],
+   "camera": {
+    "points": [
+     {
+      "t": 0,
+      "p": [
+       1396.802,
+       1294.104,
+       18.294
+      ]
+     }
+    ],
+    "targets": [
+     {
+      "t": 0,
+      "p": [
+       1396.114,
+       1273.735,
+       13.648
+      ]
+     }
+    ],
+    "_note": "Aucune caméra dans les données : la scène se joue dans la vue du joueur. Point de vue : centre de la zone de script Lazor (5_5_ServerObjects : la salle du réacteur, où le savant parle au joueur qui y entre), à 2 m ; regard vers la place d’où part le capitaine (IE1_Captain02, 5_4_ServerObjects)."
+   },
+   "_note": "Récompense de la quête « Сердце корабля » (Quest4_1.rewardImpacts, 7.0) : le savant (« Слава Свету! Мы успели! »), le capitaine Казимир Саблин et le second Алексей Грубин montent à la salle du réacteur (IE1_Captain02_Path, IE1_StarPom02_Path), deux techniciens courent aux machines et s’en servent ; ordres du capitaine (IE1/13_Master_07, 14_Master_08 : le « прибор » a disparu), bulles, puis l’annonce du navigateur (IE1/15_Navigator_Broadcast_01). Le capitaine devient ensuite le donneur de « Схватка с витязем » (ImpactMobMorph → Captain_3)."
+  },
+  {
+   "id": "empire-start-boarding-order",
+   "source": "xdb70",
+   "trigger": "World/Quests/InstEmpire1/Quest4_4/Quest4_4.xdb",
+   "trigger_tag": "startImpacts",
+   "until_last": true,
+   "map": "Inst_EmpireStart",
+   "states": {
+    "Empire_Ship_Fight1": 0,
+    "League_Ship_Fight1": 0,
+    "League_Ship_Final": 0
+   },
+   "states_note": "États des stèles du pont avant la zone LastEventStart (arbre serveur 7.0) : aucune zone ni quête ne les a encore changés (LastEventStart met Empire_Ship_Fight1 à 1, TeleportPaladin met League_Ship_Fight1 à 1, Jump touche League_Ship_Final) : action par défaut.",
+   "audio": {
+    "music": [
+     "Music/ZonesMusic/IE1_main"
+    ],
+    "ambience": []
+   },
+   "audio_note": "MusicBuff (posé par la zone EnemyAtack, au début du tutoriel ; retiré après l’abordage par Key2_Spell) joue Music/ZonesMusic/IE1_main ; IE1_Ships_Ambient n’est posé que par LastEventStart, plus tard.",
+   "interlocutor": {
+    "mob": "Characters/Orc_female/Instances/InstEmpire1/Captain_3.(MobWorld).xdb",
+    "p": [
+     1395.306,
+     1293.0839,
+     16.328
+    ],
+    "yaw": 3.1833,
+    "_note": "Donneur de la quête « Схватка с витязем » (sa MobWorld cite Quest4_4) : le capitaine, que la récompense de Quest4_1 a mené en IE1_Captain02_Path (5_5_ServerObjects) puis changé en Captain_3 (ImpactMobMorph). Lacet : sens de cette marche (de IE1_Captain02 à IE1_Captain02_Path, face_yaw du lecteur), choix documenté : les données ne le donnent pas."
+   },
+   "start_at": {
+    "IE1_StarPom02": {
+     "locator": "IE1_StarPom02_Path",
+     "_note": "La récompense de Quest4_1 a mené le second Алексей Грубин en IE1_StarPom02_Path : il y reste."
+    }
+   },
+   "fr_blocks": [
+    {
+     "ru": 182524,
+     "fr": 176375,
+     "count": 3,
+     "_note": "Messages du capitaine (Text_CaptainSpeech1…3, TextMessage) : « Механикам запустить реактор! » ↔ « Qu’est-ce qui ne va pas ? … », « \"Прибор\" пропал?! » ↔ « L’instrument est perdu ? … », « Приказываю вернуть артефакт » ↔ « Rapportez l’artéfact à tout prix ! » ; relu réplique par réplique."
+    },
+    {
+     "ru": 182624,
+     "fr": 176475,
+     "count": 29,
+     "_note": "Messages et bulles du tutoriel (Ask_11…, Quest4_1_Finish, Ask_16/17, PaladinChat) : « Подача энергии падает! » ↔ « Les niveaux d’énergie sont en chute libre ! », « Проклятье! Что там происходит? » ↔ « Bon sang ! Que se passe-t-il ? », « Не могу знать! » ↔ « Je ne sais pas ! », « Слава Свету! Мы успели! » ↔ « Gloire à la Lumière ! Nous l’avons fait ! », « Прибор у нас, задержите их! » ↔ « Retardez le poursuivant. Je me téléporte vers notre navire ! » : écart constant (−6149, celui du bloc 182588 de la Ligue), relu réplique par réplique."
+    }
+   ],
+   "camera": {
+    "points": [
+     {
+      "t": 0,
+      "p": [
+       1396.802,
+       1294.104,
+       18.294
+      ]
+     }
+    ],
+    "targets": [
+     {
+      "t": 0,
+      "p": [
+       1395.306,
+       1293.0839,
+       17.328
+      ]
+     }
+    ],
+    "_note": "Aucune caméra dans les données. Point de vue : le même que la scène précédente (centre de la zone Lazor, à 2 m), le joueur n’ayant pas quitté la salle ; regard vers le capitaine, à 1 m au-dessus de sa place."
+   },
+   "_note": "Début de la quête « Схватка с витязем » (Quest4_4.startImpacts, 7.0) : le capitaine donne l’ordre de l’abordage, dialogue doublé du capitaine et du second (IE1/16-18_Dialogue_Master-FirstMate), bulle « Приказываю вернуть артефакт. Любой ценой! », lampe d’alerte IE1_Lamp15."
+  },
+  {
+   "id": "empire-start-stolen-device",
+   "source": "xdb70",
+   "trigger": "Maps/Inst_EmpireStart/ScriptZones/TeleportPaladin.(ScriptZone).xdb",
+   "until_last": true,
+   "map": "Inst_EmpireStart",
+   "states": {
+    "Empire_Ship_Fight1": 1,
+    "League_Ship_Fight1": 0,
+    "League_Ship_Final": 0
+   },
+   "states_note": "États des stèles à l’entrée de la zone TeleportPaladin (arbre serveur 7.0) : LastEventStart, juste avant sur le pont, a mis Empire_Ship_Fight1 à 1 (combat) ; la zone met elle-même League_Ship_Fight1 à 1 ; rien ne touche League_Ship_Final avant Jump.",
+   "audio": {
+    "music": [
+     "Music/ZonesMusic/IE1_main"
+    ],
+    "ambience": [
+     "Ambience/AstralAmbience/4Layer_3Tier"
+    ]
+   },
+   "audio_note": "MusicBuff (EnemyAtack) joue encore Music/ZonesMusic/IE1_main ; IE1_Ships_Ambient (LastEventStart, juste avant) joue Ambience/AstralAmbience/4Layer_3Tier.",
+   "fr_blocks": [
+    {
+     "ru": 182524,
+     "fr": 176375,
+     "count": 3,
+     "_note": "Messages du capitaine (Text_CaptainSpeech1…3, TextMessage) : « Механикам запустить реактор! » ↔ « Qu’est-ce qui ne va pas ? … », « \"Прибор\" пропал?! » ↔ « L’instrument est perdu ? … », « Приказываю вернуть артефакт » ↔ « Rapportez l’artéfact à tout prix ! » ; relu réplique par réplique."
+    },
+    {
+     "ru": 182624,
+     "fr": 176475,
+     "count": 29,
+     "_note": "Messages et bulles du tutoriel (Ask_11…, Quest4_1_Finish, Ask_16/17, PaladinChat) : « Подача энергии падает! » ↔ « Les niveaux d’énergie sont en chute libre ! », « Проклятье! Что там происходит? » ↔ « Bon sang ! Que se passe-t-il ? », « Не могу знать! » ↔ « Je ne sais pas ! », « Слава Свету! Мы успели! » ↔ « Gloire à la Lumière ! Nous l’avons fait ! », « Прибор у нас, задержите их! » ↔ « Retardez le poursuivant. Je me téléporte vers notre navire ! » : écart constant (−6149, celui du bloc 182588 de la Ligue), relu réplique par réplique."
+    }
+   ],
+   "camera": {
+    "points": [
+     {
+      "t": 0,
+      "p": [
+       2659.753,
+       1394.529,
+       13.0409
+      ]
+     }
+    ],
+    "targets": [
+     {
+      "t": 0,
+      "p": [
+       2649.5163,
+       1401.122,
+       15.192
+      ]
+     }
+    ],
+    "_note": "Aucune caméra dans les données. Point de vue : centre de la zone de script TeleportPaladin (0_5_ServerObjects), que le joueur atteint sur le pont, à 2 m ; regard vers Gradimir Belov (IE1_PaladinTeleport, même fichier)."
+   },
+   "_note": "Zone de script TeleportPaladin (Inst_EmpireStart, 7.0), sur le pont : Градимир Белов, le « прибор » volé en main, crie « Прибор у нас, задержите их! » (IE1/22_Gradimir_Paluba, bulle), marche vers le point de saut (IE1_PaladinTeleportMove) et disparaît à 6 s ; le combat du navire kanien commence (League_Ship_Fight1, état 1). La zone Jump (« L’abordage ») s’ouvre 9 s après."
   },
   {
    "id": "empire-start-boarding",
