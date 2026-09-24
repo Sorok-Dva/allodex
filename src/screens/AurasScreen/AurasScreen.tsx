@@ -36,6 +36,11 @@ export function appearanceHeight(choice: AuraChoice | undefined): number {
   return b ? Math.max(1, b[2] + b[5]) : 2.4;
 }
 
+/** Une apparence remplace l'avatar (modèle de monture ou de carapace) : pas de marche. */
+function appearanceOf(choice: AuraChoice | undefined): boolean {
+  return choice?.kind === 'appearance' && !!choice.entry.model;
+}
+
 /** Ligne verte de l'infobulle de la liste : version d'apparition, date inconnue. */
 export function auraSinceLine(choice: AuraChoice, t: I18n['t']): string | undefined {
   const since = sinceParts(choice.entry.since);
@@ -66,7 +71,9 @@ export function AuraInfo({ choice, lang, auras }: { choice: AuraChoice; lang: La
       <div className={`${s.infoTitle} ${name.official ? '' : a.unofficial}`} title={name.official ? undefined : t('auras.nameUnproven')}>{name.text}</div>
       {choice.kind === 'appearance' && (
         <div className={s.infoSub}>
-          {choice.entry.kind === 'mount'
+          {choice.entry.kind === 'exoskin'
+            ? `${t('auras.exoskin')} — ${officialText(choice.entry.skin?.mount, lang)?.text ?? ''}`
+            : choice.entry.kind === 'mount'
             ? `${t(isExoskeleton(choice.entry.model?.vot) ? 'auras.exoskeleton' : 'auras.mount')} — ${(officialText(choice.entry.skin?.mount, lang) ?? officialText(choice.entry.skin?.name, lang))?.text ?? ''}`
             : t('auras.costume')}
         </div>
@@ -82,6 +89,7 @@ export function AuraInfo({ choice, lang, auras }: { choice: AuraChoice; lang: La
       <div className={`${a.obtain} ${obtain && !obtain.official ? a.unofficial : ''}`}>{obtain ? t('auras.obtain', { text: obtain.text }) : t('auras.obtainUnknown')}</div>
       {choice.kind === 'aura' && choice.entry.visual === false && <div className={s.infoNote}>{t('auras.noVisual')}</div>}
       {choice.kind === 'appearance' && choice.entry.kind === 'costume' && <div className={s.infoNote}>{t('auras.costumeNote')}</div>}
+      {choice.kind === 'appearance' && choice.entry.kind === 'exoskin' && <div className={s.infoNote}>{t('auras.exoskinNote')}</div>}
       {(items.length > 0 || given.length > 0) && (
         <>
           <div className={s.infoSep} />
@@ -166,7 +174,16 @@ export function AurasScreen() {
   const [speed, setSpeed] = useState<Speed>('1');
   const [showFx, setShowFx] = useState(true);
   const [ready, setReady] = useState(false);
-  const aura = choice?.kind === 'aura' ? choice.entry : choice ? index?.auras.find(x => x.id === choice.entry.auras[0]) : undefined;
+  // Effets montrés : ceux de l'aura, ceux de la couleur de robe elle-même, ou la première aura du lot.
+  const aura: Pick<AuraEntry, 'fx' | 'objects' | 'timeline'> | undefined = choice?.kind === 'aura' ? choice.entry
+    : choice?.entry.kind === 'exoskin' ? choice.entry
+      : choice ? index?.auras.find(x => x.id === choice.entry.auras[0]) : undefined;
+  // Marche : active d'office pour les auras qui ne se voient qu'en marchant (empreintes).
+  const walkMeta = !appearanceOf(choice) && dress ? index?.walks?.[dress.template] : undefined;
+  const walk = useMemo(() => (walkMeta ? { url: auraFile(walkMeta.glb), clips: walkMeta.clips, speed: walkMeta.speed } : null), [walkMeta]);
+  const walkDefault = !!aura?.timeline?.stateAttached?.length;
+  const [walking, setWalking] = useState(walkDefault);
+  useEffect(() => { setWalking(walkDefault); }, [choice?.entry.id, walkDefault]);
   const appearance = choice?.kind === 'appearance' && choice.entry.model
     ? { url: auraFile(choice.entry.model.glb), vot: choice.entry.model.vot, objects: choice.entry.model.objects } : null;
   const fxUrl = aura?.fx ? auraFile(aura.fx) : null;
@@ -210,7 +227,8 @@ export function AurasScreen() {
   const [hover, setHover] = useState<{ id: string; anchor: DOMRect } | null>(null);
   const hovered = hover ? choices.find(c => c.entry.id === hover.id) : undefined;
 
-  const list = (kind: AuraChoice['kind']) => choices.filter(c => c.kind === kind).map(c => {
+  const group = (c: AuraChoice): 'aura' | 'appearance' | 'exoskin' => (c.kind === 'aura' ? 'aura' : c.entry.kind === 'exoskin' ? 'exoskin' : 'appearance');
+  const list = (kind: 'aura' | 'appearance' | 'exoskin') => choices.filter(c => group(c) === kind).map(c => {
     const current = c.entry.id === choice?.entry.id;
     const shown = choiceName(c, lang);
     return (
@@ -249,6 +267,8 @@ export function AurasScreen() {
             playing={playing}
             speed={Number(speed)}
             showFx={showFx}
+            walking={walking && !!walk}
+            walk={walk}
             assetUrl={auraFile}
             particleAtlas={index?.particleAtlas ?? null}
             soundUrl={muted ? null : auraFile}
@@ -302,8 +322,10 @@ export function AurasScreen() {
           <div className={s.lists} role="listbox" aria-label={t('auras.list')}>
             <div className={s.group}>{t('auras.wardrobe')}</div>
             <ul className={s.list}>{list('aura')}</ul>
-            {choices.some(c => c.kind === 'appearance') && <div className={s.group}>{t('auras.appearances')}</div>}
+            {choices.some(c => group(c) === 'appearance') && <div className={s.group}>{t('auras.appearances')}</div>}
             <ul className={s.list}>{list('appearance')}</ul>
+            {choices.some(c => group(c) === 'exoskin') && <div className={s.group}>{t('auras.exoskins')}</div>}
+            <ul className={s.list}>{list('exoskin')}</ul>
           </div>
         </aside>
       )}
@@ -332,6 +354,11 @@ export function AurasScreen() {
             <span className={s.checkbox} style={{ backgroundImage: `url(${sprite(showFx && aura?.fx ? 'checkbox-on' : 'checkbox-off')})` }} aria-hidden="true" />
             <input type="checkbox" checked={showFx} disabled={!aura?.fx} onChange={e => { playSfx('ui-click'); setShowFx(e.target.checked); }} />
             {t('auras.fx')}
+          </label>
+          <label className={`${s.check} ${!walk ? s.checkOff : ''}`} title={walk ? undefined : t('auras.walkOff')}>
+            <span className={s.checkbox} style={{ backgroundImage: `url(${sprite(walking && walk ? 'checkbox-on' : 'checkbox-off')})` }} aria-hidden="true" />
+            <input type="checkbox" checked={walking && !!walk} disabled={!walk} onChange={e => { playSfx('ui-click'); setWalking(e.target.checked); }} />
+            {t('auras.walk')}
           </label>
           <div className={s.speed}>
             <span className={s.fieldLabel}>{t('auras.speed')}</span>
