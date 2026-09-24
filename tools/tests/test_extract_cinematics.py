@@ -230,18 +230,18 @@ def test_manifest_ids_are_unique_and_factions_valid(manifest):
     assert all(c["arc"] in manifest["arcs"] and c["source"] in manifest["sources"] for c in manifest["cinematics"])
 
 
-def test_manifest_opens_each_film_with_its_start_zone_then_its_prologue(manifest):
-    # Choix de l'utilisateur : la zone de départ de la faction ouvre le film, le prologue (16.0)
-    # vient juste après sa fin.
+def test_manifest_opens_each_film_with_its_prologue(manifest):
+    # Choix de l'utilisateur (24/09/2026) : les zones de départ sont retirées du film, qui s'ouvre
+    # sur le prologue (16.0) ; leurs chapitres sont gardés à part (`held_back`), scènes conservées.
     for faction in ("league", "empire"):
         film = sorted((c for c in manifest["cinematics"] if c["faction"] in (faction, "common")), key=lambda c: c["order"])
-        # zones de départ de la faction (Ligue : aussi le départ pridien, qui finit au même point)
-        arcs = list(dict.fromkeys(c["arc"] for c in film))
-        start = arcs.index("prologue")
-        assert start >= 1 and arcs[0] == f"{faction}-start" and all(a.endswith("-start") for a in arcs[:start])
-        assert all(c["faction"] == faction for c in film if c["arc"] in arcs[:start + 1])
+        assert film[0]["arc"] == "prologue" and film[0]["faction"] == faction
         orders = [c["order"] for c in film]
         assert len(orders) == len(set(orders)), "deux cinématiques d'un même film à la même place"
+    held = manifest["held_back"]["chapters"]
+    assert {c["arc"] for c in held} == {"league-start", "empire-start", "pride-start"}
+    scenes = {s["id"] for s in manifest["engine_scenes"]}
+    assert all(c["id"] in scenes for c in held), "un chapitre en attente sans sa scène moteur"
 
 
 def test_manifest_puts_the_boss_presentations_in_a_bonus_after_the_film(manifest):

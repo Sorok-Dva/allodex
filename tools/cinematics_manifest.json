@@ -257,114 +257,6 @@
    }
   },
   {
-   "id": "empire-start-command-post",
-   "kind": "engine",
-   "source": "main",
-   "event": "ComanadPost",
-   "arc": "empire-start",
-   "version": "7.0",
-   "faction": "empire",
-   "order": 104,
-   "title": {
-    "fr": "Au poste de commandement",
-    "en": "At the command post"
-   },
-   "chronology": "Tutoriel de l’Empire (Inst_EmpireStart, voix « patch403 ») : zone ComanadPost, entre les quêtes des canons (« Пострелять из корабельной пушки ») et « Реакторная », dont elle fait le capitaine donneur ; première scène doublée à plusieurs voix du tutoriel ; ouvre le film de l’Empire.",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "empire-start-lost-artifact",
-   "kind": "engine",
-   "source": "main",
-   "event": "Quest4_1",
-   "arc": "empire-start",
-   "version": "7.0",
-   "faction": "empire",
-   "order": 106,
-   "title": {
-    "fr": "L’artefact perdu",
-    "en": "The lost artifact"
-   },
-   "chronology": "Tutoriel de l’Empire : récompense de « Сердце корабля » (Quest4_1), dans la salle du réacteur ; après « Реакторная », avant « Канийский вор » (Quest4_3) et « Схватка с витязем ».",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "empire-start-boarding-order",
-   "kind": "engine",
-   "source": "main",
-   "event": "Quest4_4",
-   "arc": "empire-start",
-   "version": "7.0",
-   "faction": "empire",
-   "order": 107,
-   "title": {
-    "fr": "L’ordre d’abordage",
-    "en": "The boarding order"
-   },
-   "chronology": "Tutoriel de l’Empire : début de « Схватка с витязем » (Quest4_4), donnée par le capitaine que la scène précédente a amené au réacteur ; précède la montée sur le pont.",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "empire-start-stolen-device",
-   "kind": "engine",
-   "source": "main",
-   "event": "TeleportPaladin",
-   "arc": "empire-start",
-   "version": "7.0",
-   "faction": "empire",
-   "order": 108,
-   "title": {
-    "fr": "L’appareil volé",
-    "en": "The stolen device"
-   },
-   "chronology": "Tutoriel de l’Empire : zone TeleportPaladin, sur le pont, pendant « Схватка с витязем » ; après LastEventStart, 9 s avant la zone Jump (« L’abordage »).",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "empire-start-boarding",
-   "kind": "engine",
-   "source": "main",
-   "event": "Jump",
-   "arc": "empire-start",
-   "version": "7.0",
-   "faction": "empire",
-   "order": 110,
-   "title": {
-    "fr": "L’abordage",
-    "en": "Boarding the enemy ship"
-   },
-   "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; après la montée sur le pont. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "empire-start-knight-defeated",
-   "kind": "engine",
-   "source": "main",
-   "event": "DeathTriggerPaladinFinal",
-   "arc": "empire-start",
-   "version": "7.0",
-   "faction": "empire",
-   "order": 120,
-   "title": {
-    "fr": "Le chevalier vaincu",
-    "en": "The knight defeated"
-   },
-   "chronology": "Fin du tutoriel de l’Empire : Gradimir Belov vaincu, le joueur quitte le navire kanien pour Igsh (Hadagan_Sanatorium) ; suit l’abordage.",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
    "id": "invasion-plague",
    "entry": "Video/7_0Events/Invasion/Beregovoy_HD.ogv",
    "source": "main",
@@ -1524,80 +1416,193 @@
    "audio": {
     "language": "ru"
    }
-  },
-  {
-   "id": "league-klement-death",
-   "kind": "engine",
-   "source": "main",
-   "event": "PaladinQuest",
-   "arc": "league-start",
-   "version": "4.0",
-   "faction": "league",
-   "order": 110,
-   "title": {
-    "fr": "La mort du Grand Mage",
-    "en": "The Great Mage’s Death"
-   },
-   "chronology": "Instance de départ de la Ligue (Inst_LeagueStart, voix « patch403 ») : première scène jouée, au sommet de la tour, pendant les quêtes « Аудиенция у Великого мага » ; après le prologue de faction.",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "league-evacuation",
-   "kind": "engine",
-   "source": "main",
-   "event": "Quest_4_30",
-   "arc": "league-start",
-   "version": "4.0",
-   "faction": "league",
-   "order": 120,
-   "title": {
-    "fr": "L’évacuation",
-    "en": "The Evacuation"
-   },
-   "chronology": "Instance de départ de la Ligue : quête « Эвакуация » (Quest_4_30), au pied de la tour, avant « Дорога в Новоград » qui clôt l’instance ; suit la mort du Grand Mage.",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "pride-cinema",
-   "kind": "engine",
-   "source": "main",
-   "event": "Pride_1_9",
-   "arc": "pride-start",
-   "version": "7.0",
-   "faction": "league",
-   "order": 130,
-   "title": {
-    "fr": "Ah, le cinéma !",
-    "en": "Ah, the Cinema!"
-   },
-   "chronology": "Zone de départ des Pridiens (PridensStart) : début de la quête « Ах, синема, синема! » (Pride_1_9, après Pride_1_8) ; avant « Спектакль » (Pride_1_11).",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "pride-performance",
-   "kind": "engine",
-   "source": "main",
-   "event": "Pride_1_11",
-   "arc": "pride-start",
-   "version": "7.0",
-   "faction": "league",
-   "order": 132,
-   "title": {
-    "fr": "Le spectacle",
-    "en": "The Performance"
-   },
-   "chronology": "Zone de départ des Pridiens : début de la quête « Спектакль » (Pride_1_11), jusqu'au moment où le joueur reçoit ses émotes de scène (13 s : la suite est jouée par lui).",
-   "audio": {
-    "language": "ru"
-   }
   }
  ],
+ "held_back": {
+  "_note": "Chapitres retirés du film à la demande (24/09/2026) : zones de départ de la Ligue, de l'Empire et des Pridiens, à réintégrer autrement (timeline propre). Leurs scènes moteur (`engine_scenes`) et leurs fichiers sous public/game/cinematics/engine/ sont conservés ; pour remettre un chapitre dans le film, le replacer dans `cinematics` puis relancer tools/extract_engine_cutscene.py --only <id>.",
+  "chapters": [
+   {
+    "id": "empire-start-command-post",
+    "kind": "engine",
+    "source": "main",
+    "event": "ComanadPost",
+    "arc": "empire-start",
+    "version": "7.0",
+    "faction": "empire",
+    "order": 104,
+    "title": {
+     "fr": "Au poste de commandement",
+     "en": "At the command post"
+    },
+    "chronology": "Tutoriel de l’Empire (Inst_EmpireStart, voix « patch403 ») : zone ComanadPost, entre les quêtes des canons (« Пострелять из корабельной пушки ») et « Реакторная », dont elle fait le capitaine donneur ; première scène doublée à plusieurs voix du tutoriel ; ouvre le film de l’Empire.",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "empire-start-lost-artifact",
+    "kind": "engine",
+    "source": "main",
+    "event": "Quest4_1",
+    "arc": "empire-start",
+    "version": "7.0",
+    "faction": "empire",
+    "order": 106,
+    "title": {
+     "fr": "L’artefact perdu",
+     "en": "The lost artifact"
+    },
+    "chronology": "Tutoriel de l’Empire : récompense de « Сердце корабля » (Quest4_1), dans la salle du réacteur ; après « Реакторная », avant « Канийский вор » (Quest4_3) et « Схватка с витязем ».",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "empire-start-boarding-order",
+    "kind": "engine",
+    "source": "main",
+    "event": "Quest4_4",
+    "arc": "empire-start",
+    "version": "7.0",
+    "faction": "empire",
+    "order": 107,
+    "title": {
+     "fr": "L’ordre d’abordage",
+     "en": "The boarding order"
+    },
+    "chronology": "Tutoriel de l’Empire : début de « Схватка с витязем » (Quest4_4), donnée par le capitaine que la scène précédente a amené au réacteur ; précède la montée sur le pont.",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "empire-start-stolen-device",
+    "kind": "engine",
+    "source": "main",
+    "event": "TeleportPaladin",
+    "arc": "empire-start",
+    "version": "7.0",
+    "faction": "empire",
+    "order": 108,
+    "title": {
+     "fr": "L’appareil volé",
+     "en": "The stolen device"
+    },
+    "chronology": "Tutoriel de l’Empire : zone TeleportPaladin, sur le pont, pendant « Схватка с витязем » ; après LastEventStart, 9 s avant la zone Jump (« L’abordage »).",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "empire-start-boarding",
+    "kind": "engine",
+    "source": "main",
+    "event": "Jump",
+    "arc": "empire-start",
+    "version": "7.0",
+    "faction": "empire",
+    "order": 110,
+    "title": {
+     "fr": "L’abordage",
+     "en": "Boarding the enemy ship"
+    },
+    "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; après la montée sur le pont. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "empire-start-knight-defeated",
+    "kind": "engine",
+    "source": "main",
+    "event": "DeathTriggerPaladinFinal",
+    "arc": "empire-start",
+    "version": "7.0",
+    "faction": "empire",
+    "order": 120,
+    "title": {
+     "fr": "Le chevalier vaincu",
+     "en": "The knight defeated"
+    },
+    "chronology": "Fin du tutoriel de l’Empire : Gradimir Belov vaincu, le joueur quitte le navire kanien pour Igsh (Hadagan_Sanatorium) ; suit l’abordage.",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "league-klement-death",
+    "kind": "engine",
+    "source": "main",
+    "event": "PaladinQuest",
+    "arc": "league-start",
+    "version": "4.0",
+    "faction": "league",
+    "order": 110,
+    "title": {
+     "fr": "La mort du Grand Mage",
+     "en": "The Great Mage’s Death"
+    },
+    "chronology": "Instance de départ de la Ligue (Inst_LeagueStart, voix « patch403 ») : première scène jouée, au sommet de la tour, pendant les quêtes « Аудиенция у Великого мага » ; après le prologue de faction.",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "league-evacuation",
+    "kind": "engine",
+    "source": "main",
+    "event": "Quest_4_30",
+    "arc": "league-start",
+    "version": "4.0",
+    "faction": "league",
+    "order": 120,
+    "title": {
+     "fr": "L’évacuation",
+     "en": "The Evacuation"
+    },
+    "chronology": "Instance de départ de la Ligue : quête « Эвакуация » (Quest_4_30), au pied de la tour, avant « Дорога в Новоград » qui clôt l’instance ; suit la mort du Grand Mage.",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "pride-cinema",
+    "kind": "engine",
+    "source": "main",
+    "event": "Pride_1_9",
+    "arc": "pride-start",
+    "version": "7.0",
+    "faction": "league",
+    "order": 130,
+    "title": {
+     "fr": "Ah, le cinéma !",
+     "en": "Ah, the Cinema!"
+    },
+    "chronology": "Zone de départ des Pridiens (PridensStart) : début de la quête « Ах, синема, синема! » (Pride_1_9, après Pride_1_8) ; avant « Спектакль » (Pride_1_11).",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "pride-performance",
+    "kind": "engine",
+    "source": "main",
+    "event": "Pride_1_11",
+    "arc": "pride-start",
+    "version": "7.0",
+    "faction": "league",
+    "order": 132,
+    "title": {
+     "fr": "Le spectacle",
+     "en": "The Performance"
+    },
+    "chronology": "Zone de départ des Pridiens : début de la quête « Спектакль » (Pride_1_11), jusqu'au moment où le joueur reçoit ses émotes de scène (13 s : la suite est jouée par lui).",
+    "audio": {
+     "language": "ru"
+    }
+   }
+  ]
+ },
  "excluded": [
   {
    "entry": "Video/<N>_0Events/MainMenu/Intro.ogv, MainMenu.ogv (9.0 → 17.0)",
