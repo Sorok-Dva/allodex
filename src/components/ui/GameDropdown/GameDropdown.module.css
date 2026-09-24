@@ -15,7 +15,8 @@
 .value {
   position: absolute; left: 0; right: 2px; top: -1.8px;
   font-size: 14px; line-height: 14px; color: #e6f3e6;
-  white-space: nowrap;
+  /* Un libellé plus long que le champ (tenues) est coupé, jamais débordant ; l'infobulle le donne en entier. */
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 6px;
 }
 .button {
   position: absolute; top: -1px; width: 23px; height: 23px;

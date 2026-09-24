@@ -5,9 +5,10 @@
   color: #b0d9be; font-size: 15px; pointer-events: none;
 }
 
-/* Cartouche : plaque de titre du jeu, comme les Chroniques. */
-.cartouche { position: absolute; left: 28px; top: 24px; }
-.plate { position: relative; display: inline-block; height: 31px; min-width: 220px; padding: 0 48px; }
+/* Cartouche : plaque de titre du jeu posée à cheval sur le bord haut du panneau, centrée
+   sur sa largeur, comme la plaque des fenêtres du jeu (Succès). */
+.cartouche { position: absolute; left: 24px; top: 57px; width: 268px; z-index: 2; display: flex; justify-content: center; }
+.plate { position: relative; display: inline-block; height: 31px; min-width: 200px; padding: 0 48px; }
 .plateTitle {
   position: relative; display: flex; align-items: flex-start; justify-content: center;
   height: 31px; padding-top: 4px; line-height: 19px; white-space: nowrap;
@@ -27,10 +28,10 @@
 .panel {
   position: absolute; left: 24px; top: 72px; bottom: 96px; width: 268px;
   display: flex; flex-direction: column; gap: 10px;
-  padding: 12px 12px 10px; border-style: solid; border-color: transparent;
+  padding: 26px 12px 10px; border-style: solid; border-color: transparent;
   background: rgba(0, 0, 0, 0.67); color: #e6f3e6;
 }
-.field { display: flex; align-items: center; justify-content: space-between; height: 24px; }
+.field { display: flex; align-items: center; justify-content: space-between; gap: 6px; height: 24px; }
 .fieldLabel { color: #b0d9be; font-size: 13px; }
 .dropdown { position: relative !important; width: 150px; }
 .lists { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #4c5a3f transparent; padding-right: 2px; }
@@ -99,6 +100,7 @@
 
 @media (max-width: 900px) {
   .panel { top: 64px; bottom: auto; max-height: 46vh; width: min(268px, calc(100vw - 32px)); left: 16px; }
+  .cartouche { top: 49px; left: 16px; width: min(268px, calc(100vw - 32px)); }
   .hint { display: none; }
   .transport { flex-wrap: wrap; bottom: 12px; }
   .seek { min-width: 160px; }
