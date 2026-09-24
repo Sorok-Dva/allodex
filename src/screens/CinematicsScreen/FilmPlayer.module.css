@@ -4,6 +4,14 @@
 .stage { position: relative; grid-column: 1; grid-row: 1; overflow: hidden; }
 .video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
 .visible { visibility: visible; }
+/* Voile noir des changements de chapitre (fondus, chargement) ; roue d'attente si l'attente dure. */
+.veil { position: absolute; inset: 0; background: #000; opacity: 1; pointer-events: none; }
+.veilSpinner { position: absolute; left: 50%; top: 50%; width: 36px; height: 36px; margin: -18px; border: 3px solid #e8c87755;
+  border-top-color: #e8c877; border-radius: 50%; opacity: 0; }
+.veil[data-waiting="true"] .veilSpinner { animation: veilSpin 900ms linear infinite, veilShow 300ms ease-out 800ms both; }
+@keyframes veilSpin { to { transform: rotate(360deg); } }
+@keyframes veilShow { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .veil[data-waiting="true"] .veilSpinner { animation-duration: 3s, 300ms; } }
 .hidden { visibility: hidden; pointer-events: none; }
 .video::cue { font-family: var(--font-serif); font-size: 26px; line-height: 1.3; color: #fff3c4; background: #000a; text-shadow: 0 1px 2px #000; }
 @media (max-width: 900px) { .video::cue { font-size: 18px; } }

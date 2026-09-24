@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { actorClipAt, argb, lineEnd, sampleKeys, subtitleAt, voiceAt, type EngineLine } from './timeline';
+import { actorClipAt, argb, decorShownAt, decorWindows, lineEnd, sampleKeys, shakeAt, subtitleAt, voiceAt, type EngineLine } from './timeline';
 
 const line = (n: number, start: number, duration: number, speaker: string, voice: number | null, animations: string[] = []): EngineLine => ({
   n, start, duration, speaker, animations, text: { en: `line ${n}`, ru: `реплика ${n}` },
@@ -7,6 +7,13 @@ const line = (n: number, start: number, duration: number, speaker: string, voice
 });
 
 describe('engine cutscene timeline', () => {
+  it('plays a decor object from 0 without states, each server state until the next one', () => {
+    expect(decorWindows({ vot: 'Cannon' })).toEqual([{ vot: 'Cannon', start: 0, until: Infinity }]);
+    expect(decorWindows({ vot: 'Door', states: [{ t: 2, vot: 'Door@special' }, { t: -1e5, vot: 'Door@special01' }] })).toEqual([
+      { vot: 'Door@special01', start: -1e5, until: 2 }, { vot: 'Door@special', start: 2, until: Infinity },
+    ]);
+  });
+
   it('interpolates camera keys linearly and holds the last one', () => {
     const keys = [{ t: 0, p: [0, 0, 0] as [number, number, number] }, { t: 10, p: [10, 20, 30] as [number, number, number] }];
     expect(sampleKeys(keys, 5)).toEqual([5, 10, 15]);
@@ -99,5 +106,19 @@ describe('engine cutscene paths, fades and sounds', () => {
     expect(actorClipAt(actor, [], 11)).toEqual({ clip: 'Death', time: 1 });
     expect(actorClipAt(actor, [], 15).clip).toBe('Death');
     expect(actorClipAt(actor, [], 32)).toEqual({ clip: 'Idle', time: 32 });
+  });
+
+  it('shows decor swapped by a stele only inside its window', () => {
+    expect(decorShownAt({ hidden: [[25.5, 600]] }, 25)).toBe(true);
+    expect(decorShownAt({ hidden: [[25.5, 600]] }, 26)).toBe(false);
+    expect(decorShownAt({ t: 25.5, until: 600 }, 25)).toBe(false);
+    expect(decorShownAt({ t: 25.5, until: 600 }, 30)).toBe(true);
+  });
+
+  it('plays camera shakes at fps times timeScale, scaled by amplitude', () => {
+    const shakes = [{ t: 10, fps: 30, amplitude: 4, timeScale: 2, keys: [[0, 0, 0], [0.1, 0, 0], [0, 0, 0]] as [number, number, number][] }];
+    expect(shakeAt(shakes, 9)).toEqual([0, 0, 0]);
+    expect(shakeAt(shakes, 10 + 1 / 60)[0]).toBeCloseTo(0.4);
+    expect(shakeAt(shakes, 12)).toEqual([0, 0, 0]);
   });
 });

@@ -6,7 +6,7 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { FullscreenToggle } from '@/components/controls/FullscreenToggle';
 import { EngineCutscene, type MediaLike } from '@/components/scene/EngineCutscene';
 import {
-  bonusStart, chapterAt, chaptersOf, cinematicFile, filmDuration, filmTime, formatDuration, groupByArc, nextIndex,
+  bonusStart, chapterAt, chapterVeil, chaptersOf, cinematicFile, filmDuration, filmTime, formatDuration, groupByArc, nextIndex,
   subtitleLangs, trackFor, type Cinematic, type CinematicArc, type Faction, type SubtitleLang,
 } from '@/lib/cinematics';
 import s from './FilmPlayer.module.css';
@@ -28,6 +28,13 @@ function preferredFormat(): 'webm' | 'mp4' {
 }
 
 const TITLE_CARD_MS = 4200;
+/**
+ * Après un changement de chapitre, le lecteur libéré attend avant de précharger le suivant : le
+ * chargement d'une scène moteur (lecture des modèles) ne doit pas tomber pendant le fondu d'entrée.
+ */
+export const PRELOAD_DELAY_MS = 1500;
+/** Lecteur prêt à montrer une image : vidéo `HAVE_FUTURE_DATA`, scène moteur préparée (`readyState` 4). */
+const READY_STATE = 3;
 /** Délai d'inactivité avant de masquer commandes et curseur en plein écran. */
 export const IDLE_MS = 2500;
 
@@ -41,6 +48,8 @@ const fullscreenElement = () => document.fullscreenElement ?? (document as Webki
  * Lecture « film complet » : deux lecteurs vidéo se relaient. Pendant qu'un chapitre joue,
  * l'autre lecteur, caché et muet, précharge le suivant ; à la fin, on bascule de l'un à
  * l'autre sans temps de chargement, puis le lecteur libéré précharge le chapitre d'après.
+ * Un voile noir fond chaque fin de chapitre et chaque début, et reste posé tant que le lecteur
+ * montré n'est pas prêt (scène moteur en préparation) : le chargement ne se voit pas.
  */
 export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }: Props) {
   const { t, lang } = useI18n();
@@ -65,6 +74,8 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
   const video1 = useRef<MediaLike>(null);
   const videos = useMemo(() => [video0, video1] as const, []);
   const pendingSeek = useRef<number | null>(null);
+  const veilRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef<0 | 1>(0);
   const playerRef = useRef<HTMLDivElement>(null);
   // Plein écran : API Fullscreen sur le conteneur du lecteur (les sous-titres, rendus par nos
   // <track>, restent visibles), sinon mode CSS (iOS Safari n'accepte pas l'API sur un div).
@@ -72,6 +83,7 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
   const [idle, setIdle] = useState(false);
   const idleTimer = useRef<number | undefined>(undefined);
 
+  activeRef.current = active;
   const current = slots[active] ?? 0;
   const cinematic = film[current];
   const firstBonus = useMemo(() => bonusStart(film), [film]);
@@ -95,9 +107,9 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
     pendingSeek.current = at || null;
     videos[active].current?.pause();
     if (slots[other] === index) {
-      // Le chapitre attendait, préchargé : on montre ce lecteur et l'autre prend la suite.
+      // Le chapitre attendait, préchargé : on montre ce lecteur ; l'autre prendra la suite
+      // (`PRELOAD_DELAY_MS` plus tard).
       out[other] = index;
-      out[active] = next;
       setActive(other);
       const video = videos[other].current;
       if (video) {
@@ -106,10 +118,41 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
       }
     } else {
       out[active] = index;
-      out[other] = next;
+      if (next !== null && slots[other] === next) out[other] = next;
     }
     setSlots(out);
   }, [active, slots, film, play, videos]);
+
+  // Lecteur libre : préchargement du chapitre suivant, un peu après le changement de chapitre.
+  useEffect(() => {
+    const other: 0 | 1 = active === 0 ? 1 : 0;
+    const next = nextIndex(film, current);
+    if (slots[other] !== null || next === null) return;
+    const timer = window.setTimeout(() => setSlots(prev => {
+      if (prev[other] !== null) return prev;
+      const out: [number | null, number | null] = [prev[0], prev[1]];
+      out[other] = next;
+      return out;
+    }), PRELOAD_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [slots, active, film, current]);
+
+  // Voile des changements de chapitre, suivi image par image sur le lecteur montré.
+  useEffect(() => {
+    let frame = 0;
+    const step = () => {
+      frame = requestAnimationFrame(step);
+      const veil = veilRef.current;
+      if (!veil) return;
+      const media = videos[activeRef.current].current;
+      const ready = !!media && media.readyState >= READY_STATE;
+      const opacity = media ? chapterVeil(media.currentTime, media.duration, ready) : 1;
+      veil.style.opacity = opacity.toFixed(3);
+      veil.dataset.waiting = ready ? 'false' : 'true';
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [videos]);
 
   // Chapitre chargé dans le lecteur visible : lecture (dès les métadonnées si besoin).
   useEffect(() => {
@@ -306,6 +349,10 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
             </video>
           );
         })}
+
+        <div ref={veilRef} className={s.veil} aria-hidden="true" data-testid="film-veil" data-waiting="true">
+          <span className={s.veilSpinner} />
+        </div>
 
         {cinematic && !ended && (
           <div className={`${s.card} ${cardVisible ? s.cardIn : s.cardOut}`} aria-live="polite" data-testid="title-card">

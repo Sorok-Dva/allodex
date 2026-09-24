@@ -86,7 +86,7 @@ export function OpeningScreen() {
     { id: 'lorebook', base: `${T.pinMenu}/ButtonSpellbook`, label: t('home.lorebook'), hint: t('home.lorebookHint'), onClick: () => navigate('/lorebook') },
     { id: 'music', base: `${T.pinMenu}/ButtonMedals`, image: 'Official/media_player', label: t('music.title'), hint: t('home.musicHint'), onClick: () => navigate('/music') },
     { id: 'cinematics', base: `${T.pinMenu}/ButtonMedals`, image: T.videoIcon, label: t('home.cinematics'), hint: t('home.cinematicsHint'), onClick: () => navigate('/cinematics') },
-    { id: 'fatalities', base: T.spells, image: `${T.spells}/FatalityLotus`, label: t('home.fatalities'), hint: t('home.fatalitiesHint'), disabled: import.meta.env.PROD, onClick: () => navigate('/fatalities') },
+    { id: 'fatalities', base: T.spells, image: `${T.spells}/FatalityLotus`, label: t('home.fatalities'), hint: t('home.fatalitiesHint'), onClick: () => navigate('/fatalities') },
     { id: 'talents', base: `${T.pinMenu}/ButtonTalents`, label: t('home.talents'), hint: t('home.talentsHint'), onClick: () => navigate('/talents') },
     { id: 'medals', base: `${T.pinMenu}/ButtonMedals`, label: t('home.medals'), hint: t('home.medalsHint'), onClick: () => navigate('/achievements') },
     { id: 'equipment', base: `${T.pinMenu}/ButtonEquipment`, label: t('home.character'), hint: t('home.characterHint'), disabled: import.meta.env.PROD, onClick: () => navigate('/character') },

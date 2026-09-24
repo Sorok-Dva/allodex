@@ -270,7 +270,7 @@ export function FatalitiesScreen() {
           onMouseEnter={e => setHover({ id: f.id, anchor: e.currentTarget.getBoundingClientRect() })}
           onMouseLeave={() => setHover(null)}
         >
-          <span className={s.pillSkin} aria-hidden="true" style={nineSlice(current ? 'pill-full-open' : 'pill-full', PILL_SLICE)} />
+          <span className={s.pillSkin} aria-hidden="true" style={nineSlice(current ? 'pill-full-open' : 'pill-full', PILL_SLICE, { fill: true })} />
           {shown.icon && <img className={s.pillIcon} src={fatalityFile(shown.icon)} alt="" aria-hidden="true" width={20} height={20} />}
           <span className={`${s.pillLabel} ${shown.icon ? s.pillLabelIcon : ''} ${shown.official ? '' : s.pillLabelUnofficial}`}><span className={s.pillText}>{shown.text}</span></span>
         </button>

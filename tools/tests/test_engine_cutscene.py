@@ -430,3 +430,126 @@ def test_merge_bubbles_gives_a_voice_its_bubble_and_drops_twin_chats():
     out = merge_bubbles(lines, chats)
     assert [(l["t"], l["voice"], l.get("bubble")) for l in out] == [
         (12.0, "IL1/15_Amanda_04", "Портал открыт!"), (20.0, None, "Прыгай!")]
+
+
+def test_map_doors_reads_door_devices_of_the_regions_and_their_state_animations(tmp_path):
+    door_dir = tmp_path / "Items" / "Door"
+    door_dir.mkdir(parents=True)
+    (door_dir / "Door.(DeviceVisScripts).xdb").write_text("""<DeviceVisScripts><states>
+      <Item><action type="DeviceVisActionList"><elements>
+        <Item type="DeviceAnimationAction"><mode>CLAMP</mode><animations><Item>special</Item></animations></Item>
+      </elements></action></Item>
+      <Item><action type="DeviceVisActionList"><elements>
+        <Item type="DeviceAnimationAction"><mode>CLAMP</mode><animations><Item>special01</Item></animations></Item>
+      </elements></action></Item></states></DeviceVisScripts>""")
+    (door_dir / "Door.(DoorResource).xdb").write_text("""<DoorResource><visScripts href="Door.(DeviceVisScripts).xdb" />
+      <isOpen>false</isOpen><closedVisState>2</closedVisState><openVisState>1</openVisState></DoorResource>""")
+    region = tmp_path / "Maps" / "M" / "010_000"
+    region.mkdir(parents=True)
+    (region / "0_5_MapRegion.xdb").write_text("""<MapRegion><Objects>
+      <Item><Position X="102.5" Y="113.7" Z="10.8" /><serverStatic type="gameMechanics.map.spawn.StaticDevice">
+        <scriptID>FinalDoor</scriptID><device href="/Items/Door/Door.(DoorResource).xdb#xpointer(/DoorResource)" />
+      </serverStatic></Item>
+      <Item><Position X="1" Y="2" Z="3" /></Item></Objects></MapRegion>""")
+    (door,) = cutscene_xdb70.map_doors(tmp_path, "M")
+    assert door["script"] == "FinalDoor" and door["p"] == [2662.5, 1393.7, 10.8] and not door["isOpen"]
+    assert door["open"] == {"clips": ["special"], "mode": "CLAMP"}
+    assert door["closed"] == {"clips": ["special01"], "mode": "CLAMP"}
+
+
+def test_xdb70_door_switches_are_recorded_on_their_spawn(tmp_path):
+    def switch(script: str, kind: str) -> str:
+        return (f'<Item type="gameMechanics.elements.impacts.ImpactsToSingleSpawn"><spawn><scriptID>{script}</scriptID>'
+                f'</spawn><impacts><Item type="gameMechanics.elements.device.DoorSwitch"><switchType>{kind}</switchType>'
+                f'</Item></impacts></Item>')
+    (tmp_path / "Z.(ScriptZone).xdb").write_text(f"""<ScriptZone><impactsIn>{switch('D1', 'Close')}
+      <Item type="gameMechanics.elements.impacts.ImpactsDeferred"><delay>1500</delay><impacts>{switch('D2', 'Open')}
+      </impacts></Item></impactsIn></ScriptZone>""")
+    tl = cutscene_xdb70.simulate(tmp_path, trigger="Z.(ScriptZone).xdb")
+    assert tl.doors == [{"t": 0.0, "spawn": "D1", "open": False}, {"t": 1.5, "spawn": "D2", "open": True}]
+
+
+def test_door_states_hold_the_starting_state_then_follow_the_switches():
+    from tools.extract_engine_cutscene import DOOR_BEFORE, door_states
+    door = {"script": "D1", "isOpen": False, "open": "Door@special", "closed": "Door@special01"}
+    assert door_states(door, {}, []) == [{"t": DOOR_BEFORE, "vot": "Door@special01"}]
+    switches = [{"t": 0.0, "spawn": "D1", "open": False}, {"t": 2.0, "spawn": "D2", "open": True}]
+    assert door_states(door, {"D1": True}, switches) == [{"t": DOOR_BEFORE, "vot": "Door@special"},
+                                                         {"t": 0.0, "vot": "Door@special01"}]
+
+
+def test_server_yaw_is_a_heading_turned_to_the_minus_y_model_axis():
+    from tools.extract_engine_cutscene import heading, model_yaw
+    # stèle League_Ship_Final (3,26141) et sa collision posée dans la région (4,82951)
+    assert abs(model_yaw(3.26141) - 4.82951) < 0.01
+    assert heading([0, 0, 0], [0, 5, 0]) == round(math.pi / 2, 4)
+    assert abs(model_yaw(heading([0, 0, 0], [3, 4, 0])) - face_yaw([0, 0, 0], [3, 4, 0])) < 1e-3
+
+
+def test_move_clip_runs_a_model_without_a_walk():
+    from tools.extract_engine_cutscene import move_clip
+    assert move_clip("Walk", {"Idle": 1, "Run": 1}) == "Run"
+    assert move_clip("Walk", {"Walk": 1, "Run": 1}) == "Walk"
+    assert move_clip("Run", {"Run": 1}) == "Run" and move_clip(None, {}) is None
+def test_xdb70_trigger_reads_vis_lists_switch_off_teleports_and_shakes(tmp_path):
+    """Déroulé d'un déclencheur : `VisActionList` lue dans l'ordre (délai, arrêt), `postAction` et
+    `impactsOff` au retrait du buff, téléportation sur la carte même (pas une sortie), secousse."""
+    (tmp_path / "Maps" / "M" / "ScriptZones").mkdir(parents=True)
+    (tmp_path / "Fall.(BuffVisScripts).xdb").write_text("""<BuffVisScripts>
+      <action type="VisActionList"><elements>
+        <Item type="PostEffectVisAction"><visActionID>Fade</visActionID><userPostEffect href="/Black.xdb"/></Item>
+        <Item type="VisActionDelay"><time>3000</time></Item>
+        <Item type="VisActionStopAction"><stoppedActionID>Fade</stoppedActionID></Item>
+        <Item type="CameraTrackAction"><cameraPoints><Item><position x="1" y="2" z="3"/><duration>1</duration></Item>
+          <Item><position x="4" y="5" z="6"/><duration>1</duration></Item></cameraPoints></Item>
+      </elements></action>
+      <postAction type="CreatureAnimationAction"><mode>DIE</mode><animations><Item>sleepUp</Item></animations></postAction>
+    </BuffVisScripts>""")
+    (tmp_path / "Black.xdb").write_text("<UserPostEffect><textureMultiply href='/Black.(Texture).xdb'/></UserPostEffect>")
+    (tmp_path / "Up.(BuffResource).xdb").write_text("<BuffResource><duration>1000</duration></BuffResource>")
+    (tmp_path / "Fall.(BuffResource).xdb").write_text("""<BuffResource><visScript href="Fall.(BuffVisScripts).xdb"/>
+      <effects><Item type="gameMechanics.elements.effects.Switch"><impactsOff>
+        <Item type="gameMechanics.constructor.schemes.buff.BuffAttacher"><buff href="Up.(BuffResource).xdb"/></Item>
+      </impactsOff></Item></effects><duration>9000</duration></BuffResource>""")
+    (tmp_path / "cam.(AnimatedParameters).xdb").write_text(
+        "<AnimatedParameters><cameraTranslate><Item x='0' y='0' z='0'/><Item x='0.1' y='0' z='0'/></cameraTranslate>"
+        "<fps>30</fps></AnimatedParameters>")
+    (tmp_path / "Shake.(CameraShakeParameters).xdb").write_text(
+        "<CameraShakeParameters><animation href='cam.(AnimatedParameters).xdb'/><maxRadius>60</maxRadius>"
+        "<minRadius>30</minRadius><amplitudeScale>4</amplitudeScale><timeScale>2</timeScale></CameraShakeParameters>")
+    (tmp_path / "Shake.(ClientData).xdb").write_text(
+        "<ClientData><customData type='CreatureVisActionData'><action type='ShakeAction'>"
+        "<params href='Shake.(CameraShakeParameters).xdb'/></action></customData></ClientData>")
+    (tmp_path / "Maps" / "M" / "ScriptZones" / "Z.(ScriptZone).xdb").write_text("""<ScriptZone><impactsIn>
+      <Item type="gameMechanics.constructor.schemes.buff.BuffAttacher"><buff href="/Fall.(BuffResource).xdb"/>
+        <impactsOnAttach><Item type="gameMechanics.elements.impacts.ImpactTeleport">
+          <destination type="gameMechanics.map.destination.DestinationLocator"><locator><scriptID>Here</scriptID>
+            <map href="/Maps/M/MapResource.xdb"/></locator><yaw><value>2.86</value></yaw></destination>
+        </Item></impactsOnAttach></Item>
+      <Item type="gameMechanics.elements.impacts.ImpactsToSingleSpawn"><spawn><scriptID>Paladin</scriptID></spawn>
+        <impacts><Item type="gameMechanics.constructor.schemes.buff.BuffAttacher"><buff href="/Fall.(BuffResource).xdb"/></Item>
+        </impacts></Item>
+      <Item type="gameMechanics.elements.impacts.ImpactClientDataParams"><data href="/Shake.(ClientData).xdb"/></Item>
+    </impactsIn></ScriptZone>""")
+    tl = cutscene_xdb70.simulate(tmp_path, trigger="Maps/M/ScriptZones/Z.(ScriptZone).xdb", until_last=True, home="M")
+    assert tl.exit is None and tl.teleports == [{"t": 0.0, "locator": "Here", "yaw": 2.86}]
+    assert [(p["t"], p["until"]) for p in tl.post][:1] == [(0.0, 3.0)]
+    assert tl.shots[0]["t"] == 3.0 and tl.shots[0]["duration"] == 6.0
+    assert ("sleepUp", 9.0) in [(e["animations"][0], e["t"]) for e in tl.effects if e["target"] == "Paladin"]
+    assert "Paladin" in tl.scripts
+    assert [b["t"] for b in tl.buffs if b["buff"] == "Up.(BuffResource).xdb"] == [9.0, 9.0]
+    assert tl.shakes[0]["amplitude"] == 4 and tl.shakes[0]["timeScale"] == 2 and len(tl.shakes[0]["keys"]) == 2
+
+
+def test_find_spawns_reads_static_device_steles_of_map_regions(tmp_path):
+    folder = tmp_path / "Maps" / "M" / "000_020"
+    folder.mkdir(parents=True)
+    (folder / "1_2_MapRegion.xdb").write_text("""<MapRegion><objects><Item>
+      <Position X="44" Y="168" Z="0" /><Rotation Yaw="0.5" Pitch="0" Roll="0" />
+      <StaticObjectTemplate href="/World/Floor6_Intact.(StaticObject).xdb" />
+      <serverStatic type="gameMechanics.map.spawn.StaticDevice"><scriptID>Floor_6</scriptID>
+        <device href="/Items/Floor_6.(SteleResource).xdb" /></serverStatic></Item></objects></MapRegion>""")
+    out = cutscene_xdb70.find_spawns(tmp_path, "M", {"Floor_6"})
+    assert out["Floor_6"]["p"] == [300.0, 5800.0, 0.0] and out["Floor_6"]["yaw"] == 0.5
+    assert out["Floor_6"]["mob"] == "Items/Floor_6.(SteleResource).xdb"
+    assert out["Floor_6"]["static"] == "World/Floor6_Intact.(StaticObject).xdb"

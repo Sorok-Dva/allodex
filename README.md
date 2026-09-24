@@ -96,7 +96,12 @@ s'enchaînent dans l'ordre chronologique, avec un carton de titre à chaque chap
 liste des chapitres (vignettes, navigation), une barre de progression sur la durée du
 film (repères de chapitres) et les sous-titres officiels en `<track>` WebVTT (FR, EN, RU
 ou aucun). Deux lecteurs se relaient : pendant qu'un chapitre joue, l'autre, caché et
-muet, précharge le suivant, d'où un passage sans attente. `?faction=league|empire` ouvre
+muet, précharge le suivant, d'où un passage sans attente ; après un changement de chapitre, le
+lecteur libéré attend 1,5 s avant de précharger (la lecture des modèles d'une scène moteur ne tombe
+pas pendant le fondu). **Fondus** : un voile noir ferme chaque chapitre et ouvre le suivant (0,6 s,
+vidéo comme scène moteur) et reste posé tant que le lecteur montré n'est pas prêt ; une scène moteur
+n'est prête qu'une fois préparée (programmes compilés, textures envoyées quelques-unes par image,
+premier rendu), et son horloge ne part qu'ensuite. `?faction=league|empire` ouvre
 directement un film. Clavier : espace (lecture/pause), Maj+←/→ (chapitre), F (plein écran),
 Échap (quitte le plein écran, sinon retour au choix de faction).
 
@@ -175,7 +180,7 @@ ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le rest
 
 ### Cinématiques moteur recréées en 3D
 
-Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Dix-sept
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Vingt-trois
 sont **recréées dans three.js** avec les données du dernier client et jouées dans le film comme
 des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix russes) :
 
@@ -194,12 +199,18 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Ferris 6.0 · « La chute du Locus » (`ferris-locus-fall`) | serveur 7.0 | `FerrisRaid` | 122 s |
 | Invasion 7.0 · « La mort de l’ingénieur » (`invasion-engineer-kania`, Ligue) | client (`GameViewScene`) | `Inst_ZoneContested12_Start` | 13 s |
 | Citadelle de Nihaz 12.0 · « Le monde caché » (`ao12-prologue04`, pilote) | manifeste | `AO12_PrologueInst` | 82 s |
+| Zone de départ de l’Empire · « Au poste de commandement » (`empire-start-command-post`, zone `ComanadPost`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 12 s |
+| Zone de départ de l’Empire · « L’artefact perdu » (`empire-start-lost-artifact`, récompense de `Quest4_1`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 28 s |
+| Zone de départ de l’Empire · « L’ordre d’abordage » (`empire-start-boarding-order`, début de `Quest4_4`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 9 s |
+| Zone de départ de l’Empire · « L’appareil volé » (`empire-start-stolen-device`, zone `TeleportPaladin`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 7 s |
 | Zone de départ de l’Empire · « L’abordage » (`empire-start-boarding`, zone `Jump`, quête `Quest4_4`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 14 s |
 | Zone de départ de l’Empire · « Le chevalier vaincu » (`empire-start-knight-defeated`, `DeathTriggerPaladinFinal`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 15 s |
-| Zone de départ de la Ligue · « La mort du Grand Mage » (`league-klement-death`, zone `PaladinQuest`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 43 s |
+| Zone de départ de la Ligue · « La mort du Grand Mage » (`league-klement-death`, zone `PaladinQuest`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 53 s |
 | Zone de départ de la Ligue · « L’évacuation » (`league-evacuation`, quête `Quest_4_30`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 81 s |
+| Zone de départ des Pridiens · « Ah, le cinéma ! » (`pride-cinema`, quête `Pride_1_9`) | serveur 7.0 (déclencheur) | `PridensStart` | 12 s |
+| Zone de départ des Pridiens · « Le spectacle » (`pride-performance`, quête `Pride_1_11`) | serveur 7.0 (déclencheur) | `PridensStart` | 11 s |
 
-**Zone de départ de l’Empire** (arc `empire-start`, juste après le prologue de l’Empire) : dans le
+**Zone de départ de l’Empire** (arc `empire-start`, en tête du film de l’Empire ; le prologue de l’Empire vient juste après sa fin, choix de l’utilisateur) : dans le
 17.0, les trois races de l’Empire (Xadaganiens, Orcs, Arisen) commencent au même tutoriel,
 `Inst_EmpireStart` (navire astral attaqué par la Ligue), qui sort vers `Hadagan_Sanatorium` (Igsh,
 d’après l’`ImpactTeleport` du 7.0) ; Pridiens et Aoidoi, factions à part à la création
@@ -225,7 +236,83 @@ Stèle du 17.0 retrouvée par sa place (`SpawnLocation` : case de 32 m en `+0x30
 `+0x24`) ; lacet propre d’un PNJ de `GameViewScene` en `+0xB8` ; délai `delayBefore` d’une action de
 `GameViewScript` en `+0x2C` (recoupés sur le 7.0).
 
-**Zone de départ de la Ligue** (arc `league-start`, juste après le prologue de la Ligue) : Kanians,
+Corrections du tutoriel de l’Empire (toutes génériques, règles tirées des données) :
+
+- **Composants d’état** (`StateComponent` : indices d’animations en `+0x68`, composant porté en
+  `+0x88`, `stopForOtherAnimation` en `+0x99`, recoupés sur `KaniaShip` 7.0) : un composant montré tant
+  que le gabarit joue l’une de ces animations. Le modèle de la stèle `League_Ship_Final`, `KaniaShip`,
+  n’est qu’une boîte invisible : la coque du navire kanien (`KaniaShip_Clear` en `idle`,
+  `KaniaShip_Break` en flammes en `idle01`, `KaniaShip_Part01` en `special`) et le Спрутоглав qui
+  l’enserre (`AstralCtulhuShip`, `idle01`/`special`, à (100, −35, 0), échelle 0,75) sont ses
+  composants d’état ; ils sont posés comme effets accrochés à la stèle, pendant les états qui les
+  montrent (d’où les combattants kaniens qui flottaient : leur pont n’était pas dessiné). Le décor et
+  les effets ne les posent pas (aucun ne les pilote).
+- **Échelle de la `VisualMob`** (`+0xB4`, f32 ; 12 066 `VisualMob`, 8 971 à 1) appliquée aux acteurs :
+  le Спрутоглав est à 0,4 (`AstralCthulhu_Inst`) ; à l’échelle 1 il traversait le navire. Il se
+  déplace à sa `walkSpeed` (8 m/s) sur son chemin serveur, 14 m sous le pont (`z` 0,889 des
+  `ServerObjects`) ; son modèle n’a pas de marche : il court (`Run`), choix documenté.
+- **Portes** : un objet du décor qui porte une `StaticDevice` à `DoorResource` dans l’arbre 7.0 (le
+  17.0 ne le dit pas : le serveur envoie l’état) est une porte. Elle est montrée dans l’état de sa
+  ressource (`isOpen`, `openVisState`/`closedVisState` → animation `CLAMP` du `DeviceVisScripts`),
+  ou dans celui que le tutoriel lui a laissé (`"doors"` du manifeste, justifié), puis suit les
+  `DoorSwitch` du déroulé ; chaque état est une variante du gabarit (`IH1_Door_01@special01`) tenue sur
+  sa dernière image. Sans cela, le modèle jouait en boucle son premier état (l’ouverture).
+- **Ciel du pont** (`"sky"` du manifeste) : dans le 7.0, le pont (région 0_5, zone `FinalZone`) a
+  l’éclairage `AstralShip_Tubes` et son ciel astral `Astral_Sky` ; le 17.0 ne relie plus le pont à
+  aucun éclairage, et le premier de la carte (`AstralShip`) n’a que le dôme de nuit gris et les
+  étoiles. Le `SkyMesh` 103155 du 17.0 a les trois mêmes calques qu’`Astral_Sky`. Non repris : ses
+  animations, le plancton (`AreaEffect` `Plankton_Tubes`) et l’ombrage astral (`AstralShadingParams`).
+- **Lacet des `ServerObjects`** : c’est un cap (direction de l’axe X tourné, comme le lacet d’une
+  téléportation) ; un modèle, dont l’avant est −Y, tourne de ce cap + π/2 (`model_yaw`). Prouvé sur le
+  navire kanien : stèle `League_Ship_Final` à 3,26141, sa collision posée dans la région au même point
+  à 4,82951. Appliqué aux PNJ posés, aux stèles et au donneur de quête ; pas aux invocations
+  (`ImpactSummon`), non vérifiées. Avant, le navire kanien était tourné d’un quart de tour (ses voiles
+  barraient le pont impérial) et le second tournait le dos au joueur.
+- **Orientations** : un PNJ que le manifeste replace (`start_at`, `"yaw": "walk"`) garde le cap de
+  la marche qui l’y a mené ; un donneur de quête (`"interlocutor"`, `"face": "player"`) se tourne
+  vers le joueur qui lui parle (comportement du client, non tiré des fichiers), à la place que donne
+  `"player"` (centre de la zone `Lazor`, où le joueur rend la quête).
+- **Composants d’état du décor** : un objet posé ne montre que ceux de son état par défaut (animation
+  de son premier état, `FxBuild.default_state`) ; un objet fait seulement de composants d’état n’est
+  plus invisible (lacune relevée côté Ligue).
+- **Découpe par l’alpha** (`cutout`) désactivée pour `Inst_EmpireStart` (`"decor_cutout": false`) :
+  le 17.0 ne marque pas les matériaux découpés, et l’alpha des textures opaques du navire y est un
+  masque (`Hadagan_Inst_Board`, les planches du pont : alpha sous 0,5 sur 80 % ; `Heraldic_Base` :
+  nul partout) ; la découpe creusait le pont.
+
+**Tutoriel de l’Empire, scènes doublées** (étape 2) : comme pour la Ligue, les enchaînements doublés des
+zones de script et des quêtes d’`Inst_EmpireStart` qui mettent en scène plusieurs répliques sont montés,
+dans l’ordre des quêtes : zone `ComanadPost` (le second et le capitaine au poste de commandement,
+dialogue `IE1/08-10`, bulles, bombardement), récompense de « Сердце корабля » (`Quest4_1.rewardImpacts` :
+le capitaine et le second montent au réacteur, techniciens aux machines, ordres doublés, annonce du
+navigateur), début de « Схватка с витязем » (`Quest4_4.startImpacts` : l’ordre d’abordage, capitaine
+changé en donneur de quête par `ImpactMobMorph`, second laissé là par la scène précédente :
+`"start_at"`, que le déroulé ne nomme pas), zone `TeleportPaladin` (Градимир Белов, le « прибор » en main,
+sur le pont, 9 s avant `Jump`). Voix d’après les `.bev` (`IE1/13_Master_07` →
+`13_Master_07_Captain_StartTheReactor_patch403` ; `IE1/22_Gradimir_Paluba` →
+`02-Gradimir_No_04-Gradimir_StopThem03`) ; bulles et messages RU/EN du 17.0, FR du 16.0 par deux blocs
+alignés (écart −6149, relus réplique par réplique). Musique `IE1_main` (buff `MusicBuff` de la zone
+`EnemyAtack`), ambiance `4Layer_3Tier` seulement après `LastEventStart`. **Caméra** : aucune dans les
+données ; point de vue fixe du manifeste, justifié : centre de la zone de script atteinte, à 2 m
+(`ComanadPost`, `TeleportPaladin` : 2 m au-dessus du centre de la zone, en bas de la rampe du pont),
+salle du réacteur (centre de la zone `Lazor`) pour les deux scènes de quête ; regard vers le locuteur
+ou la place d’où il part. Points de vue retouchés (choix, non tirés des données) : au poste de
+commandement, avancé de 2,5 m (au centre de la zone, la caméra est dans l’encadrement de la porte
+`ES_Door7_2`, que la zone ouvre) ; « L’artefact perdu », depuis la salle du réacteur vers son entrée
+(savant, capitaine, second et techniciens dans le champ ; au centre de `Lazor`, le savant était à
+1,5 m et les techniciens derrière la caméra) ; « L’ordre d’abordage », derrière le joueur, reculé à
+4,5 m, les deux officiers tournés vers lui. **Non repris** : l’annonce du navigateur n’a ni bulle ni sous-titre (voix seule) ; les
+lampes d’alerte (`IE1_Lamp*`, stèles absentes du 17.0) ; les répliques isolées (sergent `EnemyAtack`,
+canonnier `Fire`, savant `Lazor`, annonces `StartBuff`, `Quest1_2`, `LastEventStart`, ordre `Quest3_2`) :
+une voix sur un PNJ immobile, sans enchaînement. **Zones suivantes** (`Hadagan`, `Hadagan_AE1…3`,
+`Inst_Empire1End`, `AstralHangarHadagan`) : l’arbre 7.0 n’y a ni `CameraTrackAction`, ni `ShowSceneAction`,
+ni buff de cinématique, ni banque de voix ; le 17.0 n’y pose aucune `GameViewScene`, et ses 48 trajets de
+caméra « 17.0 seul » dont les points tombent dans leurs régions tombent aussi dans celles de 8 à 75
+autres cartes (`Ferris4`, `ZC12`, `Eden`…), leurs voisins de ressource désignant d’autres zones (Ferris,
+Isa, Eden) : aucune scène attribuable, rien n’est monté. `AstralHangarHadagan` et `Inst_Empire1End`
+n’ont que des `Tour` (trajet du navire à la sortie du hangar, avec son son) : du transport, pas une scène.
+
+**Zone de départ de la Ligue** (arc `league-start`, en tête du film de la Ligue ; le prologue de la Ligue vient juste après sa fin) : Kanians,
 elfes et gibberlings commencent au même tutoriel, `Inst_LeagueStart` (la tour du Grand Mage Klement
 attaquée par les démons ; `CharacterType` de la Ligue du 7.0 : `LeagueStartOrdinary`, voix
 enregistrées au 4.0.3, `patch403`), qui sort vers Novograd (quête « Дорога в Новоград »). Le client
@@ -255,15 +342,82 @@ première. Éclairage : la base de carte n'a pas de `ZoneLights` ; celle de `pac
 de `AstralCoast_Tubes` (7.0) est désignée par `"zone_lights"`. **Caméra** : aucune dans les données
 (scènes vues par le joueur) ; point de vue fixe du manifeste, justifié : centre de la zone
 `PaladinQuest` vers le Grand Mage ; centre de la zone `FinalGibberlingMorph` (où le joueur retrouve
-le gibberling qui lui donne la quête) vers la place du combat. **Non repris** : la musique adaptative `Siege_warfare` (aucune
-onde), la poussière (`Dust_enlarge`, projectile sans gabarit retrouvé), le rayon du champ
-protecteur d'Amanda, les secousses de caméra, les vagues de démons de combat (tables d'apparition
-du jeu) et les cris aléatoires des réfugiés (`NPC_Ask` : `RandomImpact`), les paladins
-`Paladin_live1…4` (`MobWorld` sans nom, introuvable dans le 17.0). Non montées : la foule immobile
-de l'étage 5 (`Floor5_People`, script vide, déclenchée à la sortie d'une zone de 30 m sans point de
-vue), les corps et la poussière de l'étage 1 (`Floor1_Dead`, `Dust1/2`, décor), le discours
-d'ambiance répété du Grand Mage (`StartSpeech`, toutes les 60 s). La zone pridienne
-(`PridensStart` : `Pride_1_9`, `Pride_1_11`), aux PNJ des deux factions, reste à attribuer.
+le gibberling qui lui donne la quête) vers la place du combat. À 25,5 s, `PlayerFall_GM` téléporte le
+joueur sur l'étage effondré (`impactsOnAttach` → `ImpactTeleport` vers `Floor6_PlayerPos`, carte
+même : pas une sortie) : la vue le suit, à 2 m, tournée selon le lacet donné (2,86 rad, lu comme un
+cap : c'est au centième la direction du Grand Mage vue de ce point). **Musique** : `Siege_warfare` (buff `Music_Buff`, sans durée,
+posé par `PaladinQuest` à 25,5 s, retiré par la récompense de « Эвакуация ») : onde
+`Siege_warfare_adaptive` d'après `Music.bev` ; ses enveloppes adaptatives ne sont pas reproduites.
+
+*Étape 2* (ajouts au déroulé, `extended`) : `VisActionList` lue dans l'ordre (`VisActionDelay`,
+`VisActionStopAction` par `visActionID`), `postAction` et `Switch.impactsOff` au retrait d'un buff à
+durée, `impactsOnAttach`, `Sound3DAction` du joueur (entendu en 2D ; projet `Music` → musique), PNJ
+posés visés par un buff visible (en scène). **Stèles du décor** (`serverStatic` `StaticDevice` des
+`MapRegion`, relues avec leur `StaticObjectTemplate`) : un état `DeviceVisActionChangeModel` retire
+l'objet posé et pose, à sa place, le gabarit du 17.0 du même nom (`Floor_6` : `InstLeague1_Floor6_Intact`
+→ `InstLeague1_Floor6_Destroyed` et ses débris, `Corridor_Floor6` → `InstLeague1_Corridor1_Destroyed`,
+à 25,5 s ; hors `lightvrt`, ambiante seule) ; un état `DeviceAnimationAction` joue ses animations en
+acteur (portail kanien `KaniaPortal` : `special` en boucle dès 5 s) ; une stèle qui lit un drapeau
+visuel (`DeviceIfFlagVisAction`) posé sur le joueur (`CreatureSetFlagVisAction`) s'anime tant qu'il
+l'est. **Poussière** : le gabarit 7.0 `Descending_Dust_enlarge` n'a pas de nom propre dans le 17.0
+(nommé par son binaire, `Descending_Dust`) ; il est celui du 17.0 aux mêmes binaire, fondus (0/0 ms)
+et échelle, tiré par une action du même projectile (id 334034, un seul) ; une seule ligne de tir
+(`endPointIndex` 1) : deux nuages, `F6_DustMassiveFall_02` (31 s) et `_07` (32 s), les autres repères
+ne sont pas visés. **Secousse** (`MinorShake`, 28,5 s, source le joueur) : `ShakeAction` →
+`CameraShakeParameters` (`amplitudeScale` 4, `timeScale` 2, rayons 30/60 m) et courbe
+`cameraTranslate` (61 images à 30 i/s) de `cam.(AnimatedParameters)` ; appliquée dans le repère de la
+caméra, temps multiplié par `timeScale` (lecture choisie, le moteur n'en dit pas plus). Les secousses
+de `PremanentShake` (tirage à 80 % toutes les 10 s, `ProbabilisticImpact`) ne sont pas jouées.
+**Paladins** `Paladin_live1…4` (`MobWorld` sans nom) : `VisualMob` du 17.0 retrouvée par son contenu —
+mêmes couleurs de peau et de cheveux, et textures de tenue (`armorShapes.replacement`) toutes
+communes, seule en tête (druide kanienne, elfe, soldat kanien, gibberling) ; ils tombent (`sleep` en
+boucle), se relèvent (`sleepUp`, `postAction`), puis marchent vers le mage (`PlayerFall*b` →
+`ImpactGoTo`). **Champ protecteur** (évacuation) : mur magique de la table `Floor_Firewall`
+(`SpawnTableObjects` : stèle `Magic_Wall`, échelle 0,35, à 20 s) et rayon d'Amanda
+(`CreatureChannelDirectAction` : gabarit `MagePrismaticRayAbility_RayBlue`, longueur modelée de
+l'action du 17.0, de sa main droite au repère `Firewall`, 1,5 s jusqu'à `InterruptChannel2`).
+**Non repris** : les vagues de démons de combat (tables d'apparition de PNJ du jeu : `DemonScout1_1`…) et les cris aléatoires des
+réfugiés (`NPC_Ask` : `RandomImpact`), la chute du joueur lui-même (`KnockDown`, vue à la première
+personne). Non montées : la foule immobile de l'étage 5 (`Floor5_People`, script vide, déclenchée à la
+sortie d'une zone de 30 m sans point de vue), les corps et la poussière de l'étage 1 (`Floor1_Dead`,
+`Dust1/2`, décor), le discours d'ambiance répété du Grand Mage (`StartSpeech`, toutes les 60 s).
+
+**Zone de départ des Pridiens** (arc `pride-start`) : les Pridiens sont une faction à part à la
+création (`chargen.json`) ; leur départ (`PridensStart`) se clôt sur « Присяга Лиге » (`Pride_7_8_L` :
+aller à Novograd voir Aidenus), au même point que la zone de départ de la Ligue, qui sort aussi vers
+Novograd : l'arc suit donc celle-ci dans le film de la Ligue (choix documenté, `faction` `league` ; la
+branche impériale, `Pride_7_8_E`, rejoindrait de même le film de l'Empire). Deux débuts de quête,
+seules scènes de la zone qui ont une caméra (inventaire : `Pride_1_9`, `Pride_1_11`), relus comme
+l'instance de la Ligue (`startImpacts`, `until_last`). « Ах, синема, синема! » : voile noir (3 s),
+travelling vers l'écran du cinéma hadagan et musique `Music/Ingame/Cinema` (onde du `.bev` :
+`YaskerBirthdayPatefon1_lp`) ; le drapeau visuel `Pride_Cinema_state2` posé à 1,5 s met la stèle du
+décor (`StaticDevice` sans `scriptID`, retrouvée par le drapeau que lit son script) dans son état
+`special` : son gabarit (`Hadagan_Cinema_PridenAll`, géométrie de base invisible) montre alors le
+modèle accroché par son `StateComponent` d'état (`+0x68` animations, `+0x88` composant
+`AttachedVisObjectComponent`, gabarit en `+0x88` : le film projeté, `Hadagan_Cinema_PridenReview` du
+7.0), posé à sa place et à son échelle. « Спектакль » : voile noir, travelling vers la scène,
+Эстель ди Грандер (5 s) puis Ромулус ди Ардер (9 s) jouent (bulles `CustomClientDataList`, RU/EN du
+17.0, FR du 16.0 par bloc aligné : écart 12 303), les spectateurs de la table `Pride_1_11_Spectators`
+applaudissent ; la scène s'arrête quand le joueur reçoit ses émotes (13 s). Son : la base de carte
+porte les six musiques de la carte ; on garde celles des cases de son de la région de la scène
+(`Muz_OlmEast` → `Music/RacesMusic/Priden`, `Amb_OlmEast`). Hors du film : `Inst_PS_critters`
+(serpents de décor, `GameViewScene` sans caméra). Les feuillages du décor sont découpés par l'alpha
+de leur texture (`Exporter.cutout`, comme la création de personnage).
+
+**Kvatoh** (`Kvator`, contenu d'après 7.0 sur la carte `Kania`) : aucun déroulé serveur. Relevé du
+17.0 : 295 ondes russes (`Voice_Kvator_*`, dont `Witches` 66, `Stump` 34, `Catorga` 22, `Fortress` 19,
+`Castle` 16, `Village` 13, `Wedding` 12, `Start` 11 — le vol d'arrivée, `Kvator_Start_Fly_Cut_Muzhik` —,
+`LeagueStart` 7) ; quatre buffs de caméra (`CameraTrackAction`) voisins de répliques de Kvatoh :
+542594 (vol de Зайкина et du Мужик, 23 s, 3 points), 542607 (même vol, sans point), 544917 (mariage,
+240 s, 7 trajets) et 545522 (discours de Светлана, 4 trajets sans durée) ; aucun `ShowSceneAction`
+ni `GameViewScene` sur la carte. Le client ne relie aucune réplique à ces buffs et ne pose pas les
+PNJ : une reconstruction demanderait un placement justifié par le manifeste (pilote), non tentée.
+
+**Fins de chapitre** (`Inst_Liga1End`, `Inst_Liga3End`) : aucune scène moteur. Les quêtes qui y
+mènent (`ZoneLeague1/Quest_13_01…05`, `Quest_14_01Heroic`) n'ont ni caméra, ni réplique doublée, ni
+`ClientData` de dialogue (escorte `Quest_13_05` : un PNJ invoqué qui suit un chemin) ; leurs zones de
+script ne portent que des téléportations, des invocations de boss et un anti-invisibilité ; aucune
+onde `Voice_*` ne les nomme.
 
 En attente, hors du film : `isa-freya` (Isa 14.0 : le navire « Freya », sujet du plan, est posé par le
 serveur et n'est pas dans le décor du client) et `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
@@ -443,16 +597,30 @@ sommet du carreau), `xmax` (`−FLT_MAX` dans 89 % des cas), boîte haute de 1 0
 d'occlusion du sol (culling). Invisibles, non rendus ni exploités : three.js ne fait que du
 culling par frustum et nos décors sont petits.
 
+**Événements FMOD** (`tools/allods_fev.py`) : les `SFX/**/*.bev` du client sont des projets FMOD
+Designer 4.44 compilés (zlib, entête de 68 octets, `RIFF` `FEV ` version `0x00450000`), dont le
+bloc `LGCY` garde l'ancien format `FEV1` et `STRR` les noms. On en lit les banques, les
+définitions de sons (ondes : fichier source, banque, sous-piste, durée) et, pour chaque
+événement (simple : l'indice de sa définition à `+0xA8` ; complexe : ses calques, puis ses sons
+de 58 octets), la définition jouée : `Music/ZonesMusic/IE1_main` → `/Music/Conquer_high` →
+`adaptivemusic/Conquer_high.wav`, sous-piste 2 de `Music_StartZones.fsb`. La sous-piste n'est
+retenue que si la banque FSB lui donne le nom de l'onde (onze définitions du menu pointent des
+ondes retirées) ; sinon, et pour un nom d'événement ambigu dans son projet, l'appariement par le
+nom reste le repli (`match` : `bev` ou `name` dans `scene.json`). Un événement à plusieurs sons
+joue le premier (les autres sont signalés : `4Layer_3Tier` en a trois, pilotés par un
+paramètre) ; les voix (`Voice*.bev`, entête de projet différent) restent appariées par le nom.
+
 **Manques** : `ferris-sarcophagus` reste sombre même lu en entier (zone violette, aucune lumière
 ponctuelle ; octets 0-1 pleins) ; le fichier
-d'événements FMOD `.bev` (sons appariés par nom : quelques ambiances introuvables) ; les effets de
+d'événements FMOD `.bev` n'est lu que pour ses calques et définitions de sons (voir « Événements FMOD ») :
+enveloppes, paramètres et effets DSP non interprétés ; les effets de
 sort, de projectile ou de stèle (`CutScene_Boom`, jets des lance-flammes) et ce que montre
 « Оглянитесь ! » ; les drapeaux visuels (`CreatureSetFlagVisAction`) ; les scènes faites de
 `GameViewScene` (`Swarm_CutScene`) ; le joueur, absent.
 
 ### Ce qui manque
 
-- **Cinématiques moteur** : quinze sont recréées (voir plus haut). Liste dans
+- **Cinématiques moteur** : vingt et une sont recréées (voir plus haut). Liste dans
   `engine_cutscenes` du manifeste. Huit d'entre elles ont été refaites en sept vidéos HD
   (7_0Events), extraites ici.
 - **Sous-titres absents des données** : prologue 10.0 (narration russe, client Warp) et
@@ -1042,7 +1210,9 @@ Ce qui vient du client :
   `Quarry_Boarding01`, `Quarry_Stone*`, `Sawmill_*`), le camp kanien (`Kania_WarCamp_*`,
   `K_Fence_*`, `Kania_Hospital_Tent`), le lieu de résurrection kanien (`Kania_ResurrectPlace`),
   `Elf_House_02`, des rochers `BM_Rock_02/03` et des pins `BM_Pine_Small_*`, `BM_Fir_01` ;
-- **ciel** `SkyMesh` `Sky01_Day*` (première partie `Kvatoh_Day`) et **lumière et brouillard** du
+- **ciel** `SkyMesh` `Sky01_Day*` (première partie `Kvatoh_Day`), dessiné avant tout le reste sans
+  test de profondeur (ses nuages, à 100 m de la caméra, passaient devant les arbres lointains), et
+  **lumière et brouillard** du
   `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi (le `ZoneLights` compilé n'est pas lu par zone).
 
 Ce qui est de la mise en scène (manifeste, `scene.terrain` et `scene.site`) :
@@ -1087,14 +1257,41 @@ caméra, particules en quads instanciés (`particles.ts`), sons calés sur la ch
 - **Vie propre de chaque gabarit** (`VotPart`, `votInstances.ts`, option `lifetimes`) : la racine
   et chaque composant accroché ont leur fenêtre — apparition au retard du `DelayComponent` avec son
   `fadeInMS`, fin à l'arrêt (`StopVisObjectComponents`) ou **au bout de son clip s'il ne boucle pas**
-  (`SkeletalAnimation.looped` faux), avec son `fadeOutMS` ; un composant s'éteint avec son parent.
-  Preuve sur le Barde : `FatalityBardMuseLight` (clip de 1,5 s posé à 7,87 s, `fadeOutMS` 800) n'est
-  visé par aucun arrêt (celui de 7,85 s le précède) et son parent meurt sans fondu à 11,6 s : ce
-  fondu n'a de sens que si l'objet s'éteint seul à la fin de son clip ; de même le rayon et son
-  étincelle (ci-dessus). Avant, la dernière pose était tenue jusqu'à la fin de vie de l'instance :
-  67 gabarits figés dans 25 fatalités (Muse de lumière et neuf `FatalityBard_Lines` du Barde, dôme
-  `FatalityDruid_Explosion01` du Tribaliste, chauves-souris de l'Invocateur, rayon partout…). Les
-  cinématiques moteur gardent l'ancien comportement (règle non vérifiée sur leur décor) ;
+  (`SkeletalAnimation.looped` faux), avec son `fadeOutMS` (le rayon et son étincelle, ci-dessus).
+  Avant, la dernière pose était tenue jusqu'à la fin de vie de l'instance : 67 gabarits figés dans
+  25 fatalités (neuf `FatalityBard_Lines` du Barde, dôme `FatalityDruid_Explosion01` du
+  Tribaliste, chauves-souris de l'Invocateur, rayon partout…). Trois précisions **établies sur la
+  vidéo de référence** (voir « Comparaison à la vidéo ») :
+  - un composant **meurt au plus tard avec son parent, mais s'efface à son propre rythme** : la
+    fumée de `FatalityMage_Meteor` (`fadeOutMS` 3 500) survit au socle `FatalityMage` (vie 7,6 s,
+    800 ms) et se voit jusqu'à 10 s ; l'ange `FatalityPriest` (1 200 ms) est effacé à 10 s, avant
+    son socle `Fatality_Priest_Basis` (vie 8,8 s, 2 000 ms). Les fondus d'entrée, eux, se
+    multiplient (le socle du Mage entre en 3 s avec son météore) ;
+  - l'identifiant d'un composant est celui du `DelayComponent` qui le porte : **l'arrêter avant
+    son échéance l'annule**. Seul cas : `MuseL` du Barde, arrêté à 7,85 s pour une apparition à
+    7,87 s — la Muse de lumière (1,5 s de clip, dorée, à 2–5 m) n'apparaît jamais dans la vidéo ;
+  - un matériau opaque passe en mélange le temps d'un fondu (sinon l'ange du Prêtre surgissait
+    d'un bloc malgré ses 6,5 s d'entrée).
+
+  Les cinématiques moteur gardent l'ancien comportement (règles non vérifiées sur leur décor) ;
+- **Transparence des éléments** (`ElementTrack`, `tools/extract_menu_scene.py`) : le blob d'une
+  `SkeletalAnimation` porte un **second jeu de pistes, une par élément de géométrie**, que rien ne
+  lisait. L'entête est une suite de couples (pointeur auto-relatif, nombre) : +4 descripteurs des
+  articulations, +12 leurs noms, +20 leur ordre, **+28 descripteurs des éléments, +36 leurs
+  noms** ; descripteur de 20 octets comme ceux des articulations, masque `1` = transparence
+  (1 canal), `2` et `4` = deux canaux chacun (décalages de texture, non lus) ; **un octet par canal
+  et par image**, entrelacé, **0 = plein, 255 = caché**. Exporté en clés `elementAlpha` (secondes
+  du clip à sa vitesse, clés redondantes retirées à 1/255 près) pour 157 gabarits ; le lecteur
+  (`votInstances.ts`) en multiplie l'opacité des matériaux de l'élément au temps du clip de son
+  gabarit, cache l'élément à 0 et passe un élément opaque en mélange le temps d'un fondu. Un
+  gabarit non skinné qui porte de telles pistes prend la durée de son clip (dague du Paladin, feux
+  du Guerrier, éclairs de l'Ingénieur). C'est la règle qui cachait en jeu les poses figées :
+  instruments du Barde fondus à 5,7–5,9 s (la Muse prend le relais), météores du Mage cachés dans
+  le ciel puis révélés un à un à leur chute (5,3 à 7,2 s), lianes du Tribaliste rentrées à
+  l'explosion (3 s) et leur base à 4,7 s, dôme `FatalityDruid_Explosion` visible de 1 à 3 s
+  seulement… **Vérifiée sur une vidéo 1080p60 du jeu** (les 11 fatalités de classe, temps recalé
+  sur un repère commun : flash du Barde, explosion du Tribaliste) : les apparitions et
+  disparitions tombent à l'image près des pistes (voir « Comparaison à la vidéo ») ;
 - **cadrage** : aucune caméra de fatalité dans le client (seules des secousses, `CameraShakerComponent`,
   s'ajoutent à la caméra du joueur). Le cadrage initial vise l'effet principal et la victime :
   le gabarit posé ou accroché qui porte le son de la fatalité (`FatalityBard`, `FatalityDruid`… ;
@@ -1128,12 +1325,32 @@ rouge sombre du Guerrier, carbonisé de l'Ingénieur, pétrifié vert d'Avril 20
 `cameraTranslate` des `AnimatedParameters` (61 clés, 30 i/s, `fps` vaut 0 dans le client) × amplitude,
 amortie entre `minRadius` et `maxRadius` (Universelles 2022 et 2023) ; `timeScale` non interprété.
 
+**Comparaison à la vidéo.** Une capture du jeu (1080p60, les 11 fatalités de classe à la suite,
+non versionnée) a été comparée au lecteur image par image, caméra du lecteur recentrée sur la
+victime. Le temps 0 du lecteur est recalé sur un repère net de chaque segment (colonne
+`Fatality_Back`, flash du Barde à 7,5 s, explosion du Tribaliste à 3,5 s) ; l'onde de la fatalité
+ne suffit pas (musique mêlée, corrélation faible sauf Tribaliste et Rôdeur). Toutes les
+apparitions et disparitions tombent à ±0,25 s près, sauf mention :
+
+| Classe | Vérifié sur la vidéo |
+|---|---|
+| Mage | météores absents du ciel jusqu'à leur chute (7 s), explosion à 7,5 s, fumée jusqu'à 10 s |
+| Prêtre | ange entré en fondu (2,5–4 s), effacé à 10 s après le flash |
+| Psionique | nuage, éclairs, tourbillon bleu (9–10 s) puis flash ; rien de figé |
+| Paladin | vierge de fer : apparition 0,5 s, fermeture 3 s, dagues 4–8 s, ouverture 8,5 s, poussière 11 s |
+| Guerrier | lames `FatalityWarrior_Bottom` de 2 à 8,5 s, feu au sol jusqu'à 11,5 s |
+| Ingénieur | machine, rayon 4,5–7,5 s, poussière 8,5–9,5 s (écart ≈ 0,5 s, repère incertain) |
+| Invocateur | colonne 0–6,5 s, tas au sol 7–10 s |
+| Barde | instruments fondus à 5,7 s, Muse 4,5–7,8 s, jamais de Muse de lumière |
+| Rôdeur | épées 4,5–7,5 s, feu 8–10,5 s, épées plantées jusqu'à 11 s |
+| Occultiste | colonne et orbe (5,5 s), anneau jusqu'à 6,5 s, colonne jusqu'à 10 s |
+| Tribaliste | lianes rentrées à l'explosion, base au sol jusqu'à 4,7 s, fleur 5–10 s |
+
 **Manques.** `ProceduralEffect` (effet `Empty`) ignoré. Particules : `WorldSpaceEmitter` et `Z_BOX`
 traités comme locales / face caméra. Pas de bloom : la géométrie douce a ramené le Prêtre d'un
 blanc plein à des effets lisibles, un bloom le resaturerait. Effets des tenues de création
-(`growths.fx`) non joués. Aucune capture du jeu pour comparer (à venir). La durée affichée est celle
-du script : certaines fatalités (11 Carnage, 23 Rituel squelettique) finissent par plusieurs
-secondes vides.
+(`growths.fx`) non joués. La durée affichée est celle du script : certaines fatalités (11 Carnage,
+23 Rituel squelettique) finissent par plusieurs secondes vides.
 
 ## Création de personnage (développement)
 

@@ -131,6 +131,14 @@ COMP_OFFSET = 0x60
 COMP_ROTATION = 0x70
 COMP_SCALE = 0x80
 COMP_VISOBJECT = 0x88
+# `StateComponent` : composant montré tant que le gabarit joue l'une de ses animations (vecteur
+# d'indices de l'énumération `Animations` en +0x68), composant porté en +0x88,
+# `stopForOtherAnimation` en +0x99 (recoupé sur `KaniaShip` 7.0 : idle01/special → le Спрутоглав
+# accroché, arrêt faux ; idle01 → `KaniaShip_Break` ; idle → `KaniaShip_Clear` ; special →
+# `KaniaShip_Part01`, arrêts vrais).
+STATE_ANIMS = 0x68
+STATE_CHILD = 0x88
+STATE_STOP_OTHER = 0x99
 
 # --- VisActions -------------------------------------------------------------------------------
 
@@ -325,6 +333,11 @@ class Component:
     start: float = 0.0                 # `DelayComponent` : apparition retardée (s)
     stop: float | None = None          # `StopVisObjectComponents` retardé : disparition (s)
     random_delay: bool = False         # timeMin ≠ timeMax : délai tiré au hasard par le client
+    cancelled: bool = False            # arrêté avant son échéance : jamais créé
+    # `StateComponent` : indices des animations du gabarit pendant lesquelles il est montré
+    # (`None` : toujours), et s'il s'arrête quand le gabarit passe à une autre animation.
+    state_ids: tuple[int, ...] | None = None
+    stop_other: bool = True
 
 
 @dataclass
@@ -362,14 +375,20 @@ def read_visobject(db: PackDB, cat: PakCatalog, off: int) -> VisObject:
     components = []
     stops: list[tuple[float, list[str]]] = []
 
-    def visit(comp: int, delay: float, ident: str, random_delay: bool) -> None:
+    def visit(comp: int, delay: float, ident: str, random_delay: bool, state: tuple | None = None) -> None:
         kind = db.vtype(comp)
         ident = db.string(comp + COMPONENT_ID) or ident
         if kind == "DelayComponent":
             tmin, tmax = db.floats(comp + DELAY_TIME_MIN, 2)
             child = db.ptr(comp + DELAY_CHILD)
             if child is not None:
-                visit(child, delay + float(tmin), ident, random_delay or abs(tmax - tmin) > 1e-6)
+                visit(child, delay + float(tmin), ident, random_delay or abs(tmax - tmin) > 1e-6, state)
+        elif kind == "StateComponent":
+            v = db.vec(comp + STATE_ANIMS)
+            ids = tuple(db.u32(v[0] + 4 * k) for k in range(v[1] // 4)) if v else ()
+            child = db.ptr(comp + STATE_CHILD)
+            if child is not None:
+                visit(child, delay, ident, random_delay, (ids, bool(db.u8(comp + STATE_STOP_OTHER))))
         elif kind == "StopVisObjectComponents":
             v = db.vec(comp + STOP_IDS)
             ids = [db.string(v[0] + 24 * k) or "" for k in range(v[1] // 24)] if v else []
@@ -380,15 +399,21 @@ def read_visobject(db: PackDB, cat: PakCatalog, off: int) -> VisObject:
                                         rotation=tuple(float(v) for v in db.floats(comp + COMP_ROTATION, 4)),
                                         scale=db.f32(comp + COMP_SCALE),
                                         visobject=db.ptr(comp + COMP_VISOBJECT),
-                                        ident=ident, start=round(delay, 4), random_delay=random_delay))
+                                        ident=ident, start=round(delay, 4), random_delay=random_delay,
+                                        **({"state_ids": state[0], "stop_other": state[1]} if state else {})))
 
     for comp in db.pointers(off + VOT_COMPONENTS):
         visit(comp, 0.0, "", False)
-    # Un arrêt ne vaut que pour un composant déjà apparu (`MuseL` du Barde : arrêté à 7,85 s,
-    # apparu à 7,87 s, il reste).
+    # L'identifiant est celui du `DelayComponent` qui porte le composant : l'arrêter avant son
+    # échéance l'annule (`MuseL` du Barde, arrêté à 7,85 s pour une apparition à 7,87 s : la
+    # vidéo de référence ne montre jamais la Muse de lumière) ; après, il disparaît.
     for when, ids in stops:
         for c in components:
-            if c.ident and c.ident in ids and when > c.start and (c.stop is None or when < c.stop):
+            if not c.ident or c.ident not in ids:
+                continue
+            if c.start > 0 and when <= c.start:
+                c.cancelled = True
+            elif when > c.start and (c.stop is None or when < c.stop):
                 c.stop = round(when, 4)
     return VisObject(off, vot_name(db, cat, off), geometry, db.ptr(off + VOT_PARTICLE), animation,
                      db.f32(off + VOT_SCALE), db.i32(off + VOT_FADE_IN), db.i32(off + VOT_FADE_OUT),

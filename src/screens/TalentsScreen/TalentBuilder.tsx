@@ -270,26 +270,27 @@ function BookCell(props: Props & Shared & { r: number; c: number; x: number; y: 
 
 function FieldCell(props: Props & Shared & { f: number; r: number; c: number; x: number; y: number; size: number }) {
   const { ui, calc, build, f, r, c, x, y, size, lit } = props;
+  const { t } = useI18n();
   const field = calc.data.fields[f];
   const cell = field.rows[r]?.[c];
   const target: Target = { kind: 'field', f, r, c };
   const talentKey = cell?.talent ?? '';
+  // Case vide : pas d'infobulle (aucun talent), elle s'apprend quand même comme passage.
   const showCell = (e: { currentTarget: HTMLElement }) => {
-    props.setHovered(talentKey);
-    props.onHover({ target, talent: talentKey, anchor: e.currentTarget.getBoundingClientRect() });
+    props.setHovered(talentKey || null);
+    props.onHover(talentKey ? { target, talent: talentKey, anchor: e.currentTarget.getBoundingClientRect() } : null);
   };
   const gestures = useCellGestures(target, props, { ...props, cellKey: `f${f}-${r}-${c}`, show: showCell });
-  if (!cell) return null;
   const { main, done } = ui.layout.fieldTalentSize;
   const k = size / main;
-  const talent = calc.data.talents[cell.talent];
+  const talent = cell ? calc.data.talents[cell.talent] : undefined;
   const learned = build.fields[f][r][c];
   const ready = !learned && !fieldBlock(calc, build, f, r, c);
   const doneSize = done * k;
-  const same = lit.has(cell.talent);
+  const same = Boolean(cell && lit.has(cell.talent));
   const hlColor = ui.layout.fieldHighlight.TALENT_HIGHLIGHT_FULL;
   const hlTex = texUrl(ui, ui.templates.FieldTalentHighlight?.back?.texture);
-  const name = textFor(talent?.name, props.lang)?.text ?? cell.talent;
+  const name = cell ? textFor(talent?.name, props.lang)?.text ?? cell.talent : t('talents.emptyCell');
   const show = showCell;
   const hide = () => { if (!props.selected) { props.setHovered(null); props.onHover(null); } };
   return (
@@ -299,7 +300,8 @@ function FieldCell(props: Props & Shared & { f: number; r: number; c: number; x:
       style={box(x, y, size, size)}
       aria-label={name}
       aria-pressed={learned}
-      data-talent={cell.talent}
+      data-talent={cell?.talent}
+      data-empty={cell ? undefined : true}
       data-state={learned ? 'learned' : ready ? 'available' : 'locked'}
       data-lit={same || undefined}
       onMouseEnter={show} onFocus={show} onMouseLeave={hide} onBlur={hide}

@@ -58,6 +58,9 @@ def test_real_items_teach_their_fatality():
     assert c.text(lunar.buffs[0], "BuffResource", "en") == "Lunar Ritual"
     # Fatalités de classe : icône générique, aucun objet propre.
     assert not c.sources[1].items
-    # La 11 (« Расправа ») n'est rattachée que par le nom de la capacité du « Кодекс Палача ».
+    # La 11 (« Расправа ») n'est rattachée que par le nom **russe** de la capacité du « Кодекс
+    # Палача » : sans vrai texte russe (client repatché avec un `pack.rus.loc` traduit), pas de lien.
+    if c.text(c.sources[11].buffs[0], "BuffResource", "ru") != "Расправа":
+        pytest.skip("pack.rus.loc du client n'est plus le texte russe officiel")
     assert c.sources[11].link == "name"
     assert "Carnifex Code" in {c.text(i, "ItemResource", "en") for i in c.sources[11].items}

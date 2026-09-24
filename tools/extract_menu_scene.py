@@ -421,11 +421,74 @@ class JointTrack:
 
 
 @dataclass
+class ElementTrack:
+    """Piste d'un élément de géométrie (second jeu de pistes du blob d'animation).
+
+    `kind` est un masque : bit 0 = transparence (1 canal), bits 1 et 2 = couples de canaux
+    (décalages de texture, non lus). `values` : (images, canaux), un octet par canal."""
+    name: str
+    kind: int
+    values: np.ndarray
+
+    @property
+    def alpha(self) -> np.ndarray | None:
+        """Opacité par image (1 = opaque) : l'octet de transparence vaut 0 pour un élément
+        plein, 255 pour un élément caché (instruments du Barde cachés à 5,7 s, météores du
+        Mage révélés à leur chute, racines du Tribaliste rentrées)."""
+        if not self.kind & 1:
+            return None
+        return 1.0 - self.values[:, 0].astype(np.float64) / 255.0
+
+
+@dataclass
 class SkeletalAnimation:
     fps: int
     frames: int
     tracks: list[JointTrack]
     undecoded: list[str] = field(default_factory=list)
+    elements: list[ElementTrack] = field(default_factory=list)
+
+
+def _element_channels(kind: int) -> int:
+    return (kind & 1) + 2 * ((kind >> 1) & 1) + 2 * ((kind >> 2) & 1)
+
+
+def _read_element_tracks(blob: bytes, frames: int) -> list[ElementTrack]:
+    """Pistes d'éléments : l'entête du blob est une suite de couples (pointeur auto-relatif,
+    nombre) — +4 descripteurs des articulations, +12 leurs noms, +20 leur ordre, **+28 les
+    descripteurs des éléments** (20 octets : `u16 masque, u16 canaux, ptr valeurs, u32 nombre,
+    ptr flottants, u32 nombre`, comme ceux des articulations), +36 leurs noms (couples
+    pointeur, longueur). Valeurs : un octet par canal, entrelacées par image. Tout écart
+    (blobs synthétiques des tests, anciens formats) → aucune piste."""
+    if len(blob) < 44:
+        return []
+    try:
+        count, = struct.unpack_from("<I", blob, 32)
+        n_names, = struct.unpack_from("<I", blob, 40)
+        if count == 0 or count != n_names or count > 4096:
+            return []
+        p_tracks, p_names = self_pointer(blob, 28), self_pointer(blob, 36)
+        if p_tracks + 20 * count > len(blob) or p_names + 8 * count > len(blob):
+            return []
+        out: list[ElementTrack] = []
+        for i in range(count):
+            d = p_tracks + 20 * i
+            kind, channels, p_values, n_values, _p_floats, n_floats = struct.unpack_from("<HHIIII", blob, d)
+            if not 0 < kind <= 7 or channels != _element_channels(kind) or n_values != frames * channels or n_floats:
+                return []
+            start = d + 4 + p_values
+            if start + n_values > len(blob):
+                return []
+            o = p_names + 8 * i
+            value, length = struct.unpack_from("<II", blob, o)
+            raw = blob[o + value:o + value + max(0, length - 1)]
+            if not raw or not raw.isascii():
+                return []
+            values = np.frombuffer(blob, np.uint8, count=n_values, offset=start).reshape(frames, channels)
+            out.append(ElementTrack(raw.decode("ascii"), kind, values.copy()))
+        return out
+    except struct.error:
+        return []
 
 
 # Une piste décrit sept composantes, dans cet ordre : Tx Ty Tz, S (échelle uniforme), puis
@@ -558,7 +621,8 @@ def parse_skeletal_animation(blob: bytes, skeleton: Skeleton | None = None,
             track = JointTrack(name=name, translation=rest_t, rotation=rest_q, animated=False,
                                scale=np.array([bind_s]))
         tracks.append(track)
-    return SkeletalAnimation(fps=fps or 30, frames=frames, tracks=tracks, undecoded=undecoded)
+    return SkeletalAnimation(fps=fps or 30, frames=frames, tracks=tracks, undecoded=undecoded,
+                             elements=_read_element_tracks(blob, frames))
 
 
 def _infer_track_flags(blob: bytes, start: int, body: int, frames: int,

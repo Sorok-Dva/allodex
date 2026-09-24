@@ -7,7 +7,7 @@ import { loadParticleFile } from '@/components/scene/FatalityViewer/particles';
 import { spawnOpacity } from '@/components/scene/FatalityViewer/timeline';
 import { VotFactory, particleSystems, toViewerMaterial, updateInstance, type Tinted, type VotInstance } from '@/components/scene/vot/votInstances';
 import { buildTerrainExtras, type TerrainExtras } from '@/components/scene/vot/terrainExtras';
-import { actorClipAt, argb, falloff, pathAt, presentAt, sampleKeys, subtitleAt, veilAt, voiceAt, type EngineScene } from './timeline';
+import { actorClipAt, argb, decorShownAt, decorWindows, falloff, pathAt, presentAt, sampleKeys, shakeAt, subtitleAt, veilAt, voiceAt, type DecorInstance, type EngineScene, type FxChannel } from './timeline';
 import s from './EngineCutscene.module.css';
 
 // Même parti pris que les scènes de menu et les fatalités : les textures du jeu sont des octets,
@@ -55,9 +55,49 @@ const LIGHT_SCALE = Math.PI;
 const SOUND_RANGE = 70;
 /** Écart toléré entre un son et la chronologie avant de le recaler (s). */
 const SOUND_DRIFT = 0.3;
+/** Axe modelé des rayons : l'avant des modèles du jeu, −Y, comme les fatalités (`Fatality_Channel`). */
+const CHANNEL_AXIS = new THREE.Vector3(0, -1, 0);
 
 type Actor = { id: string; holder: THREE.Object3D; model: THREE.Object3D; mixer: THREE.AnimationMixer; actions: Map<string, THREE.AnimationAction> };
 type Loop = { audio: HTMLAudioElement; volume: number; position: THREE.Vector3 | null; start: number; until: number; kind: 'music' | 'ambience' | 'sfx' };
+
+/** Textures envoyées à la carte graphique par image pendant la préparation (le lecteur voisin joue). */
+const WARM_TEXTURES_PER_FRAME = 6;
+
+const nextFrame = () => new Promise<void>(resolve => {
+  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve()); else resolve();
+});
+
+/**
+ * Prépare une scène avant sa première image : programmes compilés (en parallèle quand le pilote
+ * le permet), textures envoyées quelques-unes par image, puis un rendu complet. L'horloge de la
+ * cinématique ne part qu'après : pas de gel au premier plan.
+ */
+async function warmUp(renderer: THREE.WebGLRenderer, view: THREE.Scene, camera: THREE.Camera, alive: () => boolean): Promise<void> {
+  if (typeof renderer.compileAsync === 'function') {
+    try { await renderer.compileAsync(view, camera); } catch { /* compilé au premier rendu */ }
+  }
+  const textures = new Set<THREE.Texture>();
+  view.traverse(object => {
+    const mesh = object as THREE.Mesh;
+    if (!mesh.material) return;
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      for (const value of Object.values(material as unknown as Record<string, unknown>)) {
+        if (value instanceof THREE.Texture) textures.add(value);
+      }
+      const uniforms = (material as THREE.ShaderMaterial).uniforms;
+      for (const u of Object.values(uniforms ?? {})) if (u?.value instanceof THREE.Texture) textures.add(u.value);
+    }
+  });
+  let k = 0;
+  for (const texture of textures) {
+    if (!alive()) return;
+    renderer.initTexture?.(texture);
+    if (++k % WARM_TEXTURES_PER_FRAME === 0) await nextFrame();
+  }
+  if (!alive()) return;
+  renderer.render(view, camera);
+}
 
 const TERRAIN_SIZE = 512;
 const TERRAIN_MAX_LAYERS = 32;
@@ -202,6 +242,8 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
     audios: [] as HTMLAudioElement[],
     loops: [] as Loop[],
     lastUpdate: 0,
+    /** L'horloge repart de zéro écart à la prochaine image (lecture, lecteur montré). */
+    resetClock: true,
   });
   const callbacks = useRef({ onLoadedMetadata, onTimeUpdate, onEnded, onPlay, onPause });
   callbacks.current = { onLoadedMetadata, onTimeUpdate, onEnded, onPlay, onPause };
@@ -222,6 +264,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       state.playing = true;
       state.dirty = true;
       state.seeked = true;
+      state.resetClock = true;
       callbacks.current.onPlay?.();
     },
     pause: () => {
@@ -254,6 +297,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
     state.hidden = hidden;
     state.lang = subtitleLang;
     state.dirty = true;
+    state.resetClock = true;
     if (hidden) silence();
     if (import.meta.env.DEV && !hidden && devHook.current) (window as Window & { __engineCutscene?: unknown }).__engineCutscene = devHook.current;
   }, [hidden, subtitleLang]);
@@ -276,7 +320,28 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
     camera.up.set(0, 0, 1);
     const actors: Actor[] = [];
     const decorInstances: VotInstance[] = [];
-    const spawns: { inst: VotInstance; until: number }[] = [];
+    // Fenêtre de chaque instance du décor : un objet à états (porte) a une instance par état.
+    const decorWindowsOf = new Map<VotInstance, { start: number; until: number }>();
+    const decorItems: DecorInstance[] = [];
+    const spawns: { inst: VotInstance; until: number; channel: FxChannel | null }[] = [];
+    const channelA = new THREE.Vector3();
+    const channelB = new THREE.Vector3();
+    /** Rayon (`CreatureChannelDirectAction`) : origine au locator de l'acteur, axe Y vers le repère, étiré. */
+    const stretchChannel = (root: THREE.Object3D, channel: FxChannel) => {
+      const actor = actors.find(a => a.id === channel.from);
+      if (!actor) return;
+      const suffix = `_${channel.locator}`;
+      let node: THREE.Object3D | undefined;
+      if (channel.locator !== 'Global') actor.model.traverse(n => { if (!node && n.name.endsWith(suffix)) node = n; });
+      (node ?? actor.holder).getWorldPosition(channelA);
+      world.worldToLocal(channelA);
+      const dir = channelB.set(...channel.to).sub(channelA);
+      const distance = dir.length();
+      if (distance < 1e-4) return;
+      root.position.copy(channelA);
+      root.quaternion.setFromUnitVectors(CHANNEL_AXIS, dir.divideScalar(distance));
+      root.scale.set(1, channel.length > 0 ? distance / channel.length : 1, 1);
+    };
     const disposables: { dispose(): void }[] = [];
     const factory = new VotFactory({ objects: {}, baseUrl: base, disposables, anisotropy: () => renderer?.capabilities?.getMaxAnisotropy?.() ?? 1 });
     let data: EngineScene | null = null;
@@ -338,6 +403,9 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       gamePoint(sampleKeys(data.camera.points, t), camera.position);
       gamePoint(sampleKeys(data.camera.targets, t), target);
       if (camera.position.distanceToSquared(target) > 1e-6) camera.lookAt(target);
+      // Secousses (`ShakeAction`) : décalage dans le repère de la caméra, après la visée.
+      const [sx, sy, sz] = shakeAt(data.shakes, t);
+      if (sx || sy || sz) { camera.translateX(sx); camera.translateY(sy); camera.translateZ(sz); }
       if (sky) { const eye = world.worldToLocal(camera.position.clone()); sky.position.set(eye.x, eye.y, 0); }
       for (const actor of actors) {
         const info = data.actors.find(a => a.id === actor.id);
@@ -357,8 +425,16 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         actor.mixer.update(0);
       }
       actors.forEach(a => a.holder.updateMatrixWorld(true));
-      for (const inst of decorInstances) updateInstance(inst, t, 1, camera);
-      for (const { inst } of spawns) updateInstance(inst, t - inst.start, spawnOpacity(t - inst.start, inst.lifeTime, inst.fadeIn, inst.fadeOut), camera);
+      decorInstances.forEach((inst, i) => {
+        const item = decorItems[i];
+        const w = decorWindowsOf.get(inst);
+        if ((w && (t < w.start || t >= w.until)) || (item && !decorShownAt(item, t))) { inst.root.visible = false; return; }
+        updateInstance(inst, t - (w ? w.start : item?.t ?? 0), 1, camera);
+      });
+      for (const { inst, channel } of spawns) {
+        if (channel) stretchChannel(inst.root, channel);
+        updateInstance(inst, t - inst.start, spawnOpacity(t - inst.start, inst.lifeTime, inst.fadeIn, inst.fadeOut), camera);
+      }
       if (veilRef.current) veilRef.current.style.opacity = String(veilAt(data.post ?? [], t));
       const text = subtitleAt(data, t, state.lang);
       setSubtitle(prev => (prev === text ? prev : text));
@@ -367,7 +443,8 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
     const tick = () => {
       frame = requestAnimationFrame(tick);
       const now = performance.now();
-      const delta = previous ? Math.min((now - previous) / 1000, 0.25) : 0;
+      const delta = previous && !state.resetClock ? Math.min((now - previous) / 1000, 0.25) : 0;
+      state.resetClock = false;
       previous = now;
       if (!data) return;
       if (state.playing) {
@@ -552,17 +629,18 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         audio.loop = until === Infinity || !!data?.objects[vot]?.loop;
         state.loops.push({ audio, volume: volume.sfx ?? 0.8, position: p, start, until, kind: 'sfx' });
       };
-      for (const item of data.decor.instances) {
-        const proto = prototypes.get(item.vot);
-        const info = data.objects[item.vot];
+      for (const item of data.decor.instances) for (const window of decorWindows(item)) {
+        const proto = prototypes.get(window.vot);
+        const info = data.objects[window.vot];
         if (!proto || !info) continue;
         const inst = factory.instantiate(proto, clips, 0, Infinity, 0, 0);
+        if (item.states) decorWindowsOf.set(inst, window);
         inst.root.position.set(...item.p);
         inst.root.rotation.set(item.tilt?.[0] ?? 0, item.tilt?.[1] ?? 0, item.yaw, 'ZYX');
         inst.root.scale.setScalar((item.scale || 1) * (info.scale || 1));
         // Éclairage précalculé de l'instance (octets à moitié : le matériau double) sur son maillage
         // propre ; les autres maillages opaques (composants) prennent l'ambiante.
-        const own = inst.root.children.find(c => c.name === `${item.vot}_mesh`) as THREE.Mesh | undefined;
+        const own = inst.root.children.find(c => c.name === `${window.vot}_mesh`) as THREE.Mesh | undefined;
         inst.root.traverse(node => {
           const mesh = node as THREE.Mesh;
           if (!mesh.isMesh) return;
@@ -585,7 +663,9 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         });
         world.add(inst.root);
         decorInstances.push(inst);
-        soundAt(item.vot, world.localToWorld(new THREE.Vector3(...item.p)), 0, Infinity);
+        decorItems.push(item);
+        if (item.states) soundAt(window.vot, world.localToWorld(new THREE.Vector3(...item.p)), Math.max(0, window.start), window.until);
+        else soundAt(item.vot, world.localToWorld(new THREE.Vector3(...item.p)), item.t ?? 0, item.until ?? Infinity);
       }
       data.actors.forEach((info, i) => {
         const gltf = actorGltfs[i];
@@ -619,14 +699,19 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         inst.root.rotation.z = spawn.yaw ?? 0;
         inst.root.scale.setScalar((spawn.scale || 1) * (info.scale || 1));
         (holder ?? world).add(inst.root);
-        spawns.push({ inst, until: spawn.until });
+        spawns.push({ inst, until: spawn.until, channel: spawn.channel ?? null });
         soundAt(spawn.vot, spawn.p ? world.localToWorld(new THREE.Vector3(...spawn.p)) : null, spawn.t, spawn.until);
       }
+      // Préparation (programmes, textures, premier rendu) avant de se dire prêt : l'horloge attend.
+      apply();
+      await warmUp(renderer, view, camera, () => alive);
+      if (!alive) return;
       state.ready = 4;
       state.dirty = true;
+      state.resetClock = true;
       setLoading(false);
       // Accès de débogage (captures sans écran) : celui du lecteur visible, pas du préchargé.
-      devHook.current = { THREE, view, world, camera, state, actors, renderer, decorInstances, spawns, terrainExtras };
+      devHook.current = { THREE, view, world, camera, state, actors, renderer, decorInstances, spawns, terrainExtras, data };
       if (import.meta.env.DEV && !state.hidden) (window as Window & { __engineCutscene?: unknown }).__engineCutscene = devHook.current;
       frame = requestAnimationFrame(tick);
     };
@@ -646,6 +731,8 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
       for (const d of disposables) d.dispose();
       view.traverse(object => { const mesh = object as THREE.Mesh; if (mesh.isMesh) mesh.geometry.dispose(); });
       renderer?.dispose();
+      // Contexte rendu tout de suite (le film en ouvre un par chapitre moteur).
+      renderer?.forceContextLoss?.();
       sceneRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -77,10 +77,13 @@ describe('CinematicsScreen — film', () => {
     expect((tracks[0] as HTMLTrackElement).default).toBe(true);
 
     act(() => { fireEvent.ended(v0); });
-    // le lecteur qui attendait devient visible, l'autre charge le chapitre d'après
+    // le lecteur qui attendait devient visible ; l'autre charge le chapitre d'après un peu plus tard
     await waitFor(() => expect(v1.getAttribute('aria-hidden')).toBe('false'));
     expect(v1.dataset.chapter).toBe('plague');
-    expect(v0.dataset.chapter).toBe('bridge');
+    expect(v0.dataset.chapter).toBe('');
+    await waitFor(() => expect(v0.dataset.chapter).toBe('bridge'), { timeout: 3000 });
+    // voile noir des changements de chapitre, au-dessus des lecteurs
+    expect(page.getByTestId('film-veil')).toBeTruthy();
     expect(page.getByTestId('chapter-plague').getAttribute('aria-current')).toBe('true');
     expect(HTMLMediaElement.prototype.play).toHaveBeenCalled();
   });

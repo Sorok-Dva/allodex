@@ -132,6 +132,15 @@ function hasCell(field: TalentField, r: number, c: number): boolean {
   return Boolean(field.rows[r]?.[c]);
 }
 
+/**
+ * Emplacement de la grille : toute case du damier, rubis ou non. Une case vide (`NoTalent`
+ * dans le client) s'apprend comme un rubis, pour 1 point, et sert de passage vers les rubis
+ * plus loin ; elle ne donne aucun talent.
+ */
+function isSlot(field: TalentField, r: number, c: number): boolean {
+  return r >= 0 && r < field.rows.length && c >= 0 && c < fieldCols(field);
+}
+
 /** La case de départ porte un talent : il est appris d'office (gratuit). */
 export function autoStart(field: TalentField): boolean {
   const [r, c] = fieldStart(field);
@@ -172,7 +181,10 @@ export type FieldBlock = 'empty' | 'learned' | 'isolated' | 'points';
 
 export function fieldBlock(calc: Calc, build: Build, f: number, r: number, c: number): FieldBlock | null {
   const field = calc.data.fields[f];
-  if (!field || !hasCell(field, r, c)) return 'empty';
+  if (!field || !isSlot(field, r, c)) return 'empty';
+  // Le départ vide est l'ancre de la grille : relié d'office, il ne s'apprend pas.
+  const [sr, sc] = fieldStart(field);
+  if (r === sr && c === sc && !hasCell(field, r, c)) return 'empty';
   const learned = build.fields[f];
   if (learned[r][c]) return 'learned';
   const reach = connected(field, learned);
@@ -245,7 +257,7 @@ export function normalize(calc: Calc, input: Build): Build {
     if (autoStart(field)) learned[sr][sc] = true;
     const reach = connected(field, learned);
     learned.forEach((row, r) => row.forEach((on, c) => {
-      if (on && (!hasCell(field, r, c) || !reach.has(`${r},${c}`))) row[c] = false;
+      if (on && (!isSlot(field, r, c) || !reach.has(`${r},${c}`))) row[c] = false;
     }));
   });
   return build;
@@ -275,8 +287,8 @@ export function addField(calc: Calc, build: Build, f: number, r: number, c: numb
   if (fieldBlock(calc, build, f, r, c)) return null;
   const next = clone(build);
   next.fields[f][r][c] = true;
-  const talent = calc.data.fields[f].rows[r][c]!.talent;
-  if (same) {
+  const talent = calc.data.fields[f].rows[r]?.[c]?.talent;
+  if (same && talent) {
     for (let found = true; found;) {
       found = false;
       calc.data.fields[f].rows.forEach((row, y) => row.forEach((cell, x) => {
@@ -294,9 +306,9 @@ export function removeField(calc: Calc, build: Build, f: number, r: number, c: n
   const isStart = (y: number, x: number) => autoStart(field) && y === sr && x === sc;
   if (isStart(r, c)) return null;
   const next = clone(build);
-  const talent = field.rows[r][c]!.talent;
+  const talent = field.rows[r]?.[c]?.talent;
   next.fields[f][r][c] = false;
-  if (same) field.rows.forEach((row, y) => row.forEach((cell, x) => { if (cell?.talent === talent && !isStart(y, x)) next.fields[f][y][x] = false; }));
+  if (same && talent) field.rows.forEach((row, y) => row.forEach((cell, x) => { if (cell?.talent === talent && !isStart(y, x)) next.fields[f][y][x] = false; }));
   return normalize(calc, next);
 }
 
@@ -374,8 +386,8 @@ export function decodeBuild(calc: Calc, code: string): Decoded {
       const on = Boolean((B64.indexOf(g[Math.floor(i / 6)]) >> (i % 6)) & 1);
       if (!on) continue;
       const r = Math.floor(i / cols), c = i % cols;
-      // Bit au-delà de la dernière case, sur une case vide, ou sur le départ (implicite).
-      if (i >= total || !hasCell(field, r, c) || (auto && r === sr && c === sc)) return { ok: false, error: 'grid' };
+      // Bit au-delà de la dernière case, hors du damier, ou sur le départ (implicite).
+      if (i >= total || !isSlot(field, r, c) || (auto && r === sr && c === sc)) return { ok: false, error: 'grid' };
       build.fields[f][r][c] = true;
     }
   }

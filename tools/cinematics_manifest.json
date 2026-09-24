@@ -1,13 +1,6 @@
 {
  "_note": "Cinématiques précalculées du client Allods Online, pour la page /cinematics (tools/extract_cinematics.py). `sources` : clients lus (le dernier client 17.0 par défaut ; `warp` pour les vidéos retirées ; `fr` pour les sous-titres français officiels). `cinematics` : une entrée par vidéo ; `entry` = chemin dans Video.pak, `event` = groupe/événement du registre vidéo compilé du client, `faction` = league | empire | common, `order` = clé de chronologie (le film d’une faction = ses entrées + les communes, triées par `order`), `chronology` = justification de la place. `title` est éditorial : le jeu ne nomme pas ses vidéos. `subtitles.lines[].ru` = début (normalisé) du texte russe d’un sous-titre officiel, cherché parmi les éléments UISubtitleShow du pack.bin ; l’ordre des lignes est celui de la voix. `subtitles.fr_anchor` = début du texte français de la première ligne dans le client FR. Les instants d’apparition ne sont pas dans les données décodées : voir tools/cinematics_sync.json. `bonus: true` = chapitre bonus, joué après la fin du film et que l’on peut passer.",
  "arcs": {
-  "prologue": {
-   "title": {
-    "fr": "Prologue de faction",
-    "en": "Faction prologue"
-   },
-   "version": "16.0"
-  },
   "league-start": {
    "title": {
     "fr": "La zone de départ de la Ligue",
@@ -15,12 +8,27 @@
    },
    "version": "4.0"
   },
+  "pride-start": {
+   "title": {
+    "fr": "La zone de départ des Pridiens",
+    "en": "The Priden starting zone"
+   },
+   "version": "7.0",
+   "_note": "Les Pridiens sont une faction à part à la création (chargen.json) ; leur départ (PridensStart) se clôt sur « Присяга Лиге » (Pride_7_8_L : aller à Novograd voir Aidenus), où ils rejoignent le film de la Ligue, au même point que la zone de départ de la Ligue (qui sort aussi vers Novograd) : l'arc suit donc « La zone de départ de la Ligue »."
+  },
   "empire-start": {
    "title": {
     "fr": "La zone de départ de l’Empire",
     "en": "The Empire starting zone"
    },
    "version": "7.0"
+  },
+  "prologue": {
+   "title": {
+    "fr": "Prologue de faction",
+    "en": "Faction prologue"
+   },
+   "version": "16.0"
   },
   "ferris": {
    "title": {
@@ -150,12 +158,12 @@
    "arc": "prologue",
    "version": "16.0",
    "faction": "league",
-   "order": 100,
+   "order": 149,
    "title": {
     "fr": "Prologue de la Ligue",
     "en": "League prologue"
    },
-   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de la Ligue ; placée en tête du film.",
+   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction de la Ligue ; placée juste après la zone de départ de la Ligue (arc league-start), qui ouvre le film (ordre choisi par l’utilisateur).",
    "subtitles": {
     "fr_anchor": "allez sur le",
     "lines": [
@@ -212,12 +220,12 @@
    "arc": "prologue",
    "version": "16.0",
    "faction": "empire",
-   "order": 100,
+   "order": 149,
    "title": {
     "fr": "Prologue de l’Empire",
     "en": "Empire prologue"
    },
-   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de l’Empire ; placée en tête du film.",
+   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction de l’Empire ; placée juste après la zone de départ de l’Empire (arc empire-start), qui ouvre le film (ordre choisi par l’utilisateur).",
    "subtitles": {
     "fr_anchor": "qu avez vous",
     "lines": [
@@ -244,42 +252,6 @@
      }
     ]
    },
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "empire-start-boarding",
-   "kind": "engine",
-   "source": "main",
-   "event": "Jump",
-   "arc": "empire-start",
-   "version": "7.0",
-   "faction": "empire",
-   "order": 110,
-   "title": {
-    "fr": "L’abordage",
-    "en": "Boarding the enemy ship"
-   },
-   "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; juste après le prologue de l’Empire. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "empire-start-knight-defeated",
-   "kind": "engine",
-   "source": "main",
-   "event": "DeathTriggerPaladinFinal",
-   "arc": "empire-start",
-   "version": "7.0",
-   "faction": "empire",
-   "order": 120,
-   "title": {
-    "fr": "Le chevalier vaincu",
-    "en": "The knight defeated"
-   },
-   "chronology": "Fin du tutoriel de l’Empire : Gradimir Belov vaincu, le joueur quitte le navire kanien pour Igsh (Hadagan_Sanatorium) ; suit l’abordage.",
    "audio": {
     "language": "ru"
    }
@@ -1444,44 +1416,193 @@
    "audio": {
     "language": "ru"
    }
-  },
-  {
-   "id": "league-klement-death",
-   "kind": "engine",
-   "source": "main",
-   "event": "PaladinQuest",
-   "arc": "league-start",
-   "version": "4.0",
-   "faction": "league",
-   "order": 110,
-   "title": {
-    "fr": "La mort du Grand Mage",
-    "en": "The Great Mage’s Death"
-   },
-   "chronology": "Instance de départ de la Ligue (Inst_LeagueStart, voix « patch403 ») : première scène jouée, au sommet de la tour, pendant les quêtes « Аудиенция у Великого мага » ; après le prologue de faction.",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "league-evacuation",
-   "kind": "engine",
-   "source": "main",
-   "event": "Quest_4_30",
-   "arc": "league-start",
-   "version": "4.0",
-   "faction": "league",
-   "order": 120,
-   "title": {
-    "fr": "L’évacuation",
-    "en": "The Evacuation"
-   },
-   "chronology": "Instance de départ de la Ligue : quête « Эвакуация » (Quest_4_30), au pied de la tour, avant « Дорога в Новоград » qui clôt l’instance ; suit la mort du Grand Mage.",
-   "audio": {
-    "language": "ru"
-   }
   }
  ],
+ "held_back": {
+  "_note": "Chapitres retirés du film à la demande (24/09/2026) : zones de départ de la Ligue, de l'Empire et des Pridiens, à réintégrer autrement (timeline propre). Leurs scènes moteur (`engine_scenes`) et leurs fichiers sous public/game/cinematics/engine/ sont conservés ; pour remettre un chapitre dans le film, le replacer dans `cinematics` puis relancer tools/extract_engine_cutscene.py --only <id>.",
+  "chapters": [
+   {
+    "id": "empire-start-command-post",
+    "kind": "engine",
+    "source": "main",
+    "event": "ComanadPost",
+    "arc": "empire-start",
+    "version": "7.0",
+    "faction": "empire",
+    "order": 104,
+    "title": {
+     "fr": "Au poste de commandement",
+     "en": "At the command post"
+    },
+    "chronology": "Tutoriel de l’Empire (Inst_EmpireStart, voix « patch403 ») : zone ComanadPost, entre les quêtes des canons (« Пострелять из корабельной пушки ») et « Реакторная », dont elle fait le capitaine donneur ; première scène doublée à plusieurs voix du tutoriel ; ouvre le film de l’Empire.",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "empire-start-lost-artifact",
+    "kind": "engine",
+    "source": "main",
+    "event": "Quest4_1",
+    "arc": "empire-start",
+    "version": "7.0",
+    "faction": "empire",
+    "order": 106,
+    "title": {
+     "fr": "L’artefact perdu",
+     "en": "The lost artifact"
+    },
+    "chronology": "Tutoriel de l’Empire : récompense de « Сердце корабля » (Quest4_1), dans la salle du réacteur ; après « Реакторная », avant « Канийский вор » (Quest4_3) et « Схватка с витязем ».",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "empire-start-boarding-order",
+    "kind": "engine",
+    "source": "main",
+    "event": "Quest4_4",
+    "arc": "empire-start",
+    "version": "7.0",
+    "faction": "empire",
+    "order": 107,
+    "title": {
+     "fr": "L’ordre d’abordage",
+     "en": "The boarding order"
+    },
+    "chronology": "Tutoriel de l’Empire : début de « Схватка с витязем » (Quest4_4), donnée par le capitaine que la scène précédente a amené au réacteur ; précède la montée sur le pont.",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "empire-start-stolen-device",
+    "kind": "engine",
+    "source": "main",
+    "event": "TeleportPaladin",
+    "arc": "empire-start",
+    "version": "7.0",
+    "faction": "empire",
+    "order": 108,
+    "title": {
+     "fr": "L’appareil volé",
+     "en": "The stolen device"
+    },
+    "chronology": "Tutoriel de l’Empire : zone TeleportPaladin, sur le pont, pendant « Схватка с витязем » ; après LastEventStart, 9 s avant la zone Jump (« L’abordage »).",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "empire-start-boarding",
+    "kind": "engine",
+    "source": "main",
+    "event": "Jump",
+    "arc": "empire-start",
+    "version": "7.0",
+    "faction": "empire",
+    "order": 110,
+    "title": {
+     "fr": "L’abordage",
+     "en": "Boarding the enemy ship"
+    },
+    "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; après la montée sur le pont. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "empire-start-knight-defeated",
+    "kind": "engine",
+    "source": "main",
+    "event": "DeathTriggerPaladinFinal",
+    "arc": "empire-start",
+    "version": "7.0",
+    "faction": "empire",
+    "order": 120,
+    "title": {
+     "fr": "Le chevalier vaincu",
+     "en": "The knight defeated"
+    },
+    "chronology": "Fin du tutoriel de l’Empire : Gradimir Belov vaincu, le joueur quitte le navire kanien pour Igsh (Hadagan_Sanatorium) ; suit l’abordage.",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "league-klement-death",
+    "kind": "engine",
+    "source": "main",
+    "event": "PaladinQuest",
+    "arc": "league-start",
+    "version": "4.0",
+    "faction": "league",
+    "order": 110,
+    "title": {
+     "fr": "La mort du Grand Mage",
+     "en": "The Great Mage’s Death"
+    },
+    "chronology": "Instance de départ de la Ligue (Inst_LeagueStart, voix « patch403 ») : première scène jouée, au sommet de la tour, pendant les quêtes « Аудиенция у Великого мага » ; après le prologue de faction.",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "league-evacuation",
+    "kind": "engine",
+    "source": "main",
+    "event": "Quest_4_30",
+    "arc": "league-start",
+    "version": "4.0",
+    "faction": "league",
+    "order": 120,
+    "title": {
+     "fr": "L’évacuation",
+     "en": "The Evacuation"
+    },
+    "chronology": "Instance de départ de la Ligue : quête « Эвакуация » (Quest_4_30), au pied de la tour, avant « Дорога в Новоград » qui clôt l’instance ; suit la mort du Grand Mage.",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "pride-cinema",
+    "kind": "engine",
+    "source": "main",
+    "event": "Pride_1_9",
+    "arc": "pride-start",
+    "version": "7.0",
+    "faction": "league",
+    "order": 130,
+    "title": {
+     "fr": "Ah, le cinéma !",
+     "en": "Ah, the Cinema!"
+    },
+    "chronology": "Zone de départ des Pridiens (PridensStart) : début de la quête « Ах, синема, синема! » (Pride_1_9, après Pride_1_8) ; avant « Спектакль » (Pride_1_11).",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   {
+    "id": "pride-performance",
+    "kind": "engine",
+    "source": "main",
+    "event": "Pride_1_11",
+    "arc": "pride-start",
+    "version": "7.0",
+    "faction": "league",
+    "order": 132,
+    "title": {
+     "fr": "Le spectacle",
+     "en": "The Performance"
+    },
+    "chronology": "Zone de départ des Pridiens : début de la quête « Спектакль » (Pride_1_11), jusqu'au moment où le joueur reçoit ses émotes de scène (13 s : la suite est jouée par lui).",
+    "audio": {
+     "language": "ru"
+    }
+   }
+  ]
+ },
  "excluded": [
   {
    "entry": "Video/<N>_0Events/MainMenu/Intro.ogv, MainMenu.ogv (9.0 → 17.0)",
@@ -23166,6 +23287,311 @@
    "_note": "GameViewScene 438509 (CutScene_EngineerDeathKania, Inst_ZoneContested12_Start) jouée par le ShowSceneAction de la stèle 438512 : trois assassins colosses (special03, 04, 05) et Luka (special08) à la place de la scène, caméra au cameraPlacement. Caméra : le cameraPlacement (drapeau use) pose le spectateur ; caméra à 2 m au-dessus, regard selon son lacet (vue de joueur). La version hadagane (CutScene_EngineerDeathHadagan du 7.0) n’existe plus dans le 17.0 : la GameViewScene 443968, voisine, est l’explosion du navire, déjà dans le film en vidéo."
   },
   {
+   "id": "empire-start-command-post",
+   "source": "xdb70",
+   "trigger": "Maps/Inst_EmpireStart/ScriptZones/ComanadPost.(ScriptZone).xdb",
+   "until_last": true,
+   "map": "Inst_EmpireStart",
+   "states": {
+    "Empire_Ship_Fight1": 0,
+    "League_Ship_Fight1": 0,
+    "League_Ship_Final": 0
+   },
+   "states_note": "États des stèles du pont avant la zone LastEventStart (arbre serveur 7.0) : aucune zone ni quête ne les a encore changés (LastEventStart met Empire_Ship_Fight1 à 1, TeleportPaladin met League_Ship_Fight1 à 1, Jump touche League_Ship_Final) : action par défaut.",
+   "audio": {
+    "music": [
+     "Music/ZonesMusic/IE1_main"
+    ],
+    "ambience": []
+   },
+   "audio_note": "MusicBuff (posé par la zone EnemyAtack, au début du tutoriel ; retiré après l’abordage par Key2_Spell) joue Music/ZonesMusic/IE1_main ; IE1_Ships_Ambient n’est posé que par LastEventStart, plus tard.",
+   "fr_blocks": [
+    {
+     "ru": 182524,
+     "fr": 176375,
+     "count": 3,
+     "_note": "Messages du capitaine (Text_CaptainSpeech1…3, TextMessage) : « Механикам запустить реактор! » ↔ « Qu’est-ce qui ne va pas ? … », « \"Прибор\" пропал?! » ↔ « L’instrument est perdu ? … », « Приказываю вернуть артефакт » ↔ « Rapportez l’artéfact à tout prix ! » ; relu réplique par réplique."
+    },
+    {
+     "ru": 182624,
+     "fr": 176475,
+     "count": 29,
+     "_note": "Messages et bulles du tutoriel (Ask_11…, Quest4_1_Finish, Ask_16/17, PaladinChat) : « Подача энергии падает! » ↔ « Les niveaux d’énergie sont en chute libre ! », « Проклятье! Что там происходит? » ↔ « Bon sang ! Que se passe-t-il ? », « Не могу знать! » ↔ « Je ne sais pas ! », « Слава Свету! Мы успели! » ↔ « Gloire à la Lumière ! Nous l’avons fait ! », « Прибор у нас, задержите их! » ↔ « Retardez le poursuivant. Je me téléporte vers notre navire ! » : écart constant (−6149, celui du bloc 182588 de la Ligue), relu réplique par réplique."
+    }
+   ],
+   "camera": {
+    "points": [
+     {
+      "t": 0,
+      "p": [
+       1386.1,
+       1233.9,
+       12.893
+      ]
+     }
+    ],
+    "targets": [
+     {
+      "t": 0,
+      "p": [
+       1393.094,
+       1221.565,
+       11.6702
+      ]
+     }
+    ],
+    "_note": "Aucune caméra dans les données : la scène se joue dans la vue du joueur. Point de vue : centre de la zone de script ComanadPost (5_4_ServerObjects), que le joueur atteint, à 2 m ; regard vers le capitaine (IE1_Captain, même fichier). Avancé de 2,5 m vers le capitaine (choix) : au centre de la zone, la caméra est dans l’encadrement de la porte ES_Door7_2, que la zone ouvre, et son battant ouvert bouchait la vue."
+   },
+   "_note": "Zone de script ComanadPost (Inst_EmpireStart, 7.0) : au poste de commandement, le second Алексей Грубин (« Подача энергии падает! ») et le capitaine Казимир Саблин (« Проклятье! Что там происходит? ») ; dialogue doublé IE1/08-10_Dialogue_Mechanic-Master, bulles, gestes (emoteSpeech), bombardement (IE1_OutdoorShelling). La zone change ensuite le capitaine en donneur de la quête « Реакторная » (ImpactMobMorph → Captain_Morph).",
+   "doors": {
+    "ES_Door7": "open",
+    "_note": "Portes (DoorResource des objets du décor, arbre 7.0) à l’entrée de la zone : la récompense de Quest3_1 (les canons, juste avant) a ouvert ES_Door7 ; ComanadPost la referme et ouvre ES_Door7_2 dans la scène ; les autres ont l’état de leur ressource (fermées ; ES_Door11 ouverte, Door_01Open)."
+   },
+   "decor_cutout": false,
+   "decor_cutout_note": "Pas de découpe par l’alpha pour Inst_EmpireStart : l’alpha des textures opaques du navire y est un masque (Hadagan_Inst_Board, planches du pont, sous 0,5 sur 80 % ; Heraldic_Base, nul partout), la découpe creusait le pont."
+  },
+  {
+   "id": "empire-start-lost-artifact",
+   "source": "xdb70",
+   "trigger": "World/Quests/InstEmpire1/Quest4_1/Quest4_1.xdb",
+   "trigger_tag": "rewardImpacts",
+   "until_last": true,
+   "map": "Inst_EmpireStart",
+   "states": {
+    "Empire_Ship_Fight1": 0,
+    "League_Ship_Fight1": 0,
+    "League_Ship_Final": 0
+   },
+   "states_note": "États des stèles du pont avant la zone LastEventStart (arbre serveur 7.0) : aucune zone ni quête ne les a encore changés (LastEventStart met Empire_Ship_Fight1 à 1, TeleportPaladin met League_Ship_Fight1 à 1, Jump touche League_Ship_Final) : action par défaut.",
+   "audio": {
+    "music": [
+     "Music/ZonesMusic/IE1_main"
+    ],
+    "ambience": []
+   },
+   "audio_note": "MusicBuff (posé par la zone EnemyAtack, au début du tutoriel ; retiré après l’abordage par Key2_Spell) joue Music/ZonesMusic/IE1_main ; IE1_Ships_Ambient n’est posé que par LastEventStart, plus tard.",
+   "interlocutor": {
+    "mob": "Characters/Hadagan_male/Instances/InstEmpire1/Mage.(MobWorld).xdb",
+    "p": [
+     1397.419,
+     1292.1164,
+     16.3284
+    ],
+    "yaw": 2.45108,
+    "_note": "Donneur de la quête « Сердце корабля » (sa MobWorld cite Quest4_1) : le savant Саранг Кафири, posé en IE1_NPC2 (5_5_ServerObjects), sa place et son lacet. Le donneur de la quête se tourne vers le joueur qui lui parle (comportement du client, non tiré des fichiers) : lacet vers le point de vue.",
+    "face": "player"
+   },
+   "fr_blocks": [
+    {
+     "ru": 182524,
+     "fr": 176375,
+     "count": 3,
+     "_note": "Messages du capitaine (Text_CaptainSpeech1…3, TextMessage) : « Механикам запустить реактор! » ↔ « Qu’est-ce qui ne va pas ? … », « \"Прибор\" пропал?! » ↔ « L’instrument est perdu ? … », « Приказываю вернуть артефакт » ↔ « Rapportez l’artéfact à tout prix ! » ; relu réplique par réplique."
+    },
+    {
+     "ru": 182624,
+     "fr": 176475,
+     "count": 29,
+     "_note": "Messages et bulles du tutoriel (Ask_11…, Quest4_1_Finish, Ask_16/17, PaladinChat) : « Подача энергии падает! » ↔ « Les niveaux d’énergie sont en chute libre ! », « Проклятье! Что там происходит? » ↔ « Bon sang ! Que se passe-t-il ? », « Не могу знать! » ↔ « Je ne sais pas ! », « Слава Свету! Мы успели! » ↔ « Gloire à la Lumière ! Nous l’avons fait ! », « Прибор у нас, задержите их! » ↔ « Retardez le poursuivant. Je me téléporte vers notre navire ! » : écart constant (−6149, celui du bloc 182588 de la Ligue), relu réplique par réplique."
+    }
+   ],
+   "camera": {
+    "points": [
+     {
+      "t": 0,
+      "p": [
+       1391.0,
+       1318.5,
+       20.3
+      ]
+     }
+    ],
+    "targets": [
+     {
+      "t": 0,
+      "p": [
+       1396.5,
+       1297.0,
+       16.5
+      ]
+     }
+    ],
+    "_note": "Aucune caméra dans les données. Point de vue choisi (non tiré des données) pour montrer l’action : dans la salle du réacteur, vers l’entrée où le savant attend le joueur et où arrivent le capitaine et le second (IE1_Captain02_Path, IE1_StarPom02_Path) ; les deux techniciens courent vers leurs machines, devant la caméra. L’ancien point de vue (centre de la zone Lazor, où est le joueur) mettait le savant à 1,5 m et les techniciens derrière la caméra."
+   },
+   "_note": "Récompense de la quête « Сердце корабля » (Quest4_1.rewardImpacts, 7.0) : le savant (« Слава Свету! Мы успели! »), le capitaine Казимир Саблин et le second Алексей Грубин montent à la salle du réacteur (IE1_Captain02_Path, IE1_StarPom02_Path), deux techniciens courent aux machines et s’en servent ; ordres du capitaine (IE1/13_Master_07, 14_Master_08 : le « прибор » a disparu), bulles, puis l’annonce du navigateur (IE1/15_Navigator_Broadcast_01). Le capitaine devient ensuite le donneur de « Схватка с витязем » (ImpactMobMorph → Captain_3).",
+   "doors": {
+    "ES_Door7_2": "open",
+    "ES_Door10": "open",
+    "ES_Door10_2": "open",
+    "ES_Door10_3": "open",
+    "_note": "Portes à la salle du réacteur : ComanadPost a fermé ES_Door7 et ouvert ES_Door7_2 ; les zones Generator1, Generator1_2 et Generator1_3 du couloir vers le réacteur ont ouvert ES_Door10, ES_Door10_2, ES_Door10_3 (Generator1_3 ferme ES_Door9) ; les autres ont l’état de leur ressource."
+   },
+   "decor_cutout": false,
+   "decor_cutout_note": "Pas de découpe par l’alpha pour Inst_EmpireStart : l’alpha des textures opaques du navire y est un masque (Hadagan_Inst_Board, planches du pont, sous 0,5 sur 80 % ; Heraldic_Base, nul partout), la découpe creusait le pont.",
+   "player": [
+    1396.802,
+    1294.104,
+    18.294
+   ],
+   "player_note": "Place du joueur : centre de la zone Lazor (5_5_ServerObjects), la salle du réacteur où il rend la quête, à 2 m."
+  },
+  {
+   "id": "empire-start-boarding-order",
+   "source": "xdb70",
+   "trigger": "World/Quests/InstEmpire1/Quest4_4/Quest4_4.xdb",
+   "trigger_tag": "startImpacts",
+   "until_last": true,
+   "map": "Inst_EmpireStart",
+   "states": {
+    "Empire_Ship_Fight1": 0,
+    "League_Ship_Fight1": 0,
+    "League_Ship_Final": 0
+   },
+   "states_note": "États des stèles du pont avant la zone LastEventStart (arbre serveur 7.0) : aucune zone ni quête ne les a encore changés (LastEventStart met Empire_Ship_Fight1 à 1, TeleportPaladin met League_Ship_Fight1 à 1, Jump touche League_Ship_Final) : action par défaut.",
+   "audio": {
+    "music": [
+     "Music/ZonesMusic/IE1_main"
+    ],
+    "ambience": []
+   },
+   "audio_note": "MusicBuff (posé par la zone EnemyAtack, au début du tutoriel ; retiré après l’abordage par Key2_Spell) joue Music/ZonesMusic/IE1_main ; IE1_Ships_Ambient n’est posé que par LastEventStart, plus tard.",
+   "interlocutor": {
+    "mob": "Characters/Orc_female/Instances/InstEmpire1/Captain_3.(MobWorld).xdb",
+    "p": [
+     1395.306,
+     1293.0839,
+     16.328
+    ],
+    "yaw": 3.1833,
+    "_note": "Donneur de la quête « Схватка с витязем » (sa MobWorld cite Quest4_4) : le capitaine, que la récompense de Quest4_1 a mené en IE1_Captain02_Path (5_5_ServerObjects) puis changé en Captain_3 (ImpactMobMorph). Le donneur de la quête se tourne vers le joueur qui lui parle (comportement du client, non tiré des fichiers) : lacet vers le point de vue.",
+    "face": "player"
+   },
+   "start_at": {
+    "IE1_StarPom02": {
+     "locator": "IE1_StarPom02_Path",
+     "_note": "La récompense de Quest4_1 a mené le second Алексей Грубин en IE1_StarPom02_Path (GoThroughPath depuis IE1_StarPom02) : il y reste, tourné dans le sens de cette marche, comme à la fin de « L’artefact perdu ».",
+     "yaw": "walk"
+    }
+   },
+   "fr_blocks": [
+    {
+     "ru": 182524,
+     "fr": 176375,
+     "count": 3,
+     "_note": "Messages du capitaine (Text_CaptainSpeech1…3, TextMessage) : « Механикам запустить реактор! » ↔ « Qu’est-ce qui ne va pas ? … », « \"Прибор\" пропал?! » ↔ « L’instrument est perdu ? … », « Приказываю вернуть артефакт » ↔ « Rapportez l’artéfact à tout prix ! » ; relu réplique par réplique."
+    },
+    {
+     "ru": 182624,
+     "fr": 176475,
+     "count": 29,
+     "_note": "Messages et bulles du tutoriel (Ask_11…, Quest4_1_Finish, Ask_16/17, PaladinChat) : « Подача энергии падает! » ↔ « Les niveaux d’énergie sont en chute libre ! », « Проклятье! Что там происходит? » ↔ « Bon sang ! Que se passe-t-il ? », « Не могу знать! » ↔ « Je ne sais pas ! », « Слава Свету! Мы успели! » ↔ « Gloire à la Lumière ! Nous l’avons fait ! », « Прибор у нас, задержите их! » ↔ « Retardez le poursuivant. Je me téléporte vers notre navire ! » : écart constant (−6149, celui du bloc 182588 de la Ligue), relu réplique par réplique."
+    }
+   ],
+   "camera": {
+    "points": [
+     {
+      "t": 0,
+      "p": [
+       1398.6,
+       1296.2,
+       18.0
+      ]
+     }
+    ],
+    "targets": [
+     {
+      "t": 0,
+      "p": [
+       1395.8,
+       1292.98,
+       17.3
+      ]
+     }
+    ],
+    "_note": "Aucune caméra dans les données. Point de vue choisi : derrière le joueur (centre de la zone Lazor), dans l’axe qui va du capitaine et du second vers lui, reculé à 4,5 m pour les cadrer en pied ; regard vers eux, à 1 m de haut."
+   },
+   "_note": "Début de la quête « Схватка с витязем » (Quest4_4.startImpacts, 7.0) : le capitaine donne l’ordre de l’abordage, dialogue doublé du capitaine et du second (IE1/16-18_Dialogue_Master-FirstMate), bulle « Приказываю вернуть артефакт. Любой ценой! », lampe d’alerte IE1_Lamp15.",
+   "doors": {
+    "ES_Door7_2": "open",
+    "ES_Door10": "open",
+    "ES_Door10_2": "open",
+    "ES_Door10_3": "open",
+    "_note": "Portes à la salle du réacteur : ComanadPost a fermé ES_Door7 et ouvert ES_Door7_2 ; les zones Generator1, Generator1_2 et Generator1_3 du couloir vers le réacteur ont ouvert ES_Door10, ES_Door10_2, ES_Door10_3 (Generator1_3 ferme ES_Door9) ; les autres ont l’état de leur ressource."
+   },
+   "decor_cutout": false,
+   "decor_cutout_note": "Pas de découpe par l’alpha pour Inst_EmpireStart : l’alpha des textures opaques du navire y est un masque (Hadagan_Inst_Board, planches du pont, sous 0,5 sur 80 % ; Heraldic_Base, nul partout), la découpe creusait le pont.",
+   "player": [
+    1396.802,
+    1294.104,
+    18.294
+   ],
+   "player_note": "Place du joueur : centre de la zone Lazor (5_5_ServerObjects), la salle du réacteur où il rend la quête, à 2 m."
+  },
+  {
+   "id": "empire-start-stolen-device",
+   "source": "xdb70",
+   "trigger": "Maps/Inst_EmpireStart/ScriptZones/TeleportPaladin.(ScriptZone).xdb",
+   "until_last": true,
+   "map": "Inst_EmpireStart",
+   "states": {
+    "Empire_Ship_Fight1": 1,
+    "League_Ship_Fight1": 0,
+    "League_Ship_Final": 0
+   },
+   "states_note": "États des stèles à l’entrée de la zone TeleportPaladin (arbre serveur 7.0) : LastEventStart, juste avant sur le pont, a mis Empire_Ship_Fight1 à 1 (combat) ; la zone met elle-même League_Ship_Fight1 à 1 ; rien ne touche League_Ship_Final avant Jump.",
+   "audio": {
+    "music": [
+     "Music/ZonesMusic/IE1_main"
+    ],
+    "ambience": [
+     "Ambience/AstralAmbience/4Layer_3Tier"
+    ]
+   },
+   "audio_note": "MusicBuff (EnemyAtack) joue encore Music/ZonesMusic/IE1_main ; IE1_Ships_Ambient (LastEventStart, juste avant) joue Ambience/AstralAmbience/4Layer_3Tier.",
+   "fr_blocks": [
+    {
+     "ru": 182524,
+     "fr": 176375,
+     "count": 3,
+     "_note": "Messages du capitaine (Text_CaptainSpeech1…3, TextMessage) : « Механикам запустить реактор! » ↔ « Qu’est-ce qui ne va pas ? … », « \"Прибор\" пропал?! » ↔ « L’instrument est perdu ? … », « Приказываю вернуть артефакт » ↔ « Rapportez l’artéfact à tout prix ! » ; relu réplique par réplique."
+    },
+    {
+     "ru": 182624,
+     "fr": 176475,
+     "count": 29,
+     "_note": "Messages et bulles du tutoriel (Ask_11…, Quest4_1_Finish, Ask_16/17, PaladinChat) : « Подача энергии падает! » ↔ « Les niveaux d’énergie sont en chute libre ! », « Проклятье! Что там происходит? » ↔ « Bon sang ! Que se passe-t-il ? », « Не могу знать! » ↔ « Je ne sais pas ! », « Слава Свету! Мы успели! » ↔ « Gloire à la Lumière ! Nous l’avons fait ! », « Прибор у нас, задержите их! » ↔ « Retardez le poursuivant. Je me téléporte vers notre navire ! » : écart constant (−6149, celui du bloc 182588 de la Ligue), relu réplique par réplique."
+    }
+   ],
+   "camera": {
+    "points": [
+     {
+      "t": 0,
+      "p": [
+       2659.753,
+       1394.529,
+       13.0409
+      ]
+     }
+    ],
+    "targets": [
+     {
+      "t": 0,
+      "p": [
+       2649.5163,
+       1401.122,
+       15.192
+      ]
+     }
+    ],
+    "_note": "Aucune caméra dans les données. Point de vue : centre de la zone de script TeleportPaladin (0_5_ServerObjects), que le joueur atteint sur le pont, à 2 m ; regard vers Gradimir Belov (IE1_PaladinTeleport, même fichier)."
+   },
+   "_note": "Zone de script TeleportPaladin (Inst_EmpireStart, 7.0), sur le pont : Градимир Белов, le « прибор » volé en main, crie « Прибор у нас, задержите их! » (IE1/22_Gradimir_Paluba, bulle), marche vers le point de saut (IE1_PaladinTeleportMove) et disparaît à 6 s ; le combat du navire kanien commence (League_Ship_Fight1, état 1). La zone Jump (« L’abordage ») s’ouvre 9 s après.",
+   "sky": 103155,
+   "sky_note": "Ciel du pont : dans l’arbre 7.0, la région 0_5 (le pont) est de la zone FinalZone, dont l’éclairage AstralShip_Tubes a pour ciel Astral_Sky (Astral_SkyBackGround, Astral_SkyStars, Astral_SkyForegroundGround) ; le 17.0 ne relie plus le pont à aucun éclairage (ni ZoneInfo ni grille), et le premier éclairage de la carte (AstralShip) n’a que le dôme de nuit gris et les étoiles. SkyMesh 103155 du 17.0 : le premier des huit aux trois mêmes calques qu’Astral_Sky.",
+   "decor_cutout": false,
+   "decor_cutout_note": "Pas de découpe par l’alpha pour Inst_EmpireStart : l’alpha des textures opaques du navire y est un masque (Hadagan_Inst_Board, planches du pont, sous 0,5 sur 80 % ; Heraldic_Base, nul partout), la découpe creusait le pont."
+  },
+  {
    "id": "empire-start-boarding",
    "source": "xdb70",
    "trigger": "Maps/Inst_EmpireStart/ScriptZones/Jump.(ScriptZone).xdb",
@@ -23184,8 +23610,12 @@
      "Ambience/AstralAmbience/4Layer_3Tier"
     ]
    },
-   "audio_note": "Buffs posés avant la scène et encore actifs : MusicBuff (EnemyAtack ; retiré plus tard par Key2_Spell) joue Music/ZonesMusic/IE1_main, IE1_Ships_Ambient (LastEventStart ; retiré à la mort de Gradimir) joue Ambience/AstralAmbience/4Layer_3Tier.",
-   "_note": "Zone de script Jump du tutoriel de l’Empire (Inst_EmpireStart, quête Quest4_4 « Схватка с витязем ») : buff Jump_Camera (14 s, plan JumpCameraFix), le navire impérial touché (Shield.CanonHitFire aux repères IE_Boom_01…04, Hull.Death à IE_ShipDestroy et IE_ShipDestroy2, son IE1_ShipDestroy), les combattants de la GameViewScene IE1_EmpireShip_Fight1 tombent (état 2) puis disparaissent (état 3), le Спрутоглав (IE1_Ktulha) suit son chemin puis est retiré, débarquement (Demon_Desant : SummonUndead aux repères d’arrivée), le navire kanien (stèle League_Ship_Final) passe à idle01. Le joueur, qui saute (ShipOutJump, route FromShipFly), n’est pas montré."
+   "audio_note": "Buffs posés avant la scène et encore actifs : MusicBuff (EnemyAtack ; retiré plus tard par Key2_Spell) joue Music/ZonesMusic/IE1_main, IE1_Ships_Ambient (LastEventStart ; retiré à la mort de Gradimir) joue Ambience/AstralAmbience/4Layer_3Tier. Onde de IE1_main d'après Music.bev : définition /Music/Conquer_high (adaptivemusic/Conquer_high.wav, sous-piste 2 de Music_StartZones.fsb).",
+   "_note": "Zone de script Jump du tutoriel de l’Empire (Inst_EmpireStart, quête Quest4_4 « Схватка с витязем ») : buff Jump_Camera (14 s, plan JumpCameraFix), le navire impérial touché (Shield.CanonHitFire aux repères IE_Boom_01…04, Hull.Death à IE_ShipDestroy et IE_ShipDestroy2, son IE1_ShipDestroy), les combattants de la GameViewScene IE1_EmpireShip_Fight1 tombent (état 2) puis disparaissent (état 3), le Спрутоглав (IE1_Ktulha) suit son chemin puis est retiré, débarquement (Demon_Desant : SummonUndead aux repères d’arrivée), le navire kanien (stèle League_Ship_Final) passe à idle01. Le joueur, qui saute (ShipOutJump, route FromShipFly), n’est pas montré.",
+   "sky": 103155,
+   "sky_note": "Ciel du pont : dans l’arbre 7.0, la région 0_5 (le pont) est de la zone FinalZone, dont l’éclairage AstralShip_Tubes a pour ciel Astral_Sky (Astral_SkyBackGround, Astral_SkyStars, Astral_SkyForegroundGround) ; le 17.0 ne relie plus le pont à aucun éclairage (ni ZoneInfo ni grille), et le premier éclairage de la carte (AstralShip) n’a que le dôme de nuit gris et les étoiles. SkyMesh 103155 du 17.0 : le premier des huit aux trois mêmes calques qu’Astral_Sky.",
+   "decor_cutout": false,
+   "decor_cutout_note": "Pas de découpe par l’alpha pour Inst_EmpireStart : l’alpha des textures opaques du navire y est un masque (Hadagan_Inst_Board, planches du pont, sous 0,5 sur 80 % ; Heraldic_Base, nul partout), la découpe creusait le pont."
   },
   {
    "id": "empire-start-knight-defeated",
@@ -23207,7 +23637,11 @@
     ]
    },
    "audio_note": "MusicBuff a été retiré par Key2_Spell : pas de musique de buff ; IE1_Ships_Ambient reste jusqu’à la téléportation (retiré à 24 s).",
-   "_note": "Capacité DeathTriggerPaladinFinal de Gradimir Belov (Quest4_4) : à sa mort, le joueur se téléporte (Teleport4sec, fondu au noir Effect_Avatar_Fade), à 9 s le buff Teleport4sec_Camera (17 s, plan IE1_Teleport_Camera), à 10 s le navire kanien joue « special » (League_Ship_Final, état 3) et ses combattants disparaissent (League_Ship_Fight1, état 3), à 24 s le joueur part pour Hadagan_Sanatorium (ImpactTeleport) : la scène va du premier plan (9 s) au départ (24 s). La réplique de la mort de Gradimir (IE1/24_Gradimir_Death, bulle sans sous-titre) est dite à 0 s, avant le plan : hors scène."
+   "_note": "Capacité DeathTriggerPaladinFinal de Gradimir Belov (Quest4_4) : à sa mort, le joueur se téléporte (Teleport4sec, fondu au noir Effect_Avatar_Fade), à 9 s le buff Teleport4sec_Camera (17 s, plan IE1_Teleport_Camera), à 10 s le navire kanien joue « special » (League_Ship_Final, état 3) et ses combattants disparaissent (League_Ship_Fight1, état 3), à 24 s le joueur part pour Hadagan_Sanatorium (ImpactTeleport) : la scène va du premier plan (9 s) au départ (24 s). La réplique de la mort de Gradimir (IE1/24_Gradimir_Death, bulle sans sous-titre) est dite à 0 s, avant le plan : hors scène.",
+   "sky": 103155,
+   "sky_note": "Ciel du pont : dans l’arbre 7.0, la région 0_5 (le pont) est de la zone FinalZone, dont l’éclairage AstralShip_Tubes a pour ciel Astral_Sky (Astral_SkyBackGround, Astral_SkyStars, Astral_SkyForegroundGround) ; le 17.0 ne relie plus le pont à aucun éclairage (ni ZoneInfo ni grille), et le premier éclairage de la carte (AstralShip) n’a que le dôme de nuit gris et les étoiles. SkyMesh 103155 du 17.0 : le premier des huit aux trois mêmes calques qu’Astral_Sky.",
+   "decor_cutout": false,
+   "decor_cutout_note": "Pas de découpe par l’alpha pour Inst_EmpireStart : l’alpha des textures opaques du navire y est un masque (Hadagan_Inst_Board, planches du pont, sous 0,5 sur 80 % ; Heraldic_Base, nul partout), la découpe creusait le pont."
   },
   {
    "id": "league-klement-death",
@@ -23279,6 +23713,13 @@
    "trigger_tag": "startImpacts",
    "until_last": true,
    "map": "Inst_LeagueStart",
+   "audio": {
+    "music": [
+     "Music/AdaptiveMusic/Siege_warfare"
+    ],
+    "ambience": []
+   },
+   "audio_note": "Buff Music_Buff (sans durée) posé par la zone PaladinQuest (scène précédente, 25,5 s) et retiré seulement par la récompense de la quête (Quest_4_30.rewardImpacts, BuffDetacher) : sa musique Music/AdaptiveMusic/Siege_warfare joue encore au début de la quête.",
    "interlocutor": {
     "mob": "Characters/Gibberling_male/Instances/InstLeague1/LI_GibberlingStalker3.(MobWorld).xdb",
     "p": [
@@ -23335,6 +23776,47 @@
    "_note": "Début de la quête « Эвакуация » (Quest_4_30.startImpacts, 7.0) : le gibberling court vers le front et appelle, Amanda ouvre le portail et lève son champ protecteur ; trois GameViewScene de l’étage 1 posées par leurs stèles (état 1) — combat des civils et des démons (1 s), civils qui fuient par le portail (4 s), démons (15 s). La scène dure jusqu’à la fin du plus long de leurs scripts.",
    "zone_lights": 200291,
    "zone_lights_note": "La base de carte Maps_Inst_LeagueStart.bin ne porte aucune ZoneLights : celle de pack.bin (200291) dont le premier éclairage a les couleurs de AstralCoast_Tubes.(ZoneLights), éclairage des zones InstLeague1 de l’arbre 7.0 (AmbientColor 2015437136, DiffuseColor 2015839606, brouillard 10–935 m)."
+  },
+  {
+   "id": "pride-cinema",
+   "source": "xdb70",
+   "trigger": "World/Quests/PridensStart/Pride_1_9/Pride_1_9.xdb",
+   "trigger_tag": "startImpacts",
+   "until_last": true,
+   "map": "PridensStart",
+   "_note": "Début de la quête « Ах, синема, синема! » (Pride_1_9.startImpacts, 7.0) : buff Pride_1_9_Fade (15 s) — voile noir 3 s (Black_Long, arrêté par VisActionStopAction), puis travelling de caméra vers l'écran et musique Music/Ingame/Cinema ; à 1,5 s, Pride_Cinema_state2 pose le drapeau visuel que lit le cinéma hadagan (stèle Priden_Hadagan_Cinema du décor : « special » en boucle). La scène filmée commence au premier plan de caméra (3 s).",
+   "audio": {
+    "ambience": [
+     "Ambience/OutdoorAmbience/Zones/PridenStart/OlmEast"
+    ],
+    "_note": "La base de carte PridensStart porte toutes les musiques de la carte (six Sound2DTassel joués ensemble sinon) : on garde celles des cases de son de la région de la scène (7.0, 050_050/4_1_MapRegion.xdb : Amb_OlmEast, Amb_NoCrows, Amb_wind → Ambience/OutdoorAmbience/Zones/PridenStart/OlmEast ; musique : celle du déroulé (Music/Ingame/Cinema))."
+   }
+  },
+  {
+   "id": "pride-performance",
+   "source": "xdb70",
+   "trigger": "World/Quests/PridensStart/Pride_1_11/Pride_1_11.xdb",
+   "trigger_tag": "startImpacts",
+   "until_last": true,
+   "map": "PridensStart",
+   "_note": "Début de la quête « Спектакль » (Pride_1_11.startImpacts, 7.0) : buff Pride_1_11_Performance1 — voile noir 3 s, travelling vers la scène, joueur déplacé sur la scène (2 s, Pride_1_11_Performance) ; Эстель (5 s) puis l'acteur (9 s) parlent (bulles), les spectateurs de la table Pride_1_11_Spectators applaudissent 2 s après chacun ; à 13 s le joueur reçoit ses émotes (suite jouée par lui).",
+   "fr_blocks": [
+    {
+     "ru": 247738,
+     "fr": 235435,
+     "count": 26,
+     "_note": "Textes de Pride_1_11 : « Oh my love, I'd leave the world… » (247742) ↔ « Ô mon amour, je laisserai le monde derrière moi… » (235439), « Remember: theater is your second life » (247763) ↔ « N'oubliez pas que le théâtre est votre seconde vie » (235460) : écart constant de 12 303 sur le bloc."
+    }
+   ],
+   "audio": {
+    "ambience": [
+     "Ambience/OutdoorAmbience/Zones/PridenStart/OlmEast"
+    ],
+    "music": [
+     "Music/RacesMusic/Priden"
+    ],
+    "_note": "La base de carte PridensStart porte toutes les musiques de la carte (six Sound2DTassel joués ensemble sinon) : on garde celles des cases de son de la région de la scène (7.0, 050_040/3_9_MapRegion.xdb : Muz_OlmEast → Music/RacesMusic/Priden (seule musique), Amb_OlmEast, Amb_wind → …/PridenStart/OlmEast)."
+   }
   }
  ]
 }

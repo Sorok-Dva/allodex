@@ -19,13 +19,15 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from tools.allods_gltf import Exporter, TexturePool, load_animation, load_geometry
+from tools.allods_gltf import Exporter, TexturePool, load_animation, load_geometry, reduce_keys
 from tools.allods_packdb import PackDB, PakCatalog
-from tools.allods_visdb import animation_bounds, read_visobject
+from tools.allods_visdb import STATE_ANIMATION, STATE_STRIDE, VOT_STATES, animation_bounds, read_visobject
 from tools.extract_menu_scene import BinSource, read_chunks
 
 
 # --- effets ------------------------------------------------------------------------------------
+
+_ANIM_NAMES: dict[int, dict[int, str]] = {}
 
 @dataclass
 class FxBuild:
@@ -49,12 +51,54 @@ class FxBuild:
             self.names[off] = name
         return self.names[off]
 
-    def emit(self, off: int, depth: int = 0) -> int | None:
-        """Nœud d'un gabarit : géométrie skinnée animée, composants accrochés."""
+    def default_state(self, state_ids: tuple[int, ...], animation: int | None) -> bool:
+        """Un `StateComponent` est-il montré dans l'état par défaut du gabarit : l'une de ses
+        animations (énumération `Animations`) est celle du premier état (`KaniaShip.Idle` → `idle`) ;
+        sans animation, l'état `idle`."""
+        from tools.allods_visdb import animation_names
+        root = getattr(self.db, "parent", None) or self.db
+        names = _ANIM_NAMES.get(id(root))
+        if names is None:
+            names = _ANIM_NAMES[id(root)] = {k: v.lower() for k, v in animation_names(root).items()}
+        file = self.cat.name(self.db.binary_ref(animation)) if animation is not None else None
+        clip = file.rsplit("/", 1)[-1].split(".(")[0].rsplit(".", 1)[-1].lower() if file and "." in file.rsplit("/", 1)[-1].split(".(")[0] else "idle"
+        return any(names.get(i) == clip for i in state_ids)
+
+    def state_animation(self, off: int, clip: str) -> int | None:
+        """Animation de l'état du gabarit dont le fichier porte le clip `clip` (`special01` →
+        `IH1_Door_01.Special01.(SkeletalAnimation).bin`), sans égard à la casse."""
+        wanted = f".{clip.lower()}.("
+        for e in self.db.elements(off + VOT_STATES, STATE_STRIDE):
+            anim = self.db.ptr(e + STATE_ANIMATION)
+            name = self.cat.name(self.db.binary_ref(anim)) if anim is not None else None
+            if name and wanted in name.lower():
+                return anim
+        return None
+
+    def emit_state(self, off: int, clip: str) -> str | None:
+        """Variante `<gabarit>@<clip>` d'un gabarit : son modèle, l'animation de l'état `clip`, jouée
+        une fois puis tenue (`CLAMP` des états d'un dispositif : porte ouverte ou fermée)."""
+        anim = self.state_animation(off, clip)
+        if anim is None:
+            return None
+        name = f"{self.name_of(off)}@{clip}"
+        if name not in self.meta:
+            node = self.emit(off, animation=anim, variant=name)
+            if node is None:
+                return None
+            self.roots.append(node)
+            self.meta[name]["loop"] = False
+        return name
+
+    def emit(self, off: int, depth: int = 0, animation: int | None = None, variant: str | None = None) -> int | None:
+        """Nœud d'un gabarit : géométrie skinnée animée, composants accrochés. `animation`,
+        `variant` : autre animation (celle d'un état) sous un autre nom (`emit_state`)."""
         if depth > 8:
             return None
         vot = read_visobject(self.db, self.cat, off)
-        name = self.name_of(off)
+        if animation is not None:
+            vot.animation = animation
+        name = variant or self.name_of(off)
         ex = self.exporter
         children: list[int] = []
         joint_nodes: list[int] = []
@@ -87,6 +131,11 @@ class FxBuild:
                 ex.stats["objects"] += 1
                 mesh_node = {"name": f"{name}_mesh", "mesh": mesh}
                 skeleton = loaded.skeleton
+                anim_name = self.cat.name(self.db.binary_ref(vot.animation)) if vot.animation is not None else None
+                span = float(np.max(np.abs(loaded.vertices["position"])) * 8.0) if len(loaded.vertices["position"]) else 0.0
+                animation = load_animation(self.bins, anim_name, skeleton, span) if anim_name else None
+                speed = (self.db.f32(vot.animation + 0x100) or 1.0) if animation is not None else 1.0
+                looped = animation is not None and bool(self.db.u8(vot.animation + 0x108))
                 if skeleton is not None and skinned:
                     joint_nodes = ex.emit_skeleton(skeleton, name)
                     joint_names = list(skeleton.names)
@@ -95,13 +144,18 @@ class FxBuild:
                     children.extend(joint_nodes[i] for i in range(len(skeleton))
                                     if not (0 <= skeleton.parents[i] < len(skeleton)))
                     children.append(static_node)
-                    anim_name = self.cat.name(self.db.binary_ref(vot.animation)) if vot.animation is not None else None
-                    span = float(np.max(np.abs(loaded.vertices["position"])) * 8.0) if len(loaded.vertices["position"]) else 0.0
-                    animation = load_animation(self.bins, anim_name, skeleton, span)
                     if animation is not None:
-                        speed = self.db.f32(vot.animation + 0x100) or 1.0
-                        loop = bool(self.db.u8(vot.animation + 0x108))
+                        loop = looped
                         duration = ex.emit_clip(name, skeleton, joint_nodes, animation, speed)
+                if animation is not None:
+                    alpha = element_alpha(animation, {e.name for e in elements}, speed)
+                    if alpha:
+                        info["elementAlpha"] = alpha
+                        loop = looped
+                        # Le clip porte au moins la transparence de ses éléments : sa durée
+                        # compte même sans squelette animé (dague du Paladin, feux du Guerrier).
+                        if duration <= 0 and animation.frames > 1:
+                            duration = (animation.frames - 1) / float(animation.fps) / max(speed, 1e-6)
                 children.append(ex.gltf.add_node(mesh_node))
         info["duration"] = round(duration, 4)
         info["loop"] = loop
@@ -112,6 +166,14 @@ class FxBuild:
         attached = []
         for comp in vot.components:
             if comp.visobject is None:
+                continue
+            if comp.state_ids is not None and not self.default_state(comp.state_ids, vot.animation):
+                # `StateComponent` d'un autre état que celui du gabarit posé (son animation par défaut) :
+                # rien ne le pilote dans le décor (les stèles posent les leurs, `stele_components`).
+                self.exporter.notes.append(f"{name} : composant d'état {self.name_of(comp.visobject)} hors de l'état par défaut")
+                continue
+            if comp.cancelled:
+                self.exporter.notes.append(f"{name} : composant {comp.ident} annulé (arrêté avant son échéance)")
                 continue
             child = self.emit(comp.visobject, depth + 1)
             if child is None:
@@ -154,6 +216,25 @@ class FxBuild:
             info["components"] = attached
         self.meta[name] = info
         return ex.gltf.add_node({"name": f"vot:{name}", "children": children, "extras": {"vot": name}})
+
+
+#: Écart toléré sur l'opacité d'un élément entre deux clés gardées (un pas de l'octet source).
+ALPHA_TOLERANCE = 1.0 / 255.0
+
+
+def element_alpha(animation, drawn: set[str], speed: float = 1.0) -> dict[str, list[float]]:
+    """Transparence des éléments dessinés, en clés `[t0, a0, t1, a1, …]` (secondes du clip à
+    sa vitesse, opacité 0 à 1, interpolation linéaire) : seules les pistes qui ne sont pas
+    pleines d'un bout à l'autre, allégées des clés redondantes."""
+    out: dict[str, list[float]] = {}
+    for track in animation.elements:
+        alpha = track.alpha
+        if alpha is None or track.name not in drawn or track.name in out or float(alpha.min()) >= 1.0:
+            continue
+        keep = reduce_keys(alpha[:, None], ALPHA_TOLERANCE)
+        times = np.arange(len(alpha)) / float(animation.fps) / max(speed, 1e-6)
+        out[track.name] = [round(float(v), 4) for k in keep for v in (times[k], alpha[k])]
+    return out
 
 
 def _qmul(a, b):

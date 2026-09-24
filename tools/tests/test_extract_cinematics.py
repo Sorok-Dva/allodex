@@ -230,12 +230,18 @@ def test_manifest_ids_are_unique_and_factions_valid(manifest):
     assert all(c["arc"] in manifest["arcs"] and c["source"] in manifest["sources"] for c in manifest["cinematics"])
 
 
-def test_manifest_gives_each_faction_its_own_prologue_first(manifest):
+def test_manifest_opens_each_film_with_its_prologue(manifest):
+    # Choix de l'utilisateur (24/09/2026) : les zones de départ sont retirées du film, qui s'ouvre
+    # sur le prologue (16.0) ; leurs chapitres sont gardés à part (`held_back`), scènes conservées.
     for faction in ("league", "empire"):
         film = sorted((c for c in manifest["cinematics"] if c["faction"] in (faction, "common")), key=lambda c: c["order"])
-        assert film[0]["faction"] == faction and film[0]["arc"] == "prologue"
+        assert film[0]["arc"] == "prologue" and film[0]["faction"] == faction
         orders = [c["order"] for c in film]
         assert len(orders) == len(set(orders)), "deux cinématiques d'un même film à la même place"
+    held = manifest["held_back"]["chapters"]
+    assert {c["arc"] for c in held} == {"league-start", "empire-start", "pride-start"}
+    scenes = {s["id"] for s in manifest["engine_scenes"]}
+    assert all(c["id"] in scenes for c in held), "un chapitre en attente sans sa scène moteur"
 
 
 def test_manifest_puts_the_boss_presentations_in_a_bonus_after_the_film(manifest):
@@ -256,7 +262,7 @@ def test_engine_chapters_have_an_extraction_spec(manifest):
     assert engine and all(c["id"] in specs for c in engine)
     for spec in specs.values():
         if spec.get("source") == "xdb70":
-            if "trigger" in spec and spec.get("trigger_tag") == "startImpacts":   # début d'une quête
+            if "trigger" in spec and spec.get("trigger_tag") in ("startImpacts", "rewardImpacts"):   # début, fin d'une quête
                 assert spec["trigger"].startswith("World/Quests/") and spec.get("until_last")
             elif "trigger" in spec:                                     # zone de script ou capacité
                 assert spec["trigger"].endswith((".(ScriptZone).xdb", ".(AbilityResource).xdb"))

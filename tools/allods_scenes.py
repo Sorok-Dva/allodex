@@ -58,6 +58,9 @@ VM_CHARACTER = 0x28
 VM_DRESS = 0x60
 VM_DRESS_STRIDE = 24
 VM_VARIATION = 0xD8
+# Échelle de la `VisualMob` (`scale`, f32) : 0,4 pour le Спрутоглав du tutoriel de l'Empire
+# (`AstralCthulhu_Inst`, 7.0) ; 12 066 `VisualMob` du 17.0, 8 971 à 1, les autres de 0,4 à 6.
+VM_SCALE = 0xB4
 REGION_OBJECTS = 0xA0
 REGION_OBJECT_STRIDE = 72
 STATIC_VISOBJECT = 0x30

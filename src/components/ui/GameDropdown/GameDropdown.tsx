@@ -102,7 +102,7 @@ export function GameDropdown<T extends string>({ value, options, onChange, width
         aria-label={label}
         onClick={toggle}
       >
-        <span className={s.value}>{current?.label ?? ''}</span>
+        <span className={s.value} title={current?.label}>{current?.label ?? ''}</span>
       </button>
       <button
         type="button"

@@ -1,12 +1,5 @@
 {
  "arcs": {
-  "prologue": {
-   "title": {
-    "fr": "Prologue de faction",
-    "en": "Faction prologue"
-   },
-   "version": "16.0"
-  },
   "league-start": {
    "title": {
     "fr": "La zone de départ de la Ligue",
@@ -14,12 +7,27 @@
    },
    "version": "4.0"
   },
+  "pride-start": {
+   "title": {
+    "fr": "La zone de départ des Pridiens",
+    "en": "The Priden starting zone"
+   },
+   "version": "7.0",
+   "_note": "Les Pridiens sont une faction à part à la création (chargen.json) ; leur départ (PridensStart) se clôt sur « Присяга Лиге » (Pride_7_8_L : aller à Novograd voir Aidenus), où ils rejoignent le film de la Ligue, au même point que la zone de départ de la Ligue (qui sort aussi vers Novograd) : l'arc suit donc « La zone de départ de la Ligue »."
+  },
   "empire-start": {
    "title": {
     "fr": "La zone de départ de l’Empire",
     "en": "The Empire starting zone"
    },
    "version": "7.0"
+  },
+  "prologue": {
+   "title": {
+    "fr": "Prologue de faction",
+    "en": "Faction prologue"
+   },
+   "version": "16.0"
   },
   "ferris": {
    "title": {
@@ -121,7 +129,7 @@
     "en": "Empire prologue"
    },
    "faction": "empire",
-   "order": 100,
+   "order": 149,
    "arc": "prologue",
    "version": "16.0",
    "duration": 78.711,
@@ -173,7 +181,7 @@
     "en": "League prologue"
    },
    "faction": "league",
-   "order": 100,
+   "order": 149,
    "arc": "prologue",
    "version": "16.0",
    "duration": 74.474,
@@ -217,176 +225,6 @@
     "event": "FactionsIntro/LeagueIntro"
    },
    "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de la Ligue ; placée en tête du film."
-  },
-  {
-   "id": "empire-start-boarding",
-   "arc": "empire-start",
-   "version": "7.0",
-   "faction": "empire",
-   "order": 110,
-   "event": "Jump",
-   "title": {
-    "fr": "L’abordage",
-    "en": "Boarding the enemy ship"
-   },
-   "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; juste après le prologue de l’Empire. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
-   "bonus": false,
-   "duration": 14.0,
-   "files": {
-    "poster": "engine/empire-start-boarding/poster.jpg"
-   },
-   "engine": {
-    "scene": "engine/empire-start-boarding/scene.json"
-   },
-   "tracks": [],
-   "subtitles": {
-    "status": "official",
-    "lines": 0,
-    "timing": "server",
-    "audio": {
-     "language": "ru"
-    }
-   },
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "league-klement-death",
-   "arc": "league-start",
-   "version": "4.0",
-   "faction": "league",
-   "order": 110,
-   "event": "PaladinQuest",
-   "title": {
-    "fr": "La mort du Grand Mage",
-    "en": "The Great Mage’s Death"
-   },
-   "chronology": "Instance de départ de la Ligue (Inst_LeagueStart, voix « patch403 ») : première scène jouée, au sommet de la tour, pendant les quêtes « Аудиенция у Великого мага » ; après le prologue de faction.",
-   "bonus": false,
-   "duration": 42.5,
-   "files": {
-    "poster": "engine/league-klement-death/poster.jpg"
-   },
-   "engine": {
-    "scene": "engine/league-klement-death/scene.json"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "engine/league-klement-death/fr.vtt",
-     "lines": 2
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "engine/league-klement-death/en.vtt",
-     "lines": 2
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "engine/league-klement-death/ru.vtt",
-     "lines": 2
-    }
-   ],
-   "subtitles": {
-    "status": "official",
-    "lines": 3,
-    "timing": "server",
-    "audio": {
-     "language": "ru"
-    }
-   },
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "empire-start-knight-defeated",
-   "arc": "empire-start",
-   "version": "7.0",
-   "faction": "empire",
-   "order": 120,
-   "event": "DeathTriggerPaladinFinal",
-   "title": {
-    "fr": "Le chevalier vaincu",
-    "en": "The knight defeated"
-   },
-   "chronology": "Fin du tutoriel de l’Empire : Gradimir Belov vaincu, le joueur quitte le navire kanien pour Igsh (Hadagan_Sanatorium) ; suit l’abordage.",
-   "bonus": false,
-   "duration": 15.0,
-   "files": {
-    "poster": "engine/empire-start-knight-defeated/poster.jpg"
-   },
-   "engine": {
-    "scene": "engine/empire-start-knight-defeated/scene.json"
-   },
-   "tracks": [],
-   "subtitles": {
-    "status": "official",
-    "lines": 0,
-    "timing": "server",
-    "audio": {
-     "language": "ru"
-    }
-   },
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "league-evacuation",
-   "arc": "league-start",
-   "version": "4.0",
-   "faction": "league",
-   "order": 120,
-   "event": "Quest_4_30",
-   "title": {
-    "fr": "L’évacuation",
-    "en": "The Evacuation"
-   },
-   "chronology": "Instance de départ de la Ligue : quête « Эвакуация » (Quest_4_30), au pied de la tour, avant « Дорога в Новоград » qui clôt l’instance ; suit la mort du Grand Mage.",
-   "bonus": false,
-   "duration": 81.0,
-   "files": {
-    "poster": "engine/league-evacuation/poster.jpg"
-   },
-   "engine": {
-    "scene": "engine/league-evacuation/scene.json"
-   },
-   "tracks": [
-    {
-     "lang": "fr",
-     "label": "Français",
-     "src": "engine/league-evacuation/fr.vtt",
-     "lines": 4
-    },
-    {
-     "lang": "en",
-     "label": "English",
-     "src": "engine/league-evacuation/en.vtt",
-     "lines": 4
-    },
-    {
-     "lang": "ru",
-     "label": "Русский",
-     "src": "engine/league-evacuation/ru.vtt",
-     "lines": 4
-    }
-   ],
-   "subtitles": {
-    "status": "official",
-    "lines": 5,
-    "timing": "server",
-    "audio": {
-     "language": "ru"
-    }
-   },
-   "audio": {
-    "language": "ru"
-   }
   },
   {
    "id": "ferris-retrospective",
