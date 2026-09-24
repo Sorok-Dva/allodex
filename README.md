@@ -1025,6 +1025,27 @@ rouge sombre du Guerrier, carbonisé de l'Ingénieur, pétrifié vert d'Avril 20
 `cameraTranslate` des `AnimatedParameters` (61 clés, 30 i/s, `fps` vaut 0 dans le client) × amplitude,
 amortie entre `minRadius` et `maxRadius` (Universelles 2022 et 2023) ; `timeScale` non interprété.
 
+**Comparaison à la vidéo.** Une capture du jeu (1080p60, les 11 fatalités de classe à la suite,
+non versionnée) a été comparée au lecteur image par image, caméra du lecteur recentrée sur la
+victime. Le temps 0 du lecteur est recalé sur un repère net de chaque segment (colonne
+`Fatality_Back`, flash du Barde à 7,5 s, explosion du Tribaliste à 3,5 s) ; l'onde de la fatalité
+ne suffit pas (musique mêlée, corrélation faible sauf Tribaliste et Rôdeur). Toutes les
+apparitions et disparitions tombent à ±0,25 s près, sauf mention :
+
+| Classe | Vérifié sur la vidéo |
+|---|---|
+| Mage | météores absents du ciel jusqu'à leur chute (7 s), explosion à 7,5 s, fumée jusqu'à 10 s |
+| Prêtre | ange entré en fondu (2,5–4 s), effacé à 10 s après le flash |
+| Psionique | nuage, éclairs, tourbillon bleu (9–10 s) puis flash ; rien de figé |
+| Paladin | vierge de fer : apparition 0,5 s, fermeture 3 s, dagues 4–8 s, ouverture 8,5 s, poussière 11 s |
+| Guerrier | lames `FatalityWarrior_Bottom` de 2 à 8,5 s, feu au sol jusqu'à 11,5 s |
+| Ingénieur | machine, rayon 4,5–7,5 s, poussière 8,5–9,5 s (écart ≈ 0,5 s, repère incertain) |
+| Invocateur | colonne 0–6,5 s, tas au sol 7–10 s |
+| Barde | instruments fondus à 5,7 s, Muse 4,5–7,8 s, jamais de Muse de lumière |
+| Rôdeur | épées 4,5–7,5 s, feu 8–10,5 s, épées plantées jusqu'à 11 s |
+| Occultiste | colonne et orbe (5,5 s), anneau jusqu'à 6,5 s, colonne jusqu'à 10 s |
+| Tribaliste | lianes rentrées à l'explosion, base au sol jusqu'à 4,7 s, fleur 5–10 s |
+
 **Manques.** `ProceduralEffect` (effet `Empty`) ignoré. Particules : `WorldSpaceEmitter` et `Z_BOX`
 traités comme locales / face caméra. Pas de bloom : la géométrie douce a ramené le Prêtre d'un
 blanc plein à des effets lisibles, un bloom le resaturerait. Effets des tenues de création
