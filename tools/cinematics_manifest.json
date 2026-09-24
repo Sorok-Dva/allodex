@@ -23294,8 +23294,8 @@
      {
       "t": 0,
       "p": [
-       300.0371,
-       5800.166,
+       304.6679,
+       5815.384,
        34.5608
       ]
      }
@@ -23310,7 +23310,7 @@
       ]
      }
     ],
-    "_note": "Aucune caméra dans les données. Point de vue : centre de la zone TeleportOut (sortie par le portail, but de la quête), à 2 m, regard vers la place de la GameViewScene du combat (Floor1_PeopleFight01) : l’étage 1 entier, du portail au front."
+    "_note": "Aucune caméra dans les données : la scène se joue dans la vue du joueur. Point de vue : centre de la zone FinalGibberlingMorph (1_2_ServerObjects), où le joueur retrouve le gibberling qui lui donne la quête, à 2 m ; regard vers la place de la GameViewScene du combat (Floor1_PeopleFight01). La zone TeleportOut (sortie) est dans le modèle du portail."
    },
    "fr_blocks": [
     {

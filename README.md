@@ -175,7 +175,7 @@ ru.vtt}` et `public/game/cinematics/cinematics.json`, versionnées comme le rest
 
 ### Cinématiques moteur recréées en 3D
 
-Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Quinze
+Les mini-cinématiques des quêtes ne sont pas des vidéos : le jeu les joue en temps réel. Dix-sept
 sont **recréées dans three.js** avec les données du dernier client et jouées dans le film comme
 des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix russes) :
 
@@ -196,6 +196,8 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Citadelle de Nihaz 12.0 · « Le monde caché » (`ao12-prologue04`, pilote) | manifeste | `AO12_PrologueInst` | 82 s |
 | Zone de départ de l’Empire · « L’abordage » (`empire-start-boarding`, zone `Jump`, quête `Quest4_4`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 14 s |
 | Zone de départ de l’Empire · « Le chevalier vaincu » (`empire-start-knight-defeated`, `DeathTriggerPaladinFinal`) | serveur 7.0 (déclencheur) | `Inst_EmpireStart` | 15 s |
+| Zone de départ de la Ligue · « La mort du Grand Mage » (`league-klement-death`, zone `PaladinQuest`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 43 s |
+| Zone de départ de la Ligue · « L’évacuation » (`league-evacuation`, quête `Quest_4_30`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 81 s |
 
 **Zone de départ de l’Empire** (arc `empire-start`, juste après le prologue de l’Empire) : dans le
 17.0, les trois races de l’Empire (Xadaganiens, Orcs, Arisen) commencent au même tutoriel,
@@ -222,6 +224,46 @@ qui les posent. La scène commence au premier plan de caméra (avant, c’est la
 Stèle du 17.0 retrouvée par sa place (`SpawnLocation` : case de 32 m en `+0x30`, repère local en
 `+0x24`) ; lacet propre d’un PNJ de `GameViewScene` en `+0xB8` ; délai `delayBefore` d’une action de
 `GameViewScript` en `+0x2C` (recoupés sur le 7.0).
+
+**Zone de départ de la Ligue** (arc `league-start`, juste après le prologue de la Ligue) : Kanians,
+elfes et gibberlings commencent au même tutoriel, `Inst_LeagueStart` (la tour du Grand Mage Klement
+attaquée par les démons ; `CharacterType` de la Ligue du 7.0 : `LeagueStartOrdinary`, voix
+enregistrées au 4.0.3, `patch403`), qui sort vers Novograd (quête « Дорога в Новоград »). Le client
+17.0 n'y garde **aucune caméra** (ni `CameraTrackAction` ni `CameraMovesAction` dans ses régions) :
+ses scènes moteur sont les `GameViewScene` jouées par des stèles pendant le jeu, et les
+enchaînements doublés des zones de script et des quêtes qui les posent. Deux sont montées :
+la zone `PaladinQuest` (discours du Grand Mage, l'Ombre qui le tue, mort des apprentis de l'étage 6,
+effondrement) et le début de la quête « Эвакуация » (`startImpacts` : `"trigger_tag"`), trois
+`GameViewScene` de l'étage 1 (combat, fuite des civils par le portail, démons). Ajouts au déroulé :
+impacts d'une quête, `DeviceImpactsDeferred`, `ImpactsToInterlocutor` (le donneur de la quête,
+placé par le manifeste : `"interlocutor"`), `ImpactKill` (mort tenue), `ImpactMobChat` (message de
+PNJ), marche en courant (`runningMode`, à 6,5 m/s, vitesse de course des foules des scripts de
+l'instance : le `MobWorld` ne donne que `walkSpeed`), PNJ déjà déplacés par une zone précédente
+(`"start_at"`) ; fin de scène (`"until_last"`) : la fin de ce qu'elle montre (voix, marches, scripts
+des scènes du client), pas les remises à zéro des stèles des minutes suivantes. Dans les
+`GameViewScript` : marche le long d'un chemin de la scène (`GameViewActionMoveCreature` : `+0xC0`
+PNJ, `+0xD8` chemin, `+0xF0` vitesse ; chemins de la scène en `+0xC0`, 72 o : points en `+0x08`,
+`scriptID` en `+0x28`), `ClientData` (échelle ou transparence 0 : le PNJ disparaît ; effet posé :
+téléportation des civils) ; état `NoScene` d'une stèle : ses PNJ ne sont plus montrés ; stèle
+absente du 17.0 à sa place (`Device_Floor6_GameScene`, posée par une table d'apparition) : états
+relus dans l'arbre 7.0, `GameViewScene` retrouvée par sa place et ses PNJ. **Bulles** : le texte
+d'une réplique d'instance est une bulle (`InterfaceAction` `ENUM_SHOW_BUBBLE`, indice du texte en
+`+0x78` ; message `TextMessage` en `+0x40`), sous-titre de la voix posée au même instant ; RU/EN
+du 17.0, FR du client 16.0 par blocs d'indices alignés relus réplique par réplique
+(`"fr_blocks"`) ; une bulle sans voix reste 5 s. Voix en variantes (`15_amanda_04_v1…v3`) : la
+première. Éclairage : la base de carte n'a pas de `ZoneLights` ; celle de `pack.bin` aux couleurs
+de `AstralCoast_Tubes` (7.0) est désignée par `"zone_lights"`. **Caméra** : aucune dans les données
+(scènes vues par le joueur) ; point de vue fixe du manifeste, justifié : centre de la zone
+`PaladinQuest` vers le Grand Mage ; centre de la zone `FinalGibberlingMorph` (où le joueur retrouve
+le gibberling qui lui donne la quête) vers la place du combat. **Non repris** : la musique adaptative `Siege_warfare` (aucune
+onde), la poussière (`Dust_enlarge`, projectile sans gabarit retrouvé), le rayon du champ
+protecteur d'Amanda, les secousses de caméra, les vagues de démons de combat (tables d'apparition
+du jeu) et les cris aléatoires des réfugiés (`NPC_Ask` : `RandomImpact`), les paladins
+`Paladin_live1…4` (`MobWorld` sans nom, introuvable dans le 17.0). Non montées : la foule immobile
+de l'étage 5 (`Floor5_People`, script vide, déclenchée à la sortie d'une zone de 30 m sans point de
+vue), les corps et la poussière de l'étage 1 (`Floor1_Dead`, `Dust1/2`, décor), le discours
+d'ambiance répété du Grand Mage (`StartSpeech`, toutes les 60 s). La zone pridienne
+(`PridensStart` : `Pride_1_9`, `Pride_1_11`), aux PNJ des deux factions, reste à attribuer.
 
 En attente, hors du film : `isa-freya` (Isa 14.0 : le navire « Freya », sujet du plan, est posé par le
 serveur et n'est pas dans le décor du client) et `ferris-sarcophagus` (`Ferris_4_start`, carte `Ferris_indoor`) — la salle,
