@@ -162,6 +162,8 @@ export type VotFactoryOptions = {
    * comportement (dernière pose tenue) tant qu'elle n'y est pas vérifiée.
    */
   lifetimes?: boolean;
+  /** Particules en boucle continue (`continuousFrames`) : effets permanents (auras). */
+  continuousParticles?: boolean;
 };
 
 /** Prépare les matériaux des `.glb` et clone les instances de gabarits (particules comprises). */
@@ -252,7 +254,7 @@ export class VotFactory {
       for (const [node, system] of withParticles) {
         const file = this.particleFiles.get(system.file);
         if (!file) continue;
-        const view = new ParticleSystemView(file, system, this.atlasTexture, this.particleAtlas);
+        const view = new ParticleSystemView(file, system, this.atlasTexture, this.particleAtlas, !!this.opts.continuousParticles);
         node.add(view.group);
         inst.particles.push({ view, offset: windowOffset(node, root), part: partOf?.(node) ?? undefined });
         this.opts.disposables.push(view);

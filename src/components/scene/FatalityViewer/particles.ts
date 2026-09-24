@@ -28,6 +28,11 @@ export type ParticleEmitterMeta = {
   looping: boolean;
   worldSpace: boolean;
   flip: [boolean, boolean];
+  /**
+   * `decalEmitter` du client : particules plaquées au sol (runes et cercles des auras, `.xdb` 7.0
+   * de `HeroesArena_Aura04`), dessinées couchées comme `Z_QUAD`.
+   */
+  decal?: boolean;
 };
 export type ParticleSystemMeta = {
   file: string;
@@ -40,6 +45,8 @@ export type ParticleSystemMeta = {
 };
 export type ParticleAtlasMeta = { file: string; width: number; height: number; rects: [number, number, number, number][] };
 
+/** Hauteur (m) d'un décalque au-dessus du sol : constante du lecteur (le client projette le sien). */
+export const DECAL_LIFT = 0.03;
 /** Images par seconde des animations de particules (celles des animations squelettiques). */
 export const PARTICLE_FPS = 30;
 /** Au-delà de cette durée de vie (images), nombres et positions de clés sont sur 16 bits. */
@@ -111,6 +118,29 @@ export function particleFrame(local: number, meta: Pick<ParticleSystemMeta, 'spe
   return frame;
 }
 
+/** Image où reprend la boucle continue : `loopFrame` s'il est avant la fin, sinon 0. */
+export function loopStart(meta: Pick<ParticleSystemMeta, 'endFrame' | 'loopFrame'>): number {
+  return meta.loopFrame > 0 && meta.loopFrame < meta.endFrame ? meta.loopFrame : 0;
+}
+
+/**
+ * Boucle **continue** d'un système qui boucle (auras, effets permanents) : au-delà de
+ * `endFrame`, l'animation reprend à `loopFrame` (0 si `loopFrame` n'est pas avant la fin), et
+ * les particules du tour précédent encore vivantes restent dessinées jusqu'au bout de leur vie
+ * au lieu de disparaître d'un coup. Renvoie les images à dessiner : l'image courante, et celle du
+ * tour précédent (`frame + période`) quand un tour a déjà eu lieu. Règle du lecteur (le client ne
+ * publie pas la sienne) : un flux continu, sans saut à chaque tour.
+ */
+export function continuousFrames(local: number, meta: Pick<ParticleSystemMeta, 'speed' | 'loop' | 'endFrame' | 'loopFrame'>): number[] {
+  const frame = local * PARTICLE_FPS * (meta.speed || 1);
+  const end = meta.endFrame;
+  if (!meta.loop || end <= 0 || frame < end) return [frame];
+  const start = loopStart(meta);
+  const period = end - start;
+  const f = start + ((frame - start) % period);
+  return [f, f + period];
+}
+
 const VERTEX = /* glsl */`
 attribute vec3 iPos;
 attribute vec2 iSize;
@@ -120,6 +150,7 @@ attribute vec4 iRect;
 uniform vec2 pivot;
 uniform float virtualOffset;
 uniform float lying;
+uniform float lift;
 varying vec2 vUv;
 varying vec4 vColor;
 void main() {
@@ -129,7 +160,7 @@ void main() {
   vec2 r = vec2(c * corner.x - s * corner.y, s * corner.x + c * corner.y) * iSize;
   vec4 mv;
   if (lying > 0.5) {
-    mv = modelViewMatrix * vec4(iPos + vec3(r, 0.0), 1.0);
+    mv = modelViewMatrix * vec4(iPos + vec3(r, lift), 1.0);
   } else {
     float scale = length(modelMatrix[0].xyz);
     mv = modelViewMatrix * vec4(iPos, 1.0);
@@ -184,14 +215,18 @@ export class ParticleSystemView {
   private readonly meta: ParticleSystemMeta;
   private readonly atlasMeta: ParticleAtlasMeta;
 
-  constructor(file: ParticleFile, meta: ParticleSystemMeta, atlas: THREE.Texture, atlasMeta: ParticleAtlasMeta) {
+  private readonly continuous: boolean;
+
+  /** `continuous` : boucle sans saut (`continuousFrames`), pour les effets permanents. */
+  constructor(file: ParticleFile, meta: ParticleSystemMeta, atlas: THREE.Texture, atlasMeta: ParticleAtlasMeta, continuous = false) {
     this.meta = meta;
     this.atlasMeta = atlasMeta;
+    this.continuous = continuous;
     const quad = new THREE.PlaneGeometry(1, 1);
     file.emitters.forEach((data, i) => {
       const em = meta.emitters[i] ?? meta.emitters[meta.emitters.length - 1];
       if (!em || !data.particles.length) return;
-      const capacity = Math.max(1, maxAlive(data.particles));
+      const capacity = Math.max(1, maxAlive(data.particles)) * (continuous ? 2 : 1);
       const geometry = new THREE.InstancedBufferGeometry();
       geometry.index = quad.index;
       geometry.setAttribute('position', quad.getAttribute('position'));
@@ -211,7 +246,9 @@ export class ParticleSystemView {
           opacity: { value: 1 },
           pivot: { value: new THREE.Vector2(em.pivot[0], em.pivot[1]) },
           virtualOffset: { value: em.virtualOffset },
-          lying: { value: em.render === 1 ? 1 : 0 },
+          lying: { value: em.render === 1 || em.decal ? 1 : 0 },
+          // Décalque : soulevé de `DECAL_LIFT` au-dessus de son plan (pas de scintillement avec le sol).
+          lift: { value: em.decal ? DECAL_LIFT : 0 },
         },
         transparent: true,
         depthWrite: false,
@@ -229,16 +266,21 @@ export class ParticleSystemView {
 
   /** Pose les particules à `local` secondes de la vie de l'objet, avec son opacité. */
   update(local: number, opacity: number): void {
-    const frame = particleFrame(local, this.meta);
+    const frames = this.continuous ? continuousFrames(local, this.meta) : [particleFrame(local, this.meta)];
     const { width, height, rects } = this.atlasMeta;
     const s = this.scratch;
     for (const view of this.emitters) {
       const { data, meta } = view;
       view.material.uniforms.opacity.value = opacity;
       let n = 0;
-      for (const p of data.particles) {
-        const x = frame - p.birth;
-        if (x < 0 || x > p.span) continue;
+      const capacity = view.pos.count;
+      for (let pass = 0; pass < frames.length; pass += 1) for (const p of data.particles) {
+        const x = frames[pass] - p.birth;
+        if (x < 0 || x > p.span || n >= capacity) continue;
+        // Tour précédent : seulement les particules qui débordent la fin de l'animation ; après un
+        // tour, celles nées avant le point de boucle (l'amorce) ne renaissent pas.
+        if (pass > 0 && p.birth + p.span <= this.meta.endFrame) continue;
+        if (pass === 0 && frames.length > 1 && p.birth < loopStart(this.meta)) continue;
         const [cp, cs, cr, cc, cf] = p.channels;
         sampleChannel(cp, x, s);
         view.pos.setXYZ(n, data.posMin[0] + s[0] * data.posStep[0], data.posMin[1] + s[1] * data.posStep[1], data.posMin[2] + s[2] * data.posStep[2]);
