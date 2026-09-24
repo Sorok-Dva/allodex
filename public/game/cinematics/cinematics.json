@@ -133,7 +133,7 @@
     "fr": "Au poste de commandement",
     "en": "At the command post"
    },
-   "chronology": "Tutoriel de l’Empire (Inst_EmpireStart, voix « patch403 ») : zone ComanadPost, entre les quêtes des canons (« Пострелять из корабельной пушки ») et « Реакторная », dont elle fait le capitaine donneur ; première scène doublée à plusieurs voix du tutoriel, après le prologue de l’Empire.",
+   "chronology": "Tutoriel de l’Empire (Inst_EmpireStart, voix « patch403 ») : zone ComanadPost, entre les quêtes des canons (« Пострелять из корабельной пушки ») et « Реакторная », dont elle fait le capitaine donneur ; première scène doublée à plusieurs voix du tutoriel ; ouvre le film de l’Empire.",
    "bonus": false,
    "duration": 12.0,
    "files": {
@@ -341,7 +341,7 @@
     "fr": "L’abordage",
     "en": "Boarding the enemy ship"
    },
-   "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; juste après le prologue de l’Empire. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
+   "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; après la montée sur le pont. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
    "bonus": false,
    "duration": 14.0,
    "files": {
