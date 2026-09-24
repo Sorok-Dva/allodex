@@ -740,6 +740,68 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
 
 # --- effets de scène ------------------------------------------------------------------------------
 
+RESOURCE_REF = "res:"
+STELE_SCENE_REF = "stele:"
+
+
+def resource_ref(db: PackDB, ref, what: str = "ressource") -> int:
+    """Ressource désignée par le manifeste → identifiant **volatil** du client lu (`db.ids`).
+
+    Le manifeste ne garde pas l'identifiant volatil de la table de hachage (rang renuméroté à chaque
+    construction de `pack.bin` : la mise à jour du client RU des 23 et 24/09/2026 a décalé ceux
+    d'`isa-freya` et d'`ao12-prologue04`, dont les buffs ne donnaient plus de caméra) mais :
+
+    * `"res:<resourceId>"` — l'identifiant **persistant** de la ressource (`PackDB.resource_ids`) ;
+    * `"stele:res:<resourceId>"` — la `GameViewScene` que joue le `ShowSceneAction` d'une stèle (les
+      scènes du client, ressources visuelles, n'ont pas de `resourceId`).
+
+    Un entier nu est refusé : il ne désigne rien de façon durable."""
+    if isinstance(ref, str) and ref.startswith(STELE_SCENE_REF):
+        root = getattr(db, "parent", None) or db
+        stele = root.ids[resource_ref(db, ref[len(STELE_SCENE_REF):], what)]
+        default, states = device_states(root, stele, {})
+        scene = next((s["scene"] for s in [default, *states] if s and s["kind"] == "scene" and s["scene"] is not None), None)
+        rid = root.rid(scene) if scene is not None else None
+        if rid is None:
+            raise ValueError(f"{what} {ref} : la stèle ne joue aucune GameViewScene")
+        return rid
+    if isinstance(ref, str) and ref.startswith(RESOURCE_REF):
+        root = getattr(db, "parent", None) or db
+        off = root.resource_ids.get(int(ref[len(RESOURCE_REF):]))
+        rid = root.rid(off) if off is not None else None
+        if rid is None:
+            raise ValueError(f"{what} {ref} : resourceId absent de pack.bin")
+        return rid
+    raise ValueError(f"{what} {ref!r} : référence attendue « res:<resourceId> » (identifiant persistant), "
+                     "pas un identifiant volatil de pack.bin")
+
+
+def resolve_refs(spec: dict, db: PackDB) -> dict:
+    """Copie d'une scène du manifeste dont les références (`buff`, `lines`, `scene`, `script`, `mob`
+    des acteurs, `mob`/`buff`/`vot` des effets) sont ramenées aux identifiants volatils du client lu."""
+    out = json.loads(json.dumps(spec))
+    for key in ("buff", "scene", "script"):
+        if out.get(key) is not None:
+            out[key] = resource_ref(db, out[key], f"{spec['id']} : {key}")
+    if "lines" in out:
+        out["lines"] = [resource_ref(db, r["ref"] if isinstance(r, dict) else r, f"{spec['id']} : réplique")
+                        for r in out["lines"]]
+    for seg in out.get("cameras", []):
+        if seg.get("buff") is not None:
+            seg["buff"] = resource_ref(db, seg["buff"], f"{spec['id']} : caméra")
+    for actor in out.get("actors", []):
+        if actor.get("mob") is not None:
+            actor["mob"] = resource_ref(db, actor["mob"], f"{spec['id']} : acteur {actor.get('id')}")
+    for item in out.get("spawns", []):
+        for key in ("mob", "buff", "vot", "stele"):
+            if item.get(key) is not None:
+                item[key] = resource_ref(db, item[key], f"{spec['id']} : effet {key}")
+    out["_refs"] = {k: spec[k] for k in ("buff", "scene", "script", "lines") if spec.get(k) is not None}
+    if spec.get("cameras"):
+        out["_refs"]["cameras"] = [seg.get("buff") or "manifest" for seg in spec["cameras"]]
+    return out
+
+
 def pack_offset(db: PackDB, rid) -> int | None:
     """Ressource de `pack.bin` par identifiant, vue depuis la base de carte `db` (bit `EXTERN`)."""
     root = getattr(db, "parent", None) or db
@@ -749,7 +811,10 @@ def pack_offset(db: PackDB, rid) -> int | None:
 
 def spawn_template(db: PackDB, spawn: dict) -> int | None:
     """Gabarit d'un effet du manifeste : `vot` (ressource), `mob` (PNJ d'effet : son gabarit visuel),
-    `buff` (premier gabarit des effets du script du buff)."""
+    `buff` (premier gabarit des effets du script du buff), `stele` (gabarit visuel d'une stèle posée)."""
+    if "stele" in spawn:
+        stele = pack_offset(db, spawn["stele"])
+        return db.ptr(stele + STELE_VISOBJ) if stele is not None else None
     if "vot" in spawn:
         return pack_offset(db, spawn["vot"])
     if "mob" in spawn:
@@ -803,8 +868,11 @@ def build_fx(spawns: list[dict], db: PackDB, cat, bins, textures: TexturePool, p
             node = fx.emit(vot)
             if node is not None:
                 fx.roots.append(node)
-        entry = {k: v for k, v in spawn.items() if k not in ("vot", "mob", "buff", "_note", "_source")}
+        entry = {k: v for k, v in spawn.items() if k not in ("vot", "mob", "buff", "stele", "_note", "_source")}
         entry["vot"] = name
+        if "stele" in spawn and "p" not in entry:
+            # stèle posée par le client (`SpawnLocation`) : à sa place
+            entry["p"] = [round(v, 4) for v in stele_position(db, pack_offset(db, spawn["stele"]))]
         if entry.get("until") is None and "t" in entry:
             # Effet ponctuel (explosion d'un `ClientData`) : il dure le temps de son gabarit.
             entry["until"] = round(entry["t"] + max(fx_length(fx.meta, name), 0.5), 3)
@@ -1042,7 +1110,7 @@ def schedule_lines(spec: dict, camera: dict, voices: list[dict | None], lines: l
     times = [k["t"] for k in camera["points"]]
     lead, gap = spec["timing"].get("lead", 0.5), spec["timing"].get("gap", 0.6)
     for group in spec["timing"]["groups"]:
-        t = times[group["segment"]] + lead
+        t = (group["t"] if "t" in group else times[group["segment"]]) + lead
         for n in group["lines"]:
             i = n - 1
             starts[i] = round(t, 3)
@@ -1088,9 +1156,9 @@ class Texts:
 
     def __init__(self, manifest: dict, report: list[str]) -> None:
         main_spec, fr_spec = manifest["sources"]["main"], manifest["sources"]["fr"]
-        self.main = load_textset(Path(main_spec["root"]), main_spec)
+        self.main = load_textset(Path(main_spec["root"]), main_spec, report.append)
         try:
-            self.fr = load_textset(Path(fr_spec["root"]), fr_spec)
+            self.fr = load_textset(Path(fr_spec["root"]), fr_spec, report.append)
         except (OSError, KeyError, zipfile.BadZipFile) as exc:
             report.append(f"textes FR illisibles : {exc}")
             self.fr = None
@@ -1120,6 +1188,45 @@ class Texts:
             if cl.voice and cl.text_index is not None:
                 self.fr_voice.setdefault(cl.voice, (cl.text_index, cl.delay_ms))
                 self.fr_voice_all.setdefault(cl.voice, []).append(cl.text_index)
+
+    def find_text(self, lang: str, prefix: str, near: int | None = None) -> int:
+        """Indice du texte (`lang`, du 17.0 ou `fr` du 16.0) qui commence par `prefix`, parmi tous les
+        textes du client (bulles, messages, dialogues : les voix d'Isa ont leur texte officiel là, pas
+        dans un sous-titre). Égalité d'abord ; entre plusieurs, le plus proche de `near`."""
+        from tools.extract_cinematics import norm_key
+        source = self.fr.texts["fr"] if lang == "fr" else self.main.texts[lang]
+        cache = self.__dict__.setdefault("_keys_all", {})
+        keys = cache.get(lang)
+        if keys is None:
+            keys = cache[lang] = [norm_key(t) if t else "" for t in source]
+        want = norm_key(prefix)
+        hits = [i for i, k in enumerate(keys) if k.startswith(want)] if want else []
+        hits = [i for i in hits if keys[i] == want] or hits
+        if not hits:
+            raise LookupError(f"« {prefix} » ({lang}) : aucun texte ne commence ainsi")
+        return min(hits, key=lambda i: (abs(i - near) if near is not None else 0, i))
+
+    def official(self, prefixes: list[str], fr_pair: dict | None, first: int | None = None) -> tuple[dict, list[int]]:
+        """Texte officiel d'une réplique désignée par le début de son (ou ses) texte(s) russe(s) :
+        RU/EN du 17.0 au même indice ; FR du 16.0 à l'indice décalé de l'écart d'une paire de textes
+        connus (`fr_pair` : début du texte russe et du texte français d'une même réplique), vérifié
+        constant sur tout le bloc des textes d'Isa (écart 7 285 au 24/09/2026)."""
+        delta = None
+        if fr_pair and self.fr is not None:
+            ru_at = self.find_text("ru", fr_pair["ru"])
+            delta = ru_at - self.find_text("fr", fr_pair["fr"], near=ru_at - fr_pair.get("near_delta", 0))
+        near = None if not fr_pair else self.find_text("ru", fr_pair["ru"])
+        # `first` : indice lu dans la ressource (bulle du `ClientData`) — il prime sur la recherche
+        idx = [first if (k == 0 and first is not None) else self.find_text("ru", p, near) for k, p in enumerate(prefixes)]
+        text: dict[str, str] = {"ru": "\n".join(clean_text(self.main.texts["ru"][i]) for i in idx)}
+        en = "\n".join(clean_text(self.main.texts["en"][i]) for i in idx)
+        if en and not has_cyrillic(en):
+            text["en"] = en
+        if delta is not None:
+            fr = [self.fr.texts["fr"][i - delta] if 0 <= i - delta < len(self.fr.texts["fr"]) else "" for i in idx]
+            if all(fr):
+                text["fr"] = "\n".join(clean_text(t) for t in fr)
+        return text, idx
 
     def line(self, idx: int | None, voice: str | None, delay_ms: int, anchor_delta: int | None,
              same_voice: list[int] | None = None) -> dict:
@@ -1646,8 +1753,12 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
 
 # --- déroulé d'un déclencheur : stèles, effets, sons, PNJ posés ------------------------------------
 
-# `SteleResource` (17.0) : place (`SpawnLocation` : repère local en f32 + case de 32 m en i32),
-# gabarit visuel, scripts visuels (`DeviceVisScripts` : action par défaut, états).
+# `SteleResource` (17.0) : place (`SpawnLocation` : repère local en f32 + case de 32 m en i32 x, y, z),
+# gabarit visuel, scripts visuels (`DeviceVisScripts` : action par défaut, états). Les `MobWorld`
+# portent la même `SpawnLocation` au même décalage (7 911 PNJ du 17.0), avec sa zone (`+0x40`,
+# `ZoneResource`) ; elle ne garde pas de lacet. La case z (`+0x38`) compte aussi : sur `Isa`, un PNJ
+# en case z 2 à 40,57 m locaux est à 104,57 m, la hauteur du terrain sous lui (104,3 à 104,6) ;
+# le bateau `Isa_Ship_01` (case −1, 32 m) est à 0, au niveau de la mer, comme ceux du décor.
 STELE_SPAWN = 0x70
 STELE_VISOBJ = 0x110
 STELE_VISSCRIPTS = 0x118
@@ -1668,8 +1779,8 @@ def stele_position(db: PackDB, stele: int) -> list[float] | None:
     if loc is None or db.vtype(loc) != "SpawnLocation":
         return None
     x, y, z = db.floats(loc + SPAWNLOC_LOCAL, 3)
-    cx, cy = db.i32(loc + SPAWNLOC_CELL), db.i32(loc + SPAWNLOC_CELL + 4)
-    return [cx * SPAWNLOC_CELL_SIZE + x, cy * SPAWNLOC_CELL_SIZE + y, z]
+    cx, cy, cz = db.i32(loc + SPAWNLOC_CELL), db.i32(loc + SPAWNLOC_CELL + 4), db.i32(loc + SPAWNLOC_CELL + 8)
+    return [cx * SPAWNLOC_CELL_SIZE + x, cy * SPAWNLOC_CELL_SIZE + y, cz * SPAWNLOC_CELL_SIZE + z]
 
 
 def find_stele(db: PackDB, position: list[float], tolerance: float = 0.05) -> int | None:
@@ -2541,26 +2652,103 @@ def plan_gameview(spec: dict, db: PackDB, texts: Texts, anim_names: dict, report
                 points.insert(0, {"t": 0, "p": points[0]["p"]})
                 targets.insert(0, {"t": 0, "p": targets[0]["p"]})
             camera = {"points": points, "targets": targets, "duration": float(spec.get("duration", 0))}
-    report.append(f"{spec['id']} : GameViewScene {spec['scene']} sur {map_name}, {len(actors)} PNJ, "
+    report.append(f"{spec['id']} : GameViewScene {spec.get('_refs', {}).get('scene', spec['scene'])} sur {map_name}, {len(actors)} PNJ, "
                   f"{sum(1 for a in actors if a['animations'])} animés")
     return {"map": map_name, "camera": camera, "lines": [], "actors": actors, "weather": None,
             "sounds": {"music": [], "ambience": []}, "post": spec.get("post", []),
             "decor_center": [cam[0], cam[1]], "timing": "client", "duration_from_clips": not spec.get("duration"),
-            "sources": {"scene": spec["scene"], "script": spec.get("script")}}
+            "sources": {k: spec.get("_refs", {}).get(k, spec.get(k)) for k in ("scene", "script")}}
 
 
 def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim_names: dict, report: list[str]) -> dict:
     """Plan d'une scène sans déroulé serveur connu (après 7.0) : ressources du 17.0 nommées par le
-    manifeste, mise en scène et minutage du manifeste."""
-    track = buff_camera_track(db, db.ids[int(spec["buff"])])
-    camera = camera_keys(track)
+    manifeste, mise en scène et minutage du manifeste.
+
+    `"buff_script": true` : le **script visuel du buff** est lu en entier (`tools/cutscene_client.py`) :
+    plans de caméra enchaînés (coupes franches), voix off (`Sound2DAction` d'un événement
+    `Cutscenes/…`), autres sons, voiles noirs (`PostEffectVisAction`). Sinon, seul le premier trajet
+    de caméra du buff est lu (pilote). `timing.starts` : départs des répliques mesurés (voir le
+    manifeste), à la place des groupes estimés.
+
+    `"cameras"` : scène faite de plusieurs moments — plans des buffs de caméra du client (`buff`, à
+    l'instant `t` de la scène) et points de vue fixes du manifeste (`p`, `look` : vue du joueur quand
+    le client n'a pas de caméra, choix justifié par le manifeste) ; la scène dure jusqu'à la fin des voix."""
+    from tools import cutscene_xdb70 as x70
+    from tools.cutscene_client import buff_timeline
+    buff_ref = spec.get("_refs", {}).get("buff", spec.get("buff"))
+    client = buff_timeline(db, db.ids[int(spec["buff"])]) if spec.get("buff_script") else None
+    fixed = spec.get("buff") is None and not spec.get("cameras")
     plan_lines = []
+    post = list(spec.get("post", []))
+    sfx: list[dict] = []
+    if client is not None:
+        shots = [{"t": sh["t"], "duration": (sh["until"] - sh["t"]) if sh["until"] is not None else None,
+                  "points": sh["points"], "targets": sh["targets"]} for sh in client.shots]
+        camera = x70.camera_keys(shots)
+        ends = [client.end] + [sh["t"] + (sh["duration"] if sh["duration"] is not None else sum(d for d, _ in sh["points"]))
+                               for sh in shots if sh["points"]]
+        camera["duration"] = round(max(ends), 3)
+        for veil in client.veils:
+            # voile noir (`UserPostEffect` au carré noir) jusqu'à la borne de sa liste, ou la fin
+            post.append({"t": veil["t"], "until": veil["until"] if veil["until"] is not None else camera["duration"],
+                         "kind": "veil", "fadeIn": veil["fadeIn"], "fadeOut": veil["fadeOut"]})
+        for snd in client.sounds:
+            if snd["event"].startswith("Cutscenes/"):
+                plan_lines.append({"start": snd["t"], "duration": 0.0, "voice_event": snd["event"],
+                                   "speaker": spec.get("narrator"), "clips": [], "text": {},
+                                   "source": f"script du buff {buff_ref}"})
+            else:
+                sfx.append({"event": snd["event"], "t": snd["t"], "until": None})
+        if client.ignored:
+            report.append(f"{spec['id']} : actions du script non reprises : {', '.join(sorted(set(client.ignored)))}")
+    elif spec.get("cameras"):
+        shots, ends = [], [0.0]
+        for seg in spec["cameras"]:
+            t0 = float(seg.get("t", 0.0))
+            if seg.get("buff") is not None:
+                tl = buff_timeline(db, db.ids[int(seg["buff"])])
+                ends.append(t0 + tl.end)
+                for sh in tl.shots:
+                    # plan sans borne : ses durées en secondes (durée = somme des poids, échelle 1)
+                    dur = (sh["until"] - sh["t"]) if sh["until"] is not None else (sum(d for d, _ in sh["points"][:-1]) or None)
+                    shots.append({"t": round(t0 + sh["t"], 3), "duration": dur, "points": sh["points"], "targets": sh["targets"]})
+                    ends.append(t0 + sh["t"] + (dur if dur is not None else sum(d for d, _ in sh["points"])))
+                for veil in tl.veils:
+                    post.append({"t": round(t0 + veil["t"], 3), "until": round(t0 + (veil["until"] or tl.end), 3),
+                                 "kind": "veil", "fadeIn": veil["fadeIn"], "fadeOut": veil["fadeOut"]})
+            else:
+                shots.append({"t": t0, "duration": None, "points": [(0.0, tuple(seg["p"]))],
+                              "targets": [(0.0, tuple(seg["look"]))]})
+        camera = x70.camera_keys(shots)
+        camera["duration"] = round(max(ends), 3)
+    elif fixed:
+        # Scène jouée dans la vue du joueur (buff de cinématique sans trajet, ou aucun) : point de vue
+        # du manifeste, justifié par lui ; durée : celle du buff, sinon jusqu'à la fin des voix.
+        cam = spec["camera"]
+        camera = {"points": [dict(k) for k in cam["points"]], "targets": [dict(k) for k in cam["targets"]],
+                  "duration": float(cam.get("duration", 0.0))}
+    else:
+        track = buff_camera_track(db, db.ids[int(spec["buff"])])
+        camera = camera_keys(track)
     anchor = None
-    for n, rid in enumerate(spec["lines"], 1):
+    refs = spec.get("_refs", {}).get("lines", spec["lines"])
+    for n, (rid, ref) in enumerate(zip(spec["lines"], refs), 1):
+        official = None
         cd = db.ids.get(int(rid))
         if cd is None:
-            raise ValueError(f"ClientData {rid} introuvable")
+            raise ValueError(f"ClientData {ref['ref'] if isinstance(ref, dict) else ref} introuvable")
         cl = read_client_line(db, cd)
+        if isinstance(ref, dict):
+            # réplique doublée sans sous-titre : texte officiel de sa bulle (`ENUM_SHOW_BUBBLE`), le début
+            # russe du manifeste le vérifie (et désigne les textes suivants d'une réplique en plusieurs bulles)
+            from tools.extract_cinematics import norm_key
+            prefixes = ref["ru"] if isinstance(ref["ru"], list) else [ref["ru"]]
+            official, idx = texts.official(prefixes, spec.get("fr_pair"), cl.bubble_index)
+            if not norm_key(texts.main.texts["ru"][idx[0]]).startswith(norm_key(prefixes[0])):
+                report.append(f"{spec['id']} : réplique {n} : la bulle ne commence pas par « {prefixes[0]} »")
+            ref = ref["ref"]
+        elif cl.text_index is None and cl.bubble_index is not None:
+            official, _ = texts.official([""], spec.get("fr_pair"), cl.bubble_index)
         if anchor is None and spec.get("fr_anchor") and texts.fr is not None and cl.text_index is not None:
             anchor = cl.text_index - texts.fr.find("fr", spec["fr_anchor"])
         if anchor is None and not spec.get("fr_anchor") and texts.fr is not None and cl.text_index is not None and cl.voice:
@@ -2569,21 +2757,43 @@ def plan_manual(spec: dict, db: PackDB, texts: Texts, lines17: ClientLines, anim
             texts.load_fr_voices()
             if cl.voice in texts.fr_voice:
                 anchor = cl.text_index - texts.fr_voice[cl.voice][0]
-        text = texts.line(cl.text_index, cl.voice, cl.delay_ms, anchor)
-        speaker = next((a["id"] for a in spec["actors"] if any(text.get("ru", "").startswith(p) for p in a.get("speaker_prefixes", []))), None)
+        text = official if official is not None else texts.line(cl.text_index, cl.voice, cl.delay_ms, anchor)
+        if "fr" not in text and spec.get("fr_pair") and cl.text_index is not None:
+            # sous-titre du 17.0 que la voix ne relie pas au client FR : écart de la paire de textes
+            fr = texts.official([""], spec["fr_pair"], cl.text_index)[0].get("fr")
+            if fr:
+                text["fr"] = fr
+        speaker = spec.get("speakers", {}).get(str(n)) or next((a["id"] for a in spec["actors"] if any(text.get("ru", "").startswith(p) for p in a.get("speaker_prefixes", []))), None)
         actor = next((a for a in spec["actors"] if a["id"] == speaker), None)
         clips = [actor["talk"]] if actor and actor.get("talk") and cl.animations else []
+        if spec.get("line_animations") and actor is not None and cl.animations:
+            # animation que le `ClientData` donne au locuteur (`emoteTalkExcited`…), à la place de `talk`
+            clips = [clip_name(anim_names[a]) for a in cl.animations if anim_names.get(a)] or clips
         plan_lines.append({"start": None, "duration": cl.delay_ms / 1000.0, "voice_event": cl.voice, "speaker": speaker,
-                           "clips": clips, "text": text, "source": f"ClientData {rid}"})
+                           "clips": clips, "text": text, "source": f"ClientData {ref}"})
+    starts = spec.get("timing", {}).get("starts")
+    if starts is not None:
+        # départs mesurés (reconnaissance vocale sur la voix officielle, voir le manifeste)
+        official = [l for l in plan_lines if l["source"].startswith("ClientData")]
+        for line, t in zip(official, starts):
+            line["start"] = t
+        plan_lines.sort(key=lambda l: l["start"])
     actors = []
     for a in spec["actors"]:
         entry = dict(a)
+        spoken = sorted({c for l in plan_lines if l["speaker"] == a["id"] for c in l["clips"]})
+        entry["animations"] = sorted(set(a.get("animations", [])) | set(spoken))
         entry["mob_offset"] = pack_offset(db, a["mob"])
         entry["path"] = a.get("path") or [{"t": 0, "p": a["position"], "face": a.get("face")}]
         actors.append(entry)
+    timing = "measured" if starts is not None else ("client" if client is not None and not spec["lines"] else "estimated")
     return {"map": spec["map"], "camera": camera, "lines": plan_lines, "actors": actors, "weather": None,
-            "sounds": {"music": [], "ambience": []}, "post": spec.get("post", []),
-            "decor_center": spec.get("decor_center"), "timing": "estimated", "sources": spec.get("sources", {})}
+            **({"duration_from_voices": True} if (fixed and not camera["duration"]) or spec.get("cameras") else {}),
+            "sounds": {"music": [], "ambience": [], "sfx": sfx}, "post": post,
+            "decor_center": spec.get("decor_center"), "timing": timing,
+            "sources": {**({"buff": buff_ref} if buff_ref else {"cameras": spec["_refs"]["cameras"]} if spec.get("cameras")
+                           else {"camera": "manifest"}),
+                        **({"buff_script": True} if client is not None else {}), **spec.get("sources", {})}}
 
 
 def weather_light(weather: dict, base: dict) -> dict:
@@ -2706,7 +2916,8 @@ def build_map(map_name: str, specs: list[dict], plans: dict[str, dict], db: Pack
         sky_glb, sky_meta = build_sky(mp, cat, bins, textures, light, prefix, report)
         sky[spec["id"]] = (sky_glb, sky_meta)
         (out / "sky.glb").write_bytes(sky_glb) if sky_glb else (out / "sky.glb").unlink(missing_ok=True)
-        fx_glb, fx_objects, fx_sounds, spawns = build_fx(spec.get("spawns", []) + plans[spec["id"]].get("spawns", []), mp, cat,
+        manual = resolve_refs(spec, db).get("spawns", []) if spec.get("spawns") else []
+        fx_glb, fx_objects, fx_sounds, spawns = build_fx(manual + plans[spec["id"]].get("spawns", []), mp, cat,
                                                          bins, textures, particles, report, texture_prefix=prefix)
         fx[spec["id"]] = (fx_glb, fx_objects, fx_sounds, spawns)
         (out / "fx.glb").write_bytes(fx_glb) if fx_glb else (out / "fx.glb").unlink(missing_ok=True)
@@ -2741,8 +2952,8 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         try:
             plans[spec["id"]] = plan_xdb70(spec, root, db, pack_cat, texts, lines17, anim_names, report, rtexts) \
                 if source == "xdb70" \
-                else plan_gameview(spec, db, texts, anim_names, report) if source == "gameview" \
-                else plan_manual(spec, db, texts, lines17, anim_names, report)
+                else plan_gameview(resolve_refs(spec, db), db, texts, anim_names, report) if source == "gameview" \
+                else plan_manual(resolve_refs(spec, db), db, texts, lines17, anim_names, report)
         except (AttributeError, KeyError, ValueError) as err:
             # Scène non demandée (`--only`) dont le plan ne se lit plus (ressource du client déplacée par
             # une mise à jour) : elle ne bloque pas les autres, mais ne contribue pas au décor commun

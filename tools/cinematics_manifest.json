@@ -132,7 +132,9 @@
    "locs": {
     "ru": "Bin/pack.rus.loc",
     "en": "Bin/pack.eng_eu.loc"
-   }
+   },
+   "ru_fallback": "/mnt/i/Backups/GameClients/AllodsClient/MyGames/AllodsRU 17",
+   "_ru_fallback_note": "Client RU 17 antérieur (13/09/2026) : russe de secours si le pack.rus.loc du dernier client sort dans une autre langue (vérifié à chaque lecture, tools/extract_cinematics.py:load_textset)."
   },
   "fr": {
    "client": "16.0",
@@ -351,24 +353,6 @@
    }
   },
   {
-   "id": "invasion-engineer-kania",
-   "kind": "engine",
-   "source": "main",
-   "event": "CutScene_EngineerDeathKania",
-   "arc": "invasion",
-   "version": "7.0",
-   "faction": "league",
-   "order": 225,
-   "title": {
-    "fr": "La mort de l’ingénieur",
-    "en": "The Engineer’s Death"
-   },
-   "chronology": "Scène moteur de l’instance de départ de l’Invasion (Inst_ZoneContested12_Start, 7.0, version de la Ligue) : l’ingénieur Luka tombe sous les coups de trois assassins colosses ; entre le navire astral et la métamorphose.",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
    "id": "invasion-kursk-1",
    "entry": "Video/7_0Events/Invasion/Kursk_1_HD.ogv",
    "source": "main",
@@ -459,7 +443,7 @@
    },
    "chronology": "Groupe « Raid7_2 » du registre : raid de la mise à jour 7.2, après l’Invasion (7.0).",
    "audio": {
-    "language": null
+    "language": "ru"
    }
   },
   {
@@ -982,7 +966,7 @@
    },
    "chronology": "Vidéos retirées du jeu : absentes des clients 15.0, 16.0 et 17.0, seul le client « Warp » 11.0.00.37 les conserve (dossier 10_0Events/Story, hors registre des clients récents). Ordre des épisodes donné par leurs noms (Ep1_0, Ep1_1, Ep1_2, Ep2_1).",
    "audio": {
-    "language": null
+    "language": "ru"
    }
   },
   {
@@ -1000,7 +984,7 @@
    },
    "chronology": "Vidéos retirées du jeu : absentes des clients 15.0, 16.0 et 17.0, seul le client « Warp » 11.0.00.37 les conserve (dossier 10_0Events/Story, hors registre des clients récents). Ordre des épisodes donné par leurs noms (Ep1_0, Ep1_1, Ep1_2, Ep2_1).",
    "audio": {
-    "language": null
+    "language": "ru"
    }
   },
   {
@@ -1197,6 +1181,114 @@
      }
     ]
    },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-unn-trance",
+   "kind": "engine",
+   "source": "main",
+   "event": "Isa_Prologue_4_UnnTrance",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1200,
+   "title": {
+    "fr": "La transe d’Unn",
+    "en": "Unn’s trance"
+   },
+   "chronology": "Isa (14.0), prologue sur Olm (Isa_Prologue_*) : la transe d'Unn éveille Ratatosk, qui mènera les héros vers Isa ; ouvre l'arc d'Isa, avant l'arrivée — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-arrival",
+   "kind": "engine",
+   "source": "main",
+   "event": "Isa_Arrival",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1210,
+   "title": {
+    "fr": "L’arrivée sur Isa",
+    "en": "Arrival on Isa"
+   },
+   "chronology": "Isa (14.0), série de l'arrivée (Isa_Arrival_*) : les héros débarquent sur Isa gelée et trouvent Mrak près d'un bloc de glace ; après le prologue d'Olm (Isa_Prologue_*), avant la ville (Isa_Town_*) — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-fighting-pit",
+   "kind": "engine",
+   "source": "main",
+   "event": "Isa_Town_ElderBullyClan",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1220,
+   "title": {
+    "fr": "La fosse aux combats",
+    "en": "The fighting pit"
+   },
+   "chronology": "Isa (14.0), série de la ville (Isa_Town_*), Skalgard : Mrak jeté dans la fosse (« Спасти Мрака из бойцовой ямы ») ; après l'arrivée, avant la forêt — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-fishers-legend",
+   "kind": "engine",
+   "source": "main",
+   "event": "Isa_Fishers_1_Cutscene",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1260,
+   "title": {
+    "fr": "La légende de Lyngbakr",
+    "en": "The legend of Lyngbakr"
+   },
+   "chronology": "Isa (14.0), série des pêcheurs (voix Cutscenes/Isa/Isa_Fishers_*, première du rang : Isa_Fishers_1_Cutscene) : le conteur dit la légende de Lyngbakr, le poisson-île qui noie ceux qui s'y posent, avant la prophétie (Isa_Fishers_2d) et la chasse (Isa_Fishers_3 à 5, « Убедить старосту клана рыбаков поймать Лингбакра »). Ordre des séries d'Isa : celui du plan du film (tools/film_plan.json), d'après les noms des voix. Recréée en 3D, voir engine_scenes.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-freya",
+   "kind": "engine",
+   "source": "main",
+   "event": "Isa_Ship_7_FinalScene",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1270,
+   "title": {
+    "fr": "La Freya",
+    "en": "The Freya"
+   },
+   "chronology": "Isa (14.0), série du navire (Isa_Ship_*) : Hauk et Trand trouvent la Freya, le navire de leur arrière-grand-père, le capitaine Koll ; avant le journal du capitaine — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-captain-journal",
+   "kind": "engine",
+   "source": "main",
+   "event": "Isa_Ship_8b_CapitanDiary",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1275,
+   "title": {
+    "fr": "Le journal du capitaine",
+    "en": "The captain’s journal"
+   },
+   "chronology": "Isa (14.0), série du navire (Isa_Ship_*) : les pages du journal de Koll révèlent le pacte avec les orcs et l'esprit du Crâne ; après la découverte de la Freya. Recréée en 3D, voir engine_scenes.",
    "audio": {
     "language": "ru"
    }
@@ -1600,6 +1692,25 @@
     "audio": {
      "language": "ru"
     }
+   },
+   {
+    "id": "invasion-engineer-kania",
+    "kind": "engine",
+    "source": "main",
+    "event": "CutScene_EngineerDeathKania",
+    "arc": "invasion",
+    "version": "7.0",
+    "faction": "league",
+    "order": 225,
+    "title": {
+     "fr": "La mort de l’ingénieur",
+     "en": "The Engineer’s Death"
+    },
+    "chronology": "Scène moteur de l’instance de départ de l’Invasion (Inst_ZoneContested12_Start, 7.0, version de la Ligue) : l’ingénieur Luka tombe sous les coups de trois assassins colosses ; entre le navire astral et la métamorphose.",
+    "audio": {
+     "language": "ru"
+    },
+    "_held_note": "Retiré du film le 24/09/2026 à la demande : doublon de la fin de la vidéo « Le navire astral » (invasion-astral-ship)."
    }
   ]
  },
@@ -22815,19 +22926,19 @@
    "id": "ao12-prologue04",
    "_note": "Pilote des cinématiques moteur. Tout vient du client 17.0 sauf `actors[].position/face` et `timing` : le client ne contient ni la position des PNJ (apparition par le serveur) ni l’instant des répliques (script serveur). Ces valeurs sont une mise en scène, justifiée ci-dessous.",
    "map": "AO12_PrologueInst",
-   "buff": 507556,
-   "buff_note": "BuffResource 507556 → BuffVisScripts 507555 → CameraTrackAction : 6 points de caméra et 6 visées, identiques au .xdb 7.0 World/Quests/AO12/AO12_Prologue04/AO12_Prologue04_Cutscene.(BuffVisScripts).",
+   "buff": "res:740141621",
+   "buff_note": "BuffResource res:740141621 (identifiant volatil 507556 avant la mise à jour du 23/09/2026, 507592 après) → CameraTrackAction : 6 points de caméra et 6 visées, identiques au .xdb 7.0 World/Quests/AO12/AO12_Prologue04/AO12_Prologue04_Cutscene.(BuffVisScripts).",
    "lines": [
-    507557,
-    507580,
-    507576,
-    507579,
-    507569,
-    507570,
-    507577,
-    507573,
-    507581,
-    507582
+    "res:740141632",
+    "res:740141638",
+    "res:740141639",
+    "res:740141640",
+    "res:740141642",
+    "res:740141643",
+    "res:740141645",
+    "res:740141646",
+    "res:740141647",
+    "res:740141648"
    ],
    "lines_note": "ClientData dont la voix est Cutscenes/Eden2/Prologue04_Cutscene_1 … _10, dans l’ordre des numéros (ordre des textes du client).",
    "fr_anchor": "Gort alors qu est ce qu on attend",
@@ -22874,7 +22985,7 @@
    "actors": [
     {
      "id": "reniesta",
-     "mob": 498463,
+     "mob": "res:740121153",
      "sex": "female",
      "position": [
       171.6,
@@ -22898,7 +23009,7 @@
     },
     {
      "id": "veronika",
-     "mob": 495589,
+     "mob": "res:740117005",
      "position": [
       170.2,
       148.9,
@@ -22921,7 +23032,7 @@
     },
     {
      "id": "gort",
-     "mob": 507560,
+     "mob": "res:740141628",
      "sex": "male",
      "position": [
       173.4,
@@ -22945,7 +23056,7 @@
     },
     {
      "id": "nihaz",
-     "mob": 507561,
+     "mob": "res:740141631",
      "ground": true,
      "idle": "Idle",
      "talk": "SpellCastOmni",
@@ -23003,7 +23114,7 @@
    "staging_note": "Le groupe (Reniesta, Klavdia, Gort) entoure le Pointeur de Nihaz, visé par la caméra pendant les 42 premières secondes ; Nihaz (NihazDragonBoss, seul visuel du MobWorld « Нихаз » 507561 rangé avec la quête) arrive par un portail au point visé par le plan fixe de ses trois répliques (148,3 ; 135,1), puis rejoint le point visé par le dernier travelling (90,1 ; 147,6 ; 210,3), où il prononce les trois dernières : la caméra se rapproche du dragon. Effets : portail, bouclier de Reniesta, hologramme du quartier général sur le Pointeur.",
    "spawns": [
     {
-     "mob": 507537,
+     "mob": "res:740141622",
      "p": [
       148.35,
       135.07,
@@ -23015,14 +23126,14 @@
      "_note": "Portail de Nihaz (PNJ d'effet 507537, Nihaz_FlyPart_PortaOn02) à son arrivée."
     },
     {
-     "buff": 507572,
+     "buff": "res:740141644",
      "attach": "reniesta",
      "t": 42,
      "until": 63,
      "_note": "Bouclier de Reniesta (buff 507572 = AO12_Prologue04_Cutscene_Reniesta_ShieldCast, RysinaShield_Main) pendant les répliques de Nihaz."
     },
     {
-     "mob": 507559,
+     "mob": "res:740141629",
      "p": [
       174.92,
       147.87,
@@ -23182,113 +23293,931 @@
    "_note": "Déroulé serveur 7.0 du raid de Ferris ; PNJ invoqués sur les repères de la carte FerrisRaid ; locuteurs par le nom de la voix (Vayatel → le Colosse, Marianna → di Arder, Arch → le Cœur du Locus)."
   },
   {
-   "id": "isa-freya",
+   "id": "isa-arrival",
+   "_note": "Arrivée des héros sur Isa (série Isa_Arrival) : Hauk, Trand et Unn découvrent l'île, puis Mrak et, près de lui, un bloc de glace (Осколок льда, où Gerda est prise). Deux moments : les répliques Isa_Arrival_1 (sans caméra dans le client) puis le buff de caméra res:740170126 (9 s, deux points : descente vers le bloc de glace), rangé juste après les trois répliques qu'il accompagne (resourceId 740170122–124). Places des PNJ : leur SpawnLocation du 17.0 (MobWorld). Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
    "map": "Isa",
-   "buff": 521226,
-   "buff_note": "BuffResource 521226 → BuffVisScripts 521225 → CameraTrackAction : 4 points (7 s, 0,1 s, 6 s, 6 s) et 3 visées, 19 s.",
-   "lines": [
-    521219,
-    521207,
-    521210,
-    521203
+   "cameras": [
+    {
+     "t": 0.0,
+     "p": [
+      12830.56,
+      11844.23,
+      6.1
+     ],
+     "look": [
+      12800.8,
+      11840.43,
+      6.5
+     ],
+     "_note": "Vue du joueur arrivé avec les héros : 5 m derrière eux, à hauteur d'œil (1,8 m au-dessus de leur place), vers le bloc de glace qu'ils regardent, sur la butte à 65 m (choix)."
+    },
+    {
+     "t": 16.0,
+     "buff": "res:740170126",
+     "_note": "BuffResource res:740170126 (volatil 520620) : caméra de 7 s + 2 s vers le bloc de glace et Mrak."
+    }
    ],
-   "lines_note": "Répliques rangées avec le buff (même dossier, identifiants 521203–521219) : les deux doublées (voix Isa_Ship_7_FinalScene_Subtitle_1 puis _2 : Hauk, puis Trand) ouvrent l’échange ; « C’est la Freya ! » et « Notre arrière-grand-père… a trouvé Isa ! », non doublées, le closent. Rattachement : dossier et numéros des voix ; aucune ressource du client ne relie les ClientData au buff (script serveur).",
+   "lines": [
+    {
+     "ref": "res:740169472",
+     "ru": "Морозец пробирает до костей"
+    },
+    {
+     "ref": "res:740169471",
+     "ru": "Да тут холоднее, чем на Хладберге"
+    },
+    {
+     "ref": "res:740169470",
+     "ru": "Ох, занесло по самую макушку"
+    },
+    {
+     "ref": "res:740169490",
+     "ru": "Смотри! Это же Мрак!"
+    },
+    {
+     "ref": "res:740170122",
+     "ru": "Ой, а это кто?"
+    },
+    {
+     "ref": "res:740170123",
+     "ru": "Чего смотр-рите?"
+    },
+    {
+     "ref": "res:740170124",
+     "ru": "Там вроде деревья виднеются"
+    }
+   ],
+   "lines_note": "ClientData des voix Cutscenes/Isa/Isa_Arrival_1_{Hauk,Trand,Unn}_Replika, _Hauk_Replika_02, puis Isa_Arrival_{Trand,Mrak,Unn} ; leurs textes officiels sont dans des bulles (pas de sous-titre) : désignés par leur début russe. Ordre des quatre premières : celui du sens (l'arrivée, puis Mrak aperçu), le client ne le donne pas.",
+   "speakers": {
+    "1": "hauk",
+    "2": "trand",
+    "3": "unn",
+    "4": "hauk",
+    "5": "trand",
+    "6": "mrak",
+    "7": "unn"
+   },
+   "line_animations": true,
+   "fr_pair": {
+    "ru": "Но в глубокой бездне водятся чудовища",
+    "fr": "Mais il y a des monstres dans les profondeurs abyssales",
+    "_note": "Paire de textes d'une même réplique (légende des pêcheurs) : l'écart d'indice entre le 17.0 et le client FR 16.0 qu'elle donne (7 285 au 24/09/2026) est le même sur tout le bloc des textes d'Isa, vérifié réplique par réplique de l'arrivée (« Морозец пробирает до костей ») au journal du capitaine (« Но какой ценой? Череп снова будет свободен! »)."
+   },
    "fov": 45,
    "timing": {
     "groups": [
      {
-      "segment": 0,
+      "t": 0.3,
       "lines": [
        1,
        2,
        3,
        4
       ]
+     },
+     {
+      "t": 16.0,
+      "lines": [
+       5,
+       6,
+       7
+      ]
      }
     ],
     "lead": 0.5,
-    "gap": 0.4,
-    "_note": "Les quatre répliques (18 s d’affichage) tiennent dans les 19 s du plan : elles s’enchaînent dès l’ouverture."
+    "gap": 0.6,
+    "_note": "Instants estimés (le serveur les donne) : chaque groupe s'ouvre sur son moment, les répliques s'enchaînent à la fin de la voix précédente + 0,6 s."
    },
    "decor_center": [
-    13335,
-    12490
+    12795.0,
+    11840.0
    ],
-   "decor_radius": 160,
+   "decor_radius": 90,
    "actors": [
     {
      "id": "hauk",
-     "mob": 521238,
+     "mob": "res:740168292",
      "position": [
-      13337.5,
-      12492.0,
-      130
+      12825.57,
+      11840.54,
+      5.83
      ],
      "ground": true,
      "face": [
-      13330.0,
-      12474.0
+      12760.24,
+      11835.25
+     ]
+    },
+    {
+     "id": "trand",
+     "mob": "res:740168293",
+     "position": [
+      12824.43,
+      11846.4,
+      5.5
      ],
-     "idle": "Idle",
-     "talk": "EmoteSpeech",
-     "animations": [
-      "Idle",
-      "EmoteSpeech"
+     "ground": true,
+     "face": [
+      12760.24,
+      11835.25
+     ]
+    },
+    {
+     "id": "unn",
+     "mob": "res:740168291",
+     "position": [
+      12826.71,
+      11843.77,
+      5.89
+     ],
+     "ground": true,
+     "face": [
+      12760.24,
+      11835.25
+     ]
+    },
+    {
+     "id": "mrak",
+     "mob": "res:740169144",
+     "position": [
+      12759.62,
+      11831.8,
+      20.42
+     ],
+     "ground": true,
+     "face": [
+      12825.6,
+      11843.6
+     ]
+    },
+    {
+     "id": "ice-shard",
+     "mob": "res:740168302",
+     "position": [
+      12760.24,
+      11835.25,
+      20.57
+     ],
+     "ground": true,
+     "face": [
+      12825.6,
+      11843.6
+     ]
+    }
+   ],
+   "staging_note": "Places : SpawnLocation des MobWorld (Хаук Фитилёк res:740168292, Транд res:740168293, Унн res:740168291 au point d'arrivée ; Мрак res:740169144 et Осколок льда res:740168302 sur la butte) ; cap : les héros tournés vers le bloc de glace, Mrak et le bloc vers eux (le client ne garde pas de lacet).",
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
+   }
+  },
+  {
+   "id": "isa-fighting-pit",
+   "_note": "Skalgard (série Isa_Town, quête « Спасти Мрака из бойцовой ямы ») : les gibberlings ont jeté Mrak, le « урун noir », dans la fosse contre la Семейка Драчунов ; la foule l'encourage (Isa_Town_1_Replica*), puis Броди Задира arrête le combat (Isa_Town_ElderBullyClan, sous-titre officiel). Le buff de caméra res:740170162 (9 s) suit la réplique de Броди (resourceId 740170159, juste avant) : il finit sur lui. Places : SpawnLocation des MobWorld. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "map": "Isa",
+   "cameras": [
+    {
+     "t": 0.0,
+     "p": [
+      12614.6,
+      12918.2,
+      107.7
+     ],
+     "look": [
+      12631.07,
+      12900.0,
+      98.8
+     ],
+     "_note": "Au bord de la fosse, à hauteur d'œil à la place d'une habitante de Skalgard (res:740172838), vers Mrak au fond (choix : le client ne filme pas la foule)."
+    },
+    {
+     "t": 14.0,
+     "buff": "res:740170162",
+     "_note": "BuffResource res:740170162 (volatil 520641) : 7 s + 2 s, du bord de la fosse vers Броди."
+    }
+   ],
+   "lines": [
+    {
+     "ref": "res:740172565",
+     "ru": "Давай, чёрный, покажи"
+    },
+    {
+     "ref": "res:740172570",
+     "ru": "Бочку мёда на чёрного"
+    },
+    {
+     "ref": "res:740172571",
+     "ru": "Порви их, чёрный"
+    },
+    {
+     "ref": "res:740172572",
+     "ru": "Деритесь, вы, рыбьи головёшки"
+    },
+    {
+     "ref": "res:740172573",
+     "ru": "Чего белые, побледнели"
+    },
+    "res:740170159"
+   ],
+   "lines_note": "Cris de la foule : ClientData Isa_Town_1_Replica, _02 à _05 (animation emoteCongratulate), textes officiels 1 à 5 du même dialogue que la réplique de Броди (bloc « Чёрный урун ») ; le texte de _02 (« Бочку мёда на чёрного! ») est pris par son rang, la reconnaissance vocale n'y entend rien. Voix off : le client ne dit pas quel habitant crie.",
+   "speakers": {
+    "6": "broddi"
+   },
+   "line_animations": true,
+   "fr_pair": {
+    "ru": "Но в глубокой бездне водятся чудовища",
+    "fr": "Mais il y a des monstres dans les profondeurs abyssales",
+    "_note": "Paire de textes d'une même réplique (légende des pêcheurs) : l'écart d'indice entre le 17.0 et le client FR 16.0 qu'elle donne (7 285 au 24/09/2026) est le même sur tout le bloc des textes d'Isa, vérifié réplique par réplique de l'arrivée (« Морозец пробирает до костей ») au journal du capitaine (« Но какой ценой? Череп снова будет свободен! »)."
+   },
+   "fov": 45,
+   "timing": {
+    "groups": [
+     {
+      "t": 0.3,
+      "lines": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     },
+     {
+      "t": 14.0,
+      "lines": [
+       6
+      ]
+     }
+    ],
+    "lead": 0.5,
+    "gap": 0.3,
+    "_note": "Instants estimés : les cris s'enchaînent, Броди parle à l'ouverture du plan de caméra qui le suit."
+   },
+   "decor_center": [
+    12630.0,
+    12905.0
+   ],
+   "decor_radius": 70,
+   "actors": [
+    {
+     "id": "broddi",
+     "mob": "res:740168164",
+     "position": [
+      12625.37,
+      12903.21,
+      99.84
+     ],
+     "ground": true,
+     "face": [
+      12631.07,
+      12900.0
+     ]
+    },
+    {
+     "id": "mrak",
+     "mob": "res:740168390",
+     "position": [
+      12631.07,
+      12900.0,
+      99.81
+     ],
+     "ground": true,
+     "face": [
+      12638.79,
+      12900.46
+     ]
+    },
+    {
+     "id": "brawlers",
+     "mob": "res:740168405",
+     "position": [
+      12638.79,
+      12900.46,
+      99.8
+     ],
+     "ground": true,
+     "face": [
+      12631.07,
+      12900.0
+     ]
+    },
+    {
+     "id": "crowd-522092",
+     "mob": "res:740172838",
+     "position": [
+      12614.64,
+      12918.19,
+      107.37
+     ],
+     "ground": true,
+     "face": [
+      12631.07,
+      12900.0
+     ]
+    },
+    {
+     "id": "crowd-522027",
+     "mob": "res:740172837",
+     "position": [
+      12616.05,
+      12887.57,
+      106.6
+     ],
+     "ground": true,
+     "face": [
+      12631.07,
+      12900.0
+     ]
+    },
+    {
+     "id": "crowd-522013",
+     "mob": "res:740172833",
+     "position": [
+      12636.77,
+      12933.22,
+      106.99
+     ],
+     "ground": true,
+     "face": [
+      12631.07,
+      12900.0
+     ]
+    },
+    {
+     "id": "crowd-522011",
+     "mob": "res:740172835",
+     "position": [
+      12635.33,
+      12867.29,
+      106.17
+     ],
+     "ground": true,
+     "face": [
+      12631.07,
+      12900.0
+     ]
+    },
+    {
+     "id": "crowd-522016",
+     "mob": "res:740172831",
+     "position": [
+      12657.75,
+      12914.22,
+      106.46
+     ],
+     "ground": true,
+     "face": [
+      12631.07,
+      12900.0
+     ]
+    }
+   ],
+   "staging_note": "Броди Задира res:740168164, Мрак res:740168390 et Семейка Драчунов res:740168405 au fond de la fosse (z 98), cinq habitants de Skalgard sur le bord (z 105) : SpawnLocation du 17.0. Caps : vers la fosse (choix). Pas d'animation de combat : le client ne la donne pas hors du serveur.",
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
+   }
+  },
+  {
+   "id": "isa-unn-trance",
+   "_note": "Prologue d'Isa sur Olm (série Isa_Prologue, carte Isa_Prologue) : Unn, en transe, appelle les esprits gardés dans l'Arbre (Val, Orn), sent une Nit vivante et réveille Ratatosk, l'écureuil du Frêne, avant de conclure qu'on peut parler à la déesse. Voix Isa_Prologue_4_UnnTranceSay_01…08, _UnnTranceGotHelpSay_01…03 (les « GotHelp » suivent l'aide du joueur), Isa_Prologue_Unn_TranceEnd ; textes officiels (bulles). Places : SpawnLocation d'Унн res:740169449 et de Рататоск res:740169482. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "map": "Isa_Prologue",
+   "camera": {
+    "points": [
+     {
+      "t": 0,
+      "p": [
+       13103.8,
+       13745.2,
+       55.8
+      ]
+     }
+    ],
+    "targets": [
+     {
+      "t": 0,
+      "p": [
+       13099.3,
+       13750.4,
+       54.8
+      ]
+     }
+    ],
+    "_note": "Face à Unn, à 5,5 m, Ratatosk dans le champ (choix)."
+   },
+   "lines": [
+    {
+     "ref": "res:740169543",
+     "ru": "Тысячу лет назад спасли они Ольм"
+    },
+    {
+     "ref": "res:740169544",
+     "ru": "Но ничто не исчезает на совсем"
+    },
+    {
+     "ref": "res:740169545",
+     "ru": "Они были со своим народом"
+    },
+    {
+     "ref": "res:740169546",
+     "ru": "Достаточно лишь позвать"
+    },
+    {
+     "ref": "res:740169547",
+     "ru": "Ты была быстрой, словно молния"
+    },
+    {
+     "ref": "res:740169548",
+     "ru": "Ты видел вершины самых высоких гор"
+    },
+    {
+     "ref": "res:740169549",
+     "ru": "Я чувствую… живую Нить"
+    },
+    {
+     "ref": "res:740169550",
+     "ru": "Бьётся словно сердце"
+    },
+    {
+     "ref": "res:740169592",
+     "ru": "Да, я вижу очертания"
+    },
+    {
+     "ref": "res:740169593",
+     "ru": "Да, это белка"
+    },
+    {
+     "ref": "res:740169594",
+     "ru": "Она… пробудилась"
+    },
+    {
+     "ref": "res:740169123",
+     "ru": "С богиней поговорить мы можем"
+    }
+   ],
+   "lines_note": "Ordre : numéros des voix, puis la fin de transe (TranceEnd) ; le texte suit : appel, éveil, conclusion.",
+   "speakers": {
+    "1": "unn",
+    "2": "unn",
+    "3": "unn",
+    "4": "unn",
+    "5": "unn",
+    "6": "unn",
+    "7": "unn",
+    "8": "unn",
+    "9": "unn",
+    "10": "unn",
+    "11": "unn",
+    "12": "unn"
+   },
+   "fr_pair": {
+    "ru": "Но в глубокой бездне водятся чудовища",
+    "fr": "Mais il y a des monstres dans les profondeurs abyssales",
+    "_note": "Paire de textes d'une même réplique (légende des pêcheurs) : l'écart d'indice entre le 17.0 et le client FR 16.0 qu'elle donne (7 285 au 24/09/2026) est le même sur tout le bloc des textes d'Isa, vérifié réplique par réplique de l'arrivée (« Морозец пробирает до костей ») au journal du capitaine (« Но какой ценой? Череп снова будет свободен! »)."
+   },
+   "fov": 45,
+   "timing": {
+    "groups": [
+     {
+      "t": 0.0,
+      "lines": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12
+      ]
+     }
+    ],
+    "lead": 0.5,
+    "gap": 1.0,
+    "_note": "Instants estimés : les répliques s'enchaînent à 1 s d'écart (le serveur attend l'aide du joueur entre elles)."
+   },
+   "decor_center": [
+    13100.0,
+    13750.0
+   ],
+   "decor_radius": 60,
+   "actors": [
+    {
+     "id": "unn",
+     "mob": "res:740169449",
+     "position": [
+      13099.99,
+      13749.11,
+      55.34
+     ],
+     "ground": true,
+     "face": [
+      13103.8,
+      13745.2
+     ]
+    },
+    {
+     "id": "ratatosk",
+     "mob": "res:740169482",
+     "position": [
+      13098.55,
+      13751.79,
+      55.84
+     ],
+     "ground": true,
+     "face": [
+      13099.99,
+      13749.11
+     ],
+     "appear": 67.1
+    }
+   ],
+   "staging_note": "Unn tournée vers le point de vue (choix) ; Ratatosk apparaît (67,1 s) quand Unn dit « Она… пробудилась. Рататоск! » (choix : le client ne dit pas quand le serveur le fait paraître).",
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
+   }
+  },
+  {
+   "id": "isa-freya",
+   "_note": "La découverte de la Freya (série Isa_Ship, voix Isa_Ship_7_FinalScene_Subtitle_1 et _2, deux répliques de plus sans voix) : l'épave du navire astral du capitaine Колль Фитилёк, AstralShipKaniaGroupBroken, posée dans le décor d'Isa (région 050_050/3_2, seul navire astral de la carte), entourée des pages du journal du capitaine (stèles Offhand_Book_D_03, quête « Разыскать и прочесть обрывки журнала ») ; Хаук Фитилёк res:740171495 et Герда res:740168263 y ont leur SpawnLocation. Voile d'ouverture : buff res:740171413 (21 s, voile noir 1 s, caméra sans point : vue du joueur), rangé juste avant les quatre répliques. Remplace la première version (buff de caméra res:740171462, 19 s, qui regarde le ciel au-dessus du plateau de Skalgard, à 1 km de l'épave : non retenu, rattachement non établi). Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "map": "Isa",
+   "cameras": [
+    {
+     "t": 0.0,
+     "p": [
+      13627.8,
+      13437.9,
+      73.5
+     ],
+     "look": [
+      13670.72,
+      13437.64,
+      69.42
+     ],
+     "_note": "Derrière les héros, 7,5 m en retrait et 2 m au-dessus d'eux, vers l'épave (choix)."
+    },
+    {
+     "t": 0.0,
+     "buff": "res:740171413",
+     "_note": "BuffResource res:740171413 (volatil 521258) : voile d'ouverture."
+    }
+   ],
+   "lines": [
+    "res:740171414",
+    "res:740171415",
+    "res:740171416",
+    "res:740171417"
+   ],
+   "lines_note": "ClientData rangés avec le buff (resourceId 740171414–740171417) : sous-titres officiels ; les deux premiers doublés (Hauk, puis Trand), les deux derniers sans voix.",
+   "fr_pair": {
+    "ru": "Но в глубокой бездне водятся чудовища",
+    "fr": "Mais il y a des monstres dans les profondeurs abyssales",
+    "_note": "Paire de textes d'une même réplique (légende des pêcheurs) : l'écart d'indice entre le 17.0 et le client FR 16.0 qu'elle donne (7 285 au 24/09/2026) est le même sur tout le bloc des textes d'Isa, vérifié réplique par réplique de l'arrivée (« Морозец пробирает до костей ») au journal du capitaine (« Но какой ценой? Череп снова будет свободен! »)."
+   },
+   "fov": 45,
+   "timing": {
+    "starts": [
+     1.5,
+     5.15,
+     7.01,
+     8.39
+    ],
+    "_note": "Hauk à la fin du voile (1 s) + 0,5 s ; Trand à la fin de sa voix + 0,4 s (estimés). Sa voix (Isa_Ship_7_FinalScene_Subtitle_2, 7,2 s) dit aussi les deux sous-titres sans voix : leurs départs sont mesurés dans elle (faster-whisper small, mot à mot : « Это » à 1,86 s, « Наш » à 3,24 s)."
+   },
+   "decor_center": [
+    13650.0,
+    13437.0
+   ],
+   "decor_radius": 75,
+   "actors": [
+    {
+     "id": "hauk",
+     "mob": "res:740171495",
+     "position": [
+      13635.47,
+      13436.33,
+      72.94
+     ],
+     "ground": true,
+     "face": [
+      13670.72,
+      13437.64
      ],
      "speaker_prefixes": [
       "Хаук:"
      ]
     },
     {
-     "id": "trand",
-     "mob": 521384,
+     "id": "gerda",
+     "mob": "res:740168263",
      "position": [
-      13334.0,
-      12494.0,
-      130
+      13634.31,
+      13438.44,
+      73.09
      ],
      "ground": true,
      "face": [
-      13330.0,
-      12474.0
+      13670.72,
+      13437.64
+     ]
+    },
+    {
+     "id": "trand",
+     "mob": "res:740171737",
+     "position": [
+      13636.9,
+      13439.3,
+      73.0
      ],
-     "idle": "Idle",
-     "talk": "EmoteSpeech",
-     "animations": [
-      "Idle",
-      "EmoteSpeech"
+     "ground": true,
+     "face": [
+      13670.72,
+      13437.64
      ],
      "speaker_prefixes": [
       "Транд:"
      ]
     }
    ],
-   "staging_note": "Mise en scène (le serveur place les PNJ) : les deux frères au pied de la pente, entre la caméra et ce qu’elle vise, tournés vers la visée finale (13330 ; 12474) ; posés sur le sol du terrain. Modèles : les MobWorld Hauk 521238 (même dossier que le buff) et Trand 521384 (le plus proche).",
-   "post": [
+   "staging_note": "Hauk et Gerda : SpawnLocation du 17.0 ; Trand, sans place près de l'épave dans le client, posé à 2 m d'eux (choix), modèle du MobWorld Транд Фитилёк res:740171737. Tous tournés vers l'épave.",
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
+   }
+  },
+  {
+   "id": "isa-captain-journal",
+   "_note": "Le journal du capitaine (série Isa_Ship, voix Isa_Ship_8b_CapitanDiary_AssistantSay_* puis Isa_Ship_8b_FinalScene_Say_*) : près de l'épave de la Freya, Hauk, Trand et Gerda commentent les pages du journal de Колль Фитилёк (le pacte avec les orcs, l'esprit du Crâne libéré, Isa cachée par les Держащие Нить, Колль ancêtre de Gerda), puis se demandent s'il faut rendre Isa au monde. Textes officiels (bulles) ; page du journal : stèle Offhand_Book_D_03 res:740171431 à sa place. Point de vue : aucun trajet de caméra dans le client (scène jouée dans la vue du joueur) ; point de vue fixe du manifeste, choix documenté, pas une donnée.",
+   "map": "Isa",
+   "camera": {
+    "points": [
+     {
+      "t": 0,
+      "p": [
+       13639.2,
+       13440.2,
+       75.2
+      ]
+     }
+    ],
+    "targets": [
+     {
+      "t": 0,
+      "p": [
+       13635.0,
+       13437.6,
+       72.2
+      ]
+     }
+    ],
+    "_note": "Sur le pont de l'épave, 4,5 m à l'est des trois gibberlings et au-dessus de la rambarde, tourné vers eux et la page du journal (choix)."
+   },
+   "lines": [
     {
-     "t": 0,
-     "kind": "fadeIn",
-     "duration": 1.0
+     "ref": "res:740171524",
+     "ru": "Это случилось в первую высадку"
     },
     {
-     "t": 18.0,
-     "kind": "fadeOut",
-     "duration": 1.0
+     "ref": "res:740171525",
+     "ru": "Неужели наш родич согласился"
+    },
+    {
+     "ref": "res:740171526",
+     "ru": "Колль согласился освободить"
+    },
+    {
+     "ref": "res:740171527",
+     "ru": "Так вот как это всё случилось"
+    },
+    {
+     "ref": "res:740171528",
+     "ru": "И всё-таки он отказался"
+    },
+    {
+     "ref": "res:740171531",
+     "ru": "Никто из нас и не мог представить"
+    },
+    {
+     "ref": "res:740171529",
+     "ru": "Вот почему никто не мог найти Ису"
+    },
+    {
+     "ref": "res:740171532",
+     "ru": "Печальная история"
+    },
+    {
+     "ref": "res:740171530",
+     "ru": "Выходит, что Колль Фитилёк"
+    },
+    {
+     "ref": "res:740171533",
+     "ru": [
+      "Вот почему в нашей семье",
+      "Связь, разорванная два столетия назад"
+     ]
+    },
+    {
+     "ref": "res:740171536",
+     "ru": "Мы можем вновь вернуть Ису в мир"
+    },
+    {
+     "ref": "res:740171537",
+     "ru": "Но какой ценой"
     }
    ],
+   "lines_note": "Ordre : numéros des voix (1 à 7, variantes _1/_2/_3), puis FinalScene 1 et 2.",
+   "speakers": {
+    "1": "hauk",
+    "2": "trand",
+    "3": "trand",
+    "4": "gerda",
+    "5": "gerda",
+    "6": "hauk",
+    "7": "trand",
+    "8": "gerda",
+    "9": "hauk",
+    "10": "gerda",
+    "11": "trand",
+    "12": "hauk"
+   },
+   "fr_pair": {
+    "ru": "Но в глубокой бездне водятся чудовища",
+    "fr": "Mais il y a des monstres dans les profondeurs abyssales",
+    "_note": "Paire de textes d'une même réplique (légende des pêcheurs) : l'écart d'indice entre le 17.0 et le client FR 16.0 qu'elle donne (7 285 au 24/09/2026) est le même sur tout le bloc des textes d'Isa, vérifié réplique par réplique de l'arrivée (« Морозец пробирает до костей ») au journal du capitaine (« Но какой ценой? Череп снова будет свободен! »)."
+   },
+   "fov": 45,
+   "timing": {
+    "groups": [
+     {
+      "t": 0.0,
+      "lines": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12
+      ]
+     }
+    ],
+    "lead": 0.8,
+    "gap": 1.0,
+    "_note": "Instants estimés : chaque réplique à 1 s de la précédente (le joueur lit les pages entre elles)."
+   },
+   "decor_center": [
+    13650.0,
+    13437.0
+   ],
+   "decor_radius": 75,
+   "actors": [
+    {
+     "id": "hauk",
+     "mob": "res:740171495",
+     "position": [
+      13635.47,
+      13436.33,
+      72.94
+     ],
+     "ground": true,
+     "face": [
+      13634.31,
+      13438.44
+     ]
+    },
+    {
+     "id": "gerda",
+     "mob": "res:740168263",
+     "position": [
+      13634.31,
+      13438.44,
+      73.09
+     ],
+     "ground": true,
+     "face": [
+      13635.47,
+      13436.33
+     ]
+    },
+    {
+     "id": "trand",
+     "mob": "res:740171737",
+     "position": [
+      13636.9,
+      13439.3,
+      73.0
+     ],
+     "ground": true,
+     "face": [
+      13635.47,
+      13436.33
+     ]
+    }
+   ],
+   "spawns": [
+    {
+     "stele": "res:740171431",
+     "t": 0,
+     "until": 600,
+     "_note": "Page du journal (stèle Offhand_Book_D_03), à sa SpawnLocation."
+    }
+   ],
+   "staging_note": "Mêmes places que « La Freya » ; les trois tournés les uns vers les autres (choix).",
+   "mix": {
+    "music": 0.35,
+    "ambience": 0.5,
+    "sfx": 0.8,
+    "voice": 1.0
+   }
+  },
+  {
+   "id": "isa-fishers-legend",
+   "_note": "Pilote d'Isa (14.0), seule cinématique d'Isa entièrement écrite dans le client : le script visuel du buff de caméra enchaîne un voile noir, six plans de caméra (la mer, puis sous l'eau, les épaves au fond) et la voix off du conteur, Isa_Fishers_1_Cutscene (39,6 s), qui dit mot pour mot les six sous-titres rangés avec le buff. Tout vient du client 17.0 (script du buff, décor, sous-titres RU/EN, FR du 16.0) ; seul l'instant de chaque sous-titre est mesuré sur la voix (timing.starts). Aucun PNJ : le script n'en pose aucun, Lyngbakr n'apparaît pas.",
+   "buff_script": true,
+   "map": "Isa",
+   "buff": "res:740170090",
+   "buff_note": "BuffResource res:740170090 (volatil 520623 au 23/09/2026, 520579 avant) → BuffVisScripts : liste simultanée de trois branches — délai 3 s puis Sound2DAction « /Cutscenes/Isa/Isa_Fishers_1_Cutscene » ; voile noir (UserPostEffect res:… volatil 499520, carré noir, fondus 0,5 s) borné à 2,5 s puis six plans en séquence, chacun borné par un délai (5,5 ; 8 ; 9 ; 7 ; 3,5 ; 9 s) ; délai 44 s puis voile noir de fin. Voir tools/cutscene_client.py.",
+   "lines": [
+    {
+     "ref": "res:740170091",
+     "ru": "Мудрые говорят"
+    },
+    {
+     "ref": "res:740170092",
+     "ru": "Бескрайним было море-окиян"
+    },
+    {
+     "ref": "res:740170093",
+     "ru": "Но в глубокой бездне"
+    },
+    {
+     "ref": "res:740170094",
+     "ru": "Сия рыба была огромна"
+    },
+    {
+     "ref": "res:740170095",
+     "ru": "Но горе тому"
+    },
+    {
+     "ref": "res:740170096",
+     "ru": "Почуяв живых"
+    }
+   ],
+   "lines_note": "ClientData de sous-titre seul rangés avec le buff (resourceId 740170091 à 740170096, suivant le buff 740170090) ; leur ordre est celui de la voix, relevé par reconnaissance vocale (« Мудрые говорят… », « Бескрайним было море-окиян… », « Но в глубокой бездне… », « Сия рыба… », « Но горе тому… », « Почуяв живых… »). Aucune ressource du client ne relie ces ClientData au buff : c'est le script serveur ; le texte, lui, est celui que dit la voix. Chaque réplique porte aussi le début de son texte russe (`ru`) : texte officiel RU/EN du 17.0, FR du 16.0 par l'écart de `fr_pair`.",
+   "narrator": null,
+   "fov": 45,
+   "timing": {
+    "starts": [
+     3.0,
+     8.48,
+     16.3,
+     25.16,
+     31.5,
+     35.24
+    ],
+    "_note": "Départs mesurés : début de chaque sous-titre dans la voix (faster-whisper small, horodatage mot à mot : 0 ; 5,48 ; 13,3 ; 22,16 ; 28,5 ; 32,24 s) + 3 s, instant de la voix dans le script. Même principe que le minutage des vidéos (tools/cinematics_sync.json). Les plans coupent à 8, 16, 25 et 32 s, avec les phrases."
+   },
+   "decor_center": [
+    12410.0,
+    12370.0
+   ],
+   "decor_radius": 230,
+   "actors": [],
    "mix": {
     "music": 0.35,
     "ambience": 0.5,
     "sfx": 0.8,
     "voice": 1.0
    },
-   "_note": "En attente, hors du film : le sujet du plan, le navire astral « Freya », n’est pas dans le décor du client (posé par le serveur) ; la caméra ne montre que des sapins."
+   "fr_pair": {
+    "ru": "Но в глубокой бездне водятся чудовища",
+    "fr": "Mais il y a des monstres dans les profondeurs abyssales",
+    "_note": "Paire de textes d'une même réplique (légende des pêcheurs) : l'écart d'indice entre le 17.0 et le client FR 16.0 qu'elle donne (7 285 au 24/09/2026) est le même sur tout le bloc des textes d'Isa, vérifié réplique par réplique de l'arrivée (« Морозец пробирает до костей ») au journal du capitaine (« Но какой ценой? Череп снова будет свободен! »)."
+   }
   },
   {
    "id": "invasion-engineer-kania",
    "source": "gameview",
-   "scene": 438509,
-   "_note": "GameViewScene 438509 (CutScene_EngineerDeathKania, Inst_ZoneContested12_Start) jouée par le ShowSceneAction de la stèle 438512 : trois assassins colosses (special03, 04, 05) et Luka (special08) à la place de la scène, caméra au cameraPlacement. Caméra : le cameraPlacement (drapeau use) pose le spectateur ; caméra à 2 m au-dessus, regard selon son lacet (vue de joueur). La version hadagane (CutScene_EngineerDeathHadagan du 7.0) n’existe plus dans le 17.0 : la GameViewScene 443968, voisine, est l’explosion du navire, déjà dans le film en vidéo."
+   "scene": "stele:res:739933258",
+   "_note": "GameViewScene de la stèle res:739933258 (CutScene_EngineerDeathKania, Inst_ZoneContested12_Start) jouée par le ShowSceneAction de cette stèle (identifiants volatils 438509 et 438512 avant la mise à jour du 23/09/2026) : trois assassins colosses (special03, 04, 05) et Luka (special08) à la place de la scène, caméra au cameraPlacement. Caméra : le cameraPlacement (drapeau use) pose le spectateur ; caméra à 2 m au-dessus, regard selon son lacet (vue de joueur). La version hadagane (CutScene_EngineerDeathHadagan du 7.0) n’existe plus dans le 17.0 : la GameViewScene 443968, voisine, est l’explosion du navire, déjà dans le film en vidéo."
   },
   {
    "id": "empire-start-command-post",

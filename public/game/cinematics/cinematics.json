@@ -920,39 +920,6 @@
    "note": "Version HD de la cinématique moteur ShipExplosion : le client en avait deux variantes (Kania / Hadagan) mais n’a qu’une vidéo et un seul événement ; le visuel et les sous-titres sont ceux de la variante Ligue (Ship_explosion_L)."
   },
   {
-   "id": "invasion-engineer-kania",
-   "arc": "invasion",
-   "version": "7.0",
-   "faction": "league",
-   "order": 225,
-   "event": "CutScene_EngineerDeathKania",
-   "title": {
-    "fr": "La mort de l’ingénieur",
-    "en": "The Engineer’s Death"
-   },
-   "chronology": "Scène moteur de l’instance de départ de l’Invasion (Inst_ZoneContested12_Start, 7.0, version de la Ligue) : l’ingénieur Luka tombe sous les coups de trois assassins colosses ; entre le navire astral et la métamorphose.",
-   "bonus": false,
-   "duration": 13.433,
-   "files": {
-    "poster": "engine/invasion-engineer-kania/poster.jpg"
-   },
-   "engine": {
-    "scene": "engine/invasion-engineer-kania/scene.json"
-   },
-   "tracks": [],
-   "subtitles": {
-    "status": "official",
-    "lines": 0,
-    "timing": "client",
-    "audio": {
-     "language": "ru"
-    }
-   },
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
    "id": "invasion-kursk-1",
    "title": {
     "fr": "La métamorphose",
@@ -1104,14 +1071,38 @@
     "mp4": "raid72-boss-death/video.mp4",
     "poster": "raid72-boss-death/poster.jpg"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français (auto)",
+     "src": "raid72-boss-death/fr.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "en",
+     "label": "English (auto)",
+     "src": "raid72-boss-death/en.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "ru",
+     "label": "Русский (авто)",
+     "src": "raid72-boss-death/ru.vtt",
+     "lines": 4
+    }
+   ],
    "audio": {
-    "language": null
+    "language": "ru"
    },
    "subtitles": {
-    "status": "none",
-    "lines": 0,
-    "timing": null
+    "audio": {
+     "language": "ru"
+    },
+    "status": "transcribed",
+    "lines": 4,
+    "timing": "transcribed",
+    "reviewed": true,
+    "model": "faster-whisper large-v3/medium/small, int8, voix isolée par Demucs (htdemucs) ; 0-12 s : medium sans VAD"
    },
    "source": {
     "client": "17.0",
@@ -1394,14 +1385,38 @@
     "mp4": "warp-crypt/video.mp4",
     "poster": "warp-crypt/poster.jpg"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français (auto)",
+     "src": "warp-crypt/fr.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "en",
+     "label": "English (auto)",
+     "src": "warp-crypt/en.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "ru",
+     "label": "Русский (авто)",
+     "src": "warp-crypt/ru.vtt",
+     "lines": 4
+    }
+   ],
    "audio": {
-    "language": null
+    "language": "ru"
    },
    "subtitles": {
-    "status": "none",
-    "lines": 0,
-    "timing": null
+    "status": "transcribed",
+    "lines": 4,
+    "timing": "transcribed",
+    "reviewed": true,
+    "model": "faster-whisper large-v3/medium, int8, voix isolée par Demucs ; texte validé par un locuteur russe",
+    "audio": {
+     "language": "ru"
+    }
    },
    "source": {
     "client": "10.0-warp",
@@ -1427,14 +1442,38 @@
     "mp4": "warp-forest-city/video.mp4",
     "poster": "warp-forest-city/poster.jpg"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français (auto)",
+     "src": "warp-forest-city/fr.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "en",
+     "label": "English (auto)",
+     "src": "warp-forest-city/en.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "ru",
+     "label": "Русский (авто)",
+     "src": "warp-forest-city/ru.vtt",
+     "lines": 2
+    }
+   ],
    "audio": {
-    "language": null
+    "language": "ru"
    },
    "subtitles": {
-    "status": "none",
-    "lines": 0,
-    "timing": null
+    "status": "transcribed",
+    "lines": 2,
+    "timing": "transcribed",
+    "reviewed": true,
+    "model": "faster-whisper large-v3/medium, int8, voix isolée par Demucs ; texte validé par un locuteur russe",
+    "audio": {
+     "language": "ru"
+    }
    },
    "source": {
     "client": "10.0-warp",
@@ -1705,6 +1744,261 @@
     "event": "AllMother/AllMotherFinal"
    },
    "chronology": "Groupe « AllMother » du registre (13.0), fin de l’arc d’Eden."
+  },
+  {
+   "id": "isa-unn-trance",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1200,
+   "event": "Isa_Prologue_4_UnnTrance",
+   "title": {
+    "fr": "La transe d’Unn",
+    "en": "Unn’s trance"
+   },
+   "chronology": "Isa (14.0), prologue sur Olm (Isa_Prologue_*) : la transe d'Unn éveille Ratatosk, qui mènera les héros vers Isa ; ouvre l'arc d'Isa, avant l'arrivée — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "bonus": false,
+   "duration": 90.885,
+   "files": {
+    "poster": "engine/isa-unn-trance/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/isa-unn-trance/scene.json"
+   },
+   "tracks": [],
+   "subtitles": {
+    "status": "official",
+    "lines": 12,
+    "timing": "estimated",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-arrival",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1210,
+   "event": "Isa_Arrival",
+   "title": {
+    "fr": "L’arrivée sur Isa",
+    "en": "Arrival on Isa"
+   },
+   "chronology": "Isa (14.0), série de l'arrivée (Isa_Arrival_*) : les héros débarquent sur Isa gelée et trouvent Mrak près d'un bloc de glace ; après le prologue d'Olm (Isa_Prologue_*), avant la ville (Isa_Town_*) — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "bonus": false,
+   "duration": 32.906,
+   "files": {
+    "poster": "engine/isa-arrival/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/isa-arrival/scene.json"
+   },
+   "tracks": [],
+   "subtitles": {
+    "status": "official",
+    "lines": 7,
+    "timing": "estimated",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-fighting-pit",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1220,
+   "event": "Isa_Town_ElderBullyClan",
+   "title": {
+    "fr": "La fosse aux combats",
+    "en": "The fighting pit"
+   },
+   "chronology": "Isa (14.0), série de la ville (Isa_Town_*), Skalgard : Mrak jeté dans la fosse (« Спасти Мрака из бойцовой ямы ») ; après l'arrivée, avant la forêt — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "bonus": false,
+   "duration": 21.0,
+   "files": {
+    "poster": "engine/isa-fighting-pit/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/isa-fighting-pit/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-fighting-pit/fr.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-fighting-pit/en.vtt",
+     "lines": 1
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-fighting-pit/ru.vtt",
+     "lines": 1
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 6,
+    "timing": "estimated",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-fishers-legend",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1260,
+   "event": "Isa_Fishers_1_Cutscene",
+   "title": {
+    "fr": "La légende de Lyngbakr",
+    "en": "The legend of Lyngbakr"
+   },
+   "chronology": "Isa (14.0), série des pêcheurs (voix Cutscenes/Isa/Isa_Fishers_*, première du rang : Isa_Fishers_1_Cutscene) : le conteur dit la légende de Lyngbakr, le poisson-île qui noie ceux qui s'y posent, avant la prophétie (Isa_Fishers_2d) et la chasse (Isa_Fishers_3 à 5, « Убедить старосту клана рыбаков поймать Лингбакра »). Ordre des séries d'Isa : celui du plan du film (tools/film_plan.json), d'après les noms des voix. Recréée en 3D, voir engine_scenes.",
+   "bonus": false,
+   "duration": 44.5,
+   "files": {
+    "poster": "engine/isa-fishers-legend/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/isa-fishers-legend/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-fishers-legend/fr.vtt",
+     "lines": 6
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-fishers-legend/en.vtt",
+     "lines": 6
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-fishers-legend/ru.vtt",
+     "lines": 6
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 7,
+    "timing": "measured",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-freya",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1270,
+   "event": "Isa_Ship_7_FinalScene",
+   "title": {
+    "fr": "La Freya",
+    "en": "The Freya"
+   },
+   "chronology": "Isa (14.0), série du navire (Isa_Ship_*) : Hauk et Trand trouvent la Freya, le navire de leur arrière-grand-père, le capitaine Koll ; avant le journal du capitaine — ordre du plan du film. Recréée en 3D, voir engine_scenes.",
+   "bonus": false,
+   "duration": 21.0,
+   "files": {
+    "poster": "engine/isa-freya/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/isa-freya/scene.json"
+   },
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français",
+     "src": "engine/isa-freya/fr.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "en",
+     "label": "English",
+     "src": "engine/isa-freya/en.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "ru",
+     "label": "Русский",
+     "src": "engine/isa-freya/ru.vtt",
+     "lines": 4
+    }
+   ],
+   "subtitles": {
+    "status": "official",
+    "lines": 4,
+    "timing": "measured",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "isa-captain-journal",
+   "arc": "isa",
+   "version": "14.0",
+   "faction": "common",
+   "order": 1275,
+   "event": "Isa_Ship_8b_CapitanDiary",
+   "title": {
+    "fr": "Le journal du capitaine",
+    "en": "The captain’s journal"
+   },
+   "chronology": "Isa (14.0), série du navire (Isa_Ship_*) : les pages du journal de Koll révèlent le pacte avec les orcs et l'esprit du Crâne ; après la découverte de la Freya. Recréée en 3D, voir engine_scenes.",
+   "bonus": false,
+   "duration": 64.302,
+   "files": {
+    "poster": "engine/isa-captain-journal/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/isa-captain-journal/scene.json"
+   },
+   "tracks": [],
+   "subtitles": {
+    "status": "official",
+    "lines": 12,
+    "timing": "estimated",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
   },
   {
    "id": "boss-armand",
