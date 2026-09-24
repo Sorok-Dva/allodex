@@ -74,7 +74,10 @@ export type DecorInstance = { vot: string; p: Vec3; yaw: number; tilt?: [number,
   t?: number; until?: number; hidden?: [number, number][] };
 /** Secousse de caméra (`ShakeAction`) : décalages `keys` (m, repère caméra) à `fps`, dès `t`. */
 export type CameraShake = { t: number; fps: number; amplitude: number; timeScale: number; keys: Vec3[] };
-export type FxSpawn = { vot: string; t: number; until: number; p?: Vec3; yaw?: number; scale?: number; attach?: string; locator?: string };
+/** Rayon : de `locator` de l'acteur `from` jusqu'au point `to`, gabarit modelé sur `length` m. */
+export type FxChannel = { from: string; locator: string; to: Vec3; length: number };
+export type FxSpawn = { vot: string; t: number; until: number; p?: Vec3; yaw?: number; scale?: number; attach?: string; locator?: string;
+  channel?: FxChannel };
 export type PostEffect =
   | { t: number; kind: 'fadeIn' | 'fadeOut'; duration: number }
   /** Voile noir d'un `UserPostEffect` : monte en `fadeIn` s dès `t`, tient, redescend en `fadeOut` s à `until`. */

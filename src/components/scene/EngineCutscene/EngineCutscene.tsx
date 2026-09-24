@@ -7,7 +7,7 @@ import { loadParticleFile } from '@/components/scene/FatalityViewer/particles';
 import { spawnOpacity } from '@/components/scene/FatalityViewer/timeline';
 import { VotFactory, particleSystems, toViewerMaterial, updateInstance, type Tinted, type VotInstance } from '@/components/scene/vot/votInstances';
 import { buildTerrainExtras, type TerrainExtras } from '@/components/scene/vot/terrainExtras';
-import { actorClipAt, argb, decorShownAt, falloff, pathAt, presentAt, sampleKeys, shakeAt, subtitleAt, veilAt, voiceAt, type DecorInstance, type EngineScene } from './timeline';
+import { actorClipAt, argb, decorShownAt, falloff, pathAt, presentAt, sampleKeys, shakeAt, subtitleAt, veilAt, voiceAt, type DecorInstance, type EngineScene, type FxChannel } from './timeline';
 import s from './EngineCutscene.module.css';
 
 // Même parti pris que les scènes de menu et les fatalités : les textures du jeu sont des octets,
@@ -55,6 +55,8 @@ const LIGHT_SCALE = Math.PI;
 const SOUND_RANGE = 70;
 /** Écart toléré entre un son et la chronologie avant de le recaler (s). */
 const SOUND_DRIFT = 0.3;
+/** Axe modelé des rayons : l'avant des modèles du jeu, −Y, comme les fatalités (`Fatality_Channel`). */
+const CHANNEL_AXIS = new THREE.Vector3(0, -1, 0);
 
 type Actor = { id: string; holder: THREE.Object3D; model: THREE.Object3D; mixer: THREE.AnimationMixer; actions: Map<string, THREE.AnimationAction> };
 type Loop = { audio: HTMLAudioElement; volume: number; position: THREE.Vector3 | null; start: number; until: number; kind: 'music' | 'ambience' | 'sfx' };
@@ -277,7 +279,25 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
     const actors: Actor[] = [];
     const decorInstances: VotInstance[] = [];
     const decorItems: DecorInstance[] = [];
-    const spawns: { inst: VotInstance; until: number }[] = [];
+    const spawns: { inst: VotInstance; until: number; channel: FxChannel | null }[] = [];
+    const channelA = new THREE.Vector3();
+    const channelB = new THREE.Vector3();
+    /** Rayon (`CreatureChannelDirectAction`) : origine au locator de l'acteur, axe Y vers le repère, étiré. */
+    const stretchChannel = (root: THREE.Object3D, channel: FxChannel) => {
+      const actor = actors.find(a => a.id === channel.from);
+      if (!actor) return;
+      const suffix = `_${channel.locator}`;
+      let node: THREE.Object3D | undefined;
+      if (channel.locator !== 'Global') actor.model.traverse(n => { if (!node && n.name.endsWith(suffix)) node = n; });
+      (node ?? actor.holder).getWorldPosition(channelA);
+      world.worldToLocal(channelA);
+      const dir = channelB.set(...channel.to).sub(channelA);
+      const distance = dir.length();
+      if (distance < 1e-4) return;
+      root.position.copy(channelA);
+      root.quaternion.setFromUnitVectors(CHANNEL_AXIS, dir.divideScalar(distance));
+      root.scale.set(1, channel.length > 0 ? distance / channel.length : 1, 1);
+    };
     const disposables: { dispose(): void }[] = [];
     const factory = new VotFactory({ objects: {}, baseUrl: base, disposables, anisotropy: () => renderer?.capabilities?.getMaxAnisotropy?.() ?? 1 });
     let data: EngineScene | null = null;
@@ -366,7 +386,10 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         updateInstance(inst, t - (item?.t ?? 0), 1, camera);
         if (item && !decorShownAt(item, t)) inst.root.visible = false;
       });
-      for (const { inst } of spawns) updateInstance(inst, t - inst.start, spawnOpacity(t - inst.start, inst.lifeTime, inst.fadeIn, inst.fadeOut), camera);
+      for (const { inst, channel } of spawns) {
+        if (channel) stretchChannel(inst.root, channel);
+        updateInstance(inst, t - inst.start, spawnOpacity(t - inst.start, inst.lifeTime, inst.fadeIn, inst.fadeOut), camera);
+      }
       if (veilRef.current) veilRef.current.style.opacity = String(veilAt(data.post ?? [], t));
       const text = subtitleAt(data, t, state.lang);
       setSubtitle(prev => (prev === text ? prev : text));
@@ -628,7 +651,7 @@ export const EngineCutscene = forwardRef<MediaLike, EngineCutsceneProps>(functio
         inst.root.rotation.z = spawn.yaw ?? 0;
         inst.root.scale.setScalar((spawn.scale || 1) * (info.scale || 1));
         (holder ?? world).add(inst.root);
-        spawns.push({ inst, until: spawn.until });
+        spawns.push({ inst, until: spawn.until, channel: spawn.channel ?? null });
         soundAt(spawn.vot, spawn.p ? world.localToWorld(new THREE.Vector3(...spawn.p)) : null, spawn.t, spawn.until);
       }
       state.ready = 4;
