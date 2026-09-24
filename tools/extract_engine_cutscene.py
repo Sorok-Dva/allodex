@@ -61,7 +61,7 @@ from tools.allods_fx import FxBuild, ParticlePool, fsb5_stream_names  # noqa: E4
 from tools.allods_gltf import Exporter, TexturePool, load_animation, load_geometry  # noqa: E402
 from tools.allods_packdb import EXTERN, PackDB, open_catalog, open_map, open_pack, packs_path  # noqa: E402
 from tools.allods_scenes import (  # noqa: E402
-    VM_VARIATION, buff_camera_track, buff_scripts, mob_name_index, mob_visual, read_client_line, read_lightvrt,
+    VM_SCALE, VM_VARIATION, buff_camera_track, buff_scripts, mob_name_index, mob_visual, read_client_line, read_lightvrt,
     read_regions, read_zone_light, sky_parts, static_visobject, visual_dress, visual_template,
 )
 from tools.allods_visdb import animation_names, read_action, read_visobject  # noqa: E402
@@ -195,7 +195,7 @@ def ground_z(solids: np.ndarray, x: float, y: float, below: float) -> float | No
 
 
 def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: ParticlePool, map_name: str,
-                areas: list[tuple[list[float] | None, float]], report: list[str]) -> dict:
+                areas: list[tuple[list[float] | None, float]], report: list[str], doors: list[dict] | None = None) -> dict:
     """Décor d'une carte, **commun aux scènes qui s'y jouent** : les gabarits des objets posés dans
     l'une des zones (`areas` : centre, rayon de chaque scène) une fois chacun dans `decor.glb`, les
     instances avec ce qu'il faut pour éclairer chacune (`light_decor`, par scène : l'éclairage
@@ -235,6 +235,15 @@ def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: Particl
             inst["tilt"] = [round(a, 5) for a in obj.tilt]
         if abs(obj.scale - 1) > 1e-6 and obj.scale > 0:
             inst["scale"] = round(obj.scale, 5)
+        door = next((d for d in doors or [] if all(abs(a - b) <= 0.05 for a, b in zip(d["p"], obj.position))), None)
+        if door is not None:
+            # Porte (`DoorResource` de l'objet dans l'arbre 7.0) : états ouvert et fermé, tenus.
+            variants = {key: fx.emit_state(vot, door[key]["clips"][0]) if door.get(key) else None
+                        for key in ("open", "closed")}
+            if all(variants.values()):
+                inst["_door"] = {"script": door["script"], "isOpen": door["isOpen"], **variants}
+            else:
+                report.append(f"décor {map_name} : porte {door['script']} sans animation d'état ({variants})")
         loaded = None
         if vis.geometry is not None:
             if vis.geometry not in geometries:
@@ -439,7 +448,23 @@ def build_terrain(mp: PackDB, cat, bins, textures: TexturePool, areas: list[tupl
     return ex.finish([root, *more]), np.concatenate(solids) if solids else np.zeros((0, 3, 3))
 
 
-def light_decor(decor: dict, light: dict, center: list[float] | None, radius: float) -> tuple[list[dict], bytes]:
+DOOR_BEFORE = -1e5          # état posé avant la scène : montré à la fin de son animation
+
+
+def door_states(door: dict, initial: dict[str, bool], switches: list[dict]) -> list[dict]:
+    """États d'une porte pendant une scène : celui du départ (`initial`, laissé par le tutoriel et
+    donné par le manifeste, sinon `isOpen` de sa `DoorResource`), puis les `DoorSwitch` du déroulé."""
+    is_open = initial.get(door["script"], door["isOpen"])
+    out = [{"t": DOOR_BEFORE, "vot": door["open" if is_open else "closed"]}]
+    for sw in sorted((s for s in switches if s["spawn"] == door["script"]), key=lambda s: s["t"]):
+        if sw["open"] != is_open:
+            is_open = sw["open"]
+            out.append({"t": round(sw["t"], 3), "vot": door["open" if is_open else "closed"]})
+    return out
+
+
+def light_decor(decor: dict, light: dict, center: list[float] | None, radius: float,
+                doors: tuple[dict[str, bool], list[dict]] | None = None) -> tuple[list[dict], bytes]:
     """Instances d'une scène (dans son cercle) et leur éclairage de sommets (`decor-light.bin`) :
     ambiante + soleil (`N·S`) + octet 2 du `lightvrt`, avec la lumière de la scène."""
     out, blobs, offset = [], [], 0
@@ -448,6 +473,8 @@ def light_decor(decor: dict, light: dict, center: list[float] | None, radius: fl
         if center is not None and math.hypot(x - center[0], y - center[1]) > radius:
             continue
         entry = {k: v for k, v in inst.items() if not k.startswith("_")}
+        if inst.get("_door"):
+            entry["states"] = door_states(inst["_door"], *(doors or ({}, [])))
         loaded = decor["geometries"].get(inst.get("_geo"))
         if loaded is not None:
             normals = loaded.vertices.get("normal")
@@ -658,8 +685,12 @@ def build_actor_offset(actor: dict, mob: int | None, db: PackDB, cat, bins, text
     root = ex.gltf.add_node({"name": actor["id"], "children": roots + [static_node, ex.gltf.add_node(mesh_node)],
                              **({"scale": [scale] * 3} if abs(scale - 1) > 1e-6 else {})})
     report += [f"{actor['id']} : {n}" for n in ex.notes]
+    # Échelle de la `VisualMob` (le Спрутоглав est à 0,4) : appliquée au porteur par le lecteur.
+    visual_scale = db.f32(visual + VM_SCALE) if visual is not None else 1.0
+    visual_scale = visual_scale if 0 < visual_scale < 100 else 1.0
     meta = {"geometry": loaded.geo.binary, "height": round(float(loaded.vertices["position"][:, 2].max() * scale), 3),
-            "animations": durations, "name_index": mob_name_index(db, mob) if mob is not None else None}
+            "animations": durations, "name_index": mob_name_index(db, mob) if mob is not None else None,
+            "visual_scale": round(float(visual_scale), 4)}
     return ex.finish([root]), meta
 
 
@@ -1340,8 +1371,14 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
                                   "visual": x70.mob_visual(tree, tree.root / inter["mob"]), "file": "manifest"}
     for script, start in spec.get("start_at", {}).items():
         # PNJ déplacé avant le déroulé (par une zone voisine, justifié par le manifeste) : il part de là.
+        # `"yaw": "walk"` : il y est arrivé en marchant depuis sa place (`GoThroughPath`) et garde le
+        # cap de cette marche, comme un PNJ du déroulé à la fin de la sienne.
         if script in spawns and start["locator"] in spawns:
-            spawns[script] = {**spawns[script], "p": spawns[start["locator"]]["p"]}
+            there = spawns[start["locator"]]["p"]
+            moved = {**spawns[script], "p": there}
+            if start.get("yaw") == "walk":
+                moved["yaw"] = face_yaw(spawns[script]["p"], there)
+            spawns[script] = moved
     if tl.shots:
         camera = x70.camera_keys(tl.shots)
     else:
@@ -1349,6 +1386,10 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
         cam = spec.get("camera") or {}
         camera = {"points": [dict(k) for k in cam.get("points", [])], "targets": [dict(k) for k in cam.get("targets", [])]}
     camera["duration"] = round(tl.duration, 3)
+    if inter and inter.get("face") == "player" and camera["points"]:
+        # Le donneur de la quête se tourne vers le joueur qui lui parle (comportement du client, pas
+        # une donnée) : le joueur est au point de vue de la scène.
+        spawns["interlocutor"]["yaw"] = face_yaw(inter["p"], camera["points"][0]["p"])
     actors: dict[str, dict] = {}
     for script, sp in spawns.items():
         if sp["mob"] is None:            # repère nu : place d'une invocation ou but d'une marche
@@ -1550,6 +1591,55 @@ def gameview_script(db: PackDB, script: int | None, anim_names: dict) -> dict[st
     return out
 
 
+def stele_components(db: PackDB, cat, vot: int, ident: str, actions: list[dict], horizon: float, anim_names: dict,
+                     report: list[str]) -> list[dict]:
+    """Composants du modèle d'une stèle, posés comme effets accrochés à elle (`attach`) : un
+    `StateComponent` est montré pendant les actions dont l'animation est l'une des siennes (jusqu'à
+    la fin de la scène s'il ne s'arrête pas à l'animation suivante, `stopForOtherAnimation` faux),
+    un composant simple tout le temps. Le navire kanien `League_Ship_Final` n'est que cela : son
+    modèle `KaniaShip` est une boîte invisible, sa coque (`KaniaShip_Clear`, puis `KaniaShip_Break`
+    en flammes) et le Спрутоглав qui l'enserre sont des composants d'état."""
+    rev = {v: k for k, v in db.ids.items()}
+    out = []
+    for comp in read_visobject(db, cat, vot).components:
+        if comp.visobject is None or comp.cancelled:
+            continue
+        if comp.visobject not in rev:
+            report.append(f"{ident} : composant {read_visobject(db, cat, comp.visobject).name} sans identifiant, non posé")
+            continue
+        if comp.state_ids is None:
+            windows = [(-1e5, horizon)]
+        else:
+            wanted = {anim_names.get(i, "").lower() for i in comp.state_ids}
+            spans = sorted((act["t"], act["until"] if comp.stop_other else horizon) for act in actions
+                           if act["clips"] and act["clips"][0].lower() in wanted)
+            merged: list[list[float]] = []
+            for t0, t1 in spans:
+                if merged and t0 <= merged[-1][1] + 1e-6:
+                    merged[-1][1] = max(merged[-1][1], t1)
+                else:
+                    merged.append([t0, t1])
+            windows = [(a, b) for a, b in merged]
+        x, y, z, w = comp.rotation
+        if abs(x) > 1e-4 or abs(y) > 1e-4:
+            report.append(f"{ident} : composant incliné, seul son lacet est repris")
+        yaw = 2 * math.atan2(z, w)
+        for t0, t1 in windows:
+            if t1 <= t0:
+                continue
+            kind = "StateComponent" if comp.state_ids is not None else "AttachedVisObjectComponent"
+            item = {"vot": rev[comp.visobject], "attach": ident, "t": round(t0, 3), "until": round(t1, 3),
+                    "_source": f"{kind} {comp.locator or '-'}"}
+            if any(abs(v) > 1e-6 for v in comp.offset):
+                item["p"] = [round(float(v), 4) for v in comp.offset]
+            if abs(yaw) > 1e-5:
+                item["yaw"] = round(yaw, 5)
+            if abs(comp.scale - 1) > 1e-6 and comp.scale > 0:
+                item["scale"] = round(comp.scale, 5)
+            out.append(item)
+    return out
+
+
 def state_windows(initial: int, changes: list[dict], horizon: float) -> list[tuple[float, float, int]]:
     """Fenêtres `(début, fin, état)` d'une stèle : état initial (celui que lui a laissé le tutoriel,
     donné par le manifeste) puis ses `ImpactSetVisualState`, 1 = premier état du script."""
@@ -1721,7 +1811,10 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
         actors.append({"id": ident, "mob_offset": None, "visual": None, "vot": vot, "path": [{"t": 0, "p": sp["p"],
                        "yaw": round(sp["yaw"], 5)}], "animations": sorted(clips), "clips_wanted": sorted(clips),
                        "actions": actions, "idle": None, "name": {}})
-        report.append(f"{spec['id']} : stèle {script} → modèle {rev.get(vot)}, états {windows}")
+        parts = stele_components(db, cat, vot, ident, actions, horizon, anim_names, report)
+        scene_fx.extend(parts)
+        report.append(f"{spec['id']} : stèle {script} → modèle {rev.get(vot)}, états {windows}, "
+                      f"{len(parts)} composant(s) posé(s)")
     # Explosions posées aux repères (`CreatureFixedPointProjectileAction`, à l'arrivée du projectile).
     fx = []
     for item in tl.fx:
@@ -1740,6 +1833,7 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
         fx.append({"vot": rev[vot], "p": end["p"], "t": round(item["t"] + item["throw"], 3), "until": None,
                    "_source": item["clientdata"]})
     plan["spawns"] = fx + scene_fx
+    plan["doors"] = list(tl.doors)
     plan["sounds"]["sfx"] = [{"event": s["name"], "t": s["t"]} for s in tl.sfx]
     # Fenêtre : du premier plan de caméra à la fin de la scène.
     t0 = min((k["t"] for k in plan["camera"]["points"]), default=0.0)
@@ -1765,12 +1859,24 @@ def shift_plan(plan: dict, t0: float, report: list[str], ident: str) -> None:
             actor["presence"] = [[round(a - t0, 3), round(b - t0, 3)] for a, b in actor["presence"]]
     # PNJ qui ne sont plus là quand la scène commence (retirés avant le premier plan).
     plan["actors"] = [a for a in plan["actors"] if not a.get("presence") or any(b > 0 for _, b in a["presence"])]
-    plan["spawns"] = [{**s, "t": round(s["t"] - t0, 3)} for s in plan.get("spawns", []) if s["t"] >= t0]
+    # Effets encore là au premier plan (composants d'état d'une stèle, posés avant la scène) : gardés.
+    plan["spawns"] = [{**s, "t": round(s["t"] - t0, 3), **({"until": round(s["until"] - t0, 3)} if s.get("until") is not None else {})}
+                      for s in plan.get("spawns", []) if s["t"] >= t0 or (s.get("until") is not None and s["until"] > t0)]
+    plan["doors"] = [{**d, "t": round(d["t"] - t0, 3)} for d in plan.get("doors", [])]
     for key, items in plan["sounds"].items():
         plan["sounds"][key] = [{**s, "t": round(s["t"] - t0, 3), **({"until": round(s["until"] - t0, 3)} if "until" in s else {})}
                                for s in items if s.get("until", s["t"] + 30) > t0]
     plan["post"] = [{**p, "t": round(p["t"] - t0, 3), "until": round(p["until"] - t0, 3)} for p in plan["post"] if p["until"] > t0]
     plan["sources"]["window"] = [t0, round(t0 + cam["duration"], 3)]
+
+
+def move_clip(move: str | None, animations: dict) -> str | None:
+    """Clip de déplacement : la marche, ou la course d'un modèle qui n'a pas de marche (le
+    Спрутоглав, `AstralCtulhu` : `Run` sans `Walk`, qui se déplace à sa `walkSpeed` de 8 m/s) ;
+    choix documenté : le client choisit l'allure, les données ne disent pas laquelle il montre."""
+    if move == "Walk" and "Walk" not in animations and "Run" in animations:
+        return "Run"
+    return move
 
 
 def actor_model_key(actor: dict) -> int:
@@ -2110,6 +2216,14 @@ def scene_light(spec: dict, plan: dict, mp: PackDB, cat, root: Path, report: lis
         light = read_zone_light(mp, off) if off is not None else {}
         if not light:
             report.append(f"{spec['id']} : ZoneLights {spec['zone_lights']} illisible")
+    if spec.get("sky") is not None:
+        # Ciel désigné par le manifeste (`SkyMesh` de `pack.bin`) : celui de la zone dans l'arbre 7.0,
+        # quand le 17.0 ne relie plus le lieu à un éclairage (pont du navire de l'Empire).
+        off = pack_offset(mp, spec["sky"])
+        if off is not None and mp.vtype(off) == "SkyMesh":
+            light = {**light, "sky": off, "skyGeometry": None}
+        else:
+            report.append(f"{spec['id']} : SkyMesh {spec['sky']} introuvable")
     if plan["weather"]:
         light = weather_light(plan["weather"], light)
         if plan["weather"].get("sky"):
@@ -2135,7 +2249,9 @@ def build_map(map_name: str, specs: list[dict], plans: dict[str, dict], db: Pack
     textures = TexturePool(mp, cat, bins, map_dir, jpeg=True)
     particles = ParticlePool(mp, cat, bins, map_dir)
     areas = [scene_area(s, plans[s["id"]]) for s in specs]
-    decor = build_decor(mp, cat, bins, textures, particles, map_name, areas, report)
+    from tools import cutscene_xdb70 as x70
+    doors = x70.map_doors(root, map_name) if root is not None and (Path(root) / "Maps" / map_name).is_dir() else []
+    decor = build_decor(mp, cat, bins, textures, particles, map_name, areas, report, doors)
     (map_dir / "decor.glb").write_bytes(decor["glb"])
     terrain_glb, ground = build_terrain(mp, cat, bins, textures, areas, report, map_dir / "terrain-light.png")
     decor["terrain"] = terrain_glb is not None
@@ -2203,7 +2319,9 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         for actor in plans[s_id]["actors"]:
             clips_of.setdefault(actor_model_key(actor), set()).update(
                 set(actor.get("animations", [])) | {actor.get("idle") or "Idle", "Idle01", "Idle"} |
-                set(actor.get("clips_wanted", [])) | ({actor["move"]} if actor.get("move") else set()))
+                set(actor.get("clips_wanted", [])) | ({actor["move"]} if actor.get("move") else set()) |
+                # modèle sans marche (le Спрутоглав) : sa course, voir `move_clip`
+                ({"Run"} if actor.get("move") == "Walk" else set()))
     built: dict = {}
     for spec in selected:
         plan = plans[spec["id"]]
@@ -2220,7 +2338,9 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         camera["fov"] = spec.get("fov", 45)
         decor = ctx["decor"]
         center, radius = scene_area(spec, plan)
-        instances, light_blob = light_decor(decor, light, center, radius)
+        doors = ({k: v == "open" for k, v in spec.get("doors", {}).items() if not k.startswith("_")},
+                 plan.get("doors", []))
+        instances, light_blob = light_decor(decor, light, center, radius, doors)
         (out / "decor-light.bin").write_bytes(light_blob)
         solids = decor["solids"]
 
@@ -2262,6 +2382,7 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                 (shared / "actors" / f"{key}.glb").write_bytes(data)
                 built[key] = json.loads(json.dumps(meta))
             idle = actor.get("idle") or next((c for c in ("Idle01", "Idle") if c in meta["animations"]), None)
+            move = move_clip(actor.get("move"), meta["animations"])
             ground = bool(actor.get("ground"))
             path = []
             for key in actor["path"]:
@@ -2275,12 +2396,13 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
                     entry["yaw"] = key["yaw"]
                 path.append(entry)
             name_idx = meta.pop("name_index")
+            visual_scale = meta.pop("visual_scale", 1.0)
             name = {"ru": clean_text(texts.main.texts["ru"][name_idx]), "en": clean_text(texts.main.texts["en"][name_idx])} \
                 if name_idx is not None else actor.get("name", {})
             actors_meta.append({"id": actor["id"], "glb": glb,
                                 "name": name,
-                                "path": path, "scale": actor.get("scale", 1.0), "idle": idle,
-                                "talk": actor.get("talk"), "move": actor.get("move"), "appear": actor.get("appear", 0.0),
+                                "path": path, "scale": round(actor.get("scale", 1.0) * visual_scale, 4), "idle": idle,
+                                "talk": actor.get("talk"), "move": move, "appear": actor.get("appear", 0.0),
                                 **({"presence": actor["presence"]} if actor.get("presence") else {}),
                                 **({"actions": sorted(actor["actions"], key=lambda a: a["t"])} if actor.get("actions") else {}),
                                 "light": light_at(path[0]["p"], decor["pointLights"], light), **meta})
