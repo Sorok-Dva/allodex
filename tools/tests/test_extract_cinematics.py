@@ -230,10 +230,14 @@ def test_manifest_ids_are_unique_and_factions_valid(manifest):
     assert all(c["arc"] in manifest["arcs"] and c["source"] in manifest["sources"] for c in manifest["cinematics"])
 
 
-def test_manifest_gives_each_faction_its_own_prologue_first(manifest):
+def test_manifest_opens_each_film_with_its_start_zone_then_its_prologue(manifest):
+    # Choix de l'utilisateur : la zone de départ de la faction ouvre le film, le prologue (16.0)
+    # vient juste après sa fin.
     for faction in ("league", "empire"):
         film = sorted((c for c in manifest["cinematics"] if c["faction"] in (faction, "common")), key=lambda c: c["order"])
-        assert film[0]["faction"] == faction and film[0]["arc"] == "prologue"
+        arcs = list(dict.fromkeys(c["arc"] for c in film))
+        assert arcs[:2] == [f"{faction}-start", "prologue"]
+        assert all(c["faction"] == faction for c in film if c["arc"] in (f"{faction}-start", "prologue"))
         orders = [c["order"] for c in film]
         assert len(orders) == len(set(orders)), "deux cinématiques d'un même film à la même place"
 

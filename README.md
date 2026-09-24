@@ -203,7 +203,7 @@ des chapitres vidéo (même barre, mêmes raccourcis, sous-titres FR/EN/RU, voix
 | Zone de départ de la Ligue · « La mort du Grand Mage » (`league-klement-death`, zone `PaladinQuest`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 43 s |
 | Zone de départ de la Ligue · « L’évacuation » (`league-evacuation`, quête `Quest_4_30`) | serveur 7.0 (déclencheur) | `Inst_LeagueStart` | 81 s |
 
-**Zone de départ de l’Empire** (arc `empire-start`, juste après le prologue de l’Empire) : dans le
+**Zone de départ de l’Empire** (arc `empire-start`, en tête du film de l’Empire ; le prologue de l’Empire vient juste après sa fin, choix de l’utilisateur) : dans le
 17.0, les trois races de l’Empire (Xadaganiens, Orcs, Arisen) commencent au même tutoriel,
 `Inst_EmpireStart` (navire astral attaqué par la Ligue), qui sort vers `Hadagan_Sanatorium` (Igsh,
 d’après l’`ImpactTeleport` du 7.0) ; Pridiens et Aoidoi, factions à part à la création
@@ -257,7 +257,7 @@ autres cartes (`Ferris4`, `ZC12`, `Eden`…), leurs voisins de ressource désign
 Isa, Eden) : aucune scène attribuable, rien n’est monté. `AstralHangarHadagan` et `Inst_Empire1End`
 n’ont que des `Tour` (trajet du navire à la sortie du hangar, avec son son) : du transport, pas une scène.
 
-**Zone de départ de la Ligue** (arc `league-start`, juste après le prologue de la Ligue) : Kanians,
+**Zone de départ de la Ligue** (arc `league-start`, en tête du film de la Ligue ; le prologue de la Ligue vient juste après sa fin) : Kanians,
 elfes et gibberlings commencent au même tutoriel, `Inst_LeagueStart` (la tour du Grand Mage Klement
 attaquée par les démons ; `CharacterType` de la Ligue du 7.0 : `LeagueStartOrdinary`, voix
 enregistrées au 4.0.3, `patch403`), qui sort vers Novograd (quête « Дорога в Новоград »). Le client

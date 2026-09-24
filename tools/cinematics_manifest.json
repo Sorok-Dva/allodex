@@ -1,13 +1,6 @@
 {
  "_note": "Cinématiques précalculées du client Allods Online, pour la page /cinematics (tools/extract_cinematics.py). `sources` : clients lus (le dernier client 17.0 par défaut ; `warp` pour les vidéos retirées ; `fr` pour les sous-titres français officiels). `cinematics` : une entrée par vidéo ; `entry` = chemin dans Video.pak, `event` = groupe/événement du registre vidéo compilé du client, `faction` = league | empire | common, `order` = clé de chronologie (le film d’une faction = ses entrées + les communes, triées par `order`), `chronology` = justification de la place. `title` est éditorial : le jeu ne nomme pas ses vidéos. `subtitles.lines[].ru` = début (normalisé) du texte russe d’un sous-titre officiel, cherché parmi les éléments UISubtitleShow du pack.bin ; l’ordre des lignes est celui de la voix. `subtitles.fr_anchor` = début du texte français de la première ligne dans le client FR. Les instants d’apparition ne sont pas dans les données décodées : voir tools/cinematics_sync.json. `bonus: true` = chapitre bonus, joué après la fin du film et que l’on peut passer.",
  "arcs": {
-  "prologue": {
-   "title": {
-    "fr": "Prologue de faction",
-    "en": "Faction prologue"
-   },
-   "version": "16.0"
-  },
   "league-start": {
    "title": {
     "fr": "La zone de départ de la Ligue",
@@ -21,6 +14,13 @@
     "en": "The Empire starting zone"
    },
    "version": "7.0"
+  },
+  "prologue": {
+   "title": {
+    "fr": "Prologue de faction",
+    "en": "Faction prologue"
+   },
+   "version": "16.0"
   },
   "ferris": {
    "title": {
@@ -150,12 +150,12 @@
    "arc": "prologue",
    "version": "16.0",
    "faction": "league",
-   "order": 100,
+   "order": 149,
    "title": {
     "fr": "Prologue de la Ligue",
     "en": "League prologue"
    },
-   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de la Ligue ; placée en tête du film.",
+   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction de la Ligue ; placée juste après la zone de départ de la Ligue (arc league-start), qui ouvre le film (ordre choisi par l’utilisateur).",
    "subtitles": {
     "fr_anchor": "allez sur le",
     "lines": [
@@ -212,12 +212,12 @@
    "arc": "prologue",
    "version": "16.0",
    "faction": "empire",
-   "order": 100,
+   "order": 149,
    "title": {
     "fr": "Prologue de l’Empire",
     "en": "Empire prologue"
    },
-   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de l’Empire ; placée en tête du film.",
+   "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction de l’Empire ; placée juste après la zone de départ de l’Empire (arc empire-start), qui ouvre le film (ordre choisi par l’utilisateur).",
    "subtitles": {
     "fr_anchor": "qu avez vous",
     "lines": [
@@ -261,7 +261,7 @@
     "fr": "Au poste de commandement",
     "en": "At the command post"
    },
-   "chronology": "Tutoriel de l’Empire (Inst_EmpireStart, voix « patch403 ») : zone ComanadPost, entre les quêtes des canons (« Пострелять из корабельной пушки ») et « Реакторная », dont elle fait le capitaine donneur ; première scène doublée à plusieurs voix du tutoriel, après le prologue de l’Empire.",
+   "chronology": "Tutoriel de l’Empire (Inst_EmpireStart, voix « patch403 ») : zone ComanadPost, entre les quêtes des canons (« Пострелять из корабельной пушки ») et « Реакторная », dont elle fait le capitaine donneur ; première scène doublée à plusieurs voix du tutoriel ; ouvre le film de l’Empire.",
    "audio": {
     "language": "ru"
    }
@@ -333,7 +333,7 @@
     "fr": "L’abordage",
     "en": "Boarding the enemy ship"
    },
-   "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; juste après le prologue de l’Empire. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
+   "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; après la montée sur le pont. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
    "audio": {
     "language": "ru"
    }
