@@ -114,6 +114,8 @@ class Timeline:
     shakes: list[dict] = field(default_factory=list)
     teleports: list[dict] = field(default_factory=list)
     flags: list[dict] = field(default_factory=list)
+    # Tables d'apparition posées par le déroulé (`SpawnTableObjects`, retirées par `ResetSpawnTable`).
+    tables: list[dict] = field(default_factory=list)
 
 
 def read_client_data(tree: Tree, path: Path) -> dict:
@@ -123,7 +125,10 @@ def read_client_data(tree: Tree, path: Path) -> dict:
     out = {"clientdata": tree.rel(path), "ru": "", "delay_ms": 0, "voice": None, "animations": []}
     if doc is None:
         return out
-    for data in doc.iter("customData"):
+    for data in doc.iter():
+        # `customData` seul, ou élément d'une `CustomClientDataList` (bulle + message + animation)
+        if data.tag not in ("customData", "Item"):
+            continue
         if (data.get("type") or "").endswith("InterfaceAction") and data.findtext("sysId") == "ENUM_SHOW_BUBBLE":
             href = data.find("text")
             if href is not None and href.get("href"):
@@ -156,6 +161,15 @@ def read_client_data(tree: Tree, path: Path) -> dict:
                              "theGe": _f(action, "theGe"), "throw": _f(line, "throwDuration") / 1000.0,
                              "end": int(_f(line, "endPointIndex"))}
         out["voice"] = None
+    elif kind == "CreatureChannelDirectAction":
+        # Rayon canalisé : gabarit (`channelingFx`), départ (locator de la créature), nom de l'action
+        # (`visActionID`, qu'un `VisActionStopAction` arrête).
+        fx, start = action.find("channelingFx"), action.find("startPoint")
+        out["channel"] = {"fx": tree.rel(tree.resolve(path, fx.get("href"))) if fx is not None and fx.get("href") else None,
+                          "locator": start.findtext("locator") if start is not None else None,
+                          "id": action.findtext("visActionID")}
+    elif kind == "VisActionStopAction":
+        out["stop"] = action.findtext("stoppedActionID")
     elif kind == "ShakeAction":
         # Secousse de caméra : `CameraShakeParameters` (rayons, échelles) et sa courbe
         # `AnimatedParameters.cameraTranslate` (décalages x, y, z à `fps` images par seconde).
@@ -309,6 +323,18 @@ class Simulator:
                 path = self.tree.resolve(base, msg.get("href"))
                 self.tl.chats.append({"t": round(t, 3), "speaker": target, "message": self.tree.rel(path),
                                       "ru": clean(_text(self.tree.resolve(path, href)))})
+        elif self.extended and kind in ("SpawnTableObjects", "ResetSpawnTable"):
+            # Table d'apparition posée (stèle d'effet : mur magique) puis retirée.
+            href = node.find("table")
+            if href is not None and href.get("href"):
+                rel = self.tree.rel(self.tree.resolve(base, href.get("href")))
+                if kind == "SpawnTableObjects":
+                    self.tl.tables.append({"t": round(t, 3), "table": rel, "until": None})
+                    self.tl.scripts.add("table:" + rel)
+                else:
+                    for item in self.tl.tables:
+                        if item["table"] == rel and item["until"] is None and item["t"] <= t:
+                            item["until"] = round(t, 3)
         elif kind == "ImpactSummon":
             self.summon(base, node, t)
         elif kind == "ImpactFindSpawnTable":
@@ -396,10 +422,16 @@ class Simulator:
                 if self.extended and line.get("sound"):
                     self.tl.sfx.append({"t": round(t, 3), "clientdata": line["clientdata"], **line["sound"]})
                     return
+                if self.extended and line.get("stop"):
+                    # `VisActionStopAction` : arrête le rayon (ou l'action) nommé, lancé plus tôt.
+                    for item in self.tl.fx:
+                        if item.get("channel") and item["channel"].get("id") == line["stop"] and item.get("until") is None:
+                            item["until"] = round(t, 3)
+                    return
                 if self.extended and line.get("kind") == "CreatureChannelDirectAction":
-                    # Rayon canalisé d'un PNJ vers un repère (non rendu) : le PNJ est en scène.
+                    # Rayon canalisé d'un PNJ vers un repère : le PNJ est en scène.
                     self.tl.fx.append({"t": round(t, 3), "clientdata": line["clientdata"], "locators": locators,
-                                       "owner": target, "channel": True})
+                                       "owner": target, "channel": line.get("channel") or {}, "until": None})
                     if target != "player":
                         self.tl.scripts.add(target)
                     return
@@ -737,6 +769,59 @@ def find_spawns(root: Path, map_name: str, scripts: set[str]) -> dict[str, dict]
                            "mob": tree.rel(tree.resolve(path, device.get("href"))), "name": "", "visual": None,
                            "static": tree.rel(tree.resolve(path, tpl.get("href"))) if tpl is not None and tpl.get("href") else None,
                            "file": tree.rel(path)}
+    return out
+
+
+def flag_devices(root: Path, map_name: str, flags: set[str]) -> list[dict]:
+    """Stèles du décor (`StaticDevice` d'un `MapRegion`, avec ou sans `scriptID`) dont le script visuel
+    lit l'un des drapeaux `flags` (`DeviceIfFlagVisAction`, posé sur le joueur par le déroulé : le
+    cinéma pridien) : place, lacet, échelle, gabarit statique, et animation jouée par drapeau."""
+    tree = Tree(Path(root))
+    out: list[dict] = []
+    if not flags:
+        return out
+    cache: dict[Path, list[dict]] = {}
+    for path in sorted((tree.root / "Maps" / map_name).glob("*/*_MapRegion.xdb")):
+        raw = path.read_bytes()
+        if b"StaticDevice" not in raw:
+            continue
+        doc = _read(path)
+        m = re.search(r"/(\d+)_(\d+)/(\d+)_(\d+)_MapRegion", tree.rel(path))
+        if doc is None or not m:
+            continue
+        bx, by, i, j = (int(g) for g in m.groups())
+        for item in doc.iter("Item"):
+            static = item.find("serverStatic")
+            device = static.find("device") if static is not None else None
+            if device is None or not device.get("href"):
+                continue
+            stele = tree.resolve(path, device.get("href"))
+            if stele not in cache:
+                cache[stele] = []
+                sdoc = _read(stele)
+                vis = sdoc.find("visScripts") if sdoc is not None else None
+                vpath = tree.resolve(stele, vis.get("href")) if vis is not None and vis.get("href") else None
+                vdoc = _read(vpath) if vpath is not None else None
+                for branch in (vdoc.iter() if vdoc is not None else []):
+                    if not (branch.get("type") or "").endswith("DeviceIfFlagVisAction"):
+                        continue
+                    flag, loop = branch.find("visualFlag"), branch.find("visScriptLoop")
+                    if flag is None or not flag.get("href") or loop is None:
+                        continue
+                    cache[stele].append({"flag": tree.rel(tree.resolve(vpath, flag.get("href"))),
+                                         "clips": [a.text for a in loop.findall("animations/Item") if a.text],
+                                         "mode": loop.findtext("mode") or "DIE"})
+            branches = [b for b in cache[stele] if b["flag"] in flags]
+            if not branches:
+                continue
+            pos, rot, scale = item.find("Position"), item.find("Rotation"), item.find("Scale")
+            tpl = item.find("StaticObjectTemplate")
+            out.append({"p": [float(pos.get("X", 0)) + (bx + i) * REGION_SIZE, float(pos.get("Y", 0)) + (by + j) * REGION_SIZE,
+                              float(pos.get("Z", 0))],
+                        "yaw": float(rot.get("Yaw", 0)) if rot is not None else 0.0,
+                        "scale": float(scale.get("Ratio", 1)) if scale is not None else 1.0,
+                        "mob": tree.rel(stele), "static": tree.rel(tree.resolve(path, tpl.get("href"))) if tpl is not None else None,
+                        "branches": branches, "file": tree.rel(path)})
     return out
 
 
