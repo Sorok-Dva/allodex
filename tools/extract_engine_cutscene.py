@@ -199,14 +199,18 @@ def ground_z(solids: np.ndarray, x: float, y: float, below: float) -> float | No
 
 def build_decor(mp: PackDB, cat, bins, textures: TexturePool, particles: ParticlePool, map_name: str,
                 areas: list[tuple[list[float] | None, float]], report: list[str], extras: list[dict] | None = None,
-                doors: list[dict] | None = None) -> dict:
+                doors: list[dict] | None = None, cutout: bool = True) -> dict:
     """Décor d'une carte, **commun aux scènes qui s'y jouent** : les gabarits des objets posés dans
     l'une des zones (`areas` : centre, rayon de chaque scène) une fois chacun dans `decor.glb`, les
     instances avec ce qu'il faut pour éclairer chacune (`light_decor`, par scène : l'éclairage
     dépend du temps de la scène)."""
     # feuillages : matériaux opaques à texture alphée découpés par leur alpha (`cutout`), comme la
     # création de personnage ; sans lui, les frondaisons des cartes d'extérieur sortent en aplats
-    fx = FxBuild(Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/", cutout=True), mp, cat, bins,
+    # `cutout=False` (`"decor_cutout": false` d'une scène de la carte) : le 17.0 ne marque pas les
+    # matériaux découpés, et l'alpha d'une texture opaque y est parfois un masque (planches du pont du
+    # navire de l'Empire, `Hadagan_Inst_Board` : alpha sous 0,5 sur 80 % de la texture ; `Heraldic_Base` :
+    # alpha nul partout) ; la découpe y creuse le décor.
+    fx = FxBuild(Exporter(textures, DECOR_TEXTURE_MAX, generator=GENERATOR, texture_prefix="textures/", cutout=cutout), mp, cat, bins,
                  particles=particles, report=report)
     lightvrt = read_lightvrt(mp, map_name, lambda name, pak: bins.get(name))
     objects = read_regions(mp)
@@ -1050,6 +1054,20 @@ def place(point: list[float], solids: np.ndarray, ground: bool) -> list[float]:
     return [round(point[0], 4), round(point[1], 4), round(z if z is not None else point[2], 4)]
 
 
+def model_yaw(server: float) -> float:
+    """Lacet d'un modèle (avant −Y) posé à la place d'un `SpawnPlacePoint` des `ServerObjects` : le
+    lacet du serveur est un cap (direction de l'axe X tourné, comme celui d'une téléportation, lu au
+    centième sur la direction du Grand Mage) ; le modèle tourne de ce cap + π/2. Recoupé sur le
+    navire kanien : stèle `League_Ship_Final` à 3,26141, sa collision posée dans la région au même
+    point à 4,82951 (+1,568)."""
+    return round(server - MODEL_FORWARD, 5)
+
+
+def heading(position: list[float], face: list[float]) -> float:
+    """Cap (convention des `ServerObjects`) de `position` vers `face`."""
+    return round(math.atan2(face[1] - position[1], face[0] - position[0]), 4)
+
+
 def face_yaw(position: list[float], face: list[float]) -> float:
     return round(math.atan2(face[1] - position[1], face[0] - position[0]) - MODEL_FORWARD, 4)
 
@@ -1475,7 +1493,7 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
             there = spawns[start["locator"]]["p"]
             moved = {**spawns[script], "p": there}
             if start.get("yaw") == "walk":
-                moved["yaw"] = face_yaw(spawns[script]["p"], there)
+                moved["yaw"] = heading(spawns[script]["p"], there)
             spawns[script] = moved
     if tl.shots:
         camera = x70.camera_keys(tl.shots)
@@ -1497,10 +1515,11 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
                 track.append({"t": tp["t"], "p": [round(v, 4) for v in value]})
             report.append(f"{spec['id']} : joueur déplacé à {tp['t']} s vers {tp['locator']} (lacet {yaw}) : la vue le suit")
     camera["duration"] = round(tl.duration, 3)
-    if inter and inter.get("face") == "player" and camera["points"]:
+    player = spec.get("player") or (camera["points"][0]["p"] if camera["points"] else None)
+    if inter and inter.get("face") == "player" and player is not None:
         # Le donneur de la quête se tourne vers le joueur qui lui parle (comportement du client, pas
-        # une donnée) : le joueur est au point de vue de la scène.
-        spawns["interlocutor"]["yaw"] = face_yaw(inter["p"], camera["points"][0]["p"])
+        # une donnée) : le joueur est à la place que donne le manifeste (`"player"`), sinon au point de vue.
+        spawns["interlocutor"]["yaw"] = heading(inter["p"], player)
     actors: dict[str, dict] = {}
     for script, sp in spawns.items():
         if sp["mob"] is None:            # repère nu : place d'une invocation ou but d'une marche
@@ -1518,7 +1537,7 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
             report.append(f"{spec['id']} : PNJ introuvable dans le 17.0 : {sp['name']} ({script})")
             continue
         actors[script] = {"id": re.sub(r"[^a-z0-9]+", "-", script.lower()).strip("-"), "mob_offset": mob,
-                          "path": [{"t": 0, "p": sp["p"], "yaw": round(sp["yaw"], 5)}], "server": sp,
+                          "path": [{"t": 0, "p": sp["p"], "yaw": model_yaw(sp["yaw"])}], "server": sp,
                           **({"visual": visual, "name": {}} if visual is not None else {})}
     summoned = summon_actors(spec, tl, spawns, db, cat, texts, report)
     for key, info in summoned.items():
@@ -1937,7 +1956,7 @@ def static_device_extras(spec: dict, plan: dict, script: str, sp: dict, windows:
             if len(found) != 1:
                 report.append(f"{spec['id']} : stèle {script} : gabarit {base} {'introuvable' if not found else 'ambigu'}")
                 continue
-            if read_visobject(db, cat, found[0]).components:
+            if any(c.state_ids is None for c in read_visobject(db, cat, found[0]).components):   # hors composants d'état
                 report.append(f"{spec['id']} : stèle {script} : gabarit {base} à composants, animation d'état non jouée")
                 continue
             plan.setdefault("decor_windows", []).append({"hide": base, "p": sp["p"], "t": t0, "until": t1})
@@ -2164,7 +2183,7 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
                             "loop": st["mode"] == "LOOP", **({"hold": True} if st["mode"] == "CLAMP" else {})})
             clips.update(st["clips"])
         actors.append({"id": ident, "mob_offset": None, "visual": None, "vot": vot, "path": [{"t": 0, "p": sp["p"],
-                       "yaw": round(sp["yaw"], 5)}], "animations": sorted(clips), "clips_wanted": sorted(clips),
+                       "yaw": model_yaw(sp["yaw"])}], "animations": sorted(clips), "clips_wanted": sorted(clips),
                        "actions": actions, "idle": None, "name": {}})
         parts = stele_components(db, cat, vot, ident, actions, horizon, anim_names, report)
         scene_fx.extend(parts)
@@ -2198,7 +2217,7 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
         if len(found) != 1:
             report.append(f"{spec['id']} : stèle à drapeau {base} : gabarit {'introuvable' if not found else 'ambigu'}")
             continue
-        if read_visobject(db, cat, found[0]).components:
+        if any(c.state_ids is None for c in read_visobject(db, cat, found[0]).components):   # hors composants d'état
             # gabarit fait de composants (cinéma : écran animé + bâtiment) : l'acteur n'exporte que la
             # géométrie squelettique ; l'objet du décor reste, son animation d'état n'est pas jouée
             report.append(f"{spec['id']} : stèle à drapeau {base} : gabarit à composants, animation d'état non jouée "
@@ -2214,6 +2233,9 @@ def trigger_extras(spec: dict, plan: dict, tl, spawns: dict, root: Path, db: Pac
                     # cinéma : `idle` → Hadagan_Cinema_Priden, `special` → Hadagan_Cinema_PridenReview du
                     # 7.0) : le modèle de l'état joué est posé à la place de l'objet, le temps du drapeau
                     # (locator `Slot_Special01` pris à la racine : le gabarit de base n'a pas de squelette).
+                    # l'objet du décor montre l'état par défaut de ses composants (`FxBuild.default_state`) :
+                    # retiré le temps de l'état joué, que son modèle remplace
+                    plan.setdefault("decor_windows", []).append({"hide": base, "p": dev["p"], "t": t0, "until": t1})
                     for clip in branch["clips"]:
                         comp = states.get(clip.lower())
                         if comp is None or comp not in rev:
@@ -2660,7 +2682,8 @@ def build_map(map_name: str, specs: list[dict], plans: dict[str, dict], db: Pack
     extras = [{**w, "only": s["id"]} for s in specs for w in plans[s["id"]].get("decor_windows", []) if "show" in w]
     from tools import cutscene_xdb70 as x70
     doors = x70.map_doors(root, map_name) if root is not None and (Path(root) / "Maps" / map_name).is_dir() else []
-    decor = build_decor(mp, cat, bins, textures, particles, map_name, areas, report, extras, doors)
+    cutout = all(s.get("decor_cutout", True) for s in specs)
+    decor = build_decor(mp, cat, bins, textures, particles, map_name, areas, report, extras, doors, cutout)
     (map_dir / "decor.glb").write_bytes(decor["glb"])
     terrain_glb, ground = build_terrain(mp, cat, bins, textures, areas, report, map_dir / "terrain-light.png")
     decor["terrain"] = terrain_glb is not None

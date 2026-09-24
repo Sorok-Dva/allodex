@@ -478,6 +478,14 @@ def test_door_states_hold_the_starting_state_then_follow_the_switches():
                                                          {"t": 0.0, "vot": "Door@special01"}]
 
 
+def test_server_yaw_is_a_heading_turned_to_the_minus_y_model_axis():
+    from tools.extract_engine_cutscene import heading, model_yaw
+    # stèle League_Ship_Final (3,26141) et sa collision posée dans la région (4,82951)
+    assert abs(model_yaw(3.26141) - 4.82951) < 0.01
+    assert heading([0, 0, 0], [0, 5, 0]) == round(math.pi / 2, 4)
+    assert abs(model_yaw(heading([0, 0, 0], [3, 4, 0])) - face_yaw([0, 0, 0], [3, 4, 0])) < 1e-3
+
+
 def test_move_clip_runs_a_model_without_a_walk():
     from tools.extract_engine_cutscene import move_clip
     assert move_clip("Walk", {"Idle": 1, "Run": 1}) == "Run"
