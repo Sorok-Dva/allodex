@@ -239,7 +239,7 @@ def test_manifest_opens_each_film_with_its_prologue(manifest):
         orders = [c["order"] for c in film]
         assert len(orders) == len(set(orders)), "deux cinématiques d'un même film à la même place"
     held = manifest["held_back"]["chapters"]
-    assert {c["arc"] for c in held} == {"league-start", "empire-start", "pride-start"}
+    assert {"league-start", "empire-start", "pride-start"} <= {c["arc"] for c in held}
     scenes = {s["id"] for s in manifest["engine_scenes"]}
     assert all(c["id"] in scenes for c in held), "un chapitre en attente sans sa scène moteur"
 

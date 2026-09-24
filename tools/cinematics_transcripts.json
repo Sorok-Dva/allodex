@@ -278,6 +278,136 @@
    "rejected": [],
    "reviewed": true,
    "note": "Narrateur seul, sur la musique ; medium très sûr (confiance 0,83 à 0,91), recoupé par wav2vec2 (jonatasgrosman/wav2vec2-large-xlsr-53-russian, sans modèle de langue) : mêmes mots. Corrections : « забыв старого вражду » (entendu ainsi par les deux modèles) écrit « старую вражду » ; ponctuation, ё, « Ковчег » en capitale (le vaisseau des survivants). Noms officiels du client 17.0 (EN) et 16.0 (FR) : Вышеград = Hightown / Hauteville (« Red Hightown wine », « Vin rouge de Hauteville ») ; « на краю мира » = Horizon, comme dans la prophétie de la Ligue (« find a new home in Horizon », « nouvelle maison à Horizon ») ; Ковчег = the Ark / l'Arche ; эра Аллодов = the Allods Era / l'Ère des allods ; астрал = the Astral / l'Astral ; отступник = renegade / renégat."
+  },
+  "raid72-boss-death": {
+   "audio": "raid72-boss-death",
+   "model": "faster-whisper large-v3/medium/small, int8, voix isolée par Demucs (htdemucs) ; 0-12 s : medium sans VAD",
+   "rejected": [],
+   "reviewed": true,
+   "note": "Deux répliques russes sous la musique, déclarées à tort « sans voix » ; aucun sous-titre officiel dans le client (textes 17.0 et 16.0 FR parcourus). La première est une incantation, gardée telle quelle (translittérée), sans traduction ; le reste de la bande (12-61 s) n'est que musique et effets (Whisper y hallucine « ДИНАМИЧНАЯ МУЗЫКА », « Редактор субтитров… »). « прав » (confiance 0,17) lu « прах », seule lecture qui ait du sens avec « Скорее в портал ». Seconde passe (24/09) : la voix isolée par Demucs a deux autres passages, 26,3-28,5 s et 32,1-35,0 s (détection de silence), que les trois modèles entendent comme des mots magiques, sans accord entre eux : transcrits en translittération, sans traduction, et marqués douteux. « Скорее в портал! » (9,9-11,5 s), entendu par medium sur le mixage, n'est pas redonné par large-v3 sur la voix isolée : gardé.",
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 3.9,
+     "ru": "Интермундос эпортос авериат!",
+     "en": "Intermundos eportos averiat!",
+     "fr": "Intermundos eportos averiat !",
+     "whisper": "Интер-мунда-сэ-порта-сэ-вэ-ри-а-т!",
+     "confidence": 0.57,
+     "word_min": 0.3,
+     "doubtful": true
+    },
+    {
+     "start": 7.36,
+     "end": 11.5,
+     "ru": "Сейчас здесь всё превратится в прах! Скорее в портал!",
+     "en": "Everything here is about to turn to dust! Quick, into the portal!",
+     "fr": "Tout ici va tomber en poussière ! Vite, dans le portail !",
+     "whisper": "Сейчас здесь все превратится в прав! Скорее в портал!",
+     "confidence": 0.57,
+     "word_min": 0.17
+    },
+    {
+     "start": 26.2,
+     "end": 28.5,
+     "ru": "Васион!",
+     "en": "Vasion!",
+     "fr": "Vasion !",
+     "whisper": "large-v3 : « Ва-си-он! » / « Господи! » ; medium : « Ва-си-я! » ; small : « Восемь! »",
+     "confidence": 0.4,
+     "word_min": 0.4,
+     "doubtful": true
+    },
+    {
+     "start": 32.1,
+     "end": 35.0,
+     "ru": "Спацио, крикитако, суверен!",
+     "en": "Spatio, krikitako, suveren!",
+     "fr": "Spatio, krikitako, suveren !",
+     "whisper": "large-v3 : « Спасио Крикитако Суверен! » ; medium : « Спаси он! Регистрато! Суверен! » ; small : « Свачьё! Трифако! Сверан! »",
+     "confidence": 0.4,
+     "word_min": 0.4,
+     "doubtful": true
+    }
+   ]
+  },
+  "warp-crypt": {
+   "audio": "warp-crypt",
+   "model": "faster-whisper large-v3/medium, int8, voix isolée par Demucs ; texte validé par un locuteur russe",
+   "rejected": [],
+   "reviewed": true,
+   "note": "Voix sous la musique (vidéo déclarée à tort « sans voix »), aucun sous-titre dans le client. Instants : voix isolée par Demucs (htdemucs) + détection de silence ; texte : Whisper large-v3/medium sans accord, puis **dicté par un locuteur russe consulté par l'utilisateur** (24/09/2026), qui fait foi. « Ты сдай » compris « rends-le / donne-le » (сдать : remettre) ; le reste du fracas n'est que cris.",
+   "lines": [
+    {
+     "start": 7.44,
+     "end": 9.47,
+     "ru": "Стой!",
+     "en": "Stop!",
+     "fr": "Arrête !",
+     "whisper": "large-v3 : « Стой! » ; mixage : « Стой! Остановись! »",
+     "confidence": null,
+     "source": "locuteur russe"
+    },
+    {
+     "start": 24.44,
+     "end": 26.97,
+     "ru": "Сейчас, Динька, руки! Бежим!",
+     "en": "Now, Dinka, your hands! Run!",
+     "fr": "Vite, Dinka, tes mains ! On s'enfuit !",
+     "whisper": "mixage : « Сейчас, Динька, руки! Бежим! » ; voix isolée : « Ты че здесь? »",
+     "confidence": null,
+     "source": "locuteur russe"
+    },
+    {
+     "start": 32.06,
+     "end": 33.33,
+     "ru": "Ты сдай!",
+     "en": "You, give it up!",
+     "fr": "Toi, rends-le !",
+     "whisper": "large-v3 : « Ты сдай! »",
+     "confidence": null,
+     "source": "locuteur russe"
+    },
+    {
+     "start": 42.37,
+     "end": 44.4,
+     "ru": "Меч!",
+     "en": "The sword!",
+     "fr": "L'épée !",
+     "whisper": "large-v3 : « Меч! »",
+     "confidence": null,
+     "source": "locuteur russe"
+    }
+   ]
+  },
+  "warp-forest-city": {
+   "audio": "warp-forest-city",
+   "model": "faster-whisper large-v3/medium, int8, voix isolée par Demucs ; texte validé par un locuteur russe",
+   "rejected": [],
+   "reviewed": true,
+   "note": "Voix sous la musique (vidéo déclarée à tort « sans voix »), aucun sous-titre dans le client. Instants : voix isolée par Demucs (htdemucs) + détection de silence ; texte : Whisper large-v3/medium sans accord, puis **dicté par un locuteur russe consulté par l'utilisateur** (24/09/2026), qui fait foi. « Мурусис » : incantation, gardée translittérée (le locuteur hésite avec « Моросись »).",
+   "lines": [
+    {
+     "start": 5.3,
+     "end": 7.0,
+     "ru": "Мурусис!",
+     "en": "Murusis!",
+     "fr": "Murusis !",
+     "whisper": "large-v3 : « Мурусис! » ; medium : « Моросись! »",
+     "confidence": null,
+     "source": "locuteur russe"
+    },
+    {
+     "start": 29.77,
+     "end": 31.08,
+     "ru": "Атакуй!",
+     "en": "Attack!",
+     "fr": "Attaque !",
+     "whisper": "mixage : « Атакуй! »",
+     "confidence": null,
+     "source": "locuteur russe"
+    }
+   ]
   }
  }
 }

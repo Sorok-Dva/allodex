@@ -920,39 +920,6 @@
    "note": "Version HD de la cinématique moteur ShipExplosion : le client en avait deux variantes (Kania / Hadagan) mais n’a qu’une vidéo et un seul événement ; le visuel et les sous-titres sont ceux de la variante Ligue (Ship_explosion_L)."
   },
   {
-   "id": "invasion-engineer-kania",
-   "arc": "invasion",
-   "version": "7.0",
-   "faction": "league",
-   "order": 225,
-   "event": "CutScene_EngineerDeathKania",
-   "title": {
-    "fr": "La mort de l’ingénieur",
-    "en": "The Engineer’s Death"
-   },
-   "chronology": "Scène moteur de l’instance de départ de l’Invasion (Inst_ZoneContested12_Start, 7.0, version de la Ligue) : l’ingénieur Luka tombe sous les coups de trois assassins colosses ; entre le navire astral et la métamorphose.",
-   "bonus": false,
-   "duration": 13.433,
-   "files": {
-    "poster": "engine/invasion-engineer-kania/poster.jpg"
-   },
-   "engine": {
-    "scene": "engine/invasion-engineer-kania/scene.json"
-   },
-   "tracks": [],
-   "subtitles": {
-    "status": "official",
-    "lines": 0,
-    "timing": "client",
-    "audio": {
-     "language": "ru"
-    }
-   },
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
    "id": "invasion-kursk-1",
    "title": {
     "fr": "La métamorphose",
@@ -1104,14 +1071,38 @@
     "mp4": "raid72-boss-death/video.mp4",
     "poster": "raid72-boss-death/poster.jpg"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français (auto)",
+     "src": "raid72-boss-death/fr.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "en",
+     "label": "English (auto)",
+     "src": "raid72-boss-death/en.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "ru",
+     "label": "Русский (авто)",
+     "src": "raid72-boss-death/ru.vtt",
+     "lines": 4
+    }
+   ],
    "audio": {
-    "language": null
+    "language": "ru"
    },
    "subtitles": {
-    "status": "none",
-    "lines": 0,
-    "timing": null
+    "audio": {
+     "language": "ru"
+    },
+    "status": "transcribed",
+    "lines": 4,
+    "timing": "transcribed",
+    "reviewed": true,
+    "model": "faster-whisper large-v3/medium/small, int8, voix isolée par Demucs (htdemucs) ; 0-12 s : medium sans VAD"
    },
    "source": {
     "client": "17.0",
@@ -1394,14 +1385,38 @@
     "mp4": "warp-crypt/video.mp4",
     "poster": "warp-crypt/poster.jpg"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français (auto)",
+     "src": "warp-crypt/fr.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "en",
+     "label": "English (auto)",
+     "src": "warp-crypt/en.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "ru",
+     "label": "Русский (авто)",
+     "src": "warp-crypt/ru.vtt",
+     "lines": 4
+    }
+   ],
    "audio": {
-    "language": null
+    "language": "ru"
    },
    "subtitles": {
-    "status": "none",
-    "lines": 0,
-    "timing": null
+    "status": "transcribed",
+    "lines": 4,
+    "timing": "transcribed",
+    "reviewed": true,
+    "model": "faster-whisper large-v3/medium, int8, voix isolée par Demucs ; texte validé par un locuteur russe",
+    "audio": {
+     "language": "ru"
+    }
    },
    "source": {
     "client": "10.0-warp",
@@ -1427,14 +1442,38 @@
     "mp4": "warp-forest-city/video.mp4",
     "poster": "warp-forest-city/poster.jpg"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français (auto)",
+     "src": "warp-forest-city/fr.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "en",
+     "label": "English (auto)",
+     "src": "warp-forest-city/en.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "ru",
+     "label": "Русский (авто)",
+     "src": "warp-forest-city/ru.vtt",
+     "lines": 2
+    }
+   ],
    "audio": {
-    "language": null
+    "language": "ru"
    },
    "subtitles": {
-    "status": "none",
-    "lines": 0,
-    "timing": null
+    "status": "transcribed",
+    "lines": 2,
+    "timing": "transcribed",
+    "reviewed": true,
+    "model": "faster-whisper large-v3/medium, int8, voix isolée par Demucs ; texte validé par un locuteur russe",
+    "audio": {
+     "language": "ru"
+    }
    },
    "source": {
     "client": "10.0-warp",
