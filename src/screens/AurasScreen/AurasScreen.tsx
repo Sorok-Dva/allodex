@@ -26,6 +26,16 @@ const PILL_SLICE: [number, number, number, number] = [0, 30, 0, 24];
 const SPEEDS = ['0.25', '0.5', '1', '2'] as const;
 type Speed = (typeof SPEEDS)[number];
 
+/**
+ * Hauteur du modèle d'une apparence (m) : haut de la boîte de son animation dans le client
+ * (`bounds` du gabarit), pour cadrer l'exosquelette entier ; 2,4 m à défaut.
+ */
+export function appearanceHeight(choice: AuraChoice | undefined): number {
+  if (choice?.kind !== 'appearance' || !choice.entry.model) return 2.4;
+  const b = choice.entry.model.objects[choice.entry.model.vot]?.bounds;
+  return b ? Math.max(1, b[2] + b[5]) : 2.4;
+}
+
 /** Ligne verte de l'infobulle de la liste : version d'apparition, date inconnue. */
 export function auraSinceLine(choice: AuraChoice, t: I18n['t']): string | undefined {
   const since = sinceParts(choice.entry.since);
@@ -57,7 +67,7 @@ export function AuraInfo({ choice, lang, auras }: { choice: AuraChoice; lang: La
       {choice.kind === 'appearance' && (
         <div className={s.infoSub}>
           {choice.entry.kind === 'mount'
-            ? `${t(isExoskeleton(choice.entry.model?.vot) ? 'auras.exoskeleton' : 'auras.mount')} — ${officialText(choice.entry.skin?.mount, lang)?.text ?? ''} ${officialText(choice.entry.skin?.name, lang)?.text ?? ''}`.trim()
+            ? `${t(isExoskeleton(choice.entry.model?.vot) ? 'auras.exoskeleton' : 'auras.mount')} — ${(officialText(choice.entry.skin?.mount, lang) ?? officialText(choice.entry.skin?.name, lang))?.text ?? ''}`
             : t('auras.costume')}
         </div>
       )}
@@ -69,7 +79,7 @@ export function AuraInfo({ choice, lang, auras }: { choice: AuraChoice; lang: La
       </div>
       <div className={s.infoDate}><span className={s.infoMuted}>{t('auras.dateUnknown')}</span></div>
       {desc && <div className={`${a.desc} ${desc.official ? '' : a.unofficial}`}>{desc.text}</div>}
-      <div className={a.obtain}>{obtain ? t('auras.obtain', { text: obtain.text }) : t('auras.obtainUnknown')}</div>
+      <div className={`${a.obtain} ${obtain && !obtain.official ? a.unofficial : ''}`}>{obtain ? t('auras.obtain', { text: obtain.text }) : t('auras.obtainUnknown')}</div>
       {choice.kind === 'aura' && choice.entry.visual === false && <div className={s.infoNote}>{t('auras.noVisual')}</div>}
       {choice.kind === 'appearance' && choice.entry.kind === 'costume' && <div className={s.infoNote}>{t('auras.costumeNote')}</div>}
       {(items.length > 0 || given.length > 0) && (
@@ -235,7 +245,7 @@ export function AurasScreen() {
             sceneUrl={sceneUrl}
             environment={scene?.environment ?? null}
             orbitMax={scene?.site?.orbit ?? null}
-            height={appearance ? Math.max(height, 2.4) : height}
+            height={appearance ? appearanceHeight(choice) : height}
             playing={playing}
             speed={Number(speed)}
             showFx={showFx}

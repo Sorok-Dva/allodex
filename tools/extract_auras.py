@@ -575,8 +575,12 @@ def appearance_bundles(latest: Client, fr: Client | None, records: list[AuraReco
             else:
                 entry["kind"] = "costume"
                 entry["costume"] = [plain_texts(texts_of(latest, fr, c, ITEM_NAME)) for c in costumes]
-            obtain = {}
-            for lang in ("ru", "en", "fr"):
+            # Obtention : source de la peau (`MountSkin +0x80`, « Лавка Редкостей »), sinon celle de
+            # l'aura dont le lot est l'objet (costumes des auras de Hickut et de Quator), sinon la
+            # phrase d'obtention de la description du lot.
+            own = next((e for e in auras if e["id"] in by_item.get(cont, [])), None)
+            obtain = dict(entry.get("skin", {}).get("source") or {}) or (dict(own["obtain"]) if own else {})
+            for lang in ("ru", "en", "fr") if not obtain else ():
                 client = fr if lang == "fr" else latest
                 o = (fr.by_key.get(latest.keys.get(cont)) if lang == "fr" and fr else cont)
                 if client is None or o is None:
