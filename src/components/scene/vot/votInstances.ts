@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { applySoftGeometry, SoftMaskCache } from '@/components/scene/FatalityViewer/softGeometry';
 import { ParticleSystemView, type ParticleAtlasMeta, type ParticleFile, type ParticleSystemMeta } from '@/components/scene/FatalityViewer/particles';
-import { objectClipTime, type FatalityObject } from '@/components/scene/FatalityViewer/timeline';
+import { elementAlphaAt, objectClipTime, type FatalityObject } from '@/components/scene/FatalityViewer/timeline';
 
 /**
  * Gabarits d'objets visuels du jeu (`VisObjectTemplate`) exportés par `tools/allods_fx.py`
@@ -14,7 +14,13 @@ import { objectClipTime, type FatalityObject } from '@/components/scene/Fatality
 /** Seuil de découpe des feuillages (textures opaques à trous). */
 export const CUTOUT_ALPHA = 0.5;
 
-export type Tinted = { material: THREE.Material & { opacity: number }; base: number; transparent: boolean };
+/** Matériau d'une instance : opacité de base, mélange d'origine, facteur de son élément (`element`). */
+export type Tinted = { material: THREE.Material & { opacity: number }; base: number; transparent: boolean; element?: number };
+/**
+ * Élément de géométrie à piste de transparence (`elementAlpha` du gabarit) : ses maillages,
+ * leurs matériaux et ses clés, lues au temps du clip de son gabarit.
+ */
+export type ElementFade = { meshes: THREE.Object3D[]; records: Tinted[]; keys: number[]; offset: number; duration: number; loop: boolean };
 export type Scrolling = { texture: THREE.Texture; speed: [number, number] };
 export type Gate = [number, number | null];
 /**
@@ -51,6 +57,8 @@ export type VotInstance = {
   particles: { view: ParticleSystemView; offset: number; part?: VotPart }[];
   /** Vies propres des gabarits (option `lifetimes` de la fabrique), racine en tête ; sinon vide. */
   parts: VotPart[];
+  /** Éléments dont le clip anime la transparence. */
+  elementFades: ElementFade[];
 };
 
 /**
@@ -204,7 +212,7 @@ export class VotFactory {
   instantiate(proto: THREE.Object3D, clips: THREE.AnimationClip[], start: number, lifeTime: number, fadeIn: number, fadeOut: number): VotInstance {
     const root = cloneSkinned(proto);
     const mixer = new THREE.AnimationMixer(root);
-    const inst: VotInstance = { root, mixer, clips: [], start, lifeTime, fadeIn, fadeOut, tinted: [], scrolling: [], billboards: [], particles: [], gated: [], parts: [] };
+    const inst: VotInstance = { root, mixer, clips: [], start, lifeTime, fadeIn, fadeOut, tinted: [], scrolling: [], billboards: [], particles: [], gated: [], parts: [], elementFades: [] };
     const withParticles: [THREE.Object3D, ParticleSystemMeta][] = [];
     const { objects } = this.opts;
     root.traverse(node => {
@@ -227,6 +235,7 @@ export class VotFactory {
       if (system && typeof system === 'object') withParticles.push([node, system]);
     });
     this.prepare(root, false, inst.tinted, inst.scrolling, this.opts.baseUrl);
+    buildElementFades(inst, objects);
     const partOf = this.opts.lifetimes ? buildParts(inst, objects) : null;
     if (this.atlasTexture && this.particleAtlas) {
       for (const [node, system] of withParticles) {
@@ -293,6 +302,40 @@ function buildParts(inst: VotInstance, objects: Record<string, FatalityObject>):
   return nearest;
 }
 
+/**
+ * Pistes de transparence des éléments : chaque maillage revient au gabarit le plus proche qui le
+ * porte (`userData.vot`) ; son élément (`geometry.userData.element`) y cherche ses clés.
+ */
+function buildElementFades(inst: VotInstance, objects: Record<string, FatalityObject>): void {
+  const { root } = inst;
+  const records = new Map(inst.tinted.map(t => [t.material as THREE.Material, t]));
+  const byKey = new Map<string, ElementFade>();
+  root.traverse(node => {
+    const mesh = node as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    const element = String((mesh.geometry.userData as { element?: string }).element ?? '');
+    if (!element) return;
+    let owner: THREE.Object3D | null = mesh;
+    while (owner && owner !== root.parent && !(owner.userData as { vot?: string }).vot) owner = owner.parent;
+    const vot = owner ? (owner.userData as { vot?: string }).vot : undefined;
+    const info = vot ? objects[vot] : undefined;
+    const keys = info?.elementAlpha?.[element];
+    if (!owner || !info || !keys) return;
+    const key = `${owner.uuid}/${element}`;
+    let fade = byKey.get(key);
+    if (!fade) {
+      fade = { meshes: [], records: [], keys, offset: windowOffset(owner, root), duration: info.duration, loop: !!info.loop };
+      byKey.set(key, fade);
+      inst.elementFades.push(fade);
+    }
+    fade.meshes.push(mesh);
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      const record = records.get(material);
+      if (record) fade.records.push(record);
+    }
+  });
+}
+
 /** Pose une instance au temps `local` de sa vie, avec son opacité `fade` (0 = masquée). */
 export function updateInstance(inst: VotInstance, local: number, fade: number, camera: THREE.Camera): void {
   for (const part of inst.parts) {
@@ -304,10 +347,20 @@ export function updateInstance(inst: VotInstance, local: number, fade: number, c
   for (const gate of inst.gated) gate.node.visible = local >= gate.start && (gate.stop === null || local < gate.stop);
   for (const clip of inst.clips) clip.action.time = objectClipTime(Math.max(0, local - clip.offset), clip.duration, clip.loop);
   inst.mixer.update(0);
+  for (const element of inst.elementFades) {
+    const a = elementAlphaAt(element.keys, objectClipTime(Math.max(0, local - element.offset), element.duration, element.loop));
+    for (const mesh of element.meshes) mesh.visible = a > 0.001;
+    for (const record of element.records) {
+      record.element = a;
+      // Un élément opaque qui se fond passe en mélange le temps du fondu.
+      const want = record.transparent || a < 0.999;
+      if (record.material.transparent !== want) { record.material.transparent = want; record.material.needsUpdate = true; }
+    }
+  }
   if (inst.parts.length) {
-    for (const part of inst.parts) for (const { material, base } of part.tinted) material.opacity = base * fade * part.opacity;
+    for (const part of inst.parts) for (const { material, base, element } of part.tinted) material.opacity = base * fade * part.opacity * (element ?? 1);
   } else {
-    for (const { material, base } of inst.tinted) material.opacity = base * fade;
+    for (const { material, base, element } of inst.tinted) material.opacity = base * fade * (element ?? 1);
   }
   for (const { texture, speed: [su, sv] } of inst.scrolling) texture.offset.set((local * su) % 1, -((local * sv) % 1));
   for (const { node, mode, base } of inst.billboards) faceCamera(node, mode, base, camera);

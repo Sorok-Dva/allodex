@@ -963,6 +963,24 @@ caméra, particules en quads instanciés (`particles.ts`), sons calés sur la ch
   67 gabarits figés dans 25 fatalités (Muse de lumière et neuf `FatalityBard_Lines` du Barde, dôme
   `FatalityDruid_Explosion01` du Tribaliste, chauves-souris de l'Invocateur, rayon partout…). Les
   cinématiques moteur gardent l'ancien comportement (règle non vérifiée sur leur décor) ;
+- **Transparence des éléments** (`ElementTrack`, `tools/extract_menu_scene.py`) : le blob d'une
+  `SkeletalAnimation` porte un **second jeu de pistes, une par élément de géométrie**, que rien ne
+  lisait. L'entête est une suite de couples (pointeur auto-relatif, nombre) : +4 descripteurs des
+  articulations, +12 leurs noms, +20 leur ordre, **+28 descripteurs des éléments, +36 leurs
+  noms** ; descripteur de 20 octets comme ceux des articulations, masque `1` = transparence
+  (1 canal), `2` et `4` = deux canaux chacun (décalages de texture, non lus) ; **un octet par canal
+  et par image**, entrelacé, **0 = plein, 255 = caché**. Exporté en clés `elementAlpha` (secondes
+  du clip à sa vitesse, clés redondantes retirées à 1/255 près) pour 157 gabarits ; le lecteur
+  (`votInstances.ts`) en multiplie l'opacité des matériaux de l'élément au temps du clip de son
+  gabarit, cache l'élément à 0 et passe un élément opaque en mélange le temps d'un fondu. Un
+  gabarit non skinné qui porte de telles pistes prend la durée de son clip (dague du Paladin, feux
+  du Guerrier, éclairs de l'Ingénieur). C'est la règle qui cachait en jeu les poses figées :
+  instruments du Barde fondus à 5,7–5,9 s (la Muse prend le relais), météores du Mage cachés dans
+  le ciel puis révélés un à un à leur chute (5,3 à 7,2 s), lianes du Tribaliste rentrées à
+  l'explosion (3 s) et leur base à 4,7 s, dôme `FatalityDruid_Explosion` visible de 1 à 3 s
+  seulement… **Vérifiée sur une vidéo 1080p60 du jeu** (les 11 fatalités de classe, temps recalé
+  sur un repère commun : flash du Barde, explosion du Tribaliste) : les apparitions et
+  disparitions tombent à l'image près des pistes (voir « Comparaison à la vidéo ») ;
 - **cadrage** : aucune caméra de fatalité dans le client (seules des secousses, `CameraShakerComponent`,
   s'ajoutent à la caméra du joueur). Le cadrage initial vise l'effet principal et la victime :
   le gabarit posé ou accroché qui porte le son de la fatalité (`FatalityBard`, `FatalityDruid`… ;
@@ -999,7 +1017,7 @@ amortie entre `minRadius` et `maxRadius` (Universelles 2022 et 2023) ; `timeScal
 **Manques.** `ProceduralEffect` (effet `Empty`) ignoré. Particules : `WorldSpaceEmitter` et `Z_BOX`
 traités comme locales / face caméra. Pas de bloom : la géométrie douce a ramené le Prêtre d'un
 blanc plein à des effets lisibles, un bloom le resaturerait. Effets des tenues de création
-(`growths.fx`) non joués. Aucune capture du jeu pour comparer (à venir). La durée affichée est celle
+(`growths.fx`) non joués. La durée affichée est celle
 du script : certaines fatalités (Occultiste, Crâne 2024) finissent par plusieurs secondes vides.
 
 ## Création de personnage (développement)

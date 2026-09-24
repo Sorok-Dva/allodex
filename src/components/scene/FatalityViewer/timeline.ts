@@ -140,7 +140,28 @@ export type FatalityObject = {
   bounds?: [number, number, number, number, number, number];
   /** Composants accrochés ; `start`/`stop` : fenêtre des `DelayComponent`/`StopVisObjectComponents`. */
   components?: { vot: string; locator: string; start?: number; stop?: number }[];
+  /**
+   * Opacité des éléments de géométrie au fil du clip (piste de transparence du `.bin` de
+   * l'animation) : par nom d'élément, clés `[t0, a0, t1, a1, …]`, secondes du clip, linéaire.
+   */
+  elementAlpha?: Record<string, number[]>;
 };
+
+/** Opacité d'un élément au temps `t` de son clip, d'après ses clés `[t0, a0, t1, a1, …]`. */
+export function elementAlphaAt(keys: number[], t: number): number {
+  const n = keys.length >> 1;
+  if (n === 0) return 1;
+  if (t <= keys[0]) return keys[1];
+  for (let i = 1; i < n; i += 1) {
+    const t1 = keys[2 * i];
+    if (t <= t1) {
+      const t0 = keys[2 * i - 2];
+      const w = t1 > t0 ? (t - t0) / (t1 - t0) : 1;
+      return keys[2 * i - 1] + (keys[2 * i + 1] - keys[2 * i - 1]) * w;
+    }
+  }
+  return keys[2 * n - 1];
+}
 
 /**
  * Durée prêtée à `CreatureSetTransparencyAction` pour atteindre sa transparence cible, divisée

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
 import { VotFactory, partOpacity, updateInstance } from './votInstances';
-import type { FatalityObject } from '@/components/scene/FatalityViewer/timeline';
+import { elementAlphaAt, type FatalityObject } from '@/components/scene/FatalityViewer/timeline';
 
 const object = (over: Partial<FatalityObject>): FatalityObject => ({ fadeIn: 0, fadeOut: 0, scale: 1, duration: 0, loop: false, ...over });
 
@@ -59,5 +59,47 @@ describe('VotFactory lifetimes', () => {
     updateInstance(inst, 4, 1, camera);
     expect(childNode.visible).toBe(false);
     expect(inst.root.visible).toBe(true);
+  });
+});
+
+describe('element transparency tracks', () => {
+  it('hides a frozen element outside its keys and fades it with the clip time', () => {
+    // Instruments du Barde : pleins jusqu'à 5,7 s, fondus jusqu'à 5,9 s ; clip bouclé de 11,67 s.
+    const root = new THREE.Group();
+    root.userData = { vot: 'FatalityBard' };
+    const geometry = new THREE.PlaneGeometry();
+    geometry.userData.element = 'Drum_mesh';
+    const drum = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
+    const other = new THREE.Mesh(new THREE.PlaneGeometry(), new THREE.MeshBasicMaterial());
+    root.add(drum, other);
+    const objects = { FatalityBard: object({ duration: 11.6667, loop: true, elementAlpha: { Drum_mesh: [0, 1, 5.7, 1, 5.9, 0, 11.6667, 0] } }) };
+    const inst = new VotFactory({ objects, baseUrl: null, disposables: [], lifetimes: true }).instantiate(root, [], 0, 11.6, 0, 0);
+    const camera = new THREE.PerspectiveCamera();
+    const [shownDrum, shownOther] = inst.root.children as THREE.Mesh[];
+    const material = shownDrum.material as THREE.Material;
+    updateInstance(inst, 3, 1, camera);
+    expect(shownDrum.visible).toBe(true);
+    expect(material.opacity).toBeCloseTo(1, 5);
+    expect(material.transparent).toBe(false);
+    updateInstance(inst, 5.8, 1, camera);
+    expect(material.opacity).toBeCloseTo(0.5, 5);
+    expect(material.transparent).toBe(true);
+    updateInstance(inst, 8, 1, camera);
+    expect(shownDrum.visible).toBe(false);
+    expect(shownOther.visible).toBe(true);
+    updateInstance(inst, 3, 1, camera);
+    expect(shownDrum.visible).toBe(true);
+    expect(material.transparent).toBe(false);
+  });
+});
+
+describe('elementAlphaAt', () => {
+  it('interpolates flat [t, a] keys and clamps outside them', () => {
+    const keys = [0, 0, 1, 1, 3, 0];
+    expect(elementAlphaAt(keys, -1)).toBe(0);
+    expect(elementAlphaAt(keys, 0.5)).toBeCloseTo(0.5, 6);
+    expect(elementAlphaAt(keys, 2)).toBeCloseTo(0.5, 6);
+    expect(elementAlphaAt(keys, 9)).toBe(0);
+    expect(elementAlphaAt([], 1)).toBe(1);
   });
 });
