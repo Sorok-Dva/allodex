@@ -1207,7 +1207,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -1248,7 +1249,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -1285,7 +1287,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -1323,7 +1326,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -1364,7 +1368,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -1401,7 +1406,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -1464,7 +1470,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.6,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -1521,7 +1528,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.6,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -1582,7 +1590,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.6,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -1624,7 +1633,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.6,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -1681,7 +1691,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.6,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -1742,7 +1753,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.6,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -2142,7 +2154,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfHeal_Down.glb"
         }
        ]
@@ -2195,7 +2208,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfHeal_Down.glb"
         }
        ]
@@ -2256,7 +2270,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfHeal_Down.glb"
         }
        ]
@@ -2298,7 +2313,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfHeal_Down.glb"
         }
        ]
@@ -2351,7 +2367,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfHeal_Down.glb"
         }
        ]
@@ -2412,7 +2429,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfHeal_Down.glb"
         }
        ]
@@ -2479,7 +2497,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -2536,7 +2555,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -2597,7 +2617,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -2643,7 +2664,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -2700,7 +2722,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -2761,7 +2784,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -2832,7 +2856,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -2893,7 +2918,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -2954,7 +2980,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -3005,7 +3032,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -3066,7 +3094,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -3127,7 +3156,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -3199,7 +3229,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -3256,7 +3287,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -3317,7 +3349,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -3367,7 +3400,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -3424,7 +3458,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -3485,7 +3520,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -4067,7 +4103,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -4112,7 +4149,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -4165,7 +4203,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -4203,7 +4242,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -4248,7 +4288,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -4301,7 +4342,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -4356,7 +4398,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -4393,7 +4436,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -4430,7 +4474,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -4464,7 +4509,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -4501,7 +4547,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -4538,7 +4585,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -4601,7 +4649,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.8,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -4658,7 +4707,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.8,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -4719,7 +4769,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.8,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -4761,7 +4812,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.8,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -4818,7 +4870,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.8,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -4879,7 +4932,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.8,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -5287,7 +5341,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfHeal_Down.glb"
         }
        ]
@@ -5336,7 +5391,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfHeal_Down.glb"
         }
        ]
@@ -5397,7 +5453,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfHeal_Down.glb"
         }
        ]
@@ -5447,7 +5504,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfHeal_Down.glb"
         }
        ]
@@ -5496,7 +5554,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfHeal_Down.glb"
         }
        ]
@@ -5557,7 +5616,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfHeal_Down.glb"
         }
        ]
@@ -5953,7 +6013,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -5998,7 +6059,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -6051,7 +6113,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -6089,7 +6152,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -6134,7 +6198,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -6187,7 +6252,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -6391,7 +6457,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -6448,7 +6515,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -6505,7 +6573,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -6551,7 +6620,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -6608,7 +6678,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -6665,7 +6736,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -6728,7 +6800,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -6781,7 +6854,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -6842,7 +6916,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -6884,7 +6959,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -6937,7 +7013,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -6998,7 +7075,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -7061,7 +7139,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -7114,7 +7193,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -7167,7 +7247,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -7209,7 +7290,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -7262,7 +7344,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -7315,7 +7398,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -7386,7 +7470,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -7443,7 +7528,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -7500,7 +7586,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -7551,7 +7638,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -7608,7 +7696,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -7665,7 +7754,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -7910,7 +8000,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -7959,7 +8050,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -7996,7 +8088,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -8034,7 +8127,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -8083,7 +8177,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -8120,7 +8215,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -8183,7 +8279,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -8240,7 +8337,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -8301,7 +8399,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -8343,7 +8442,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -8400,7 +8500,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -8461,7 +8562,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -8524,7 +8626,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.75,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -8581,7 +8684,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.75,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -8642,7 +8746,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.75,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -8684,7 +8789,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.75,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -8741,7 +8847,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.75,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -8802,7 +8909,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.75,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -8861,7 +8969,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -8910,7 +9019,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -8967,7 +9077,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -9005,7 +9116,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -9054,7 +9166,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -9111,7 +9224,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -9178,7 +9292,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -9235,7 +9350,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -9296,7 +9412,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -9342,7 +9459,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -9399,7 +9517,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -9460,7 +9579,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -9868,7 +9988,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -9921,7 +10042,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -9978,7 +10100,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -10020,7 +10143,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -10073,7 +10197,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -10130,7 +10255,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -10719,7 +10845,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -10748,7 +10875,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -10789,7 +10917,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -10820,7 +10949,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -10849,7 +10979,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -10890,7 +11021,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -11087,7 +11219,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -11124,7 +11257,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -11169,7 +11303,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -11207,7 +11342,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -11244,7 +11380,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -11289,7 +11426,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -11356,7 +11494,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -11413,7 +11552,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -11474,7 +11614,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -11520,7 +11661,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -11577,7 +11719,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -11638,7 +11781,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -11705,7 +11849,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -11762,7 +11907,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -11823,7 +11969,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -11869,7 +12016,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -11926,7 +12074,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -11987,7 +12136,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -12054,7 +12204,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -12111,7 +12262,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -12172,7 +12324,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -12218,7 +12371,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -12275,7 +12429,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -12336,7 +12491,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 1,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -12403,7 +12559,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -12460,7 +12617,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -12521,7 +12679,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -12568,7 +12727,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -12625,7 +12785,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -12686,7 +12847,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -12750,7 +12912,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -12803,7 +12966,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -12860,7 +13024,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -12902,7 +13067,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -12955,7 +13121,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -13012,7 +13179,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -13083,7 +13251,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfLight_Down.glb"
         }
        ]
@@ -13140,7 +13309,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfLight_Down.glb"
         }
        ]
@@ -13201,7 +13371,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfLight_Down.glb"
         }
        ]
@@ -13251,7 +13422,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfLight_Down.glb"
         }
        ]
@@ -13308,7 +13480,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfLight_Down.glb"
         }
        ]
@@ -13369,7 +13542,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfLight_Down.glb"
         }
        ]
@@ -14114,7 +14288,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -14167,7 +14342,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -14224,7 +14400,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -14266,7 +14443,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -14319,7 +14497,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -14376,7 +14555,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -14749,7 +14929,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -14782,7 +14963,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -14827,7 +15009,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -14857,7 +15040,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -14890,7 +15074,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -14935,7 +15120,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -14986,7 +15172,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.1,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -15019,7 +15206,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.1,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -15068,7 +15256,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.1,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -15098,7 +15287,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.2,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -15131,7 +15321,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.2,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -15180,7 +15371,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.2,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -15231,7 +15423,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -15264,7 +15457,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -15313,7 +15507,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -15344,7 +15539,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -15377,7 +15573,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -15426,7 +15623,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/DruidGibber.glb"
         }
        ]
@@ -15699,7 +15897,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -15728,7 +15927,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -15765,7 +15965,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -15791,7 +15992,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -15820,7 +16022,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -15857,7 +16060,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -15908,7 +16112,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -15941,7 +16146,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -15982,7 +16188,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -16012,7 +16219,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -16045,7 +16253,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -16086,7 +16295,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -16141,7 +16351,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.6,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -16174,7 +16385,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.6,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -16215,7 +16427,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.6,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -16249,7 +16462,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.6,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -16282,7 +16496,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.6,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -16323,7 +16538,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.6,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -16374,7 +16590,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -16407,7 +16624,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -16444,7 +16662,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -16474,7 +16693,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -16507,7 +16727,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -16544,7 +16765,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.65,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -16603,7 +16825,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.8,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -16636,7 +16859,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.8,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -16669,7 +16893,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.8,
+         "runType": 1,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -16707,7 +16932,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.8,
+         "runType": 0,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -16740,7 +16966,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.8,
+         "runType": 0,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -16773,7 +17000,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.8,
+         "runType": 0,
          "fx": "fx/Mass_Dissonance.glb"
         }
        ]
@@ -16836,7 +17064,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -16873,7 +17102,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -16910,7 +17140,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -16952,7 +17183,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -16989,7 +17221,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -17026,7 +17259,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 0.9,
+         "runType": 0,
          "fx": "fx/WarriorInnerRageAbility.glb"
         }
        ]
@@ -17089,7 +17323,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.75,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -17126,7 +17361,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.75,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -17163,7 +17399,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.75,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -17205,7 +17442,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.75,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -17242,7 +17480,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.75,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -17279,7 +17518,8 @@
        "fx": [
         {
          "locator": "Slot_Hand_R",
-         "scale": 0.0,
+         "scale": 0.75,
+         "runType": 0,
          "fx": "fx/PaladinBladeofJusticeAbility.glb"
         }
        ]
@@ -17338,7 +17578,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -17371,7 +17612,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -17404,7 +17646,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -17446,7 +17689,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -17483,7 +17727,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -17520,7 +17765,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/StalkerEmergencyEnchant.glb"
         }
        ]
@@ -17583,7 +17829,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -17620,7 +17867,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -17657,7 +17905,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -17699,7 +17948,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -17736,7 +17986,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -17773,7 +18024,8 @@
        "fx": [
         {
          "locator": "Slot_Global",
-         "scale": 0.0,
+         "scale": 1.0,
+         "runType": 0,
          "fx": "fx/PriestAspectOfRage_Down.glb"
         }
        ]
@@ -17832,7 +18084,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -17865,7 +18118,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -17898,7 +18152,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -17936,7 +18191,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -17969,7 +18225,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -18002,7 +18259,8 @@
        "fx": [
         {
          "locator": "Slot_Head",
-         "scale": 0.0,
+         "scale": 0.7,
+         "runType": 0,
          "fx": "fx/PsionicHeadCast.glb"
         }
        ]
@@ -115489,10 +115747,37 @@
      -0.003,
      0.192
     ],
-    "light": [
-     1.6649,
-     1.6258,
-     1.868
+    "ambient": [
+     0.9062,
+     0.8672,
+     1.1094
+    ],
+    "pointColor": [
+     1.4922,
+     1.2734,
+     0.6641
+    ],
+    "pointLights": [
+     {
+      "p": [
+       -1.096,
+       -6.512,
+       4.043
+      ],
+      "intensity": 2.0,
+      "radius": 9.798,
+      "attenuation": 2.0
+     },
+     {
+      "p": [
+       2.55,
+       -0.99,
+       4.043
+      ],
+      "intensity": 2.0,
+      "radius": 8.895,
+      "attenuation": 2.0
+     }
     ]
    },
    "camera": {
@@ -115518,10 +115803,27 @@
      -0.037,
      0.313
     ],
-    "light": [
-     0.9739,
-     0.9505,
-     1.1458
+    "ambient": [
+     0.3828,
+     0.3594,
+     0.5547
+    ],
+    "pointColor": [
+     0.5781,
+     0.4375,
+     0.8359
+    ],
+    "pointLights": [
+     {
+      "p": [
+       -0.822,
+       2.833,
+       3.118
+      ],
+      "intensity": 2.0,
+      "radius": 7.663,
+      "attenuation": 2.0
+     }
     ]
    },
    "camera": {
@@ -115547,10 +115849,37 @@
      0.61,
      0.195
     ],
-    "light": [
-     2.4609,
-     2.5703,
-     2.6094
+    "ambient": [
+     0.4688,
+     0.5781,
+     0.6172
+    ],
+    "pointColor": [
+     0.7578,
+     0.6484,
+     0.3203
+    ],
+    "pointLights": [
+     {
+      "p": [
+       1.327,
+       2.372,
+       2.104
+      ],
+      "intensity": 2.0,
+      "radius": 15.0,
+      "attenuation": 2.0
+     },
+     {
+      "p": [
+       -1.294,
+       2.299,
+       2.104
+      ],
+      "intensity": 2.0,
+      "radius": 15.0,
+      "attenuation": 2.0
+     }
     ]
    },
    "camera": {
@@ -115576,10 +115905,47 @@
      -0.021,
      0.28
     ],
-    "light": [
-     2.6953,
-     2.7266,
-     2.8984
+    "ambient": [
+     0.7031,
+     0.7344,
+     0.9062
+    ],
+    "pointColor": [
+     1.0781,
+     0.8281,
+     0.4453
+    ],
+    "pointLights": [
+     {
+      "p": [
+       -1.074,
+       0.272,
+       2.145
+      ],
+      "intensity": 2.0,
+      "radius": 6.017,
+      "attenuation": 2.0
+     },
+     {
+      "p": [
+       -0.487,
+       11.677,
+       4.69
+      ],
+      "intensity": 2.0,
+      "radius": 12.923,
+      "attenuation": 2.0
+     },
+     {
+      "p": [
+       0.199,
+       -1.75,
+       2.623
+      ],
+      "intensity": 2.0,
+      "radius": 6.273,
+      "attenuation": 2.0
+     }
     ]
    },
    "camera": {
@@ -115605,10 +115971,67 @@
      -0.175,
      0.367
     ],
-    "light": [
-     0.6906,
-     0.8469,
-     1.1672
+    "ambient": [
+     0.5078,
+     0.6641,
+     0.9844
+    ],
+    "pointColor": [
+     1.1484,
+     0.8047,
+     0.0
+    ],
+    "pointLights": [
+     {
+      "p": [
+       3.146,
+       -1.058,
+       3.925
+      ],
+      "intensity": 1.0,
+      "radius": 9.046,
+      "attenuation": 4.0
+     },
+     {
+      "p": [
+       10.033,
+       11.705,
+       4.792
+      ],
+      "intensity": 1.0,
+      "radius": 15.0,
+      "attenuation": 4.0
+     },
+     {
+      "p": [
+       6.717,
+       13.921,
+       4.792
+      ],
+      "intensity": 1.0,
+      "radius": 15.0,
+      "attenuation": 4.0
+     },
+     {
+      "p": [
+       11.563,
+       9.52,
+       -0.305
+      ],
+      "intensity": 1.0,
+      "radius": 15.0,
+      "attenuation": 4.0
+     },
+     {
+      "p": [
+       -2.702,
+       -1.611,
+       3.925
+      ],
+      "intensity": 1.0,
+      "radius": 9.046,
+      "attenuation": 4.0
+     }
     ]
    },
    "camera": {
@@ -115634,10 +116057,27 @@
      0.029,
      0.278
     ],
-    "light": [
-     1.9026,
-     1.8948,
-     1.8323
+    "ambient": [
+     0.5234,
+     0.5156,
+     0.4531
+    ],
+    "pointColor": [
+     0.9766,
+     0.7812,
+     0.5312
+    ],
+    "pointLights": [
+     {
+      "p": [
+       1.432,
+       -0.173,
+       2.432
+      ],
+      "intensity": 2.0,
+      "radius": 10.426,
+      "attenuation": 2.0
+     }
     ]
    },
    "camera": {
@@ -115663,10 +116103,77 @@
      0.019,
      0.272
     ],
-    "light": [
-     1.1035,
-     1.2129,
-     1.1894
+    "ambient": [
+     0.6094,
+     0.7188,
+     0.6953
+    ],
+    "pointColor": [
+     1.0,
+     0.6328,
+     0.6016
+    ],
+    "pointLights": [
+     {
+      "p": [
+       -2.024,
+       4.545,
+       4.532
+      ],
+      "intensity": 2.0,
+      "radius": 4.518,
+      "attenuation": 2.0
+     },
+     {
+      "p": [
+       5.206,
+       -7.249,
+       12.524
+      ],
+      "intensity": 2.0,
+      "radius": 23.37,
+      "attenuation": 2.0
+     },
+     {
+      "p": [
+       7.137,
+       -1.148,
+       1.338
+      ],
+      "intensity": 2.0,
+      "radius": 7.87,
+      "attenuation": 2.0
+     },
+     {
+      "p": [
+       -2.85,
+       -5.814,
+       0.736
+      ],
+      "intensity": 2.0,
+      "radius": 8.731,
+      "attenuation": 2.0
+     },
+     {
+      "p": [
+       8.039,
+       0.104,
+       4.733
+      ],
+      "intensity": 2.0,
+      "radius": 10.471,
+      "attenuation": 2.0
+     },
+     {
+      "p": [
+       -4.213,
+       -6.199,
+       3.156
+      ],
+      "intensity": 2.0,
+      "radius": 8.109,
+      "attenuation": 2.0
+     }
     ]
    },
    "camera": {
@@ -115692,11 +116199,17 @@
      0.0,
      0.28
     ],
-    "light": [
+    "ambient": [
      0.2734,
      0.5312,
      0.7578
-    ]
+    ],
+    "pointColor": [
+     0.5469,
+     0.2344,
+     0.0
+    ],
+    "pointLights": []
    },
    "camera": {
     "position": [
@@ -115763,6 +116276,7 @@
   "onde introuvable pour l'événement Ambience/OutdoorAmbience/Zones/ZE1/Backyard",
   "onde introuvable pour l'événement World/Flame/Campfire1_OrcChargen",
   "onde introuvable pour l'événement World/Water/Fontain_Hadagan_Chargen",
-  "textures du décor 13.2 Mo, particules 0.89 Mo, 42 sons"
+  "sol : 1166 sous-carreaux de 8 m, 49 calques mélangés, 11 lightmap(s) de région",
+  "textures du décor 30.3 Mo, particules 0.89 Mo, 42 sons"
  ]
 }

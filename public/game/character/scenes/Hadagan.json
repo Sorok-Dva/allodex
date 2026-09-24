@@ -12,10 +12,47 @@
    -0.021,
    0.28
   ],
-  "light": [
-   2.6953,
-   2.7266,
-   2.8984
+  "ambient": [
+   0.7031,
+   0.7344,
+   0.9062
+  ],
+  "pointColor": [
+   1.0781,
+   0.8281,
+   0.4453
+  ],
+  "pointLights": [
+   {
+    "p": [
+     -1.074,
+     0.272,
+     2.145
+    ],
+    "intensity": 2.0,
+    "radius": 6.017,
+    "attenuation": 2.0
+   },
+   {
+    "p": [
+     -0.487,
+     11.677,
+     4.69
+    ],
+    "intensity": 2.0,
+    "radius": 12.923,
+    "attenuation": 2.0
+   },
+   {
+    "p": [
+     0.199,
+     -1.75,
+     2.623
+    ],
+    "intensity": 2.0,
+    "radius": 6.273,
+    "attenuation": 2.0
+   }
   ]
  },
  "camera": {
@@ -52,7 +89,7 @@
    "parts": 10
   },
   "skyGlb": "scenes/Hadagan-sky.glb",
-  "terrainGlb": null
+  "terrainGlb": "maps/MainMenu/terrain.glb"
  },
  "objects": {
   "Chargen_Net": {
@@ -3235,8 +3272,8 @@
   "fog": 4282732901,
   "fogEnd": 400.0,
   "fogStart": 0.0,
-  "pointLight": 4294967295,
-  "selfIllum": 4287261241,
+  "pointLight": 4287261241,
+  "selfIllum": 2017861120,
   "specular": 4283387727,
   "sunPitch": 45.0,
   "sunYaw": 135.0,

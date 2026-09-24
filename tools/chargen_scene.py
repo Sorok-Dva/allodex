@@ -94,18 +94,45 @@ def zone_lights_at(m: PackDB, pos, grid: int = REGION_ZONE_LIGHTS, reach: int = 
 def zone_light(m: PackDB, zl: int) -> dict:
     """Éclairage d'une zone du menu, au format de `allods_scenes.read_zone_light` (couleurs ARGB,
     unité 0x80 = 1) : ambiante, diffuse (soleil), brouillard, lumière ponctuelle, auto-illumination,
-    spéculaire, soleil (degrés), ciel. Valeurs lues telles quelles, comme dans les cinématiques :
-    `PointLightColor` vaut `0xFFFFFF` (2) à sept places, `0xA59243` à celle des aèdes, et le
-    client pose aussi `0x808080` (1) ailleurs (zone de `ferris-retrospective`) : une valeur choisie
-    par zone, qu'aucune donnée ne demande de rééchelonner."""
+    spéculaire, soleil (degrés), ciel.
+
+    Les champs du `StaticLight` sont rangés par ordre alphabétique (schéma 7.0 : `AmbientColor`,
+    `AmbientFactor`, `ContourColor`, `DiffuseColor`, `FadeEnd`, `FadeStart`, `FogColor`, `FogEnd`,
+    `FogStart`, `PointLightColor`, `SelfIllumColor`, `SpecularColor`, `SpecularWaterColor`,
+    `SunLightPitch`, `SunLightYaw`…) ; le 17 a ajouté un mot en `+0x48`, entre `FogStart` et
+    `PointLightColor`, qui vaut `0xFFFFFFFF` partout. `PointLightColor` est donc en **`+0x4C`**,
+    `SelfIllumColor` en `+0x50` : recoupé sur les `ZoneLights/*_Chargen` de l'arbre 7.0, où les
+    sept couleurs de lumière ponctuelle (`0xFF4A386B` elfe, `0xFF615329` gibberling, `0xFF8A6A39`
+    hadagan, `0xFFBFA355` kanian, `0xFF936700` orc, `0xFF80514D` priden, `0xFF7D6444` mort-vivant)
+    et les auto-illuminations (`0x78659FDA` gibberling, `0xFF150A00` priden) se retrouvent à ces
+    places dans le 17. Lu en `+0x48`, le blanc (2) doublait les lanternes et délavait les acteurs."""
     e = zl + ZONE_ITEM
     sky = m.ptr(zl + ZONE_SKY)
     return {"ambient": m.u32(e + 0x24), "ambientFactor": round(m.f32(e + 0x28), 4),
             "diffuse": m.u32(e + 0x30), "fog": m.u32(e + 0x3C), "fogEnd": round(m.f32(e + 0x40), 3),
-            "fogStart": round(m.f32(e + 0x44), 3), "pointLight": m.u32(e + 0x48),
-            "selfIllum": m.u32(e + 0x4C), "specular": m.u32(e + 0x54),
+            "fogStart": round(m.f32(e + 0x44), 3), "pointLight": m.u32(e + 0x4C),
+            "selfIllum": m.u32(e + 0x50), "specular": m.u32(e + 0x54),
             "sunPitch": round(m.f32(e + 0x5C), 3), "sunYaw": round(m.f32(e + 0x60), 3),
             "sky": sky if sky is not None and m.vtype(sky) == "SkyMesh" else None}
+
+
+ACTOR_REACH = 1.5            # m : demi-hauteur d'un personnage, marge autour de la portée d'une lumière
+
+
+def actor_point_lights(position, lights: list[dict], origin) -> list[dict]:
+    """Lumières ponctuelles de la carte qui atteignent le personnage (portée + `ACTOR_REACH` autour
+    du milieu du corps), positions ramenées à l'origine du décor. Le lecteur les applique comme le
+    jeu : une passe par lumière (`Material/pointLit-dx11.bin`), `N·L` par sommet, résultat saturé à
+    2 × la texture, couleur `PointLightColor` × intensité × `(1 − d / rayon)^atténuation` (loi de
+    l'octet 2 du `lightvrt` du décor, `extract_engine_cutscene.vertex_light`)."""
+    p = np.array(position, float) + np.array([0, 0, 1.0])
+    out = []
+    for lt in lights:
+        d = float(np.linalg.norm(np.array(lt["p"]) - p))
+        if d < lt["radius"] + ACTOR_REACH and lt["intensity"]:
+            out.append({"p": [round(float(v), 3) for v in np.array(lt["p"]) - np.array(origin)],
+                        "intensity": lt["intensity"], "radius": lt["radius"], "attenuation": lt["attenuation"]})
+    return out
 
 
 def scene_origin(mp: PackDB, cat, objects, place, radius: float = 10.0) -> tuple[float, float, float] | None:
@@ -181,7 +208,7 @@ def export_scenes(ctx, races: list[str], race_scene: dict[str, str], vgmstream: 
     `scenes/<Race>-light.bin`, ciel `scenes/<Race>-sky.glb`), sons dans `sfx/`."""
     import tools.extract_engine_cutscene as eec
     from tools.extract_engine_cutscene import (
-        DEFAULT_VGMSTREAM, build_decor, build_sky, export_waves, light_at, light_decor, map_sounds,
+        DEFAULT_VGMSTREAM, _rgb, build_decor, build_sky, build_terrain, export_waves, light_decor, map_sounds,
         rebase_objects, sun_direction,
     )
     # Réglages propres à la création, posés sur la chaîne commune le temps de l'extraction :
@@ -225,10 +252,14 @@ def export_scenes(ctx, races: list[str], race_scene: dict[str, str], vgmstream: 
     areas = [([float(p["origin"][0]), float(p["origin"][1])], SCENE_RADIUS) for p in plans.values()]
     decor = build_decor(mp, cat, bins, textures, particles, MAP, areas, report)
     (map_dir / "decor.glb").write_bytes(decor["glb"])
-    # Pas de sol de carte : chaque décor de création porte le sien ; celui de la carte, sous le
-    # décor elfe, sortait sans texture (tache blanche à droite de l'estrade).
-    terrain_glb = None
-    (map_dir / "terrain.glb").unlink(missing_ok=True)
+    # Sol de la carte (`terrainDump` des régions, calques du SplatMap, lightmaps) : sans lui, les
+    # décors kanian et gibberling s'ouvrent sur le vide (le sol de leurs places n'est que du
+    # terrain). Même décodeur que les cinématiques (`build_terrain`), même rendu (`terrainMaterial`).
+    terrain_glb, _ = build_terrain(mp, cat, bins, textures, areas, report, lightmap_out=map_dir / "terrain-lightmap.png")
+    if terrain_glb:
+        (map_dir / "terrain.glb").write_bytes(terrain_glb)
+    else:
+        (map_dir / "terrain.glb").unlink(missing_ok=True)
     prefix = f"maps/{MAP}/"
     objects_meta = rebase_objects(decor["objects"], prefix)
 
@@ -283,8 +314,11 @@ def export_scenes(ctx, races: list[str], race_scene: dict[str, str], vgmstream: 
             "origin": [round(float(v), 4) for v in origin],
             "character": {"yaw": round(place.character_yaw, 3), "scale": round(place.character_scale, 3),
                           "position": [round(float(v), 3) for v in stand],
-                          # Lumière du personnage (ambiante + ponctuelles de la carte à sa place, 1 = 0x80).
-                          "light": light_at(list(origin + stand), decor["pointLights"], light) if light else None},
+                          # Lumière du personnage (1 = 0x80) : ambiante de la zone (`shadowColor` du shader
+                          # des personnages), soleil laissé au lecteur (`N·L`), lumières ponctuelles.
+                          "ambient": [round(float(v), 4) for v in _rgb(light.get("ambient"))] if light else None,
+                          "pointColor": [round(float(v), 4) for v in _rgb(light.get("pointLight"))] if light else None,
+                          "pointLights": actor_point_lights(origin + stand, decor["pointLights"], origin)},
             "camera": {"position": [round(float(v), 4) for v in (np.array(place.camera) - P)],
                        "yaw": round(place.camera_yaw, 3), "pitch": round(place.camera_pitch, 3),
                        "height": round(place.camera_height, 3), "fov": round(place.fov, 4)},

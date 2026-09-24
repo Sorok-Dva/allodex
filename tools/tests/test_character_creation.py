@@ -118,6 +118,25 @@ def test_mage_growths_dress_three_outfits(pack):
 
 
 @client
+def test_growth_effects_scale_and_run_type(pack):
+    db, _ = pack
+    e = next(e for e in ac.walk_root(db) if e.race == "Kania" and e.cls == "PALADIN")
+    fx = [f for g in ac.read_growths(db, e.character) for f in g.fx]
+    assert fx and all(f["locator"] == "Slot_Hand_R" for f in fx)
+    # Échelle en +0x24 (0,6 à 1,2 selon les classes), `runType` en +0x20 (0 ou 1).
+    assert all(0.5 <= f["scale"] <= 1.3 for f in fx) and {f["runType"] for f in fx} <= {0, 1}
+
+
+def test_actor_point_lights_reach_and_origin():
+    from tools.chargen_scene import actor_point_lights
+    lights = [{"p": [10.0, 0.0, 1.0], "intensity": 2.0, "radius": 5.0, "attenuation": 2.0},
+              {"p": [100.0, 0.0, 1.0], "intensity": 2.0, "radius": 5.0, "attenuation": 2.0},
+              {"p": [2.0, 0.0, 1.0], "intensity": 0.0, "radius": 5.0, "attenuation": 2.0}]
+    out = actor_point_lights([4.0, 0.0, 0.0], lights, [1.0, 0.0, 0.0])
+    assert out == [{"p": [9.0, 0.0, 1.0], "intensity": 2.0, "radius": 5.0, "attenuation": 2.0}]
+
+
+@client
 def test_character_scenes_places(pack):
     db, _ = pack
     places = {s.name: s for s in ac.character_scenes(db)}
@@ -176,5 +195,7 @@ def test_menu_zone_light_and_ambience_grid(pack):
     place = {s.name: s for s in ac.character_scenes(db)}["CharacterSelectElf"].character
     light = zone_light(mp, zone_lights_at(mp, place))
     assert light["ambient"] & 0xFFFFFF == 0x312E47 and light["fogEnd"] == 220.0
+    # PointLightColor de `ZoneLights/Elf_Chargen.(ZoneLights).xdb` (7.0 : -11913109), en +0x4C.
+    assert light["pointLight"] & 0xFFFFFFFF == 0xFF4A386B
     amb = zone_lights_at(mp, place, REGION_AMBIENCES, reach=2)
     assert mp.string(amb + 0x58) == "Ambience/OutdoorAmbience/Zones/AI36"

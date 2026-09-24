@@ -80,8 +80,12 @@ class CharacterFx:
         """`fx/<nom>.glb` du gabarit (nom de son nœud racine `vot:<nom>`), ou None."""
         if vot in self.files:
             return self.files[vot]
+        # `cutout` : matériaux opaques découpés par l'alpha de leur texture, comme le décor — les
+        # pixel shaders du jeu (`Material/common_sm4-dx11.bin`) ramènent l'alpha de la texture à 0
+        # ou 0,95 au seuil 0,5 puis écartent le fragment sous le seuil `test` ; sans lui, les
+        # fougères et les herbes du Tribaliste (`DruidGibber`) sortent en carrés verts pleins.
         fx = FxBuild(Exporter(self.textures, FX_TEXTURE_MAX, generator="allodex/extract_character_creation",
-                              texture_prefix="../textures/"), self.db, self.cat, self.bins,
+                              texture_prefix="../textures/", cutout=True), self.db, self.cat, self.bins,
                      names=self.names, particles=self.particles, report=self.report)
         with with_state_attachments(self.db):
             node = fx.emit(vot)

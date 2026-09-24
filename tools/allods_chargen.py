@@ -69,7 +69,10 @@ GROWTH_STRIDE = 224
 GROWTH_LOOP = 0x08             # chaîne : animation en boucle
 GROWTH_START = 0x38            # chaîne : animation d'entrée
 GROWTH_ITEMS = 0x50            # {pad, VisualItem*, emplacement u32} (24 o)
-GROWTH_FX = 0x70               # {pad, locator (chaîne), échelle f32 (+0x20), VisObjectTemplate* (+0x28)} (48 o)
+GROWTH_FX = 0x70               # ChargenEffect (48 o) : locator (chaîne, +0x08), runType (+0x20),
+                               # échelle f32 (+0x24), VisObjectTemplate* (+0x28)
+FX_RUN_TYPE = 0x20             # champs par ordre alphabétique (types 7.0 : locator, runType, scale, visObj) ;
+FX_SCALE = 0x24                # +0x24 vaut 0,6 à 1,2 selon la classe et la race, +0x20 vaut 0 ou 1
 
 # Emplacements (`ItemSlot`) tels que stockés (vérifiés sur `ElfMage01Female` : BELT 7, BOOTS 3,
 # PANTS 2, BRACERS 6, ARMOR 1, OFFHAND 15, MAINHAND 14, RANGED 16, HELM 0, MANTLE 4, GLOVES 5,
@@ -213,7 +216,7 @@ class Growth:
     loop: str | None
     start: str | None
     items: list[tuple[str, int]]            # (emplacement, VisualItem)
-    fx: list[dict]                          # {locator, scale, visObject}
+    fx: list[dict]                          # {locator, scale, runType, visObject}
 
 
 def read_growths(db: PackDB, character: int) -> list[Growth]:
@@ -229,7 +232,8 @@ def read_growths(db: PackDB, character: int) -> list[Growth]:
         for e in db.elements(g + GROWTH_FX, 48):
             vot = db.ptr(e + 0x28)
             if vot is not None:
-                fx.append({"locator": db.string(e + 0x08) or "", "scale": round(db.f32(e + 0x20), 4), "visObject": vot})
+                fx.append({"locator": db.string(e + 0x08) or "", "scale": round(db.f32(e + FX_SCALE), 4),
+                           "runType": db.u32(e + FX_RUN_TYPE), "visObject": vot})
         out.append(Growth(db.string(g + GROWTH_LOOP), db.string(g + GROWTH_START), items, fx))
     return out
 

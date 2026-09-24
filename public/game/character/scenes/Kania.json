@@ -12,10 +12,37 @@
    -0.003,
    0.192
   ],
-  "light": [
-   1.6649,
-   1.6258,
-   1.868
+  "ambient": [
+   0.9062,
+   0.8672,
+   1.1094
+  ],
+  "pointColor": [
+   1.4922,
+   1.2734,
+   0.6641
+  ],
+  "pointLights": [
+   {
+    "p": [
+     -1.096,
+     -6.512,
+     4.043
+    ],
+    "intensity": 2.0,
+    "radius": 9.798,
+    "attenuation": 2.0
+   },
+   {
+    "p": [
+     2.55,
+     -0.99,
+     4.043
+    ],
+    "intensity": 2.0,
+    "radius": 8.895,
+    "attenuation": 2.0
+   }
   ]
  },
  "camera": {
@@ -52,7 +79,7 @@
    "parts": 7
   },
   "skyGlb": "scenes/Kania-sky.glb",
-  "terrainGlb": null
+  "terrainGlb": "maps/MainMenu/terrain.glb"
  },
  "objects": {
   "Chargen_Net": {
@@ -3235,8 +3262,8 @@
   "fog": 4284568903,
   "fogEnd": 600.0,
   "fogStart": 0.0,
-  "pointLight": 4294967295,
-  "selfIllum": 4290749269,
+  "pointLight": 4290749269,
+  "selfIllum": 2017861120,
   "specular": 722692,
   "sunPitch": 45.0,
   "sunYaw": 25.0,

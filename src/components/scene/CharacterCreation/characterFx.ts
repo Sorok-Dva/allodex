@@ -8,11 +8,13 @@ import type { CharacterRig } from './rig';
 /**
  * Effet à poser sur un personnage : gabarit (`fx/…glb`), locator, échelle, instant de départ.
  * `effectsOnly` : objet porté dont le maillage est déjà accroché par `CharacterRig` (seuls ses
- * composants et particules sont montrés).
+ * composants et particules sont montrés). `runType` : `ChargenEffectRunType` de la tenue (types 7.0 :
+ * 0 = `CHARGEN_EFFECT_RUN_TYPE_KEY`, joué une fois ; 1 = `CHARGEN_EFFECT_RUN_TYPE_LOOP`, rejoué en boucle).
  */
-export type FxWant = { fx: string; locator: string; scale?: number; start: number; effectsOnly?: boolean };
+export type FxWant = { fx: string; locator: string; scale?: number; start: number; effectsOnly?: boolean; runType?: number };
 
-type Live = { key: string; inst: VotInstance; start: number };
+/** `period` : durée du gabarit rejoué en boucle ; `until` : fin d'un effet joué une fois (s, temps local). */
+type Live = { key: string; inst: VotInstance; start: number; period: number | null; until: number | null };
 
 /**
  * Effets des personnages de la création (`tools/chargen_fx.py`) : ceux des objets portés (boule de
@@ -98,13 +100,24 @@ export class CharacterFxHost {
         if (own) own.visible = false;
       }
       (rig.joint(w.locator) ?? rig.model).add(inst.root);
-      lives.push({ key: keyOf(w), inst, start: w.start });
+      // Gabarit non bouclé (`loop` faux, durée connue) : effacé à la fin de sa durée quand la tenue le
+      // joue une fois (sans cela, sa dernière image restait figée : traînées du guerrier) ; rejoué
+      // à chaque période quand elle le boucle.
+      const duration = info && !info.loop && info.duration > 0 ? info.duration : null;
+      lives.push({ key: keyOf(w), inst, start: w.start, period: w.runType === 1 ? duration : null,
+        until: w.runType === 0 ? duration : null });
     });
   }
 
   /** Pose les effets au temps `t` de la scène. */
   update(t: number, camera: THREE.Camera): void {
-    for (const lives of this.lives.values()) for (const l of lives) updateInstance(l.inst, Math.max(0, t - l.start), 1, camera);
+    for (const lives of this.lives.values()) {
+      for (const l of lives) {
+        let local = Math.max(0, t - l.start);
+        if (l.period) local %= l.period;
+        updateInstance(l.inst, local, l.until !== null && local > l.until ? 0 : 1, camera);
+      }
+    }
   }
 
   forget(rig: CharacterRig): void {

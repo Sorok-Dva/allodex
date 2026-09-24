@@ -12,10 +12,27 @@
    -0.037,
    0.313
   ],
-  "light": [
-   0.9739,
-   0.9505,
-   1.1458
+  "ambient": [
+   0.3828,
+   0.3594,
+   0.5547
+  ],
+  "pointColor": [
+   0.5781,
+   0.4375,
+   0.8359
+  ],
+  "pointLights": [
+   {
+    "p": [
+     -0.822,
+     2.833,
+     3.118
+    ],
+    "intensity": 2.0,
+    "radius": 7.663,
+    "attenuation": 2.0
+   }
   ]
  },
  "camera": {
@@ -74,7 +91,7 @@
    "parts": 11
   },
   "skyGlb": "scenes/Elf-sky.glb",
-  "terrainGlb": null
+  "terrainGlb": "maps/MainMenu/terrain.glb"
  },
  "objects": {
   "Chargen_Net": {
@@ -3257,8 +3274,8 @@
   "fog": 4279899951,
   "fogEnd": 220.0,
   "fogStart": 0.0,
-  "pointLight": 4294967295,
-  "selfIllum": 4283054187,
+  "pointLight": 4283054187,
+  "selfIllum": 2017861120,
   "specular": 0,
   "sunPitch": 45.0,
   "sunYaw": 225.0,

@@ -599,7 +599,7 @@ def run(out: Path, client: Path, only: list[str] | None, models: bool, scenes: b
         for g in ac.read_growths(db, e.character):
             growths.append({"start": g.start, "loop": g.loop,
                             "items": [{"slot": s, "item": export_item(ctx, i)} for s, i in g.items],
-                            "fx": [{"locator": f["locator"], "scale": f["scale"],
+                            "fx": [{"locator": f["locator"], "scale": f["scale"], "runType": f["runType"],
                                     "fx": ctx.fx.export(f["visObject"]) if ctx.fx is not None else None}
                                    for f in g.fx if f["visObject"] is not None]})
             for clip in (g.start, g.loop):
