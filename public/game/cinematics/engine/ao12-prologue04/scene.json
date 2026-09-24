@@ -352,9 +352,9 @@
    "move": null,
    "appear": 0.0,
    "light": [
-    1.0677,
-    0.9739,
-    0.9192
+    0.8879,
+    0.3596,
+    0.135
    ],
    "geometry": "Characters/Kania_female/KaniaFemale.(Geometry).bin",
    "height": 1.835,
@@ -388,9 +388,9 @@
    "move": null,
    "appear": 0.0,
    "light": [
-    1.1666,
-    1.0729,
-    1.0182
+    0.9655,
+    0.3856,
+    0.1408
    ],
    "geometry": "Creatures/Veronika/Veronika.(Geometry).bin",
    "height": 1.871,
@@ -423,9 +423,9 @@
    "move": null,
    "appear": 0.0,
    "light": [
-    1.1994,
-    1.1056,
-    1.051
+    0.9913,
+    0.3942,
+    0.1427
    ],
    "geometry": "Characters/Kania_male/KaniaMale.(Geometry).bin",
    "height": 1.867,
@@ -477,9 +477,9 @@
    "move": "Run",
    "appear": 39,
    "light": [
-    0.7964,
-    0.7027,
-    0.648
+    0.6752,
+    0.2883,
+    0.119
    ],
    "geometry": "Creatures/NihazDragonBoss/NihazDragonBoss.(Geometry).bin",
    "height": 11.693,
@@ -970,7 +970,15 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.09,
+    1.58,
+    -6.445,
+    6.289,
+    1.643,
+    7.767
+   ]
   },
   "Nihaz_HQ_Column_FX_02": {
    "fadeIn": 0.0,
@@ -1029,7 +1037,15 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.09,
+    1.58,
+    -6.732,
+    6.289,
+    1.643,
+    7.48
+   ]
   },
   "Nihaz_HQ_Column_FX_01": {
    "fadeIn": 0.0,
@@ -1088,7 +1104,15 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.09,
+    1.58,
+    -6.732,
+    6.289,
+    1.643,
+    7.48
+   ]
   },
   "Nihaz_HQ_Column_All_FX": {
    "fadeIn": 0.0,
@@ -1096,6 +1120,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.03,
+    25.534,
+    -5.689,
+    0.03,
+    0.606,
+    0.258
+   ],
    "components": [
     {
      "vot": "Nihaz_HQ_Column_FX",
@@ -1137,6 +1169,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    -42.471,
+    162.528,
+    140.754,
+    102.279
+   ],
    "components": [
     {
      "vot": "Nihaz_HQ_Column_All_FX",
@@ -1261,7 +1301,15 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    0.592,
+    1.345,
+    1.345,
+    0.582
+   ]
   },
   "AC5_Nihaz_Pointer_Runs_01": {
    "fadeIn": 0.0,
@@ -1269,7 +1317,15 @@
    "scale": 1.0,
    "orientation": "Z_AXIS",
    "duration": 8.6667,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.254,
+    -0.001,
+    0.466,
+    0.263,
+    0.001,
+    0.476
+   ]
   },
   "AC5_Nihaz_Pointer_Top_FX": {
    "fadeIn": 0.0,
@@ -1309,6 +1365,14 @@
    },
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    -0.085,
+    1.167,
+    1.011,
+    0.771
+   ],
    "components": [
     {
      "vot": "AC5_Nihaz_Pointer_Runs_01",
@@ -1338,6 +1402,14 @@
    "scale": 1.0,
    "duration": 11.6667,
    "loop": true,
+   "bounds": [
+    0.0,
+    0.0,
+    1.628,
+    1.15,
+    1.15,
+    2.012
+   ],
    "components": [
     {
      "vot": "AC5_Nihaz_Pointer_Lower_FX",
@@ -1561,6 +1633,14 @@
    },
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    -0.043,
+    -0.298,
+    18.236,
+    5.671,
+    5.672,
+    22.037
+   ],
    "sfx": "sfx/AC7_Nihaz_Camp_Lightning_lp"
   },
   "AC5_Nihaz_NPC_Portal": {
@@ -1568,14 +1648,30 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 13.3333,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    0.0,
+    0.654,
+    2.468,
+    5.56,
+    3.431,
+    2.642
+   ]
   },
   "AC6_NihazCamp_Obj": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.652,
+    -4.017,
+    4.029,
+    7.748,
+    10.313,
+    9.532
+   ]
   },
   "Nihaz_Raid11_Generator_Crystal": {
    "fadeIn": 0.0,
@@ -1674,14 +1770,30 @@
     ]
    },
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    -0.0,
+    -1.021,
+    1.932,
+    3.774,
+    9.917
+   ]
   },
   "Nihaz_Raid11_Generator_Ring": {
    "fadeIn": 0.0,
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    -0.052,
+    -0.053,
+    0.03,
+    14.084,
+    14.084,
+    1.694
+   ]
   },
   "Nihaz_Raid11_Generator_Top_01": {
    "fadeIn": 0.0,
@@ -1788,6 +1900,14 @@
    "scale": 1.0,
    "duration": 12.6667,
    "loop": true,
+   "bounds": [
+    0.01,
+    0.003,
+    24.31,
+    17.995,
+    17.998,
+    22.126
+   ],
    "components": [
     {
      "vot": "Nihaz_Raid11_Generator_Crystal",
@@ -1808,7 +1928,15 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    2.891,
+    11.806,
+    9.663,
+    1.636
+   ]
   },
   "Nihaz_Raid11_Generator": {
    "fadeIn": 0.0,
@@ -1816,6 +1944,14 @@
    "scale": 1.0,
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    3.449,
+    26.851,
+    14.033,
+    3.449
+   ],
    "components": [
     {
      "vot": "Nihaz_Raid11_Generator_Top",
@@ -1832,7 +1968,15 @@
    "fadeOut": 0.0,
    "scale": 1.0,
    "duration": 5.3333,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    1.226,
+    0.076,
+    36.423,
+    3.47,
+    3.454,
+    3.509
+   ]
   },
   "Nihaz_Raid11_Plunger": {
    "fadeIn": 0.0,
@@ -1840,6 +1984,14 @@
    "scale": 1.0,
    "duration": 10.0,
    "loop": true,
+   "bounds": [
+    -1.42,
+    0.0,
+    5.69,
+    21.331,
+    10.645,
+    27.549
+   ],
    "components": [
     {
      "vot": "Nihaz_Raid11_Plunger#2",
@@ -1853,7 +2005,15 @@
    "scale": 1.0,
    "orientation": "BILLBOARD",
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.018,
+    0.755,
+    -0.149,
+    38.888,
+    21.581,
+    38.811
+   ]
   },
   "RysinaShield_Center": {
    "fadeIn": 0.0,
@@ -1861,7 +2021,15 @@
    "scale": 1.0,
    "orientation": "Z_AXIS",
    "duration": 0.0,
-   "loop": false
+   "loop": false,
+   "bounds": [
+    0.108,
+    0.0,
+    5.818,
+    3.195,
+    0.007,
+    3.849
+   ]
   },
   "Elf_Big_House_CrystalGlow": {
    "fadeIn": 0.0,
@@ -1941,6 +2109,14 @@
    },
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.0,
+    0.0,
+    4.136,
+    7.751,
+    7.751,
+    5.661
+   ],
    "components": [
     {
      "vot": "RysinaShield_Center",
@@ -1959,7 +2135,15 @@
    "scale": 1.0,
    "orientation": "Z_AXIS",
    "duration": 10.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -3.052,
+    0.008,
+    2.63,
+    9.236,
+    0.169,
+    4.851
+   ]
   },
   "Nihaz_HQ_Hologram_Sphere": {
    "fadeIn": 0.0,
@@ -1967,7 +2151,15 @@
    "scale": 1.0,
    "orientation": "BILLBOARD",
    "duration": 3.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -0.0,
+    -0.862,
+    0.0,
+    3.044,
+    2.182,
+    3.066
+   ]
   },
   "Nihaz_HQ_Hologram_Part_02": {
    "fadeIn": 0.0,
@@ -1976,6 +2168,14 @@
    "orientation": "Z_AXIS",
    "duration": 10.0,
    "loop": true,
+   "bounds": [
+    3.357,
+    0.029,
+    -0.237,
+    2.264,
+    0.06,
+    4.963
+   ],
    "components": [
     {
      "vot": "Nihaz_HQ_Hologram_Sphere",
@@ -1988,7 +2188,15 @@
    "fadeOut": 0.1,
    "scale": 1.0,
    "duration": 3.0,
-   "loop": true
+   "loop": true,
+   "bounds": [
+    -0.0,
+    -0.0,
+    -0.0,
+    0.364,
+    3.796,
+    3.796
+   ]
   },
   "Nihaz_HQ_Hologram": {
    "fadeIn": 0.0,
@@ -2049,6 +2257,14 @@
    },
    "duration": 0.0,
    "loop": false,
+   "bounds": [
+    0.599,
+    -1.386,
+    5.95,
+    1.395,
+    3.153,
+    6.069
+   ],
    "components": [
     {
      "vot": "Nihaz_HQ_Hologram_Part_01",
@@ -2338,11 +2554,14 @@
   "fog": 4280815111,
   "fogEnd": 850.0,
   "fogStart": 80.0,
-  "pointLight": 4294967295,
-  "selfIllum": 4291314447,
+  "pointLight": 4291314447,
+  "selfIllum": 4291313171,
   "specular": 4291311119,
   "sunPitch": 40.0,
   "sunYaw": 45.0,
+  "waterSpecular": 2021161080,
+  "waterGradientStart": 4294967295,
+  "waterGradientEnd": 4294967295,
   "sunDirection": [
    0.5417,
    0.5417,
@@ -3998,6 +4217,7 @@
   "ambience": [
    "sfx/demonic_drone_lp"
   ],
+  "sfx": [],
   "events": {
    "music": [
     "Music/ZonesMusic/AC9_main"

@@ -8,12 +8,12 @@
    },
    "version": "16.0"
   },
-  "start": {
+  "empire-start": {
    "title": {
-    "fr": "Les premiers pas",
-    "en": "First steps"
+    "fr": "La zone de départ de l’Empire",
+    "en": "The Empire starting zone"
    },
-   "version": "4.0"
+   "version": "7.0"
   },
   "ferris": {
    "title": {
@@ -237,6 +237,42 @@
      }
     ]
    },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "empire-start-boarding",
+   "kind": "engine",
+   "source": "main",
+   "event": "Jump",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 110,
+   "title": {
+    "fr": "L’abordage",
+    "en": "Boarding the enemy ship"
+   },
+   "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; juste après le prologue de l’Empire. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "empire-start-knight-defeated",
+   "kind": "engine",
+   "source": "main",
+   "event": "DeathTriggerPaladinFinal",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 120,
+   "title": {
+    "fr": "Le chevalier vaincu",
+    "en": "The knight defeated"
+   },
+   "chronology": "Fin du tutoriel de l’Empire : Gradimir Belov vaincu, le joueur quitte le navire kanien pour Igsh (Hadagan_Sanatorium) ; suit l’abordage.",
    "audio": {
     "language": "ru"
    }
@@ -1398,42 +1434,6 @@
     "en": "The Fall of the Locus"
    },
    "chronology": "Cinématique moteur de fin du raid de Ferris (« LastEnd_CutScene », 6.0) : le Locus s’effondre, la fuite, puis le Ваятель révèle ce qui attend Sarnaut ; clôt l’arc de Ferris avant l’Invasion (7.0).",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "league-klement-death",
-   "kind": "engine",
-   "source": "main",
-   "event": "PaladinQuest",
-   "arc": "start",
-   "version": "4.0",
-   "faction": "league",
-   "order": 110,
-   "title": {
-    "fr": "La mort du Grand Mage",
-    "en": "The Great Mage’s Death"
-   },
-   "chronology": "Instance de départ de la Ligue (Inst_LeagueStart, voix « patch403 ») : première scène jouée, au sommet de la tour, pendant les quêtes « Аудиенция у Великого мага » ; après le prologue de faction.",
-   "audio": {
-    "language": "ru"
-   }
-  },
-  {
-   "id": "league-evacuation",
-   "kind": "engine",
-   "source": "main",
-   "event": "Quest_4_30",
-   "arc": "start",
-   "version": "4.0",
-   "faction": "league",
-   "order": 120,
-   "title": {
-    "fr": "L’évacuation",
-    "en": "The Evacuation"
-   },
-   "chronology": "Instance de départ de la Ligue : quête « Эвакуация » (Quest_4_30), au pied de la tour, avant « Дорога в Новоград » qui clôt l’instance ; suit la mort du Grand Mage.",
    "audio": {
     "language": "ru"
    }
@@ -23123,129 +23123,48 @@
    "_note": "GameViewScene 438509 (CutScene_EngineerDeathKania, Inst_ZoneContested12_Start) jouée par le ShowSceneAction de la stèle 438512 : trois assassins colosses (special03, 04, 05) et Luka (special08) à la place de la scène, caméra au cameraPlacement. Caméra : le cameraPlacement (drapeau use) pose le spectateur ; caméra à 2 m au-dessus, regard selon son lacet (vue de joueur). La version hadagane (CutScene_EngineerDeathHadagan du 7.0) n’existe plus dans le 17.0 : la GameViewScene 443968, voisine, est l’explosion du navire, déjà dans le film en vidéo."
   },
   {
-   "id": "league-klement-death",
+   "id": "empire-start-boarding",
    "source": "xdb70",
-   "first_buff": "Maps/Inst_LeagueStart/ScriptZones/PaladinQuest.(ScriptZone).xdb",
-   "impacts": "impactsIn",
-   "map": "Inst_LeagueStart",
-   "devices": [
-    {
-     "device": "Device_Floor6_GameScene",
-     "state": 1,
-     "_note": "Posé par la zone Tutorial_03 (entrée à l’étage 6, juste avant) : les apprentis debout (Floor6_People, script PeopleStand)."
-    }
-   ],
-   "camera": {
-    "points": [
-     {
-      "t": 0,
-      "p": [
-       325.5767,
-       5791.775,
-       158.614
-      ]
-     }
-    ],
-    "targets": [
-     {
-      "t": 0,
-      "p": [
-       298.79,
-       5800.45,
-       158.4
-      ]
-     }
-    ],
-    "_note": "Aucune caméra dans les données : la scène se joue dans la vue du joueur. Point de vue : centre de la zone de script PaladinQuest (1_2_ServerObjects, celle que le joueur atteint en venant de Tutorial_03), à 2 m, regard vers le Grand Mage (GreatMage, même fichier)."
+   "trigger": "Maps/Inst_EmpireStart/ScriptZones/Jump.(ScriptZone).xdb",
+   "map": "Inst_EmpireStart",
+   "states": {
+    "Empire_Ship_Fight1": 1,
+    "League_Ship_Fight1": 1,
+    "League_Ship_Final": 0
    },
-   "fr_blocks": [
-    {
-     "ru": 182572,
-     "fr": 176506,
-     "count": 2,
-     "_note": "Bulles du Grand Mage (MageSpeech02, 02a) : « Теперь, когда… » ↔ « Maintenant que la menace… », « Пришёл наш час… » ↔ « Le moment est venu… »."
-    },
-    {
-     "ru": 182588,
-     "fr": 176439,
-     "count": 16,
-     "_note": "Bulles de l’instance (Follow me! ↔ Suis-moi !, Come on! ↔ Allez !, The portal's open ↔ Le portail est ouvert, protective field ↔ champ protecteur, breaking through ↔ Ils arrivent à passer, into the portal ↔ Vite, vers le portail, Lure him ↔ Attirez-le) : écart constant, relu réplique par réplique."
-    },
-    {
-     "ru": 182655,
-     "fr": 176506,
-     "count": 3,
-     "_note": "Messages de PNJ (TextMessage) : les deux discours du Grand Mage, « Осторожно, камни! » ↔ « Attention ! Rochers ! »."
-    }
-   ],
-   "_note": "Zone PaladinQuest (Inst_LeagueStart, 7.0) rejouée depuis l’arbre serveur : discours du Grand Mage Klement (voix, bulles), l’Ombre invoquée sur KillerSpawn qui le frappe, sa mort, les apprentis de l’étage 6 qui meurent (GameViewScene Floor6_People, script PeopleDie, état 2 de la stèle Device_Floor6_GameScene), l’effondrement de l’étage (RoomDestruction), la chute des paladins et de Светобор Ратнев, qui court au mage mourant et le pleure.",
-   "start_at": {
-    "KaniaPaladin": {
-     "locator": "2GreatMage07",
-     "_note": "La zone Tutorial_03 (juste avant) fait courir Светобор Ратнев de sa place à 2GreatMage03…07 : il attend là."
-    }
-   }
+   "states_note": "États des stèles à l’entrée de la zone Jump, laissés par le tutoriel (arbre serveur 7.0) : LastEventStart met Empire_Ship_Fight1 à 1 (combat), TeleportPaladin met League_Ship_Fight1 à 1 et n’active Jump que 9 s plus tard (ImpactScriptZoneSetDisabled, disable=false) ; rien ne touche League_Ship_Final avant Jump (action par défaut : modèle KaniaShip, idle tenu).",
+   "audio": {
+    "music": [
+     "Music/ZonesMusic/IE1_main"
+    ],
+    "ambience": [
+     "Ambience/AstralAmbience/4Layer_3Tier"
+    ]
+   },
+   "audio_note": "Buffs posés avant la scène et encore actifs : MusicBuff (EnemyAtack ; retiré plus tard par Key2_Spell) joue Music/ZonesMusic/IE1_main, IE1_Ships_Ambient (LastEventStart ; retiré à la mort de Gradimir) joue Ambience/AstralAmbience/4Layer_3Tier.",
+   "_note": "Zone de script Jump du tutoriel de l’Empire (Inst_EmpireStart, quête Quest4_4 « Схватка с витязем ») : buff Jump_Camera (14 s, plan JumpCameraFix), le navire impérial touché (Shield.CanonHitFire aux repères IE_Boom_01…04, Hull.Death à IE_ShipDestroy et IE_ShipDestroy2, son IE1_ShipDestroy), les combattants de la GameViewScene IE1_EmpireShip_Fight1 tombent (état 2) puis disparaissent (état 3), le Спрутоглав (IE1_Ktulha) suit son chemin puis est retiré, débarquement (Demon_Desant : SummonUndead aux repères d’arrivée), le navire kanien (stèle League_Ship_Final) passe à idle01. Le joueur, qui saute (ShipOutJump, route FromShipFly), n’est pas montré."
   },
   {
-   "id": "league-evacuation",
+   "id": "empire-start-knight-defeated",
    "source": "xdb70",
-   "first_buff": "World/Quests/InstLeague1/Quest_4_30/Quest_4_30.xdb",
-   "impacts": "startImpacts",
-   "map": "Inst_LeagueStart",
-   "interlocutor": {
-    "mob": "Characters/Gibberling_male/Instances/InstLeague1/LI_GibberlingStalker3.(MobWorld).xdb",
-    "p": [
-     304.6679,
-     5815.384,
-     32.5608
-    ],
-    "yaw": 0.0,
-    "_note": "Donneur de la quête « Эвакуация » (sa MobWorld cite Quest_4_30) ; le gibberling suit le joueur et prend cette forme dans la zone FinalGibberlingMorph : son centre (1_2_ServerObjects) donne sa place au départ."
+   "trigger": "Mechanics/Spells/QuestSpells/IE1_DesantDeath/DeathTriggerPaladinFinal.(AbilityResource).xdb",
+   "trigger_effect": "HealthTrigger",
+   "trigger_owner": "IE1_Paladin02",
+   "map": "Inst_EmpireStart",
+   "states": {
+    "Empire_Ship_Fight1": 3,
+    "League_Ship_Fight1": 2,
+    "League_Ship_Final": 2
    },
-   "camera": {
-    "points": [
-     {
-      "t": 0,
-      "p": [
-       300.0371,
-       5800.166,
-       34.5608
-      ]
-     }
-    ],
-    "targets": [
-     {
-      "t": 0,
-      "p": [
-       315.2649,
-       5855.2437,
-       33.1283
-      ]
-     }
-    ],
-    "_note": "Aucune caméra dans les données. Point de vue : centre de la zone TeleportOut (sortie par le portail, but de la quête), à 2 m, regard vers la place de la GameViewScene du combat (Floor1_PeopleFight01) : l’étage 1 entier, du portail au front."
+   "states_note": "États laissés par le tutoriel à la mort de Gradimir Belov : Jump a mis Empire_Ship_Fight1 à 3 (plus personne) et League_Ship_Final à 2 (idle01) ; Key2_Spell (le Лазор, après l’abordage : il retire le bouclier de Gradimir que TeleportPaladin avait posé) a mis League_Ship_Fight1 à 2 (morts).",
+   "audio": {
+    "music": [],
+    "ambience": [
+     "Ambience/AstralAmbience/4Layer_3Tier"
+    ]
    },
-   "fr_blocks": [
-    {
-     "ru": 182572,
-     "fr": 176506,
-     "count": 2,
-     "_note": "Bulles du Grand Mage (MageSpeech02, 02a) : « Теперь, когда… » ↔ « Maintenant que la menace… », « Пришёл наш час… » ↔ « Le moment est venu… »."
-    },
-    {
-     "ru": 182588,
-     "fr": 176439,
-     "count": 16,
-     "_note": "Bulles de l’instance (Follow me! ↔ Suis-moi !, Come on! ↔ Allez !, The portal's open ↔ Le portail est ouvert, protective field ↔ champ protecteur, breaking through ↔ Ils arrivent à passer, into the portal ↔ Vite, vers le portail, Lure him ↔ Attirez-le) : écart constant, relu réplique par réplique."
-    },
-    {
-     "ru": 182655,
-     "fr": 176506,
-     "count": 3,
-     "_note": "Messages de PNJ (TextMessage) : les deux discours du Grand Mage, « Осторожно, камни! » ↔ « Attention ! Rochers ! »."
-    }
-   ],
-   "_note": "Début de la quête « Эвакуация » (Quest_4_30.startImpacts, 7.0) : le gibberling court vers le front et appelle, Amanda ouvre le portail et lève son champ protecteur ; trois GameViewScene de l’étage 1 posées par leurs stèles (état 1) — combat des civils et des démons (1 s), civils qui fuient par le portail (4 s), démons (15 s). La scène dure jusqu’à la fin du plus long de leurs scripts."
+   "audio_note": "MusicBuff a été retiré par Key2_Spell : pas de musique de buff ; IE1_Ships_Ambient reste jusqu’à la téléportation (retiré à 24 s).",
+   "_note": "Capacité DeathTriggerPaladinFinal de Gradimir Belov (Quest4_4) : à sa mort, le joueur se téléporte (Teleport4sec, fondu au noir Effect_Avatar_Fade), à 9 s le buff Teleport4sec_Camera (17 s, plan IE1_Teleport_Camera), à 10 s le navire kanien joue « special » (League_Ship_Final, état 3) et ses combattants disparaissent (League_Ship_Fight1, état 3), à 24 s le joueur part pour Hadagan_Sanatorium (ImpactTeleport) : la scène va du premier plan (9 s) au départ (24 s). La réplique de la mort de Gradimir (IE1/24_Gradimir_Death, bulle sans sous-titre) est dite à 0 s, avant le plan : hors scène."
   }
  ]
 }

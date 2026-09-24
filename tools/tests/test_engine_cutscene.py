@@ -286,88 +286,82 @@ def test_lightmap_uv_skips_the_two_texel_border_and_flips_y():
     assert np.allclose(uv[0], [514, 510]) and np.allclose(uv[1], [1022, 2]) and np.allclose(uv[2], [768, 256])
 
 
-def test_find_wave_takes_the_first_recorded_variant():
-    index = {"15amanda04v2patch403": [("SFX/Voice/Voice_IL1_3D_rus.bsb", 40, "15_amanda_04_v2_patch403")],
-             "15amanda04v1patch403": [("SFX/Voice/Voice_IL1_3D_rus.bsb", 39, "15_amanda_04_v1_patch403")],
-             "18amanda07patch403": [("SFX/Voice/Voice_IL1_3D_rus.bsb", 48, "18_Amanda_07_patch403")]}
-    assert find_wave("IL1/15_Amanda_04", index, "SFX/Voice/")[2] == "15_amanda_04_v1_patch403"
-    assert find_wave("IL1/18_Amanda_07", index, "SFX/Voice/")[1] == 48
-    assert find_wave("IL1/15_Amanda_0", index) is None
+def test_xdb70_trigger_zone_takes_the_if_branch_and_records_states_fx_and_exit(tmp_path):
+    (tmp_path / "Boom.(ClientData).xdb").write_text("""<ClientData><customData type="CreatureVisActionData">
+      <action type="CreatureFixedPointProjectileAction"><projectileFx href="/P.(VisObjectTemplate).xdb" />
+      <explosionFx href="/E.(VisObjectTemplate).xdb" /><theGe>5</theGe>
+      <lines><Item><throwDuration>3000</throwDuration><endPointIndex>1</endPointIndex></Item></lines></action>
+    </customData></ClientData>""")
+    (tmp_path / "Snd.(ClientData).xdb").write_text("""<ClientData><customData type="CreatureVisActionData">
+      <action type="Sound2DAction"><sound><project href="/SFX/World/World.(FMODProject).xdb" />
+      <name>World/Zones/IE1/IE1_ShipDestroy</name></sound></action></customData></ClientData>""")
+
+    def spawn(script: str, inner: str) -> str:
+        return (f"<Item type=\"gameMechanics.elements.impacts.ImpactsToSingleSpawn\"><spawn><scriptID>{script}</scriptID>"
+                f"</spawn><impacts>{inner}</impacts></Item>")
+    state = '<Item type="gameMechanics.elements.impacts.ImpactSetVisualState"><visualState>{}</visualState></Item>'
+    (tmp_path / "Z.(ScriptZone).xdb").write_text(f"""<ScriptZone><impactsIn>
+      <Item type="gameMechanics.elements.impacts.ImpactIfTarget"><impactsIf>
+        <Item type="gameMechanics.elements.impacts.ImpactsDeferred"><delay>2000</delay><impacts>
+          <Item type="gameMechanics.elements.impacts.ImpactClientData"><data href="Boom.(ClientData).xdb" />
+            <locators><Item><scriptID>A</scriptID></Item><Item><scriptID>B</scriptID></Item></locators></Item>
+          <Item type="gameMechanics.elements.impacts.ImpactClientDataParams"><data href="Snd.(ClientData).xdb" /></Item>
+          {spawn('Ship', state.format(2))}
+        </impacts></Item></impactsIf>
+        <impactsElse>{spawn('No', state.format(9))}</impactsElse></Item>
+      {spawn('Squid', '<Item type="gameMechanics.elements.impacts.GoThroughPath"><path><Item><scriptID>P1</scriptID></Item></path></Item>'
+             '<Item type="gameMechanics.elements.impacts.ImpactsDeferred"><delay>4000</delay><impacts>'
+             '<Item type="gameMechanics.elements.impacts.Disintegrate" /></impacts></Item>')}
+      <Item type="gameMechanics.elements.impacts.ImpactsDeferred"><delay>6000</delay><impacts>
+        <Item type="gameMechanics.elements.impacts.ImpactTeleport" /></impacts></Item>
+    </impactsIn></ScriptZone>""")
+    tl = cutscene_xdb70.simulate(tmp_path, trigger="Z.(ScriptZone).xdb")
+    assert tl.states == [{"t": 2.0, "spawn": "Ship", "state": 2}]
+    (fx,) = tl.fx
+    assert fx["locators"] == ["A", "B"] and fx["throw"] == 3.0 and fx["end"] == 1
+    assert fx["explosion"] == "E.(VisObjectTemplate).xdb"
+    assert tl.sfx[0]["name"] == "World/Zones/IE1/IE1_ShipDestroy" and not tl.lines
+    assert tl.spawn_moves == {"Squid": [{"t": 0.0, "locator": "P1"}]} and tl.spawn_until == {"Squid": 4.0}
+    assert tl.exit == 6.0 and tl.duration == 6.0
 
 
-def _league_tree(tmp_path):
-    """Quête qui pose l'état 1 d'une stèle de scène (1 s) puis l'état 2 (61 s), fait courir et parler
-    son donneur, tue un PNJ, et n'emprunte que la branche `impactsIf` d'un `ImpactIfTarget`."""
-    (tmp_path / "Maps" / "M" / "000_000").mkdir(parents=True)
-    (tmp_path / "Dev").mkdir()
-    (tmp_path / "Dev" / "S.(SteleResource).xdb").write_text(
-        '<SteleResource><visScripts href="S.(DeviceVisScripts).xdb" /></SteleResource>')
-    (tmp_path / "Dev" / "S.(DeviceVisScripts).xdb").write_text("""<DeviceVisScripts><states>
-      <Item><action type="ShowSceneAction"><scene href="/Maps/M/Fight.xdb" /><script href="Fight.(GameViewScript).xdb" /></action></Item>
-      <Item><action type="ShowSceneAction"><scene href="/Maps/M/NoScene.xdb" /></action></Item></states></DeviceVisScripts>""")
-    (tmp_path / "Maps" / "M" / "Fight.xdb").write_text(
-        "<GameViewScene><place><x>10</x><y>20</y><z>3</z></place><mobs><Item><scriptID>A</scriptID></Item></mobs></GameViewScene>")
-    (tmp_path / "Maps" / "M" / "000_000" / "0_0_ServerObjects.xdb").write_text("""<PatchObjects><objects>
-      <Item><scriptID>Dev1</scriptID><place><center x="1" y="2" z="3" /><yaw>0</yaw></place><object href="/Dev/S.(SteleResource).xdb" /></Item>
-      <Item type="gameMechanics.map.Locator"><scriptID>Far</scriptID><position x="10" y="0" z="0" /><yaw>0</yaw></Item>
-    </objects></PatchObjects>""")
-    (tmp_path / "Line.(ClientData).xdb").write_text(
-        '<ClientData><customData type="InterfaceAction"><sysId>ENUM_SHOW_BUBBLE</sysId><text href="Line.txt" /></customData></ClientData>')
-    (tmp_path / "Line.txt").write_bytes("Портал открыт!".encode("utf-16"))
-    (tmp_path / "M.(TextMessage).xdb").write_text('<TextMessage><Text href="Line.txt" /></TextMessage>')
-    (tmp_path / "China.(TextMessage).xdb").write_text('<TextMessage><Text href="Line.txt" /></TextMessage>')
-
-    def spawn(s, body):
-        return (f'<Item type="x.ImpactsToSingleSpawn"><spawn><scriptID>{s}</scriptID><map href="/Maps/M/MapResource.xdb" />'
-                f'</spawn><impacts>{body}</impacts></Item>')
-    state = '<Item type="x.ImpactSetVisualState"><visualState>{}</visualState></Item>'
-    (tmp_path / "Q.xdb").write_text(f"""<QuestResource><startImpacts>
-      <Item type="x.ImpactsDeferred"><delay>1000</delay><impacts>{spawn('Dev1', state.format(1) +
-        '<Item type="x.DeviceImpactsDeferred"><delay>60000</delay><impacts>' + state.format(2) + '</impacts></Item>')}</impacts></Item>
-      <Item type="x.ImpactsToInterlocutor"><impacts>
-        <Item type="x.GoThroughPath"><runningMode>true</runningMode><path><Item><scriptID>Far</scriptID></Item></path></Item>
-        <Item type="x.ImpactsDeferred"><delay>2000</delay><impacts>
-          <Item type="x.ImpactClientDataParams"><data href="Line.(ClientData).xdb" /></Item></impacts></Item></impacts></Item>
-      <Item type="x.ImpactIfTarget"><impactsIf><Item type="x.ImpactMobChat"><msg href="M.(TextMessage).xdb" /></Item></impactsIf>
-        <impactsElse><Item type="x.ImpactMobChat"><msg href="China.(TextMessage).xdb" /></Item></impactsElse></Item>
-      <Item type="x.ImpactsDeferred"><delay>3000</delay><impacts>{spawn('Mage', '<Item type="x.ImpactKill" />')}</impacts></Item>
-    </startImpacts></QuestResource>""")
+def test_xdb70_ability_trigger_reads_only_the_named_effect():
+    import xml.etree.ElementTree as ET
+    doc = ET.fromstring("""<AbilityResource><effects>
+      <Item type="gameMechanics.elements.effects.HealthTrigger"><impactsOn><Item type="a.X" /></impactsOn></Item>
+      <Item type="gameMechanics.elements.effects.CombatStateTrigger"><impactsOn><Item type="a.Y" /></impactsOn></Item>
+    </effects></AbilityResource>""")
+    assert [i.get("type") for i in cutscene_xdb70.trigger_impacts(doc, "HealthTrigger")] == ["a.X"]
 
 
-def test_xdb70_quest_impacts_play_device_scenes_moves_and_bubbles(tmp_path):
-    _league_tree(tmp_path)
-    tl = cutscene_xdb70.simulate(tmp_path, "Q.xdb", impacts="startImpacts")
-    assert tl.devices == [{"t": 1.0, "device": "Dev1", "state": 1}, {"t": 61.0, "device": "Dev1", "state": 2}]
-    assert tl.moves == {"interlocutor": [{"t": 0.0, "locator": "Far", "run": True}]}
-    assert tl.kills == {"Mage": 3.0}
-    (line,) = tl.lines
-    assert line["bubble"] == "Портал открыт!" and line["t"] == 2.0 and line["speaker"] == "interlocutor"
-    assert [c["message"] for c in tl.chats] == ["M.(TextMessage).xdb"]       # `impactsIf` seulement
-    scenes = cutscene_xdb70.device_scenes(tmp_path, "M", tl.devices)
-    # état visuel n → `states[n - 1]` : la scène à 1 s, retirée (`NoScene`) à 61 s
-    assert [(s["t"], s["until"], s["scene"]) for s in scenes] == [(1.0, 61.0, "Maps/M/Fight.xdb"),
-                                                                 (61.0, None, "Maps/M/NoScene.xdb")]
-    assert cutscene_xdb70.read_game_scene(tmp_path, "Maps/M/Fight.xdb") == {"place": [10.0, 20.0, 3.0], "mobs": ["A"]}
+def test_state_windows_start_from_the_manifest_state():
+    from tools.extract_engine_cutscene import state_windows
+    w = state_windows(1, [{"t": 0.0, "state": 2}, {"t": 11.0, "state": 3}], 14.0)
+    assert w == [(-1e6, 0.0, 1), (0.0, 11.0, 2), (11.0, 14.0, 3)]
 
 
-def test_merge_bubbles_gives_a_voice_its_bubble_and_drops_twin_chats():
-    from tools.extract_engine_cutscene import merge_bubbles
-    base = {"ru": "", "animations": [], "delay_ms": 0}
-    lines = [{**base, "t": 12.0, "speaker": "elf", "voice": "IL1/15_Amanda_04", "clientdata": "15_Elf01"},
-             {**base, "t": 12.0, "speaker": "elf", "voice": None, "bubble": "Портал открыт!", "clientdata": "15_Elf01_Bubble"},
-             {**base, "t": 5.0, "speaker": "elf", "voice": "World/Zones/IL1/CameraShake", "clientdata": "Shake"}]
-    chats = [{"t": 12.0, "speaker": "elf", "ru": "Портал открыт!", "message": "Elf.(TextMessage)"},
-             {"t": 20.0, "speaker": "elf", "ru": "Прыгай!", "message": "Jump.(TextMessage)"}]
-    out = merge_bubbles(sorted(lines, key=lambda l: l["t"]), chats)
-    assert [(l["t"], l["voice"], l.get("bubble")) for l in out] == [
-        (5.0, "World/Zones/IL1/CameraShake", None), (12.0, "IL1/15_Amanda_04", "Портал открыт!"), (20.0, None, "Прыгай!")]
+def test_read_zone_light_reads_point_light_after_the_constant_field():
+    """Élément `Ferris4_Base` : `+0x48` vaut −1, `PointLightColor` 12362130 en `+0x4C` (7.0)."""
+    from tools.allods_scenes import ZONE_LIGHTS, read_zone_light
+    raw = bytearray(0x200)
+    e = 0x100
+    for off, value in ((0x24, 0xFF655045), (0x48, 0xFFFFFFFF), (0x4C, 12362130), (0x50, 2024878104), (0x54, 9259293)):
+        struct.pack_into("<I", raw, e + off, value)
 
+    class Db:
+        def resources(self, kind):
+            return [0]
 
-def test_walk_placed_waits_for_the_previous_walk_and_runs_faster():
-    from tools.extract_engine_cutscene import RUN_SPEED, walk_placed
-    path = [{"t": 0, "p": [0.0, 0.0, 0.0], "yaw": 0.0}]
-    spawns = {"A": {"p": [0.0, 13.0, 0.0]}, "B": {"p": [2.0, 13.0, 0.0]}}
-    moves = [{"t": 1.0, "locator": "A", "run": True}, {"t": 1.0, "locator": "B", "run": False}]
-    end = walk_placed(path, moves, spawns, 2.0, {"id": "x"}, [])
-    assert path[1] == {"t": 1.0, "p": [0.0, 0.0, 0.0], "yaw": 0.0}
-    assert path[2]["t"] == round(1 + 13 / RUN_SPEED, 3) and end == round(1 + 13 / RUN_SPEED + 1.0, 3)
+        def elements(self, loc, stride):
+            return [e] if loc == ZONE_LIGHTS else []
+
+        def ptr(self, loc):
+            return None
+
+        def u32(self, off):
+            return struct.unpack_from("<I", raw, off)[0]
+
+        def f32(self, off):
+            return struct.unpack_from("<f", raw, off)[0]
+    light = read_zone_light(Db())
+    assert light["pointLight"] == 12362130 and light["selfIllum"] == 2024878104 and light["specular"] == 9259293

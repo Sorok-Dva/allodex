@@ -7,6 +7,13 @@
    },
    "version": "16.0"
   },
+  "empire-start": {
+   "title": {
+    "fr": "La zone de départ de l’Empire",
+    "en": "The Empire starting zone"
+   },
+   "version": "7.0"
+  },
   "ferris": {
    "title": {
     "fr": "Ferris",
@@ -203,6 +210,72 @@
     "event": "FactionsIntro/LeagueIntro"
    },
    "chronology": "Groupe « FactionsIntro » du registre (16.0) : introduction jouée au début du parcours d’un personnage de la Ligue ; placée en tête du film."
+  },
+  {
+   "id": "empire-start-boarding",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 110,
+   "event": "Jump",
+   "title": {
+    "fr": "L’abordage",
+    "en": "Boarding the enemy ship"
+   },
+   "chronology": "Scène moteur du tutoriel de l’Empire (Inst_EmpireStart, quête « Схватка с витязем ») : le joueur quitte le navire impérial touché pour le navire kanien ; juste après le prologue de l’Empire. Attestée dans l’arbre serveur 7.0 et le client 17.0 ; absente des clients 3.0.2 et 4.2, qui ont déjà la carte.",
+   "bonus": false,
+   "duration": 14.0,
+   "files": {
+    "poster": "engine/empire-start-boarding/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/empire-start-boarding/scene.json"
+   },
+   "tracks": [],
+   "subtitles": {
+    "status": "official",
+    "lines": 0,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
+  },
+  {
+   "id": "empire-start-knight-defeated",
+   "arc": "empire-start",
+   "version": "7.0",
+   "faction": "empire",
+   "order": 120,
+   "event": "DeathTriggerPaladinFinal",
+   "title": {
+    "fr": "Le chevalier vaincu",
+    "en": "The knight defeated"
+   },
+   "chronology": "Fin du tutoriel de l’Empire : Gradimir Belov vaincu, le joueur quitte le navire kanien pour Igsh (Hadagan_Sanatorium) ; suit l’abordage.",
+   "bonus": false,
+   "duration": 15.0,
+   "files": {
+    "poster": "engine/empire-start-knight-defeated/poster.jpg"
+   },
+   "engine": {
+    "scene": "engine/empire-start-knight-defeated/scene.json"
+   },
+   "tracks": [],
+   "subtitles": {
+    "status": "official",
+    "lines": 0,
+    "timing": "server",
+    "audio": {
+     "language": "ru"
+    }
+   },
+   "audio": {
+    "language": "ru"
+   }
   },
   {
    "id": "ferris-retrospective",

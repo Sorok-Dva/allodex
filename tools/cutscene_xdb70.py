@@ -94,30 +94,24 @@ class Timeline:
     maps: set[str] = field(default_factory=set)
     # PNJ invoqués : {id, mob, name, locator, yaw (rad), t, until, moves: [{t, locator}]}
     summons: list[dict] = field(default_factory=list)
-    # États visuels posés sur une stèle (`ImpactSetVisualState`) : {t, device (scriptID), state}
-    devices: list[dict] = field(default_factory=list)
-    # PNJ posés sur la carte que le déroulé fait marcher (`GoThroughPath`, `ImpactGoTo`) :
-    # scriptID → [{t, locator, run}] ; retirés (`Disintegrate`) : scriptID → t
-    moves: dict[str, list[dict]] = field(default_factory=dict)
-    gone: dict[str, float] = field(default_factory=dict)
-    # PNJ tués par le déroulé (`ImpactKill`) : scriptID → t
-    kills: dict[str, float] = field(default_factory=dict)
-    # Messages de PNJ (`ImpactMobChat` → `TextMessage`) : {t, speaker, ru, message}
-    chats: list[dict] = field(default_factory=list)
+    # Déroulé ouvert par un déclencheur (`trigger`, zone de script ou effet d'une capacité) :
+    # états visuels posés sur les stèles (`ImpactSetVisualState`), effets de `ClientData` posés sur
+    # des repères (projectile, explosion, rayon), sons ponctuels, trajets et retrait des PNJ posés,
+    # sortie du joueur de la carte (`ImpactTeleport`).
+    states: list[dict] = field(default_factory=list)
+    fx: list[dict] = field(default_factory=list)
+    sfx: list[dict] = field(default_factory=list)
+    spawn_moves: dict[str, list[dict]] = field(default_factory=dict)
+    spawn_until: dict[str, float] = field(default_factory=dict)
+    exit: float | None = None
 
 
 def read_client_data(tree: Tree, path: Path) -> dict:
-    """Réplique d'un `ClientData` 7.0 : texte russe, durée, voix, animations ; bulle au-dessus du
-    PNJ (`InterfaceAction` `ENUM_SHOW_BUBBLE` : `bubble`, texte russe)."""
+    """Réplique d'un `ClientData` 7.0 : texte russe, durée, voix, animations."""
     doc = _read(path)
     out = {"clientdata": tree.rel(path), "ru": "", "delay_ms": 0, "voice": None, "animations": []}
     if doc is None:
         return out
-    for data in doc.iter("customData"):
-        if (data.get("type") or "").endswith("InterfaceAction") and data.findtext("sysId") == "ENUM_SHOW_BUBBLE":
-            href = data.find("text")
-            if href is not None and href.get("href"):
-                out["bubble"] = clean(_text(tree.resolve(path, href.get("href"))))
     for item in doc.iter("subtitles"):
         for sub in item:
             href = sub.find("text")
@@ -132,6 +126,26 @@ def read_client_data(tree: Tree, path: Path) -> dict:
             break
     for anims in doc.iter("animations"):
         out["animations"] += [a.text for a in anims if a.text]
+    action = doc.find("customData/action")
+    kind = (action.get("type") or "").rsplit(".", 1)[-1] if action is not None else ""
+    out["kind"] = kind
+    if kind == "CreatureFixedPointProjectileAction":
+        # Projectile d'un repère à l'autre (`lines` : `endPointIndex`, `throwDuration` ms), explosion
+        # à l'arrivée : un effet posé, sans PNJ.
+        def ref(tag: str) -> str | None:
+            node = action.find(tag)
+            return tree.rel(tree.resolve(path, node.get("href"))) if node is not None and node.get("href") else None
+        line = action.find("lines/Item")
+        out["projectile"] = {"projectile": ref("projectileFx"), "explosion": ref("explosionFx"),
+                             "theGe": _f(action, "theGe"), "throw": _f(line, "throwDuration") / 1000.0,
+                             "end": int(_f(line, "endPointIndex"))}
+        out["voice"] = None
+    elif kind in ("Sound2DAction", "Sound3DAction"):
+        project = action.find("sound/project")
+        href = project.get("href", "") if project is not None else ""
+        if out["voice"] and "VoiceDialogs" not in href and not out["ru"]:
+            # Son d'effet (projet `World`, `Ambience`…) : pas une réplique.
+            out["sound"] = {"name": out["voice"], "kind": kind, "type": action.findtext("actionType") or "Simple"}
     return out
 
 
@@ -145,11 +159,15 @@ def read_camera(action: ET.Element) -> dict:
 class Simulator:
     """Déroule une chaîne de buffs à partir de son premier buff."""
 
-    def __init__(self, tree: Tree, horizon: float = 600.0) -> None:
+    def __init__(self, tree: Tree, horizon: float = 600.0, extended: bool = False) -> None:
         self.tree = tree
         self.tl = Timeline()
         self.horizon = horizon
         self.open: dict[str, dict] = {}     # buff sans durée → entrée, fermée par un BuffDetacher
+        # Déroulé d'un déclencheur (zone de script, capacité) : branches `ImpactIfTarget`, impacts
+        # instanciés ou sur les avatars voisins, états des stèles, effets et sons des `ClientData`,
+        # PNJ posés qui marchent ou disparaissent. Les chaînes de buffs gardent leur lecture.
+        self.extended = extended
 
     def attach(self, path: Path, t: float, target: str = "player") -> None:
         if t > self.horizon or len(self.tl.buffs) > 400:
@@ -217,36 +235,10 @@ class Simulator:
                     self.tl.maps.add(m.group(1))
             for sub in node.findall("impacts/Item"):
                 self.impact(base, sub, t, script or target)
-        elif kind in ("ImpactsDeferred", "DeviceImpactsDeferred"):
+        elif kind == "ImpactsDeferred":
             delay = _f(node, "delay") / 1000.0
             for sub in node.findall("impacts/Item"):
                 self.impact(base, sub, t + delay, target)
-        elif kind in ("ImpactInstantiating", "ImpactInstantiatingWithAddressee"):
-            for sub in node.findall("impacts/Item"):
-                self.impact(base, sub, t, target)
-        elif kind == "ImpactsToInterlocutor":
-            # PNJ à qui parle le joueur (donneur de la quête) : désigné « interlocutor », le manifeste
-            # le rattache à un PNJ.
-            for sub in node.findall("impacts/Item"):
-                self.impact(base, sub, t, "interlocutor")
-        elif kind == "ImpactIfTarget":
-            # Seules conditions rencontrées : `PredicateNot(PredicateHasContentKey China)` — la version
-            # chinoise passe par `impactsElse` ; les autres clients jouent `impactsIf`.
-            for sub in node.findall("impactsIf/Item"):
-                self.impact(base, sub, t, target)
-        elif kind == "ImpactSetVisualState" and target not in ("player", "interlocutor"):
-            self.tl.devices.append({"t": round(t, 3), "device": target, "state": int(_f(node, "visualState"))})
-            self.tl.scripts.add(target)
-        elif kind == "ImpactMobChat":
-            msg = node.find("msg")
-            if msg is not None and msg.get("href"):
-                path = self.tree.resolve(base, msg.get("href"))
-                doc = _read(path)
-                href = next((e.get("href") for e in doc.iter() if e.tag.lower() == "text" and e.get("href")), None) \
-                    if doc is not None else None
-                if href:
-                    self.tl.chats.append({"t": round(t, 3), "speaker": target, "message": self.tree.rel(path),
-                                          "ru": clean(_text(self.tree.resolve(path, href)))})
         elif kind == "ImpactSummon":
             self.summon(base, node, t)
         elif kind == "ImpactFindSpawnTable":
@@ -255,7 +247,6 @@ class Simulator:
                 self.impact(base, sub, t, table or target)
         elif kind == "GoThroughPath":
             summon = self.summon_by_id(target)
-            run = (node.findtext("runningMode") or "").strip() == "true"
             for step in node.findall("path/Item"):
                 locator = step.findtext("scriptID")
                 mp = step.find("map")
@@ -263,40 +254,68 @@ class Simulator:
                     m = re.search(r"/Maps/([^/]+)/", mp.get("href"))
                     if m:
                         self.tl.maps.add(m.group(1))
-                if not locator:
-                    continue
-                if summon is not None:
+                if summon is not None and locator:
                     summon["moves"].append({"t": round(t, 3), "locator": locator})
                     self.tl.scripts.add(locator)
-                elif target != "player":
-                    self.tl.moves.setdefault(target, []).append({"t": round(t, 3), "locator": locator, "run": run})
-                    self.tl.scripts.update({locator, target})
+                elif self.extended and locator and target != "player":
+                    # PNJ posé sur la carte (`ImpactsToSingleSpawn`) qui suit un chemin.
+                    self.tl.spawn_moves.setdefault(target, []).append({"t": round(t, 3), "locator": locator})
+                    self.tl.scripts.update({target, locator})
         elif kind == "ImpactGoTo":
             summon = self.summon_by_id(target)
             locator = self.locator(node.find("destination"))
             if summon is not None and locator:
                 summon["moves"].append({"t": round(t, 3), "locator": locator})
                 self.tl.scripts.add(locator)
-            elif locator and target != "player":
-                self.tl.moves.setdefault(target, []).append({"t": round(t, 3), "locator": locator, "run": False})
-                self.tl.scripts.update({locator, target})
-        elif kind == "ImpactKill" and target not in ("player",):
-            self.tl.kills.setdefault(target, round(t, 3))
         elif kind == "Disintegrate":
             summon = self.summon_by_id(target)
             if summon is not None and summon.get("until") is None:
                 summon["until"] = round(t, 3)
-            elif summon is None and target != "player":
-                self.tl.gone.setdefault(target, round(t, 3))
+            elif summon is None and self.extended and target != "player":
+                self.tl.spawn_until[target] = min(self.tl.spawn_until.get(target, t), round(t, 3))
+        elif self.extended and kind == "ImpactIfTarget":
+            # Branche prise par la scène : celle où les conditions tiennent (joueur hors combat,
+            # cible avatar…) ; `impactsElse` est le cas hors cinématique.
+            for sub in node.findall("impactsIf/Item"):
+                self.impact(base, sub, t, target)
+        elif self.extended and kind == "ImpactInstantiating":
+            for sub in node.findall("impacts/Item"):
+                self.impact(base, sub, t, target)
+        elif self.extended and kind == "ImpactCreaturesAround":
+            flt = node.find("filter")
+            if flt is not None and (flt.get("type") or "").endswith("AvatarFilter"):   # avatars voisins : le joueur
+                for sub in node.findall("impacts/Item"):
+                    self.impact(base, sub, t, "player")
+        elif self.extended and kind == "ImpactTeleport" and target == "player":
+            self.tl.exit = t if self.tl.exit is None else min(self.tl.exit, t)
+        elif self.extended and kind == "ImpactSetVisualState" and target != "player":
+            self.tl.states.append({"t": round(t, 3), "spawn": target, "state": int(_f(node, "visualState"))})
+            self.tl.scripts.add(target)
         elif kind in ("ImpactClientDataParams", "ImpactClientData"):
             data = node.find("data")
             if data is not None and data.get("href"):
                 path = self.tree.resolve(base, data.get("href"))
                 line = read_client_data(self.tree, path)
-                if line["ru"] or line["voice"] or line["animations"] or line.get("bubble"):
+                locators = [x.text for x in node.findall("locators/Item/scriptID") if x.text]
+                if self.extended and line.get("projectile"):
+                    self.tl.fx.append({"t": round(t, 3), "clientdata": line["clientdata"], "locators": locators,
+                                       "owner": target, **line["projectile"]})
+                    self.tl.scripts.update(locators)
+                    return
+                if self.extended and line.get("sound"):
+                    self.tl.sfx.append({"t": round(t, 3), "clientdata": line["clientdata"], **line["sound"]})
+                    return
+                if self.extended and line.get("kind") == "CreatureChannelDirectAction":
+                    # Rayon canalisé d'un PNJ vers un repère (non rendu) : le PNJ est en scène.
+                    self.tl.fx.append({"t": round(t, 3), "clientdata": line["clientdata"], "locators": locators,
+                                       "owner": target, "channel": True})
+                    if target != "player":
+                        self.tl.scripts.add(target)
+                    return
+                if line["ru"] or line["voice"] or line["animations"]:
                     line.update({"t": round(t, 3), "speaker": target})
                     self.tl.lines.append(line)
-                    if target not in ("player", "interlocutor") and not target.startswith("summon"):
+                    if target != "player" and not target.startswith("summon"):
                         self.tl.scripts.add(target)
 
     def locator(self, dest: ET.Element | None) -> str | None:
@@ -399,37 +418,46 @@ class Simulator:
                 self.tl.effects.append(entry)
 
 
-def simulate(root: Path, first_buff: str, horizon: float = 600.0, impacts: str | None = None,
-             duration: float | None = None) -> Timeline:
-    """Déroulé d'une chaîne de buffs à partir de son premier buff ; ou, avec `impacts`, de la liste
-    d'impacts `impacts` d'une autre ressource (`startImpacts` d'une quête, `impactsIn` d'une zone de
-    script), jouée à 0 s par le joueur. Sans buff à durée pour la borner, la scène dure `duration`
-    (sinon jusqu'au dernier événement)."""
+def trigger_impacts(doc: ET.Element, effect: str | None = None) -> list[ET.Element]:
+    """Impacts d'un déclencheur : `impactsIn` d'une zone de script (`ScriptZone`, à l'entrée du
+    joueur), ou `impactsOn` de l'effet `effect` (`HealthTrigger`…) d'une capacité (`AbilityResource`)."""
+    if doc.find("impactsIn") is not None:
+        return doc.findall("impactsIn/Item")
+    out: list[ET.Element] = []
+    for item in doc.findall("effects/Item"):
+        if effect is None or (item.get("type") or "").rsplit(".", 1)[-1] == effect:
+            out += item.findall("impactsOn/Item")
+    return out
+
+
+def simulate(root: Path, first_buff: str | None = None, horizon: float = 600.0, trigger: str | None = None,
+             trigger_effect: str | None = None, owner: str = "player") -> Timeline:
+    """Déroulé depuis un premier buff (`first_buff`, posé sur le joueur) ou depuis un déclencheur
+    (`trigger` : zone de script ou capacité ; `owner` : `scriptID` du porteur de la capacité, cible
+    de ses impacts directs)."""
     tree = Tree(Path(root))
-    sim = Simulator(tree, horizon)
-    if impacts:
-        path = tree.root / first_buff
+    sim = Simulator(tree, horizon, extended=trigger is not None)
+    if trigger is not None:
+        path = tree.root / trigger
         doc = _read(path)
-        for node in (doc.findall(f"{impacts}/Item") if doc is not None else []):
-            sim.impact(path, node, 0.0, "player")
-        events = [x["t"] for bucket in (sim.tl.lines, sim.tl.devices, sim.tl.chats, sim.tl.summons) for x in bucket]
-        events += [m["t"] for ms in sim.tl.moves.values() for m in ms]
-        # Fin : dernier événement, prolongée par l'extraction (durée des voix, des scènes du client).
-        sim.tl.duration = float(duration) if duration else max([sim.tl.duration] + events) + 1e-3
-    else:
+        for impact in trigger_impacts(doc, trigger_effect) if doc is not None else []:
+            sim.impact(path, impact, 0.0, owner)
+        if owner != "player":
+            sim.tl.scripts.add(owner)
+    root_doc = None
+    if first_buff is not None:
         sim.attach(tree.root / first_buff, 0.0)
-    root_doc = _read(tree.root / first_buff)
-    if not impacts and root_doc is not None and _f(root_doc, "duration") and root_doc.find(".//impactsOff") is not None:
+        root_doc = _read(tree.root / first_buff)
+    if root_doc is not None and _f(root_doc, "duration") and root_doc.find(".//impactsOff") is not None:
         # Buff racine à durée dont le `Switch` retire toute la chaîne à la fin : la scène s'arrête là.
         sim.tl.duration = min(sim.tl.duration, _f(root_doc, "duration") / 1000.0)
     for entry in sim.open.values():
         entry.setdefault("until", round(sim.tl.duration, 3))
     for summon in sim.tl.summons:
         summon["moves"].sort(key=lambda m: m["t"])
-    for moves in sim.tl.moves.values():
-        moves.sort(key=lambda m: m["t"])
-    sim.tl.devices.sort(key=lambda d: d["t"])
-    sim.tl.chats.sort(key=lambda c: c["t"])
+    if sim.tl.exit is not None:
+        # Le joueur quitte la carte : la scène s'arrête là (ses buffs locaux tombent avec elle).
+        sim.tl.duration = min(sim.tl.duration, sim.tl.exit) if sim.tl.duration else sim.tl.exit
     for bucket in (sim.tl.weather, sim.tl.sounds, sim.tl.effects, sim.tl.post):
         for item in bucket:
             if item.get("until") is None:
@@ -524,60 +552,6 @@ def find_spawns(root: Path, map_name: str, scripts: set[str]) -> dict[str, dict]
                            "visual": mob_visual(tree, mob) if mob is not None and mob.is_file() else None,
                            "file": tree.rel(path)}
     return out
-
-
-def device_scenes(root: Path, map_name: str, devices: list[dict]) -> list[dict]:
-    """Scènes du client jouées par les stèles du déroulé : l'état visuel posé (`ImpactSetVisualState`)
-    choisit l'état de la `DeviceVisScripts` de la stèle (`SteleResource.visScripts`, `states[i]`),
-    dont l'action `ShowSceneAction` joue une `GameViewScene` avec son `GameViewScript`, jusqu'au
-    changement d'état suivant de la même stèle (`until`, `None` : jusqu'à la fin)."""
-    tree = Tree(Path(root))
-    spawns = find_spawns(root, map_name, {d["device"] for d in devices})
-    devices = [d for k, d in enumerate(devices) if d not in devices[:k]]      # impacts posés deux fois
-    out = []
-    for k, dev in enumerate(devices):
-        sp = spawns.get(dev["device"])
-        stele = tree.root / sp["mob"] if sp and sp.get("mob") else None
-        doc = _read(stele) if stele is not None else None
-        vis = doc.find("visScripts") if doc is not None else None
-        if vis is None or not vis.get("href"):
-            continue
-        vis_path = tree.resolve(stele, vis.get("href"))
-        vdoc = _read(vis_path)
-        states = vdoc.findall("states/Item") if vdoc is not None else []
-        # État visuel `n` → `states[n - 1]` (0 : la stèle posée, sans état) : la quête « Эвакуация »
-        # pose 1 sur ses trois stèles de scène (`states[0]` : la scène) puis 2 à l'échéance
-        # (`states[1]` : `NoScene`, qui retire les PNJ).
-        index = dev["state"] - 1
-        if not 0 <= index < len(states):
-            continue
-        action = states[index].find("action")
-        if action is None or not (action.get("type") or "").endswith("ShowSceneAction"):
-            continue
-        scene, script = action.find("scene"), action.find("script")
-        if scene is None or not scene.get("href"):
-            continue
-        nxt = next((d["t"] for d in devices[k + 1:] if d["device"] == dev["device"]), None)
-        out.append({"t": dev["t"], "until": nxt, "device": dev["device"], "state": dev["state"],
-                    "stele": tree.rel(stele), "at": sp["p"],
-                    "scene": tree.rel(tree.resolve(vis_path, scene.get("href"))),
-                    "script": tree.rel(tree.resolve(vis_path, script.get("href"))) if script is not None and script.get("href") else None})
-    return out
-
-
-def read_game_scene(root: Path, path: str) -> dict:
-    """`GameViewScene` 7.0 : place (x, y, z), `scriptID` de ses PNJ ; et nombre d'actions d'un
-    `GameViewScript` (`actions`) — de quoi retrouver les ressources du 17.0."""
-    doc = _read(Path(root) / path)
-    place = doc.find("place") if doc is not None else None
-    p = [_f(place, k) for k in ("x", "y", "z")] if place is not None else None
-    mobs = [m.findtext("scriptID") for m in doc.findall("mobs/Item")] if doc is not None else []
-    return {"place": p, "mobs": mobs}
-
-
-def script_actions(root: Path, path: str | None) -> int:
-    doc = _read(Path(root) / path) if path else None
-    return len(doc.findall("actions/Item")) if doc is not None else 0
 
 
 def track_keys(src: list, t0: float, duration: float | None) -> list[dict]:
