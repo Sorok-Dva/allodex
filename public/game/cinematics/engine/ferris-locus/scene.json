@@ -413,7 +413,8 @@
    "animations": [],
    "text": {
     "ru": "Здесь материя обретает форму и становится частью единого целого.",
-    "en": "Here matter acquires shape and becomes a part of the whole."
+    "en": "Here matter acquires shape and becomes a part of the whole.",
+    "fr": "Ici, la matière prend forme et devient une partie du tout."
    },
    "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub4.(ClientData).xdb"
   },
@@ -434,7 +435,8 @@
    "animations": [],
    "text": {
     "ru": "Совершенство есть порядок. Порядок есть целостность.",
-    "en": "Perfectness is order. Order is wholeness."
+    "en": "Perfectness is order. Order is wholeness.",
+    "fr": "La perfection c'est l'ordre. L'Ordre est l'intégralité."
    },
    "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub5.(ClientData).xdb"
   },
@@ -455,7 +457,8 @@
    "animations": [],
    "text": {
     "ru": "Нарушив целостность Локуса, вы нарушите гармонию Порядка...",
-    "en": "If you disrupt Locus' wholeness, you will disrupt the harmony of the world..."
+    "en": "If you disrupt Locus' wholeness, you will disrupt the harmony of the world...",
+    "fr": "Si vous portez atteinte à l'intégralité du Locus, vous portez atteinte à l'harmonie du monde..."
    },
    "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub6.(ClientData).xdb"
   },
@@ -498,7 +501,8 @@
    "animations": [],
    "text": {
     "ru": "Вы? Это не имеет смысла. Вам не нарушить столь совершенной структуры.",
-    "en": "You? This is pointless. You cannot break such a perfect structure."
+    "en": "You? This is pointless. You cannot break such a perfect structure.",
+    "fr": "Vous ? C'est inutile. Vous ne pouvez pas briser une structure aussi parfaite."
    },
    "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub8.(ClientData).xdb"
   },
@@ -519,7 +523,8 @@
    "animations": [],
    "text": {
     "ru": "Если только... Уничтожьте материю! Разрушьте Низших! И тогда бытие Локуса потеряет смысл.",
-    "en": "Unless... You destroy matter! Destroy the Inferiors! Then the existence of Locus will lose its meaning."
+    "en": "Unless... You destroy matter! Destroy the Inferiors! Then the existence of Locus will lose its meaning.",
+    "fr": "À moins que... Vous détruisez la matière ! Détruisez les Inférieurs ! Alors l'existence du Locus perdra son sens."
    },
    "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub9.(ClientData).xdb"
   },
@@ -584,7 +589,8 @@
    "animations": [],
    "text": {
     "ru": "Порождения хаоса... Зачем вы пришли в мой мир? Аз есмь архитектор! Аз есмь Порядок!",
-    "en": "Children of chaos... Why did you come to my world? I am the Architect! I am the Order!"
+    "en": "Children of chaos... Why did you come to my world? I am the Architect! I am the Order!",
+    "fr": "Enfants du chaos... Pourquoi êtes-vous venus dans mon monde ? Je suis l'Architecte ! Je suis l'Ordre !"
    },
    "source": "World/Quests/Ferris_indoor/Ferris_3_4_2/LastStart_Sub12.(ClientData).xdb"
   },
@@ -614,7 +620,7 @@
  "actors": [
   {
    "id": "rysina",
-   "glb": "../shared/actors/mob-56721a8.glb",
+   "glb": "../shared/actors/mob-56723b8.glb",
    "name": {
     "ru": "Елизавета Рысина",
     "en": "Elizaveta Rysina"
@@ -712,6 +718,7 @@
     "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
     "ReadySpellDirected": 1.3333,
+    "Run": 0.5667,
     "Special": 12.0,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.3333,
@@ -720,7 +727,7 @@
   },
   {
    "id": "diarder",
-   "glb": "../shared/actors/mob-56747f0.glb",
+   "glb": "../shared/actors/mob-5674a00.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -827,6 +834,7 @@
     "Idle02": 4.1,
     "Ready": 2.6667,
     "ReadySpellDirected": 2.6667,
+    "Run": 0.6,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.5,
     "Walk": 1.0
@@ -834,7 +842,7 @@
   },
   {
    "id": "colossus",
-   "glb": "../shared/actors/mob-8c7ef98.glb",
+   "glb": "../shared/actors/mob-1b1a16c0.glb",
    "name": {
     "ru": "Колосс",
     "en": "Colossus"
@@ -895,7 +903,7 @@
      "yaw": 4.38078
     }
    ],
-   "scale": 1.0,
+   "scale": 0.9,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -920,12 +928,13 @@
    "animations": {
     "ChannelCastDirected": 1.6667,
     "Idle": 6.6667,
+    "Run": 0.8333,
     "Walk": 6.6333
    }
   },
   {
    "id": "bosslast",
-   "glb": "../shared/actors/mob-95c47f0.glb",
+   "glb": "../shared/actors/mob-1b2db200.glb",
    "name": {
     "ru": "Сердце Локуса",
     "en": "Locus' Heart"

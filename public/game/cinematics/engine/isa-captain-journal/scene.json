@@ -37,7 +37,7 @@
   {
    "n": 1,
    "start": 0.8,
-   "duration": 0.0,
+   "duration": 2.989,
    "speaker": "hauk",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Ship_8b_CapitanDiary_AssistantSay_1_Hauk",
@@ -59,7 +59,7 @@
   {
    "n": 2,
    "start": 4.789,
-   "duration": 0.0,
+   "duration": 3.187,
    "speaker": "trand",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Ship_8b_CapitanDiary_AssistantSay_2_Trand",
@@ -81,7 +81,7 @@
   {
    "n": 3,
    "start": 8.976,
-   "duration": 0.0,
+   "duration": 4.672,
    "speaker": "trand",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Ship_8b_CapitanDiary_AssistantSay_3_Trand",
@@ -103,7 +103,7 @@
   {
    "n": 4,
    "start": 14.648,
-   "duration": 0.0,
+   "duration": 4.757,
    "speaker": "gerda",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Ship_8b_CapitanDiary_AssistantSay_4_Gerda",
@@ -125,7 +125,7 @@
   {
    "n": 5,
    "start": 20.405,
-   "duration": 0.0,
+   "duration": 3.884,
    "speaker": "gerda",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Ship_8b_CapitanDiary_AssistantSay_5_1_Gerda",
@@ -147,7 +147,7 @@
   {
    "n": 6,
    "start": 25.289,
-   "duration": 0.0,
+   "duration": 5.227,
    "speaker": "hauk",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Ship_8b_CapitanDiary_AssistantSay_5_2_Hauk",
@@ -169,7 +169,7 @@
   {
    "n": 7,
    "start": 31.516,
-   "duration": 0.0,
+   "duration": 5.55,
    "speaker": "trand",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Ship_8b_CapitanDiary_AssistantSay_6_1_Trand",
@@ -191,7 +191,7 @@
   {
    "n": 8,
    "start": 38.066,
-   "duration": 0.0,
+   "duration": 4.718,
    "speaker": "gerda",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Ship_8b_CapitanDiary_AssistantSay_6_2_Gerda",
@@ -213,7 +213,7 @@
   {
    "n": 9,
    "start": 43.784,
-   "duration": 0.0,
+   "duration": 4.593,
    "speaker": "hauk",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Ship_8b_CapitanDiary_AssistantSay_7_1_Hauk",
@@ -235,7 +235,7 @@
   {
    "n": 10,
    "start": 49.377,
-   "duration": 0.0,
+   "duration": 6.746,
    "speaker": "gerda",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Ship_8b_CapitanDiary_AssistantSay_7_3_Gerda",
@@ -257,7 +257,7 @@
   {
    "n": 11,
    "start": 57.123,
-   "duration": 0.0,
+   "duration": 2.75,
    "speaker": "trand",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Ship_8b_FinalScene_Say_1_Trand",
@@ -279,7 +279,7 @@
   {
    "n": 12,
    "start": 60.873,
-   "duration": 0.0,
+   "duration": 3.429,
    "speaker": "hauk",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Ship_8b_FinalScene_Say_2_Hauk",

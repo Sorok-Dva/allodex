@@ -1341,16 +1341,29 @@ class ResourceTexts:
         return text
 
 
-def find_mob_by_name(db: PackDB, cat, texts: Texts, name: str, model_hint: str) -> int | None:
+def visual_scale_70(root: Path | None, visual: str | None) -> float | None:
+    """Échelle (`scale`) d'une `VisualMob` de l'arbre 7.0, `None` si illisible."""
+    if root is None or not visual:
+        return None
+    from tools import cutscene_xdb70 as x70
+    doc = x70._read(Path(root) / visual.lstrip("/"))
+    return _f70(doc, "scale", 1.0) if doc is not None else None
+
+
+def find_mob_by_name(db: PackDB, cat, texts: Texts, name: str, model_hint: str, scale: float | None = None) -> int | None:
     """`MobWorld` du 17.0 au nom russe `name` ; entre plusieurs, celui dont le modèle vient du même
-    dossier que le `MobWorld` 7.0 (`Characters/Hadagan_male/…`)."""
+    dossier que le `MobWorld` 7.0 (`Characters/Hadagan_male/…`) et, si elle est connue (`scale`), dont la
+    `VisualMob` a l'échelle de celle du 7.0 : « Негус Джиг » a cinq `MobWorld` au 17.0, dont celui du
+    boss du raid à l'échelle 2 (le PNJ de la rétrospective de Ferris, à 1 au 7.0, sortait géant depuis
+    que l'échelle des `VisualMob` est appliquée)."""
     from tools.extract_cinematics import norm_key
     want = norm_key(name)
     if not want:
         return None         # PNJ sans nom (paladins `KIS_NoobPaladin_live`) : le nom ne départage rien
     ru = texts.main.texts["ru"]
     hint = "/".join(model_hint.split("/")[:2]).lower() if model_hint else ""
-    best = None
+    # rang : même dossier et même échelle, même dossier, même échelle, premier au nom
+    ranked: dict[int, int] = {}
     for off in db.resources("MobWorld"):
         idx = mob_name_index(db, off)
         if idx >= len(ru) or norm_key(ru[idx]) != want:
@@ -1359,13 +1372,16 @@ def find_mob_by_name(db: PackDB, cat, texts: Texts, name: str, model_hint: str) 
         tpl = visual_template(db, visual) if visual is not None else None
         if tpl is None:
             continue
-        best = best or off
         vot = db.ptr(tpl + 0x90)
         geo = db.ptr(vot + 0xC0) if vot is not None else None
         path = (cat.name(db.binary_ref(geo)) or "").lower() if geo is not None else ""
-        if hint and path.startswith(hint):
-            return off
-    return best
+        same_dir = bool(hint) and path.startswith(hint)
+        same_scale = scale is not None and abs(db.f32(visual + VM_SCALE) - scale) <= 1e-3
+        rank = 0 if same_dir and (same_scale or scale is None) else 1 if same_dir else 2 if same_scale else 3
+        ranked.setdefault(rank, off)
+        if rank == 0:
+            break
+    return ranked[min(ranked)] if ranked else None
 
 
 def _stem(name: str | None) -> str:
@@ -1422,11 +1438,60 @@ def find_visual_by_content(db: PackDB, cat, root: Path, visual: str | None) -> t
     return scored[0][1], f"couleurs {skin}/{hair}, textures de tenue {scored[0][0]:.2f} ({len(scored)} candidates)"
 
 
+def creature_signature_70(root: Path, visual: str) -> tuple[str, float] | None:
+    """Signature d'une `VisualMob` 7.0 de créature (sans tenue ni couleurs) : chemin de la géométrie
+    de son gabarit (`character` → `VisCharacterTemplate` → `VisObjectTemplate` → `Geometry`, en
+    minuscules, sans suffixe) et son échelle (`scale`)."""
+    from tools import cutscene_xdb70 as x70
+    tree = x70.Tree(Path(root))
+    path = tree.root / visual.lstrip("/")
+    doc = x70._read(path)
+    char = doc.find("character") if doc is not None else None
+    if char is None or not char.get("href"):
+        return None
+    tpl_path = tree.resolve(path, char.get("href"))
+    tpl = x70._read(tpl_path)
+    vot_href = next((n.get("href") for n in (tpl.iter() if tpl is not None else []) if "(VisObjectTemplate)" in (n.get("href") or "")), None)
+    if vot_href is None:
+        return None
+    vot_path = tree.resolve(tpl_path, vot_href)
+    vot = x70._read(vot_path)
+    geo = next((n.get("href") for n in (vot.iter() if vot is not None else []) if "(Geometry)" in (n.get("href") or "")), None)
+    if geo is None:
+        return None
+    geo_rel = tree.rel(tree.resolve(vot_path, geo)).split(".(")[0].lstrip("/").lower()
+    return geo_rel, _f70(doc, "scale", 1.0)
+
+
+def find_creature_visual(db: PackDB, cat, root: Path, visual: str | None) -> tuple[int | None, str]:
+    """`VisualMob` du 17.0 d'une créature sans nom (drones de Genera, essaim du raid de Ferris) : sans
+    tenue, gabarit à la même géométrie que la `VisualMob` 7.0 (`creature_signature_70`) et même échelle.
+    Entre plusieurs (copies d'une même créature), la première par offset, signalée."""
+    sig = creature_signature_70(root, visual) if visual else None
+    if sig is None:
+        return None, "VisualMob 7.0 sans gabarit lisible"
+    geo_want, scale = sig
+    found = []
+    for off in db.resources("VisualMob"):
+        if visual_dress(db, off) or abs(db.f32(off + VM_SCALE) - scale) > 1e-3:
+            continue
+        tpl = visual_template(db, off)
+        vot = db.ptr(tpl + 0x90) if tpl is not None else None
+        geo = db.ptr(vot + 0xC0) if vot is not None else None
+        name = (cat.name(db.binary_ref(geo)) or "").lower() if geo is not None else ""
+        if name and name.split(".(")[0].split("@")[0].lstrip("/") == geo_want:
+            found.append(off)
+    if not found:
+        return None, f"aucune VisualMob sans tenue de géométrie {geo_want} à l'échelle {scale}"
+    return found[0], f"géométrie {geo_want}, échelle {scale} ({len(found)} candidates, première prise)"
+
+
 # Mots des noms de `MobWorld` qui ne désignent pas le PNJ (`CutScene_BossLast`, `Cut_Scene_Boss`).
 GENERIC_TOKENS = {"cutscene", "cut", "scene", "cs", "mob", "npc"}
 
 
-def summon_actors(spec: dict, tl, spawns: dict, db: PackDB, cat, texts: Texts, report: list[str]) -> dict[str, dict]:
+def summon_actors(spec: dict, tl, spawns: dict, db: PackDB, cat, texts: Texts, report: list[str],
+                  root: Path | None = None) -> dict[str, dict]:
     """PNJ invoqués par le déroulé (`ImpactSummon`) → acteurs, un par nom : chaque invocation le
     (ré)apparaît sur son repère, `ImpactGoTo` le fait marcher (à la `walkSpeed` du `MobWorld`)
     jusqu'au repère visé, `Disintegrate` le retire (`presence`)."""
@@ -1442,8 +1507,15 @@ def summon_actors(spec: dict, tl, spawns: dict, db: PackDB, cat, texts: Texts, r
         twins = [a for a in groups.values() if a["name"] == name]
         actor = next((a for a in twins if a["presence"][-1][1] <= summon["t"] + 1e-3), None)
         if actor is None:
-            mob = find_mob_by_name(db, cat, texts, summon["name"], summon.get("visual") or summon["mob"] or "")
-            if mob is None:
+            mob = find_mob_by_name(db, cat, texts, summon["name"], summon.get("visual") or summon["mob"] or "",
+                                   visual_scale_70(root, summon.get("visual")))
+            visual = None
+            if mob is None and not summon["name"] and summon.get("visual") and root is not None:
+                # créature sans nom (drones de Genera, essaim) : sa `VisualMob` par gabarit et échelle
+                visual, why = find_creature_visual(db, cat, root, summon["visual"])
+                report.append(f"{spec['id']} : invocation sans nom {summon['mob']} : VisualMob "
+                              f"{'introuvable' if visual is None else 'retrouvée'} ({summon['visual']} ; {why})")
+            if mob is None and visual is None:
                 report.append(f"{spec['id']} : PNJ invoqué introuvable dans le 17.0 : {summon['name']}")
                 continue
             tokens = [t for t in Path(summon["mob"] or "x").name.split(".")[0].lower().split("_") if t not in GENERIC_TOKENS]
@@ -1455,7 +1527,8 @@ def summon_actors(spec: dict, tl, spawns: dict, db: PackDB, cat, texts: Texts, r
                 n += 1
                 ident = f"{base}-{n}"
             actor = {"id": ident, "name": name, "mob_offset": mob,
-                     "path": [], "presence": [], "move": "Walk", "voice_key": stem, "summons": [], "server": summon}
+                     "path": [], "presence": [], "move": "Walk", "voice_key": stem, "summons": [], "server": summon,
+                     **({"visual": visual} if visual is not None else {})}
             groups[summon["id"]] = actor
         actor["summons"].append(summon["id"])
         path = actor["path"]
@@ -1638,7 +1711,8 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
             continue
         if sp["mob"].endswith(".(SteleResource).xdb"):   # stèle : ses états visuels (voir trigger_extras)
             continue
-        mob = find_mob_by_name(db, cat, texts, sp["name"], sp.get("visual") or sp["mob"] or "")
+        mob = find_mob_by_name(db, cat, texts, sp["name"], sp.get("visual") or sp["mob"] or "",
+                               visual_scale_70(root, sp.get("visual")))
         visual = None
         if mob is None and not sp["name"] and sp.get("visual"):
             # `MobWorld` sans nom (paladins `Paladin_live1…4`) : sa `VisualMob` retrouvée par son contenu.
@@ -1651,7 +1725,7 @@ def plan_xdb70(spec: dict, root: Path, db: PackDB, cat, texts: Texts, lines17: C
         actors[script] = {"id": re.sub(r"[^a-z0-9]+", "-", script.lower()).strip("-"), "mob_offset": mob,
                           "path": [{"t": 0, "p": sp["p"], "yaw": model_yaw(sp["yaw"])}], "server": sp,
                           **({"visual": visual, "name": {}} if visual is not None else {})}
-    summoned = summon_actors(spec, tl, spawns, db, cat, texts, report)
+    summoned = summon_actors(spec, tl, spawns, db, cat, texts, report, root)
     for key, info in summoned.items():
         actors[key] = info
     plan_lines, content = [], [0.0]
@@ -3056,7 +3130,7 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
             name_idx = meta.pop("name_index")
             visual_scale = meta.pop("visual_scale", 1.0)
             name = {"ru": clean_text(texts.main.texts["ru"][name_idx]), "en": clean_text(texts.main.texts["en"][name_idx])} \
-                if name_idx is not None else actor.get("name", {})
+                if name_idx is not None else (actor["name"] if isinstance(actor.get("name"), dict) else {})
             actors_meta.append({"id": actor["id"], "glb": glb,
                                 "name": name,
                                 "path": path, "scale": round(actor.get("scale", 1.0) * visual_scale, 4), "idle": idle,
@@ -3077,18 +3151,10 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
         sky_glb, sky = ctx["sky"][spec["id"]]
         objects = rebase_objects({**decor["objects"], **fx_objects}, prefix)
 
-        cue_lines = [Line(l["duration"], l["text"]) for l in plan["lines"]]
-        cues = build_cues(cue_lines, [l["start"] for l in plan["lines"]], camera["duration"])
-        tracks = []
-        for lang in LANGS:
-            vtt = to_vtt(cues, lang)
-            path = out / f"{lang}.vtt"
-            if vtt:
-                path.write_text(vtt, encoding="utf-8")
-                tracks.append({"lang": lang, "label": LANG_LABELS[lang], "src": f"engine/{spec['id']}/{lang}.vtt",
-                               "lines": sum(1 for c in cues if lang in c[2])})
-            elif path.exists():
-                path.unlink()
+        filled = fill_line_durations(plan["lines"], voice_meta, camera["duration"])
+        if filled:
+            report.append(f"{spec['id']} : {filled} réplique(s) sans durée : temps de la voix, sinon de lecture")
+        tracks = write_tracks(out, spec["id"], plan["lines"], camera["duration"])
 
         audio = map_sounds(mp)
         timed = plan["sounds"]
@@ -3163,6 +3229,72 @@ def run(manifest: dict, out_root: Path, client: Path, only: list[str] | None, vo
     return report
 
 
+# Réplique sans durée ni voix : temps de lecture de son texte, 15 caractères par seconde (règle
+# courante des sous-titres), au moins 1,5 s — choix documenté, le client ne donne rien.
+READING_CPS = 15.0
+READING_MIN = 1.5
+
+
+def fill_line_durations(lines: list[dict], voices: list[dict | None], total: float) -> int:
+    """Durée d'affichage des répliques qui n'en ont pas (texte d'une bulle ou d'un `ClientData` sans
+    sous-titre : `delay_ms` nul) : celle de leur voix, sinon le temps de lecture de leur texte (le plus
+    long des trois), bornée par le départ de la réplique suivante et la fin de la scène. Sans elle, la
+    réplique n'avait ni sous-titre ni piste (Isa). Renvoie le nombre de répliques complétées."""
+    filled = 0
+    for i, (line, voice) in enumerate(zip(lines, voices)):
+        texts = [t for t in (line.get("text") or {}).values() if t]
+        if (line.get("duration") or 0) > 0 or not texts or line.get("start") is None:
+            continue
+        length = voice["duration"] if voice and voice.get("duration") else \
+            max(READING_MIN, max(len(t) for t in texts) / READING_CPS)
+        end = line["start"] + length
+        later = [l["start"] for l in lines[i + 1:] if l.get("start") is not None and l["start"] > line["start"]]
+        if later:
+            end = min(end, later[0])
+        if total:
+            end = min(end, total)
+        line["duration"] = round(max(end - line["start"], 0.0), 3)
+        filled += 1
+    return filled
+
+
+def write_tracks(out: Path, scene_id: str, lines: list[dict], duration: float) -> list[dict]:
+    """Pistes WebVTT d'une scène (`<lang>.vtt`, retirées quand la langue manque) ; leurs entrées d'index."""
+    cues = build_cues([Line(l["duration"], l["text"]) for l in lines], [l["start"] for l in lines], duration)
+    tracks = []
+    for lang in LANGS:
+        vtt = to_vtt(cues, lang)
+        path = out / f"{lang}.vtt"
+        if vtt:
+            path.write_text(vtt, encoding="utf-8")
+            tracks.append({"lang": lang, "label": LANG_LABELS[lang], "src": f"engine/{scene_id}/{lang}.vtt",
+                           "lines": sum(1 for c in cues if lang in c[2])})
+        elif path.exists():
+            path.unlink()
+    return tracks
+
+
+def retrack(manifest: dict, out_root: Path, only: list[str]) -> list[str]:
+    """Pistes et index refaits depuis le `scene.json` déjà extrait (`--tracks-only`), sans réextraire :
+    seules les durées des répliques qui n'en avaient pas changent (`fill_line_durations`)."""
+    report, entries = [], []
+    for scene_id in only:
+        out = out_root / "engine" / scene_id
+        path = out / "scene.json"
+        scene = json.loads(path.read_text(encoding="utf-8"))
+        lines = scene["lines"]
+        filled = fill_line_durations(lines, [l.get("voice") for l in lines], scene["duration"])
+        if filled:
+            path.write_text(json.dumps(scene, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        tracks = write_tracks(out, scene_id, lines, scene["duration"])
+        entries.append({"spec": {"id": scene_id}, "duration": scene["duration"], "tracks": tracks,
+                        "lines": len(lines), "timing": scene.get("timing", "estimated")})
+        summary = ", ".join(f"{t['lang']} {t['lines']}" for t in tracks) or "aucune"
+        report.append(f"{scene_id} : {filled} réplique(s) complétée(s), pistes {summary}")
+    update_index(manifest, out_root, entries)
+    return report
+
+
 def prune_shared_actors(engine: Path) -> None:
     """Retire les modèles communs qu'aucune scène ne cite plus."""
     used = set()
@@ -3226,8 +3358,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--only", action="append")
     p.add_argument("--no-voices", action="store_true", help="garde les voix et les sons déjà extraits")
     p.add_argument("--vgmstream", type=Path, default=DEFAULT_VGMSTREAM)
+    p.add_argument("--tracks-only", action="store_true",
+                   help="refait pistes et index depuis le scene.json extrait (avec --only), sans réextraire")
     args = p.parse_args(argv)
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    if args.tracks_only:
+        if not args.only:
+            p.error("--tracks-only demande --only")
+        print("\n".join(retrack(manifest, args.out, args.only)))
+        return 0
     report = run(manifest, args.out, args.client, args.only, not args.no_voices, args.vgmstream)
     print("\n".join(report))
     return 0

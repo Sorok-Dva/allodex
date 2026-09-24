@@ -37,7 +37,7 @@
   {
    "n": 1,
    "start": 0.5,
-   "duration": 0.0,
+   "duration": 4.994,
    "speaker": "unn",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_01",
@@ -59,7 +59,7 @@
   {
    "n": 2,
    "start": 6.494,
-   "duration": 0.0,
+   "duration": 5.177,
    "speaker": "unn",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_02",
@@ -81,7 +81,7 @@
   {
    "n": 3,
    "start": 12.671,
-   "duration": 0.0,
+   "duration": 3.583,
    "speaker": "unn",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_03",
@@ -103,7 +103,7 @@
   {
    "n": 4,
    "start": 17.254,
-   "duration": 0.0,
+   "duration": 4.235,
    "speaker": "unn",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_04",
@@ -125,7 +125,7 @@
   {
    "n": 5,
    "start": 22.489,
-   "duration": 0.0,
+   "duration": 5.998,
    "speaker": "unn",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_05",
@@ -147,7 +147,7 @@
   {
    "n": 6,
    "start": 29.487,
-   "duration": 0.0,
+   "duration": 7.48,
    "speaker": "unn",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_06",
@@ -169,7 +169,7 @@
   {
    "n": 7,
    "start": 37.967,
-   "duration": 0.0,
+   "duration": 8.085,
    "speaker": "unn",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_07",
@@ -191,7 +191,7 @@
   {
    "n": 8,
    "start": 47.052,
-   "duration": 0.0,
+   "duration": 4.854,
    "speaker": "unn",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceSay_08",
@@ -213,7 +213,7 @@
   {
    "n": 9,
    "start": 52.906,
-   "duration": 0.0,
+   "duration": 4.322,
    "speaker": "unn",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceGotHelpSay_01",
@@ -235,7 +235,7 @@
   {
    "n": 10,
    "start": 58.228,
-   "duration": 0.0,
+   "duration": 7.874,
    "speaker": "unn",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceGotHelpSay_02",
@@ -257,7 +257,7 @@
   {
    "n": 11,
    "start": 67.102,
-   "duration": 0.0,
+   "duration": 8.576,
    "speaker": "unn",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Prologue_4_UnnTranceGotHelpSay_03",
@@ -279,7 +279,7 @@
   {
    "n": 12,
    "start": 76.678,
-   "duration": 0.0,
+   "duration": 14.207,
    "speaker": "unn",
    "voice": {
     "event": "/Cutscenes/Isa/Isa_Prologue_Unn_TranceEnd",
