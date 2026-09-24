@@ -53,7 +53,7 @@
  "actors": [
   {
    "id": "ferris4-architect-friend-mob",
-   "glb": "../shared/actors/mob-5d8d550.glb",
+   "glb": "../shared/actors/mob-95b4178.glb",
    "name": {
     "ru": "Ваятель",
     "en": "Sculptor"
@@ -66,10 +66,10 @@
       1368.2888,
       -4.8453
      ],
-     "yaw": 5.46274
+     "yaw": 7.03354
     }
    ],
-   "scale": 1.0,
+   "scale": 0.9,
    "idle": "Idle",
    "talk": null,
    "move": null,
@@ -784,8 +784,16 @@
      }
     ]
    },
-   "duration": 0.0,
-   "loop": false,
+   "elementAlpha": {
+    "VolumetricLigh01": [
+     0.0,
+     0.149,
+     28.0,
+     0.149
+    ]
+   },
+   "duration": 28.0,
+   "loop": true,
    "bounds": [
     5.292,
     0.498,
@@ -1407,8 +1415,126 @@
      }
     ]
    },
-   "duration": 0.0,
-   "loop": false,
+   "elementAlpha": {
+    "Terminal3": [
+     0.0,
+     1.0,
+     0.0333,
+     0.9569,
+     0.0667,
+     0.8431,
+     0.1,
+     0.6824,
+     0.1667,
+     0.3176,
+     0.2,
+     0.1569,
+     0.2333,
+     0.0431,
+     0.2667,
+     0.0,
+     0.3,
+     0.0549,
+     0.3333,
+     0.2,
+     0.3667,
+     0.3922,
+     0.4,
+     0.6078,
+     0.4333,
+     0.8,
+     0.4667,
+     0.9451,
+     0.5,
+     1.0,
+     0.5333,
+     0.9451,
+     0.5667,
+     0.8,
+     0.6,
+     0.6078,
+     0.6333,
+     0.3922,
+     0.6667,
+     0.2,
+     0.7,
+     0.0549,
+     0.7333,
+     0.0,
+     0.7667,
+     0.0431,
+     0.8,
+     0.1569,
+     0.8333,
+     0.3176,
+     0.9,
+     0.6824,
+     0.9333,
+     0.8431,
+     0.9667,
+     0.9569,
+     1.0,
+     1.0,
+     1.0333,
+     0.9451,
+     1.0667,
+     0.8,
+     1.1,
+     0.6078,
+     1.1333,
+     0.3922,
+     1.1667,
+     0.2,
+     1.2,
+     0.0549,
+     1.2333,
+     0.0,
+     1.2667,
+     0.0549,
+     1.3,
+     0.2,
+     1.3333,
+     0.3922,
+     1.3667,
+     0.6078,
+     1.4,
+     0.8,
+     1.4333,
+     0.9451,
+     1.4667,
+     1.0,
+     1.5,
+     0.9569,
+     1.5333,
+     0.8431,
+     1.5667,
+     0.6824,
+     1.6333,
+     0.3176,
+     1.6667,
+     0.1569,
+     1.7,
+     0.0431,
+     1.7333,
+     0.0,
+     1.7667,
+     0.0431,
+     1.8,
+     0.1569,
+     1.8333,
+     0.3176,
+     1.9,
+     0.6824,
+     1.9333,
+     0.8431,
+     1.9667,
+     0.9569,
+     2.0,
+     1.0
+    ]
+   },
+   "duration": 2.0,
+   "loop": true,
    "bounds": [
     0.05,
     -0.377,
@@ -1650,8 +1776,16 @@
      }
     ]
    },
-   "duration": 0.0,
-   "loop": false,
+   "elementAlpha": {
+    "VolumetricLigh01": [
+     0.0,
+     0.149,
+     28.0,
+     0.149
+    ]
+   },
+   "duration": 28.0,
+   "loop": true,
    "bounds": [
     6.347,
     1.993,
@@ -2564,7 +2698,8 @@
     17.988,
     18.106,
     23.933
-   ]
+   ],
+   "sfx": "sfx/idle_lp"
   },
   "FerrisCore_GunAll": {
    "fadeIn": 0.0,
@@ -3911,8 +4046,12 @@
   }
  ],
  "sounds": {
-  "music": [],
-  "ambience": [],
+  "music": [
+   "sfx/Siege_warfare_adaptive"
+  ],
+  "ambience": [
+   "sfx/Ferris4_Cave_drone"
+  ],
   "sfx": [],
   "events": {
    "music": [
@@ -3923,11 +4062,33 @@
    ]
   },
   "waves": {
+   "Ambience/OutdoorAmbience/Zones/Ferris4/Ferris4_Outdoor": {
+    "file": "sfx/Ferris4_Cave_drone",
+    "wave": "Ferris4_Cave_drone",
+    "bank": "SFX/Ambience/Ambience_Ferris_2.bsb",
+    "duration": 60.0,
+    "match": "bev"
+   },
+   "Music/AdaptiveMusic/Siege_warfare": {
+    "file": "sfx/Siege_warfare_adaptive",
+    "wave": "Siege_warfare_adaptive",
+    "bank": "SFX/Music/Music_Ingame.fsb",
+    "duration": 14.0,
+    "match": "bev"
+   },
    "World/Zones/Ferris/HG8_Terminal_01": {
     "file": "sfx/HG8_Terminal_01",
     "wave": "HG8_Terminal_01",
     "bank": "SFX/World/World_Ferris03.bsb",
-    "duration": 39.971
+    "duration": 39.971,
+    "match": "bev"
+   },
+   "spells/FX/Mobs/ArchitectFX/FerrisCore_Portal_idle": {
+    "file": "sfx/idle_lp",
+    "wave": "idle_lp",
+    "bank": "SFX/Spells/ArchitectFX.bsb",
+    "duration": 3.6,
+    "match": "bev"
    }
   },
   "volume": {}

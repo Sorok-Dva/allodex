@@ -597,7 +597,41 @@ le `pack.rus.loc` est bien du russe (95 % de cyrillique).
     python3 tools/extract_engine_cutscene.py                      # toutes les scènes
     python3 tools/extract_engine_cutscene.py --only ferris-locus  # une scène
     python3 tools/extract_engine_cutscene.py --no-voices          # garde voix et sons extraits
+    python3 tools/extract_engine_cutscene.py --tracks-only --only isa-arrival   # pistes et index seuls
     python3 tools/inventory_engine_cutscenes.py --client-only     # relevé du 17.0 (4 s)
+
+**Répliques sans durée** (`fill_line_durations`) : une réplique dont le texte vient d'une bulle ou d'un
+`ClientData` sans sous-titre (`delay_ms` nul : presque toutes celles d'Isa) n'avait ni repère VTT, ni piste
+dans l'index, ni sous-titre dans le lecteur. Elle s'affiche désormais le temps de sa voix, sinon le temps de
+lecture de son texte (15 caractères par seconde, au moins 1,5 s : choix, le client ne donne rien), bornée
+par la réplique suivante et la fin de la scène. `--tracks-only` refait pistes et index depuis le
+`scene.json` extrait, sans réextraire (utilisé pour les six scènes d'Isa le 24/09/2026).
+
+**Réextraction du 24/09/2026** (les douze scènes moteur du film hors Isa, avec le pipeline commun à
+jour ; relevé avant/après : caméra, répliques, voix inchangées) : lacets serveur tournés de +π/2 sur
+`ferris-retrospective` (les trois PNJ se font désormais face, vers Негус Джиг, comme le veulent leurs
+caps) et `ferris-awakening` ; textes officiels EN/FR manquants ajoutés (`ferris-order`, `ferris-locus`,
+`ferris-locus-fall`) ; ambiance et musique de zone de la carte résolues par les `.bev` (`Ferris4` :
+`Siege_warfare`, seule musique de zone de la carte, et `Ferris4_Outdoor` ; `FerrisRaid` : `Ferris_Winter1`,
+dont le premier calque, `IceCrack_01`, est un craquement de 3 s qui crépitait en boucle : le manifeste garde
+`FerrisWinter_drone`, `audio_layers`, choix documenté). Deux correctifs communs en sont sortis :
+
+- **Invocations sans nom** (`find_creature_visual`) : les drones de Genera (`ferris-order`) et l'essaim
+  (`ferris-swarm`, `ferris-power-of-order`) n'ont pas de nom ; depuis que `find_mob_by_name` refuse les
+  noms vides, ils disparaissaient (avant, ils prenaient le premier PNJ sans nom : un golem de jade). Leur
+  `VisualMob` 17.0 est retrouvée par la géométrie du gabarit de la `VisualMob` 7.0 et son échelle, sans
+  tenue (une seule candidate chacune : `ArchitectBot` et `Colossus`, à 1,5).
+- **Homonymes départagés par l'échelle** : entre plusieurs `MobWorld` au même nom, `find_mob_by_name`
+  préfère celui dont la `VisualMob` a l'échelle de celle du 7.0 (même dossier et même échelle, puis même
+  dossier, puis même échelle, puis le premier). « Негус Джиг » (cinq `MobWorld` au 17.0) prenait celui du
+  boss du raid, à l'échelle 2, et sortait géant ; le boss du Locus prenait une copie à 1,5 (1 au 7.0) ;
+  les Колосс de `ferris-portal`, `ferris-locus`, `ferris-locus-fall` et le Ваятель de `ferris-awakening`
+  sont désormais ceux à 0,9 (`ColossusScout_CutScene_0.7`, 0,9 au 7.0). Toutes les échelles des acteurs
+  Ferris concordent maintenant avec leur `VisualMob` 7.0 (avant la réextraction, aucune n'était appliquée).
+
+Non repris : la dernière réplique de `ferris-locus-fall` (« Уходите. Возвращайтесь… ») nomme la voix
+`Cutscenes/Ferris4/CS_FR_CarrierVayate13`, sans le « l » des autres (`CS_FR_CarrierVayatel13` est dans la
+banque) ; le projet `Cutscenes` n'a pas de `.bev`, rien ne relie les deux noms, elle reste muette.
 
 **Inventaire** (`engine_cutscenes` du manifeste) : arbre serveur 7.0 croisé avec le 17.0
 (141 scènes) et 17.0 seul : 555 trajets de caméra (`CameraTrackAction`), dont 375 dans des

@@ -23286,7 +23286,11 @@
     "Marianna": "diarder",
     "Arch": "Сердце Локуса"
    },
-   "_note": "Déroulé serveur 7.0 (Portal_Start et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix."
+   "_note": "Déroulé serveur 7.0 (Portal_Start et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix.",
+   "audio_layers": {
+    "Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1": "FerrisWinter_drone"
+   },
+   "_audio_note": "Ambiance de zone de la carte FerrisRaid (préréglage Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1, 4 calques dans son .bev : IceCrack_01, UmoirWind_lp, FerrisWinter_drone, demonic_drone_lp). Le premier, IceCrack_01, est un craquement de 3 s (accent ponctuel) qui, joué en boucle, crépitait toute la scène ; calque gardé : FerrisWinter_drone, le fond propre à la zone (choix, comme Ferris4_Cave_drone pour Ferris4_Outdoor ; enveloppes du .bev non décodées)."
   },
   {
    "id": "ferris-no-way-back",
@@ -23298,7 +23302,11 @@
     "Marianna": "diarder",
     "Arch": "Сердце Локуса"
    },
-   "_note": "Déroulé serveur 7.0 (Portal_Ending_Main et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix."
+   "_note": "Déroulé serveur 7.0 (Portal_Ending_Main et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix.",
+   "audio_layers": {
+    "Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1": "FerrisWinter_drone"
+   },
+   "_audio_note": "Ambiance de zone de la carte FerrisRaid (préréglage Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1, 4 calques dans son .bev : IceCrack_01, UmoirWind_lp, FerrisWinter_drone, demonic_drone_lp). Le premier, IceCrack_01, est un craquement de 3 s (accent ponctuel) qui, joué en boucle, crépitait toute la scène ; calque gardé : FerrisWinter_drone, le fond propre à la zone (choix, comme Ferris4_Cave_drone pour Ferris4_Outdoor ; enveloppes du .bev non décodées)."
   },
   {
    "id": "ferris-swarm",
@@ -23310,7 +23318,11 @@
     "Marianna": "diarder",
     "Arch": "Архитектор"
    },
-   "_note": "Déroulé serveur 7.0 (Swarm_CutScene → _1part … _6part, EffectInstantiating) ; PNJ invoqués (essaim d’Architectes) sur les repères de FerrisRaid. La GameViewScene Swarm_CutScene du dossier GlobalObjects n’est pas lancée par cette chaîne. Aucun sol dans les données (7.0 comme 17.0) sous les repères de la scène : seuls des marqueurs invisibles (InstLeague1_AI_2X2) et des collisions ; les héros se tiennent au-dessus de la mer de nuages du ciel."
+   "_note": "Déroulé serveur 7.0 (Swarm_CutScene → _1part … _6part, EffectInstantiating) ; PNJ invoqués (essaim d’Architectes) sur les repères de FerrisRaid. La GameViewScene Swarm_CutScene du dossier GlobalObjects n’est pas lancée par cette chaîne. Aucun sol dans les données (7.0 comme 17.0) sous les repères de la scène : seuls des marqueurs invisibles (InstLeague1_AI_2X2) et des collisions ; les héros se tiennent au-dessus de la mer de nuages du ciel.",
+   "audio_layers": {
+    "Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1": "FerrisWinter_drone"
+   },
+   "_audio_note": "Ambiance de zone de la carte FerrisRaid (préréglage Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1, 4 calques dans son .bev : IceCrack_01, UmoirWind_lp, FerrisWinter_drone, demonic_drone_lp). Le premier, IceCrack_01, est un craquement de 3 s (accent ponctuel) qui, joué en boucle, crépitait toute la scène ; calque gardé : FerrisWinter_drone, le fond propre à la zone (choix, comme Ferris4_Cave_drone pour Ferris4_Outdoor ; enveloppes du .bev non décodées)."
   },
   {
    "id": "ferris-power-of-order",
@@ -23322,7 +23334,11 @@
     "Marianna": "diarder",
     "Arch": "Сердце Локуса"
    },
-   "_note": "Déroulé serveur 7.0 (Swarm_Ending_Main et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix."
+   "_note": "Déroulé serveur 7.0 (Swarm_Ending_Main et suite) ; PNJ invoqués sur les repères de FerrisRaid ; locuteurs par le nom de la voix.",
+   "audio_layers": {
+    "Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1": "FerrisWinter_drone"
+   },
+   "_audio_note": "Ambiance de zone de la carte FerrisRaid (préréglage Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1, 4 calques dans son .bev : IceCrack_01, UmoirWind_lp, FerrisWinter_drone, demonic_drone_lp). Le premier, IceCrack_01, est un craquement de 3 s (accent ponctuel) qui, joué en boucle, crépitait toute la scène ; calque gardé : FerrisWinter_drone, le fond propre à la zone (choix, comme Ferris4_Cave_drone pour Ferris4_Outdoor ; enveloppes du .bev non décodées)."
   },
   {
    "id": "ferris-order",
@@ -23334,7 +23350,11 @@
     "Marianna": "diarder",
     "Arch": "Сердце Локуса"
    },
-   "_note": "Déroulé serveur 7.0 du raid de Ferris ; PNJ invoqués sur les repères de la carte FerrisRaid ; locuteurs par le nom de la voix (Vayatel → le Colosse, Marianna → di Arder, Arch → le Cœur du Locus)."
+   "_note": "Déroulé serveur 7.0 du raid de Ferris ; PNJ invoqués sur les repères de la carte FerrisRaid ; locuteurs par le nom de la voix (Vayatel → le Colosse, Marianna → di Arder, Arch → le Cœur du Locus).",
+   "audio_layers": {
+    "Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1": "FerrisWinter_drone"
+   },
+   "_audio_note": "Ambiance de zone de la carte FerrisRaid (préréglage Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1, 4 calques dans son .bev : IceCrack_01, UmoirWind_lp, FerrisWinter_drone, demonic_drone_lp). Le premier, IceCrack_01, est un craquement de 3 s (accent ponctuel) qui, joué en boucle, crépitait toute la scène ; calque gardé : FerrisWinter_drone, le fond propre à la zone (choix, comme Ferris4_Cave_drone pour Ferris4_Outdoor ; enveloppes du .bev non décodées)."
   },
   {
    "id": "ferris-locus",

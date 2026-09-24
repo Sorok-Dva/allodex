@@ -528,7 +528,7 @@
  "actors": [
   {
    "id": "scientist",
-   "glb": "../shared/actors/mob-1b2a5a58.glb",
+   "glb": "../shared/actors/mob-1b2a9c88.glb",
    "name": {
     "ru": "Лаборантка",
     "en": "Lab Worker"
@@ -541,7 +541,7 @@
       1176.793,
       -0.2954
      ],
-     "yaw": 0.79091
+     "yaw": 2.3617
     }
    ],
    "scale": 1.0,
@@ -564,7 +564,7 @@
   },
   {
    "id": "promozglin",
-   "glb": "../shared/actors/mob-1ab9fe40.glb",
+   "glb": "../shared/actors/mob-1aba31a0.glb",
    "name": {
     "ru": "Василий Промозглин",
     "en": "Vasily Dankin"
@@ -577,7 +577,7 @@
       1175.773,
       -0.2954
      ],
-     "yaw": 1.42738
+     "yaw": 2.99818
     }
    ],
    "scale": 1.0,
@@ -616,7 +616,7 @@
   },
   {
    "id": "saw",
-   "glb": "../shared/actors/mob-9570480.glb",
+   "glb": "../shared/actors/mob-1aba36f8.glb",
    "name": {
     "ru": "Негус Джиг",
     "en": "Negus Jeeg"
@@ -629,7 +629,7 @@
       1178.31,
       -0.2954
      ],
-     "yaw": 4.28683
+     "yaw": 5.85763
     }
    ],
    "scale": 1.0,
@@ -4062,8 +4062,16 @@
      }
     ]
    },
-   "duration": 0.0,
-   "loop": false,
+   "elementAlpha": {
+    "VolumetricLigh01": [
+     0.0,
+     0.149,
+     28.0,
+     0.149
+    ]
+   },
+   "duration": 28.0,
+   "loop": true,
    "bounds": [
     5.292,
     0.498,
@@ -4685,8 +4693,126 @@
      }
     ]
    },
-   "duration": 0.0,
-   "loop": false,
+   "elementAlpha": {
+    "Terminal3": [
+     0.0,
+     1.0,
+     0.0333,
+     0.9569,
+     0.0667,
+     0.8431,
+     0.1,
+     0.6824,
+     0.1667,
+     0.3176,
+     0.2,
+     0.1569,
+     0.2333,
+     0.0431,
+     0.2667,
+     0.0,
+     0.3,
+     0.0549,
+     0.3333,
+     0.2,
+     0.3667,
+     0.3922,
+     0.4,
+     0.6078,
+     0.4333,
+     0.8,
+     0.4667,
+     0.9451,
+     0.5,
+     1.0,
+     0.5333,
+     0.9451,
+     0.5667,
+     0.8,
+     0.6,
+     0.6078,
+     0.6333,
+     0.3922,
+     0.6667,
+     0.2,
+     0.7,
+     0.0549,
+     0.7333,
+     0.0,
+     0.7667,
+     0.0431,
+     0.8,
+     0.1569,
+     0.8333,
+     0.3176,
+     0.9,
+     0.6824,
+     0.9333,
+     0.8431,
+     0.9667,
+     0.9569,
+     1.0,
+     1.0,
+     1.0333,
+     0.9451,
+     1.0667,
+     0.8,
+     1.1,
+     0.6078,
+     1.1333,
+     0.3922,
+     1.1667,
+     0.2,
+     1.2,
+     0.0549,
+     1.2333,
+     0.0,
+     1.2667,
+     0.0549,
+     1.3,
+     0.2,
+     1.3333,
+     0.3922,
+     1.3667,
+     0.6078,
+     1.4,
+     0.8,
+     1.4333,
+     0.9451,
+     1.4667,
+     1.0,
+     1.5,
+     0.9569,
+     1.5333,
+     0.8431,
+     1.5667,
+     0.6824,
+     1.6333,
+     0.3176,
+     1.6667,
+     0.1569,
+     1.7,
+     0.0431,
+     1.7333,
+     0.0,
+     1.7667,
+     0.0431,
+     1.8,
+     0.1569,
+     1.8333,
+     0.3176,
+     1.9,
+     0.6824,
+     1.9333,
+     0.8431,
+     1.9667,
+     0.9569,
+     2.0,
+     1.0
+    ]
+   },
+   "duration": 2.0,
+   "loop": true,
    "bounds": [
     0.05,
     -0.377,
@@ -4928,8 +5054,16 @@
      }
     ]
    },
-   "duration": 0.0,
-   "loop": false,
+   "elementAlpha": {
+    "VolumetricLigh01": [
+     0.0,
+     0.149,
+     28.0,
+     0.149
+    ]
+   },
+   "duration": 28.0,
+   "loop": true,
    "bounds": [
     6.347,
     1.993,
@@ -5842,7 +5976,8 @@
     17.988,
     18.106,
     23.933
-   ]
+   ],
+   "sfx": "sfx/idle_lp"
   },
   "FerrisCore_GunAll": {
    "fadeIn": 0.0,
@@ -7197,30 +7332,46 @@
     "until": 82.5
    }
   ],
-  "ambience": [],
+  "ambience": [
+   {
+    "file": "sfx/ghost_voices_wind_lp",
+    "t": 3.0,
+    "until": 82.5
+   }
+  ],
   "sfx": [],
   "events": {
    "music": [],
    "ambience": []
   },
   "waves": {
+   "Ambience/OutdoorAmbience/Zones/AI52_GhostWorld": {
+    "file": "sfx/ghost_voices_wind_lp",
+    "wave": "ghost_voices_wind_lp",
+    "bank": "SFX/Ambience/Ambience_RandomDrones.bsb",
+    "duration": 33.631,
+    "match": "bev"
+   },
    "Music/ZonesMusic/AG1_Village": {
     "file": "sfx/AG1_Village_NM",
     "wave": "AG1_Village_NM",
     "bank": "SFX/Music/Music_Zone.fsb",
-    "duration": 83.5
+    "duration": 83.5,
+    "match": "bev"
    },
    "World/Zones/Ferris/HG8_Terminal_01": {
     "file": "sfx/HG8_Terminal_01",
     "wave": "HG8_Terminal_01",
     "bank": "SFX/World/World_Ferris03.bsb",
-    "duration": 39.971
+    "duration": 39.971,
+    "match": "bev"
    },
-   "World/Zones/ZC10/ManaTrain_Active": {
-    "file": "sfx/ManaTrain_Active",
-    "wave": "ManaTrain_Active",
-    "bank": "SFX/World/World_ZC10.bsb",
-    "duration": 7.5
+   "spells/FX/Mobs/ArchitectFX/FerrisCore_Portal_idle": {
+    "file": "sfx/idle_lp",
+    "wave": "idle_lp",
+    "bank": "SFX/Spells/ArchitectFX.bsb",
+    "duration": 3.6,
+    "match": "bev"
    }
   },
   "volume": {}

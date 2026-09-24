@@ -656,3 +656,20 @@ def test_retrack_rebuilds_tracks_and_index_from_the_extracted_scene(tmp_path):
     assert "00:00:01.000 --> 00:00:03.500" in (scene_dir / "en.vtt").read_text()
     entry = json.loads((tmp_path / "cinematics.json").read_text())["cinematics"][0]
     assert [t["lang"] for t in entry["tracks"]] == ["fr", "en", "ru"] and entry["subtitles"]["lines"] == 1
+
+
+def test_creature_signature_follows_the_template_to_its_geometry_and_scale(tmp_path):
+    from tools.extract_engine_cutscene import creature_signature_70
+    bot = tmp_path / "Creatures" / "ArchitectBot"
+    bot.mkdir(parents=True)
+    (bot / "General_Drone_Die.(VisualMob).xdb").write_text(
+        '<VisualMob><character href="/Creatures/ArchitectBot/ArchitectBot.(VisCharacterTemplate).xdb#x"/>'
+        '<scale>1.5</scale></VisualMob>', encoding="utf-8")
+    (bot / "ArchitectBot.(VisCharacterTemplate).xdb").write_text(
+        '<VisCharacterTemplate><a href="AnimationProperties.xdb"/>'
+        '<visObject href="/Creatures/ArchitectBot/ArchitectBot.(VisObjectTemplate).xdb#x"/></VisCharacterTemplate>',
+        encoding="utf-8")
+    (bot / "ArchitectBot.(VisObjectTemplate).xdb").write_text(
+        '<VisObjectTemplate><geometry href="ArchitectBot.(Geometry).xdb#x"/></VisObjectTemplate>', encoding="utf-8")
+    sig = creature_signature_70(tmp_path, "Creatures/ArchitectBot/General_Drone_Die.(VisualMob).xdb")
+    assert sig == ("creatures/architectbot/architectbot", 1.5)

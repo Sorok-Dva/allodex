@@ -306,7 +306,7 @@
  "actors": [
   {
    "id": "portal",
-   "glb": "../shared/actors/mob-95b70e8.glb",
+   "glb": "../shared/actors/mob-95b79a0.glb",
    "name": {
     "ru": "Жнец",
     "en": "Reaper"
@@ -322,7 +322,7 @@
      "yaw": 0.01745
     }
    ],
-   "scale": 1.0,
+   "scale": 1.12,
    "idle": "Idle",
    "talk": null,
    "move": "Walk",
@@ -374,7 +374,7 @@
   },
   {
    "id": "diarder",
-   "glb": "../shared/actors/mob-56747f0.glb",
+   "glb": "../shared/actors/mob-5674a00.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -433,6 +433,7 @@
     "Idle02": 4.1,
     "Ready": 2.6667,
     "ReadySpellDirected": 2.6667,
+    "Run": 0.6,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.5,
     "Walk": 1.0
@@ -440,7 +441,7 @@
   },
   {
    "id": "rysina",
-   "glb": "../shared/actors/mob-56721a8.glb",
+   "glb": "../shared/actors/mob-56723b8.glb",
    "name": {
     "ru": "Елизавета Рысина",
     "en": "Elizaveta Rysina"
@@ -541,6 +542,7 @@
     "EmoteTalkExcited": 7.6667,
     "Idle": 2.6333,
     "ReadySpellDirected": 1.3333,
+    "Run": 0.5667,
     "Special": 12.0,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.3333,
@@ -549,7 +551,7 @@
   },
   {
    "id": "diarder-2",
-   "glb": "../shared/actors/mob-56747f0.glb",
+   "glb": "../shared/actors/mob-5674a00.glb",
    "name": {
     "ru": "Марианна ди Ардер",
     "en": "Marianne de Ardeur"
@@ -635,6 +637,7 @@
     "Idle02": 4.1,
     "Ready": 2.6667,
     "ReadySpellDirected": 2.6667,
+    "Run": 0.6,
     "SpellCastDirected": 1.3333,
     "SpellCastOmni": 1.5,
     "Walk": 1.0
@@ -1464,7 +1467,7 @@
      "locator": "Slot_Special01"
     }
    ],
-   "sfx": "sfx/Kernel"
+   "sfx": "sfx/BigKernel_lp"
   },
   "Architect_Rock_Lantern": {
    "fadeIn": 0.0,
@@ -1844,7 +1847,8 @@
      "vot": "Architect_Big_Portal_02",
      "locator": "Slot_Special01"
     }
-   ]
+   ],
+   "sfx": "sfx/Ready_Spell_FettersFrost_Decal"
   },
   "Architect_Big_Portal#2": {
    "fadeIn": 0.0,
@@ -2141,7 +2145,8 @@
      "vot": "Carrier_Arena_Ray",
      "locator": "Slot_Special01"
     }
-   ]
+   ],
+   "sfx": "sfx/Ready_Spell_FettersFrost_Decal"
   },
   "Carrier_Arena_Sky": {
    "fadeIn": 0.0,
@@ -2640,7 +2645,9 @@
     "until": 44.0
    }
   ],
-  "ambience": [],
+  "ambience": [
+   "sfx/FerrisWinter_drone"
+  ],
   "sfx": [],
   "events": {
    "music": [],
@@ -2649,23 +2656,40 @@
    ]
   },
   "waves": {
+   "Ambience/OutdoorAmbience/Zones/Ferris/Ferris_Winter1": {
+    "file": "sfx/FerrisWinter_drone",
+    "wave": "FerrisWinter_drone",
+    "bank": "SFX/Ambience/Ambience_Ferris.bsb",
+    "duration": 20.0,
+    "match": "bev"
+   },
    "Music/AdaptiveMusic/Nihaz": {
     "file": "sfx/NihazSecretRoom_lp",
     "wave": "NihazSecretRoom_lp",
     "bank": "SFX/Ambience/Ambience_AC9.bsb",
-    "duration": 30.129
+    "duration": 30.129,
+    "match": "name"
    },
    "World/Races/Architectors/Kernel": {
-    "file": "sfx/Kernel",
-    "wave": "Kernel",
-    "bank": "SFX/Creatures/ArchitectSiegeHeavyArtillery.bsb",
-    "duration": 7.776
+    "file": "sfx/BigKernel_lp",
+    "wave": "BigKernel_lp",
+    "bank": "SFX/World/World_Races.bsb",
+    "duration": 7.837,
+    "match": "bev"
+   },
+   "spells/FX/Mobs/ArchitectFX/ArchitectBigPortal": {
+    "file": "sfx/Ready_Spell_FettersFrost_Decal",
+    "wave": "Ready_Spell_FettersFrost_Decal",
+    "bank": "SFX/Spells/Spells_FX2.bsb",
+    "duration": 2.549,
+    "match": "bev"
    },
    "spells/World/UI04/idle01": {
     "file": "sfx/idle01",
     "wave": "idle01",
     "bank": "SFX/Creatures/BasiliskPet.bsb",
-    "duration": 0.916
+    "duration": 0.916,
+    "match": "name"
    }
   },
   "volume": {}
