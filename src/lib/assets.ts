@@ -110,10 +110,31 @@ export type FatalityEntry = {
   objects?: Record<string, FatalityObject>;
   timelines?: Record<string, FatalityTimeline>;
   note?: { fr: string; en: string };
+  /** Nom en jeu de la fatalité (buff du client : « Rituel lunaire »), par langue officielle. */
+  name?: FatalityText;
+  /** Objets qui l'apprennent (`tools/fatality_items.py`), l'objet de boutique principal en tête. */
+  items?: FatalityItem[];
+  /** `icon` : objet → capacité par pointeurs ; `name` : par le nom de la capacité. */
+  itemLink?: 'icon' | 'name' | null;
+  since?: FatalitySince;
+};
+/** Texte officiel ; une langue absente n'a pas de texte officiel dans les clients. */
+export type FatalityText = { fr?: string; en?: string; ru?: string };
+export type FatalityItem = { name: FatalityText; icon: string | null; resourceIds: number[] };
+export type FatalitySince = {
+  /** Premier client archivé qui contient la fatalité. */
+  version: string;
+  client?: string;
+  /** Dernier client archivé vérifié sans elle. */
+  previous?: string;
+  /** Date d'une actualité officielle (pas dans les données du client). */
+  date?: { value: string; kind: 'announced' | 'attested'; region?: string; source: string; quote?: string };
 };
 export type FatalityScene = {
   glb: string;
   label?: { fr: string; en: string };
+  /** Lieu réel du décor (`scene.site`) : carte, centre, rayon dégagé, orbite maximale de la caméra. */
+  site?: { map: string; center: [number, number]; clear: number; orbit?: number | null; objects?: number; nearest?: number | null };
   environment?: FatalityEnvironment;
 };
 export type FatalitiesIndex = {

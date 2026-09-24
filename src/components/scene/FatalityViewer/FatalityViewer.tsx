@@ -45,6 +45,11 @@ export type FatalityViewerProps = {
   sceneUrl?: string | null;
   /** Réglages du décor : couleur du ciel, brouillard, lumières (`fatalities.json`). */
   environment?: FatalityEnvironment | null;
+  /**
+   * Distance d'orbite maximale (m) : rayon dégagé du décor moins la couronne des arbres
+   * (`scene.site.orbit`), pour que la caméra ne traverse aucun objet ; `null` : pas de borne.
+   */
+  orbitMax?: number | null;
   /** Hauteur du personnage en unités du jeu : cadre la caméra. */
   height: number;
   playing: boolean;
@@ -134,7 +139,7 @@ export { faceCamera, toViewerMaterial };
  * les sons partent avec leur objet. Le temps est piloté à la main : pause, vitesse, recherche.
  */
 export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerProps>(function FatalityViewer(
-  { characterUrl, model, attackerUrl = null, attackerModel = '', victimDress = null, attackerDress = null, fxUrl, timeline, objects, fadeStart, fadeDuration, sceneUrl = null, environment = null, height,
+  { characterUrl, model, attackerUrl = null, attackerModel = '', victimDress = null, attackerDress = null, fxUrl, timeline, objects, fadeStart, fadeDuration, sceneUrl = null, environment = null, orbitMax = null, height,
     playing, loop, speed, showFx, soundUrl = null, assetUrl, particleAtlas = null, volume = 1, className, onProgress, onEnded, onReady, createLoader, createRenderer },
   ref,
 ) {
@@ -168,10 +173,10 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
     resetView: () => {
       const st = state.current;
       if (!st.camera || !st.controls) return;
-      frameCamera(st.camera, st.controls, height, bounds, st.camera.aspect);
+      frameCamera(st.camera, st.controls, height, bounds, st.camera.aspect, orbitMax);
       st.dirty = true;
     },
-  }), [height, bounds]);
+  }), [height, bounds, orbitMax]);
 
   useEffect(() => {
     const st = state.current;
@@ -425,7 +430,7 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
       window.addEventListener('resize', resize);
       if (typeof ResizeObserver !== 'undefined') { observer = new ResizeObserver(resize); observer.observe(canvas.parentElement ?? canvas); }
       resize();
-      frameCamera(camera, controls, height, bounds, camera.aspect);
+      frameCamera(camera, controls, height, bounds, camera.aspect, orbitMax);
 
       try {
         const [character, fx, decor, killer] = await Promise.all([
@@ -443,6 +448,9 @@ export const FatalityViewer = forwardRef<FatalityViewerHandle, FatalityViewerPro
           });
           const sky = decor.scene.getObjectByName('sky');
           if (sky) skyNode = sky;
+          // Objets posés du site (plusieurs centaines, immobiles) : découpés par le champ de la
+          // caméra, contrairement aux effets animés.
+          decor.scene.getObjectByName('site')?.traverse(child => { if ((child as THREE.Mesh).isMesh) child.frustumCulled = true; });
           // Herbe et eau du sol réel (`terrainDump`), éclairées par la lumière de la zone.
           if (sceneUrl) {
             const env = environment;
@@ -704,7 +712,7 @@ export function effectBounds(timeline: FatalityTimeline | null, objects: Record<
  * pas dans le cadrage (il peut sortir du champ) ; l'orbite reste libre.
  */
 export function frameCamera(camera: THREE.PerspectiveCamera, controls: OrbitControls, height: number, bounds: THREE.Box3 | null = null,
-  aspect = camera.aspect || 16 / 9): void {
+  aspect = camera.aspect || 16 / 9, orbitMax: number | null = null): void {
   const h = Math.max(height, 1);
   const direction = new THREE.Vector3(FRAME_SIDE, -FRAME_BACK, FRAME_UP - FRAME_TARGET).normalize();
   if (!bounds) {
@@ -729,6 +737,11 @@ export function frameCamera(camera: THREE.PerspectiveCamera, controls: OrbitCont
     controls.target.copy(center);
     camera.position.copy(center).addScaledVector(direction, distance);
     controls.maxDistance = Math.max(controls.maxDistance, distance * 1.5);
+  }
+  if (orbitMax && orbitMax > 0) {
+    controls.maxDistance = Math.min(controls.maxDistance, orbitMax);
+    const offset = camera.position.clone().sub(controls.target);
+    if (offset.length() > orbitMax) camera.position.copy(controls.target).addScaledVector(offset.normalize(), orbitMax);
   }
   camera.lookAt(controls.target);
   controls.update();

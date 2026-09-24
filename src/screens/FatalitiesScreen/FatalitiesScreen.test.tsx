@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, fireEvent, act } from '@testing-library/react';
 import type { FatalitiesIndex } from '@/lib/assets';
-import { FatalitiesScreen, defaultAttacker, victimSummary } from './FatalitiesScreen';
+import { FatalitiesScreen, defaultAttacker, fatalityListName, gameDate, victimSummary } from './FatalitiesScreen';
 
 const step = (anim: string, end: number, speed = 1) => ({ t: 0, end, anim, speed, mode: 'CLAMP' });
 const timeline = (anim: string, end: number, speed = 1) => ({ end, victim: [step(anim, end, speed)], scale: [], alpha: [], spawns: [], attached: [] });
@@ -20,8 +20,14 @@ const INDEX: FatalitiesIndex = {
       objects: {}, timelines: { 'aed-female': timeline('DeathFatalityWarrior', 11.7), 'aed-male': timeline('DeathFatalityWarrior', 11.7),
         'gibberling-male': timeline('DeathFatalityWarrior', 10) } },
     { id: 'phoenix', kind: 'shop', label: { fr: 'Phénix', en: 'Phoenix' }, fx: 'fx/phoenix.glb', objects: {},
-      timelines: { 'aed-female': timeline('DeathFatalityPhoenix', 9, 0.6) } },
-    { id: 'lotus', kind: 'shop', label: { fr: 'Lotus', en: 'Lotus' }, objects: {}, timelines: {} },
+      timelines: { 'aed-female': timeline('DeathFatalityPhoenix', 9, 0.6) },
+      name: { fr: 'Rituel enflammé', en: 'Flaming Ritual', ru: 'Пламенный ритуал' },
+      items: [{ name: { fr: 'Discours incinérant du Carnifex', en: 'Incinerating Speech of the Carnifex' }, icon: 'icons/FatalityPhoenix_Scroll.png', resourceIds: [740180189] }],
+      itemLink: 'icon',
+      since: { version: '15.0', client: '15.0.03.23.2', previous: '11.0',
+        date: { value: '2023-08-18', kind: 'announced', source: 'https://allods.my.games/en/news/sales/sale-radiant-strongbox-carnifex-1' } } },
+    { id: 'lotus', kind: 'shop', label: { fr: 'Lotus', en: 'Lotus' }, objects: {}, timelines: {},
+      items: [{ name: { ru: 'Цветущие речи Палача' }, icon: null, resourceIds: [1] }] },
   ],
 };
 
@@ -57,6 +63,20 @@ describe('victimSummary', () => {
   });
 });
 
+describe('fatalityListName', () => {
+  it('montre le nom officiel de l’objet de boutique, à défaut le libellé du site signalé', () => {
+    expect(fatalityListName(INDEX.fatalities[1], 'fr')).toEqual({ text: 'Discours incinérant du Carnifex', official: true, icon: 'icons/FatalityPhoenix_Scroll.png' });
+    expect(fatalityListName(INDEX.fatalities[1], 'en').text).toBe('Incinerating Speech of the Carnifex');
+    // Nom seulement russe : libellé du site, non officiel.
+    expect(fatalityListName(INDEX.fatalities[2], 'fr')).toEqual({ text: 'Lotus', official: false, icon: null });
+    expect(fatalityListName(INDEX.fatalities[0], 'fr')).toEqual({ text: 'Guerrier', official: true, icon: null });
+  });
+
+  it('écrit les dates au format du jeu', () => {
+    expect(gameDate('2023-08-18')).toBe('18.08.2023');
+  });
+});
+
 describe('defaultAttacker', () => {
   it('choisit un tueur de l’autre faction, du même sexe si possible', () => {
     const races = { ...INDEX.races, orc: { fr: 'Orc', en: 'Orc', faction: 'empire' } };
@@ -81,7 +101,7 @@ describe('FatalitiesScreen', () => {
     const { getByText, getAllByRole } = render(<FatalitiesScreen />);
     expect(getByText('Fatalités de classe')).toBeTruthy();
     expect(getByText('Fatalités de la boutique')).toBeTruthy();
-    expect(getAllByRole('option').map(o => o.textContent)).toEqual(['Guerrier', 'Phénix', 'Lotus']);
+    expect(getAllByRole('option').map(o => o.textContent)).toEqual(['Guerrier', 'Discours incinérant du Carnifex', 'Lotus']);
     expect(getByText(/WebGL indisponible/)).toBeTruthy();
   });
 
@@ -122,6 +142,24 @@ describe('FatalitiesScreen', () => {
     expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({ playing: false }));
     await act(async () => { fireEvent.keyDown(window, { key: ' ' }); });
     expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({ playing: true }));
+  });
+
+  it('affiche l’encart : nom en jeu, objet, version et date avec sa source', () => {
+    window.history.replaceState(null, '', '/fatalities?f=phoenix');
+    const { getByRole } = render(<FatalitiesScreen />);
+    const info = getByRole('region', { name: 'Fiche de la fatalité' });
+    expect(info.textContent).toContain('Rituel enflammé');
+    expect(info.textContent).toContain('Apparition : version 15.0');
+    expect(info.textContent).toContain('absente de la 11.0');
+    expect(info.textContent).toContain('Date : 18.08.2023');
+    expect(info.querySelector('a')?.getAttribute('href')).toContain('sale-radiant-strongbox-carnifex-1');
+    expect(info.querySelector('img')?.getAttribute('src')).toBe('/game/fatalities/icons/FatalityPhoenix_Scroll.png');
+  });
+
+  it('dit quand la date est inconnue', () => {
+    window.history.replaceState(null, '', '/fatalities?f=warrior');
+    const { getByRole } = render(<FatalitiesScreen />);
+    expect(getByRole('region', { name: 'Fiche de la fatalité' }).textContent).toContain('Date inconnue');
   });
 
   it('signale les effets absents', () => {
