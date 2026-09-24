@@ -931,7 +931,9 @@ choisi pour ses calques d'herbe et son relief doux (5 m sur 120 m) — niveau de
 90 m, grossier jusqu'à 300 m ; chaque sous-carreau prend le premier calque de sa première passe (le
 mélange du `SplatMap` n'est pas élucidé), terre battue redessinée au centre ; bouleaux, pins,
 rochers et buissons de la zone posés sur ce sol (disposition mise en scène, `scene.props`) ; ciel
-`Sky01_Day*` ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi. Herbe du
+`Sky01_Day*`, dessiné avant tout le reste sans test de profondeur (ses calques de nuages, à
+100 m de la caméra, passaient devant les arbres lointains quand elle reculait : cadrage du
+Prêtre et du Mage) ; lumière et brouillard du `ZoneLights` 7.0 `BlessedMeadowsDefault` à midi. Herbe du
 `terrainDump` jusqu'à 110 m du centre et eau jusqu'à 300 m, rendues par le code commun aux
 cinématiques moteur (`vot/terrainExtras.ts`, voir « Herbe » et « Eau »), éclairées par la lumière de
 la zone (pas de lumière cuite ici) ; ni l'une ni l'autre n'arrête la caméra.
