@@ -376,6 +376,18 @@ def test_find_wave_takes_the_first_recorded_variant():
     assert find_wave("IL1/15_Amanda_0", index) is None
 
 
+def test_resolve_wave_plays_one_layer_the_manifest_one_when_named():
+    from tools.extract_engine_cutscene import resolve_wave
+    layers = [{"bank": "SFX/Music/Music_Zone.fsb", "sub": 7, "stream": "TepPyramid_low", "param": 0},
+              {"bank": "SFX/Music/Music_Zone.fsb", "sub": 8, "stream": "TepPyramid_high", "param": 0}]
+    fev = SimpleNamespace(waves=lambda event: (layers, None))
+    report: list[str] = []
+    assert resolve_wave("Music/AdaptiveMusic/TepPyramidAdaptive", {}, fev, report)[0][2] == "TepPyramid_low"
+    hit, source = resolve_wave("Music/AdaptiveMusic/TepPyramidAdaptive", {}, fev, report, layer="teppyramid_high")
+    assert hit == ("SFX/Music/Music_Zone.fsb", 8, "TepPyramid_high") and source == "bev"
+    assert any("non repris : TepPyramid_low" in r for r in report)
+
+
 def _league_tree(tmp_path):
     """Quête qui pose l'état 1 d'une stèle (1 s) puis 2 (61 s), fait courir son donneur et lui donne une
     bulle, tue un PNJ, et n'emprunte que la branche `impactsIf` d'un `ImpactIfTarget`."""

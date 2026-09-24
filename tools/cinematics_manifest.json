@@ -23156,13 +23156,17 @@
   {
    "id": "ferris-locus",
    "source": "xdb70",
-   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene.(BuffResource).xdb",
+   "first_buff": "Mechanics/RaidInstances/FerrisRaid/CutScene/LastStart_CutScene_Main.(BuffResource).xdb",
    "map": "FerrisRaid",
    "speakers": {
     "Vayatel": "colossus",
     "Marianna": "diarder",
     "Arch": "Сердце Локуса"
    },
+   "audio_layers": {
+    "Music/AdaptiveMusic/TepPyramidAdaptive": "TepPyramid_high"
+   },
+   "_audio_note": "Buff racine : LastStart_CutScene_Main, posé par la zone ZoneFR16 (comme les *_Main des autres scènes du raid) ; il porte la musique de la scène (Sound2DAction de type Music : Music/AdaptiveMusic/TepPyramidAdaptive, qui remplace la musique de zone, arrêtée par son postAction) et l'ambiance Ambience/Cutscenes/Ferris_Raid/Last_Start, et borne la scène à 106 s (son Switch retire la chaîne). Partir de LastStart_CutScene perdait les deux : la scène retombait sur les deux musiques de zone de la carte (Winter et AC5_main) jouées ensemble, et durait 162 s (60 s de Cooldown_CarrierIntro). TepPyramidAdaptive a deux calques pilotés par le paramètre `action` (plage 0 à 2 dans Music.bev) ; la scène le met à 2 (CombatState3, CreatureMusicParamAction) : calque TepPyramid_high gardé (le plus dynamique ; enveloppes du .bev non décodées, lecture par le nom et le maximum du paramètre).",
    "_note": "Déroulé serveur 7.0 du raid de Ferris ; PNJ invoqués sur les repères de la carte FerrisRaid ; locuteurs par le nom de la voix (Vayatel → le Colosse, Marianna → di Arder, Arch → le Cœur du Locus)."
   },
   {

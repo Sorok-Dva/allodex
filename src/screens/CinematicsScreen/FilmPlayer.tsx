@@ -407,7 +407,9 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
                           <span className={s.chapterTitle}>{index + 1}. {title(c)}</span>
                           <span className={s.chapterMeta}>
                             {formatDuration(c.duration)}
-                            {c.subtitles.status === 'official' ? '' : ` · ${c.audio.language ? t('cinematics.noSubtitles') : t('cinematics.noDialogue')}`}
+                            {c.subtitles.status === 'official' ? ''
+                              : ` · ${c.subtitles.status === 'transcribed' ? t('cinematics.transcribed')
+                                : c.audio.language ? t('cinematics.noSubtitles') : t('cinematics.noDialogue')}`}
                           </span>
                         </span>
                       </button>
@@ -485,6 +487,9 @@ export function FilmPlayer({ film, arcs, faction, initialLang, onBack, onClose }
 
       {cinematic && trackFor(cinematic, subLang) === null && cinematic.audio.language && subLang && (
         <p className={s.notice} role="status">{t('cinematics.noSubtitles')}</p>
+      )}
+      {cinematic && cinematic.subtitles.status === 'transcribed' && trackFor(cinematic, subLang) !== null && (
+        <p className={s.transcribedNote} data-testid="transcribed-note">{t('cinematics.transcribedNote')}</p>
       )}
     </div>
   );

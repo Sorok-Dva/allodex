@@ -32,10 +32,13 @@ export type Cinematic = {
   /** Langue des voix incrustées ; `null` = musique et effets seulement. */
   audio: { language: SubtitleLang | null };
   subtitles: {
-    status: 'official' | 'none';
+    /** `transcribed` : pas de sous-titres dans le jeu, transcription automatique de la voix, relue
+     *  (`tools/transcribe_cinematics.py`) ; jamais présentée comme officielle. */
+    status: 'official' | 'none' | 'transcribed';
     lines: number;
     /** `client` : durée du jeu depuis 0 ; `measured` : départs mesurés sur la voix. */
-    timing: 'client' | 'measured' | 'sequential' | 'estimated' | null;
+    timing: 'client' | 'measured' | 'sequential' | 'estimated' | 'transcribed' | 'server' | null;
+    reviewed?: boolean;
   };
   source: { client: string; pak: string; entry: string; event: string };
   chronology: string;
