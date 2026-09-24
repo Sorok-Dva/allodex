@@ -1385,14 +1385,38 @@
     "mp4": "warp-crypt/video.mp4",
     "poster": "warp-crypt/poster.jpg"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français (auto)",
+     "src": "warp-crypt/fr.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "en",
+     "label": "English (auto)",
+     "src": "warp-crypt/en.vtt",
+     "lines": 4
+    },
+    {
+     "lang": "ru",
+     "label": "Русский (авто)",
+     "src": "warp-crypt/ru.vtt",
+     "lines": 4
+    }
+   ],
    "audio": {
-    "language": null
+    "language": "ru"
    },
    "subtitles": {
-    "status": "none",
-    "lines": 0,
-    "timing": null
+    "status": "transcribed",
+    "lines": 4,
+    "timing": "transcribed",
+    "reviewed": true,
+    "model": "faster-whisper large-v3/medium, int8, voix isolée par Demucs ; texte validé par un locuteur russe",
+    "audio": {
+     "language": "ru"
+    }
    },
    "source": {
     "client": "10.0-warp",
@@ -1418,14 +1442,38 @@
     "mp4": "warp-forest-city/video.mp4",
     "poster": "warp-forest-city/poster.jpg"
    },
-   "tracks": [],
+   "tracks": [
+    {
+     "lang": "fr",
+     "label": "Français (auto)",
+     "src": "warp-forest-city/fr.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "en",
+     "label": "English (auto)",
+     "src": "warp-forest-city/en.vtt",
+     "lines": 2
+    },
+    {
+     "lang": "ru",
+     "label": "Русский (авто)",
+     "src": "warp-forest-city/ru.vtt",
+     "lines": 2
+    }
+   ],
    "audio": {
-    "language": null
+    "language": "ru"
    },
    "subtitles": {
-    "status": "none",
-    "lines": 0,
-    "timing": null
+    "status": "transcribed",
+    "lines": 2,
+    "timing": "transcribed",
+    "reviewed": true,
+    "model": "faster-whisper large-v3/medium, int8, voix isolée par Demucs ; texte validé par un locuteur russe",
+    "audio": {
+     "language": "ru"
+    }
    },
    "source": {
     "client": "10.0-warp",

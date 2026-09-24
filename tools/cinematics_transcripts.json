@@ -330,6 +330,84 @@
      "doubtful": true
     }
    ]
+  },
+  "warp-crypt": {
+   "audio": "warp-crypt",
+   "model": "faster-whisper large-v3/medium, int8, voix isolée par Demucs ; texte validé par un locuteur russe",
+   "rejected": [],
+   "reviewed": true,
+   "note": "Voix sous la musique (vidéo déclarée à tort « sans voix »), aucun sous-titre dans le client. Instants : voix isolée par Demucs (htdemucs) + détection de silence ; texte : Whisper large-v3/medium sans accord, puis **dicté par un locuteur russe consulté par l'utilisateur** (24/09/2026), qui fait foi. « Ты сдай » compris « rends-le / donne-le » (сдать : remettre) ; le reste du fracas n'est que cris.",
+   "lines": [
+    {
+     "start": 7.44,
+     "end": 9.47,
+     "ru": "Стой!",
+     "en": "Stop!",
+     "fr": "Arrête !",
+     "whisper": "large-v3 : « Стой! » ; mixage : « Стой! Остановись! »",
+     "confidence": null,
+     "source": "locuteur russe"
+    },
+    {
+     "start": 24.44,
+     "end": 26.97,
+     "ru": "Сейчас, Динька, руки! Бежим!",
+     "en": "Now, Dinka, your hands! Run!",
+     "fr": "Vite, Dinka, tes mains ! On s'enfuit !",
+     "whisper": "mixage : « Сейчас, Динька, руки! Бежим! » ; voix isolée : « Ты че здесь? »",
+     "confidence": null,
+     "source": "locuteur russe"
+    },
+    {
+     "start": 32.06,
+     "end": 33.33,
+     "ru": "Ты сдай!",
+     "en": "You, give it up!",
+     "fr": "Toi, rends-le !",
+     "whisper": "large-v3 : « Ты сдай! »",
+     "confidence": null,
+     "source": "locuteur russe"
+    },
+    {
+     "start": 42.37,
+     "end": 44.4,
+     "ru": "Меч!",
+     "en": "The sword!",
+     "fr": "L'épée !",
+     "whisper": "large-v3 : « Меч! »",
+     "confidence": null,
+     "source": "locuteur russe"
+    }
+   ]
+  },
+  "warp-forest-city": {
+   "audio": "warp-forest-city",
+   "model": "faster-whisper large-v3/medium, int8, voix isolée par Demucs ; texte validé par un locuteur russe",
+   "rejected": [],
+   "reviewed": true,
+   "note": "Voix sous la musique (vidéo déclarée à tort « sans voix »), aucun sous-titre dans le client. Instants : voix isolée par Demucs (htdemucs) + détection de silence ; texte : Whisper large-v3/medium sans accord, puis **dicté par un locuteur russe consulté par l'utilisateur** (24/09/2026), qui fait foi. « Мурусис » : incantation, gardée translittérée (le locuteur hésite avec « Моросись »).",
+   "lines": [
+    {
+     "start": 5.3,
+     "end": 7.0,
+     "ru": "Мурусис!",
+     "en": "Murusis!",
+     "fr": "Murusis !",
+     "whisper": "large-v3 : « Мурусис! » ; medium : « Моросись! »",
+     "confidence": null,
+     "source": "locuteur russe"
+    },
+    {
+     "start": 29.77,
+     "end": 31.08,
+     "ru": "Атакуй!",
+     "en": "Attack!",
+     "fr": "Attaque !",
+     "whisper": "mixage : « Атакуй! »",
+     "confidence": null,
+     "source": "locuteur russe"
+    }
+   ]
   }
  }
 }
