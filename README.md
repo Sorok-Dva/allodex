@@ -1681,7 +1681,8 @@ KaniaFemale, 1,6 pour les Morts-vivants… mêmes valeurs que les xdb 7.0 ; `+0x
 `Walk`) ; la caméra suit. L'export lit aussi la vitesse de lecture du clip (`SkeletalAnimation
 +0x100`, `speed` : 1,5 pour `KaniaFemale.Walk`, 1,2 pour `UndeadFemale.Walk`), boucle le cycle sur
 `endFrame` images (la première recopiée à la fin : 1 s pour `KaniaMale.Walk`, et non 29/30 s) et
-mesure sur le clip, cheville par cheville, **quand chaque pied se pose** (début de la phase où il
+mesure sur le clip, cheville par cheville (sabot `Foot_L`/`Foot_R` des Praidens, digitigrades dont
+`LeftFoot` est le jarret), **quand chaque pied se pose** (début de la phase où il
 recule dans le repère du modèle : 0,2 et 0,7 s sur `KaniaMale.Walk`, évènements `Action` du xdb à
 0,233 et 0,7) et **l'allure propre du clip** (`pace` : vitesse du pied posé, à l'échelle du modèle ;
 1,93 m/s sur `KaniaMale.Walk`, 3,52 sur `KaniaMale.Run` pour 3,5). Le lecteur joue le clip à

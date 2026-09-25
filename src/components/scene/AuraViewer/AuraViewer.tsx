@@ -425,8 +425,9 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
         }
         if (prefix) {
           const bone = (name: string) => anchor.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(`${prefix}/${name}`));
-          for (const [side, names] of [['L', ['LeftFoot', 'LeftToeBase']], ['R', ['RightFoot', 'RightToeBase']]] as const) {
-            const nodes = names.map(bone).filter((n): n is THREE.Object3D => !!n);
+          // Articulation au sol (`Foot_L` : sabot des Praidens, sinon la cheville) et orteils.
+          for (const [side, ground, ankle, toe] of [['L', 'Foot_L', 'LeftFoot', 'LeftToeBase'], ['R', 'Foot_R', 'RightFoot', 'RightToeBase']] as const) {
+            const nodes = [bone(ground) ?? bone(ankle), bone(toe)].filter((n): n is THREE.Object3D => !!n);
             if (nodes.length) feet[side] = nodes;
           }
         }

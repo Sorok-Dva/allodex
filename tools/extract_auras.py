@@ -914,9 +914,11 @@ ANIMPROPS_WALK_FORWARD = 0x124
 # de lecture, 1,5 pour `KaniaFemale.Walk`, 1,2 pour `UndeadFemale.Walk`, comme dans les xdb 7.0).
 SKELANIM_END_FRAME = 0xB0
 SKELANIM_SPEED = 0x100
-# Chevilles des pieds gauche et droit. Un pied est posé tant qu'il recule dans le repère du modèle
-# (+Y, le modèle regardant −Y) ; une phase de moins de `MIN_STANCE` images n'est qu'un à-coup.
-FEET = {"L": "LeftFoot", "R": "RightFoot"}
+# Articulation qui touche le sol, pied gauche et droit, la première présente : `Foot_L` (sabot des
+# Praidens, digitigrades, dont `LeftFoot` est le jarret, à 0,36–0,72 m du sol), sinon la cheville.
+# Un pied est posé tant qu'il recule dans le repère du modèle (+Y, le modèle regardant −Y) ; une
+# phase de moins de `MIN_STANCE` images n'est qu'un à-coup.
+FEET = {"L": ("Foot_L", "LeftFoot"), "R": ("Foot_R", "RightFoot")}
 MIN_STANCE = 3
 
 
@@ -1071,8 +1073,9 @@ def export_walks(manifest: dict, out_dir: Path, report: list[str]) -> dict:
             worlds = [frame_world(skeleton, anim, k) for k in range(anim.frames)]
             fps = anim.fps * rate  # images par seconde réelles
             steps[clip], measured[clip] = {}, {}
-            for side, bone in FEET.items():
-                if bone not in skeleton.names:
+            for side, bones in FEET.items():
+                bone = next((b for b in bones if b in skeleton.names), None)
+                if bone is None:
                     continue
                 ys = [w[skeleton.names.index(bone)][1, 3] for w in worlds]  # cycle fermé : cycle + 1 images
                 stance = stance_frames(ys)
