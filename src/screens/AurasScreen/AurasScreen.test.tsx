@@ -158,7 +158,7 @@ describe('AurasScreen', () => {
     const second = render(<AurasScreen />);
     await act(async () => {});
     expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({
-      walking: true, walk: { url: '/game/auras/walk/KaniaMale.glb', clips: { walk: 1, run: 0.6 }, speed: 3.5 },
+      walking: true, walk: { url: '/game/auras/walk/KaniaMale.glb', clips: { walk: 1, run: 0.6 }, speed: 2.1, runSpeed: 3.5, steps: undefined, pace: undefined },
     }));
     await act(async () => { fireEvent.click(second.getByRole('checkbox', { name: 'Marcher' })); });
     expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({ walking: false }));
