@@ -382,3 +382,22 @@ def test_after_export_records_sort_mode_and_materials(tmp_path):
     untouched = {"version": "5.0"}
     after_export(tmp_path / "out", untouched, None, tmp_path / "nulle-part")
     assert untouched == {"version": "5.0"}
+
+
+def test_restore_fixed_rotations_keeps_a_deeply_bent_hinge_on_the_bind_branch():
+    """Genou gauche de `KaniaMale.Run` : bind identité, X animé de 11° à 110°, 110° à l'image 0.
+
+    L'image 0 seule faisait préférer la branche (180°, 180°, 180°) — 70° de 110° contre 110° —,
+    ce qui ajoutait un demi-tour sur X : jambe repliée à 160°, pied à hauteur de hanche. La piste
+    frôle le bind à 11° sur la branche identité, à 70° sur l'autre : rien à restaurer.
+    """
+    from tools.extract_menu_scene import _euler_zyx_quaternion
+    from tools.scenes.v5_0 import restore_fixed_rotations
+    skeleton = _rotation_skeleton(["LeftLeg"], [0xFFFF], [_rows_of(0.0, 0.0, 0.0)], [(0, 0, 0)])
+    ax = np.radians([110.3, 58.2, 11.1, 53.0, 104.6])
+    zeros = np.zeros(5)
+    track = JointTrack("LeftLeg", np.zeros((5, 3)), _euler_zyx_quaternion(zeros, zeros, ax), True, np.ones(5))
+    before = track.rotation.copy()
+    obj = SimpleNamespace(skeleton=skeleton, animation=SkeletalAnimation(fps=30, frames=5, tracks=[track]))
+    assert restore_fixed_rotations(obj) == []
+    assert np.allclose(track.rotation, before)

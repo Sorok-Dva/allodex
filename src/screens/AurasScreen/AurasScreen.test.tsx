@@ -29,7 +29,7 @@ const INDEX: AurasIndex = {
       model: { glb: 'models/s740178049.glb', vot: 'KaniaMale', objects: {} },
       visual: true, fx: 'fx/s740178049.glb', objects: {}, timeline: { attached: [{ t: 0, vot: 'MEV16Hunter_Dec', locator: 'Slot_Global', scale: 1 }], spawns: [] } },
   ],
-  walks: { KaniaMale: { glb: 'walk/KaniaMale.glb', clips: { walk: 1, run: 0.6 }, speed: 3.5 } },
+  walks: { KaniaMale: { glb: 'walk/KaniaMale.glb', clips: { walk: 1, run: 0.6 }, speed: 2.1, runSpeed: 3.5 } },
 };
 const CHARGEN = {
   schema: 1, client: '17.0', texts: { Low: { fr: 'Départ' }, Medium: { fr: 'Intermédiaire' }, High: { fr: 'Supérieur' } },
@@ -158,7 +158,7 @@ describe('AurasScreen', () => {
     const second = render(<AurasScreen />);
     await act(async () => {});
     expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({
-      walking: true, walk: { url: '/game/auras/walk/KaniaMale.glb', clips: { walk: 1, run: 0.6 }, speed: 3.5 },
+      walking: true, walk: { url: '/game/auras/walk/KaniaMale.glb', clips: { walk: 1, run: 0.6 }, speed: 2.1, runSpeed: 3.5, steps: undefined, pace: undefined },
     }));
     await act(async () => { fireEvent.click(second.getByRole('checkbox', { name: 'Marcher' })); });
     expect(viewerProps).toHaveBeenLastCalledWith(expect.objectContaining({ walking: false }));

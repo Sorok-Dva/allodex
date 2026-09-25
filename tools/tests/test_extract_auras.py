@@ -151,3 +151,28 @@ def test_export_has_the_shell_color_patterns_with_a_ground_aura():
     assert "Summer 2021" in destroyer["obtain"]["en"]
     # La couleur de base de la Faucheuse n'a pas de pièce au sol : absente.
     assert 740153299 not in skins
+
+
+def test_close_loop_repeats_the_first_frame():
+    import numpy as np
+    from tools.extract_menu_scene import JointTrack, SkeletalAnimation
+    track = JointTrack("Hips", np.arange(9.0).reshape(3, 3), np.tile([0.0, 0.0, 0.0, 1.0], (3, 1)), True, np.array([1.0, 2.0, 3.0]))
+    static = JointTrack("Head", np.zeros((1, 3)), np.array([[0.0, 0.0, 0.0, 1.0]]), False, np.ones(1))
+    anim = SkeletalAnimation(fps=30, frames=3, tracks=[track, static])
+    ea.close_loop(anim)
+    assert anim.frames == 4
+    assert np.allclose(track.translation[-1], track.translation[0]) and track.scale[-1] == 1.0
+    assert len(static.translation) == 1
+
+
+def test_stance_contacts_and_speed_from_the_ankle():
+    """Cheville d'un cycle de 10 images à 10 i/s : posée (recule de 0,2 m par image) de
+    l'image 2 à l'image 7, levée (revient en avant) ensuite."""
+    import numpy as np
+    ys = [0.0, -0.3, -0.5, -0.3, -0.1, 0.1, 0.3, 0.5, 0.4, 0.2, 0.0]  # cycle fermé
+    stance = ea.stance_frames(ys)
+    assert ea.foot_contacts(stance, 10.0) == [0.2]
+    assert ea.stance_speed(ys, stance, 10.0) == pytest.approx(2.0)
+    # un à-coup de moins de `MIN_STANCE` images n'est pas un pas
+    jitter = ea.stance_frames([0.0, 0.1, 0.0, -0.1, -0.2, -0.3, -0.2, -0.1, 0.0])
+    assert ea.foot_contacts(jitter, 10.0) == [0.5]

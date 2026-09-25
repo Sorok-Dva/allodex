@@ -12,7 +12,7 @@ import { loadParticleFile, type ParticleAtlasMeta } from '@/components/scene/Fat
 import { bindClips, dressedBodies, tintedOf, type Body, type FatalityDress } from '@/components/scene/FatalityViewer/dress';
 import { skyBehindEverything, type FatalityEnvironment } from '@/components/scene/FatalityViewer/FatalityViewer';
 import { objectClipTime, type FatalityObject } from '@/components/scene/FatalityViewer/timeline';
-import { moveClip, seedTimes, stateShown, walkPose, WALK_SPEED, type AuraWalk } from './walk';
+import { clipRate, footOf, moveClip, moveSpeed, seedTimes, stateShown, stepTimes, walkPose, type AuraWalk } from './walk';
 import s from '@/components/scene/FatalityViewer/FatalityViewer.module.css';
 
 // Mêmes conventions que les fatalités : textures en octets bruts, pas de linéarisation.
@@ -161,6 +161,8 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
     let walkClips: Record<string, number> | undefined;
     let walkDistance = 0;
     let moving: string | null = null;
+    // Cadence du clip de déplacement : pied posé sans glissement à la vitesse du gabarit.
+    let moveRate = 1;
     const gates = new Map<VotInstance, { states: string[] | null; level: number; fadeIn: number; fadeOut: number; since: number }>();
     type Seeder = { inst: VotInstance; node: THREE.Object3D; emitter: NonNullable<FatalityObject['emitters']>[number] };
     const seeders: Seeder[] = [];
@@ -168,6 +170,9 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
     const prints = new Map<string, Print[]>();
     let fxScene: { scene: THREE.Object3D; animations: THREE.AnimationClip[] } | null = null;
     let lastSeed = 0;
+    // Pieds de l'avatar (cheville, orteils) : une empreinte synchronisée sur les pas se pose dessous.
+    const feet: Partial<Record<'L' | 'R', THREE.Object3D[]>> = {};
+    const footPoint = new THREE.Vector3();
     const scratch = { m: new THREE.Matrix4(), t: new THREE.Matrix4(), inv: new THREE.Matrix4(), v: new THREE.Vector3(), prev: new THREE.Vector3(), now: new THREE.Vector3() };
     const printOf = (vot: string, t: number): Print | null => {
       if (!fxScene) return null;
@@ -196,7 +201,15 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
         const gate = gates.get(sd.inst);
         if (gate && gate.level < 0.5) continue;
         const origin = gate ? gate.since : 0;
-        for (const at of seedTimes(from, to, origin, sd.emitter.start, sd.emitter.rate)) {
+        // Règle du lecteur : pendant la marche, chaque empreinte naît quand son pied se pose
+        // (pas lus sur le clip), sous ce pied ; le client la sème à `rate` par seconde.
+        const side = footOf(sd.emitter.vots, sd.emitter.point);
+        const foot = side ? feet[side] : undefined;
+        const contacts = moving && side && foot ? walk?.steps?.[moving]?.[side] : undefined;
+        const cycle = moving ? walkClips?.[moving] ?? 0 : 0;
+        const times = contacts?.length && cycle > 0 ? stepTimes(from * moveRate, to * moveRate, cycle, contacts).map(c => c / moveRate)
+          : seedTimes(from, to, origin, sd.emitter.start, sd.emitter.rate);
+        for (const at of times) {
           for (const vot of sd.emitter.vots) {
             const pr = printOf(vot, at);
             if (!pr) continue;
@@ -205,14 +218,23 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
             scratch.t.makeTranslation(px, py, pz).multiply(new THREE.Matrix4().makeScale(s, s, s));
             scratch.m.multiplyMatrices(scratch.inv, sd.node.matrixWorld).multiply(scratch.t);
             scratch.m.decompose(pr.inst.root.position, pr.inst.root.quaternion, pr.inst.root.scale);
+            if (contacts && foot) {
+              // Hauteur, cap et échelle du client ; x, y : milieu cheville–orteils.
+              footPoint.set(0, 0, 0);
+              for (const node of foot) footPoint.add(node.getWorldPosition(scratch.v));
+              footPoint.divideScalar(foot.length).applyMatrix4(scratch.inv);
+              pr.inst.root.position.x = footPoint.x;
+              pr.inst.root.position.y = footPoint.y;
+            }
           }
         }
       }
     };
     const setWalk = (t: number, dt: number) => {
       moving = st.walking && walkClips ? moveClip(walkClips) : null;
+      moveRate = clipRate(walk, moving);
       if (holderNode && moving) {
-        walkDistance += dt * (walk?.speed || WALK_SPEED);
+        walkDistance += dt * moveSpeed(walk, moving);
         const pose = walkPose(walkDistance);
         holderNode.getWorldPosition(scratch.prev);
         holderNode.position.set(pose.x, pose.y, 0);
@@ -235,16 +257,18 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
     };
 
     let firstFrame = true;
-    const applyTime = (t: number) => {
+    // Pose de l'avatar, puis semis (les empreintes lisent la pose des pieds), puis gabarits.
+    const applyTime = (t: number, seedFrom: number | null) => {
       for (const body of bodies) {
         for (const [name, action] of body.actions) {
           const on = moving ? name === moving : IDLE.test(name);
           action.enabled = on;
           action.setEffectiveWeight(on ? 1 : 0);
-          if (on) action.time = objectClipTime(t, body.durations.get(name) ?? action.getClip().duration, true);
+          if (on) action.time = objectClipTime(name === moving ? t * moveRate : t, body.durations.get(name) ?? action.getClip().duration, true);
         }
         body.mixer.update(0);
       }
+      if (seedFrom !== null && t > seedFrom) seed(seedFrom, t);
       for (const inst of instances) {
         const local = t - inst.start;
         const fx = (inst.root.userData as { appearance?: boolean }).appearance ? true : st.showFx;
@@ -265,12 +289,13 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
       const now = performance.now();
       const delta = previous ? Math.min((now - previous) / 1000, 0.25) : 0;
       previous = now;
+      let seedFrom: number | null = null;
       if (st.playing) {
         const dt = delta * st.speed;
         time += dt;
         st.dirty = true;
         setWalk(time, dt);
-        if (time > lastSeed) seed(lastSeed, time);
+        if (time > lastSeed) seedFrom = lastSeed;
       }
       lastSeed = time;
       if (camera.position.equals(shown)) camera.position.copy(orbit);
@@ -285,7 +310,7 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
       }
       if (!st.dirty && !moved && !settling && !instances.some(i => i.billboards.length && i.root.visible)) return;
       for (const pool of prints.values()) for (const p of pool) if (p.busy && time - p.inst.start > p.life) { p.busy = false; p.inst.root.visible = false; }
-      applyTime(time);
+      applyTime(time, seedFrom);
       if (!renderer) return;
       terrainExtras?.update(renderer, scene, camera, time);
       renderer.render(scene, camera);
@@ -398,8 +423,16 @@ export const AuraViewer = forwardRef<AuraViewerHandle, AuraViewerProps>(function
             prefix = dress.template;
           }
         }
+        if (prefix) {
+          const bone = (name: string) => anchor.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(`${prefix}/${name}`));
+          // Articulation au sol (`Foot_L` : sabot des Praidens, sinon la cheville) et orteils.
+          for (const [side, ground, ankle, toe] of [['L', 'Foot_L', 'LeftFoot', 'LeftToeBase'], ['R', 'Foot_R', 'RightFoot', 'RightToeBase']] as const) {
+            const nodes = [bone(ground) ?? bone(ankle), bone(toe)].filter((n): n is THREE.Object3D => !!n);
+            if (nodes.length) feet[side] = nodes;
+          }
+        }
         if (fx && timeline) {
-          const locate = (locator: string) => (prefix && anchor.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(`${prefix}/${locator}`))) || anchor;
+          const locate =(locator: string) => (prefix && anchor.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(`${prefix}/${locator}`))) || anchor;
           for (const item of timeline.attached) {
             const proto = findVot(fx.scene, item.vot);
             const info = objects[item.vot];

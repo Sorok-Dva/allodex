@@ -84,10 +84,10 @@ def restore_fixed_rotations(obj) -> list[str]:
 
     Un angle est tenu pour fixe quand il vaut 0 à toutes les images (le décodeur générique met
     0 aux composantes que le drapeau de la piste déclare fixes). La rotation de bind admet deux
-    décompositions ZYX, `(a, b, c)` et `(a + π, π − b, c + π)` : on garde celle dont les angles
-    animés à l'image 0 sont les plus proches des courbes (les bielles tournent de 98° autour
-    de Y avec un Z fixe à 180°, décomposition que le premier jet cacherait sous
-    `(0°, 82°, −180°)`). Renvoie les noms des articulations retouchées ; idempotent.
+    décompositions ZYX, `(a, b, c)` et `(a + π, π − b, c + π)` : on garde celle avec laquelle la
+    piste passe au plus près du bind (les bielles tournent de 98° autour de Y avec un Z fixe à
+    180°, décomposition que le premier jet cacherait sous `(0°, 82°, −180°)` ; un genou fléchi
+    de 110° à l'image 0 reste sur la branche identité, qu'il frôle à 11°). Renvoie les noms des articulations retouchées ; idempotent.
 
     Rien à restaurer quand la piste brute **passe déjà par la rotation de bind** : les canaux
     fixes laissés à 0 sont alors les bons, la pose de bind n'étant pas toujours celle de
@@ -122,8 +122,22 @@ def restore_fixed_rotations(obj) -> list[str]:
         branches = np.array([[a, b, c], [a + math.pi, math.pi - b, c + math.pi]])
         moving = ~fixed
         if moving.any():
+            # Chaque branche donne une famille de rotations (angles animés bruts, fixes du
+            # bind) qui passe par le bind quand les angles animés valent ceux de la branche :
+            # on garde celle dont la piste **s'en approche le plus** ; l'écart des angles
+            # animés à l'image 0 ne départage que les égalités. Ce seul écart trompait sur une
+            # charnière très fléchie : le genou gauche de `KaniaMale.Run` (bind identité, X
+            # animé de 11° à 110°, 110° à l'image 0) prenait la branche (180°, 180°, 180°),
+            # soit un demi-tour de plus sur X — jambe repliée à 160°, pied à hauteur de hanche.
+            bind_q = _euler_zyx_quaternion(np.array([a]), np.array([b]), np.array([c]))[0]
+            miss = []
+            for branch in branches:
+                trial = angles.copy()
+                trial[:, fixed] = branch[fixed]
+                q = _euler_zyx_quaternion(trial[:, 0], trial[:, 1], trial[:, 2])
+                miss.append(round(1.0 - float(np.abs(q @ bind_q).max()), 6))
             error = np.abs(_wrap(branches[:, moving] - angles[0, moving])).sum(axis=1)
-            chosen = branches[int(np.argmin(error))]
+            chosen = branches[min(range(2), key=lambda k: (miss[k], error[k]))]
         else:
             chosen = branches[0]
         if np.allclose(_wrap(chosen[fixed]), 0.0, atol=1e-6):

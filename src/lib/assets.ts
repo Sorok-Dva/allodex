@@ -195,8 +195,13 @@ export type AuraAppearance = {
   timeline?: import('@/components/scene/AuraViewer/AuraViewer').AuraTimeline;
   visualItems?: (number | null)[];
 };
-/** Clips de marche d'un gabarit de la création (`walk/<gabarit>.glb`) et sa vitesse de course. */
-export type AuraWalkClips = { glb: string; clips: Record<string, number>; speed?: number };
+/**
+ * Clips de marche d'un gabarit de la création (`walk/<gabarit>.glb`), vitesses de marche (`speed`,
+ * `AnimationProperties.walk`) et de course (`runSpeed`, `walkForward`), instants de pose de chaque
+ * pied par clip (`steps`).
+ */
+export type AuraWalkClips = { glb: string; clips: Record<string, number>; speed?: number; runSpeed?: number;
+  steps?: Record<string, { L?: number[]; R?: number[] }>; pace?: Record<string, number> };
 export type AurasIndex = { schema: number; client: string; auras: AuraEntry[]; appearances: AuraAppearance[]; particleAtlas?: ParticleAtlasMeta;
   walks?: Record<string, AuraWalkClips> };
 /** URL d'un fichier de `public/game/auras/` (`fx/a740017040.glb`, `icons/HeroHalo06.webp`). */
