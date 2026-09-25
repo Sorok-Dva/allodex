@@ -180,7 +180,7 @@ export function AurasScreen() {
       : choice ? index?.auras.find(x => x.id === choice.entry.auras[0]) : undefined;
   // Marche : active d'office pour les auras qui ne se voient qu'en marchant (empreintes).
   const walkMeta = !appearanceOf(choice) && dress ? index?.walks?.[dress.template] : undefined;
-  const walk = useMemo(() => (walkMeta ? { url: auraFile(walkMeta.glb), clips: walkMeta.clips, speed: walkMeta.speed } : null), [walkMeta]);
+  const walk = useMemo(() => (walkMeta ? { url: auraFile(walkMeta.glb), clips: walkMeta.clips, speed: walkMeta.speed, runSpeed: walkMeta.runSpeed, steps: walkMeta.steps, pace: walkMeta.pace } : null), [walkMeta]);
   const walkDefault = !!aura?.timeline?.stateAttached?.length;
   const [walking, setWalking] = useState(walkDefault);
   useEffect(() => { setWalking(walkDefault); }, [choice?.entry.id, walkDefault]);

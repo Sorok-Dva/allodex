@@ -1673,12 +1673,35 @@ Les **lots** qui « donnent » une aura avec une peau de monture, d'exosquelette
 garde-robe qu'ils donnent.
 
 **Marche** (option « Marcher », active d'office pour les auras à empreintes) : l'avatar fait un
-cercle de 3 m (`walk.ts`, règle du lecteur) à la vitesse de course de son gabarit
-(`AnimationProperties.walkForward`, `+0x124`, 3,5 m/s pour les Kanians), avec son clip `run`
-(`walk/<gabarit>.glb` : clips `Walk` et `Run` du client, squelette seul) ; la caméra suit. Les
-auras au sol suivent l'avatar ; les composants d'état n'apparaissent que pendant leurs
-animations (fondu du gabarit) ; les empreintes sont posées dans le monde et s'effacent seules. Les
-modèles de monture et de carapace n'ont pas de clip de déplacement exporté : pas de marche.
+cercle de 3 m (`walk.ts`, règle du lecteur) **en marchant** : clip `walk`, à la vitesse de marche
+de son gabarit (`AnimationProperties.walk`, `+0x11C` du 17.0 — 2,1 m/s pour KaniaMale, 1,7 pour
+KaniaFemale, 1,6 pour les Morts-vivants… mêmes valeurs que les xdb 7.0 ; `+0x120` `walkBackwards`,
+`+0x124` `walkForward` = 3,5 m/s partout, la course), `run` seulement pour un gabarit sans `walk`
+(`walk/<gabarit>.glb` : clips `Walk` et `Run` du client, squelette seul ; `KaniaFemale` n'a que
+`Walk`) ; la caméra suit. L'export lit aussi la vitesse de lecture du clip (`SkeletalAnimation
++0x100`, `speed` : 1,5 pour `KaniaFemale.Walk`, 1,2 pour `UndeadFemale.Walk`), boucle le cycle sur
+`endFrame` images (la première recopiée à la fin : 1 s pour `KaniaMale.Walk`, et non 29/30 s) et
+mesure sur le clip, cheville par cheville, **quand chaque pied se pose** (début de la phase où il
+recule dans le repère du modèle : 0,2 et 0,7 s sur `KaniaMale.Walk`, évènements `Action` du xdb à
+0,233 et 0,7) et **l'allure propre du clip** (`pace` : vitesse du pied posé, à l'échelle du modèle ;
+1,93 m/s sur `KaniaMale.Walk`, 3,52 sur `KaniaMale.Run` pour 3,5). Le lecteur joue le clip à
+`vitesse ÷ allure` (1,09 pour KaniaMale ; le client étire aussi ses animations de déplacement,
+`moveAnimationsNoScale` faux) : le pied posé ne glisse plus (mesuré dans le lecteur : ≈ 6 mm par
+image pour 7 cm d'avancée). Les auras au sol suivent l'avatar ; les composants d'état
+n'apparaissent que pendant leurs animations (fondu du gabarit). **Empreintes** (règle du lecteur) :
+le client les sème à `rate` par seconde, sans lien avec les pas ; le lecteur fait naître chacune
+(`…L`, `…R`) quand son pied se pose, sous ce pied (hauteur, cap et échelle du client), puis elle
+reste dans le monde et s'efface seule. Les modèles de monture et de carapace n'ont pas de clip de
+déplacement exporté : pas de marche.
+
+**Pied gauche plié à 90° pendant la course** (corrigé) : `restore_fixed_rotations` choisissait la
+branche d'Euler du bind sur l'image 0 seule. Le genou gauche de `KaniaMale.Run` (`LeftLeg`, bind
+identité, Z et Y fixes, X animé de 11° à 110°, 110° à l'image 0) prenait la branche (180°, 180°,
+180°), plus proche de 110° que (0°, 0°, 0°) : un demi-tour de plus sur X, jambe repliée à 160°,
+pied au-dessus du genou (1,22 m de haut contre 0,51 pour le droit). Même défaut sur un genou des
+`Run` d'Aed, Hadagan, Orc et Mort-vivant, et sur des coudes. La branche retenue est désormais celle
+avec laquelle la piste passe au plus près du bind (11° contre 70° pour ce genou) ; les deux pieds
+de tous les clips de marche et de course montent de nouveau à la même hauteur.
 
 **Lecteur** (`src/components/scene/AuraViewer/`) : temps continu, sans fin ni barre de lecture
 (pause, vitesse, effets). Il réutilise les briques des fatalités — `VotFactory` (vies propres des
@@ -2584,7 +2607,9 @@ d'elle vit dans `tools/scenes/v5_0.py` et `src/components/scene/MenuScene/v5/` :
   `root` (rochers) et `root1` (grand arbre) tournent de ~180°, `Tower`/`group5` de 10,4° autour de Z,
   les bielles ont un Z fixe à 180°, la branche `joint9` un Y fixe à 90°. Les angles *animés* sont
   absolus et valent ceux du bind à l'image 0. `restore_fixed_rotations` remplace chaque angle fixe
-  par celui du bind, dans la branche d'Euler qui s'accorde aux angles animés : la pose de bind
+  par celui du bind, dans la branche d'Euler avec laquelle la piste **passe au plus près du bind**
+  (l'écart des angles animés à l'image 0 ne départage que les égalités : seul, il retournait les
+  charnières très fléchies à l'image 0 — genoux des `Run`, coudes, voir « Marche » des auras) : la pose de bind
   stockée est retrouvée exactement pour 23 des 35 articulations à inverse réelle (les autres à moins
   de 0,3), et toutes les pièces de la tour s'alignent sur un même axe (X ≈ −52, Y ≈ 24). Le premier
   jet laissait ces rotations à l'identité : arbre 33 unités trop bas, rochers derrière la tour,

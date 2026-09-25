@@ -905,16 +905,103 @@ CHARGEN_INDEX = HERE.parent / "public" / "game" / "character" / "chargen.json"
 # (mêmes noms que l'énumération `Animations` : `walk`, `run`), celles que les empreintes attendent.
 WALK_CLIPS = {"walk": "Walk", "run": "Run"}
 VCT_ANIMATION_PROPERTIES = 0x88
-# `AnimationProperties.walkForward` (7.0 : 3.5 pour KaniaMale, même valeur en +0x124 du 17.0) : vitesse
-# (m/s) à laquelle l'animation de course avance d'elle-même.
+# `AnimationProperties` (7.0, `Characters/<race>_<sexe>/AnimationProperties.xdb`) : `walk` (m/s),
+# vitesse de la marche (2,1 pour KaniaMale, 1,7 pour KaniaFemale…), puis `walkBackwards` et
+# `walkForward` (3,5 partout : la course). Même ordre, flottants consécutifs dans le 17.0.
+ANIMPROPS_WALK = 0x11C
 ANIMPROPS_WALK_FORWARD = 0x124
+# `SkeletalAnimation` : `endFrame` (+0xB0, u32), `fps` (+0xB4, f32), `speed` (+0x100, f32 : vitesse
+# de lecture, 1,5 pour `KaniaFemale.Walk`, 1,2 pour `UndeadFemale.Walk`, comme dans les xdb 7.0).
+SKELANIM_END_FRAME = 0xB0
+SKELANIM_SPEED = 0x100
+# Chevilles des pieds gauche et droit. Un pied est posé tant qu'il recule dans le repère du modèle
+# (+Y, le modèle regardant −Y) ; une phase de moins de `MIN_STANCE` images n'est qu'un à-coup.
+FEET = {"L": "LeftFoot", "R": "RightFoot"}
+MIN_STANCE = 3
+
+
+def close_loop(animation) -> None:
+    """Clip en boucle : le client joue `endFrame` images (autant que le binaire en porte) et
+    revient à la première — `Walk` de KaniaMale : 30 images, cycle d'une seconde. La première
+    image est recopiée à la fin, pour que le lecteur interpole la dernière vers la première au
+    lieu d'y sauter une image trop tôt (cycle de 29/30 s)."""
+    import numpy as np
+    for t in animation.tracks:
+        if len(t.rotation) == animation.frames:
+            t.translation = np.vstack([t.translation, t.translation[:1]])
+            t.rotation = np.vstack([t.rotation, t.rotation[:1]])
+        if np.size(t.scale) == animation.frames:
+            t.scale = np.concatenate([t.scale, t.scale[:1]])
+    animation.frames += 1
+
+
+def frame_world(skeleton, animation, frame: int) -> np.ndarray:
+    """Matrices monde des articulations à l'image `frame` du clip (bind pour les autres)."""
+    from types import SimpleNamespace
+    import numpy as np
+    from tools.extract_menu_scene import rest_world_matrices
+
+    def at(values):
+        values = np.asarray(values)
+        return values[frame:frame + 1] if len(values) > frame else values[:1]
+    tracks = [SimpleNamespace(name=t.name, translation=at(t.translation), rotation=at(t.rotation),
+                              scale=at(np.atleast_1d(t.scale))) for t in animation.tracks]
+    return rest_world_matrices(skeleton, SimpleNamespace(tracks=tracks))
+
+
+def stance_frames(ys) -> np.ndarray:
+    """Images du cycle où le pied est posé : la cheville recule (+Y) jusqu'à l'image suivante.
+    `ys` : Y de la cheville sur le cycle **fermé** (première image recopiée à la fin)."""
+    import numpy as np
+    return np.diff(np.asarray(ys, float)) > 0
+
+
+def stance_runs(stance: np.ndarray) -> list[list[int]]:
+    """Phases posées d'au moins `MIN_STANCE` images, en boucle sur le cycle (indices croissants,
+    au-delà du cycle si la phase en passe la fin)."""
+    import numpy as np
+    n = len(stance)
+    if not stance.any() or stance.all():
+        return []
+    start = int(np.argmin(stance))  # une image levée : aucune phase ne la traverse
+    runs: list[list[int]] = []
+    run: list[int] = []
+    for k in range(start, start + n + 1):
+        if k < start + n and stance[k % n]:
+            run.append(k)
+            continue
+        if len(run) >= MIN_STANCE:
+            runs.append(run)
+        run = []
+    return runs
+
+
+def foot_contacts(stance: np.ndarray, fps: float) -> list[float]:
+    """Instants (s, dans le cycle) où le pied se pose : début de chaque phase posée. Sur
+    `KaniaMale.Walk`, 0,233 et 0,733 s — les évènements `Action` du clip (xdb 7.0 : 0,233 et 0,7)."""
+    n = len(stance)
+    return sorted(round((run[0] % n) / fps, 4) for run in stance_runs(stance))
+
+
+def stance_speed(ys, stance: np.ndarray, fps: float) -> float | None:
+    """Vitesse (m/s) à laquelle le pied posé recule — celle dont le corps avance sans glissement :
+    médiane des pas de la cheville d'une image à l'autre pendant les phases posées."""
+    import numpy as np
+    dy = np.diff(np.asarray(ys, float))
+    frames = [k % len(stance) for run in stance_runs(stance) for k in run]
+    if not frames:
+        return None
+    return round(float(np.median(dy[frames])) * fps, 3)
 
 
 def export_walks(manifest: dict, out_dir: Path, report: list[str]) -> dict:
     """Clips `walk` et `run` des gabarits de la création (`walk/<gabarit>.glb` : squelette et clips,
-    sans maillage ; mêmes noms de nœuds que `public/game/character/models/<gabarit>.glb`) et vitesse
-    de course du gabarit. Le lecteur les ajoute aux clips de l'avatar pour la boucle de marche."""
-    from tools.allods_gltf import Exporter, load_animation, load_geometry
+    sans maillage ; mêmes noms de nœuds que `public/game/character/models/<gabarit>.glb`), vitesses
+    de marche (`speed`, `AnimationProperties.walk`) et de course (`runSpeed`, `walkForward`) du
+    gabarit, instants où chaque pied se pose dans chaque clip (`steps`) et allure propre du clip
+    (`pace`, vitesse du pied posé), lus sur le clip. Le lecteur ajoute les clips à ceux de
+    l'avatar pour la boucle de marche."""
+    from tools.allods_gltf import Exporter, clean_animation, load_animation, load_geometry
     from tools.allods_packdb import open_catalog, open_pack, packs_path
     from tools.chargen_scene import WebpTexturePool
     from tools.extract_menu_scene import BinSource
@@ -932,16 +1019,23 @@ def export_walks(manifest: dict, out_dir: Path, report: list[str]) -> dict:
         n = cat.name(db.binary_ref(g))
         if n in wanted and n not in geometries:
             geometries[n] = g
-    speeds: dict[str, float] = {}
+    anim_names = {f"{b.rsplit('/', 1)[0]}/Animations/{b.rsplit('/', 1)[1].split('.')[0]}.{suffix}.(SkeletalAnimation).bin"
+                  for b in wanted for suffix in WALK_CLIPS.values()}
+    anim_res: dict[str, int] = {}
+    for res in db.resources("SkeletalAnimation") + db.structs("SkeletalAnimation"):
+        ref = db.binary_ref(res)
+        n = cat.name(ref) if ref is not None else None
+        if n in anim_names and n not in anim_res:
+            anim_res[n] = res
+    speeds: dict[str, dict[str, float]] = {}
     for vct in db.resources("VisCharacterTemplate") + db.structs("VisCharacterTemplate"):
         vo = db.ptr(vct + TEMPLATE_VISOBJECT)
         geo = db.ptr(vo + 0xC0) if vo is not None else None
         n = cat.name(db.binary_ref(geo)) if geo is not None else None
         props = db.ptr(vct + VCT_ANIMATION_PROPERTIES)
         if n in wanted and n not in speeds and props is not None:
-            v = float(db.f32(props + ANIMPROPS_WALK_FORWARD))
-            if 0.5 < v < 20:
-                speeds[n] = round(v, 3)
+            pair = {key: float(db.f32(props + off)) for key, off in (("speed", ANIMPROPS_WALK), ("runSpeed", ANIMPROPS_WALK_FORWARD))}
+            speeds[n] = {k: round(v, 3) for k, v in pair.items() if 0.3 < v < 20}
     out: dict[str, dict] = {}
     for binary, name in sorted(wanted.items(), key=lambda x: x[1]):
         g = geometries.get(binary)
@@ -949,27 +1043,57 @@ def export_walks(manifest: dict, out_dir: Path, report: list[str]) -> dict:
         if loaded is None or loaded.skeleton is None:
             report.append(f"AVERTISSEMENT : marche de {name} — géométrie introuvable")
             continue
+        skeleton = loaded.skeleton
         folder, stem = binary.rsplit("/", 1)
         stem = stem.split(".")[0]
         ex = Exporter(textures, 256)
-        joints = ex.emit_skeleton(loaded.skeleton, name)
+        joints = ex.emit_skeleton(skeleton, name)
         span = float(np.max(np.abs(loaded.vertices["position"])) * 4.0)
-        clips = {}
+        clips: dict[str, float] = {}
+        steps: dict[str, dict[str, list[float]]] = {}
+        measured: dict[str, dict[str, float | None]] = {}
+        paces: dict[str, float] = {}
         for clip, suffix in WALK_CLIPS.items():
-            anim = load_animation(bins, f"{folder}/Animations/{stem}.{suffix}.(SkeletalAnimation).bin", loaded.skeleton, span)
+            anim_name = f"{folder}/Animations/{stem}.{suffix}.(SkeletalAnimation).bin"
+            anim = load_animation(bins, anim_name, skeleton, span)
             if anim is None:
                 report.append(f"AVERTISSEMENT : {name} — animation {suffix} absente")
                 continue
-            clips[clip] = round(ex.emit_clip(clip, loaded.skeleton, joints, anim), 4)
+            clean_animation(skeleton, anim)
+            res = anim_res.get(anim_name)
+            rate = float(db.f32(res + SKELANIM_SPEED)) if res is not None else 1.0
+            rate = rate if 0.1 < rate < 10 else 1.0
+            if res is not None and db.u32(res + SKELANIM_END_FRAME) != anim.frames:
+                report.append(f"AVERTISSEMENT : {name} — {suffix} : endFrame {db.u32(res + SKELANIM_END_FRAME)}, "
+                              f"{anim.frames} images dans le binaire")
+            cycle = anim.frames
+            close_loop(anim)
+            worlds = [frame_world(skeleton, anim, k) for k in range(anim.frames)]
+            fps = anim.fps * rate  # images par seconde réelles
+            steps[clip], measured[clip] = {}, {}
+            for side, bone in FEET.items():
+                if bone not in skeleton.names:
+                    continue
+                ys = [w[skeleton.names.index(bone)][1, 3] for w in worlds]  # cycle fermé : cycle + 1 images
+                stance = stance_frames(ys)
+                steps[clip][side] = foot_contacts(stance, fps)
+                measured[clip][side] = stance_speed(ys, stance, fps)
+            clips[clip] = round(ex.emit_clip(clip, skeleton, joints, anim, rate), 4)
+            # Allure propre du clip (m/s, à l'échelle du modèle de la création) : le lecteur y
+            # accorde la cadence des pas quand l'avatar avance à la vitesse du gabarit.
+            gaits = [v for v in measured[clip].values() if v]
+            if gaits:
+                paces[clip] = round(float(np.mean(gaits)) * float(chargen["templates"][name].get("scale") or 1.0), 3)
         if not clips:
             continue
-        roots = [joints[i] for i in range(len(loaded.skeleton)) if not (0 <= loaded.skeleton.parents[i] < len(loaded.skeleton))]
+        roots = [joints[i] for i in range(len(skeleton)) if not (0 <= skeleton.parents[i] < len(skeleton))]
         root = ex.gltf.add_node({"name": name, "children": roots})
         glb = ex.finish([root])
         (out_dir / "walk").mkdir(parents=True, exist_ok=True)
         (out_dir / "walk" / f"{name}.glb").write_bytes(glb)
-        out[name] = {"glb": f"walk/{name}.glb", "clips": clips, **({"speed": speeds[binary]} if binary in speeds else {})}
-        print(f"marche {name:>18}  {len(glb) / 1024:.0f} Kio  {clips}  vitesse {speeds.get(binary)}")
+        out[name] = {"glb": f"walk/{name}.glb", "clips": clips, **speeds.get(binary, {}), "steps": steps, "pace": paces}
+        print(f"marche {name:>18}  {len(glb) / 1024:.0f} Kio  {clips}  vitesses {speeds.get(binary)}  "
+              f"pied posé {measured}  pas {steps}")
     return out
 
 
